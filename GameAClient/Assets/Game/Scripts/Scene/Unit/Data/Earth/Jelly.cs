@@ -12,10 +12,10 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4012, Type = typeof(Jelly))]
-    public class Jelly : BlockBase
+    public class Jelly : SkillBlock
     {
         public static int ExtraSpeedX = 180;
-        public static int ExtraSpeedY = 240;
+        public static int ExtraSpeedY = 264;
 
         protected override bool OnInit()
         {
@@ -37,66 +37,58 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            if (!checkOnly && other.IsHero)
+//            if (_colliderGrid.Intersects(grid))
             {
-                if (other.SpeedY <= 0)
-                {
+                PlayAnimation(other, eDirectionType);
+                OnEffect(other, eDirectionType);
+            }
+        }
+
+        private void PlayAnimation(UnitBase other, EDirectionType eDirectionType)
+        {
+            switch (eDirectionType)
+            {
+                case EDirectionType.Up:
+                    if (other.SpeedY <= 0)
+                    {
+                        if (_animation != null)
+                        {
+                            _animation.PlayOnce("Up");
+                        }
+                    }
+                    break;
+                case EDirectionType.Down:
+                    if (other.SpeedY >= 0)
+                    {
+                        if (_animation != null)
+                        {
+                            _animation.PlayOnce("Down");
+                        }
+                    }
+                    break;
+                case EDirectionType.Left:
                     if (_animation != null)
                     {
-                        _animation.PlayOnce("Up");
+                        _animation.PlayOnce("Left");
                     }
-                }
-                OnEffect(other, EDirectionType.Up);
-            }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                if (other.SpeedY >= 0)
-                {
+                    break;
+                case EDirectionType.Right:
                     if (_animation != null)
                     {
-                        _animation.PlayOnce("Down");
+                        _animation.PlayOnce("Right");
                     }
-                }
-                OnEffect(other, EDirectionType.Down);
+                    break;
             }
-            return base.OnDownHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                if (_animation != null)
-                {
-                    _animation.PlayOnce("Left");
-                }
-                OnEffect(other, EDirectionType.Left);
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                if (_animation != null)
-                {
-                    _animation.PlayOnce("Right");
-                }
-                OnEffect(other, EDirectionType.Right);
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
+            if (other.IsInState(EEnvState.Ice))
+            {
+                return;
+            }
             switch (eDirectionType)
             {
                 case EDirectionType.Up:
@@ -105,9 +97,9 @@ namespace GameA.Game
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
-                            PlayMode.Instance.MainUnit.Step(80);
+                            PlayMode.Instance.MainPlayer.Step();
                             other.ExtraSpeed.y = ExtraSpeedY;
-                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                         }
                         else if (other.IsMonster)
                         {
@@ -122,7 +114,7 @@ namespace GameA.Game
                         if (other.IsMain)
                         {
                             other.ExtraSpeed.y = -ExtraSpeedY;
-                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                         }
                         else if (other.IsMonster)
                         {
@@ -134,20 +126,20 @@ namespace GameA.Game
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = -ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
-                    other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        PlayMode.Instance.MainPlayer.Step();
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;
                 case EDirectionType.Right:
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
-                    other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        PlayMode.Instance.MainPlayer.Step();
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;
             }

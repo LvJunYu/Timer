@@ -13,14 +13,8 @@ namespace GameA.Game
     public struct GridCheck
     {
         private UnitBase _self;
-        private SwitchTrigger _hit;
+        private SwitchTriggerPress _hit;
         private bool _isStay;
-
-        public UnitBase Self
-        {
-            get { return _self; }
-            set { _self = value; }
-        }
 
         public GridCheck(UnitBase self)
         {
@@ -31,6 +25,7 @@ namespace GameA.Game
 
         public void Clear()
         {
+            After();
             _hit = null;
             _isStay = false;
         }
@@ -40,7 +35,7 @@ namespace GameA.Game
             _isStay = false;
         }
 
-        public void Do(SwitchTrigger hit)
+        public void Do(SwitchTriggerPress hit)
         {
             if (hit != null)
             {

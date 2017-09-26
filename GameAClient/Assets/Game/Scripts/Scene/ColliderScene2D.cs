@@ -6,12 +6,10 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using JoyEngine;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -20,7 +18,13 @@ namespace GameA.Game
     {
         private static ColliderScene2D _instance;
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
-        [SerializeField] private readonly List<UnitBase> _allUnits = new List<UnitBase>();
+        
+        [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
+
+        [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
         private byte[,] _pathGrid;
@@ -35,28 +39,46 @@ namespace GameA.Game
             get { return _units; }
         }
 
-        public List<UnitBase> AllUnits
+        public List<UnitBase> AllOtherUnits
         {
-            get { return _allUnits; }
+            get { return _allOtherUnits; }
+        }
+
+        public List<UnitBase> AllSwitchUnits
+        {
+            get { return _allSwitchUnits; }
+        }
+
+        public List<UnitBase> AllMagicUnits
+        {
+            get { return _allMagicUnits; }
+        }
+
+        public List<UnitBase> AllBulletUnits
+        {
+            get { return _allBulletUnits; }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var unit in _allUnits)
+            foreach (var unit in _units.Values)
             {
                 if (unit != null)
                 {
                     if (unit.View != null)
                     {
-                        UnityEngine.Object.Destroy(unit.View.Trans.gameObject);
+                        Object.Destroy(unit.View.Trans.gameObject);
                     }
                     unit.OnObjectDestroy();
                     unit.OnDispose();
                 }
             }
             _units.Clear();
-            _allUnits.Clear();
+            _allSwitchUnits.Clear();
+            _allMagicUnits.Clear();
+            _allBulletUnits.Clear();
+            _allOtherUnits.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -67,8 +89,11 @@ namespace GameA.Game
         public void Init(IntVec2 regionTilesCount, int width, int height)
         {
             Init(width, height);
-            InitRegions(regionTilesCount);
-            _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            if (MapConfig.UseAOI)
+            {
+                InitRegions(regionTilesCount);
+                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            }
             _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
             for (int i = 0; i < _pathGrid.GetLength(0); i++)
             {
@@ -104,6 +129,39 @@ namespace GameA.Game
             }
         }
 
+        public bool AddCollider(ColliderDesc colliderDesc)
+        {
+            if (_allColliderDescs.Contains(colliderDesc))
+            {
+                LogHelper.Warning("AddCollider Failed, {0}", colliderDesc);
+                return false;
+            }
+            var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
+            if (!AddNode(colliderNode))
+            {
+                LogHelper.Error("AddCollider Failed,{0}", colliderDesc);
+                return false;
+            }
+            _allColliderDescs.Add(colliderDesc);
+            return true;
+        }
+
+        public bool DeleteCollider(ColliderDesc colliderDesc)
+        {
+            if (!_allColliderDescs.Contains(colliderDesc))
+            {
+                return false;
+            }
+            var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
+            if (!DeleteNode(colliderNode))
+            {
+                LogHelper.Error("DeleteCollider Failed,{0}", colliderDesc);
+                return false;
+            }
+            _allColliderDescs.Remove(colliderDesc);
+            return true;
+        }
+        
         public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             if (_units.ContainsKey(unitDesc.Guid))
@@ -128,15 +186,26 @@ namespace GameA.Game
                 return false;
             }
             _units.Add(unitDesc.Guid, unit);
-            if (unit.IsMain)
-            {
-                PlayMode.Instance.MainUnit = (MainUnit)unit;
-            }
-            else if(UnitDefine.IsGround(unit.Id))
+            if (tableUnit.IsGround == 1)
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
-            _allUnits.Add(unit);
+            if (UnitDefine.IsSwitchTrigger(unit.Id))
+            {
+                _allSwitchUnits.Add(unit);
+            }
+            else if (unit.UseMagic())
+            {
+                _allMagicUnits.Add(unit);
+            }
+            else if(UnitDefine.IsBullet(unit.Id))
+            {
+                _allBulletUnits.Add(unit);
+            }
+            else
+            {
+                _allOtherUnits.Add(unit);
+            }
             return true;
         }
 
@@ -160,8 +229,26 @@ namespace GameA.Game
                 return false;
             }
             unit.OnDispose();
-            _allUnits.Remove(unit);
-            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+            if (tableUnit.IsGround == 1)
+            {
+                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+            }
+            if (UnitDefine.IsSwitchTrigger(unit.Id))
+            {
+                _allSwitchUnits.Remove(unit);
+            }
+            else if (unit.UseMagic())
+            {
+                _allMagicUnits.Remove(unit);
+            }
+            else if(UnitDefine.IsBullet(unit.Id))
+            {
+                _allBulletUnits.Remove(unit);
+            }
+            else
+            {
+                _allOtherUnits.Remove(unit);
+            }
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -226,14 +313,14 @@ namespace GameA.Game
 
         #region AOI
 
-        public bool UpdateDynamicNode(SceneNode node, Grid2D lastGrid)
+        public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
         {
-            if (base.UpdateDynamicNode(node))
+            if (UpdateDynamicNode(unit.DynamicCollider))
             {
-                if (UnitDefine.IsGround(node.Id))
+                if (unit.TableUnit.IsGround == 1)
                 {
                     _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
-                    _pathGrid[node.Grid.XMin / ConstDefineGM2D.ServerTileScale, node.Grid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale, unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
                 }
                 return true;
             }
@@ -242,17 +329,32 @@ namespace GameA.Game
 
         public void Reset()
         {
-            for (int i = 0; i < _allUnits.Count; i++)
+            for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
-                _allUnits[i].Reset();
+                _allSwitchUnits[i].Reset();
             }
+            for (int i = 0; i < _allMagicUnits.Count; i++)
+            {
+                _allMagicUnits[i].Reset();
+            }
+            for (int i = 0; i < _allOtherUnits.Count; i++)
+            {
+                _allOtherUnits[i].Reset();
+            }
+            for (int i = 0; i < _allColliderDescs.Count; i++)
+            {
+                DeleteCollider(_allColliderDescs[i]);
+            }
+            _allColliderDescs.Clear();
         }
 
         #region Comparison SortData
 
         public void SortData()
         {
-            _allUnits.Sort(_comparisonMoving);
+            _allSwitchUnits.Sort(_comparisonMoving);
+            _allMagicUnits.Sort(_comparisonMoving);
+            _allOtherUnits.Sort(_comparisonMoving);
             Sort();
         }
 
@@ -387,10 +489,10 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
-            {
-                return false;
-            }
+            //if (tableUnit.EUnitType == EUnitType.Monster || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
+            //{
+            //    return false;
+            //}
             return true;
         }
 
@@ -398,113 +500,40 @@ namespace GameA.Game
 
         #region Physics
 
-        private static List<RayHit2D> _cachedRayHits = new List<RayHit2D>();
         private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
-
-        internal static bool PointCast(Vector2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
-        {
-            return SceneQuery2D.PointCast(GM2DTools.WorldToTile(point), out sceneNode, layerMask, _instance, minDepth, maxDepth);
-        }
 
         internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
         }
 
-        //public static bool Raycast(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask, Color color)
-        //{
-        //    Debug.DrawRay(origin, direction * distance, color);
-        //    return RaycastInternal(origin, direction, out hit, distance, layerMask, false);
-        //}
+        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit, float distance = ConstDefineGM2D.MaxMapDistance,
+            int layerMask = JoyPhysics2D.LayMaskAll, SceneNode excludeNode = null)
+        {
+            return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask,
+                Instance, float.MinValue, float.MaxValue, excludeNode);
+        }
 
-        //public static bool RaycastQueryInCollider(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask = JoyPhysics2D.LayMaskAll)
-        //{
-        //    Debug.DrawRay(origin, direction * distance, Color.white);
-        //    return RaycastInternal(origin, direction, out hit, distance, layerMask, true);
-        //}
-
-        //private static bool RaycastInternal(Vector2 orgin, Vector2 direction, out RayHit2D hit, float distance, int layerMask, bool inCollider)
-        //{
-        //    hit = new RayHit2D();
-        //    List<RayHit2D> hits = inCollider ? RaycastAllInternalQueryInCollider(orgin, direction, distance, layerMask) : RaycastAllInternal(orgin, direction, distance, layerMask);
-        //    var count = hits.Count;
-        //    if (count == 0)
-        //    {
-        //        return false;
-        //    }
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        hit = hits[i];
-        //        var tableUnit = UnitManager.Instance.GetTableUnit(hits[i].node.Id);
-        //        if (tableUnit == null)
-        //        {
-        //            LogHelper.Error("Raycast Failed, GetTableUnit:{0}", hits[i].node.Id);
-        //            continue;
-        //        }
-        //        //物体是单向的时候
-        //        if (tableUnit.ColliderDirection != 15)
-        //        {
-        //            int dir = GM2DTools.GetDirection(hits[i].normal);
-        //            if ((dir & GM2DTools.GetCurrentColliderDirection(tableUnit, hits[i].node.Rotation)) == 0)
-        //            {
-        //                continue;
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //public static List<RayHit2D> RaycastAll(Vector2 orgin, Vector2 direction, float distance, int layerMask, bool inCollider = false)
-        //{
-        //    List<RayHit2D> hits = inCollider ? RaycastAllInternalQueryInCollider(orgin, direction, distance, layerMask) : RaycastAllInternal(orgin, direction, distance, layerMask);
-        //    var count = hits.Count;
-        //    if (count == 0)
-        //    {
-        //        return null;
-        //    }
-        //    _cachedRayHits.Clear();
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        var tableUnit = UnitManager.Instance.GetTableUnit(hits[i].node.Id);
-        //        if (tableUnit == null)
-        //        {
-        //            LogHelper.Error("Raycast Failed, GetTableUnit:{0}", hits[i].node.Id);
-        //            continue;
-        //        }
-        //        //物体是单向的时候
-        //        if (tableUnit.ColliderDirection != 15)
-        //        {
-        //            int dir = GM2DTools.GetDirection(hits[i].normal);
-        //            if ((dir & GM2DTools.GetCurrentColliderDirection(tableUnit, hits[i].node.Rotation)) == 0)
-        //            {
-        //                continue;
-        //            }
-        //        }
-        //        _cachedRayHits.Add(hits[i]);
-        //    }
-        //    return _cachedRayHits;
-        //}
-
-        //internal static List<RayHit2D> RaycastAllInternal(Vector2 origin, Vector2 direction, float distance,
-        //    int layerMask = JoyPhysics2D.LayMaskAll,
-        //    float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
-        //{
-        //    JoyPhysics2D.QueryInCollider = false;
-        //    return SceneQuery2D.RaycastAll(origin * ConstDefineGM2D.ServerTileScale, direction,
-        //        distance * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
-        //        excludeNode);
-        //}
-
-        //internal static List<RayHit2D> RaycastAllInternalQueryInCollider(Vector2 origin, Vector2 direction, float distance,
-        //    int layerMask = JoyPhysics2D.LayMaskAll,
-        //    float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
-        //{
-        //    JoyPhysics2D.QueryInCollider = true;
-        //    return SceneQuery2D.RaycastAll(origin * ConstDefineGM2D.ServerTileScale, direction,
-        //        distance * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
-        //        excludeNode);
-        //}
+        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance,
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        {
+            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, Instance,
+                float.MinValue, float.MaxValue, excludeNode);
+        }
+        
+        public static List<UnitBase>  RaycastAllReturnUnits(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        {
+            _cachedUnits.Clear();
+            var hits = RaycastAll(origin, direction, distance , layerMask, minDepth, maxDepth, excludeNode);
+            for (int i = 0; i < hits.Count; i++)
+            {
+                var hit = hits[i];
+                var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+                GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
+            }
+            return _cachedUnits;
+        }
 
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
@@ -534,7 +563,7 @@ namespace GameA.Game
                 excludeNode);
         }
 
-        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth,excludeNode);
@@ -547,58 +576,33 @@ namespace GameA.Game
             var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, Instance, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
-                var node = nodes[i];
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
-                if (tableUnit == null)
-                {
-                    LogHelper.Error("GetTableUnit failed.{0}", node.Id);
-                    continue;
-                }
-                if (node.IsDynamic())
-                {
-                    var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
-                    UnitBase unit;
-                    if (!_instance.TryGetUnit(guid, out unit))
-                    {
-                        //LogHelper.Warning("TryGetUnits failed,{0}", node);
-                        continue;
-                    }
-                    _cachedUnits.Add(unit);
-                }
-                else
-                {
-                    var newGrid = GM2DTools.IntersectWith(one, node, tableUnit, false);
-                    var size = tableUnit.GetColliderSize(node);
-                    var count = tableUnit.GetColliderCount(newGrid, node.Rotation, node.Scale);
-                    for (int j = 0; j < count.x; j++)
-                    {
-                        for (int k = 0; k < count.y; k++)
-                        {
-                            var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
-                            guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
-                            UnitBase unit;
-                            if (!_instance.TryGetUnit(guid, out unit))
-                            {
-                                //LogHelper.Warning("TryGetUnit failed,{0}", node);
-                                continue;
-                            }
-                            _cachedUnits.Add(unit);
-                        }
-                    }
-                }
+                GetUnits(nodes[i], one, _cachedUnits);
             }
+            return _cachedUnits;
+        }
+
+        public static List<UnitBase> GetUnits(RayHit2D hit)
+        {
+            _cachedUnits.Clear();
+            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+            GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             return _cachedUnits;
         }
 
         public static List<UnitBase> GetUnits(GridHit2D hit, Grid2D one)
         {
             _cachedUnits.Clear();
-            SceneNode node = hit.node;
+            GetUnits(hit.node, one, _cachedUnits);
+            return _cachedUnits;
+        }
+
+        private static bool GetUnits(SceneNode node, Grid2D one, List<UnitBase> units)
+        {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
             {
                 LogHelper.Error("GetTableUnit failed.{0}", node.Id);
-                return null;
+                return false;
             }
             if (node.IsDynamic())
             {
@@ -607,9 +611,9 @@ namespace GameA.Game
                 if (!_instance.TryGetUnit(guid, out unit))
                 {
                     //LogHelper.Warning("TryGetUnits failed,{0}", node);
-                    return null;
+                    return false;
                 }
-                _cachedUnits.Add(unit);
+                units.Add(unit);
             }
             else
             {
@@ -627,13 +631,13 @@ namespace GameA.Game
                         {
                             continue;
                         }
-                        _cachedUnits.Add(unit);
+                        units.Add(unit);
                     }
                 }
             }
-            return _cachedUnits;
+            return true;
         }
-
+        
         public static List<SceneNode> CircleCastAll(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
@@ -709,19 +713,18 @@ namespace GameA.Game
 
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
-            var start = unit.GetCurColliderPos() ;
-            var end = target.GetCurColliderPos();
+            var start = unit.CenterDownPos ;
+            var end = target.DownUnit == null ? target.CenterDownPos : target.DownUnit.CenterUpFloorPos;
             //不在空中的时候
             if (!target.Grounded)
             {
-                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-                GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
-                var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
-                var hits = GridCastAll(pointA, pointB, 2, distance, EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
+                var hits = RaycastAll(target.CenterDownPos, Vector2.down, GM2DTools.WorldToTile(30f),
+                    EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsGround(hit.node.Id))
+                    var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                    if (tableUnit != null && tableUnit.IsGround == 1)
                     {
                         end.y -= hit.distance;
                         break;
@@ -730,11 +733,6 @@ namespace GameA.Game
             }
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
             return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
-        }
-
-        public override bool IsOnewayPlatform(int x, int y)
-        {
-            return base.IsOnewayPlatform(x, y);
         }
 
         public override bool IsGround(int x, int y)

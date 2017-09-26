@@ -14,7 +14,7 @@ namespace GameA
 {
     public class UMViewDialog : UMViewBase
     {
-        public Image ContentBg;
+        public Button CloseBtn;
         public Text Title;
         public Text Content;
         public GameObject SeperatorDock;

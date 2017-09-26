@@ -56,7 +56,7 @@ public class SpineManager:MonoBehaviour
     //    Renderer render = res.GetComponent<Renderer>();
     //    if (render != null)
     //    {
-    //        render.sortingOrder = (int)ESortingOrder.Hero;
+    //        render.sortingOrder = (int)ESortingOrder.Monster;
     //    }
     //    return res;
     //}

@@ -10,18 +10,8 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4009, Type = typeof (Ice))]
-    public class Ice : UnitWithChild
+    public class Ice : SkillBlock
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit()) 
-            {
-                return false;
-            }
-            _friction = 1;
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -32,19 +22,29 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool StepOnIce()
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            return true;
+            OnEffect(other, eDirectionType);
         }
 
-        public override void OnShootHit(UnitBase other)
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
-            if (other is BulletFire)
+            switch (eDirectionType)
             {
-                PlayMode.Instance.DestroyUnit(this);
-                PushChild();
-                OnDead();
+                    case EDirectionType.Up:
+                        other.SetStepOnIce();
+                        break;
             }
         }
+
+//        public override void OnShootHit(UnitBase other)
+//        {
+//            if (other is ProjectileFire)
+//            {
+//                PlayMode.Instance.DestroyUnit(this);
+//                PushChild();
+//                OnDead();
+//            }
+//        }
     }
 }

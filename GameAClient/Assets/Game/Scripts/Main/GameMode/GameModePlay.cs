@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -19,12 +19,12 @@ namespace GameA.Game
             return true;
 		}
 
-        public override void InitByStep()
+        public override IEnumerator InitByStep()
 		{
             GameRun.Instance.ChangeState(ESceneState.Play);
-			InitUI();
 			InitGame();
-        }
+			yield return null;
+		}
 
 
         public virtual bool PlayNext(Action successCb, Action failedCb)
@@ -79,13 +79,15 @@ namespace GameA.Game
 
         protected virtual void InitUI()
 		{
+			SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayMode();
 			SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+			SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 			InputManager.Instance.ShowGameInput();
         }
 
-        protected virtual void InitGame()
+	    protected virtual void InitGame()
         {
-            MainUnit mainPlayer = PlayMode.Instance.MainUnit;
+            MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
             if (mainPlayer == null)
                 return;
             // todo set data
@@ -139,5 +141,12 @@ namespace GameA.Game
                 view.SetParts(appendageId, SpinePartsHelper.ESpineParts.Appendage);
             }
         }
+
+	    public override void OnGameStart()
+	    {
+		    base.OnGameStart();
+		    _inputDatas.Clear();
+		    InitUI();
+	    }
     }
 }

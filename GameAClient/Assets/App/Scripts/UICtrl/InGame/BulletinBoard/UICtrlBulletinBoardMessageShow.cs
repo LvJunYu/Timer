@@ -56,11 +56,19 @@ namespace GameA
 
 		private void OnEditMode()
 		{
+			if (!_isViewCreated)
+			{
+				return;
+			}
 			ClearAndClose();
 		}
 
 		private void OnPlayMode()
 		{
+			if (!_isViewCreated)
+			{
+				return;
+			}
 			ClearAndClose();
 		}
 

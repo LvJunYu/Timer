@@ -8,6 +8,104 @@ using SoyEngine;
 namespace GameA
 {
     public class RemoteCommands {
+        public static bool IsRequstingLogin {
+            get { return _isRequstingLogin; }
+        }
+        private static bool _isRequstingLogin = false;
+        /// <summary>
+		/// 登录
+		/// </summary>
+		/// <param name="account">账号</param>
+		/// <param name="password">密码</param>
+		/// <param name="accountType">账号类型</param>
+		/// <param name="snsUserInfo"></param>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void Login (
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            Msg_SNSUserInfo snsUserInfo,
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_Login> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingLogin) {
+                return;
+            }
+            _isRequstingLogin = true;
+            Msg_CS_CMD_Login msg = new Msg_CS_CMD_Login();
+            // 登录
+            msg.Account = account;
+            msg.Password = password;
+            msg.AccountType = accountType;
+            msg.SnsUserInfo = snsUserInfo;
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Login>(
+                SoyHttpApiPath.Login, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingLogin = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Login", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingLogin = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingLoginAsGuest {
+            get { return _isRequstingLoginAsGuest; }
+        }
+        private static bool _isRequstingLoginAsGuest = false;
+        /// <summary>
+		/// 游客登录
+		/// </summary>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void LoginAsGuest (
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_LoginAsGuest> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingLoginAsGuest) {
+                return;
+            }
+            _isRequstingLoginAsGuest = true;
+            Msg_CS_CMD_LoginAsGuest msg = new Msg_CS_CMD_LoginAsGuest();
+            // 游客登录
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginAsGuest>(
+                SoyHttpApiPath.LoginAsGuest, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingLoginAsGuest = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "LoginAsGuest", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingLoginAsGuest = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingLoginByToken {
             get { return _isRequstingLoginByToken; }
         }
@@ -16,11 +114,11 @@ namespace GameA
 		/// 设备登录包
 		/// </summary>
 		/// <param name="appVersion">应用版本号</param>
-		/// <param name="name">资源版本号</param>
+		/// <param name="resVersion">资源版本号</param>
 		/// <param name="devicePlatform">设备类型</param>
         public static void LoginByToken (
             string appVersion,
-            string name,
+            string resVersion,
             EPhoneType devicePlatform,
             Action<Msg_SC_CMD_LoginByToken> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -32,7 +130,7 @@ namespace GameA
             Msg_CS_CMD_LoginByToken msg = new Msg_CS_CMD_LoginByToken();
             // 设备登录包
             msg.AppVersion = appVersion;
-            msg.Name = name;
+            msg.ResVersion = resVersion;
             msg.DevicePlatform = devicePlatform;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginByToken>(
                 SoyHttpApiPath.LoginByToken, msg, ret => {
@@ -46,6 +144,248 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingLoginByToken = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingForgetPassword {
+            get { return _isRequstingForgetPassword; }
+        }
+        private static bool _isRequstingForgetPassword = false;
+        /// <summary>
+		/// 忘记密码
+		/// </summary>
+		/// <param name="account">账号</param>
+		/// <param name="password">密码</param>
+		/// <param name="accountType">账号类型</param>
+		/// <param name="verificationCode">验证码</param>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void ForgetPassword (
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_ForgetPassword> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingForgetPassword) {
+                return;
+            }
+            _isRequstingForgetPassword = true;
+            Msg_CS_CMD_ForgetPassword msg = new Msg_CS_CMD_ForgetPassword();
+            // 忘记密码
+            msg.Account = account;
+            msg.Password = password;
+            msg.AccountType = accountType;
+            msg.VerificationCode = verificationCode;
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ForgetPassword>(
+                SoyHttpApiPath.ForgetPassword, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingForgetPassword = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ForgetPassword", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingForgetPassword = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingChangePassword {
+            get { return _isRequstingChangePassword; }
+        }
+        private static bool _isRequstingChangePassword = false;
+        /// <summary>
+		/// 修改密码
+		/// </summary>
+		/// <param name="oldPassword">账号</param>
+		/// <param name="newPassword">密码</param>
+		/// <param name="verificationCode">验证码</param>
+        public static void ChangePassword (
+            string oldPassword,
+            string newPassword,
+            string verificationCode,
+            Action<Msg_SC_CMD_ChangePassword> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingChangePassword) {
+                return;
+            }
+            _isRequstingChangePassword = true;
+            Msg_CS_CMD_ChangePassword msg = new Msg_CS_CMD_ChangePassword();
+            // 修改密码
+            msg.OldPassword = oldPassword;
+            msg.NewPassword = newPassword;
+            msg.VerificationCode = verificationCode;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ChangePassword>(
+                SoyHttpApiPath.ChangePassword, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingChangePassword = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ChangePassword", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingChangePassword = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingRegister {
+            get { return _isRequstingRegister; }
+        }
+        private static bool _isRequstingRegister = false;
+        /// <summary>
+		/// 注册
+		/// </summary>
+		/// <param name="account">账号</param>
+		/// <param name="password">密码</param>
+		/// <param name="accountType">账号类型</param>
+		/// <param name="verificationCode">验证码</param>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void Register (
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_Register> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingRegister) {
+                return;
+            }
+            _isRequstingRegister = true;
+            Msg_CS_CMD_Register msg = new Msg_CS_CMD_Register();
+            // 注册
+            msg.Account = account;
+            msg.Password = password;
+            msg.AccountType = accountType;
+            msg.VerificationCode = verificationCode;
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Register>(
+                SoyHttpApiPath.Register, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingRegister = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Register", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingRegister = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingAccountBind {
+            get { return _isRequstingAccountBind; }
+        }
+        private static bool _isRequstingAccountBind = false;
+        /// <summary>
+		/// 绑定账号
+		/// </summary>
+		/// <param name="account">账号</param>
+		/// <param name="password">密码</param>
+		/// <param name="accountType">账号类型</param>
+		/// <param name="verificationCode">验证码</param>
+        public static void AccountBind (
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            Action<Msg_SC_CMD_AccountBind> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingAccountBind) {
+                return;
+            }
+            _isRequstingAccountBind = true;
+            Msg_CS_CMD_AccountBind msg = new Msg_CS_CMD_AccountBind();
+            // 绑定账号
+            msg.Account = account;
+            msg.Password = password;
+            msg.AccountType = accountType;
+            msg.VerificationCode = verificationCode;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_AccountBind>(
+                SoyHttpApiPath.AccountBind, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingAccountBind = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "AccountBind", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingAccountBind = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingGetVerificationCode {
+            get { return _isRequstingGetVerificationCode; }
+        }
+        private static bool _isRequstingGetVerificationCode = false;
+        /// <summary>
+		/// 请求验证码
+		/// </summary>
+		/// <param name="account">账号</param>
+		/// <param name="accountType">账号类型</param>
+		/// <param name="verifyCodeType">验证码类型</param>
+        public static void GetVerificationCode (
+            string account,
+            EAccountIdentifyType accountType,
+            EVerifyCodeType verifyCodeType,
+            Action<Msg_SC_CMD_GetVerificationCode> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingGetVerificationCode) {
+                return;
+            }
+            _isRequstingGetVerificationCode = true;
+            Msg_CS_CMD_GetVerificationCode msg = new Msg_CS_CMD_GetVerificationCode();
+            // 请求验证码
+            msg.Account = account;
+            msg.AccountType = accountType;
+            msg.VerifyCodeType = verifyCodeType;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GetVerificationCode>(
+                SoyHttpApiPath.GetVerificationCode, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingGetVerificationCode = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetVerificationCode", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingGetVerificationCode = false;
                 },
                 form
             );
@@ -217,18 +557,20 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam"></param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
         public static void CreateProject (
             string name,
             string summary,
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
+            Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -243,9 +585,10 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
                 SoyHttpApiPath.CreateProject, msg, ret => {
                     if (successCallback != null) {
@@ -276,9 +619,10 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam"></param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
         public static void UpdateProject (
             long projectId,
             string name,
@@ -286,9 +630,10 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
+            Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -304,9 +649,10 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
                 SoyHttpApiPath.UpdateProject, msg, ret => {
                     if (successCallback != null) {
@@ -373,18 +719,20 @@ namespace GameA
 		/// <param name="summary"></param>
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
         public static void PublishWorldProject (
             long personalProjectId,
             string name,
             string summary,
             int programVersion,
             int resourceVersion,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
+            Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_PublishWorldProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -399,9 +747,10 @@ namespace GameA
             msg.Summary = summary;
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishWorldProject>(
                 SoyHttpApiPath.PublishWorldProject, msg, ret => {
                     if (successCallback != null) {
@@ -501,24 +850,10 @@ namespace GameA
 		/// 提交过关世界关卡数据
 		/// </summary>
 		/// <param name="token">关卡Id</param>
-		/// <param name="success"></param>
-		/// <param name="deadPos"></param>
-		/// <param name="usedTime"></param>
-		/// <param name="score">最终得分</param>
-		/// <param name="scoreItemCount">奖分道具数</param>
-		/// <param name="killMonsterCount">击杀怪物数</param>
-		/// <param name="leftTime">剩余时间数</param>
-		/// <param name="leftLife">剩余生命</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
         public static void CommitWorldProjectResult (
             long token,
-            bool success,
-            byte[] deadPos,
-            float usedTime,
-            int score,
-            int scoreItemCount,
-            int killMonsterCount,
-            int leftTime,
-            int leftLife,
+            Msg_RecordUploadParam recordUploadParam,
             Action<Msg_SC_CMD_CommitWorldProjectResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -529,14 +864,7 @@ namespace GameA
             Msg_CS_CMD_CommitWorldProjectResult msg = new Msg_CS_CMD_CommitWorldProjectResult();
             // 提交过关世界关卡数据
             msg.Token = token;
-            msg.Success = success;
-            msg.DeadPos = deadPos;
-            msg.UsedTime = usedTime;
-            msg.Score = score;
-            msg.ScoreItemCount = scoreItemCount;
-            msg.KillMonsterCount = killMonsterCount;
-            msg.LeftTime = leftTime;
-            msg.LeftLife = leftLife;
+            msg.RecordUploadParam = recordUploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitWorldProjectResult>(
                 SoyHttpApiPath.CommitWorldProjectResult, msg, ret => {
                     if (successCallback != null) {
@@ -714,188 +1042,38 @@ namespace GameA
             );
         }
 
-        public static bool IsRequstingBuyEnergy {
-            get { return _isRequstingBuyEnergy; }
+        public static bool IsRequstingDownloadProject {
+            get { return _isRequstingDownloadProject; }
         }
-        private static bool _isRequstingBuyEnergy = false;
+        private static bool _isRequstingDownloadProject = false;
         /// <summary>
-		/// 购买体力
+		/// 下载关卡
 		/// </summary>
-		/// <param name="energy">购买数量</param>
-        public static void BuyEnergy (
-            int energy,
-            Action<Msg_SC_CMD_BuyEnergy> successCallback, Action<ENetResultCode> failedCallback,
+		/// <param name="projectId">关卡Id</param>
+        public static void DownloadProject (
+            long projectId,
+            Action<Msg_SC_CMD_DownloadProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingBuyEnergy) {
+            if (_isRequstingDownloadProject) {
                 return;
             }
-            _isRequstingBuyEnergy = true;
-            Msg_CS_CMD_BuyEnergy msg = new Msg_CS_CMD_BuyEnergy();
-            // 购买体力
-            msg.Energy = energy;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_BuyEnergy>(
-                SoyHttpApiPath.BuyEnergy, msg, ret => {
+            _isRequstingDownloadProject = true;
+            Msg_CS_CMD_DownloadProject msg = new Msg_CS_CMD_DownloadProject();
+            // 下载关卡
+            msg.ProjectId = projectId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DownloadProject>(
+                SoyHttpApiPath.DownloadProject, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingBuyEnergy = false;
+                    _isRequstingDownloadProject = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "BuyEnergy", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DownloadProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingBuyEnergy = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingPlayAdventureLevel {
-            get { return _isRequstingPlayAdventureLevel; }
-        }
-        private static bool _isRequstingPlayAdventureLevel = false;
-        /// <summary>
-		/// 进入冒险关卡
-		/// </summary>
-		/// <param name="section">章节id</param>
-		/// <param name="projectType">关卡类型</param>
-		/// <param name="level">关卡id</param>
-        public static void PlayAdventureLevel (
-            int section,
-            EAdventureProjectType projectType,
-            int level,
-            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingPlayAdventureLevel) {
-                return;
-            }
-            _isRequstingPlayAdventureLevel = true;
-            Msg_CS_CMD_PlayAdventureLevel msg = new Msg_CS_CMD_PlayAdventureLevel();
-            // 进入冒险关卡
-            msg.Section = section;
-            msg.ProjectType = projectType;
-            msg.Level = level;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PlayAdventureLevel>(
-                SoyHttpApiPath.PlayAdventureLevel, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingPlayAdventureLevel = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayAdventureLevel", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingPlayAdventureLevel = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingUnlockAdventureSection {
-            get { return _isRequstingUnlockAdventureSection; }
-        }
-        private static bool _isRequstingUnlockAdventureSection = false;
-        /// <summary>
-		/// 解锁章节
-		/// </summary>
-		/// <param name="section">章节</param>
-        public static void UnlockAdventureSection (
-            int section,
-            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingUnlockAdventureSection) {
-                return;
-            }
-            _isRequstingUnlockAdventureSection = true;
-            Msg_CS_CMD_UnlockAdventureSection msg = new Msg_CS_CMD_UnlockAdventureSection();
-            // 解锁章节
-            msg.Section = section;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UnlockAdventureSection>(
-                SoyHttpApiPath.UnlockAdventureSection, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingUnlockAdventureSection = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnlockAdventureSection", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingUnlockAdventureSection = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingCommitAdventureLevelResult {
-            get { return _isRequstingCommitAdventureLevelResult; }
-        }
-        private static bool _isRequstingCommitAdventureLevelResult = false;
-        /// <summary>
-		/// 提交冒险模式数据
-		/// </summary>
-		/// <param name="token">令牌</param>
-		/// <param name="success">是否过关</param>
-		/// <param name="usedTime">使用的时间</param>
-		/// <param name="star1Flag">星1标志</param>
-		/// <param name="star2Flag">星2标志</param>
-		/// <param name="star3Flag">星3标志</param>
-		/// <param name="score">最终得分</param>
-		/// <param name="scoreItemCount">奖分道具数</param>
-		/// <param name="killMonsterCount">击杀怪物数</param>
-		/// <param name="leftTime">剩余时间数</param>
-		/// <param name="leftLife">剩余生命</param>
-		/// <param name="deadPos">死亡位置</param>
-        public static void CommitAdventureLevelResult (
-            long token,
-            bool success,
-            float usedTime,
-            bool star1Flag,
-            bool star2Flag,
-            bool star3Flag,
-            int score,
-            int scoreItemCount,
-            int killMonsterCount,
-            int leftTime,
-            int leftLife,
-            byte[] deadPos,
-            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingCommitAdventureLevelResult) {
-                return;
-            }
-            _isRequstingCommitAdventureLevelResult = true;
-            Msg_CS_CMD_CommitAdventureLevelResult msg = new Msg_CS_CMD_CommitAdventureLevelResult();
-            // 提交冒险模式数据
-            msg.Token = token;
-            msg.Success = success;
-            msg.UsedTime = usedTime;
-            msg.Star1Flag = star1Flag;
-            msg.Star2Flag = star2Flag;
-            msg.Star3Flag = star3Flag;
-            msg.Score = score;
-            msg.ScoreItemCount = scoreItemCount;
-            msg.KillMonsterCount = killMonsterCount;
-            msg.LeftTime = leftTime;
-            msg.LeftLife = leftLife;
-            msg.DeadPos = deadPos;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitAdventureLevelResult>(
-                SoyHttpApiPath.CommitAdventureLevelResult, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingCommitAdventureLevelResult = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitAdventureLevelResult", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingCommitAdventureLevelResult = false;
+                    _isRequstingDownloadProject = false;
                 },
                 form
             );
@@ -1098,6 +1276,486 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingChangePictureFull {
+            get { return _isRequstingChangePictureFull; }
+        }
+        private static bool _isRequstingChangePictureFull = false;
+        /// <summary>
+		/// 装备拼图
+		/// </summary>
+		/// <param name="slot">槽位</param>
+		/// <param name="putOnId">装备上的拼图Id</param>
+		/// <param name="putOffId">卸下的拼图Id</param>
+        public static void ChangePictureFull (
+            int slot,
+            long putOnId,
+            long putOffId,
+            Action<Msg_SC_CMD_ChangePictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingChangePictureFull) {
+                return;
+            }
+            _isRequstingChangePictureFull = true;
+            Msg_CS_CMD_ChangePictureFull msg = new Msg_CS_CMD_ChangePictureFull();
+            // 装备拼图
+            msg.Slot = slot;
+            msg.PutOnId = putOnId;
+            msg.PutOffId = putOffId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ChangePictureFull>(
+                SoyHttpApiPath.ChangePictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingChangePictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ChangePictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingChangePictureFull = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCompoundPictureFull {
+            get { return _isRequstingCompoundPictureFull; }
+        }
+        private static bool _isRequstingCompoundPictureFull = false;
+        /// <summary>
+		/// 合成拼图
+		/// </summary>
+		/// <param name="pictureId">拼图Id</param>
+        public static void CompoundPictureFull (
+            long pictureId,
+            Action<Msg_SC_CMD_CompoundPictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompoundPictureFull) {
+                return;
+            }
+            _isRequstingCompoundPictureFull = true;
+            Msg_CS_CMD_CompoundPictureFull msg = new Msg_CS_CMD_CompoundPictureFull();
+            // 合成拼图
+            msg.PictureId = pictureId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompoundPictureFull>(
+                SoyHttpApiPath.CompoundPictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompoundPictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompoundPictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompoundPictureFull = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradePictureFull {
+            get { return _isRequstingUpgradePictureFull; }
+        }
+        private static bool _isRequstingUpgradePictureFull = false;
+        /// <summary>
+		/// 升级拼图
+		/// </summary>
+		/// <param name="pictureId">拼图Id</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradePictureFull (
+            long pictureId,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradePictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradePictureFull) {
+                return;
+            }
+            _isRequstingUpgradePictureFull = true;
+            Msg_CS_CMD_UpgradePictureFull msg = new Msg_CS_CMD_UpgradePictureFull();
+            // 升级拼图
+            msg.PictureId = pictureId;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradePictureFull>(
+                SoyHttpApiPath.UpgradePictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradePictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradePictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradePictureFull = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCompoundWeapon {
+            get { return _isRequstingCompoundWeapon; }
+        }
+        private static bool _isRequstingCompoundWeapon = false;
+        /// <summary>
+		/// 合成武器
+		/// </summary>
+		/// <param name="weaponId">武器Id</param>
+		/// <param name="universalCount">使用万能碎片数量</param>
+        public static void CompoundWeapon (
+            long weaponId,
+            int universalCount,
+            Action<Msg_SC_CMD_CompoundWeapon> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompoundWeapon) {
+                return;
+            }
+            _isRequstingCompoundWeapon = true;
+            Msg_CS_CMD_CompoundWeapon msg = new Msg_CS_CMD_CompoundWeapon();
+            // 合成武器
+            msg.WeaponId = weaponId;
+            msg.UniversalCount = universalCount;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompoundWeapon>(
+                SoyHttpApiPath.CompoundWeapon, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompoundWeapon = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompoundWeapon", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompoundWeapon = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradeWeapon {
+            get { return _isRequstingUpgradeWeapon; }
+        }
+        private static bool _isRequstingUpgradeWeapon = false;
+        /// <summary>
+		/// 升级武器
+		/// </summary>
+		/// <param name="weaponId">武器Id</param>
+		/// <param name="universalCount">使用万能碎片数量</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradeWeapon (
+            long weaponId,
+            int universalCount,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradeWeapon> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeWeapon) {
+                return;
+            }
+            _isRequstingUpgradeWeapon = true;
+            Msg_CS_CMD_UpgradeWeapon msg = new Msg_CS_CMD_UpgradeWeapon();
+            // 升级武器
+            msg.WeaponId = weaponId;
+            msg.UniversalCount = universalCount;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeWeapon>(
+                SoyHttpApiPath.UpgradeWeapon, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeWeapon = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeWeapon", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeWeapon = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradeTrainProperty {
+            get { return _isRequstingUpgradeTrainProperty; }
+        }
+        private static bool _isRequstingUpgradeTrainProperty = false;
+        /// <summary>
+		/// 升级训练属性
+		/// </summary>
+		/// <param name="property">属性ID</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradeTrainProperty (
+            ETrainPropertyType property,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradeTrainProperty> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeTrainProperty) {
+                return;
+            }
+            _isRequstingUpgradeTrainProperty = true;
+            Msg_CS_CMD_UpgradeTrainProperty msg = new Msg_CS_CMD_UpgradeTrainProperty();
+            // 升级训练属性
+            msg.Property = property;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeTrainProperty>(
+                SoyHttpApiPath.UpgradeTrainProperty, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeTrainProperty = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeTrainProperty", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeTrainProperty = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCompleteUpgradeTrainProperty {
+            get { return _isRequstingCompleteUpgradeTrainProperty; }
+        }
+        private static bool _isRequstingCompleteUpgradeTrainProperty = false;
+        /// <summary>
+		/// 升级训练阶层
+		/// </summary>
+		/// <param name="property">属性ID</param>
+		/// <param name="targetLevel">目标等级</param>
+		/// <param name="remainTime">剩余时间</param>
+        public static void CompleteUpgradeTrainProperty (
+            ETrainPropertyType property,
+            int targetLevel,
+            long remainTime,
+            Action<Msg_SC_CMD_CompleteUpgradeTrainProperty> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompleteUpgradeTrainProperty) {
+                return;
+            }
+            _isRequstingCompleteUpgradeTrainProperty = true;
+            Msg_CS_CMD_CompleteUpgradeTrainProperty msg = new Msg_CS_CMD_CompleteUpgradeTrainProperty();
+            // 升级训练阶层
+            msg.Property = property;
+            msg.TargetLevel = targetLevel;
+            msg.RemainTime = remainTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompleteUpgradeTrainProperty>(
+                SoyHttpApiPath.CompleteUpgradeTrainProperty, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompleteUpgradeTrainProperty = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompleteUpgradeTrainProperty", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompleteUpgradeTrainProperty = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradeTrainGrade {
+            get { return _isRequstingUpgradeTrainGrade; }
+        }
+        private static bool _isRequstingUpgradeTrainGrade = false;
+        /// <summary>
+		/// 升级训练阶层
+		/// </summary>
+		/// <param name="targetGrade">目标阶层</param>
+        public static void UpgradeTrainGrade (
+            int targetGrade,
+            Action<Msg_SC_CMD_UpgradeTrainGrade> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeTrainGrade) {
+                return;
+            }
+            _isRequstingUpgradeTrainGrade = true;
+            Msg_CS_CMD_UpgradeTrainGrade msg = new Msg_CS_CMD_UpgradeTrainGrade();
+            // 升级训练阶层
+            msg.TargetGrade = targetGrade;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeTrainGrade>(
+                SoyHttpApiPath.UpgradeTrainGrade, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeTrainGrade = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeTrainGrade", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeTrainGrade = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingBuyEnergy {
+            get { return _isRequstingBuyEnergy; }
+        }
+        private static bool _isRequstingBuyEnergy = false;
+        /// <summary>
+		/// 购买体力
+		/// </summary>
+		/// <param name="energy">购买数量</param>
+        public static void BuyEnergy (
+            int energy,
+            Action<Msg_SC_CMD_BuyEnergy> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingBuyEnergy) {
+                return;
+            }
+            _isRequstingBuyEnergy = true;
+            Msg_CS_CMD_BuyEnergy msg = new Msg_CS_CMD_BuyEnergy();
+            // 购买体力
+            msg.Energy = energy;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_BuyEnergy>(
+                SoyHttpApiPath.BuyEnergy, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingBuyEnergy = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "BuyEnergy", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingBuyEnergy = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingPlayAdventureLevel {
+            get { return _isRequstingPlayAdventureLevel; }
+        }
+        private static bool _isRequstingPlayAdventureLevel = false;
+        /// <summary>
+		/// 进入冒险关卡
+		/// </summary>
+		/// <param name="section">章节id</param>
+		/// <param name="projectType">关卡类型</param>
+		/// <param name="level">关卡id</param>
+        public static void PlayAdventureLevel (
+            int section,
+            EAdventureProjectType projectType,
+            int level,
+            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPlayAdventureLevel) {
+                return;
+            }
+            _isRequstingPlayAdventureLevel = true;
+            Msg_CS_CMD_PlayAdventureLevel msg = new Msg_CS_CMD_PlayAdventureLevel();
+            // 进入冒险关卡
+            msg.Section = section;
+            msg.ProjectType = projectType;
+            msg.Level = level;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PlayAdventureLevel>(
+                SoyHttpApiPath.PlayAdventureLevel, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPlayAdventureLevel = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayAdventureLevel", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPlayAdventureLevel = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUnlockAdventureSection {
+            get { return _isRequstingUnlockAdventureSection; }
+        }
+        private static bool _isRequstingUnlockAdventureSection = false;
+        /// <summary>
+		/// 解锁章节
+		/// </summary>
+		/// <param name="section">章节</param>
+        public static void UnlockAdventureSection (
+            int section,
+            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUnlockAdventureSection) {
+                return;
+            }
+            _isRequstingUnlockAdventureSection = true;
+            Msg_CS_CMD_UnlockAdventureSection msg = new Msg_CS_CMD_UnlockAdventureSection();
+            // 解锁章节
+            msg.Section = section;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UnlockAdventureSection>(
+                SoyHttpApiPath.UnlockAdventureSection, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUnlockAdventureSection = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnlockAdventureSection", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUnlockAdventureSection = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCommitAdventureLevelResult {
+            get { return _isRequstingCommitAdventureLevelResult; }
+        }
+        private static bool _isRequstingCommitAdventureLevelResult = false;
+        /// <summary>
+		/// 提交冒险模式数据
+		/// </summary>
+		/// <param name="token">令牌</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
+        public static void CommitAdventureLevelResult (
+            long token,
+            Msg_RecordUploadParam recordUploadParam,
+            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCommitAdventureLevelResult) {
+                return;
+            }
+            _isRequstingCommitAdventureLevelResult = true;
+            Msg_CS_CMD_CommitAdventureLevelResult msg = new Msg_CS_CMD_CommitAdventureLevelResult();
+            // 提交冒险模式数据
+            msg.Token = token;
+            msg.RecordUploadParam = recordUploadParam;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitAdventureLevelResult>(
+                SoyHttpApiPath.CommitAdventureLevelResult, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCommitAdventureLevelResult = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitAdventureLevelResult", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCommitAdventureLevelResult = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingReform {
             get { return _isRequstingReform; }
         }
@@ -1223,14 +1881,14 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag">是否已经通过</param>
-		/// <param name="recordUsedTime">过关使用时间</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="uploadParam">上传参数</param>
         public static void SaveReformProject (
             long projectId,
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1245,7 +1903,7 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SaveReformProject>(
                 SoyHttpApiPath.SaveReformProject, msg, ret => {
@@ -1274,13 +1932,13 @@ namespace GameA
 		/// <param name="personalProjectId"></param>
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="uploadParam">上传参数</param>
         public static void PublishReformProject (
             long personalProjectId,
             int programVersion,
             int resourceVersion,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1294,7 +1952,7 @@ namespace GameA
             msg.PersonalProjectId = personalProjectId;
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishReformProject>(
                 SoyHttpApiPath.PublishReformProject, msg, ret => {
@@ -1435,12 +2093,10 @@ namespace GameA
 		/// 提交匹配挑战关卡数据
 		/// </summary>
 		/// <param name="token">令牌</param>
-		/// <param name="success">是否过关</param>
-		/// <param name="usedTime">使用的时间</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
         public static void CommitMatchChallengeLevelResult (
             long token,
-            bool success,
-            float usedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1451,8 +2107,7 @@ namespace GameA
             Msg_CS_CMD_CommitMatchChallengeLevelResult msg = new Msg_CS_CMD_CommitMatchChallengeLevelResult();
             // 提交匹配挑战关卡数据
             msg.Token = token;
-            msg.Success = success;
-            msg.UsedTime = usedTime;
+            msg.RecordUploadParam = recordUploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitMatchChallengeLevelResult>(
                 SoyHttpApiPath.CommitMatchChallengeLevelResult, msg, ret => {
                     if (successCallback != null) {
@@ -1502,6 +2157,169 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingMatchSkipChallenge = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingSendMail {
+            get { return _isRequstingSendMail; }
+        }
+        private static bool _isRequstingSendMail = false;
+        /// <summary>
+		/// 发送邮件
+		/// </summary>
+		/// <param name="targetUserId">用户</param>
+		/// <param name="title"></param>
+		/// <param name="content"></param>
+        public static void SendMail (
+            long targetUserId,
+            string title,
+            string content,
+            Action<Msg_SC_CMD_SendMail> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSendMail) {
+                return;
+            }
+            _isRequstingSendMail = true;
+            Msg_CS_CMD_SendMail msg = new Msg_CS_CMD_SendMail();
+            // 发送邮件
+            msg.TargetUserId = targetUserId;
+            msg.Title = title;
+            msg.Content = content;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SendMail>(
+                SoyHttpApiPath.SendMail, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSendMail = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SendMail", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSendMail = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingMarkMailRead {
+            get { return _isRequstingMarkMailRead; }
+        }
+        private static bool _isRequstingMarkMailRead = false;
+        /// <summary>
+		/// 标记已读
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void MarkMailRead (
+            EMarkMailReadTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_MarkMailRead> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkMailRead) {
+                return;
+            }
+            _isRequstingMarkMailRead = true;
+            Msg_CS_CMD_MarkMailRead msg = new Msg_CS_CMD_MarkMailRead();
+            // 标记已读
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkMailRead>(
+                SoyHttpApiPath.MarkMailRead, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkMailRead = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkMailRead", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkMailRead = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReceiptMailAttach {
+            get { return _isRequstingReceiptMailAttach; }
+        }
+        private static bool _isRequstingReceiptMailAttach = false;
+        /// <summary>
+		/// 领取附件
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void ReceiptMailAttach (
+            EReceiptMailAttachTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_ReceiptMailAttach> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReceiptMailAttach) {
+                return;
+            }
+            _isRequstingReceiptMailAttach = true;
+            Msg_CS_CMD_ReceiptMailAttach msg = new Msg_CS_CMD_ReceiptMailAttach();
+            // 领取附件
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiptMailAttach>(
+                SoyHttpApiPath.ReceiptMailAttach, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReceiptMailAttach = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReceiptMailAttach", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReceiptMailAttach = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteMail {
+            get { return _isRequstingDeleteMail; }
+        }
+        private static bool _isRequstingDeleteMail = false;
+        /// <summary>
+		/// 领取附件
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void DeleteMail (
+            EDeleteMailTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteMail> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteMail) {
+                return;
+            }
+            _isRequstingDeleteMail = true;
+            Msg_CS_CMD_DeleteMail msg = new Msg_CS_CMD_DeleteMail();
+            // 领取附件
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteMail>(
+                SoyHttpApiPath.DeleteMail, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteMail = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteMail", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteMail = false;
                 },
                 form
             );

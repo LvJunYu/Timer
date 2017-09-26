@@ -39,6 +39,15 @@ namespace SoyEngine
 			get { return _isPlaying; }
 		}
 
+		public bool HasBeDestroyByUnity
+		{
+			get { return _cachedGo == null; }
+		}
+
+		public float LifeTime
+		{
+			get { return _lifeTime; }
+		}
 
 		public bool NeedToDestroy
 		{
@@ -102,11 +111,10 @@ namespace SoyEngine
 		public abstract void Release();
 		public abstract void OnFree();
 
-		public virtual void SetData(bool autoDestroy, float lifeTime)
+		public virtual void SetData(bool autoDestroy)
 		{
 			_createTime = Time.realtimeSinceStartup;
 			_autoDestroy = autoDestroy;
-			_lifeTime = Mathf.Max(0, lifeTime);
 			_hasBeenDestroy = false;
 			_isPlaying = false;
 		}

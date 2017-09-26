@@ -7,76 +7,60 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using GameA.Game;
-using Spine;
-using Spine.Unity;
-
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlLottery : UICtrlGenericBase<UIViewLottery>
+    [UIAutoSetup]
+    public class UICtrlLottery : UICtrlAnimationBase<UIViewLottery>
     {
         #region 常量与字段
-        private int _selectedTicketNum = 0;
+
+        private int _selectedTicketNum;
         //初始旋转速度
-        private float _initSpeed = 0;
+        private float _initSpeed;
         private float _initialSpeed = 2000;
         //速度变化值
         private float _delta = 0f;
         //转盘是否暂停
         private bool _isPause = true;
-        private int _TurnsNumber =3;
-        private float _stopTime = 5f;
-        private float _stopRotation = 0f;
-        private float _currentEulerAngles = 0f;
-        private bool _bright=false;
-        private float RotationEulerAngles = 0;
-        private int BrightNum = 0;
-        private string GlodImageName= "icon_coins_2";
-        private string DiamondImageName= "icon_diam";
-        private string ExpImageName= "icon_gift_1";
-        private string CreatorExpImageName = "icon_gift_3";
-        private string RaffleTicket = "icon_star";
-        private string FashionCoupon = "icon_star";
-        private string BoostItem = "icon_star";
-        private bool IfLight = true;
-        //键是抽奖券编号 值是编号对应的奖励列表
-        private Dictionary<int, List<RewardItem>> _rewardDict = new Dictionary<int, List<RewardItem>>();
-        //private string NoneImageName = "icon_star";
-        //private Reward[] _reward;
-
-
+        private float _stopRotation;
+        private float _currentEulerAngles;
+        private bool _bright;
+        private float _rotationEulerAngles;
+        private int _brightNum;
+        private bool _ifLight = true;
+        private Color _outLineColor;
         #endregion
+
         #region 属性
+
         #endregion
+
         #region 方法
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
-                RefreshRaffleCount();
-            }, code => {
-                LogHelper.Error("Network error when get RaffleCount, {0}", code);
-            });
-            
+            LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => { RefreshRaffleCount(); },
+                code => { LogHelper.Error("Network error when get RaffleCount, {0}", code); });
         }
+
         public void RefreshRaffleCount()
         {
-            _cachedView.NumberOfTicketlvl1.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1));//查看数量
-            _cachedView.NumberOfTicketlvl2.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2));
-            _cachedView.NumberOfTicketlvl3.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3));
-            _cachedView.NumberOfTicketlvl4.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4));
-            _cachedView.NumberOfTicketlvl5.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5));
+            _cachedView.NumberOfTicketlvl1.text =
+                MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1)); //查看数量
+            _cachedView.NumberOfTicketlvl2.text =
+                MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2));
+            _cachedView.NumberOfTicketlvl3.text =
+                MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3));
+            _cachedView.NumberOfTicketlvl4.text =
+                MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4));
+            _cachedView.NumberOfTicketlvl5.text =
+                MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5));
         }
 
         private string MakePositiveNumber(int lotteryNum)
@@ -88,16 +72,6 @@ namespace GameA
             else return lotteryNum.ToString();
         }
 
-        protected override void OnClose()
-        {
-            base.OnClose();
-        }
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            //			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
-            //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
-        }
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -131,15 +105,15 @@ namespace GameA
             {
                 OnSelectedRaffleBtn2();
             }
-            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3) > 1)
+            else if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3) > 1)
             {
                 OnSelectedRaffleBtn3();
             }
-            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4) > 1)
+            else if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4) > 1)
             {
                 OnSelectedRaffleBtn4();
             }
-            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5) > 1)
+            else if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5) > 1)
             {
                 OnSelectedRaffleBtn5();
             }
@@ -147,29 +121,23 @@ namespace GameA
             {
                 OnSelectedRaffleBtn1();
             }
-
         }
 
         private void ShowNoneTicketTips()
         {
             _cachedView.Mask.SetEnableEx(false);
-            if (_selectedTicketNum==0)
+            if (_selectedTicketNum == 0)
             {
                 SocialGUIManager.ShowPopupDialog("请选择一种抽奖券", null,
-                    new KeyValuePair<string, Action>("确定", () => {
-
-                    })
+                    new KeyValuePair<string, Action>("确定", () => { })
                     );
             }
             else
             {
                 SocialGUIManager.ShowPopupDialog("抽奖券数量不够", null,
-                    new KeyValuePair<string, Action>("确定", () => {
-
-                    })
+                    new KeyValuePair<string, Action>("确定", () => { })
                     );
             }
-           
         }
 
         private void UseRaffleTicket(int selectedTicketNum)
@@ -183,38 +151,28 @@ namespace GameA
                 LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, DecelerateThePanel
                     , null);
                 RefreshRaffleCount();
-                // RotateThePanel(LocalUser.Instance.RaffleTicket.CurrentRewardId);
             }
             else
-            { ShowNoneTicketTips();}
+            {
+                ShowNoneTicketTips();
+            }
         }
+
         private void DecelerateThePanel(long rewardid)
         {
-            //this._initSpeed = 0;
-            //_cachedView.RoolPanel.rotation = Quaternion.Euler(0, 0, rewardid * 360 / 8);
-            //this._isPause = true;
             _cachedView.RewardExhibition.text = rewardid.ToString();
-            _currentEulerAngles = _cachedView.RoolPanel.rotation.eulerAngles.z % 360;
-            //if (_currentEulerAngles - rewardid*360/8 > 180)
-            //{
-            //    _stopRotation = Mathf.Abs(_currentEulerAngles - rewardid * 360 / 8);
-            //}
-             if (0 < _currentEulerAngles - rewardid*360/8)
+            _currentEulerAngles = _cachedView.RoolPanel.rotation.eulerAngles.z%360;
+
+            if (0 < _currentEulerAngles - rewardid*360/8)
             {
-                _stopRotation = 360 - (_currentEulerAngles - rewardid * 360 / 8);
+                _stopRotation = 360 - (_currentEulerAngles - rewardid*360/8);
             }
             else if (_currentEulerAngles - rewardid*360/8 < 0)
             {
-                _stopRotation = Mathf.Abs( rewardid * 360 / 8- _currentEulerAngles);
+                _stopRotation = Mathf.Abs(rewardid*360/8 - _currentEulerAngles);
             }
-            //_circleNum = (int)_stopRotation / 360;
-            // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
-            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 15-17.0f));
-            //Debug.Log("______________速度" + _initSpeed);
-            //Debug.Log("______________加速度"+ _delta);
-            //Debug.Log("______________当前位置" + _currentEulerAngles);
-            //Debug.Log("______________目标位置" + rewardid * 360 / 8);
-            //Debug.Log("______________停止距离" + _stopRotation);
+
+            _delta = _initSpeed*_initSpeed/(2*(_stopRotation + 360*15 - 17.0f));
         }
 
         private void LightEntireBright()
@@ -228,35 +186,33 @@ namespace GameA
 
         private void LightRotateBright()
         {
-            if (IfLight)
+            if (_ifLight)
             {
-                _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
-                if (BrightNum >= _cachedView.BrightLamp.Length-1)
+                _cachedView.BrightLamp[_brightNum].SetActiveEx(true);
+                if (_brightNum >= _cachedView.BrightLamp.Length - 1)
                 {
-                    BrightNum = 0;
-                    IfLight = false;
+                    _brightNum = 0;
+                    _ifLight = false;
                     //ShutDownLight();
                 }
                 else
                 {
-                    ++BrightNum;
+                    ++_brightNum;
                 }
             }
             else
             {
-                _cachedView.BrightLamp[BrightNum].SetActiveEx(false);
-                if (BrightNum >= _cachedView.BrightLamp.Length-1)
+                _cachedView.BrightLamp[_brightNum].SetActiveEx(false);
+                if (_brightNum >= _cachedView.BrightLamp.Length - 1)
                 {
-                    BrightNum = 0;
-                    IfLight = true;
+                    _brightNum = 0;
+                    _ifLight = true;
                     //ShutDownLight();
                 }
                 else
                 {
-                    ++BrightNum;
+                    ++_brightNum;
                 }
-
-
             }
         }
 
@@ -266,13 +222,12 @@ namespace GameA
             {
                 _cachedView.BrightLamp[i].SetActiveEx(false);
             }
-
         }
 
         private void WhenShutDown()
         {
-            BrightNum = 0;
-            IfLight = true;
+            _brightNum = 0;
+            _ifLight = true;
             _cachedView.Mask.SetEnableEx(false);
             ShutDownLight();
             _cachedView.BrightLamp[4].SetActiveEx(true);
@@ -286,11 +241,11 @@ namespace GameA
             {
                 //转动转盘(-1为顺时针,1为逆时针)
                 //_initSpeed = Mathf.MoveTowardsAngle((float)_cachedView.RoolPanel.rotation, 10, 0.1f*Time.deltaTime);
-                RotationEulerAngles += _initSpeed*Time.deltaTime;
-                _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed) *Time.deltaTime);
-                if (RotationEulerAngles>=45)
+                _rotationEulerAngles += _initSpeed*Time.deltaTime;
+                _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed)*Time.deltaTime);
+                if (_rotationEulerAngles >= 45)
                 {
-                    RotationEulerAngles = 0;
+                    _rotationEulerAngles = 0;
                     LightRotateBright();
                 }
                 //让转动的速度缓缓降低
@@ -305,115 +260,50 @@ namespace GameA
             }
         }
 
-        private string JudgeRewardType(int RewardType)
-        {
-            string Type;
-            switch (RewardType)
-            {
-                case 1:
-                    return Type = "金币";
-                case 2:
-                    return Type = "钻石";
-                case 3:
-                    return Type = "冒险经验";
-                case 4:
-                    return Type = "工匠经验";
-                case 5:
-                    return Type = "时装券";
-                case 6:
-                    return Type = "低级抽奖券";
-                case 7:
-                    return Type = "道具";
-                default:
-                    return Type = "None";
-            }
-        }
-
-        private string JudgeRewardImageName(int RewardType)
-        {
-            string Type;
-            switch (RewardType)
-            {
-                case 1:
-                    return Type = GlodImageName;
-                case 2:
-                    return Type = DiamondImageName;
-                case 3:
-                    return Type = ExpImageName;
-                case 4:
-                    return Type = CreatorExpImageName;
-                case 5:
-                    return Type = FashionCoupon;
-                case 6:
-                    return Type = RaffleTicket;
-                case 7:
-                    return Type = BoostItem;
-                default:
-                    return Type = GlodImageName;
-            }
-        }
-
-        private Sprite FindImage(string ImageName)
-        {
-            Sprite fashion;
-            if (GameResourceManager.Instance.TryGetSpriteByName(ImageName, out fashion))
-            {
-                //Debug.Log("____________时装" + fashion.name);
-                //_cachedView.FashionPreview.sprite = fashion;
-                return fashion;
-            }
-            else return null;
-
-        }
-
         private void SetRewardItemList(int rewardNUm)
         {
             var TurntableUnit = TableManager.Instance.Table_TurntableDic[rewardNUm];
-            //private Dictionary<int, List<RewardItem>> _rewardDict = new Dictionary<int, List<RewardItem>>();
 
-                    RewardItem rewarditem1 = new RewardItem();
-                    RewardItem rewarditem2 = new RewardItem();
-                    RewardItem rewarditem3 = new RewardItem();
-                    RewardItem rewarditem4 = new RewardItem();
-                    RewardItem rewarditem5 = new RewardItem();
-                    RewardItem rewarditem6 = new RewardItem();
-                    RewardItem rewarditem7 = new RewardItem();
-                    RewardItem rewarditem8 = new RewardItem();
-                    //rewarditem.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
-                    //rewarditem.SubType = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
+            RewardItem rewarditem1 = new RewardItem();
+            RewardItem rewarditem2 = new RewardItem();
+            RewardItem rewarditem3 = new RewardItem();
+            RewardItem rewarditem4 = new RewardItem();
+            RewardItem rewarditem5 = new RewardItem();
+            RewardItem rewarditem6 = new RewardItem();
+            RewardItem rewarditem7 = new RewardItem();
+            RewardItem rewarditem8 = new RewardItem();
+
             rewarditem1.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
             rewarditem1.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Value1;
             rewarditem1.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Id1;
-            //Debug.Log("_____id1_______"+ rewarditem1.Id);
+
             _cachedView.RewardType1.text = rewarditem1.GetName();
             _cachedView.Reward1.sprite = rewarditem1.GetSprite();
 
             rewarditem2.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1;
             rewarditem2.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
-            //if(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1!=null)
+
             rewarditem2.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1;
-            //Debug.Log("_____id2_______" + rewarditem2.Id);
+
             _cachedView.RewardType2.text = rewarditem2.GetName();
             _cachedView.Reward2.sprite = rewarditem2.GetSprite();
 
             rewarditem3.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1;
             rewarditem3.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Value1;
             rewarditem3.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Id1;
-            //Debug.Log("_____id3_______" + rewarditem3.Id);
+
             _cachedView.RewardType3.text = rewarditem3.GetName();
             _cachedView.Reward3.sprite = rewarditem3.GetSprite();
 
             rewarditem4.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1;
             rewarditem4.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Value1;
             rewarditem4.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Id1;
-            //Debug.Log("_____id4_______" + rewarditem4.Id);
             _cachedView.RewardType4.text = rewarditem4.GetName();
             _cachedView.Reward4.sprite = rewarditem4.GetSprite();
 
             rewarditem5.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1;
             rewarditem5.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Value1;
             rewarditem5.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Id1;
-            //Debug.Log("_____id5_______" + rewarditem5.Id);
 
             _cachedView.RewardType5.text = rewarditem5.GetName();
             _cachedView.Reward5.sprite = rewarditem5.GetSprite();
@@ -421,7 +311,6 @@ namespace GameA
             rewarditem6.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1;
             rewarditem6.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Value1;
             rewarditem6.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Id1;
-            //Debug.Log("_____id6_______" + rewarditem6.Id);
 
             _cachedView.RewardType6.text = rewarditem6.GetName();
             _cachedView.Reward6.sprite = rewarditem6.GetSprite();
@@ -429,7 +318,6 @@ namespace GameA
             rewarditem7.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1;
             rewarditem7.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Value1;
             rewarditem7.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Id1;
-            //Debug.Log("_____id7_______" + rewarditem7.Id);
 
             _cachedView.RewardType7.text = rewarditem7.GetName();
             _cachedView.Reward7.sprite = rewarditem7.GetSprite();
@@ -437,14 +325,9 @@ namespace GameA
             rewarditem8.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1;
             rewarditem8.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
             rewarditem8.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Id1;
-            //Debug.Log("_____id8_______" + rewarditem8.Id);
 
             _cachedView.RewardType8.text = rewarditem8.GetName();
             _cachedView.Reward8.sprite = rewarditem8.GetSprite();
-
-
-
-
         }
 
         //public enum ERewardType
@@ -461,66 +344,25 @@ namespace GameA
         //    RT_ReformUnit = 9
         //}
 
-        private void RefreshReward(int rewardNUm)//1 2 3
-        {
-            var TurntableUnit = TableManager.Instance.Table_TurntableDic[rewardNUm];
-            
-            _cachedView.RewardType1.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Value1;
-            _cachedView.Reward1.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1));
-
-            _cachedView.RewardType2.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
-            _cachedView.Reward2.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1));
-
-            _cachedView.RewardType3.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Value1;
-            _cachedView.Reward3.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1));
-
-            _cachedView.RewardType4.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Value1;
-            _cachedView.Reward4.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1));
-
-            _cachedView.RewardType5.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Value1;
-            _cachedView.Reward5.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1));
-
-            _cachedView.RewardType6.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Value1;
-            _cachedView.Reward6.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1));
-
-            _cachedView.RewardType7.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Value1;
-            _cachedView.Reward7.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1));
-
-            _cachedView.RewardType8.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1)
-            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
-            _cachedView.Reward8.sprite =
-                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1));
-    }
-
-
         #region 接口
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
+
         private void OnCloseBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlLottery>();
         }
-
+        
         private void OnSelectedRaffleBtn1()
         {
             this._selectedTicketNum = 1;
-            _cachedView.SelectedTicketType.text = "<color=#ffb400>壹</color>";
+            _cachedView.SelectedTicketType.text = "<color=#ffb766>壹</color>";
+            GetOutLineColor(1);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(1);
             //RefreshReward(1);
         }
@@ -529,32 +371,70 @@ namespace GameA
         {
             this._selectedTicketNum = 2;
             _cachedView.SelectedTicketType.text = "<color=#ededeb>贰</color>";
+            GetOutLineColor(2);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(2);
             //RefreshReward(2);
         }
+
         private void OnSelectedRaffleBtn3()
         {
             this._selectedTicketNum = 3;
             _cachedView.SelectedTicketType.text = "<color=#fbf11a>叁</color>";
+            GetOutLineColor(3);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(3);
             //RefreshReward(3);
         }
+
         private void OnSelectedRaffleBtn4()
         {
             this._selectedTicketNum = 4;
             _cachedView.SelectedTicketType.text = "<color=#00ffff>匠</color>";
+            GetOutLineColor(4);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(4);
             //RefreshReward(4);
-
         }
+
         private void OnSelectedRaffleBtn5()
         {
             this._selectedTicketNum = 5;
             _cachedView.SelectedTicketType.text = "<color=#f65656>亲</color>";
+            GetOutLineColor(5);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(5);
             //RefreshReward(5);
         }
+
+        private void  GetOutLineColor(int SeletIndex)
+        {
+            switch (SeletIndex)
+            {
+                  case 1 :
+                      ColorUtility.TryParseHtmlString("#6a3916", out _outLineColor);
+                      break;
+                  case 2 :
+                    ColorUtility.TryParseHtmlString("#52545d", out _outLineColor);
+                    break;
+                  case  3:
+                      ColorUtility.TryParseHtmlString("#625519", out _outLineColor);
+                      break;
+                  case  4:
+                    ColorUtility.TryParseHtmlString("#1d5f47", out _outLineColor);
+                    break;
+                  case  5:
+                    ColorUtility.TryParseHtmlString("#9c380c", out _outLineColor);
+                    break;
+            }
+        }
+
         #endregion 接口
+
         #endregion
     }
 }

@@ -4,10 +4,11 @@
   ** Date : 2016/6/24 10:57
   ** Summary : LoginLogicUtil.cs
   ***********************************************************************/
+
 using System;
 using System.Collections;
-using cn.sharesdk.unity3d;
 using System.Text;
+//using cn.sharesdk.unity3d;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace GameA
     public static class LoginLogicUtil
     {
         private const string PhoneNumKey = "PhoneNum";
-        private static bool _hasInited = false;
+        private static bool _hasInited;
         private static string _phoneNum;
         public static Action OnSuccess;
         public static Action OnFailed;
@@ -43,8 +44,8 @@ namespace GameA
             {
                 return;
             }
-            ShareSDK.Instance.authHandler = OnAuthResultHandler;
-            ShareSDK.Instance.showUserHandler = OnGetUserInfoResultHandler;
+//            ShareSDK.Instance.authHandler = OnAuthResultHandler;
+//            ShareSDK.Instance.showUserHandler = OnGetUserInfoResultHandler;
             Messenger<ENetResultCode, string>.AddListener(SoyEngine.EMessengerType.OnAppHttpClientReceiveError, OnAppHttpClientReceiveError);
             _phoneNum = PlayerPrefs.GetString(PhoneNumKey, string.Empty).Trim();
             _hasInited = true;
@@ -56,7 +57,7 @@ namespace GameA
             {
                 CommonTools.ShowPopupDialog("登录信息已经过期，请重新登录");
                 LocalUser.Instance.Account.Logout();
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             }
         }
 
@@ -70,7 +71,7 @@ namespace GameA
                 }
                 return;
             }
-            ShareSDK.Instance.Authorize(PlatformType.QQ);
+//            ShareSDK.Instance.Authorize(PlatformType.QQ);
         }
 
         public static void OnWeibo()
@@ -83,7 +84,7 @@ namespace GameA
                 }
                 return;
             }
-            ShareSDK.Instance.Authorize(PlatformType.SinaWeibo);
+//            ShareSDK.Instance.Authorize(PlatformType.SinaWeibo);
         }
 
         public static void OnWeChat()
@@ -96,7 +97,7 @@ namespace GameA
                 }
                 return;
             }
-            ShareSDK.Instance.Authorize(PlatformType.WeChat);
+//            ShareSDK.Instance.Authorize(PlatformType.WeChat);
         }
 
 
@@ -108,7 +109,7 @@ namespace GameA
             }
             else
             {
-                CommonTools.ShowPopupDialog("手机号码输入有误", null);
+                CommonTools.ShowPopupDialog("手机号码输入有误");
             }
         }
 
@@ -119,15 +120,15 @@ namespace GameA
             }
             else if (checkResult == CheckTools.ECheckPasswordResult.TooShort)
             {
-                CommonTools.ShowPopupDialog("密码过短，密码长度8-16个字符", null);
+                CommonTools.ShowPopupDialog("密码过短，密码长度8-16个字符");
             }
             else if (checkResult == CheckTools.ECheckPasswordResult.TooLong)
             {
-                CommonTools.ShowPopupDialog("密码过长，密码长度8-16个字符", null);
+                CommonTools.ShowPopupDialog("密码过长，密码长度8-16个字符");
             }
             else
             {
-                CommonTools.ShowPopupDialog("密码格式有误", null);
+                CommonTools.ShowPopupDialog("密码格式有误");
             }
         }
 
@@ -139,121 +140,91 @@ namespace GameA
             }
             else
             {
-                CommonTools.ShowPopupDialog("验证码错误", null);
+                CommonTools.ShowPopupDialog("验证码错误");
             }
         }
 
-//        public static void RequestLogin(Msg_CA_Login msg)
-//        {
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_LoginRet>(SoyHttpApiPath.Login ,msg, ret =>
-//                {
-//                    if (ret.ResultCode == EAccountLoginResult.ALR_Success)
-//                    {
-////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-//                        if (ret.Reward != null)
-//                        {
-//                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        }
-//                        OnSuccess.Invoke();
-//                    }
-//                    else
-//                    {
-//                        if (ret.ResultCode == EAccountLoginResult.ALR_ErrorTooMany)
-//                        {
-//                            CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试", null);
-//                        }
-//                        else if(ret.ResultCode == EAccountLoginResult.ALR_PasswordError)
-//                        {
-//                            CommonTools.ShowPopupDialog("密码错误", null);
-//                        }
-//                        else if (ret.ResultCode == EAccountLoginResult.ALR_UserNotExsit)
-//                        {
-//                            CommonTools.ShowPopupDialog("用户不存在", null);
-//                        }
-//                        else
-//                        {
-//                            CommonTools.ShowPopupDialog("登录失败", null);
-//                        }
-//                        if(OnFailed != null)
-//                        {
-//                            OnFailed.Invoke();
-//                        }
-//                    }
-//                }, (i, s) =>
-//                {
-//                    ENetResultCode code = (ENetResultCode) i;
-//                    LogHelper.Warning("Login error, msg: {0}", s);
-//                    if (code == ENetResultCode.NR_NetworkNotReachable)
-//                    {
-//                        CommonTools.ShowPopupDialog("网络错误", null);
-//                    }
-//                    else
-//                    {
-//                        CommonTools.ShowPopupDialog("登录超时", null);
-//                    }
-//                    if(OnFailed != null)
-//                    {
-//                        OnFailed.Invoke();
-//                    }
-//                });
-//        }
+        public static void ShowLoginError(ELoginCode code)
+        {
+            if (code == ELoginCode.LoginC_None)
+            {
+            }
+            else if (code == ELoginCode.LoginC_ErrorTooMany)
+            {
+                CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试");
+            }
+            else if (code == ELoginCode.LoginC_PasswordError)
+            {
+                CommonTools.ShowPopupDialog("密码错误");
+            }
+            else if (code == ELoginCode.LoginC_UserNotExsit)
+            {
+                CommonTools.ShowPopupDialog("用户不存在");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("登录失败");
+            }
+        }
 
-//        public static void RequestSmsLogin(string phoneNum, string verificationCode, string newPassword, EVerifyCodeType vcType)
-//        {
-//            Msg_CA_Register msg = new Msg_CA_Register();
-//            msg.Account = phoneNum;
-//            msg.Password = newPassword;
-//            msg.RegisterType = Msg_CA_Register.ERegisterType.PhoneNum;
-//            msg.VerificationCode = verificationCode;
-//            msg.VerifyCodeType = vcType;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_RegisterRet>(SoyHttpApiPath.Register, msg, ret =>
-//                {
-//                    if (ret.ResultCode == EAccountRegisterResult.ARR_Success)
-//                    {
-////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-//                        if (ret.Reward != null)
-//                        {
-//                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        }
-//                        OnSuccess.Invoke();
-//                    }
-//                    else
-//                    {
-//                        if (ret.ResultCode == EAccountRegisterResult.ARR_VerificationCodeError)
-//                        {
-//                            CommonTools.ShowPopupDialog("验证码错误", null);
-//                        }
-//                        else
-//                        {
-//                            {
-//                                CommonTools.ShowPopupDialog("失败", null);
-//                            }
-//                        }
-//                        if(OnFailed != null)
-//                        {
-//                            OnFailed.Invoke();
-//                        }
-//                    }
-//                }, (i, s) =>
-//                {
-//                    ENetResultCode code = (ENetResultCode) i;
-//                    LogHelper.Warning("Login error, msg: {0}", s);
-//                    if (code == ENetResultCode.NR_NetworkNotReachable)
-//                    {
-//                        CommonTools.ShowPopupDialog("网络错误", null);
-//                    }
-//                    else
-//                    {
-//                        {
-//                            CommonTools.ShowPopupDialog("超时", null);
-//                        }
-//                    }
-//                    if(OnFailed != null)
-//                    {
-//                        OnFailed.Invoke();
-//                    }
-//                });
-//        }
+        public static void ShowRegisterError(ERegisterCode code)
+        {
+            if (code == ERegisterCode.RegisterC_None)
+            {
+            }
+            else if (code == ERegisterCode.RegisterC_IdentifyDuplication)
+            {
+                CommonTools.ShowPopupDialog("该账号已经存在");
+            }
+            else if (code == ERegisterCode.RegisterC_VerificationCodeError)
+            {
+                CommonTools.ShowPopupDialog("验证码错误");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("注册失败");
+            }
+        }
+        
+        public static void ShowAccountBindError(EAccountBindCode code)
+        {
+            switch (code)
+            {
+                case EAccountBindCode.ABC_None:
+                    break;
+                case EAccountBindCode.ABC_Success:
+                    break;
+                case EAccountBindCode.ABC_IdentifyDuplication:
+                    CommonTools.ShowPopupDialog("手机号已注册，请绑定未注册的手机号");
+                    break;
+                case EAccountBindCode.ABC_VerificationCodeError:
+                    CommonTools.ShowPopupDialog("验证码错误");
+                    break;
+                default:
+                    CommonTools.ShowPopupDialog("绑定失败");
+                    break;
+            }
+        }
+
+        public static void ShowForgetPasswordError(EForgetPasswordCode code)
+        {
+            if (code == EForgetPasswordCode.FPC_None)
+            {
+            }
+            else if (code == EForgetPasswordCode.FPC_AccountNotExsit)
+            {
+                CommonTools.ShowPopupDialog("账号不存在");
+            }
+            else if (code == EForgetPasswordCode.FPC_VerificationCodeError)
+            {
+                CommonTools.ShowPopupDialog("验证码错误");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("找回密码失败");
+            }
+        }
+
 
         private static void LogHashTable(Hashtable table, string title = null)
         {
@@ -287,137 +258,138 @@ namespace GameA
         {
             CommonTools.ShowPopupDialog("授权失败或用户取消授权，登录失败");
         }
+        /*
 
-//        private static void OnWechatUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
-//        {
-//            Msg_CA_Login login = new Msg_CA_Login();
-////            login.ClientVersion = 0;
-////            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
-//            login.LoginType = Msg_CA_Login.ELoginType.LT_Wechat;
-//            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
-//            snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
-//            snsUserInfo.AdditionalId = ObjectToString(userInfoTable["openid"]);
-//            snsUserInfo.BirthDay = 0;
-//            snsUserInfo.City = ObjectToString(userInfoTable["city"]);
-//            snsUserInfo.Country = ObjectToString(userInfoTable["country"]);
-//            snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["headimgurl"]);
-//            snsUserInfo.Pid = ObjectToString(userInfoTable["unionid"]);
-//            snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
-//            string gender = ObjectToString(userInfoTable["sex"]);
-//            if(gender == "1")
-//            {
-//                snsUserInfo.Sex = ESex.S_Male;
-//            }
-//            else if(gender == "2")
-//            {
-//                snsUserInfo.Sex = ESex.S_Female;
-//            }
-//            else
-//            {
-//                snsUserInfo.Sex = ESex.S_None;
-//            }
-//            snsUserInfo.UserNickName = ObjectToString(userInfoTable["nickname"]);
-//            login.SnsUserInfo = snsUserInfo;
-//            if(OnSnsInfoLogin != null)
-//            {
-//                OnSnsInfoLogin.Invoke(login);
-//            }
-//        }
+        private static void OnWechatUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
+        {
+            Msg_CA_Login login = new Msg_CA_Login();
+//            login.ClientVersion = 0;
+//            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
+            login.LoginType = Msg_CA_Login.ELoginType.LT_Wechat;
+            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
+            snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
+            snsUserInfo.AdditionalId = ObjectToString(userInfoTable["openid"]);
+            snsUserInfo.BirthDay = 0;
+            snsUserInfo.City = ObjectToString(userInfoTable["city"]);
+            snsUserInfo.Country = ObjectToString(userInfoTable["country"]);
+            snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["headimgurl"]);
+            snsUserInfo.Pid = ObjectToString(userInfoTable["unionid"]);
+            snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
+            string gender = ObjectToString(userInfoTable["sex"]);
+            if(gender == "1")
+            {
+                snsUserInfo.Sex = ESex.S_Male;
+            }
+            else if(gender == "2")
+            {
+                snsUserInfo.Sex = ESex.S_Female;
+            }
+            else
+            {
+                snsUserInfo.Sex = ESex.S_None;
+            }
+            snsUserInfo.UserNickName = ObjectToString(userInfoTable["nickname"]);
+            login.SnsUserInfo = snsUserInfo;
+            if(OnSnsInfoLogin != null)
+            {
+                OnSnsInfoLogin.Invoke(login);
+            }
+        }
 
-//        private static void OnWeiboUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
-//        {
-//            Msg_CA_Login login = new Msg_CA_Login();
-////            login.ClientVersion = 0;
-////            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
-//            login.LoginType = Msg_CA_Login.ELoginType.LT_Weibo;
-//            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
-//            snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
-//            snsUserInfo.BirthDay = 0;
-//            snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["avatar_hd"]);
-//            snsUserInfo.Pid = ObjectToString(userInfoTable["id"]);
-//            snsUserInfo.Sex = ESex.S_None;
-//            string gender = ObjectToString(userInfoTable["gender"]);
-//            if(gender == "m")
-//            {
-//                snsUserInfo.Sex = ESex.S_Male;
-//            }
-//            else if(gender == "f")
-//            {
-//                snsUserInfo.Sex = ESex.S_Female;
-//            }
-//            else
-//            {
-//                snsUserInfo.Sex = ESex.S_None;
-//            }
-//            snsUserInfo.UserNickName = ObjectToString(userInfoTable["name"]);
-//            if(CheckTools.CheckNickName(snsUserInfo.UserNickName) != CheckTools.ECheckNickNameResult.Success)
-//            {
-//                snsUserInfo.UserNickName = null;
-//            }
-//            login.SnsUserInfo = snsUserInfo;
-//            if(OnSnsInfoLogin != null)
-//            {
-//                OnSnsInfoLogin.Invoke(login);
-//            }
-//        }
-//
-//        private static void OnQQUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
-//        {
-//            Msg_CA_Login login = new Msg_CA_Login();
-////            login.ClientVersion = 0;
-////            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
-//            login.LoginType = Msg_CA_Login.ELoginType.LT_QQ;
-//            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
-//            if(Application.platform == RuntimePlatform.Android)
-//            {
-//                snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
-//                snsUserInfo.HeadImgUrl = ObjectToString(authInfoTable["userIcon"]);
-//                snsUserInfo.Pid = ObjectToString(authInfoTable["userID"]);
-//                snsUserInfo.City = ObjectToString(userInfoTable["city"]);
-//                snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
-//                string gender = ObjectToString(authInfoTable["userGender"]);
-//                if(gender == "m")
-//                {
-//                    snsUserInfo.Sex = ESex.S_Male;
-//                }
-//                else if(gender == "f")
-//                {
-//                    snsUserInfo.Sex = ESex.S_Female;
-//                }
-//                else
-//                {
-//                    snsUserInfo.Sex = ESex.S_None;
-//                }
-//                snsUserInfo.UserNickName = ObjectToString(authInfoTable["userName"]);
-//            }
-//            else if(Application.platform == RuntimePlatform.IPhonePlayer)
-//            {
-//                snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
-//                snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["figureurl_qq_1"]);
-//                snsUserInfo.Pid = ObjectToString(authInfoTable["uid"]);
-//                snsUserInfo.City = ObjectToString(userInfoTable["city"]);
-//                snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
-//                string gender = ObjectToString(userInfoTable["gender"]);
-//                if(gender == "男")
-//                {
-//                    snsUserInfo.Sex = ESex.S_Male;
-//                }
-//                else if(gender == "女")
-//                {
-//                    snsUserInfo.Sex = ESex.S_Female;
-//                }
-//                else
-//                {
-//                    snsUserInfo.Sex = ESex.S_None;
-//                }
-//                snsUserInfo.UserNickName = ObjectToString(userInfoTable["nickname"]);
-//            }
-//            login.SnsUserInfo = snsUserInfo;
-//            if(OnSnsInfoLogin != null)
-//            {
-//                OnSnsInfoLogin.Invoke(login);
-//            }
-//        }
+        private static void OnWeiboUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
+        {
+            Msg_CA_Login login = new Msg_CA_Login();
+//            login.ClientVersion = 0;
+//            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
+            login.LoginType = Msg_CA_Login.ELoginType.LT_Weibo;
+            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
+            snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
+            snsUserInfo.BirthDay = 0;
+            snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["avatar_hd"]);
+            snsUserInfo.Pid = ObjectToString(userInfoTable["id"]);
+            snsUserInfo.Sex = ESex.S_None;
+            string gender = ObjectToString(userInfoTable["gender"]);
+            if(gender == "m")
+            {
+                snsUserInfo.Sex = ESex.S_Male;
+            }
+            else if(gender == "f")
+            {
+                snsUserInfo.Sex = ESex.S_Female;
+            }
+            else
+            {
+                snsUserInfo.Sex = ESex.S_None;
+            }
+            snsUserInfo.UserNickName = ObjectToString(userInfoTable["name"]);
+            if(CheckTools.CheckNickName(snsUserInfo.UserNickName) != CheckTools.ECheckNickNameResult.Success)
+            {
+                snsUserInfo.UserNickName = null;
+            }
+            login.SnsUserInfo = snsUserInfo;
+            if(OnSnsInfoLogin != null)
+            {
+                OnSnsInfoLogin.Invoke(login);
+            }
+        }
+
+        private static void OnQQUserInfo(Hashtable userInfoTable, Hashtable authInfoTable)
+        {
+            Msg_CA_Login login = new Msg_CA_Login();
+//            login.ClientVersion = 0;
+//            login.DeviceId = SystemInfo.deviceUniqueIdentifier;
+            login.LoginType = Msg_CA_Login.ELoginType.LT_QQ;
+            Msg_CA_Login.SNSUserInfo snsUserInfo = new Msg_CA_Login.SNSUserInfo();
+            if(Application.platform == RuntimePlatform.Android)
+            {
+                snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
+                snsUserInfo.HeadImgUrl = ObjectToString(authInfoTable["userIcon"]);
+                snsUserInfo.Pid = ObjectToString(authInfoTable["userID"]);
+                snsUserInfo.City = ObjectToString(userInfoTable["city"]);
+                snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
+                string gender = ObjectToString(authInfoTable["userGender"]);
+                if(gender == "m")
+                {
+                    snsUserInfo.Sex = ESex.S_Male;
+                }
+                else if(gender == "f")
+                {
+                    snsUserInfo.Sex = ESex.S_Female;
+                }
+                else
+                {
+                    snsUserInfo.Sex = ESex.S_None;
+                }
+                snsUserInfo.UserNickName = ObjectToString(authInfoTable["userName"]);
+            }
+            else if(Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                snsUserInfo.AccessToken = ObjectToString(authInfoTable["token"]);
+                snsUserInfo.HeadImgUrl = ObjectToString(userInfoTable["figureurl_qq_1"]);
+                snsUserInfo.Pid = ObjectToString(authInfoTable["uid"]);
+                snsUserInfo.City = ObjectToString(userInfoTable["city"]);
+                snsUserInfo.Province = ObjectToString(userInfoTable["province"]);
+                string gender = ObjectToString(userInfoTable["gender"]);
+                if(gender == "男")
+                {
+                    snsUserInfo.Sex = ESex.S_Male;
+                }
+                else if(gender == "女")
+                {
+                    snsUserInfo.Sex = ESex.S_Female;
+                }
+                else
+                {
+                    snsUserInfo.Sex = ESex.S_None;
+                }
+                snsUserInfo.UserNickName = ObjectToString(userInfoTable["nickname"]);
+            }
+            login.SnsUserInfo = snsUserInfo;
+            if(OnSnsInfoLogin != null)
+            {
+                OnSnsInfoLogin.Invoke(login);
+            }
+        }
 
         private static string ObjectToString(object obj)
         {
@@ -489,6 +461,7 @@ namespace GameA
                 OnSnsLoginCancel();
             }
         }
+        */
     }
 }
 

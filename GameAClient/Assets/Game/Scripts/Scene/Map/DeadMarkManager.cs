@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class DeadMarkManager : IDisposable
+    public class DeadMarkManager
     {
         public static DeadMarkManager _instance;
 
@@ -192,7 +192,7 @@ namespace GameA.Game
 
         private void OnMainPlayerDead()
         {
-            Vector3 deadPos = PlayMode.Instance.MainUnit.Trans.position + Vector3.up*0.5f;
+            Vector3 deadPos = PlayMode.Instance.MainPlayer.Trans.position + Vector3.up*0.5f;
             _curDeadPosList.Add(new Vector2(deadPos.x, deadPos.y));
         }
 

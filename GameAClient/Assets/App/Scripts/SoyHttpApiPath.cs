@@ -14,10 +14,22 @@ namespace SoyEngine
     {
         // CS协议包例子
         public const string DataExample = "test/testAPI";
-        // 获取应用全局信息
-        public const string AppData = "/appInfo/appData";
+        // 登录
+        public const string Login = "/account/login";
+        // 游客登录
+        public const string LoginAsGuest = "/account/loginAsGuest";
         // 设备登录包
         public const string LoginByToken = "/account/loginByToken";
+        // 忘记密码
+        public const string ForgetPassword = "/account/forgetPassword";
+        // 修改密码
+        public const string ChangePassword = "/account/changePassword";
+        // 注册
+        public const string Register = "/account/register";
+        // 绑定账号
+        public const string AccountBind = "/account/bind";
+        // 请求验证码
+        public const string GetVerificationCode = "/account/getVerificationCode";
         // 退出登录
         public const string Logout = "/account/logout";
         // 用户简要信息
@@ -28,6 +40,8 @@ namespace SoyEngine
         public const string UserLevel = "/user/getLevelData";
         // 用户详细信息
         public const string UpdateUserInfo = "/user/updateInfo";
+        // 获取应用全局信息
+        public const string AppData = "/appInfo/appData";
         // 社交关系统计
         public const string UserRelationStatistic = "/relation/getUserRelationStatistic";
         // 用户与我的关系
@@ -76,34 +90,18 @@ namespace SoyEngine
         public const string UserWorldProjectPlayHistoryList = "/world/getUserProjectPlayHistoryList";
         // 最近录像
         public const string WorldProjectRecentRecordList = "/world/getProjectRecentRecordList";
+        // 最近玩过的用户
+        public const string WorldProjectRecentPlayedUserList = "/world/getProjectRecentPlayedUserList";
         // 高分排行榜
         public const string WorldProjectRecordRankList = "/world/getProjectRecordRankList";
         // 最新关卡
         public const string WorldNewestProjectList = "/world/getNewestProjectList";
+        // 推荐关卡
+        public const string WorldRecommendProjectList = "/world/getRecommendProjectList";
+        // 下载关卡
+        public const string DownloadProject = "/world/downloadProject";
         // 录像
         public const string Record = "/record/get";
-        // 冒险模式关卡列表
-        public const string AdventureProjectList = "/adventure/getProjectList";
-        // 冒险模式进度
-        public const string AdventureUserProgress = "/adventure/getUserProgress";
-        // 获取冒险关卡用户数据
-        public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
-        // 请求单人模式关卡排行
-        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
-        // 获取冒险章节用户数据
-        public const string AdventureUserSection = "/adventure/getUserSectionData";
-        // 获取体力数据
-        public const string UserEnergy = "/adventure/getUserEnergyData";
-        // 购买体力
-        public const string BuyEnergy = "/adventure/buyEnergy";
-        // 冒险模式用户数据
-        public const string AdventureUserData = "/adventure/getUserData";
-        // 进入冒险关卡
-        public const string PlayAdventureLevel = "/adventure/playLevel";
-        // 解锁章节
-        public const string UnlockAdventureSection = "/adventure/unlockSection";
-        // 提交冒险模式数据
-        public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
@@ -126,6 +124,60 @@ namespace SoyEngine
         public const string BuyAvatarPart = "/home/buyAvatarPart";
         // 转盘抽奖
         public const string Raffle = "/home/raffle";
+        // Msg_CS_DAT_UserWorkshopUnitData
+        public const string UserWorkshopUnitData = "/home/getUserWorkshopUnitData";
+        // 角色拥有的完整拼图
+        public const string UserPictureFull = "/home/getUserPictureFullData";
+        // 角色拥有的拼图碎片
+        public const string UserPicturePart = "/home/getUserPicturePartData";
+        // 角色装备的拼图数据
+        public const string UserUsingPictureFullData = "/home/getUserUsingPictureFullData";
+        // 装备拼图
+        public const string ChangePictureFull = "/home/changePictureFull";
+        // 合成拼图
+        public const string CompoundPictureFull = "/home/compoundPictureFull";
+        // 升级拼图
+        public const string UpgradePictureFull = "/home/upgradePictureFull";
+        // 角色拥有的武器
+        public const string UserWeaponData = "/home/getUserWeaponData";
+        // 角色拥有的武器碎片
+        public const string UserWeaponPartData = "/home/getUserWeaponPartData";
+        // 合成武器
+        public const string CompoundWeapon = "/home/compoundWeapon";
+        // 升级武器
+        public const string UpgradeWeapon = "/home/upgradeWeapon";
+        // 角色训练数据
+        public const string UserTrainProperty = "/home/getUserTrainPropertyData";
+        // 升级训练属性
+        public const string UpgradeTrainProperty = "/home/upgradeTrainProperty";
+        // 升级训练阶层
+        public const string CompleteUpgradeTrainProperty = "/home/completeUpgradeTrainProperty";
+        // 升级训练阶层
+        public const string UpgradeTrainGrade = "/home/upgradeTrainGrade";
+        // 获取成就数据
+        public const string Achievement = "/home/getAchievementData";
+        // 冒险模式关卡列表
+        public const string AdventureProjectList = "/adventure/getProjectList";
+        // 冒险模式进度
+        public const string AdventureUserProgress = "/adventure/getUserProgress";
+        // 获取冒险关卡用户数据
+        public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
+        // 请求单人模式关卡排行
+        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
+        // 获取冒险章节用户数据
+        public const string AdventureUserSection = "/adventure/getUserSectionData";
+        // 获取体力数据
+        public const string UserEnergy = "/adventure/getUserEnergyData";
+        // 购买体力
+        public const string BuyEnergy = "/adventure/buyEnergy";
+        // 冒险模式用户数据
+        public const string AdventureUserData = "/adventure/getUserData";
+        // 进入冒险关卡
+        public const string PlayAdventureLevel = "/adventure/playLevel";
+        // 解锁章节
+        public const string UnlockAdventureSection = "/adventure/unlockSection";
+        // 提交冒险模式数据
+        public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
         // 用户匹配改造数据
         public const string MatchUserData = "/match/getUserData";
         // 改造
@@ -148,6 +200,18 @@ namespace SoyEngine
         public const string CommitMatchChallengeLevelResult = "/match/commitChallengeLevelResult";
         // 跳过本次挑战
         public const string MatchSkipChallenge = "/match/skipChallenge";
+        // 发送邮件
+        public const string SendMail = "/mail/send";
+        // 查询未读邮件数量
+        public const string MailStatistic = "/mail/statistic";
+        // 查询邮件
+        public const string MailList = "/mail/list";
+        // 标记已读
+        public const string MarkMailRead = "/mail/markRead";
+        // 领取附件
+        public const string ReceiptMailAttach = "/mail/receiptAttach";
+        // 领取附件
+        public const string DeleteMail = "/mail/delete";
         // 执行GM指令
         public const string ExecuteCommand = "/gm/executeCommand";
     }

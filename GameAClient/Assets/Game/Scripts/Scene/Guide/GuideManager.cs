@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using SoyEngine;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
@@ -109,25 +109,25 @@ namespace GameA.Game
 				_currentGuide.OnScreenClick();
 			}
 
-			// if (PlayMode.Instance.MainUnit != null) {
+			// if (PlayMode.Instance.MainPlayer != null) {
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.RightInput == 1) {
+			// 	if (PlayMode.Instance.MainPlayer.Input.RightInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.RightInput == 2) {
+			// 	} else if (PlayMode.Instance.MainPlayer.Input.RightInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 1) {
+			// 	if (PlayMode.Instance.MainPlayer.Input.LeftInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 2) {
+			// 	} else if (PlayMode.Instance.MainPlayer.Input.LeftInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.JumpInput) {
+			// 	if (PlayMode.Instance.MainPlayer.Input.JumpInput) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.JumpButton);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.Skill1Input) {
+			// 	if (PlayMode.Instance.MainPlayer.Input.Skill1Input) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.AttackButton);
 			// 	}
 			// }
@@ -264,9 +264,9 @@ namespace GameA.Game
 		}
 
 		protected void MoveMainPlayer (IntVec2 pos) {
-			if (PlayMode.Instance.MainUnit != null) {
-				PlayMode.Instance.MainUnit.CenterPos = pos;
-				PlayMode.Instance.MainUnit.SetFacingDir(EMoveDirection.Right);
+			if (PlayMode.Instance.MainPlayer != null) {
+				PlayMode.Instance.MainPlayer.CenterDownPos = pos;
+				PlayMode.Instance.MainPlayer.SetFacingDir(EMoveDirection.Right);
 			}
 		}
 
@@ -322,16 +322,16 @@ namespace GameA.Game
 		}
 
 		protected UnitBase CreateTrigger (IntVec2 pos, Callback cb) {
-			var guid = new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth());
-            var triggerObj = new UnitDesc(65400, guid, 0, Vector2.one);
-            var unit = PlayMode.Instance.CreateUnit(triggerObj);
-			if (unit != null) {
-				var triggerUnit = unit as Trigger;
-				if (triggerUnit != null) {
-					triggerUnit.SetCallback(cb);
-					return triggerUnit;
-				}
-			}
+//			var guid = new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth());
+//            var triggerObj = new UnitDesc(65400, guid, 0, Vector2.one);
+//            var unit = PlayMode.Instance.CreateUnit(triggerObj);
+//			if (unit != null) {
+//				var triggerUnit = unit as Trigger;
+//				if (triggerUnit != null) {
+//					triggerUnit.SetCallback(cb);
+//					return triggerUnit;
+//				}
+//			}
 			return null;
 		}
 
@@ -354,17 +354,17 @@ namespace GameA.Game
 
 		private void LoadGuideUI () {
 			if (_guideUI != null) return;
-#if UNITY_EDITOR
-            UnityEngine.Object obj = Resources.Load("GuideUI");
-            if (obj == null) {
-                obj = GameResourceManager.Instance.LoadMainAssetObject ("GuideUI");
-            }
-            var gameObj = CommonTools.InstantiateObject (obj);
-#else
-            var obj = GameResourceManager.Instance.LoadMainAssetObject("GuideUI");
-            var gameObj = CommonTools.InstantiateObject(obj) as GameObject;
-#endif
-			_guideUI = gameObj.GetComponent<GuideUI>();
+//#if UNITY_EDITOR
+//            UnityEngine.Object obj = Resources.Load("GuideUI");
+//            if (obj == null) {
+////                obj = GameResourceManager.Instance.LoadMainAssetObject ("GuideUI");
+//            }
+//            var gameObj = CommonTools.InstantiateObject (obj);
+//#else
+//            var obj = GameResourceManager.Instance.LoadMainAssetObject("GuideUI");
+//            var gameObj = CommonTools.InstantiateObject(obj) as GameObject;
+//#endif
+//			_guideUI = gameObj.GetComponent<GuideUI>();
 		}
 	}
 }

@@ -6,17 +6,16 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using Animation = Spine.Animation;
 
 namespace GameA.Game
 {
-    public class GM2DTools
+    public static class GM2DTools
     {
         private static int _runtimeCreatedUnitDepth = (int)EUnitDepth.Max;
 
@@ -24,7 +23,7 @@ namespace GameA.Game
 	    {
 		    get
 		    {
-			    return (GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount * ConstDefineGM2D.ClientTileScale);
+			    return (1f * GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount * ConstDefineGM2D.ClientTileScale);
 			}
 	    }
 		
@@ -196,7 +195,7 @@ namespace GameA.Game
             return true;
         }
 
-        public static Spine.Animation GetAnimation(SkeletonAnimation skeleton, string aniName)
+        public static Animation GetAnimation(SkeletonAnimation skeleton, string aniName)
         {
             if (skeleton == null)
             {
@@ -352,6 +351,11 @@ namespace GameA.Game
             Vector2 max = TileToWorld(tileRect.Max + IntVec2.one);
             return new Rect(min, max - min);
         }
+        
+        public static IntRect WorldRectToTileRect(Rect rect)
+        {
+            return new IntRect(WorldToTile(rect.min), WorldToTile(rect.max));
+        }
 
         public static Vector2 TileToScreen(IntVec2 tile)
         {
@@ -398,12 +402,16 @@ namespace GameA.Game
         public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtra data)
         {
             var res = new UnitExtraKeyValuePair();
-            res.Guid = ToProto(index); ;
+            res.Guid = ToProto(index);
             res.MoveDirection = (byte)data.MoveDirection;
-            res.RollerDirection = (byte)data.RollerDirection;
+            res.Active = data.Active;
+            res.ChildId = data.ChildId;
+            res.ChildRotation = data.ChildRotation;
+            res.RotateMode = data.RotateMode;
+            res.RotateValue = data.RotateValue;
+            res.TimeDelay = data.TimeDelay;
+            res.TimeInterval = data.TimeInterval;
             res.Msg = data.Msg;
-            res.UnitChild = ToProto(data.Child);
-            res.EnergyType = data.EnergyType;
             return res;
         }
 
@@ -414,15 +422,6 @@ namespace GameA.Game
             guid.Y = value.y;
             guid.Z = value.z;
             return guid;
-        }
-
-        public static UnitChildProto ToProto(UnitChild value)
-        {
-            var unitChild = new UnitChildProto();
-            unitChild.Id = value.Id;
-            unitChild.Rotation = value.Rotation;
-            unitChild.MoveDirection = (byte)value.MoveDirection;
-            return unitChild;
         }
 
         public static PairUnitData ToProto(PairUnit pairUnit)
@@ -509,8 +508,9 @@ namespace GameA.Game
 			unitDesc = new UnitDesc();
 			var tile = WorldToTile(mouseWorldPos);
 			SceneNode targetNode;
-		    int layerMask = editorLayer == EEditorLayer.Effect ? EnvManager.MainPlayerAndEffectLayer : EnvManager.UnitLayerWithoutEffect;
-			if (!DataScene2D.PointCast(tile, out targetNode, layerMask))
+	        float minDepth, maxDepth;
+		    EditHelper.GetMinMaxDepth(editorLayer, out minDepth, out maxDepth);
+			if (!DataScene2D.PointCast(tile, out targetNode, JoyPhysics2D.LayMaskAll, minDepth, maxDepth))
 			{
 				return false;
 			}
@@ -556,42 +556,6 @@ namespace GameA.Game
             }
             var grid = IntersectWith(tile, targetNode, tableUnit);
             unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
-            return true;
-        }
-
-        /// <summary>
-        ///     运行时候调用
-        /// </summary>
-        /// <param name="hit"></param>
-        /// <param name="unitDesc"></param>
-        /// <returns></returns>
-        internal static bool TryGetUnitObject(RayHit2D hit, out UnitDesc unitDesc)
-        {
-            unitDesc = new UnitDesc();
-            if (hit.node == null)
-            {
-                LogHelper.Error("TryGetUnitObject failed,{0}", hit);
-                return false;
-            }
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
-            if (tableUnit == null)
-            {
-                LogHelper.Error("TryGetUnitObject failed,{0}", hit);
-                return false;
-            }
-            unitDesc.Id = hit.node.Id;
-            unitDesc.Rotation = hit.node.Rotation;
-            unitDesc.Scale = hit.node.Scale;
-            if (hit.node.IsDynamic())
-            {
-                unitDesc.Guid = tableUnit.ColliderToRenderer(hit.node.Guid, hit.node.Rotation);
-            }
-            else
-            {
-                var tile = WorldToTile(hit.point - hit.normal * ConstDefineGM2D.ClientTileScale * 0.5f);
-                var grid = IntersectWith(tile, hit.node, tableUnit, false);
-                unitDesc.Guid = tableUnit.ColliderToRenderer(new IntVec3(grid.XMin, grid.YMin, hit.node.Depth), hit.node.Rotation);
-            }
             return true;
         }
         
@@ -640,7 +604,7 @@ namespace GameA.Game
                 offset.x = 0;
                 res = offset;
             }
-            return res;
+            return -res;
         }
 
         public static Vector3 GetModelOffsetInWorldPos(IntVec2 dataSize, IntVec2 modelSize, Table_Unit tableUnit)
@@ -714,17 +678,52 @@ namespace GameA.Game
             return offsetInWorld;
         }
 
-        public static bool TryGetSpineObject<T>(string path, out T so) where T : SpineObject, new()
+        public static IntRect ToIntRect(Grid2D grid2D)
         {
-            so = PoolFactory<T>.Get();
-            if (so != null)
+            return new IntRect(grid2D.XMin, grid2D.YMin, grid2D.XMax, grid2D.YMax);
+        }
+
+        public static Grid2D ToGrid2D(IntRect rect)
+        {
+            return new Grid2D(rect.Min.x, rect.Min.y, rect.Max.x, rect.Max.y);
+        }
+        
+        public static Vector2 GetDirection(float angle)
+        {
+            var rad = angle * Mathf.Deg2Rad;
+            return new Vector2((float) Math.Sin(rad), (float) Math.Cos(rad));
+        }
+        
+        public static float GetAngle(int rotation)
+        {
+            float euler = rotation >= (int) EDirectionType.RightUp ? (rotation - 3) * 90 - 45 : rotation * 90;
+            return euler;
+        }
+        
+        public static bool GetRotation8(int angle, out byte rotation)
+        {
+            if (angle % 90 == 0)
             {
-                if (so.Init(path))
-                {
-                    return true;
-                }
-                PoolFactory<T>.Free(so);
+                rotation = (byte) (angle / 90);
+                return true;
             }
+            if ((angle + 45) % 90 == 0)
+            {
+                rotation = (byte) ((angle + 45) / 90 + 3);
+                return true;
+            }
+            rotation = 0;
+            return false;
+        }
+        
+        public static bool GetRotation4(int angle, out byte rotation)
+        {
+            if (angle % 90 == 0)
+            {
+                rotation = (byte) (angle / 90);
+                return true;
+            }
+            rotation = 0;
             return false;
         }
     }

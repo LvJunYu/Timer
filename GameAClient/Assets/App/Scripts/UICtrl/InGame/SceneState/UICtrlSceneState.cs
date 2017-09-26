@@ -5,25 +5,49 @@
 ** Summary : UICtrlSceneState  
 ***********************************************************************/
 
-
-using System;
 using System.Collections.Generic;
-
-using SoyEngine;
+using DG.Tweening;
 using GameA.Game;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
+using EWinCondition = GameA.Game.EWinCondition;
+using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSceneState: UICtrlInGameBase<UIViewSceneState>
+    [UIResAutoSetup(EResScenary.UIInGame)]
+    public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
+        private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
+            new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
 
-        private Dictionary<EWinCondition, UIViewSceneStateItem> _cachedItem;
-        private List<EWinCondition> _activeConditions;
-	    private bool _hasTimeLimit = false;
-	    private int _lastShowSceonds = -100;
+        private int _lastShowSceonds = -100;
+        private int _lastFrame;
+        private Tweener _scoreTweener;
+        private int _lastValue;
+        private int _showValue;
+        private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
+
+        private const int _finalTimeMax = 10;
+        private const int _HeartbeatTimeMax = 30;
+        private const float _collectDelayTime = 1f;
+        private const int _initUMCollectionItemNum = 10;
+        private const int _initUMCollectionLifeNum = 3;
+        private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
+        private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
+        protected Sequence _finalCountDownSequence;
+        private bool _showStar;
+
+        /// <summary>
+        /// 冒险模式
+        /// </summary>
+        private Table_StandaloneLevel _tableStandaloneLevel;
+
+        private int[] _starValueAry;
 
         private float _showHelpTimer;
+
         public bool ShowHelpPage3SecondsComplete
         {
             get { return _showHelpTimer <= 0; }
@@ -37,14 +61,35 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitUI();
+            //初始化收集物体缓存
+            _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
+            for (int i = 0; i < _initUMCollectionItemNum; i++)
+            {
+                _umCtrlCollectionItemCache.Add(new UMCtrlCollectionItem());
+                _umCtrlCollectionItemCache[i].Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionItemCache[i].Hide();
+            }
+            _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
+            for (int i = 0; i < _initUMCollectionLifeNum; i++)
+            {
+                _umCtrlCollectionLifeItemCache.Add(new UMCtrlCollectionLifeItem());
+                _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionLifeItemCache[i].Hide();
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            _umCtrlCollectionItemCache = null;
+            _umCtrlCollectionLifeItemCache = null;
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            UpdateItemVisible();
-			UpdateAll();
+            Clear();
+            UpdateAll();
         }
 
         protected override void InitEventListener()
@@ -52,108 +97,72 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWinDataChanged, OnWinDataChanged);
             RegisterEvent(EMessengerType.OnLifeChanged, OnLifeChanged);
-			RegisterEvent(EMessengerType.OnMainPlayerCreated, OnLifeChanged);
+            RegisterEvent(EMessengerType.OnMainPlayerCreated, OnLifeChanged);
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
-
-            Messenger<int, int>.AddListener (EMessengerType.OnHPChanged, OnHPChanged);
-            Messenger<int, int>.AddListener (EMessengerType.OnMPChanged, OnMPChanged);
-            Messenger<int, int>.AddListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
-		}
-
-        protected override void OnDestroy ()
-        {
-            base.OnDestroy ();
-            Messenger<int, int>.RemoveListener (EMessengerType.OnHPChanged, OnHPChanged);
-            Messenger<int, int>.RemoveListener (EMessengerType.OnMPChanged, OnMPChanged);
-            Messenger<int, int>.RemoveListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
+            RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
+            RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
         }
 
-		public override void OnUpdate()
-	    {
-		    base.OnUpdate();
-		    if (_hasTimeLimit)
-		    {
-			    UpdateTimeLimit();
-		    }
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            UpdateShowHelper();
+            UpdateTimeLimit();
 
-            if (_showHelpTimer > 0)
+            if (_showStar)
             {
-                _showHelpTimer-= UnityEngine.Time.deltaTime;
-                if (UnityEngine.Input.anyKey)
-                {
-                    _showHelpTimer = 0;
-                }
-                if (_showHelpTimer <= 0)
-                {
-                    _cachedView.HelpPage.SetActive(false);
-                }
+                UpdateAdventurePlay();
+            }
+        }
+
+        public void ShowHelpPage3Seconds()
+        {
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play)
+            {
+                _showHelpTimer = 3;
+                _cachedView.HelpPage.SetActive(true);
             }
             else
             {
-                if (UnityEngine.Input.GetKey (UnityEngine.KeyCode.H))
-                {
-                    if (!_cachedView.HelpPage.activeSelf)
-                    {
-                        _cachedView.HelpPage.SetActive (true);
-                    }
-                }
-                else
-                {
-                    
-                    if (_cachedView.HelpPage.activeSelf)
-                    {
-                        _cachedView.HelpPage.SetActive(false);
-                    }
-                }
-            }
-	    }
-
-        public void ShowHelpPage3Seconds ()
-        {
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play) {
-                _showHelpTimer = 3;
-                _cachedView.HelpPage.SetActive (true);
-            } else {
                 _showHelpTimer = 0;
-                _cachedView.HelpPage.SetActive (false);
+                _cachedView.HelpPage.SetActive(false);
             }
         }
 
-	    #region event
+        #region event
 
         private void OnWinDataChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
-	        UpdateWinDataWithOutTimeLimit();
+            UpdateWinDataWithOutTimeLimit();
         }
 
-		private void OnLifeChanged()
+        private void OnLifeChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
-			UpdateLifeItemValue();
-		}
+            UpdateLifeItemValue();
+        }
 
-	    private void OnGameRestart()
+        private void OnGameRestart()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
-			UpdateItemVisible();
-			UpdateAll();
+            UpdateAll();
         }
 
         private void OnKeyCountChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -162,7 +171,7 @@ namespace GameA
 
         private void OnScoreChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -173,208 +182,415 @@ namespace GameA
 
         #region  private
 
-	    private void UpdateAll()
+        private void UpdateAll()
         {
+            InitConditionView();
+            UpdateLifeItemValue();
+            UpdateWinDataWithOutTimeLimit();
+            UpdateItemVisible();
+            UpdateTimeLimit();
+            UpdateKeyCount();
+            UpdateScore();
+        }
+
+        private void UpdateItemVisible()
+        {
+            foreach (var entry in _winConditionItemDict)
+            {
+                entry.Value.Destroy();
+            }
+            _winConditionItemDict.Clear();
+            _cachedView.CollectionRoot.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
+            _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
+            _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
+
+            var hasOtherLimit = false;
+            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            {
+                bool hasCondition = PlayMode.Instance.SceneState.HasWinCondition(i);
+                if (hasCondition)
+                {
+                    UMCtrlGameWinConditionItem winConditionItem = new UMCtrlGameWinConditionItem();
+                    winConditionItem.Init(_cachedView.ConditionsItemRoot, ResScenary);
+                    _winConditionItemDict.Add(i, winConditionItem);
+                    winConditionItem.SetComplete(false);
+                    winConditionItem.SetText(GetWinConditionString(i));
+                    if (_showStar)
+                    {
+                        winConditionItem.Hide();
+                    }
+                    else
+                    {
+                        winConditionItem.Show();
+                    }
+                    if (i != EWinCondition.TimeLimit)
+                    {
+                        hasOtherLimit = true;
+                    }
+                }
+            }
+            if (!hasOtherLimit)
+            {//没有其他条件，时间限制改为存活
+                _winConditionItemDict[EWinCondition.TimeLimit]
+                    .SetText(GetWinConditionString(EWinCondition.TimeLimit, true));
+            }
+            UpdateWinDataWithOutTimeLimit();
+            UpdateTimeLimit();
+            _cachedView.LifeRoot.SetActiveEx(PlayMode.Instance.SceneState.IsMainPlayerCreated);
+            _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
+            _cachedView.EditModeSpace.SetActiveEx(GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit);
+        }
+
+        private void UpdateLifeItemValue()
+        {
+            if (PlayMode.Instance.MainPlayer == null)
+            {
+                _cachedView.LifeText.text = "";
+                return;
+            }
+            _cachedView.LifeRoot.SetActiveEx(true);
+            int lifeCount = PlayMode.Instance.MainPlayer.Life;
+            if (_cachedView.IsActive())
+            {
+                _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                    () => UpdateLifeItemValueText(lifeCount)));
+            }
+        }
+
+        private void UpdateLifeItemValueText(int lifeCount)
+        {
+            _cachedView.LifeText.text = string.Format(GM2DUIConstDefine.WinDataLifeFormat, lifeCount);
+        }
+
+        private void UpdateWinDataWithOutTimeLimit()
+        {
+            int curScore = PlayMode.Instance.SceneState.GemGain;
+            int totalScore = PlayMode.Instance.SceneState.TotalGem;
+            if (_cachedView.IsActive())
+            {
+                _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                    () => UpdateCollectText(curScore)));
+            }
+            if (_winConditionItemDict.ContainsKey(EWinCondition.CollectTreasure))
+            {
+                _winConditionItemDict[EWinCondition.CollectTreasure].SetComplete(curScore == totalScore);
+            }
+            int killCount = PlayMode.Instance.SceneState.MonsterKilled;
+            int totalCount = PlayMode.Instance.SceneState.MonsterCount;
+            _cachedView.EnemyText.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
+            if (_winConditionItemDict.ContainsKey(EWinCondition.KillMonster))
+            {
+                _winConditionItemDict[EWinCondition.KillMonster].SetComplete(killCount == totalCount);
+            }
+            if (_winConditionItemDict.ContainsKey(EWinCondition.Arrived))
+            {
+                _winConditionItemDict[EWinCondition.Arrived].SetComplete(PlayMode.Instance.SceneState.Arrived);
+            }
+        }
+
+        private void UpdateCollectText(int curScore)
+        {
+            int totalScore = PlayMode.Instance.SceneState.TotalGem;
+            _cachedView.CollectionText.text =
+                string.Format(GM2DUIConstDefine.WinDataValueFormat, curScore, totalScore);
+        }
+
+        private void UpdateTimeLimit()
+        {
+            int curValue = PlayMode.Instance.SceneState.SecondLeft;
+            if (curValue < _finalTimeMax)
+                ShowFinalCountDown02(curValue);
+            if (curValue != _lastShowSceonds)
+            {
+                _lastFrame = GameRun.Instance.LogicFrameCnt;
+                if (curValue < _finalTimeMax)
+                {
+                    _cachedView.LeftTimeText.color = Color.red;
+                    _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
+                }
+                else
+                {
+                    int minutes = curValue / 60;
+                    int seconds = curValue % 60;
+                    _cachedView.LeftTimeText.text =
+                        string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
+                }
+                if (curValue < _HeartbeatTimeMax)
+                {
+                    ShowFinalCountDown();
+                }
+                _lastShowSceonds = curValue;
+                if (_winConditionItemDict.Count > 1)
+                {
+                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue > 0);
+                }
+                else
+                {
+                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue <= 0);
+                }
+            }
+        }
+
+        private void UpdateKeyCount()
+        {
+            int curValue = PlayMode.Instance.SceneState.KeyGain;
+            _cachedView.KeyText.text = string.Format(GM2DUIConstDefine.WinDataKeyCountFormat, curValue);
+        }
+
+        private void UpdateScore()
+        {
+            int curValue = PlayMode.Instance.SceneState.CurScore;
+            if (null == _scoreTweener)
+            {
+                _scoreTweener = DOTween.To(() => _showValue, x => _showValue = x, curValue, 1f)
+                    .OnUpdate(UpdateScoreText).SetAutoKill(false).Pause();
+            }
+            _scoreTweener.ChangeStartValue(_lastValue);
+            _scoreTweener.ChangeEndValue(curValue);
+            _scoreTweener.Restart();
+            _lastValue = curValue;
+        }
+
+        private void UpdateScoreText()
+        {
+            _cachedView.ScoreText.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, _showValue);
+        }
+
+        private void InitConditionView()
+        {
+            _cachedView.ConditionsRoot.SetActive(true);
+            for (int i = 0; i < _starConditionList.Count; i++)
+            {
+                _starConditionList[i].Destroy();
+            }
+            _starConditionList.Clear();
+            _showStar = false;
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
                 _cachedView.LevelInfoDock.SetActive(true);
-                _cachedView.SpaceDock.SetActive(true);
-                SituationAdventureParam param = null;
                 ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
                 if (situation != null && situation.GetLevelInfo() != null)
                 {
-                    param = situation.GetLevelInfo();
-                    _cachedView.SectionText.text = "第" + ClientTools.ToCNLowerCase(param.Section) + "章";
-                    if (param.ProjectType == SoyEngine.Proto.EAdventureProjectType.APT_Normal)
+                    var param = situation.GetLevelInfo();
+                    _cachedView.SectionText.text = "第" + param.Section.ToCNLowerCase() + "章";
+                    if (param.ProjectType == EAdventureProjectType.APT_Normal)
                     {
+                        _showStar = true;
                         _cachedView.NormalLevelDock.SetActive(true);
                         _cachedView.BonusLevelDock.SetActive(false);
                         _cachedView.NormalLevelText.text = param.Level.ToString();
 
-                        _cachedView.StarConditions.SetActive (true);
                         var table = param.Table;
-                        var tableStarRequire1 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [0]);
-                        if (null == tableStarRequire1) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [0]);
-                        } else {
-                            _cachedView.StarConditionText [0].text = string.Format (tableStarRequire1.Desc, table.Star1Value);
-                            _cachedView.StarConditionStar [0].gameObject.SetActive (false);
+                        _tableStandaloneLevel = table;
+                        _starValueAry = new[] {table.Star1Value, table.Star2Value, table.Star3Value};
+                        for (int i = 0; i < table.StarConditions.Length; i++)
+                        {
+                            UMCtrlGameStarItem item;
+                            if (i >= _starConditionList.Count)
+                            {
+                                item = new UMCtrlGameStarItem();
+                                item.Init(_cachedView.ConditionsItemRoot, ResScenary);
+                                _starConditionList.Add(item);
+                            }
+                            else
+                            {
+                                item = _starConditionList[i];
+                            }
+                            var tableStarRequire = TableManager.Instance.GetStarRequire(table.StarConditions[i]);
+                            if (null == tableStarRequire)
+                            {
+                                LogHelper.Error("Cant find table starrequire of id: {0}", table.StarConditions[i]);
+                            }
+                            else
+                            {
+                                item.SetText(string.Format(tableStarRequire.Desc, _starValueAry[i]));
+                                item.SetComplete(false);
+                            }
                         }
-                        var tableStarRequire2 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [1]);
-                        if (null == tableStarRequire2) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [1]);
-                        } else {
-                            _cachedView.StarConditionText [1].text = string.Format (tableStarRequire2.Desc, table.Star2Value);
-                            _cachedView.StarConditionStar [1].gameObject.SetActive (false);
-                        }
-                        var tableStarRequire3 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [2]);
-                        if (null == tableStarRequire3) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [2]);
-                        } else {
-                            _cachedView.StarConditionText [2].text = string.Format (tableStarRequire3.Desc, table.Star3Value);
-                            _cachedView.StarConditionStar [2].gameObject.SetActive (false);
-                        }
-
                     }
                     else
                     {
                         _cachedView.NormalLevelDock.SetActive(false);
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
-                        _cachedView.StarConditions.SetActive (false);
                     }
                 }
             }
             else
             {
-                _cachedView.SpaceDock.SetActive(true);
                 _cachedView.LevelInfoDock.SetActive(false);
-                _cachedView.StarConditions.SetActive (false);
             }
-
-		    UpdateLifeItemValue();
-			UpdateWinDataWithOutTimeLimit();
-		    UpdateTimeLimit();
-		    UpdateKeyCount();
-            UpdateScore();
-
-            UpdateSpeedUpCD ();
-	    }
-
-        private void InitUI()
-        {
-            _activeConditions = new List<EWinCondition>();
-            _cachedItem = new Dictionary<EWinCondition, UIViewSceneStateItem>();
-            _cachedItem.Add(EWinCondition.Arrived,_cachedView.ArriveItem);
-            _cachedItem.Add(EWinCondition.TimeLimit, _cachedView.TimeLimitItem);
-            _cachedItem.Add(EWinCondition.CollectTreasure, _cachedView.CollectionItem);
-            _cachedItem.Add(EWinCondition.KillMonster, _cachedView.EnemyItem);
-            _cachedView.Home.onClick.AddListener (OnHomeBtn);
         }
 
-        private void UpdateItemVisible()
+        private void UpdateShowHelper()
         {
-            _activeConditions.Clear();
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            if (_showHelpTimer > 0)
             {
-                bool hasCondition = PlayMode.Instance.SceneState.HasWinCondition(i);
-                UIViewSceneStateItem item;
-                if (_cachedItem.TryGetValue(i, out item))
+                _showHelpTimer -= Time.deltaTime;
+                if (Input.anyKey)
                 {
-                    item.SetActiveEx(hasCondition);
+                    _showHelpTimer = 0;
                 }
-	            if (i == EWinCondition.TimeLimit)
-	            {
-		            _hasTimeLimit = hasCondition;
-	            }
-                if (hasCondition)
+                if (_showHelpTimer <= 0)
                 {
-                    _activeConditions.Add(i);
+                    _cachedView.HelpPage.SetActive(false);
                 }
             }
-			_cachedView.HpItem.SetActiveEx(PlayMode.Instance.SceneState.IsMainPlayerCreated);
-			_cachedView.KeyItem.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
-        }
-
-        private void UpdateLifeItemValue()
-        {
-	        if (PlayMode.Instance.MainUnit == null)
-	        {
-		        _cachedView.HpItem.Dex.text = "";
-				return;
-	        }
-			_cachedView.HpItem.SetActiveEx(true);
-			int lifeCount = PlayMode.Instance.MainUnit.Life;
-			_cachedView.HpItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataLifeFormat, lifeCount);
-		}
-
-	    private void UpdateWinDataWithOutTimeLimit()
-        {
-		    if (_activeConditions.Contains(EWinCondition.Arrived))
-		    {
-			    _cachedView.ArriveItem.Dex.text = "到达终点";
-		    }
-
-			if (_activeConditions.Contains(EWinCondition.CollectTreasure))
-			{
-				int curScore = PlayMode.Instance.SceneState.GemGain;
-				int totalScore = PlayMode.Instance.SceneState.TotalGem;
-				_cachedView.CollectionItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataValueFormat,curScore,totalScore);
-			}
-			if (_activeConditions.Contains(EWinCondition.KillMonster))
-			{
-				int killCount = PlayMode.Instance.SceneState.MonsterKilled;
-				int totalCount = PlayMode.Instance.SceneState.MonsterCount;
-				_cachedView.EnemyItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
-			}
-		}
-
-	    private void UpdateTimeLimit()
-        {
-			int curValue = PlayMode.Instance.SceneState.SecondLeft;
-		    if (curValue != _lastShowSceonds)
-		    {
-			    int minutes = curValue/60;
-				int seconds = curValue % 60;
-
-			    _cachedView.TimeLimitItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
-				_lastShowSceonds = curValue;
-		    }
-        }
-
-        private void UpdateKeyCount()
-        {
-            int curValue = PlayMode.Instance.SceneState.KeyGain;
-            _cachedView.KeyItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataKeyCountFormat, curValue);
-        }
-
-        private void UpdateScore()
-        {
-            int curValue = PlayMode.Instance.SceneState.CurScore;
-            _cachedView.ScoreItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, curValue);
-        }
-
-        private void UpdateSpeedUpCD ()
-        {
-            _cachedView.SpeedUpReady.SetActive (true);
-            _cachedView.SpeedUpCDImg.fillAmount = 0;
-            _cachedView.SpeedUpCDText.text = string.Empty;
-        }
-
-
-        private void OnHomeBtn ()
-        {
-            Messenger.Broadcast(EMessengerType.OpenGameSetting);
-        }
-
-        private void OnHPChanged (int currentValue, int maxValue)
-        {
-            if (!_isOpen)
-                return;
-            _cachedView.HP.fillAmount = (float)currentValue / maxValue;
-        }
-        private void OnMPChanged (int currentValue, int maxValue)
-        {
-            if (!_isOpen)
-                return;
-            _cachedView.MP.fillAmount = (float)currentValue / maxValue;
-        }
-
-        private void OnSpeedUpCDChanged (int currentCD, int maxCD)
-        {
-            if (maxCD == 0)
-                return;
-            currentCD = UnityEngine.Mathf.Clamp (currentCD, 0, maxCD);
-            if (currentCD <= 0) {
-                _cachedView.SpeedUpReady.SetActive (true);
-                _cachedView.SpeedUpCDImg.fillAmount = 0;
-                _cachedView.SpeedUpCDText.text = string.Empty;
-            } else {
-                _cachedView.SpeedUpReady.SetActive (false);
-                _cachedView.SpeedUpCDImg.fillAmount = (float)currentCD / maxCD;
-                _cachedView.SpeedUpCDText.text = (currentCD / ConstDefineGM2D.FixedFrameCount).ToString();
+            else
+            {
+                if (Input.GetKey(KeyCode.H))
+                {
+                    if (!_cachedView.HelpPage.activeSelf)
+                    {
+                        _cachedView.HelpPage.SetActive(true);
+                    }
+                }
+                else
+                {
+                    if (_cachedView.HelpPage.activeSelf)
+                    {
+                        _cachedView.HelpPage.SetActive(false);
+                    }
+                }
             }
         }
+
+        private void UpdateAdventurePlay()
+        {
+            if (_tableStandaloneLevel != null && _starValueAry != null)
+            {
+                for (int i = 0; i < _tableStandaloneLevel.StarConditions.Length; i++)
+                {
+                    bool showStar = AppData.Instance.AdventureData.CheckStarRequire(
+                        _tableStandaloneLevel.StarConditions[i], _starValueAry[i], PlayMode.Instance.Statistic);
+                    _starConditionList[i].SetComplete(showStar);
+                }
+            }
+        }
+
+        private string GetWinConditionString(EWinCondition winCondition, bool special = false)
+        {
+            switch (winCondition)
+            {
+                case EWinCondition.TimeLimit:
+                    if (special)
+                    {
+                        return string.Format("坚持存活 {0}",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
+                    }
+                    else
+                    {
+                        return string.Format("{0} 内过关",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
+                    }
+                case EWinCondition.Arrived:
+                    return "到达终点";
+                case EWinCondition.CollectTreasure:
+                    return "收集所有兽角";
+                case EWinCondition.KillMonster:
+                    return "杀死所有怪物";
+            }
+            return string.Empty;
+        }
+
+        private void ShowFinalCountDown()
+        {
+            if (null == _finalCountDownSequence)
+                CreateFinalCountDownSequence();
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
+            _cachedView.LeftTimeText.color = Color.red;
+            _finalCountDownSequence.Restart();
+        }
+
+        private void CreateFinalCountDownSequence()
+        {
+            _finalCountDownSequence = DOTween.Sequence();
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 0.7f, 0.1f));
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 1.15f, 0.15f)
+                    .SetEase(Ease.OutBack));
+            _finalCountDownSequence.SetAutoKill(false).Pause();
+        }
+
+        private void ShowFinalCountDown02(int curValue)
+        {
+            int seconds = curValue % 60;
+            int frameCount =
+                100 - (int) ((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
+            frameCount = Mathf.Clamp(frameCount, 0, 99);
+            _cachedView.LeftTimeText.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, seconds, frameCount);
+        }
+
+        private void Clear()
+        {
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
+            _cachedView.LeftTimeText.color = Color.white;
+            if (_scoreTweener != null)
+                _scoreTweener.Pause();
+            if (_umCtrlCollectionItemCache != null)
+                _umCtrlCollectionItemCache.ForEach(p => p.Hide());
+            UpdateLifeItemValueText(EditMode.Instance.MapStatistics.LifeCount);
+            UpdateCollectText(0);
+            _lastFrame = 0;
+            _lastValue = 0;
+            _showValue = 0;
+        }
+
+        private void ShowCollectionAnimation(Vector3 InitialPos)
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            CreateUmCtrlCollectionItem().CollectAnimation(InitialPos, _cachedView.CollectionIconRtf);
+        }
+
+        private void ShowCollectionLifeAnimation(Vector3 InitialPos)
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            CreateUmCtrlCollectionLifeItem().CollectAnimation(InitialPos, _cachedView.CollectionLifeIconRtf);
+        }
+
+        private UMCtrlCollectionItem CreateUmCtrlCollectionItem()
+        {
+            if (null == _umCtrlCollectionItemCache)
+                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
+            UMCtrlCollectionItem umCtrlCollectionItem = _umCtrlCollectionItemCache.Find(p => !p.IsShow);
+            if (umCtrlCollectionItem != null)
+            {
+                umCtrlCollectionItem.Show();
+            }
+            else
+            {
+                umCtrlCollectionItem = new UMCtrlCollectionItem();
+                umCtrlCollectionItem.Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionItemCache.Add(umCtrlCollectionItem);
+            }
+            return umCtrlCollectionItem;
+        }
+
+        private UMCtrlCollectionLifeItem CreateUmCtrlCollectionLifeItem()
+        {
+            if (null == _umCtrlCollectionLifeItemCache)
+                _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
+            UMCtrlCollectionLifeItem umCtrlCollectionLifeItem = _umCtrlCollectionLifeItemCache.Find(p => !p.IsShow);
+            if (umCtrlCollectionLifeItem != null)
+            {
+                umCtrlCollectionLifeItem.Show();
+            }
+            else
+            {
+                umCtrlCollectionLifeItem = new UMCtrlCollectionLifeItem();
+                umCtrlCollectionLifeItem.Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionLifeItemCache.Add(umCtrlCollectionLifeItem);
+            }
+            return umCtrlCollectionLifeItem;
+        }
+
         #endregion
     }
 }

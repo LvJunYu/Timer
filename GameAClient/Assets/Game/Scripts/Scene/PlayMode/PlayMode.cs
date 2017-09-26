@@ -8,10 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
@@ -19,7 +20,6 @@ namespace GameA.Game
     {
         private static PlayMode _instance;
         private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private readonly ShadowData _currentShadowData = new ShadowData();
         private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
@@ -28,31 +28,22 @@ namespace GameA.Game
 
         private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
-        private Vector2 _cameraEditPosCache = Vector2.zero;
-        private float _cameraEditOrthoSizeCache = 0f;
-        [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
-
         [SerializeField] private IntVec2 _focusPos;
 
         private int _gameFailedTime;
         private int _gameSucceedTime;
-        private List<int> _inputDatas = new List<int>();
-        [SerializeField] private MainUnit _mainUnit;
+        [SerializeField] private MainPlayer _mainPlayer;
 
-        private Texture2D _maskBaseTexture;
         private bool _pausing;
         [SerializeField] private bool _run;
         private GameStatistic _statistic;
         private UnitUpdateManager _unitUpdateManager;
+        private List<Trap> _traps = new List<Trap>();
+        protected List<Bullet> _bullets = new List<Bullet>();
 
         public static PlayMode Instance
         {
             get { return _instance ?? (_instance = new PlayMode()); }
-        }
-
-        public Texture2D MaskBaseTexture
-        {
-            get { return _maskBaseTexture; }
         }
 
         public IntVec2 FocusPos
@@ -60,10 +51,10 @@ namespace GameA.Game
             get { return _focusPos; }
         }
 
-        public MainUnit MainUnit
+        public MainPlayer MainPlayer
         {
-            get { return _mainUnit; }
-            set { _mainUnit = value; }
+            get { return _mainPlayer; }
+            set { _mainPlayer = value;}
         }
 
         public int GameSuccessFrameCnt
@@ -81,23 +72,6 @@ namespace GameA.Game
             get { return _sceneState; }
         }
 
-        public ERunMode ERunMode
-        {
-            get { return _eRunMode; }
-            set { _eRunMode = value; }
-        }
-
-        public List<int> InputDatas
-        {
-            get { return _inputDatas; }
-            set { _inputDatas = value; }
-        }
-
-        public ShadowData CurrentShadow
-        {
-            get { return _currentShadowData; }
-        }
-
         // 统计
         public GameStatistic Statistic
         {
@@ -106,7 +80,6 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            //            Debug.Log ("PlayMode.Dispose");
             Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             if (_statistic != null)
             {
@@ -117,19 +90,9 @@ namespace GameA.Game
 
         public bool Init()
         {
-            //            Debug.Log ("PlayMode.Init");
             Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
-
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
-
-            Texture t;
-            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
-            {
-                LogHelper.Error("GetMask Failed");
-                return false;
-            }
-            _maskBaseTexture = t as Texture2D;
             return true;
         }
 
@@ -156,6 +119,10 @@ namespace GameA.Game
                 UnitDesc unitDesc = _deletedDatas[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
+                if (!MapConfig.UseAOI)
+                {
+                    ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit);
+                }
             }
             _deletedDatas.Clear();
             ColliderScene2D.Instance.Reset();
@@ -163,6 +130,22 @@ namespace GameA.Game
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
             _sceneState.Reset();
+
+            for (int i = 0; i < _traps.Count; i++)
+            {
+                DeleteTrap(_traps[i].Guid);
+            }
+            _traps.Clear();
+            
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
         }
 
         public void Pause()
@@ -187,13 +170,13 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_pausing && _mainUnit.Life <= 0)
+            if (_pausing && _mainPlayer.Life <= 0)
             {
-                _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
+                _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
-            if (_mainUnit != null && _unitUpdateManager != null)
+            if (_mainPlayer != null && _unitUpdateManager != null)
             {
                 _unitUpdateManager.UpdateLogic(deltaTime);
             }
@@ -201,9 +184,20 @@ namespace GameA.Game
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
-            if (_mainUnit != null)
+            if (_mainPlayer != null)
             {
-                _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
+                _focusPos = GetFocusPos(_mainPlayer.CameraFollowPos);
+            }
+            for (int i = 0; i < _traps.Count; i++)
+            {
+                _traps[i].UpdateLogic();
+            }
+            if (_bullets.Count > 0)
+            {
+                for (int i = 0; i < _bullets.Count; i++)
+                {
+                    _bullets[i].UpdateLogic();
+                }
             }
         }
 
@@ -231,33 +225,25 @@ namespace GameA.Game
         {
             _nextActions.Add(action);
         }
-
-        public void UpdateRenderer(float deltaTime)
-        {
-            if (_unitUpdateManager != null)
-            {
-                _unitUpdateManager.UpdateRenderer(deltaTime);
-            }
-        }
-
-        public UnitBase CreateUnitView(UnitDesc unitDesc)
-        {
-            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
-            if (unit != null)
-            {
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                if (tableUnit == null)
-                {
-                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
-                    return null;
-                }
-                if (!unit.Init(tableUnit, unitDesc))
-                {
-                    return null;
-                }
-            }
-            return unit;
-        }
+        
+//        public UnitBase CreateUnitView(UnitDesc unitDesc)
+//        {
+//            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
+//            if (unit != null)
+//            {
+//                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+//                if (tableUnit == null)
+//                {
+//                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
+//                    return null;
+//                }
+//                if (!unit.Init(tableUnit, unitDesc))
+//                {
+//                    return null;
+//                }
+//            }
+//            return unit;
+//        }
 
         public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {
@@ -386,9 +372,7 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-            _mainUnit.OnSucceed();
+            _mainPlayer.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
             {
@@ -404,7 +388,6 @@ namespace GameA.Game
             {
                 _statistic.OnGameFinishFailed();
             }
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
         public void OnBoostItemSelectFinish(List<int> items)
@@ -439,36 +422,59 @@ namespace GameA.Game
 
         #region State
 
-        public bool CheckPlayerValid()
+        public bool CheckPlayerValid(bool run = true)
         {
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            if (mainPlayer == null)
+            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            if (spawnDatas.Count == 0)
             {
-                LogHelper.Error("No MainPlayer");
+                if (run)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
+                }
                 return false;
             }
-            if (!DataScene2D.Instance.ValidMapRect.Contains(new IntVec2(mainPlayer.Guid.x, mainPlayer.Guid.y)))
+            if (run)
             {
-                LogHelper.Error("No MainPlayer");
-                return false;
+                for (int i = 0; i < spawnDatas.Count; i++)
+                {
+                    var spawnData = spawnDatas[i];
+                    if (i == 0)
+                    {
+                        //TODO 临时 测试多人
+                        if (PlayerManager.Instance.UserDataList == null)
+                        {
+                            PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                        }
+                        else
+                        {
+                            for (int j = 0; j < PlayerManager.Instance.UserDataList.Count; j++)
+                            {
+                                PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                            }
+                        }
+                        _mainPlayer = PlayerManager.Instance.MainPlayer;
+                    }
+                    else
+                    {
+//                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
+                    }
+                }
             }
             return true;
         }
 
         public bool StartEdit()
         {
-            if (!CheckPlayerValid())
+            if (!CheckPlayerValid(false))
             {
                 return false;
             }
             _run = false;
             Reset();
-            if (_cameraEditPosCache != Vector2.zero)
-            {
-                CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
-                CameraManager.Instance.SetFinalOrthoSize(_cameraEditOrthoSizeCache);
-            }
-            UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
+            CameraManager.Instance.SetCameraState(ECameraState.Edit);
+            BgScene2D.Instance.OnStop();
+            BgScene2D.Instance.Reset();
+            UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos), true);
             UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
@@ -483,19 +489,18 @@ namespace GameA.Game
             {
                 return false;
             }
-            _cameraEditPosCache = CameraManager.Instance.FinalPos;
-            _cameraEditOrthoSizeCache = CameraManager.Instance.FinalOrthoSize;
             PreparePlay();
             return true;
         }
 
         public bool RePlay()
         {
+            Reset();
             if (!CheckPlayerValid())
             {
                 return false;
             }
-            Reset();
+            CameraManager.Instance.SetCameraState(ECameraState.None);
             PreparePlay();
             return true;
         }
@@ -505,8 +510,9 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
+            CameraManager.Instance.SetCameraState(ECameraState.Play);
+            BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCameraPos);
+            var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
 
@@ -522,26 +528,29 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+            BgScene2D.Instance.OnPlay();
             return true;
         }
 
         private void BeforePlay()
         {
             bool flag = false;
-            Dictionary<EPairType, PairUnit[]>.Enumerator iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
-            while (iter.MoveNext())
+            using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())
             {
-                if (iter.Current.Value != null)
+                while (iter.MoveNext())
                 {
-                    for (int i = 0; i < iter.Current.Value.Length; i++)
+                    if (iter.Current.Value != null)
                     {
-                        PairUnit pairUnit = iter.Current.Value[i];
-                        //删掉不成双的
-                        if (!pairUnit.IsEmpty && !pairUnit.IsFull)
+                        for (int i = 0; i < iter.Current.Value.Length; i++)
                         {
-                            flag = true;
-                            UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
-                            DeleteUnit(unitObject);
+                            PairUnit pairUnit = iter.Current.Value[i];
+                            //删掉不成双的
+                            if (!pairUnit.IsEmpty && !pairUnit.IsFull)
+                            {
+                                flag = true;
+                                UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
+                                DeleteUnit(unitObject);
+                            }
                         }
                     }
                 }
@@ -559,7 +568,7 @@ namespace GameA.Game
         /// <param name="isInit"></param>
         public void UpdateWorldRegion(IntVec2 mainPlayerPos, bool isInit = false)
         {
-            CameraManager.Instance.SetRollByMainPlayerPos(mainPlayerPos);
+            CameraManager.Instance.CameraCtrlPlay.SetRollPosImmediately(mainPlayerPos);
             _focusPos = GetFocusPos(mainPlayerPos);
             if (isInit)
             {
@@ -581,5 +590,56 @@ namespace GameA.Game
         }
 
         #endregion
+        
+        public bool AddTrap(int trapId, IntVec2 centerPos)
+        {
+            var trap = PoolFactory<Trap>.Get();
+            if (trap.Init(trapId, centerPos))
+            {
+                _traps.Add(trap);
+                return true;
+            }
+            PoolFactory<Trap>.Free(trap);
+            return false;
+        }
+        
+        public bool DeleteTrap(int guid)
+        {
+            for (int i = _traps.Count - 1; i >= 0; i--)
+            {
+                var trap = _traps[i];
+                if (trap.Guid == guid)
+                {
+                    _traps.Remove(trap);
+                    PoolFactory<Trap>.Free(trap);
+                    break;
+                }
+            }
+            return true;
+        }
+        
+        public void AddBullet(Bullet bullet)
+        {
+            _bullets.Add(bullet);
+        }
+
+        public void DeleteBullet(Bullet bullet)
+        {
+            _bullets.Remove(bullet);
+            PoolFactory<Bullet>.Free(bullet);
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
+        }
     }
 }

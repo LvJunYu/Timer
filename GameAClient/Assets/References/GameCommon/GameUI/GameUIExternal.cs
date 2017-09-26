@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 
+using NewResourceSolution;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +21,7 @@ namespace SoyEngine
                 return;
             }
             Sprite sprite;
-            if (GameResourceManager.Instance.TryGetSpriteByName(spriteName, out sprite))
+            if (JoyResManager.Instance.TryGetSprite (spriteName, out sprite))
             {
                 image.sprite = sprite;
             }

@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -22,20 +23,19 @@ namespace GameA.Game
     public class AlertLazer : BlockBase
     {
         protected GridCheck _gridCheck;
-        protected Grid2D _checkGrid;
+        
+        protected UnityNativeParticleItem _lazerEffectWarning;
+        protected UnityNativeParticleItem _lazerEffect;
+        protected UnityNativeParticleItem _lazerEffectEnd;
+        
+        protected Vector3 _direction;
         protected int _distance;
-        protected IntVec2 _borderCenterPoint;
 
         protected int _timer;
         protected bool _shoot = true;
-
-        protected UnityNativeParticleItem _effectStart;
-        protected UnityNativeParticleItem _effectEnd;
-        protected LazerEffect _lazerEffect1;
-        protected LazerEffect _lazerEffect2;
-
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
+        
+        protected int _timeDelay;
+        protected int _timeInterval;
 
         public override bool CanControlledBySwitch
         {
@@ -49,130 +49,129 @@ namespace GameA.Game
                 return false;
             }
             _gridCheck = new GridCheck(this);
-            Calculate();
             return true;
-        }
-
-        private void Calculate()
-        {
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
-            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-            _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
-            _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
         protected override void InitAssetPath()
         {
             InitAssetRotation();
         }
+        
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            if (_withEffect != null)
+            {
+                _withEffect.Trans.position += Vector3.back * 0.1f;
+            }
+            _lazerEffectWarning = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazer", _trans);
+            if (_lazerEffectWarning != null)
+            {
+                _lazerEffectWarning.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
+            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
+            if (_lazerEffect != null)
+            {
+                _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
+            _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazerStart", _trans);
+            return true;
+        }
 
         protected override void Clear()
         {
             base.Clear();
+            _direction = GM2DTools.GetDirection(_angle);
             _timer = 0;
             _shoot = true;
             _gridCheck.Clear();
-            if (_effectStart != null)
+            if (_lazerEffectEnd != null)
             {
-                _effectStart.Stop();
+                _lazerEffectEnd.Stop();
             }
-            if (_effectEnd != null)
+            if (_lazerEffect != null)
             {
-                _effectEnd.Stop();
+                _lazerEffect.Stop();
             }
-            if (_lazerEffect1 != null)
+            if (_lazerEffectWarning != null)
             {
-                _lazerEffect1.Reset();
+                _lazerEffectWarning.Stop();
             }
-            if (_lazerEffect2 != null)
-            {
-                _lazerEffect2.Reset();
-            }
+        }
+
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
+            _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
         }
 
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            FreeEffect(_effectStart);
-            _effectStart = null;
-            FreeEffect(_effectEnd);
-            _effectEnd = null;
-            if (_lazerEffect1 != null)
-            {
-                _lazerEffect1.OnObjectDestroy();
-                _lazerEffect1 = null;
-            }
-            if (_lazerEffect2 != null)
-            {
-                _lazerEffect2.OnObjectDestroy();
-                _lazerEffect2 = null;
-            }
+            FreeEffect(_lazerEffectWarning);
+            _lazerEffectWarning = null;
+            FreeEffect(_lazerEffect);
+            _lazerEffect = null;
+            FreeEffect(_lazerEffectEnd);
+            _lazerEffectEnd = null;
         }
 
-        private void Pause()
+        protected override void OnActiveStateChanged()
         {
-            if (_effectEnd != null)
-            {
-                _effectEnd.Pause();
-            }
-            if (_lazerEffect1 != null)
-            {
-                _lazerEffect1.Pause();
-            }
-            if (_lazerEffect2 != null)
-            {
-                _lazerEffect2.Pause();
-            }
-            if (_effectStart != null)
-            {
-                _effectStart.Pause();
-            }
+            base.OnActiveStateChanged();
+            _lazerEffectWarning.SetActiveStateEx(_eActiveState == EActiveState.Active);
+            _lazerEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
+            _lazerEffectEnd.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_ctrlBySwitch)
+            _gridCheck.Before();
+            if (_eActiveState != EActiveState.Active)
             {
-                Pause();
+                _gridCheck.After();
+                return;
+            }
+            //timeDelay
+            if (_timeDelay > 0)
+            {
+                _timeDelay--;
                 return;
             }
             _timer++;
-            _gridCheck.Before();
             if (_shoot)
             {
-                _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-                if (_dynamicCollider != null)
-                {
-                    Calculate();
-                }
-                if (_effectStart != null)
-                {
-                    _effectStart.Stop();
-                }
-                var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
+                _distance = ConstDefineGM2D.MaxMapDistance;
+                var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
                 {
                     for (int i = 0; i < hits.Count; i++)
                     {
                         var hit = hits[i];
-                        if (UnitDefine.IsLaserBlock(hit.node))
+                        var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                        if (tableUnit != null && tableUnit.IsLazerBlock == 1)
                         {
                             if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                             {
                                 UnitBase switchTrigger;
                                 if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
                                 {
-                                    _gridCheck.Do((SwitchTrigger)switchTrigger);
+                                    _gridCheck.Do((SwitchTriggerPress)switchTrigger);
                                     _distance = hit.distance + 80;
                                     break;
                                 }
                             }
                             bool flag = false;
-                            var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
+                            var units = ColliderScene2D.GetUnits(hit);
                             for (int j = 0; j < units.Count; j++)
                             {
-                                if (units[j].IsAlive && !units[j].CanLazerCross)
+                                if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
                                 {
                                     _distance = hit.distance;
                                     flag = true;
@@ -189,34 +188,20 @@ namespace GameA.Game
                 //显示警告
                 if (_timer < 100)
                 {
-                    if (_lazerEffect1 == null)
+                    UpdateEffect();
+                    if (_timer >= 40)
                     {
-                        _lazerEffect1 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect1);
-                    }
-                    _lazerEffect1.Update((float)_distance / ConstDefineGM2D.ServerTileScale);
-                    if (_timer >= 30)
-                    {
-                        if (_lazerEffect2 == null)
-                        {
-                            _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect2);
-                        }
-                        _lazerEffect2.Update((float)_distance / ConstDefineGM2D.ServerTileScale);
-                        if (_effectEnd == null)
-                        {
-                            _effectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazerEnd", _trans);
-                        }
-                        UpdateEndEffect();
                         if (hits.Count > 0)
                         {
                             for (int i = 0; i < hits.Count; i++)
                             {
                                 var hit = hits[i];
-                                if (UnitDefine.IsLaserDamage(hit.node.Layer) && hit.distance <= _distance)
+                                if (hit.distance <= _distance && UnitDefine.IsLaserDamage(hit.node.Layer))
                                 {
                                     UnitBase unit;
                                     if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
                                     {
-                                        if (unit != null && unit.IsAlive && unit.IsHero)
+                                        if (unit != null && unit.IsAlive && unit.IsActor)
                                         {
                                             unit.InLazer();
                                         }
@@ -230,58 +215,49 @@ namespace GameA.Game
             if (_timer == 100)
             {
                 _shoot = false;
-                if (_effectEnd != null)
+                if (_lazerEffect != null)
                 {
-                    _effectEnd.Stop();
+                    _lazerEffect.Stop();
                 }
-                if (_lazerEffect1 != null)
+                if (_lazerEffectEnd != null)
                 {
-                    _lazerEffect1.Stop();
+                    _lazerEffectEnd.Stop();
                 }
-                if (_lazerEffect2 != null)
-                {
-                    _lazerEffect2.Stop();
-                }
-                if (_effectStart == null)
-                {
-                    _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectAlertLazerPoint, _trans);
-                    _effectStart.Trans.position += Vector3.back*0.1f;
-                }
-                _effectStart.Play();
             }
-            else if (_timer == 200)
+            if (_timer == 100 + _timeInterval)
             {
                 _shoot = true;
                 _timer = 0;
             }
             _gridCheck.After();
         }
-
-        private void UpdateEndEffect()
+        
+        private void UpdateEffect()
         {
-            if (_effectEnd != null)
+            var distanceWorld = _distance * ConstDefineGM2D.ClientTileScale;
+            if (_timer < 40)
             {
-                _effectEnd.Play();
-                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
-                float z;
-                switch (Rotation)
+                if (_lazerEffectWarning != null)
                 {
-                    case 0:
-                        z = GetZ(_borderCenterPoint + _distance * IntVec2.up);
-                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z)+ distanceWorld * Vector3.up;
-                        break;
-                    case 1:
-                        z = GetZ(_borderCenterPoint + _distance * IntVec2.right);
-                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.right;
-                        break;
-                    case 2:
-                        z = GetZ(_borderCenterPoint + _distance * IntVec2.down);
-                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.down;
-                        break;
-                    case 3:
-                        z = GetZ(_borderCenterPoint + _distance * IntVec2.left);
-                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.left;
-                        break;
+                    _lazerEffectWarning.Play();
+                    _lazerEffectWarning.Trans.localScale = new Vector3(1, distanceWorld, 1);
+                }
+            }
+            else
+            {
+                if (_lazerEffectWarning != null)
+                {
+                    _lazerEffectWarning.Stop();
+                }
+                if (_lazerEffect != null)
+                {
+                    _lazerEffect.Play();
+                    _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
+                    if (_lazerEffectEnd != null)
+                    {
+                        _lazerEffectEnd.Play();
+                        _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) + distanceWorld * _direction;
+                    }
                 }
             }
         }
@@ -297,8 +273,8 @@ namespace GameA.Game
         public LazerEffect(UnitBase lazerUnit, string path)
         {
             CreateMesh();
-            Texture texture;
-            if (!GameResourceManager.Instance.TryGetTextureByName(path, out texture))
+            Texture texture = null;
+            if (!JoyResManager.Instance.TryGetTexture(path, out texture))
             {
                 LogHelper.Error("TryGetTextureByName Failed {0}", path);
                 return;

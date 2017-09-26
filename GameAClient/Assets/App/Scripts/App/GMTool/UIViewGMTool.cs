@@ -22,5 +22,11 @@ namespace GameA
         public Image SucceedImg;
         public Image FailedImg;
         public GameObject InputObj;
+        public Text Version;
+
+        protected override void Start ()
+        {
+            Version.text = SocialApp.Instance.Env.ToString ().Substring (0, 3);
+        }
     }
 }

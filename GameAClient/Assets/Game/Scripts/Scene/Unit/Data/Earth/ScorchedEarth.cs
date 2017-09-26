@@ -38,9 +38,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
-            _canLazerCross = false;
-            _canMagicCross = false;
-            _canBridgeCross = false;
+            SetCross(false);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -85,12 +83,9 @@ namespace GameA.Game
 
         private void OnTrigger(UnitBase other, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsPlayer)
             {
-                if (other.IsMain)
-                {
-                    OnExplode();
-                }
+                OnExplode();
             }
         }
 
@@ -101,7 +96,7 @@ namespace GameA.Game
                 _state = 1;
                 if (UseMagic())
                 {
-                    _run = false;
+                    SetEnabled(false);
                 }
             }
         }
@@ -116,9 +111,7 @@ namespace GameA.Game
                 {
                     //开始爆炸
                     _state = 2;
-                    _canLazerCross = true;
-                    _canMagicCross = true;
-                    _canBridgeCross = true;
+                    SetCross(true);
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
@@ -144,12 +137,10 @@ namespace GameA.Game
                     }
                     //复原
                     _state = 0;
-                    _canLazerCross = false;
-                    _canMagicCross = false;
-                    _canBridgeCross = false;
+                    SetCross(false);
                     if (UseMagic())
                     {
-                        _run = true;
+                        SetEnabled(true);
                     }
                     _timer = 0;
                     if (_view != null)
@@ -162,29 +153,11 @@ namespace GameA.Game
 
         private void SendMsgToAround()
         {
-            //var scale = ConstDefineGM2D.ServerTileScale;
-            //Check(new IntVec3(_curPos.x, _curPos.y + scale, _guid.z));
-            //Check(new IntVec3(_curPos.x, _curPos.y - scale, _guid.z));
-            //Check(new IntVec3(_curPos.x - scale, _curPos.y, _guid.z));
-            //Check(new IntVec3(_curPos.x + scale, _curPos.y, _guid.z));
             CheckGrid(GetYGrid(30));
             CheckGrid(GetYGrid(-30));
             CheckGrid(GetXGrid(-30));
             CheckGrid(GetXGrid(30));
         }
-
-        //private void Check(IntVec3 guid)
-        //{
-        //    UnitBase unit;
-        //    if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
-        //    {
-        //        var scorchedEarth = unit as ScorchedEarth;
-        //        if (scorchedEarth != null && scorchedEarth.CurPos == new IntVec2(guid.x, guid.y))
-        //        {
-        //            scorchedEarth.OnExplode();
-        //        }
-        //    }
-        //}
 
         private void CheckGrid(Grid2D grid)
         {
@@ -194,7 +167,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this)
+                    if (unit != null && unit.IsAlive && unit != this && unit.Id == UnitDefine.ScorchedEarthId)
                     {
                         var scorchedEarth = unit as ScorchedEarth;
                         if (scorchedEarth != null)

@@ -5,28 +5,25 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
 using GameA.Game;
+using SoyEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlEditSwitch : UICtrlInGameBase<UIViewEditSwitch>
     {
         #region 常量与字段
+        private readonly Dictionary<IntVec3, UMCtrlEditSwitchCount> _umCountDict =
+            new Dictionary<IntVec3, UMCtrlEditSwitchCount>();
 
-        private static Vector2 TextOffset = new Vector2(0.35f, 0.4f);
-
-        private List<Text> _connectionCntCache = new List<Text> ();
-        private List<Button> _delBtnCache = new List<Button> ();
-
-        private List<IntVec3> _allUnitGuids;
-        private List<int> _allUnitConnectionCnts = new List<int>();
+        private readonly Dictionary<int, UMCtrlEditSwitchConnection> _umConnectionDict =
+            new Dictionary<int, UMCtrlEditSwitchConnection>();
+        
+        private readonly Stack<UMCtrlEditSwitchCount> _umCountPool = new Stack<UMCtrlEditSwitchCount>();
+        private readonly Stack<UMCtrlEditSwitchConnection> _umConnectionPool = new Stack<UMCtrlEditSwitchConnection>();
+        private UMCtrlEditSwitchConnection _editingConnection;
         #endregion
 
         #region 属性
@@ -37,143 +34,187 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.InGamePopup;
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-
-			
+            _groupId = (int) EUIGroupType.InGameStart;
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            Messenger<List<Vector3>>.AddListener(EMessengerType.OnSelectedItemChangedOnSwitchMode, OnSelectedItemChanged);
-            Messenger<IntVec3, IntVec3, bool>.AddListener (EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
+            RegisterEvent<IntVec3, IntVec3, bool>(EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
+            RegisterEvent(EMessengerType.OnEditCameraPosChange, OnCameraPosChanged);
+        }
+
+        protected override void OnDestroy()
+        {
+            _umCountDict.Clear();
+            _umConnectionDict.Clear();
+            _umCountPool.Clear();
+            _umConnectionPool.Clear();
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-
-            if (null != parameter) {
-                _allUnitGuids = parameter as List<IntVec3>;
-                _allUnitConnectionCnts.Clear ();
-                for (int i = 0; i < _allUnitGuids.Count; i++) {
-                    var list = DataScene2D.Instance.GetControlledUnits (_allUnitGuids [i]);
-                    if (null != list) {
-                        _allUnitConnectionCnts.Add (list.Count);                        
-                    } else {
-                        var list2 = DataScene2D.Instance.GetSwitchUnitsConnected (_allUnitGuids [i]);
-                        if (null != list2) {
-                            _allUnitConnectionCnts.Add (list2.Count);
-                        }
-                    }
-                }
-                OnCameraPosChanged();
-            }
-
+            var unitList = parameter as List<IntVec3>;
+            RefreshView(unitList);
         }
 
         protected override void OnClose ()
         {
             base.OnClose ();
-            OnSelectedItemChanged (null);
+            FreeAll();
+        }
 
-            for (int i = 0; i < _connectionCntCache.Count; i++) {
-                _connectionCntCache [i].transform.parent.gameObject.SetActive (false);
+        public void ClearConnection()
+        {
+            using (var itor = _umConnectionDict.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    FreeUmConnection(itor.Current.Value);
+                }
+            }
+            _umConnectionDict.Clear();
+        }
+
+        public void AddConnection(int inx, IntVec3 switchGuid, IntVec3 unitGuid)
+        {
+            var um = GetUmConnection();
+            um.SetButtonShow(true);
+            um.Set(inx, GM2DTools.TileToWorld(switchGuid), GM2DTools.TileToWorld(unitGuid));
+            _umConnectionDict.Add(inx, um);
+        }
+
+        public UMCtrlEditSwitchConnection GetEditingConnection()
+        {
+            if (_editingConnection == null)
+            {
+                _editingConnection = GetUmConnection();
+            }
+            return _editingConnection;
+        }
+
+        public void FreeEditingConnection()
+        {
+            if (_editingConnection != null)
+            {
+                FreeUmConnection(_editingConnection);
+                _editingConnection = null;
             }
         }
 
-		protected override void OnDestroy ()
-		{
-			base.OnDestroy ();
-            Messenger<List<Vector3>>.RemoveListener(EMessengerType.OnSelectedItemChangedOnSwitchMode, OnSelectedItemChanged);
-            Messenger<IntVec3, IntVec3, bool>.RemoveListener (EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
-		}
-
-        public override void OnUpdate ()
+        private void RefreshView(List<IntVec3> unitList)
         {
-            base.OnUpdate ();
-        }
-
-        private void OnDelBtn (int idx) {
-            EditMode.Instance.DeleteSwitchConnection (idx);
-        }
-
-        private void OnCameraPosChanged () {
-            if (null != _allUnitGuids) {
-                int i = 0;
-                for (; i < _allUnitGuids.Count; i++) {
-                    Text txt = GetCntText (i);
-                    txt.transform.parent.localPosition = GM2DTools.WorldToScreenPoint ((Vector2)GM2DTools.TileToWorld(_allUnitGuids[i]) + TextOffset);
-                    txt.transform.parent.gameObject.SetActive (true);
-                    if (_allUnitConnectionCnts.Count > i) {
-                        txt.text = _allUnitConnectionCnts [i].ToString ();
+            if (null != unitList) {
+                for (int i = 0; i < unitList.Count; i++)
+                {
+                    var umCount = GetUmCount();
+                    _umCountDict.Add(unitList[i], umCount);
+                    umCount.Set(GM2DTools.TileToWorld(unitList[i]));
+                    umCount.SetCount(0);
+                    var list = DataScene2D.Instance.GetControlledUnits (unitList [i]);
+                    if (null != list) {
+                        umCount.SetCount(list.Count);
+                    } else {
+                        var list2 = DataScene2D.Instance.GetSwitchUnitsConnected (unitList [i]);
+                        if (null != list2) {
+                            umCount.SetCount(list2.Count);
+                        }
                     }
                 }
-                for (; i < _connectionCntCache.Count; i++) {
-                    _connectionCntCache[i].transform.parent.gameObject.SetActive (false);
-                }
             }
         }
-
-        private void OnSelectedItemChanged (List<Vector3> lineCenters) {
-            if (null == lineCenters) {
-                for (int j = 0; j < _delBtnCache.Count; j++) {
-                    _delBtnCache [j].gameObject.SetActive (false);
-                }
+        
+        private void OnCameraPosChanged () {
+            if (!_isOpen)
+            {
                 return;
             }
-            int i = 0;
-            for (; i < lineCenters.Count; i++) {
-                Button btn = GetDelBtn (i);
-                btn.transform.localPosition = GM2DTools.WorldToScreenPoint ((Vector2)lineCenters[i]);
-                btn.gameObject.SetActive (true);
+            using (var itor = _umConnectionDict.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    itor.Current.Value.RecalcPos();
+                }
             }
-            for (; i < _delBtnCache.Count; i++) {
-                _delBtnCache[i].gameObject.SetActive (false);
+            using (var itor = _umCountDict.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    itor.Current.Value.RecalcPos();
+                }
+            }
+            if (_editingConnection != null)
+            {
+                _editingConnection.RecalcPos();
             }
         }
 
         private void OnSwitchConnectionChanged (IntVec3 a, IntVec3 b, bool isAdd) {
-            int found = 0;
-            for (int i = 0; i < _allUnitGuids.Count; i++) {
-                if (_allUnitGuids [i] == a || _allUnitGuids [i] == b) {
-                    if (_allUnitConnectionCnts.Count > i) {
-                        _allUnitConnectionCnts [i] += isAdd ? 1 : -1;
-                        if (_connectionCntCache.Count > i) {
-                            _connectionCntCache [i].text = _allUnitConnectionCnts [i].ToString ();
-                        }
-                        found++;
-                        if (found >= 2) {
-                            break;
-                        }
-                    }
+            if (!_isOpen)
+            {
+                return;
+            }
+            var deltaCount = isAdd ? 1 : -1;
+            var umA = _umCountDict[a];
+            umA.SetCount(umA.Count + deltaCount);
+            var umB = _umCountDict[b];
+            umB.SetCount(umB.Count + deltaCount);
+        }
+
+        private void FreeAll()
+        {
+            using (var itor = _umConnectionDict.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    FreeUmConnection(itor.Current.Value);
                 }
             }
+            _umConnectionDict.Clear();
+            using (var itor = _umCountDict.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    FreeUmCount(itor.Current.Value);
+                }
+            }
+            _umCountDict.Clear();
         }
 
-        private Button GetDelBtn (int idx) {
-            while (_delBtnCache.Count <= idx) {
-                GameObject newObj = GameObject.Instantiate (_cachedView.LineDelBtnPrefb.gameObject, _cachedView.LineDelBtnPrefb.transform.parent);
-                Button newBtn = newObj.GetComponent<Button> ();
-                _delBtnCache.Add (newBtn);
+        private UMCtrlEditSwitchConnection GetUmConnection()
+        {
+            if (_umCountPool.Count > 0)
+            {
+                return _umConnectionPool.Pop();
             }
-            _delBtnCache [idx].onClick.RemoveAllListeners ();
-            _delBtnCache [idx].onClick.AddListener (() => OnDelBtn (idx));
-            return _delBtnCache [idx];
+            var um = new UMCtrlEditSwitchConnection();
+            um.Init(_cachedView.ConnectionLayer, ResScenary);
+            return um;
         }
 
-        private Text GetCntText (int idx) {
-            while (_connectionCntCache.Count <= idx) {
-                GameObject newObj = GameObject.Instantiate (_cachedView.ConnectionCntPrefb.gameObject, _cachedView.ConnectionCntPrefb.transform.parent);
-                Text newTxt = newObj.GetComponentInChildren<Text> ();
-                _connectionCntCache.Add (newTxt);
+        private void FreeUmConnection(UMCtrlEditSwitchConnection um)
+        {
+            um.MoveOut();
+            _umConnectionPool.Push(um);
+        }
+        
+        private UMCtrlEditSwitchCount GetUmCount()
+        {
+            if (_umCountPool.Count > 0)
+            {
+                return _umCountPool.Pop();
             }
-            return _connectionCntCache [idx];
+            var um = new UMCtrlEditSwitchCount();
+            um.Init(_cachedView.CountLayer, ResScenary);
+            return um;
+        }
+
+        private void FreeUmCount(UMCtrlEditSwitchCount um)
+        {
+            um.MoveOut();
+            _umCountPool.Push(um);
         }
 		#endregion
 	}

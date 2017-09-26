@@ -15,55 +15,78 @@ namespace GameA.Game
     {
         public void UpdateLogic(float deltaTime)
         {
-            var allUnits = ColliderScene2D.Instance.AllUnits;
-            for (int i = 0; i < allUnits.Count; i++)
+            var mainUnit = PlayMode.Instance.MainPlayer;
+
+            var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
+            var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
+            var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
+            var allOtherUnits = ColliderScene2D.Instance.AllOtherUnits;
+            
+            for (int i = 0; i < allSwitchUnits.Count; i++)
             {
-                allUnits[i].CheckStart();
+                allSwitchUnits[i].UpdateLogic();
             }
-            for (int i = 0; i < allUnits.Count; i++)
+            for (int i = 0; i < allMagicUnits.Count; i++)
             {
-                allUnits[i].UpdateLogic();
+                allMagicUnits[i].UpdateLogic();
             }
-            for (int i = 0; i < allUnits.Count; i++)
+            
+            for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                allUnits[i].CalculateExtraDeltaPos();
+                allOtherUnits[i].CheckStart();
             }
-            var mainUnit = PlayMode.Instance.MainUnit;
+            //人先执行 AI怪物后执行
+            mainUnit.UpdateLogic();
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                if (allOtherUnits[i].IsMain)
+                {
+                    continue;
+                }
+                allOtherUnits[i].UpdateLogic();
+            }
+            for (int i = 0; i < allBulletUnits.Count; i++)
+            {
+                allBulletUnits[i].UpdateLogic();
+            }
+            for (int i = 0; i < allMagicUnits.Count; i++)
+            {
+                allMagicUnits[i].UpdateView(deltaTime);
+            }
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allOtherUnits[i].CalculateExtraDeltaPos();
+            }
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
             {
                 case EBoxOperateType.None:
                 case EBoxOperateType.Push:
-                    for (int i = 0; i < allUnits.Count; i++)
+                    for (int i = 0; i < allOtherUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allOtherUnits[i].IsMain)
                         {
                             continue;
                         }
-                        allUnits[i].UpdateView(deltaTime);
+                        allOtherUnits[i].UpdateView(deltaTime);
                     }
-                    PlayMode.Instance.MainUnit.UpdateView(deltaTime);
+                    mainUnit.UpdateView(deltaTime);
                     break;
                 case EBoxOperateType.Pull:
-                    PlayMode.Instance.MainUnit.UpdateView(deltaTime);
-                    for (int i = 0; i < allUnits.Count; i++)
+                    mainUnit.UpdateView(deltaTime);
+                    for (int i = 0; i < allOtherUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allOtherUnits[i].IsMain)
                         {
                             continue;
                         }
-                        allUnits[i].UpdateView(deltaTime);
+                        allOtherUnits[i].UpdateView(deltaTime);
                     }
                     break;
             }
-        }
-
-        public void UpdateRenderer(float deltaTime)
-        {
-            var allUnits = ColliderScene2D.Instance.AllUnits;
-            for (int i = 0; i < allUnits.Count; i++)
+            for (int i = 0; i < allBulletUnits.Count; i++)
             {
-                allUnits[i].UpdateRenderer(deltaTime);
+                allBulletUnits[i].UpdateView(deltaTime);
             }
         }
     }

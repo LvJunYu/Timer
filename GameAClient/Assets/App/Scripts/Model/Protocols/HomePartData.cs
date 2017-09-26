@@ -129,6 +129,7 @@ namespace GameA
 
         public HomePartData () { 
             _itemDataList = new List<HomePartItem>();
+            OnCreate();
         }
         #endregion
     }

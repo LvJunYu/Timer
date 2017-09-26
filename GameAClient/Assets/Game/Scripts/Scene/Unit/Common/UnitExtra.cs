@@ -6,22 +6,50 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Runtime.InteropServices;
-using SoyEngine;
+
+#pragma warning disable 0660 0661
 
 namespace GameA.Game
 {
+    public enum EEditType
+    {
+        None = -1,
+        /// <summary>
+        /// 存在Node里面。
+        /// </summary>
+        Direction,
+        MoveDirection,
+        Active,
+        Child,
+        Rotate,
+        TimeDelay,
+        TimeInterval,
+        Text,
+        Style,
+        Max,
+    }
+    
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct UnitExtra : IEquatable<UnitExtra>
     {
-        public static UnitExtra zero = new UnitExtra();
+        public static UnitExtra zero;
+        
         public EMoveDirection MoveDirection;
-        public EMoveDirection RollerDirection;
+        
+        public byte Active;
+        
+        public ushort ChildId;
+        public byte ChildRotation;
+        
+        public byte RotateMode;
+        public byte RotateValue;
+        
+        public ushort TimeDelay;
+        public ushort TimeInterval;
+
         public string Msg;
-        public byte EnergyType;
-        public UnitChild Child;
 
         public bool IsDynamic()
         {
@@ -30,8 +58,12 @@ namespace GameA.Game
 
         public bool Equals(UnitExtra other)
         {
-            return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && EnergyType == other.EnergyType && 
-                   Child.Equals(other.Child);
+            return MoveDirection == other.MoveDirection && 
+                   Active == other.Active &&
+                   ChildId == other.ChildId && ChildRotation == other.ChildRotation && 
+                   RotateMode == other.RotateMode && RotateValue == other.RotateValue && 
+                   TimeDelay == other.TimeDelay && TimeInterval == other.TimeInterval && 
+                   Msg == other.Msg;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
@@ -42,27 +74,6 @@ namespace GameA.Game
         public static bool operator !=(UnitExtra a, UnitExtra other)
         {
             return !(a == other);
-        }
-    }
-
-    [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UnitChild : IEquatable<UnitChild>
-    {
-        public ushort Id;
-        public byte Rotation;
-        public EMoveDirection MoveDirection;
-
-        public UnitChild(ushort id, byte rotation, EMoveDirection moveDirection)
-        {
-            Id = id;
-            Rotation = rotation;
-            MoveDirection = moveDirection;
-        }
-
-        public bool Equals(UnitChild other)
-        {
-            return Id == other.Id && Rotation == other.Rotation && MoveDirection == other.MoveDirection;
         }
     }
 }

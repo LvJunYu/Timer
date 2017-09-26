@@ -6,78 +6,175 @@
 ***********************************************************************/
 
 
+using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using GameA.Game;
+using UnityEngine.EventSystems;
 
 namespace GameA
 {
-    [Poolable(MinPoolSize = 1, PreferedPoolSize = 10, MaxPoolSize = 1000)]
-    public class UMCtrlItem : UMCtrlBase<UMViewItem>, IPoolableObject
+    public class UMCtrlItem : UMCtrlBase<UMViewItem>
     {
-        private ushort _id;
+        private Table_Unit _table;
         private bool _selected;
-
-        public void OnGet()
+        private static ECheckBehaviour _checkBehaviour;
+        private static Vector2 _startPos;
+        private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
+        private UMCtrlUnitProperty _umCtrlUnitProperty;
+        private bool _isShow;
+        
+        public void Show()
         {
-            Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            if (_isShow)
+            {
+                return;
+            }
+            _isShow = true;
+            _cachedView.gameObject.SetActive(true);
+            Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
 
-        public void OnFree()
+        public void Hide()
         {
-            _cachedView.Trans.SetParent(SocialGUIManager.Instance.UIRoot.Trans, false);
-            _cachedView.Trans.localPosition = Vector3.one * 65535;
-            Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            if (!_isShow)
+            {
+                return;
+            }
+            _isShow = false;
+            _cachedView.gameObject.SetActive(false);
+            Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+        }
+
+
+        public void OnDestroyObject()
+        {
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Item.onClick.AddListener(OnItem);
+
+            _cachedView.EventTrigger.AddListener(EventTriggerType.PointerClick, OnClick);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.BeginDrag, OnBeginDrag);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.Drag, OnDrag);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.EndDrag, OnEndDrag);
         }
 
-        protected override void OnDestroy()
+        private void OnBeginDrag(BaseEventData eventData)
         {
-            _cachedView.Item.onClick.RemoveListener(OnItem);
+//            Debug.Log("OnBeginDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            _checkBehaviour = ECheckBehaviour.None;
+            _startPos = pointerEventData.position;
         }
 
-	    public void OnDestroyObject()
-	    {
-		    
-	    }
-
-
-		private void OnItem()
+        private void OnDrag(BaseEventData eventData)
         {
-            //这儿需要进行Item数量的判断。
-            //if (!MapManager.Instance.MapEditor.CanLay(_id))
-            //{
-            //    //TODO 提示不可摆放
-            //    LogHelper.Warning("Can Not Lay.{0}",_id);
-            //    return;
-            //}
-//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-//            if (!_selected) {
-                Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_id));
-//            }
+//            Debug.Log("OnDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            if (ECheckBehaviour.None == _checkBehaviour)
+            {
+                var delta = pointerEventData.position - _startPos;
+//                Debug.Log("Delta: " + delta);
+                if (delta.y > CheckDelta.y)
+                {
+                    _checkBehaviour = ECheckBehaviour.Drag;
+                    var current = EditHelper.GetUnitDefaultData(_table.Id);
+                    EDirectionType rotate = EDirectionType.Up;
+                    UnitExtra unitExtra = current.UnitExtra;
+                    if (_table.CanEdit(EEditType.Direction))
+                    {
+                        rotate = (EDirectionType) current.UnitDesc.Rotation;
+                    }
+                    var mouseWorldPos = GM2DTools.ScreenToWorldPoint(pointerEventData.position);
+                    EditMode.Instance.StartDragUnit(mouseWorldPos, mouseWorldPos, _table.Id, rotate, ref unitExtra);
+                }
+                else if (Mathf.Abs(delta.x) > CheckDelta.x)
+                {
+                    _checkBehaviour = ECheckBehaviour.Scroll;
+                    _cachedView.SendMessageUpwards("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+                }
+            }
+            else if (ECheckBehaviour.Scroll == _checkBehaviour)
+            {
+                _cachedView.SendMessageUpwards("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        private void OnEndDrag(BaseEventData eventData)
+        {
+//            Debug.Log("OnEndDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            if (ECheckBehaviour.Scroll == _checkBehaviour)
+            {
+                _cachedView.SendMessageUpwards("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        private void OnClick(BaseEventData eventData)
+        {
+//            Debug.Log("OnClick");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData || pointerEventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
+            OnItem();
+        }
+
+
+        private void OnItem()
+        {
+            if (_selected)
+            {
+                if (EditMode.Instance.IsInState(EditModeState.Add.Instance)
+                    || EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+                {
+                    UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
+                    EditHelper.TryEditUnitData(unitDesc);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
+                }
+            }
+            else
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
+            }
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)
         {
-            _id = (ushort) tableUnit.Id;
+            _table = tableUnit;
             _selected = selected;
             if (!_isViewCreated)
             {
                 return;
             }
             _cachedView.SpriteIcon.sprite = null;
-//            DictionaryTools.SetContentText(_cachedView.Name, tableUnit.Name);
-            //DictionaryTools.SetContentText(_cachedView.Summary, tableUnit.Summary);
-            //DictionaryTools.SetContentText(_cachedView.Count, "1 / 1");
             _cachedView.SpriteIcon.SetActiveEx(true);
-//            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
+            if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
             {
                 _cachedView.SpriteIcon.sprite = texture;
             }
@@ -86,28 +183,106 @@ namespace GameA
                 LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
                     tableUnit.Icon, tableUnit.EGeneratedType);
             }
-            if (_selected) {
+            if (_selected)
+            {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
-            } else {
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
-            }
-		}
-
-        private void OnSelectedItemChanged (ushort id)
-        {
-            if (id == _id) {
-                _selected = true;
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
                 _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
-            } else {
-                _selected = false;
+            }
+            else
+            {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
                 _cachedView.ShadowTrans.localScale = Vector3.one;
             }
+            RefreshUnitProperty();
+
+            int currentCnt = EditHelper.GetUnitCnt(_table.Id);
+            int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_table.Id);
+            int number = limit - currentCnt;
+            if (number < 0) number = 0;
+            if (number > 999)
+            {
+                //_cachedView.Number.gameObject.SetActive(false);
+                //_cachedView.Unlimited.SetActive(true);
+                //                    _cachedView.Number.gameObject.SetActive(false);
+                //                    _cachedView.Unlimited.SetActive(true);
+                _cachedView.Number.text = "999+";
+            }
+            else
+            {
+                //                    _cachedView.Unlimited.SetActive(false);
+                _cachedView.Number.text = number.ToString();
+            }
+            _cachedView.Number.gameObject.SetActive(true);
+        }
+
+
+        private void OnSelectedItemChanged(ushort id)
+        {
+            if (id == _table.Id)
+            {
+                Set(_table, true);
+            }
+            else
+            {
+                if (_selected)
+                {
+                    Set(_table, false);
+                }
+            }
+        }
+
+        private void OnEditUnitDefaultDataChange(int id)
+        {
+            if (id == _table.Id)
+            {
+                RefreshUnitProperty();
+            }
+        }
+
+        private void RefreshUnitProperty()
+        {
+            if (!_selected || !EditHelper.CheckCanEdit(_table.Id))
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlItem>()
+                    .ReturnUmCtrlUnitProperty(_cachedView.Trans, _umCtrlUnitProperty);
+                return;
+            }
+            _umCtrlUnitProperty = SocialGUIManager.Instance.GetUI<UICtrlItem>().GetUmCtrlUnitProperty();
+            _umCtrlUnitProperty.UITran.SetParent(_cachedView.Trans, false);
+            _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
+            _umCtrlUnitProperty.UITran.localScale = Vector3.one * 0.47f;
+            var unitDefaultData = EditHelper.GetUnitDefaultData(_table.Id);
+            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, ref unitDefaultData.UnitExtra);
+        }
+
+        private void OnUnitAddedInEditMode(int id)
+        {
+            if (id == _table.Id)
+            {
+                int currentCnt = EditHelper.GetUnitCnt(_table.Id);
+                int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_table.Id);
+                int number = limit - currentCnt;
+                if (number < 0) number = 0;
+                if (number > 999)
+                {
+//                    _cachedView.Number.gameObject.SetActive(false);
+//                    _cachedView.Unlimited.SetActive(true);
+                    _cachedView.Number.text = "999+";
+                }
+                else
+                {
+//                    _cachedView.Unlimited.SetActive(false);
+                    _cachedView.Number.text = number.ToString();
+                }
+                _cachedView.Number.gameObject.SetActive(true);
+            }
+        }
+
+        private enum ECheckBehaviour
+        {
+            None,
+            Scroll,
+            Drag
         }
     }
 }

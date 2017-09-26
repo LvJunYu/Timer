@@ -6,56 +6,36 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using SoyEngine;
 
 namespace GameA
 {
     [Poolable(MinPoolSize = ConstDefine.MaxLRUProjectCount / 10, PreferedPoolSize = ConstDefine.MaxLRUProjectCount / 5,
         MaxPoolSize = ConstDefine.MaxLRUProjectCount)]
-	public partial class Project : SyncronisticData {
+	public partial class Project
+    {
         #region 变量
         private long _guid;
         private int _downloadPrice;
 
-        private bool _extendReady = false;
+        private bool _extendReady;
         private byte[] _deadPos;
         private long _commitToken;
 
+        private WorldProjectRecentPlayedUserList _recentPlayedUserList;
+
         private GameTimer _projectInfoRequestTimer;
 
-        /// <summary>
-        /// 下载资源成功回调
-        /// </summary>
-        private Action _downloadResSucceedCB;
-        /// <summary>
-        /// 下载资源失败回调
-        /// </summary>
-        private Action _downloadResFailedCB;
-        /// <summary>
-        /// 是否正在下载资源
-        /// </summary>
-        private bool _isdownloadingRes;
-
-        /// <summary>
-        /// 冒险模式的第几章，如果不是冒险模式关卡，则为0
-        /// </summary>
-        private int _sectionId;
-        /// <summary>
-        /// 冒险模式的第几关，如果不是冒险模式关卡，则为0
-        /// </summary>
-        private int _levelId;
+        private AdventureLevelRankList _adventureLevelRankList;
         #endregion 变量
 
         #region 属性
 
-
-        public int DownloadPrice
+        public AdventureLevelRankList AdventureLevelRankList
         {
-            get { return _downloadPrice; }
-            set { _downloadPrice = value; }
+            get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
         }
 
         public int LikeCount
@@ -147,15 +127,9 @@ namespace GameA
 
         public byte[] DeadPos
         {
-            get
-            {
-                return _deadPos;
-            }
+            get { return _deadPos; }
 
-            set
-            {
-                _deadPos = value;
-            }
+            set { _deadPos = value; }
         }
 
         public bool ExtendReady
@@ -212,23 +186,25 @@ namespace GameA
             }
         }
 
-        public int SectionId {
-            get {
-                return _sectionId;
-            }
-            set {
-                _sectionId = value;
+        public int SectionId { get; set; }
+
+        public int LevelId { get; set; }
+
+        public EAdventureProjectType AdventureProjectType { get; set; }
+
+        public WorldProjectRecentPlayedUserList RecentPlayedUserList
+        {
+            get
+            {
+                if (_recentPlayedUserList == null)
+                {
+                    _recentPlayedUserList = new WorldProjectRecentPlayedUserList();
+                    _recentPlayedUserList.CS_ProjectId = _projectId;
+                }
+                return _recentPlayedUserList;
             }
         }
 
-        public int LevelId {
-            get {
-                return _levelId;
-            }
-            set {
-                _levelId = value;
-            }
-        }
         #endregion 属性
 
         #region 方法
@@ -290,9 +266,14 @@ namespace GameA
             string summary,
             byte[] dataBytes,
             byte[] iconBytes,
-            int downloadPrice,
             bool passFlag,
-            float recordUsedTime, 
+            bool success,
+            int usedTime,
+            int score,
+            int scoreItemCount,
+            int killMonsterCount,
+            int leftTime,
+            int leftLife,
             byte[] recordBytes,
             int timeLimit,
             int winCondition,
@@ -306,20 +287,42 @@ namespace GameA
             }
             if (string.IsNullOrEmpty(name))
             {
-                name = string.Format("我的匠游大作");
+                name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
             }
             Name = name;
             Summary = summary;
             WinCondition = winCondition;
 
             WWWForm form = new WWWForm();
-            form.AddBinaryData("levelFile", dataBytes);
-            form.AddBinaryData("iconFile", iconBytes);
+            if (dataBytes != null)
+            {
+                form.AddBinaryData("levelFile", dataBytes);
+            }
+            if (iconBytes != null)
+            {
+                form.AddBinaryData("iconFile", iconBytes);
+            }
             if (recordBytes != null)
             {
                 form.AddBinaryData("recordFile", recordBytes);
             }
             String oldIconPath = _iconPath;
+            // 如果是在工坊界面修改关卡的信息，就不用更新附加参数
+            if (null != dataBytes)
+            {
+                RefreshProjectUploadParam();
+            }
+            Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+            {
+                Success = success,
+                UsedTime = usedTime,
+                Score = score,
+                ScoreItemCount = scoreItemCount,
+                KillMonsterCount = killMonsterCount,
+                LeftTime = leftTime,
+                LeftLife = leftLife,
+                DeadPos = null
+            };
             if (LocalDataState == ELocalDataState.LDS_UnCreated) {
                 RemoteCommands.CreateProject (
                     Name,
@@ -327,22 +330,25 @@ namespace GameA
                     ProgramVersion,
                     ResourcesVersion,
                     passFlag,
-                    recordUsedTime,
+                    recordUploadParam,
                     timeLimit,
                     winCondition,
+                    GetMsgProjectUploadParam(),
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+                            OnSyncFromParent(msg.ProjectData);
                             ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-                            LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
+                            Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectCreated, this);
                             if (successCallback != null)
                             {
                                 successCallback.Invoke();
                             }
                         } else {
+                            LogHelper.Error("level create error, code: {0}", msg.ResultCode);
                             if (failedCallback != null)
                             {
-                                failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                                failedCallback.Invoke((EProjectOperateResult) msg.ResultCode);
                             }
                         }
                     },
@@ -363,19 +369,32 @@ namespace GameA
                     ProgramVersion,
                     ResourcesVersion,
                     passFlag,
-                    recordUsedTime,
+                    recordUploadParam,
                     timeLimit,
                     winCondition,
+                    // 如果是在工坊界面修改关卡的信息，就不必传附加参数
+                    null == dataBytes ? null : GetMsgProjectUploadParam(),
                     msg => {
-                        OnSyncFromParent(msg.ProjectData);
-                        if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
-                            ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
-                            ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
-                        }
-                        LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
-                        if (successCallback != null)
+                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success)
                         {
-                            successCallback.Invoke();
+                            OnSyncFromParent(msg.ProjectData);
+                            if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
+                                ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
+                                ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
+                            }
+                            Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }
+                        else
+                        {
+                            LogHelper.Error("level upload error, code: {0}", msg.ResultCode);
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke((EProjectOperateResult) msg.ResultCode);
+                            }
                         }
                     },
                     code => {
@@ -412,9 +431,10 @@ namespace GameA
                 _summary,
                 _programVersion,
                 _resourcesVersion,
-                _recordUsedTime,
+                null,
                 _timeLimit,
                 _winCondition,
+                null,
                 ret =>
                 {
                     if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
@@ -491,32 +511,21 @@ namespace GameA
                 }
                 return;
             }
-            _downloadResSucceedCB -= successCallback;
-            _downloadResSucceedCB += successCallback;
-            _downloadResFailedCB -= failedCallback;
-            _downloadResFailedCB += failedCallback;
-            if (_isdownloadingRes) {
-                return;
-            }
-            _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
             //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
                 {
-                    _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
                     //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
-                    if (_downloadResSucceedCB != null)
+                    if (successCallback != null)
                     {
-                        _downloadResSucceedCB.Invoke();
+                        successCallback.Invoke();
                     }
                 }, sFile =>
                 {
-                    _isdownloadingRes = false;
-                    //Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
-                    if (_downloadResFailedCB != null)
+                    if (failedCallback != null)
                     {
-                        _downloadResFailedCB.Invoke();
+                        failedCallback.Invoke();
                     }
                 });
         }
@@ -609,7 +618,11 @@ namespace GameA
                     return;
                 }
                 if (_projectUserData != null) {
-                    _projectUserData.Favorite = true;
+                    _projectUserData.Favorite = favorite;
+                }
+                if (_extendData != null)
+                {
+                    _extendData.FavoriteCount += favorite ? 1 : -1;
                 }
                 if (successCallback != null)
                 {
@@ -642,7 +655,7 @@ namespace GameA
 
         public void CommitPlayResult(
             bool success,
-            float usedTime,
+            int usedTime,
             int score,
             int scoreItemCount,
             int killMonsterCount,
@@ -662,17 +675,24 @@ namespace GameA
                     return;
                 }
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddBinaryData("recordFile", recordBytes);
+                if (recordBytes != null)
+                {
+                    wwwForm.AddBinaryData("recordFile", recordBytes);
+                }
+                Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+                {
+                    Success = success,
+                    UsedTime = usedTime,
+                    Score = score,
+                    ScoreItemCount = scoreItemCount,
+                    KillMonsterCount = killMonsterCount,
+                    LeftTime = leftTime,
+                    LeftLife = leftLife,
+                    DeadPos = deadPos
+                };
                 RemoteCommands.CommitWorldProjectResult(
                     _commitToken,
-                    success,
-                    deadPos,
-                    usedTime,
-                    score,
-                    scoreItemCount,
-                    killMonsterCount,
-                    leftTime,
-                    leftLife,
+                    recordUploadParam,
                     ret => {
                     if (ret.ResultCode == (int)ECommitWorldProjectResultCode.CWPRC_Success)
                     {
@@ -700,43 +720,35 @@ namespace GameA
 
         public void DownloadProject(Action successCallback, Action<EProjectOperateResult> failedCallback)
         {
-//            Msg_CA_RequestDownloadProject msg = new Msg_CA_RequestDownloadProject();
-//            msg.ProjectId = _guid;
-//            User user = LocalUser.Instance.User;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_OperateProjectRet>(SoyHttpApiPath.DownloadProject, msg, (ret) =>
-//            {
-//                if (ret.Result == (int)EProjectOperateResult.POR_Success)
-//                {
-//                    _downloadCount = _downloadCount + 1;
-//                    Project p = new Project();
-//                    p._projectStatus = EProjectStatus.PS_Private;
-//                    user.OnProjectCreated(ret.ProjectData, p);
-//                    user.GetSavedPrjectRequestTimer().Zero();
-//                    if (_user.UserGuid != user.UserGuid)
-//                    {
-//                        user.OnGoldCoinChange(-_downloadPrice);
-//                    }
-//                    user.UserInfoRequestGameTimer.Zero();
-//                    if (successCallback != null)
-//                    {
-//                        successCallback.Invoke();
-//                    }
-//                }
-//                else
-//                {
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke((EProjectOperateResult)ret.Result);
-//                    }
-//                }
-//            }, (errCode, errMsg) =>
-//            {
-//                SoyHttpClient.ShowErrorTip(errCode);
-//                if (failedCallback != null)
-//                {
-//                    failedCallback.Invoke(EProjectOperateResult.POR_None);
-//                }
-//            });
+            RemoteCommands.DownloadProject(_projectId, (ret) =>
+            {
+                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+                {
+                    _extendData.DownloadCount ++;
+                    Project p = new Project();
+                    p._projectStatus = EProjectStatus.PS_Private;
+                    p.OnSync(ret.ProjectData);
+                    LocalUser.Instance.PersonalProjectList.LocalAdd(p);
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
+                    }
+                }
+            }, errCode =>
+            {
+                SoyHttpClient.ShowErrorTip(errCode);
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(EProjectOperateResult.POR_None);
+                }
+            });
         }
 
         public static Project CreateWorkShopProject()
@@ -751,7 +763,6 @@ namespace GameA
             p.IconPath = "" + LocalCacheManager.Instance.GetLocalGuid() + ".jpg";
             p.ProjectStatus = EProjectStatus.PS_Private;
             p.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-            p.DownloadPrice = 0;
             p._passFlag = false;
             return p;
         }

@@ -4,16 +4,15 @@
   ** Date : 9/26/2016 9:24 AM
   ** Summary : SocialContentRefreshHelper.cs
   ***********************************************************************/
-using System;
-using UnityEngine;
+
 using SoyEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameA
 {
     public class SocialContentRefreshHelper//todo
     {
-        private UIRefreshController _refreshController;
         private GameObject _content;
         private GameObject _emptyTip;
         private GameObject _errorTip;
@@ -31,9 +30,8 @@ namespace GameA
         }
 
 
-        public SocialContentRefreshHelper(UIRefreshController rc, GameObject content, GameObject emptyTip, GameObject errorTip)
+        public SocialContentRefreshHelper(GameObject content, GameObject emptyTip, GameObject errorTip)
         {
-            _refreshController = rc;
             _content = content;
             _emptyTip = emptyTip;
             _errorTip = errorTip;

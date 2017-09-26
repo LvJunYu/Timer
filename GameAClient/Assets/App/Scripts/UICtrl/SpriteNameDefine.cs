@@ -4,75 +4,79 @@
 //  ** Date : 2016/4/13 13:46
 //  ** Summary : SpriteNameDefine.cs
 //  ***********************************************************************/
+
 using System;
+using GameA.Game;
 using SoyEngine.Proto;
-using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
     public class SpriteNameDefine
     {
+        public const string UnitEditRotateEndBgForward = "icon_edit_rotate_begin";
+        public const string UnitEditRotateEndBgNormal = "icon_edit_rotate_point";
+        public const string UnitEditMoveDirectionNone = "icon_edit_nothing";
+        public const string UnitEditMoveDirectionUp = "icon_edit_orientation_move";
+        
         public const string DefaultImageName = "CommonWhite";
         public const string MaleIcon = "Male_0";
         public const string FemaleIcon = "Female_0";
+
         public static string GetSexIcon(ESex sex)
         {
-            if(sex == ESex.S_Female)
+            if (sex == ESex.S_Female)
             {
                 return FemaleIcon;
             }
-            else if( sex == ESex.S_Male)
+            if (sex == ESex.S_Male)
             {
                 return MaleIcon;
             }
             return null;
         }
 
-        public const string PlayerExpIcon20 = "ExpMXJ_20";
-        public const string CreatorExpIcon20 = "ExpJR_20";
-        public const string CurrencyIcon20 = "Gold_20";
-//        public static string GetRewardIcon20(ERewardType reward)
-//        {
-//            if(reward == ERewardType.RT_CreatorExp)
-//            {
-//                return CreatorExpIcon20;
-//            }
-//            else if (reward == ERewardType.RT_PlayerExp)
-//            {
-//                return PlayerExpIcon20;
-//            }
-//            else if(reward == ERewardType.RT_Currency)
-//            {
-//                return CurrencyIcon20;
-//            }
-//            else
-//            {
-//                return DefaultImageName;
-//            }
-//        }
+        private static readonly string[] RankSpriteName = {"icon_crown_1", "icon_crown_2", "icon_crown_3"};
+        public static string GetRank(int rank)
+        {
+            if (rank > 0 && rank <= RankSpriteName.Length)
+            {
+                return RankSpriteName[rank - 1];
+            }
+            return null;
+        }
 
-        public const string PlayerExpIcon36 = "ExpMXJ_36";
-        public const string CreatorExpIcon36 = "ExpJR_36";
-        public const string CurrencyIcon36 = "Gold_36";
-//        public static string GetRewardIcon36(ERewardType reward)
-//        {
-//            if(reward == ERewardType.RT_CreatorExp)
-//            {
-//                return CreatorExpIcon36;
-//            }
-//            else if (reward == ERewardType.RT_PlayerExp)
-//            {
-//                return PlayerExpIcon36;
-//            }
-//            else if(reward == ERewardType.RT_Currency)
-//            {
-//                return CurrencyIcon36;
-//            }
-//            else
-//            {
-//                return DefaultImageName;
-//            }
-//        }
+        private static readonly string[] HeadImageSpriteName =
+            {"head_aries", "head_taurus", "head_gemini", "head_cancer",
+            "head_leo", "head_virgo", "head_libra", "head_scorpio",
+            "head_sagittarius", "head_capricornus", "head_aquarius", "head_pisces"};
+        public static string GetHeadImage(int head)
+        {
+            return HeadImageSpriteName[Mathf.Clamp(head, 0, HeadImageSpriteName.Length - 1)];
+        }
+
+        private static readonly string[] UnitEditRotateModeSpriteName =
+            {"icon_edit_not-rotate", "icon_edit_clockwise", "icon_edit_anti-clockwise"};
+        public static string GetUnitEditRotateModeImage(ERotateMode rotateMode)
+        {
+            return UnitEditRotateModeSpriteName[(int) rotateMode];
+        }
+        
+        public static string GetUnitEditActiveStateImage(EActiveState activeState)
+        {
+            string name = string.Empty;
+            switch (activeState)
+            {
+                case EActiveState.None:
+                    break;
+                case EActiveState.Active:
+                    name = "icon_edit_on";
+                    break;
+                case EActiveState.Deactive:
+                    name = "icon_edit_off";
+                    break;
+            }
+            return name;
+        }
     }
 }
-

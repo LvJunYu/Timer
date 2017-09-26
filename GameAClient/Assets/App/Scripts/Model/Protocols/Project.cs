@@ -76,7 +76,7 @@ namespace GameA
         /// <summary>
         /// 过关录像使用时间
         /// </summary>
-        private float _recordUsedTime;
+        private int _recordUsedTime;
         /// <summary>
         /// 改造原始section
         /// </summary>
@@ -298,7 +298,7 @@ namespace GameA
         /// <summary>
         /// 过关录像使用时间
         /// </summary>
-        public float RecordUsedTime { 
+        public int RecordUsedTime { 
             get { return _recordUsedTime; }
             set { if (_recordUsedTime != value) {
                 _recordUsedTime = value;
@@ -547,6 +547,7 @@ namespace GameA
             _userInfo = new UserInfoSimple();
             _extendData = new ProjectExtend();
             _projectUserData = new ProjectUserData();
+            OnCreate();
         }
         #endregion
     }

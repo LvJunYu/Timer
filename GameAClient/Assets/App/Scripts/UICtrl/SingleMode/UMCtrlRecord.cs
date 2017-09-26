@@ -43,13 +43,6 @@ namespace GameA
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
         }
 
-        protected override void OnDestroy()
-        {
-            //_cachedView.PlayBtn.onClick.RemoveAllListeners();
-            base.OnDestroy();
-        }
-
-
         private void OnPlayBtn()
         {
             if (_record == null)
@@ -67,7 +60,7 @@ namespace GameA
                 param.Level = uictrlAdvLvlDetail.LevelIdx;
                 param.Record = _record;
                 GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
-                SocialGUIManager.Instance.ChangeToGameMode ();
+                SocialApp.Instance.ChangeToGame();
             }, (error) => {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 SocialGUIManager.ShowPopupDialog("进入录像失败");
@@ -76,7 +69,6 @@ namespace GameA
 
         public void Set(object obj,string name)
         {
-            Debug.Log("_________set___"+ name);
             _record = obj as Record;
             _cachedView.TapName.text = name;
             _cachedView.SubmitTime.text = GetSubmitTime();

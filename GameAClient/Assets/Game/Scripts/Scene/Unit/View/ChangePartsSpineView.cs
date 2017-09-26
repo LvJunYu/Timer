@@ -10,6 +10,7 @@ using UnityEngine;
 using SoyEngine;
 using Spine;
 using Spine.Unity;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -31,13 +32,17 @@ namespace GameA.Game
 		protected override bool OnInit()
 		{
 			var tableUnit = _unit.TableUnit;
-			SkeletonDataAsset data;
-			if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
+            string skeletonDataAssetName = string.Format ("{0}_SkeletonData", tableUnit.Model);
+            SkeletonDataAsset data = JoyResManager.Instance.GetAsset<SkeletonDataAsset>(
+                EResType.SpineData,
+                skeletonDataAssetName,
+                0
+            );
+            if (null == data)
 			{
 				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
 				return false;
 			}
-
 
 			_skeletonAnimation.skeletonDataAsset = data;
 			LinkBaseSkinTextures ();
@@ -77,22 +82,23 @@ namespace GameA.Game
 		}
 
 		protected void LinkBaseSkinTextures () {
-			var baseHead = TableManager.Instance.GetHeadParts (1);
-			if (baseHead != null && !string.IsNullOrEmpty(baseHead.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseHead.SmallTexture);
-			}
-			var baseUpper = TableManager.Instance.GetUpperBodyParts (1);
-			if (baseUpper != null && !string.IsNullOrEmpty(baseUpper.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseUpper.SmallTexture);
-			}
-			var baseLower = TableManager.Instance.GetLowerBodyParts (1);
-			if (baseLower != null && !string.IsNullOrEmpty(baseLower.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseLower.SmallTexture);
-			}
-			var baseAppendage = TableManager.Instance.GetAppendageParts (1);
-			if (baseAppendage != null && !string.IsNullOrEmpty(baseAppendage.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseAppendage.SmallTexture);
-			}
+            // todo update api spine
+//			var baseHead = TableManager.Instance.GetHeadParts (1);
+//			if (baseHead != null && !string.IsNullOrEmpty(baseHead.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseHead.SmallTexture);
+//			}
+//			var baseUpper = TableManager.Instance.GetUpperBodyParts (1);
+//			if (baseUpper != null && !string.IsNullOrEmpty(baseUpper.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseUpper.SmallTexture);
+//			}
+//			var baseLower = TableManager.Instance.GetLowerBodyParts (1);
+//			if (baseLower != null && !string.IsNullOrEmpty(baseLower.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseLower.SmallTexture);
+//			}
+//			var baseAppendage = TableManager.Instance.GetAppendageParts (1);
+//			if (baseAppendage != null && !string.IsNullOrEmpty(baseAppendage.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseAppendage.SmallTexture);
+//			}
 		}
 
 		public bool HomePlayerAvatarViewInit(SkeletonAnimation animationComp) {
@@ -101,16 +107,16 @@ namespace GameA.Game
 			_skeletonAnimation.enabled = true;
 
 			_avatarId = 0;
-			_skeletonName = "MainBoy0";
+			_skeletonName = "SMainBoy0";
 			_skeleton = _skeletonAnimation.skeleton;
 			if (_skeleton == null) {
-				LogHelper.Error("Try get skeleton failed when init {0}", _unit.TableUnit.Name);
+				LogHelper.Error("Try get skeleton failed when init home avatar");
 				return false;
 			}
 			string baseSkinName = string.Format("Skin_{0}_0", _skeletonName);
 			_baseSkin = _skeleton.data.FindSkin(baseSkinName);
 			if (_baseSkin == null) {
-				LogHelper.Error("Try get default skin failed when init {0}", _unit.TableUnit.Name);
+				LogHelper.Error("Try get default skin failed when init home avatar");
 				return false;
 			}
 			_dynamicSkin = _skeleton.data.FindSkin("DynamicSkin");
@@ -129,9 +135,7 @@ namespace GameA.Game
 		}
 
 		private void InitSlotName2IndexDic () {
-//			Debug.Log("Begin+++++++++++++++++++++++++++++++++++++++++++++");
 			_slotName2Index.Clear();
-
 			ExposedList<Slot> slots = _skeleton.slots;
 			for (int i = 0, n = slots.Count; i < n; i++) {
 				Slot slot = slots.Items[i];
@@ -145,7 +149,6 @@ namespace GameA.Game
 					_slotName2Index[id] = i;
 				}
 			}
-//			Debug.Log("End+++++++++++++++++++++++++++++++++++++++++++++");
 		}
 
 		public bool SetParts (int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false) {
@@ -155,46 +158,44 @@ namespace GameA.Game
             //    return false;
             //}
 
-
-
 			if (_partsIds[(int)partsType] == partsId) return false;
-			string textureName = "";
+//			string textureName = "";
 			int[] slotsNameIdxList = null;
 			int skinId = 0;
 			if (partsType == SpinePartsHelper.ESpineParts.Head) {
-				var partData = TableManager.Instance.GetHeadParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).HeadSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Upper) {
-				var partData = TableManager.Instance.GetUpperBodyParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).UpperSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Lower) {
-				var partData = TableManager.Instance.GetLowerBodyParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).LowerSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Appendage) {
-				var partData = TableManager.Instance.GetAppendageParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).AppendageSlots;
 			} else {
@@ -237,10 +238,10 @@ namespace GameA.Game
                     continue;
                 } else
                 {
-                    
-                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
-                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
-                    }
+                        // todo update api spine
+//                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
+//                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
+//                    }
                     
                     _dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
                     

@@ -76,9 +76,14 @@ namespace GameA.Game
 
         private TrackEntry SetAnimation(string aniName, int trackIndex = 0, float timeScale = 1, bool loop = false)
         {
+            Animation ani;
+            if (!_animations.TryGetValue(aniName, out ani))
+            {
+                LogHelper.Error("animation is not exist. {0}", aniName);
+                return null;
+            }
             if (!IsPlaying(aniName, trackIndex))
             {
-//				UnityEngine.Debug.Log ("____________________ SetAnimiation " + aniName + " trackId: " + trackIndex + " ts: " + timeScale + " loop: " + loop);
                 _currentAnimation[trackIndex] = aniName;
             }
             else if (_skeletonAnimation == null)
@@ -87,12 +92,6 @@ namespace GameA.Game
             } 
             else if (Util.IsFloatEqual(timeScale, _skeletonAnimation.state.TimeScale))
             {
-                return null;
-            }
-            Animation ani;
-            if (!_animations.TryGetValue(aniName, out ani))
-            {
-                LogHelper.Error("animation is not exist. {0}", aniName);
                 return null;
             }
             _skeletonAnimation.state.TimeScale = timeScale;
@@ -115,12 +114,14 @@ namespace GameA.Game
 		/// <param name="state">State.</param>
 		/// <param name="trackIndx">Track indx.</param>
 		/// <param name="e">E.</param>
-		void OnEvent (AnimationState state, int trackIndx, Event e) {
+		void OnEvent(AnimationState state, int trackIndx, Event e)
+		{
 //			UnityEngine.Debug.Log ("____________________________onSpineEvent " + e.Data.name);
-			Action handle = null;
-			if (_eventHandles.TryGetValue (e.Data.name, out handle)) {
-				handle.Invoke ();
-			}
+		    Action handle = null;
+		    if (_eventHandles.TryGetValue(e.Data.name, out handle))
+		    {
+		        handle.Invoke();
+		    }
 		}
 
         public TrackEntry PlayOnce(string aniName, float timeScale = 1, int trackIndex = 0)
@@ -203,6 +204,11 @@ namespace GameA.Game
 		    _eventHandles[eventName] = handle;
 		    return true;
 		}
+
+        public bool HasAnimation(string name)
+        {
+            return _animations.ContainsKey(name);
+        }
     }
 }
 

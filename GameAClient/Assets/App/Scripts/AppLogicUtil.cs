@@ -33,7 +33,7 @@ namespace GameA
             {
                 return true;
             }
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             return false;
         }
 
@@ -45,24 +45,7 @@ namespace GameA
                 MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
                 return;
             }
-            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-            if(Application.internetReachability != NetworkReachability.NotReachable
-                && !Util.IsFloatEqual(needDownloadSize, 0))
-            {
-                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-                        InternalEditPersonalProject(project);
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                        LogHelper.Debug("Cancel BeginEdit");
-                    })
-                );
-            }
-            else
-            {
-                InternalEditPersonalProject(project);
-            }
+            InternalEditPersonalProject(project);
         }
 
         private static void InternalEditPersonalProject(Project project)
@@ -72,7 +55,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);
                 GameManager.Instance.RequestEdit(project);
 //                MatrixProjectTools.SetProjectVersion(project);
-                SocialGUIManager.Instance.ChangeToGameMode();
+                SocialApp.Instance.ChangeToGame();
             }, ()=>{
                 LogHelper.Error("EditPersonalProject, Project GetRes Error");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);

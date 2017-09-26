@@ -253,6 +253,7 @@ namespace GameA
         }
 
         public ProjectExtend () { 
+            OnCreate();
         }
         #endregion
     }

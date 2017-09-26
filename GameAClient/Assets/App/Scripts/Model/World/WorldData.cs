@@ -5,29 +5,33 @@
 ** Summary : World.cs
 ***********************************************************************/
 
-using System;
-
 namespace GameA
 {
     public class WorldData
     {
-        private WorldNewestProjectList _newestProjectList = new WorldNewestProjectList();
-        private UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
-        private UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
+        private readonly WorldNewestProjectList _newestProjectList = new WorldNewestProjectList();
+        private readonly WorldRecommendProjectList _recommendProjectList = new WorldRecommendProjectList();
+        private readonly UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
+        private readonly UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
 
         public WorldNewestProjectList NewestProjectList
         {
-            get { return this._newestProjectList; }
+            get { return _newestProjectList; }
+        }
+
+        public WorldRecommendProjectList RecommendProjectList
+        {
+            get { return _recommendProjectList; }
         }
 
         public UserFavoriteWorldProjectList UserFavoriteProjectList
         {
-            get { return this._userFavoriteProjectList; }
+            get { return _userFavoriteProjectList; }
         }
 
         public UserWorldProjectPlayHistoryList UserPlayHistoryList
         {
-            get { return this._userPlayHistoryList; }
+            get { return _userPlayHistoryList; }
         }
     }
 }

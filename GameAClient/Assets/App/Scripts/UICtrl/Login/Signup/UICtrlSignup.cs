@@ -5,20 +5,16 @@
 ** Summary : UICtrlSignup
 ***********************************************************************/
 
-using System;
 using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
-using cn.sharesdk.unity3d;
-using SoyEngine.Proto;
-using System.Text;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSignup : UISocialContentCtrlBase<UIViewSignup>, IUIWithTitle
+    [UIAutoSetup]
+    public class UICtrlSignup : UICtrlGenericBase<UIViewSignup>
     {
         #region 常量与字段
         #endregion
@@ -28,6 +24,10 @@ namespace GameA
         #endregion
 
         #region 方法
+        protected override void InitGroupId()
+        {
+            _groupId = (int)EUIGroupType.FrontUI;
+        }
 
         protected override void OnViewCreated()
         {
@@ -39,6 +39,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             //可能是Text的bug
+            //Debug.Log("______cachedView.Phone.characterLimit__________" + _cachedView.Phone.characterLimit);
             int charLimit = _cachedView.Phone.characterLimit;
             _cachedView.Phone.characterLimit = charLimit + 1;
             _cachedView.Phone.text = LoginLogicUtil.PhoneNum;
@@ -46,8 +47,8 @@ namespace GameA
 
             _cachedView.Pwd.text = "";
             _cachedView.SmsCode.text = "";
-            LoginLogicUtil.OnSuccess = OnLoginSuccess;
-            LoginLogicUtil.OnFailed = OnLoginFailed;
+//            LoginLogicUtil.OnSuccess = OnLoginSuccess;
+//            LoginLogicUtil.OnFailed = OnLoginFailed;
 //            LoginLogicUtil.OnSnsInfoLogin = LoginLogicUtil.RequestLogin;
             LoginLogicUtil.OnSnsInfoCancel = OnSnsInfoCancel;
             base.OnOpen(parameter);
@@ -67,6 +68,9 @@ namespace GameA
             _cachedView.GetSMSCode.enabled = true;
         }
 
+        /// <summary>
+        /// 注册功能待完成
+        /// </summary>
         private void OnSignup()
         {
             var phone = _cachedView.Phone.text;
@@ -78,12 +82,12 @@ namespace GameA
             {
                 return;
             }
-            bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
+            bool verificationCheckResult = CheckTools.CheckVerificationCode (verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
-            if(!verificationCheckResult)
-            {
-                return;
-            }
+            //if(!verificationCheckResult)
+            //{
+            //    return;
+            //}
             CheckTools.ECheckPasswordResult pwdCheckResult = CheckTools.CheckPassword(pwd);
             LoginLogicUtil.ShowPasswordCheckTip(pwdCheckResult);
             if (pwdCheckResult != CheckTools.ECheckPasswordResult.Success)
@@ -91,60 +95,90 @@ namespace GameA
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力注册中");
+            LocalUser.Instance.Account.SignUp(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
+                ret=> {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.GetUI<UICtrlSignup>().Close();
+                    SocialApp.Instance.LoginSucceed();
+                },
+                (ret) =>
+                {
+                    LoginLogicUtil.ShowRegisterError(ret);
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Error("登录失败, Code: " + ret);
+                });
 //            LoginLogicUtil.RequestSmsLogin(phone, verificationCode, pwd, EVerifyCodeType.VCT_Register);
             LoginLogicUtil.PhoneNum = _cachedView.Phone.text;
         }
 
         #endregion
 
-        #region  private 
-
+        #region  
+        /// <summary>
+        /// 验证码功能待完成
+        /// </summary>
         private void OnSmsCode()
         {
-//            string phoneNum = _cachedView.Phone.text;
-//            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
-//            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
-//            if (!phoneCheckResult)
-//            {
-//                return;
-//            }
-//            Msg_CA_RequestSMSCode req = new Msg_CA_RequestSMSCode();
-//            req.PhoneNum = phoneNum;
-//            req.VerifyCodeType = EVerifyCodeType.VCT_Register;
-//
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_CommonResult>(SoyHttpApiPath.GetSmsCode, req, ret => {
-//                ECommonResultCode c = (ECommonResultCode)ret.Code;
-//                LogHelper.Info("Send VerificationCode Success, Code: {0}, Msg: {1}", c, ret.Msg);
-//            }, (code, msg) => {
-//                ENetResultCode c = (ENetResultCode)code;
-//                LogHelper.Info("Send VerificationCode Error, Code: {0}, Msg: {1}", c, msg);
-//            });
-//            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
+            string phoneNum = _cachedView.Phone.text;
+            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
+            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
+            if (!phoneCheckResult)
+            {
+                return;
+            }
+            RemoteCommands.GetVerificationCode(phoneNum,EAccountIdentifyType.AIT_Phone,EVerifyCodeType.VCT_Register,
+                (ret) => { },null
+
+                );
+            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
+            //            string phoneNum = _cachedView.Phone.text;
+            //            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
+            //            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
+            //            if (!phoneCheckResult)
+            //            {
+            //                return;
+            //            }
+            //            Msg_CA_RequestSMSCode req = new Msg_CA_RequestSMSCode();
+            //            req.PhoneNum = phoneNum;
+            //            req.VerifyCodeType = EVerifyCodeType.VCT_Register;
+            //
+            //            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_CommonResult>(SoyHttpApiPath.GetSmsCode, req, ret => {
+            //                ECommonResultCode c = (ECommonResultCode)ret.Code;
+            //                LogHelper.Info("Send VerificationCode Success, Code: {0}, Msg: {1}", c, ret.Msg);
+            //            }, (code, msg) => {
+            //                ENetResultCode c = (ENetResultCode)code;
+            //                LogHelper.Info("Send VerificationCode Error, Code: {0}, Msg: {1}", c, msg);
+            //            });
+            //            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
         }
 
         private void InitUIEvent()
         {
             _cachedView.GetSMSCode.onClick.AddListener(OnGetSMSCodeButtonClick);
             _cachedView.DoSignup.onClick.AddListener(OnDoSignupButtonClick);
-            _cachedView.QQ.onClick.AddListener(OnQQ);
-            _cachedView.Weibo.onClick.AddListener(OnWeibo);
-            _cachedView.WeChat.onClick.AddListener(OnWeChat);
+            _cachedView.ReturnLogin.onClick.AddListener(ReturnLogin);
+            //_cachedView.QQ.onClick.AddListener(OnQQ);
+            //_cachedView.Weibo.onClick.AddListener(OnWeibo);
+            //_cachedView.WeChat.onClick.AddListener(OnWeChat);
         }
 
-        private void OnLoginSuccess()
+        private void ReturnLogin()
         {
-            if(_uiStack != null)
-            {
-                _uiStack.Close();
-            }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            CommonTools.ShowPopupDialog("注册成功");
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+            Close();
         }
-
-        private void OnLoginFailed()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-        }
+//
+//        private void OnLoginSuccess()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//            CommonTools.ShowPopupDialog("注册成功");
+//            Close();
+//        }
+//
+//        private void OnLoginFailed()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//        }
 
         #endregion
 
@@ -160,22 +194,22 @@ namespace GameA
             OnSignup();
         }
 
-        private void OnQQ()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnQQ();
-        }
-        private void OnWeibo()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnWeibo();
-        }
-
-        private void OnWeChat()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnWeChat();
-        }
+//        private void OnQQ()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnQQ();
+//        }
+//        private void OnWeibo()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnWeibo();
+//        }
+//
+//        private void OnWeChat()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnWeChat();
+//        }
 
         private void OnSnsInfoCancel()
         {

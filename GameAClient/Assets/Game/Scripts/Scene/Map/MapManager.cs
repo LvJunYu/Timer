@@ -12,8 +12,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-	public class MapManager : IDisposable
-	{
+    public class MapManager : IDisposable
+    {
         public static MapManager _instance;
 
         public static MapManager Instance
@@ -21,81 +21,63 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new MapManager()); }
         }
 
-		private bool _generateMapComplete;
-		private MapFile _mapFile;
+        private bool _generateMapComplete;
+        private MapFile _mapFile;
 
         /// <summary>
         /// 默认地图大小，可以在创建新地图时通过设置界面设置
         /// </summary>
         private IntVec2 _defaultMapSize = new IntVec2(60, 30);
 #if UNITY_EDITOR
-	    public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
+        public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
 #endif
 
-		public float MapProcess
-		{
-			get
-			{
-				if (_mapFile == null)
-				{
-					return 0;
-				}
-				return _mapFile.MapProcess;
-			}
-		}
+        public float MapProcess
+        {
+            get
+            {
+                if (_mapFile == null)
+                {
+                    return 0;
+                }
+                return _mapFile.MapProcess;
+            }
+        }
 
-	    public bool GenerateMapComplete
-		{
-			get { return _generateMapComplete; }
-		}
+        public bool GenerateMapComplete
+        {
+            get { return _generateMapComplete; }
+        }
 
         public void Dispose()
-	    {
+        {
             if (_mapFile != null)
             {
                 _mapFile.Stop();
                 UnityEngine.Object.Destroy(_mapFile.gameObject);
                 _mapFile = null;
             }
-            if (EditMode.Instance != null)
-            {
-                UnityEngine.Object.Destroy(EditMode.Instance.gameObject);
-            }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();
             PairUnitManager.Instance.Dispose();
-	        _instance = null;
-	    }
+            _instance = null;
+        }
 
-	    public bool Init(GameManager.EStartType eGameInitType, Project project)
-		{
-			LogHelper.Debug("{0} | {1}", ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize);
+        public bool Init(GameManager.EStartType eGameInitType, Project project)
+        {
             if (!MapConfig.Init())
             {
                 LogHelper.Error("MapConfig Init Failed");
                 return false;
             }
 
-			DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            if (MapConfig.UseAOI)
-		    {
-                ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-		    }
-		    else
-		    {
-                ColliderScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-		    }
+            DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+            ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+
             _mapFile = new GameObject("MapFile").AddComponent<MapFile>();
             switch (eGameInitType)
             {
-                case GameManager.EStartType.WorldPlay:
-                case GameManager.EStartType.WorldPlayRecord:
-                case GameManager.EStartType.AdventureNormalPlayRecord:
-                case GameManager.EStartType.AdventureNormalPlay:
-                case GameManager.EStartType.AdventureBonusPlay:
-                    InitPlay(project, eGameInitType);
-                    break;
                 case GameManager.EStartType.WorkshopEdit:
                     InitEdit(project, GameManager.EStartType.WorkshopEdit);
                     break;
@@ -105,17 +87,20 @@ namespace GameA.Game
                 case GameManager.EStartType.WorkshopCreate:
                     InitCreate();
                     break;
+                default:
+                    InitPlay(project, eGameInitType);
+                    break;
             }
-			return true;
-		}
+            return true;
+        }
 
         private void InitPlay(Project project, GameManager.EStartType startType)
-		{
-			var data = project.GetData();
-			if (data == null)
-			{
-				LogHelper.Error("InitPlay failed, GetData({0}) is null!!", project.ProjectId);
-				return;
+        {
+            var data = project.GetData();
+            if (data == null)
+            {
+                LogHelper.Error("InitPlay failed, GetData({0}) is null!!", project.ProjectId);
+                return;
             }
             data = MatrixProjectTools.DecompressLZMA(data);
             if (data == null)
@@ -123,15 +108,15 @@ namespace GameA.Game
                 LogHelper.Error("InitPlay failed, DecompressData({0}) is null!!", project.ProjectId);
                 return;
             }
-			var mapData = GameMapDataSerializer.Instance.Deserialize<GM2DMapData>(data);
-			if (mapData == null)
-			{
-				LogHelper.Error("InitPlay failed, ClientScene2D({0}) is null!!", project.ProjectId);
-				return;
-			}
+            var mapData = GameMapDataSerializer.Instance.Deserialize<GM2DMapData>(data);
+            if (mapData == null)
+            {
+                LogHelper.Error("InitPlay failed, ClientScene2D({0}) is null!!", project.ProjectId);
+                return;
+            }
             _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
-		}
+        }
 
         private void InitEdit(Project project, GameManager.EStartType startType)
         {
@@ -159,69 +144,60 @@ namespace GameA.Game
             //        LocalUser.Instance.UserGuid);
             //    return;
             //}
-            var go = new GameObject("EditMode");
-            go.AddComponent<EditMode>();
             _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
         }
 
         private void InitModifyEdit(Project project, GameManager.EStartType startType)
-		{
-			var data = project.GetData();
-			if (data == null)
-			{
-				LogHelper.Error("InitEdit failed, GetData({0}) is null!!", project.ProjectId);
-				return;
-			}
-			data = MatrixProjectTools.DecompressLZMA(data);
-			if (data == null)
-			{
-				LogHelper.Error("InitEdit failed, DecompressData({0}) is null!!", project.ProjectId);
-				return;
-			}
-			var mapData = GameMapDataSerializer.Instance.Deserialize<GM2DMapData>(data);
-			if (mapData == null)
-			{
-				LogHelper.Error("InitEdit failed, Deserialize({0}) is null!!", project.ProjectId);
-				return;
-			}
-			//if (mapData.UserGUID != LocalUser.Instance.UserGuid)
-			//{
-			//    LogHelper.Error("InitEdit failed, mapData.UserGUID {0}!= LocalUser.Instance.UserGuid {1}!", mapData.UserGUID,
-			//        LocalUser.Instance.UserGuid);
-			//    return;
-			//}
-			var go = new GameObject("EditMode");
-			go.AddComponent<ModifyEditMode>();
+        {
+            var data = project.GetData();
+            if (data == null)
+            {
+                LogHelper.Error("InitEdit failed, GetData({0}) is null!!", project.ProjectId);
+                return;
+            }
+            data = MatrixProjectTools.DecompressLZMA(data);
+            if (data == null)
+            {
+                LogHelper.Error("InitEdit failed, DecompressData({0}) is null!!", project.ProjectId);
+                return;
+            }
+            var mapData = GameMapDataSerializer.Instance.Deserialize<GM2DMapData>(data);
+            if (mapData == null)
+            {
+                LogHelper.Error("InitEdit failed, Deserialize({0}) is null!!", project.ProjectId);
+                return;
+            }
+            //if (mapData.UserGUID != LocalUser.Instance.UserGuid)
+            //{
+            //    LogHelper.Error("InitEdit failed, mapData.UserGUID {0}!= LocalUser.Instance.UserGuid {1}!", mapData.UserGUID,
+            //        LocalUser.Instance.UserGuid);
+            //    return;
+            //}
             _mapFile.Read(mapData, startType);
-			//read是协程 后面不能写任何代码
-		}
+            //read是协程 后面不能写任何代码
+        }
 
-	    public void Stop()
-	    {
-	        if (_mapFile != null)
-	        {
-	            _mapFile.Stop();
-	            _generateMapComplete = false;
-	        }
-	    }
+        public void Stop()
+        {
+            if (_mapFile != null)
+            {
+                _mapFile.Stop();
+                _generateMapComplete = false;
+            }
+        }
 
-	    public void Update()
-	    {
-            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraTrans.position);
-            BgScene2D.Instance.UpdateLogic(pos);
-	        if (EditMode.Instance != null)
-	        {
-                ColliderScene2D.Instance.UpdateLogic(pos);
-                EditMode.Instance.Update();
-	        }
-	    }
+        public void Update()
+        {
+            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
+            ColliderScene2D.Instance.UpdateLogic(pos);
+        }
 
-	    /// <summary>
+        /// <summary>
         /// 正在处理地图数据时
         /// </summary>
-	    public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
-	    {
+        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
@@ -230,128 +206,117 @@ namespace GameA.Game
             {
                 PlayMode.Instance.OnReadMapFile(tableUnit);
             }
-	    }
+        }
 
-	    private void InitCreate()
-		{
-            var mapWorldStartPos = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
+        private void InitCreate()
+        {
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
-            InitEditorCameraStartParam(new Rect(mapWorldStartPos.x, mapWorldStartPos.y, _defaultMapSize.x, _defaultMapSize.y));
-			var go = new GameObject("EditMode");
-			var editMode = go.AddComponent<EditMode>();
-			editMode.Init();
-			CreateDefaultScene();
-			GenerateMap(0);
-		}
+            CreateDefaultScene();
+            GenerateMap(0);
+        }
 
-		public void OnSetMapDataSuccess(GM2DMapData mapData)
-		{
+        public void OnSetMapDataSuccess(GM2DMapData mapData)
+        {
             PlayMode.Instance.SceneState.Init(mapData);
-			DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
-            if (EditMode.Instance != null)
-            {
-                EditMode.Instance.Init();
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-                {
-					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                    Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
-                    InitEditorCameraStartParam(validMapRect);
-				}
-            }
-			GenerateMap(mapData.BgRandomSeed);
-		}
+            DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
+            GenerateMap(mapData.BgRandomSeed);
+        }
 
-		public void OnSetMapDataFailed()
-		{
-			Messenger.Broadcast(EMessengerType.OnGameLoadError);
-		}
+        public void OnSetMapDataFailed()
+        {
+            Messenger.Broadcast(EMessengerType.OnGameLoadError);
+        }
 
         /// <summary>
         /// 设置默认创建地图的尺寸，目前只能在工坊创建关卡时从设置关卡尺寸界面调用
         /// </summary>
         /// <param name="size">Size.</param>
-        public void SetDefaultMapSize (IntVec2 size)
+        public void SetDefaultMapSize(IntVec2 size)
         {
             _defaultMapSize = size;
         }
 
-		public void CreateDefaultScene()
-		{
-			//生成主角
-			{
-				var unitObject = new UnitDesc();
-				unitObject.Id = MapConfig.MainPlayerId;
-			    unitObject.Scale = Vector2.one;
-				unitObject.Guid = new IntVec3((2*ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
-					(ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y), (int) EUnitDepth.Dynamic);
-				EditMode.Instance.AddUnit(unitObject);
-			}
+        public void CreateDefaultScene()
+        {
+            //生成主角
+            {
+                var unitObject = new UnitDesc();
+                unitObject.Id = MapConfig.SpawnId;
+                unitObject.Scale = Vector2.one;
+                unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),ConstDefineGM2D.MapStartPos.y,
+                    (int) EUnitDepth.Earth);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
+            }
             //生成胜利之门
             {
                 var unitObject = new UnitDesc();
                 unitObject.Id = MapConfig.FinalItemId;
                 unitObject.Scale = Vector2.one;
-                unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x, ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y, 0);
-                EditMode.Instance.AddUnit(unitObject);
+                unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,ConstDefineGM2D.MapStartPos.y, 0);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
             }
-			//生成地形
-		    var validMapRect = DataScene2D.Instance.ValidMapRect;
-            for (int i = validMapRect.Min.x; i < validMapRect.Max.x; i += ConstDefineGM2D.ServerTileScale)
-			{
-                for (int j = validMapRect.Min.y; j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;j += ConstDefineGM2D.ServerTileScale)
-				{
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
-				}
-			}
-		}
-
-		private void GenerateMap(int randomSeed)
-		{
-			GenerateBg(randomSeed);
-			_generateMapComplete = true;
-		}
-
-        private void InitEditorCameraStartParam(Rect validMapRect)
-		{
-            CameraManager.Instance.SetFinalOrthoSize((float)validMapRect.height / 2);
-            Rect cameraViewRect = CameraManager.Instance.CurCameraViewRect;
-            float cWHRatio = cameraViewRect.width / cameraViewRect.height;
-            float mWHRatio = validMapRect.width / validMapRect.height;
-
-            Vector3 pos = Vector3.zero;
-            if (cWHRatio > mWHRatio)
+            //生成地形
+            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            for (int i = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale; i < validMapRect.Max.x +ConstDefineGM2D.ServerTileScale; i += ConstDefineGM2D.ServerTileScale)
             {
-                CameraManager.Instance.SetFinalOrthoSize(validMapRect.width / cWHRatio / 2);
-                pos = new Vector3(validMapRect.center.x, validMapRect.yMin + validMapRect.width / cWHRatio / 2);
+                //down
+                for (int j = validMapRect.Min.y - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.y ; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+                //up
+                for (int j = validMapRect.Max.y + 1; j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
             }
-            else
+            for (int i = validMapRect.Min.y ; i < validMapRect.Max.y; i += ConstDefineGM2D.ServerTileScale)
             {
-                pos = new Vector3(validMapRect.xMin + cameraViewRect.width/2, validMapRect.center.y);
+                //left
+                for (int j = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.x ; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+                //right
+                for (int j = validMapRect.Max.x + 1; j < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
             }
-            CameraManager.Instance.SetEditorModeStartPos(pos);
-		}
+        }
 
-		public byte[] SaveMapData()
-		{
-			if (_mapFile == null)
-			{
-				LogHelper.Error("SaveMapData Failed, mapfile is null");
-				return null;
-			}
-			return _mapFile.Save();
-		}
+        private void GenerateMap(int randomSeed)
+        {
+            GenerateBg(randomSeed);
+            CameraManager.Instance.OnMapReady();
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.OnMapReady();
+            }
+            _generateMapComplete = true;
+        }
 
-		public void OnDrawGizmos()
-		{
+        public byte[] SaveMapData()
+        {
+            if (_mapFile == null)
+            {
+                LogHelper.Error("SaveMapData Failed, mapfile is null");
+                return null;
+            }
+            return _mapFile.Save();
+        }
+
+        public void OnDrawGizmos()
+        {
             ColliderScene2D.Instance.OnDrawGizmos();
             //DataScene2D.Instance.OnDrawGizmos();
             //BgScene2D.Instance.OnDrawGizmos();
-		}
+        }
 
-		private void GenerateBg(int randomSeed)
-		{
+        private void GenerateBg(int randomSeed)
+        {
             BgScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
             BgScene2D.Instance.GenerateBackground(randomSeed);
-		}
-	}
+        }
+    }
 }

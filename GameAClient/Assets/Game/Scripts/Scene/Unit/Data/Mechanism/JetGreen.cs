@@ -15,14 +15,9 @@ namespace GameA.Game
     [Unit(Id = 5015, Type = typeof(JetGreen))]
     public class JetGreen : JetBase
     {
-        protected override bool OnInit()
+        protected override void SetValue()
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _skillManager.CurrentSkill.SetValue(50, 60, AnimationLength);
-            return true;
+            _skillCtrl.CurrentSkills[0].SetValue(_timeInterval,  TableConvert.GetRange(600));
         }
     }
 }

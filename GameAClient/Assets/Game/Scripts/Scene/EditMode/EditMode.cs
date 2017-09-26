@@ -6,295 +6,573 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Security.Policy;
+using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.FSM;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public partial class EditMode : MonoBehaviour
+    public class EditMode : IDisposable
     {
-        public static EditMode Instance;
-        private IntVec2 _tileSizePerScreen;
-		/// <summary>
-		/// 地图数据统计
-		/// </summary>
-        private MapStatistics _mapStatistics = new MapStatistics();
-		/// <summary>
-		/// 命令管理
-		/// </summary>
-		private CommandManager _commandManager;
-		/// <summary>
-		/// 关卡中只能存在一个的物体的索引
-		/// </summary>
-        private Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
-        private UnitDesc _mainPlayer = UnitDesc.zero;
+        #region Singleton
 
-        [SerializeField]
-        private GameObject _backgroundObject;
-        [SerializeField]
-		protected ECommandType _commandType = ECommandType.Create;
-		protected ICommand _currentCommand;
+        private static EditMode _instance;
 
-		private EEditorLayer _curEditorLayer = EEditorLayer.None;
-
-	    private CompositeEditorModule _compositeEditor;
-
-		private IntVec3 _lastRectIndex;
-        [SerializeField]
-        private Vector2 _lastMousePosition;
-        [SerializeField]
-        private IntVec2 _changedTileSize;
-
-        [SerializeField]
-        protected int _selectedItemId;
-        [SerializeField]
-        private bool _isPlaying;
-        private bool _isDraggingItem;
-        private SlicedCameraMask _cameraMask;
-	    private MapRectMask _mapRectMask;
-        protected float _lastTouchTime;
-        private Grid2D _limitedMapGrid;
-        private bool _is2FingersPressed;
-
-        private ECommandType _cmdTypeBeforeMove;
-
-		/// <summary>
-		/// 命令管理
-		/// </summary>
-		public CommandManager CommandManager {
-    		get {
-    			return this._commandManager;
-    		}
-    	}
-	    public CompositeEditorModule CompositeModule
-	    {
-		    get { return _compositeEditor; }
-	    }
-
-        public ECommandType CurCommandType
+        public static EditMode Instance
         {
-            get { return _commandType; }
+            get { return _instance ?? (_instance = new EditMode()); }
         }
 
-	    public EEditorLayer CurEditorLayer
-	    {
-		    get
-		    {
-			    return _curEditorLayer;
-		    }
-	    }
+        #endregion
+        
+        public class BlackBoard : SoyEngine.FSM.BlackBoard
+        {
+            /// <summary>
+            /// 当前在选栏中选中的地块Id
+            /// </summary>
+            public int CurrentSelectedUnitId { get; set; }
+            public UnitDesc CurrentTouchUnitDesc { get; set; }
+            /// <summary>
+            /// 当前模式是否有拖拽进行
+            /// </summary>
+            public bool DragInCurrentState { get; set; }
+            public EEditorLayer EditorLayer { get; set; }
+        }
+
+        #region Field
+
+        private static readonly Color EdittingLayerColor = Color.white;
+        private static readonly Color NotEdittingLayerColor = new Color(1f, 1f, 1f, 0.3f);
+        private bool _enable;
+        private bool _inited;
+        private StateMachine<EditMode, EditModeState.Base> _stateMachine;
+        private EditModeStateMachineHelper _stateMachineHelper;
+        private BlackBoard _boardData;
+        private EditRecordManager _editRecordManager;
+        private readonly MapStatistics _mapStatistics = new MapStatistics();
+        [SerializeField]
+        private GameObject _backgroundObject;
+        private SlicedCameraMask _cameraMask;
+        private EEditorLayer _lastEditorLayer = EEditorLayer.None;
+        #endregion
+
+        #region Property
+
+        public StateMachine<EditMode, EditModeState.Base> StateMachine
+        {
+            get { return _stateMachine; }
+        }
+
+        public BlackBoard BoardData
+        {
+            get { return _boardData; }
+        }
 
         public MapStatistics MapStatistics
         {
             get { return _mapStatistics; }
         }
 
-		public int SelectedItemId
-		{
-			get
-			{
-                return _selectedItemId;
-			}
-		}
-
-
-		private void Awake()
+        public SlicedCameraMask CameraMask
         {
-            Instance = this;
-            ///编辑器下增加鼠标拖拽屏幕逻辑
-            if (Application.isEditor ||
-                Application.platform == RuntimePlatform.WindowsPlayer ||
-                Application.platform == RuntimePlatform.OSXPlayer
-            )
+            get { return _cameraMask; }
+        }
+
+        public bool Enable
+        {
+            get { return _enable; }
+        }
+
+        #endregion
+
+        #region DefaultMethod
+
+        public void Dispose()
+        {
+            if (_inited)
             {
-                gameObject.AddComponent<MouseDragListener>();
-                gameObject.AddComponent<MousePinchListener>();
+                _stateMachineHelper.Dispose();
+                if (_enable)
+                {
+                    StopEdit();
+                }
+                _stateMachineHelper.Dispose();
+                _stateMachineHelper = null;
+                if (_backgroundObject != null)
+                {
+                    Object.Destroy(_backgroundObject);
+                }
+                _backgroundObject = null;
+                if (_cameraMask != null)
+                {
+                    Object.Destroy(_cameraMask.gameObject);
+                    _cameraMask = null;
+                }
+                EditHelper.Clear();
+                _stateMachine = null;
+                _boardData.Clear();
+                _boardData = null;
+                _editRecordManager.Clear();
+                _editRecordManager = null;
+                _enable = false;
+                Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
-            Messenger<ECommandType>.AddListener(EMessengerType.OnCommandChanged, OnCommandChanged);
-            Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperator, OnScreenOperator);
-            Messenger.AddListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
+            _instance = null;
+            LogHelper.Info("EditMode Dispose");
+        }
 
-            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
-            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
-            Messenger<float>.AddListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
-            Messenger.AddListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
-            Messenger.AddListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
-            Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
-
-            EasyTouch.On_TouchStart += On_TouchStart;
-            EasyTouch.On_TouchDown += On_TouchDown;
-            EasyTouch.On_TouchUp += On_TouchUp;
-            EasyTouch.On_Pinch += OnPinch;
-            EasyTouch.On_PinchEnd += OnPinchEnd;
-            EasyTouch.On_TouchUp2Fingers += OnTwoFingersTouchUp;
-            EasyTouch.On_TouchDown2Fingers += OnTwoFingersTouchDown;
-            EasyTouch.On_Drag += On_Drag;
-            EasyTouch.On_DragEnd += OnDragEnd;
-            EasyTouch.On_Cancel2Fingers += On_Cancel2Fingers;
-			_compositeEditor = new CompositeEditorModule();
-			_commandManager = new CommandManager ();
-			_commandManager.Init ();
-
-			_backgroundObject = new GameObject("BackGround");
+        public void Init()
+        {
+            _enable = false;
+            _stateMachine = new StateMachine<EditMode, EditModeState.Base>(this);
+            _stateMachineHelper = new EditModeStateMachineHelper(_stateMachine);
+            _stateMachineHelper.Init();
+            _stateMachine.GlobalState = EditModeState.Global.Instance;
+            _stateMachine.ChangeState(EditModeState.None.Instance);
+            _boardData = new BlackBoard();
+            _boardData.Init();
+            _editRecordManager = new EditRecordManager();
+            _editRecordManager.Init();
+            
+            _backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
             box.size = Vector2.one*1000;
             box.transform.position = Vector3.forward;
-        }
-
-        private void OnDestroy()
-        {
-            Clear ();
-        }
-
-        protected virtual void Clear () {
-            _compositeEditor.Clear();
-            _commandManager.Clear ();
-            Instance = null;
-            EasyTouch.On_TouchStart -= On_TouchStart;
-            EasyTouch.On_TouchDown -= On_TouchDown;
-            EasyTouch.On_TouchUp -= On_TouchUp;
-            EasyTouch.On_Pinch -= OnPinch;
-            EasyTouch.On_PinchEnd -= OnPinchEnd;
-            EasyTouch.On_TouchUp2Fingers -= OnTwoFingersTouchUp;
-            EasyTouch.On_TouchDown2Fingers -= OnTwoFingersTouchDown;
-            EasyTouch.On_Drag -= On_Drag;
-            EasyTouch.On_DragEnd -= OnDragEnd;
-            EasyTouch.On_Cancel2Fingers -= On_Cancel2Fingers;
-
-            Messenger<ECommandType>.RemoveListener(EMessengerType.OnCommandChanged, OnCommandChanged);
-            Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperator, OnScreenOperator);
-            Messenger.RemoveListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
-            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
-            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
-            Messenger<float>.RemoveListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
-            Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
-            Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
-            Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
-
-            for (int i = 0; i < _unitMaskEffectCache.Count; i++) {
-                _unitMaskEffectCache [i].DestroySelf ();
-            }
-            _unitMaskEffectCache.Clear ();
-            for (int i = 0; i < _connectLineEffectCache.Count; i++) {
-                _connectLineEffectCache [i].DestroySelf ();
-            }
-            _connectLineEffectCache.Clear ();
-            if (_backgroundObject != null)
-            {
-                UnityEngine.Object.Destroy(_backgroundObject);
-            }
-            if (_mapRectMask != null)
-            {
-                UnityEngine.Object.Destroy(_mapRectMask.gameObject);
-            }
-            if (_cameraMask != null)
-            {
-                UnityEngine.Object.Destroy(_cameraMask.gameObject);
-            }
-        }
-
-		public virtual void Init()
-        {
-            var max = GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight));
-            _tileSizePerScreen = new IntVec2(max.x + ConstDefineGM2D.ServerTileScale - 1, max.y + ConstDefineGM2D.ServerTileScale - 1);
-
-            //IntVec2 changedRectMax =
-            //    GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight) /
-            //                                       ConstDefineGM2D.PercentOfScreenOperatorPixels);
-            //_changedTileSize = new IntVec2(changedRectMax.x + ConstDefineGM2D.ServerTileScale,
-            //    changedRectMax.y + ConstDefineGM2D.ServerTileScale);
-            _changedTileSize = ConstDefineGM2D.DefaultChangedTileSize;
-            InitLimitedMapRect();
+            
             InitMask();
-            UpdateMaskValue();
-			_commandType = ECommandType.Create;
-            _currentSelectedUnitOnSwitchMode = UnitDesc.zero;
-            //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
+
+            Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
+            _inited = true;
         }
 
-        public bool CheckCanAdd(UnitDesc unitDesc)
+        public void StartEdit()
         {
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-            if (tableUnit == null)
+            _enable = true;
+            _cameraMask.Show();
+            if (!SocialGUIManager.Instance.GetUI<UICtrlGameUnitPropertyContainer>().IsOpen)
             {
-                LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
+                SocialGUIManager.Instance.OpenUI<UICtrlGameUnitPropertyContainer>();
+            }
+            InternalStartEdit();
+            if (_lastEditorLayer != EEditorLayer.None)
+            {
+                ChangeEditorLayer(_lastEditorLayer);
+            }
+            else
+            {
+                ChangeEditorLayer(EEditorLayer.None);
+                ChangeEditorLayer(EEditorLayer.Normal);
+            }
+        }
+
+        private void InternalStartEdit()
+        {
+            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Match)
+            {
+                _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
+            }
+            else
+            {
+                _stateMachine.ChangeState(EditModeState.Add.Instance);
+            }
+        }
+
+        public void StopEdit()
+        {
+            _stateMachine.ChangeState(EditModeState.None.Instance);
+            ChangeEditorLayer(EEditorLayer.None);
+            _cameraMask.Hide();
+            if (SocialGUIManager.Instance.GetUI<UICtrlGameUnitPropertyContainer>().IsOpen)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlGameUnitPropertyContainer>();
+            }
+            _enable = false;
+        }
+
+        public void StartAdd()
+        {
+            if (!_stateMachine.IsInState(EditModeState.Add.Instance))
+            {
+                _stateMachine.ChangeState(EditModeState.Add.Instance);
+            }
+        }
+
+        public void StartRemove()
+        {
+            if (!_stateMachine.IsInState(EditModeState.Remove.Instance))
+            {
+                _stateMachine.ChangeState(EditModeState.Remove.Instance);
+            }
+        }
+
+        public void StopRemove()
+        {
+            if (!IsInState(EditModeState.Remove.Instance))
+            {
+                return;
+            }
+            if (_stateMachine.PreviousState.CanRevertTo())
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
+        }
+
+        public void StartCamera()
+        {
+            _stateMachine.ChangeState(EditModeState.Camera.Instance);
+        }
+
+        public void StopCamera()
+        {
+            if (!IsInState(EditModeState.Camera.Instance))
+            {
+                return;
+            }
+            if (_stateMachine.PreviousState.CanRevertTo())
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
+        }
+
+        public void StartSwitch()
+        {
+            _stateMachine.ChangeState(EditModeState.Switch.Instance);
+        }
+
+        public void StopSwitch()
+        {
+            if (!IsInState(EditModeState.Switch.Instance))
+            {
+                return;
+            }
+            if (_stateMachine.PreviousState.CanRevertTo())
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
+        }
+        
+        public void StartModifyAdd()
+        {
+            _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
+        }
+        public void StartModifyRemove()
+        {
+            _stateMachine.ChangeState(EditModeState.ModifyRemove.Instance);
+        }
+        public void StartModifyModify()
+        {
+            _stateMachine.ChangeState(EditModeState.ModifyModify.Instance);
+        }
+
+        public void Undo()
+        {
+            _editRecordManager.Undo();
+        }
+
+        public void Redo()
+        {
+            _editRecordManager.Redo();
+        }
+
+        public void Update()
+        {
+            if (!_enable) return;
+            
+            _stateMachine.Update();
+        }
+
+        public bool IsInState(EditModeState.Base state)
+        {
+            return _stateMachine.IsInState(state);
+        }
+
+        #endregion
+
+        #region PublicMethod
+
+        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
+        {
+            _editRecordManager.CommitRecord(editRecordBatch);
+        }
+
+        /// <summary>
+        /// 从地图文件反序列化时的处理方法
+        /// </summary>
+        /// <param name="unitDesc">Unit desc.</param>
+        /// <param name="tableUnit">Table unit.</param>
+        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            EditHelper.AfterAddUnit(unitDesc, tableUnit, true);
+        }
+
+        public void OnMapReady()
+        {
+            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
+        }
+        
+        /// <summary>
+        /// 改变当前选中的地块Id
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="changeState"></param>
+        public void ChangeSelectUnit(int unitId, bool changeState = true)
+        {
+            _boardData.CurrentSelectedUnitId = unitId;
+            if (changeState)
+            {
+                if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Match)
+                {
+                    if (!IsInState(EditModeState.ModifyAdd.Instance))
+                    {
+                        _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
+                    }
+                }
+                else
+                {
+                    if (!IsInState(EditModeState.Add.Instance))
+                    {
+                        _stateMachine.ChangeState(EditModeState.Add.Instance);
+                    }
+                }
+            }
+        }
+
+        public void ChangeSelectUnitUIType(EUIType euiType)
+        {
+            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Match)
+            {
+                if (!IsInState(EditModeState.ModifyAdd.Instance))
+                {
+                    _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
+                }
+            }
+            else
+            {
+                if (!IsInState(EditModeState.Add.Instance))
+                {
+                    _stateMachine.ChangeState(EditModeState.Add.Instance);
+                }
+            }
+            if (euiType == EUIType.Effect)
+            {
+                ChangeEditorLayer(EEditorLayer.Effect);
+            }
+            else
+            {
+                ChangeEditorLayer(EEditorLayer.Normal);
+            }
+        }
+        
+        public void RevertEditorLayer()
+        {
+            ChangeEditorLayer(_lastEditorLayer);
+        }
+
+        public void ChangeEditorLayer(EEditorLayer editorLayer)
+        {
+            if (editorLayer == _boardData.EditorLayer)
+            {
+                return;
+            }
+            var oldLayer = _boardData.EditorLayer;
+            var newLayer = editorLayer;
+            if (_stateMachine.CurrentState != null)
+            {
+                _stateMachine.CurrentState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
+            }
+            if (_stateMachine.GlobalState != null)
+            {
+                _stateMachine.GlobalState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
+            }
+            switch (_boardData.EditorLayer)
+            {//退出模式
+                case EEditorLayer.None:
+                    break;
+                case EEditorLayer.Normal:
+                    break;
+                case EEditorLayer.Effect:
+                    CameraMask.HideLayerMask();
+                    break;
+                case EEditorLayer.Capture:
+                    BgScene2D.Instance.SetCirrus(true);
+                break;
+            }
+            _lastEditorLayer = oldLayer;
+            _boardData.EditorLayer = newLayer;
+//            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
+            switch (_boardData.EditorLayer)
+            {//进入模式
+                case EEditorLayer.None:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                entry.Value.View.SetEditAssistActive(false);
+                                entry.Value.View.SetRendererColor(EdittingLayerColor);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Normal:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                bool isEditing = entry.Key.z != (int) EUnitDepth.Effect;
+                                entry.Value.View.SetRendererColor(isEditing
+                                    ? EdittingLayerColor
+                                    : NotEdittingLayerColor);
+                                entry.Value.View.SetEditAssistActive(isEditing);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Effect:
+                    _cameraMask.SetLayerMaskSortOrder((int) ESortingOrder.EffectEditorLayMask);
+                    CameraMask.ShowLayerMask();
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                bool isEditing = entry.Key.z == (int) EUnitDepth.Effect;
+                                entry.Value.View.SetRendererColor(EdittingLayerColor);
+                                entry.Value.View.SetEditAssistActive(isEditing);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Capture:
+                    BgScene2D.Instance.SetCirrus(false);
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                bool isEditing = entry.Key.z != (int) EUnitDepth.Effect;
+                                entry.Value.View.SetRendererColor(isEditing ? EdittingLayerColor : Color.clear);
+                                entry.Value.View.SetEditAssistActive(false);
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (_stateMachine.CurrentState != null)
+            {
+                _stateMachine.CurrentState.OnAfterChangeEditorLayer(oldLayer, newLayer);
+            }
+            if (_stateMachine.GlobalState != null)
+            {
+                _stateMachine.GlobalState.OnAfterChangeEditorLayer(oldLayer, newLayer);
+            }
+            Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
+        }
+
+        /// <summary>
+        /// 开始拖拽地块
+        /// </summary>
+        /// <param name="mouseWorldPos"></param>
+        /// <param name="unitWorldPos"></param>
+        /// <param name="unitId"></param>
+        /// <param name="rotate"></param>
+        /// <param name="unitExtra"></param>
+        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
+        {
+            if (IsInState(EditModeState.Move.Instance))
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            
+            var data = _boardData.GetStateData<EditModeState.Move.Data>();
+            if (data.MovingRoot != null)
+            {
+                Object.Destroy(data.MovingRoot.parent);
+            }
+            UnitBase unitBase;
+            var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase);
+            data.CurrentMovingUnitBase = unitBase;
+            data.MouseObjectOffsetInWorld = unitWorldPos - mouseWorldPos;
+            data.DragUnitExtra = unitExtra;
+            data.MovingRoot = rootGo.transform;
+            _stateMachine.ChangeState(EditModeState.Move.Instance);
+        }
+
+
+
+        public void DeleteSwitchConnection(int idx)
+        {
+            if (IsInState(EditModeState.Switch.Instance))
+            {
+                EditModeState.Switch.Instance.DeleteSwitchConnection(idx);
+            }
+        }
+
+        /// <summary>
+        /// 生成地块并执行附加逻辑比如检查数量，生成草坪
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <param name="unitExtra"></param>
+        /// <returns></returns>
+        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtra unitExtra)
+        {
+            Table_Unit tableUnit;
+            if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
+            {
                 return false;
             }
-            var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
-            var mapGrid = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
-            if (!dataGrid.Intersects(mapGrid))
+            EditHelper.BeforeAddUnit(tableUnit);
+            UnitExtra oldExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+            DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+            if (!AddUnit(unitDesc))
             {
+                DataScene2D.Instance.ProcessUnitExtra(unitDesc, oldExtra);
                 return false;
             }
-            if (tableUnit.EUnitType == EUnitType.Monster)
-            {
-                IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
-                IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
-                var min = new IntVec2(unitDesc.Guid.x / size.x * size.x, unitDesc.Guid.y / size.y * size.y);
-                var grid = new Grid2D(min.x, min.y,
-                    Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
-                var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.HeroLayer);
-                if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, "同屏不能放置太多的怪物喔~");
-                    return false;
-                }
-            }
-            //pair个数不能超过
-            if (tableUnit.EPairType > 0)
-            {
-                PairUnit pairUnit;
-                if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog,
-                        string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
-                    return false;
-                }
-            }
-            //花草树只能放在泥土上。
-            if (UnitDefine.IsPlant(tableUnit.Id))
-            {
-                var downGuid = new IntVec3(unitDesc.Guid.x, unitDesc.Guid.y - ConstDefineGM2D.ServerTileScale, (int) EUnitDepth.Earth);
-                UnitBase downUnit;
-                if (!ColliderScene2D.Instance.TryGetUnit(downGuid, out downUnit) || !UnitDefine.IsEarth(downUnit.Id))
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
-                    return false;
-                }
-            }
+            EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
 
-		/// <summary>
-		/// 从地图文件反序列化时的处理方法
-		/// </summary>
-		/// <param name="unitDesc">Unit desc.</param>
-		/// <param name="tableUnit">Table unit.</param>
-        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            AfterAddUnit(unitDesc, tableUnit, true);
-        }
-
+        /// <summary>
+        /// 单纯的添加地块
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
         public bool AddUnit(UnitDesc unitDesc)
         {
-            if (!CheckCanAdd(unitDesc))
-            {
-                return false;
-            }
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
             {
-                LogHelper.Error("AddUnit failed,{0}", unitDesc.ToString());
+                LogHelper.Error("InternalAddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            BeforeAddUnit(unitDesc, tableUnit);
             if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
             {
                 return false;
@@ -312,12 +590,41 @@ namespace GameA.Game
             {
                 return false;
             }
-            AfterAddUnit(unitDesc, tableUnit);
-//			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             return true;
         }
 
-        public virtual bool DeleteUnit(UnitDesc unitDesc)
+        /// <summary>
+        /// 删除地块并执行附加逻辑 比如删除草地 计数
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool DeleteUnitWithCheck(UnitDesc unitDesc)
+        {
+            if (!DeleteUnit(unitDesc))
+            {
+                return false;
+            }
+            //地块上的植被自动删除
+            if (UnitDefine.IsEarth(unitDesc.Id))
+            {
+                var up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
+                UnitBase unit;
+                if (EditHelper.TryGetUnit(up, out unit) && UnitDefine.IsPlant(unit.Id))
+                {
+                    DeleteUnit(new UnitDesc(unit.Id, up, 0, Vector3.one));
+                }
+            }
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
+            return true;
+        }
+
+        /// <summary>
+        /// 单纯的删除地块
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
@@ -346,132 +653,24 @@ namespace GameA.Game
                 PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
-            AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
 
         private void UpdateSelectItem()
         {
-            var id = (ushort)PairUnitManager.Instance.GetCurrentId(_selectedItemId);
-            if (id != _selectedItemId)
-            {
-                _selectedItemId = id;
-                SocialGUIManager.Instance.GetUI<UICtrlItem>().OnSelectItemChanged((ushort)_selectedItemId);
-            }
+            var id = (ushort)PairUnitManager.Instance.GetCurrentId(_boardData.CurrentSelectedUnitId);
+            ChangeSelectUnit(id, false);
         }
 
-        public void SetEditorModeEffect(bool value)
-	    {
-		    _selectedItemId = 0;
-		    _curEditorLayer = value?EEditorLayer.Effect : EEditorLayer.None;
-			UpdateMapRectMask();
-			Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
-	    }
+        #endregion
 
-        protected virtual void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (_mainPlayer == unitDesc)
-            {
-                _mainPlayer = UnitDesc.zero;
-            }
-            if (_replaceUnits.ContainsKey(unitDesc.Id) && _replaceUnits[unitDesc.Id] == unitDesc)
-            {
-                _replaceUnits.Remove(unitDesc.Id);
-            }
-            _mapStatistics.AddOrDeleteUnit(tableUnit, false);
-        }
 
-        private void BeforeAddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
-            {
-                if (_mainPlayer.Id != 0)
-                {
-                    DeleteUnit(_mainPlayer);
-                }
-            }
-            else if (tableUnit.Count == 1)
-            {
-                UnitDesc tmpDesc;
-                if (_replaceUnits.TryGetValue(unitDesc.Id, out tmpDesc))
-                {
-                    if (tmpDesc.Id != 0)
-                    {
-                        DeleteUnit(tmpDesc);
-                    }
-                }
-            }
-        }
+        #region PrivateMethod
 
-        private void AfterAddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool isInit = false)
-        {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
-            {
-                _mainPlayer = unitDesc;
-            }
-            else if (tableUnit.Count == 1)
-            {
-                _replaceUnits.Add(unitDesc.Id, unitDesc);
-            }
-            _mapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
-        }
-
-//        public bool CheckCanPublic(bool showPrompt)
-//        {
-//            if (_mapStatistics.LevelFinishCount < 1)
-//            {
-//                if (showPrompt)
-//                {
-//                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog,
-//                        LocaleManager.GameLocale("ui_publish_failed_finish_first"));
-//                }
-//                return false;
-//            }
-//            return true;
-//        }
-
-        public bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
-        {
-            Table_Unit table = UnitManager.Instance.GetTableUnit(id);
-            if (table == null)
-            {
-                outUnitDesc = UnitDesc.zero;
-                return false;
-            }
-            if (table.EUnitType == EUnitType.MainPlayer)
-            {
-                outUnitDesc = _mainPlayer;
-            }
-            else
-            {
-                if (!_replaceUnits.TryGetValue(id, out outUnitDesc))
-                {
-                    return false;
-                }
-            }
-            return outUnitDesc.Id != 0;
-        }
-
-        private void OnSuccess()
-        {
-            _mapStatistics.AddFinishCount();
-        }
-
-        #region UI
-
-        private void InitLimitedMapRect()
-        {
-            _limitedMapGrid = DataScene2D.Instance.MapGrid;
-            _limitedMapGrid.XMin += ConstDefineGM2D.MapStartPos.x;
-            _limitedMapGrid.YMin += ConstDefineGM2D.MapStartPos.y;
-            var size = MapConfig.PermitMapSize;
-            _limitedMapGrid.XMax = _limitedMapGrid.XMin + size.x - 1;
-            _limitedMapGrid.YMax = _limitedMapGrid.YMin + size.y - 1;
-        }
-
-		/// <summary>
-		/// 初始化地图边框和特效蒙黑
-		/// </summary>
+        
+        /// <summary>
+        /// 初始化地图边框和特效蒙黑
+        /// </summary>
         private void InitMask()
         {
             if (_cameraMask != null)
@@ -479,624 +678,38 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = Instantiate(Resources.Load(ConstDefineGM2D.CameraMaskPrefabName)) as GameObject;
+            var go = Object.Instantiate (JoyResManager.Instance.GetPrefab(
+                EResType.ModelPrefab, 
+                ConstDefineGM2D.CameraMaskPrefabName)
+            ) as GameObject;
             if (go == null)
             {
                 LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.CameraMaskPrefabName);
                 return;
             }
+
+            // 解决shader丢失的临时代码-----
+            Renderer r = go.GetComponent<Renderer>();
+            if (r != null)
+            {
+                Material m = r.sharedMaterial;
+//                Debug.LogError("m.shader: " + m.shader);
+                Shader s = JoyResManager.Instance.GetAsset<Shader>(EResType.Shader, "SFVertexColor");
+                m.shader = s;
+            }
+            // --------------------------
+            
             _cameraMask = go.GetComponent<SlicedCameraMask>();
-            _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
-
-			var go1 = Instantiate(Resources.Load(ConstDefineGM2D.MapRectMaskPrefabName)) as GameObject;
-			if (go1 == null)
-			{
-				LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.MapRectMaskPrefabName);
-				return;
-			}
-			_mapRectMask = go1.GetComponent<MapRectMask>();
-			_mapRectMask.SetSortOrdering((int)ESortingOrder.EffectEditorLayMask);
-		}
-
-        private void UpdateMaskValue()
-        {
-			UpdateCameraMask();
-			UpdateMapRectMask();
+            _cameraMask.SetCameraMaskSortOrder((int) ESortingOrder.Mask);
         }
 
-        internal bool GetUnitKey(ECommandType eCommandType, Vector2 pos, out UnitDesc unitDesc)
+        
+        private void OnSuccess()
         {
-            unitDesc = new UnitDesc();
-            if (_lastMousePosition == pos)
-            {
-                return false;
-            }
-            _lastMousePosition = pos;
-            Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(_lastMousePosition);
-            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
-            {
-                return false;
-            }
-            switch (eCommandType)
-            {
-                case ECommandType.Erase:
-                {
-                    SceneNode hit;
-                    if (!DataScene2D.PointCast(mouseTile, out hit))
-                    {
-                        return false;
-                    }
-                    IntVec3 rectIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, hit.Id);
-                    if (_lastRectIndex == rectIndex)
-                    {
-                        return false;
-                    }
-                    _lastRectIndex = rectIndex;
-                    unitDesc.Id = hit.Id;
-                    unitDesc.Guid = rectIndex;
-                    unitDesc.Rotation = hit.Rotation;
-                    unitDesc.Scale = hit.Scale;
-                }
-                   break;
-                case ECommandType.Create:
-                {
-                    if (_selectedItemId == 0)
-                    {
-                        return false;
-                    }
-                    IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, _selectedItemId);
-                    if (_lastRectIndex == tileIndex)
-                    {
-                        return false;
-                    }
-                    _lastRectIndex = tileIndex;
-                    unitDesc.Id = (ushort)_selectedItemId;
-                    unitDesc.Guid = tileIndex;
-                    var tableUnit = UnitManager.Instance.GetTableUnit(_selectedItemId);
-                    if (tableUnit == null)
-                    {
-                        return false;
-                    }
-                    if (tableUnit.CanRotate)
-                    {
-                        unitDesc.Rotation = 1;
-                    }
-                    unitDesc.Scale = Vector2.one;
-                }
-                    break;
-            }
-            return true;
+            _mapStatistics.AddFinishCount();
         }
-
-        public bool TryGetSelectedObject(Vector2 mousePos, out UnitDesc unitDesc)
-        {
-            Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
-            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, _curEditorLayer,out unitDesc))
-            {
-                return false;
-            }
-            return true;
-        }
-
-        public void ChangeCurCommand(ICommand command)
-        {
-            _currentCommand = command;
-        }
-
-        public void SetDraggingState(bool value)
-        {
-            _isDraggingItem = value;
-        }
-
-        #region game logic event
-
-		protected virtual void ForceUpdateCameraMaskSize()
-        {
-            UpdateMaskValue();
-        }
-
-        protected virtual void OnScreenOperator(EScreenOperator eScreenOperator)
-        {
-            var changedTileSize = new IntRect(IntVec2.zero, IntVec2.zero);
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
-            switch (eScreenOperator)
-            {
-                case EScreenOperator.UpAdd:
-                    changedTileSize.Max.y = _changedTileSize.y;
-                    break;
-                case EScreenOperator.UpDelete:
-                    changedTileSize.Max.y = -_changedTileSize.y;
-                    break;
-                case EScreenOperator.LeftAdd:
-                    changedTileSize.Min.x = -_changedTileSize.x;
-                    break;
-                case EScreenOperator.LeftDelete:
-                    changedTileSize.Min.x = _changedTileSize.x;
-                    break;
-                case EScreenOperator.RightAdd:
-                    if (validMapRect.Max.x == _limitedMapGrid.XMax)
-                    {
-                        Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "扩图失败，已达地图边界。");
-                        return;
-                    }
-                    changedTileSize.Max.x = _changedTileSize.x;
-                    break;
-                case EScreenOperator.RightDelete:
-                    changedTileSize.Max.x = -_changedTileSize.x;
-                    break;
-            }
-            IntRect calRect = DataScene2D.Instance.ValidMapRect + changedTileSize;
-            calRect.Min.x = Mathf.Max(_limitedMapGrid.XMin, calRect.Min.x);
-            calRect.Min.y = Mathf.Max(_limitedMapGrid.YMin, calRect.Min.y);
-            calRect.Max.x = Mathf.Min(_limitedMapGrid.XMax, calRect.Max.x);
-            calRect.Max.y = Mathf.Min(_limitedMapGrid.YMax, calRect.Max.y);
-            changedTileSize = calRect - DataScene2D.Instance.ValidMapRect;
-            if (changedTileSize.Min != IntVec2.zero || changedTileSize.Max != IntVec2.zero)
-            {
-                if (calRect.Max.x - calRect.Min.x >= _tileSizePerScreen.x &&
-                    calRect.Max.y - calRect.Min.y >= _tileSizePerScreen.y)
-                {
-                    LogHelper.Debug("ValidMapRect:{0} || calRect:{1}", DataScene2D.Instance.ValidMapRect/ConstDefineGM2D.ServerTileScale, calRect/ConstDefineGM2D.ServerTileScale);
-                    MapStatistics.NeedSave = true;
-                    DataScene2D.Instance.ChangeMapRect(changedTileSize);
-                    Messenger<IntRect>.Broadcast(EMessengerType.OnValidMapRectChanged, changedTileSize);
-                    Messenger<EScreenOperator>.Broadcast(EMessengerType.OnScreenOperatorSuccess, eScreenOperator);
-                }
-            }
-        }
-
-        private void CancelCurrentCommand ()
-        {
-            if (_currentCommand != null)
-			{
-				if (_isDraggingItem)
-				{
-					_currentCommand.Exit();
-				}
-                _currentCommand = null;
-            }
-        }
-
-        #endregion
-
-        #region input  event
-
-		protected virtual void On_TouchStart(Gesture gesture)
-        {
-			_currentCommand = null;
-			if (_commandType == ECommandType.Move)
-			{
-				return;
-			}
-            
-            switch (_commandType)
-            {
-                case ECommandType.Erase:
-                    _currentCommand = new DeleteCommand();
-                    break;
-                case ECommandType.Create:
-                {
-                    UnitDesc outValue;
-                    if (TryGetSelectedObject(Input.mousePosition, out outValue))
-                    {
-	                    if (!_compositeEditor.IsInCompositeEditorMode)
-	                    {
-							_currentCommand = new ClickItemCommand(outValue, gesture.position);
-						}
-	                    else if(_compositeEditor.IsSelecting)
-	                    {
-		                    _compositeEditor.OnClickItem(outValue);
-	                    }
-                    }
-                    else
-                    {
-	                    if (!_compositeEditor.IsInCompositeEditorMode)
-	                    {
-							if (_selectedItemId > 0)
-							{
-								UnitDesc unit;
-								Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_selectedItemId);
-								if (tableUnit.EUnitType == EUnitType.MainPlayer)
-								{
-									_currentCommand = new AddCommandOnce(_mainPlayer);
-								}
-                                else if (tableUnit.Count == 1 && _replaceUnits.TryGetValue(_selectedItemId, out unit))
-								{
-									_currentCommand = new AddCommandOnce(unit);
-								}
-								else
-								{
-									_currentCommand = new AddCommand();
-								}
-							}
-						}
-
-                    }
-                }
-                break;
-            case ECommandType.Switch:
-                UnitDesc outValue2;
-                if (TryGetSelectedObject(Input.mousePosition, out outValue2))
-                {
-                    if (UnitDefine.IsSwitch (outValue2.Id)) {
-                        _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
-                    } else {
-//                        Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(Input.mousePosition);
-//                        IntVec3 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-//                        UnitBase unit;
-//                        if (ColliderScene2D.Instance.TryGetUnit (mouseTile, out unit)) {
-//                            if (unit.CanControlledBySwitch) {
-//                                _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
-//                            }
-//                        }
-                        UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit (outValue2.Guid, out unit)) {
-                            if (unit.CanControlledBySwitch) {
-                                _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
-                            }
-                        }
-                    }
-                }
-                break;
-            }
-
-
-//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-//            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-//            {
-                //GM2DGUIManager.Instance.OpenUI<UICtrlCreate>();
-//                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
-//            }
-            _lastTouchTime = Time.realtimeSinceStartup;
-        }
-
-		protected virtual void OnPinch(Gesture ge)
-        {
-         //   if (ge.pickedObject != _backgroundObject)
-         //   {
-         //       return;
-         //   }
-
-	        //if (_commandType != ECommandType.Move)
-	        //{
-		       // return;
-	        //}
-         //   if (CheckReceiveTwoFingerEvent())
-         //   {
-         //       CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset(ge.deltaPinch/Screen.width*4);
-         //   }
-        }
-
-		protected virtual void OnTwoFingersTouchUp(Gesture ge)
-        {
-	   //     if (_commandType != ECommandType.Move)
-	   //     {
-				//return;
-	   //     }
-            if (EasyTouch.GetTouchCount() == 1)
-            {
-                _is2FingersPressed = false;
-            }
-    //        if (CheckReceiveTwoFingerEvent())
-    //        {
-    //            DoPichEnd(ge);
-    //        }
-        }
-
-		protected virtual void OnTwoFingersTouchDown(Gesture ge)
-        {
-            _is2FingersPressed = true;
-        }
-
-        protected virtual void On_TouchDown(Gesture gesture)
-        {
-	        if (_commandType == ECommandType.Move)
-	        {
-		        return;
-	        }
-            if (_is2FingersPressed)
-            {
-                if (_currentCommand != null)
-                {
-                    _currentCommand.Exit();
-                    _currentCommand = null;
-                }
-                return;
-            }
-            if (Time.realtimeSinceStartup - _lastTouchTime > ConstDefineGM2D.TouchEffectiveDelayTime)
-            {
-                if (_currentCommand != null && !_isPlaying)
-                {
-                    DoCommondExecute(gesture);
-                }
-            }
-        }
-
-		protected virtual void OnPinchEnd(Gesture ge)
-        {
-	        //if (_commandType != ECommandType.Move)
-	        //{
-		       // return;
-	        //}
-         //   if (CheckReceiveTwoFingerEvent())
-         //   {
-         //       DoPichEnd(ge);
-         //   }
-        }
-
-		protected virtual void On_TouchUp(Gesture gesture)
-        {
-            if (EasyTouch.GetTouchCount() == 1)
-            {
-                _is2FingersPressed = false;
-            }
-	        if (_commandType == ECommandType.Move)
-	        {
-		        return;
-	        }
-            if (_currentCommand != null && !_isPlaying)
-            {
-                _commandManager.Execute(_currentCommand, Input.mousePosition);
-            }
-        }
-
-		protected virtual void On_Drag(Gesture gesture)
-        {
-			if (_commandType != ECommandType.Move)
-			{
-				return;
-			}
-			if (gesture.pickedObject != _backgroundObject)
-            {
-                return;
-            }
-            if (CheckReceiveTwoFingerEvent())
-            {
-                Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
-            }
-        }
-
-		protected virtual void OnDragEnd(Gesture gesture)
-        {
-			if (_commandType != ECommandType.Move)
-			{
-				return;
-			}
-			if (gesture.pickedObject != _backgroundObject)
-            {
-                return;
-            }
-            Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-            CameraManager.Instance.OnDragEnd(deltaWorldPos);
-        }
-
-        private void OnDrag_MouseBtn2(Vector2 delta)
-        {
-            if (!_isPlaying)
-            {
-                Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
-                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
-            }
-        }
-
-        private void OnPinchMouseButton(float value)
-        {
-            if (!_isPlaying)
-            {
-                CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset(value);
-            }
-            //LogHelper.Error("OnPinchMouseButton {0} ",value);
-        }
-
-        private void OnPinchMouseButtonStart()
-        {
-            //LogHelper.Error("OnPinchMouseButtonStart");
-        }
-
-        private void OnPinchMouseButtonEnd()
-        {
-            if (!_isPlaying)
-            {
-                CameraManager.Instance.OnPinchEnd();
-                CameraManager.Instance.OnDragEnd(Vector2.zero);
-            }
-        }
-
-		protected virtual void On_Cancel2Fingers(Gesture gesture)
-        {
-            if (gesture.pickedObject != _backgroundObject)
-            {
-                return;
-            }
-            //var deltaWorldPos = MapTools.ScreenToWorldSize(gesture.deltaPosition);
-            CameraManager.Instance.OnPinchEnd();
-            CameraManager.Instance.OnDragEnd(Vector2.zero);
-        }
-
-        private void OnDragEnd(Vector2 vec)
-        {
-            if (!_isPlaying)
-            {
-                CameraManager.Instance.OnDragEnd(vec);
-            }
-        }
-
-        public void Update()
-        {
-            if (_isPlaying)
-            {
-                return;
-            }
-            if (Input.GetKey(KeyCode.Mouse1))
-            {
-                if (_commandType != ECommandType.Move)
-                {
-                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Move);
-                }
-            }
-            else
-            {
-                if (_commandType == ECommandType.Move)
-                {
-                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Create);
-                }
-            }
-        }
-
-        #endregion
-
-        #region private
-
-        private void DoCommondExecute(Gesture gesture)
-        {
-            
-            float heightPixel = CameraManager.Instance.FinalOrthoSize*2;
-            float withPixel = heightPixel*CameraManager.Instance.AspectRatio;
-            float tempY = GM2DGame.Instance.GameScreenHeight / heightPixel;
-            float tempX = GM2DGame.Instance.GameScreenWidth / withPixel;
-            int xCount = (int) (Mathf.Abs(gesture.deltaPosition.x)/tempX) + 1;
-            int yCount = (int) (Mathf.Abs(gesture.deltaPosition.y)/tempY) + 1;
-            int finalCount = Mathf.Max(xCount, yCount)*ConstDefineGM2D.ServerTileScale;
-            if (finalCount == 0)
-            {
-                return;
-            }
-            Vector2 tmpPos;
-            Vector2 mousePos = Input.mousePosition;
-            for (int i = finalCount; i >= 0; i--)
-            {
-                tmpPos = mousePos - gesture.deltaPosition*i/finalCount;
-				_commandManager.Execute(_currentCommand, tmpPos);
-            }
-        }
-
-        private void DoPichEnd(Gesture ge)
-        {
-            //if (ge.pickedObject != _backgroundObject)
-            //{
-            //    return;
-            //}
-            //if (!_isPlaying)
-            //{
-            //    CameraManager.Instance.OnPinchEnd();
-            //    CameraManager.Instance.OnDragEnd(Vector2.zero);
-            //}
-        }
-
-        private void OnSelectedItemChanged(ushort itemId)
-        {
-            OnCommandChanged(ECommandType.Create);
-            _selectedItemId = itemId;
-        }
-
-		protected virtual void OnCommandChanged(ECommandType eCommandType)
-        {
-            _lastMousePosition = Vector3.zero;
-            _lastRectIndex = IntVec3.zero;
-            switch (eCommandType)
-            {
-                case ECommandType.Edit:
-                    eCommandType = ECommandType.Create;
-                    break;
-                case ECommandType.Erase:
-                    break;
-                case ECommandType.Redo:
-					_commandManager.Redo();
-                    return;
-                case ECommandType.Undo:
-					_commandManager.Undo();
-                    return;
-                case ECommandType.Publish:
-                    break;
-                case ECommandType.Create:
-                break;
-            case ECommandType.Move:
-                _cmdTypeBeforeMove = _commandType;
-                CancelCurrentCommand ();
-                break;
-            case ECommandType.Switch:
-                OnEnterSwitchMode ();
-                break;
-            }
-            // 从移动操作退出时，回到移动操作前的操作
-            if (_commandType == ECommandType.Move) {
-                _commandType = _cmdTypeBeforeMove;
-                if (_cmdTypeBeforeMove == ECommandType.Switch) {
-                    OnEnterSwitchMode ();
-                }
-            } else if (_commandType == ECommandType.Switch) {
-                OnExitSwitchMode ();
-                _commandType = eCommandType;
-            } else {
-                _commandType = eCommandType;
-            }
-            Messenger.Broadcast(EMessengerType.AfterCommandChanged);
-            //Debug.Log("OnCommandChanged:" + eCommandType);
-            if (_commandType == ECommandType.Pause)
-            {
-                _commandType = ECommandType.Create;
-            }
-        }
-
-        public void HandlePlay()
-        {
-            if (_isPlaying)
-            {
-                return;
-            }
-            _isPlaying = true;
-            PlayMode.Instance.SceneState.Init(_mapStatistics);
-            OnCommandChanged(ECommandType.Play);
-        }
-
-        public void HandlePause()
-        {
-            if (!_isPlaying)
-            {
-                return;
-            }
-            _isPlaying = false;
-            OnCommandChanged(ECommandType.Pause);
-        }
-
-        private bool CheckReceiveTwoFingerEvent()
-        {
-            return !_isPlaying && !_isDraggingItem;
-        }
-
-	    private void UpdateCameraMask()
-	    {
-			Rect worldRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
-			if (_cameraMask != null)
-			{
-				_cameraMask.Trans.localPosition = new Vector3(worldRect.center.x, worldRect.center.y, -30);
-				_cameraMask.SetLocalScale(worldRect.width, worldRect.height);
-			}
-			else
-			{
-				LogHelper.Error("UpdateMaskValue Failed ! _cameraMask == null");
-			}
-		}
-
-	    private void UpdateMapRectMask()
-	    {
-			Rect worldRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
-			if (_mapRectMask != null)
-			{
-				_mapRectMask.SetActiveEx(_curEditorLayer == EEditorLayer.Effect);
-				_mapRectMask.transform.localPosition = new Vector3(worldRect.center.x, worldRect.center.y, -30);
-				_mapRectMask.SetLocalScale(worldRect.width, worldRect.height);
-			}
-			else
-			{
-				LogHelper.Error("UpdateMaskValue Failed ! _mapRectMask == null");
-			}
-		}
-
-        #endregion
 
         #endregion
     }
 }
+

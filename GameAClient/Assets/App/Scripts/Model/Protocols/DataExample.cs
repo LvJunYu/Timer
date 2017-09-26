@@ -197,6 +197,7 @@ namespace GameA
 
         public DataExample () { 
             _struct = new List<Struct>();
+            OnCreate();
         }
         #endregion
     }

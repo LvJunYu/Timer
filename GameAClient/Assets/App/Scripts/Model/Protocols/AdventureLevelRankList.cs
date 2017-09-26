@@ -220,6 +220,7 @@ namespace GameA
 
         public AdventureLevelRankList () { 
             _recordList = new List<Record>();
+            OnCreate();
         }
         #endregion
     }

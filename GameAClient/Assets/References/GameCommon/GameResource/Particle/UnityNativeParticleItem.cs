@@ -26,7 +26,6 @@ namespace SoyEngine
 
 		public Action OnFreeEvent;
 
-
 		public override bool HasFinish
 		{
 			get
@@ -46,9 +45,9 @@ namespace SoyEngine
 			_cachedGo.SetActiveEx(false);
 		}
 
-		public override void SetData(bool autoDestroy , float lifeTime)
+		public override void SetData(bool autoDestroy)
 		{
-			base.SetData(autoDestroy, lifeTime);
+			base.SetData(autoDestroy);
 			_autoStop = false;
 			_playTime = 0;
 		}
@@ -79,9 +78,7 @@ namespace SoyEngine
                 _isPlaying = true;
             }
 		}
-
-
-
+		
 		public override void Stop()
 		{
 		    if (_isPlaying)
@@ -91,7 +88,19 @@ namespace SoyEngine
 		    }
 		}
 
-        public void Pause()
+		public void SetActiveState(bool active)
+		{
+			if (active)
+			{
+				Play();
+			}
+			else
+			{
+				Pause();
+			}
+		}
+
+		public void Pause()
         {
             if (_isPlaying)
             {
@@ -193,6 +202,23 @@ namespace SoyEngine
 				for (int i = 0; i < _cachedRenders.Length; i++)
 				{
 					_cachedRenders[i].sortingOrder = (int)ESortingOrder.Bullet;
+				}
+				_lifeTime = 0;
+				var particleSystems = _cachedGo.GetComponentsInChildren<ParticleSystem>(true);
+				if (particleSystems != null)
+				{
+					for (int i = 0; i < particleSystems.Length; i++)
+					{
+						var p = particleSystems[i];
+						if (p.main.duration > _lifeTime)
+						{
+							_lifeTime = p.main.duration;
+						}
+					}
+				}
+				if (_lifeTime <= 0)
+				{
+					_lifeTime = ConstDefineGM2D.DefaultParticlePlayTime;
 				}
 			}
 		}

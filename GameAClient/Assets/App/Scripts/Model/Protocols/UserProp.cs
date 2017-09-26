@@ -129,6 +129,7 @@ namespace GameA
 
         public UserProp () { 
             _itemDataList = new List<PropItem>();
+            OnCreate();
         }
         #endregion
     }

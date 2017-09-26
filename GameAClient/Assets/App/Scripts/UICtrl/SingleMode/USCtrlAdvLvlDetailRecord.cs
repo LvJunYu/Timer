@@ -6,12 +6,8 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
-using GameA.Game;
 
 namespace GameA
 {
@@ -20,9 +16,10 @@ namespace GameA
         #region 常量与字段
         public List<UMCtrlRecord> _cardList = new List<UMCtrlRecord>();
         private string HighScoreRecord = "最高记录录像";
-        private string Star3FlagRecord = "第一次获得三星录像";
-        private string Star2FlagRecord = "第一次获得二星录像";
-        private string Star1FlagRecord = "第一次获得一星录像";
+        private string Star3FlagRecord = "首次获得3星录像";
+        private string Star2FlagRecord = "首次获得2星录像";
+        private string Star1FlagRecord = "首次获得1星录像";
+        private EResScenary _resScenary;
         #endregion
 
         #region 属性
@@ -31,16 +28,6 @@ namespace GameA
         #endregion
 
         #region 方法
-        public override void Init (USViewAdvLvlDetailRecord view)
-        {
-            base.Init (view);
-        }
-
-        protected override void OnViewCreated ()
-        {
-            base.OnViewCreated ();
-//            _cachedView.SelectBtn.onClick.AddListener (OnSelectBtn);
-        }
 
         public void Open ()
         {
@@ -51,30 +38,36 @@ namespace GameA
             _cachedView.gameObject.SetActive (false);
         }
         #endregion
-
-        public void Set()
+        public void OnCloseBtnClick()
         {
+            //CardList.Clear();
+            //_cardList.Clear();
+            //_avatarmsg.Clear();
+        }
+
+        public void Set(AdventureUserLevelDataDetail levelDataDetail, EResScenary resScenary)
+        {
+            _resScenary = resScenary;
             if (_cardList.Count > 0)
             {
                 for (int i = 0; i < _cardList.Count; i++)
                 {
                     _cardList[i].Destroy();
-                    Debug.Log("_____销毁______"+ i);
                 }
             }
 
             _cardList.Clear();
 
-            if (LocalUser.Instance.AdventureUserLevelDataDetail.HighScoreRecord.CreateTime!=0)
-                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.HighScoreRecord, HighScoreRecord);
-            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star3FlagRecord.CreateTime != 0)
-                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star3FlagRecord, Star3FlagRecord);
-            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star2FlagRecord.CreateTime != 0)
-                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star2FlagRecord, Star2FlagRecord);
-            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star1FlagRecord.CreateTime != 0)
-                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star1FlagRecord, Star1FlagRecord);
-            if (LocalUser.Instance.AdventureUserLevelDataDetail.RecentRecordList != null)
-                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.RecentRecordList);
+            if (levelDataDetail.HighScoreRecord.CreateTime!=0)
+                SetEachCard(levelDataDetail.HighScoreRecord, HighScoreRecord);
+            if (levelDataDetail.Star3FlagRecord.CreateTime != 0)
+                SetEachCard(levelDataDetail.Star3FlagRecord, Star3FlagRecord);
+            if (levelDataDetail.Star2FlagRecord.CreateTime != 0)
+                SetEachCard(levelDataDetail.Star2FlagRecord, Star2FlagRecord);
+            if (levelDataDetail.Star1FlagRecord.CreateTime != 0)
+                SetEachCard(levelDataDetail.Star1FlagRecord, Star1FlagRecord);
+            if (levelDataDetail.RecentRecordList != null)
+                SetEachCard(levelDataDetail.RecentRecordList);
             
             //RefreshPage();
         }
@@ -83,10 +76,10 @@ namespace GameA
         {
             if (_cachedView != null)
             {
-                var UM = new UMCtrlRecord();
-                UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set(record,name);
-                _cardList.Add(UM);
+                var um = new UMCtrlRecord();
+                um.Init(_cachedView.Dock, _resScenary);
+                um.Set(record,name);
+                _cardList.Add(um);
             }
         }
 
@@ -94,21 +87,19 @@ namespace GameA
         {
             if (_cachedView != null)
             {
-                var UM = new UMCtrlRecord();
+                
                 if (record.Count > 0)
                 {
                     for (int i = 0; i < record.Count; i++)
                     {
+                        var um = new UMCtrlRecord();
                         string m = String.Format("最近尝试{0}次录像",i+1);
                         //string name =
-                        UM.Init(_cachedView.Dock as RectTransform);
-                        UM.Set(record[i], m);
-                        _cardList.Add(UM);
+                        um.Init(_cachedView.Dock, _resScenary);
+                        um.Set(record[i], m);
+                        _cardList.Add(um);
                     }
                 }
-
-
-
             }
         }
 

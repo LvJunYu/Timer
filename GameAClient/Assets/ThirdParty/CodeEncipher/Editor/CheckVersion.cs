@@ -90,7 +90,7 @@ namespace J3Tech
             {
                 return;
             }
-            title = UpgradeWindowTitle;
+            titleContent.text = UpgradeWindowTitle;
             int w = 400;
             int h = 400;
             position = new Rect(Screen.width - w *0.5f,Screen.height - h * 0.5f,400,400);

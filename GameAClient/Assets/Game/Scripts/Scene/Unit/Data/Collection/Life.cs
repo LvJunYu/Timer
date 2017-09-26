@@ -8,6 +8,8 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -26,10 +28,12 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void OnTrigger()
+        protected override void OnTrigger(UnitBase other)
         {
-            PlayMode.Instance.MainUnit.Life ++;
-            base.OnTrigger();
+            other.Life ++;
+            if (_trans != null)
+                Messenger<Vector3>.Broadcast(EMessengerType.OnLifeCollect, _trans.position);
+            base.OnTrigger(other);
         }
     }
 }

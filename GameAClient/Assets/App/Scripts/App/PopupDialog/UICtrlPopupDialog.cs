@@ -8,13 +8,12 @@
 
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 using System;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlPopupDialog : UICtrlGenericBase<UIViewPopupDialog>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlPopupDialog : UICtrlResManagedBase<UIViewPopupDialog>
     {
         #region 常量与字段
         #endregion
@@ -46,6 +45,10 @@ namespace GameA
 
         private void MessengerShowDialogHandler(string msg, string title, KeyValuePair<string, Action>[] btnParam)
         {
+            if (!IsOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
+            }
             ShowDialog(msg, title, btnParam);
         }
         /// <summary>
@@ -63,10 +66,10 @@ namespace GameA
             }
             if(!_isOpen)
             {
-                Open(null);
+                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
             }
             UMCtrlDialog ctrl = new UMCtrlDialog();
-            ctrl.Init(_cachedView.ContentDock);
+            ctrl.Init(_cachedView.ContentDock, ResScenary);
             ctrl.Set(msg, title, btnParam);
         }
 

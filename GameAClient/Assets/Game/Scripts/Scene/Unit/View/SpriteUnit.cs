@@ -8,6 +8,7 @@
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -23,8 +24,8 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
+            Sprite sprite = null;
+            if (!JoyResManager.Instance.TryGetSprite(_unit.AssetPath, out sprite))
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
                 return false;
@@ -59,7 +60,7 @@ namespace GameA.Game
         public override void ChangeView(string assetPath)
         {
             Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
+            if (!JoyResManager.Instance.TryGetSprite(assetPath, out sprite))
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
                 return;

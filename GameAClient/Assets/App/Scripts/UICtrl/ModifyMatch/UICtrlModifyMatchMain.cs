@@ -5,19 +5,13 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlModifyMatchMain : UICtrlGenericBase<UIViewModifyMatchMain>
     {
         #region 常量与字段
@@ -28,6 +22,7 @@ namespace GameA
         private const long _autoRequstDataInterval = 1000;
         private long _lastAutoRefreshView;
         private long _lastRequstDataTime;
+        private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -69,7 +64,11 @@ namespace GameA
             if (LocalUser.Instance.MatchUserData.IsInited) {
                 LocalUser.Instance.MatchUserData.LocalRefresh ();
             }
-            SocialGUIManager.HideGoldEnergyBar ();
+            if (!_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.None);
+                _pushGoldEnergyStyle = true;
+            }
             //RefreshViewAll ();
             _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
             _lastRequstDataTime = _lastAutoRefreshView;
@@ -77,8 +76,12 @@ namespace GameA
 
         protected override void OnClose()
         {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
             base.OnClose();
-            SocialGUIManager.ShowGoldEnergyBar (true);
         }
 
         protected override void InitEventListener()
@@ -153,14 +156,11 @@ namespace GameA
             _cachedView.MatchPoint.text = string.Format ("{0} / {1}", matchPoint, matchPointMax);
 
             long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
-            float getMatchPointLeftTimeInSecond = 0f;
-            float getMatchPointLeftTimeInPercentage = 0f;
             if (0 == matchPoint) {
-                getMatchPointLeftTimeInSecond = 
-                    LocalUser.Instance.MatchUserData.ChallengeIntervalSecond - 
-                             0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
-                getMatchPointLeftTimeInPercentage = getMatchPointLeftTimeInSecond /
-                (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                var getMatchPointLeftTimeInSecond = LocalUser.Instance.MatchUserData.ChallengeIntervalSecond - 
+                                                      0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
+                var getMatchPointLeftTimeInPercentage = getMatchPointLeftTimeInSecond /
+                                                          LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
                 _cachedView.MatchPoint.gameObject.SetActive (false);
                 int hour = (int)getMatchPointLeftTimeInSecond / 60 / 60;
                 int minute = (int)getMatchPointLeftTimeInSecond / 60 - hour * 60;
@@ -169,11 +169,15 @@ namespace GameA
                 _cachedView.matchCDText.gameObject.SetActive (true);
                 SetLightImageProgress (1f - getMatchPointLeftTimeInPercentage, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
                 _cachedView.MatchBtn.gameObject.SetActive (false);
+                _cachedView.MatchRedPoint.gameObject.SetActive(false);
+                _cachedView.MatchDoneText.gameObject.SetActive(false);
             } else {
                 _cachedView.MatchPoint.gameObject.SetActive (true);
                 _cachedView.matchCDText.gameObject.SetActive (false);
                 SetLightImageProgress (1, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
                 _cachedView.MatchBtn.gameObject.SetActive (true);
+                _cachedView.MatchRedPoint.gameObject.SetActive(true);
+                _cachedView.MatchDoneText.gameObject.SetActive(true);
             }
 
         }
@@ -194,6 +198,7 @@ namespace GameA
                     _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (false);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (false);
+                _cachedView.ModifyRedPoint.gameObject.SetActive(false);
                 //_cachedView.ModifyCDImage.fillAmount = (float)modifyCDInSecond / LocalUser.Instance.MatchUserData.ReformIntervalSeconds;
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
@@ -202,6 +207,8 @@ namespace GameA
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
+                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
+                _cachedView.ModifyDoneText.gameObject.SetActive(true);
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
                 _cachedView.ModifyCDText.text = string.Empty;
@@ -209,6 +216,8 @@ namespace GameA
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
+//                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
+                _cachedView.ModifyDoneText.gameObject.SetActive(true);
             }
         }
 
@@ -313,47 +322,52 @@ namespace GameA
             }
         }
 
-        private void OnClaimBtn () {
-            //if (!CheckPublishedProjectValid ()) {
-            //    return;
-            //}
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
-            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
-            if (rewardLevel < 1) return;
-            rewardLevel = Mathf.Clamp (rewardLevel, 1, 3);
-            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
-            RemoteCommands.GetReformReward (
-                rewardLevel,
-                msg => {
-                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        var reward = new Reward (msg.Reward);
-                        for (int i = 0; i < reward.ItemList.Count; i++)
-                        {
-                            reward.ItemList[i].AddToLocal();
-                        }
-                        SocialGUIManager.ShowReward (reward);
-                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
-                        RefreshPublishedProject ();
+        private void OnClaimBtn ()
+        {
 
-                    } else
-                    {
-                        // TODO error handle    
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    }
-                },
-                code => {
-                    // TODO error handle
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                }
-            );
+            SocialGUIManager.Instance.OpenUI<UICtrlMatchGetReward>();
+//            //if (!CheckPublishedProjectValid ()) {
+//            //    return;
+//            //}
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
+//            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
+//            if (rewardLevel < 1) return;
+//            rewardLevel = Mathf.Clamp (rewardLevel, 1, 3);
+//            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
+//            RemoteCommands.GetReformReward (
+//                rewardLevel,
+//                msg => {
+//                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                        var reward = new Reward (msg.Reward);
+//                        for (int i = 0; i < reward.ItemList.Count; i++)
+//                        {
+//                            reward.ItemList[i].AddToLocal();
+//                        }
+//                        SocialGUIManager.ShowReward (reward);
+//                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
+//                        RefreshPublishedProject ();
+//
+//                    } else
+//                    {
+//                        // TODO error handle    
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                    }
+//                },
+//                code => {
+//                    // TODO error handle
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                }
+//            );
 
         }
 
         #endregion 接口
         private void OnReformProjectPublished () {
-            if (!IsOpen)
+            if (!_isViewCreated)
+            {
                 return;
+            }
             LocalUser.Instance.MatchUserData.Request(
                 LocalUser.Instance.UserGuid,
                 () => {

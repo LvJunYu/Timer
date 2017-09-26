@@ -10,13 +10,15 @@ using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     [StructLayout(LayoutKind.Sequential)]
-    [System.Serializable]
+    [Serializable]
     public struct UnitDesc : IEquatable<UnitDesc>
     {
-        public static UnitDesc zero = new UnitDesc();
+        public static UnitDesc zero;
 
         public int Id;
         public IntVec3 Guid;
@@ -31,9 +33,49 @@ namespace GameA.Game
             Scale = scale;
         }
 
+        public IntVec3 GetUpPos(int z)
+        {
+            return new IntVec3(Guid.x, Guid.y + ConstDefineGM2D.ServerTileScale, z);
+        }
+
+        public IntVec2 GetUpPos()
+        {
+            return new IntVec2(Guid.x, Guid.y + ConstDefineGM2D.ServerTileScale);
+        }
+
+        public IntVec3 GetDownPos(int z)
+        {
+            return new IntVec3(Guid.x, Guid.y - ConstDefineGM2D.ServerTileScale, z);
+        }
+
+        public IntVec3 GetLeftPos(int z)
+        {
+            return new IntVec3(Guid.x - ConstDefineGM2D.ServerTileScale, Guid.y, z);
+        }
+        
+        public IntVec2 GetLeftPos()
+        {
+            return new IntVec2(Guid.x - ConstDefineGM2D.ServerTileScale, Guid.y);
+        }
+
+        public IntVec3 GetRightPos(int z)
+        {
+            return new IntVec3(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y , z);
+        }
+        
+        public IntVec2 GetRightPos()
+        {
+            return new IntVec2(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y);
+        }
+      
+        public override string ToString()
+        {
+            return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);
+        }
+        
         public static bool operator ==(UnitDesc a, UnitDesc other)
         {
-            return (a.Id == other.Id) && (a.Guid == other.Guid) && (a.Rotation == other.Rotation);
+            return a.Equals(other);
         }
 
         public static bool operator !=(UnitDesc a, UnitDesc other)
@@ -43,17 +85,56 @@ namespace GameA.Game
 
         public bool Equals(UnitDesc other)
         {
-            return (Id == other.Id) && (Guid == other.Guid) && (Rotation == other.Rotation);
+            return Id == other.Id && Guid == other.Guid && Rotation == other.Rotation &&Util.IsVector2Equal(Scale, other.Scale);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id;
+                hashCode = (hashCode * 397) ^ Guid.GetHashCode();
+                hashCode = (hashCode * 397) ^ Rotation.GetHashCode();
+                hashCode = (hashCode * 397) ^ Scale.GetHashCode();
+                return hashCode;
+            }
+        }
+    }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ColliderDesc : IEquatable<ColliderDesc>
+    {
+        public Grid2D Grid;
+        public byte Depth;
+        public byte Layer;
+        public bool IsDynamic;
+
+        public bool Equals(ColliderDesc other)
+        {
+            return Grid.Equals(other.Grid) && Depth == other.Depth && Layer == other.Layer && IsDynamic == other.IsDynamic;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals((UnitDesc)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is ColliderDesc && Equals((ColliderDesc) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Grid.GetHashCode();
+                hashCode = (hashCode * 397) ^ Depth.GetHashCode();
+                hashCode = (hashCode * 397) ^ Layer.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsDynamic.GetHashCode();
+                return hashCode;
+            }
         }
 
         public override string ToString()
         {
-            return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);
+            return string.Format("Grid: {0}, Depth: {1}, Layer: {2}, IsDynamic: {3}", Grid, Depth, Layer, IsDynamic);
         }
     }
 }

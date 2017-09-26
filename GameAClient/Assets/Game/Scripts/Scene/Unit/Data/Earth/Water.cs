@@ -37,9 +37,9 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_view1 != null)
+            for (int i = 0; i < _viewExtras.Length; i++)
             {
-                _view1.Animation.Init("Run");
+                _viewExtras[i].Animation.Init("Run");
             }
             _animation.Init("Run");
             return true;
@@ -58,7 +58,7 @@ namespace GameA.Game
         {
             //播放水中动画 漂浮一会 然后死掉
             //GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
-            if (other.IsHero)
+            if (other.IsActor && other.IsAlive)
             {
                 other.InWater();
             }

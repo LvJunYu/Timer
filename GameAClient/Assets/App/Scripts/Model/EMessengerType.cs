@@ -4,7 +4,6 @@
   ** Date : 3/29/2017 11:53 AM
   ** Summary : EMessengerType.cs
   ***********************************************************************/
-using System;
 
 namespace GameA
 {
@@ -28,6 +27,9 @@ namespace GameA
         public static readonly int OnUserFollowerChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserMatrixDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectCreated = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnRequestStartGame = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnGameStartComplete = SoyEngine.EMessengerType.NextId++;
@@ -96,6 +98,39 @@ namespace GameA
         public static int OnGoldChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnDiamondChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnEnergyChanged = SoyEngine.EMessengerType.NextId++;
+
+
+        public static int OnResourcesCheckFinish = SoyEngine.EMessengerType.NextId++;
+        public static int OnResourcesCheckStart = SoyEngine.EMessengerType.NextId++;
+        public static int OnResourcesUpdateProgressUpdate = SoyEngine.EMessengerType.NextId++;
+        public static int OnVersionUpdateStateChange = SoyEngine.EMessengerType.NextId++;
+        
+        
+        //PVP
+        public static int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomWarnningHost = SoyEngine.EMessengerType.NextId++;
+        public static int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
+
+        //拼图
+        public static int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
+        public static int OnPuzzleEquip = SoyEngine.EMessengerType.NextId++;
+        public static int OnPuzzleFragChanged = SoyEngine.EMessengerType.NextId++;
+        
+        //武器升级后广播消息
+        public static int OnWeaponDataChange = SoyEngine.EMessengerType.NextId++;
+        //设置变化
+        public static int OnGameSettingChanged = SoyEngine.EMessengerType.NextId++;
+        
+        //训练
+        public static int OnUpgradeTrainProperty = SoyEngine.EMessengerType.NextId++;
+        public static int OnUpgradeTrainGrade = SoyEngine.EMessengerType.NextId++;
+        
+        //成就
+        public static int OnAchieve = SoyEngine.EMessengerType.NextId++;
+        public static int OnAddAchievementCount = SoyEngine.EMessengerType.NextId++;
     }
 }
 

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
 using SoyEngine;
@@ -10,6 +10,7 @@ namespace GameA.Game
     {
         protected Record _record;
         protected GM2DRecordData _gm2drecordData;
+        protected int _inputDataReadInx = 0;
 
         public virtual Record Record
         {
@@ -22,17 +23,41 @@ namespace GameA.Game
             {
                 return false;
             }
-            _record = param as Record;
             _gameRunMode = EGameRunMode.PlayRecord;
-            InitRecord();
             return true;
 		}
 
-        public override void InitByStep()
+        public override IEnumerator InitByStep()
         {
             GameRun.Instance.ChangeState(ESceneState.Play);
             InitUI();
             InitGame();
+            yield return null;
+        }
+
+
+        public override void Update()
+        {
+            GameRun.Instance.Update();
+            while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+            {
+                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
+                {
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
+                    if (localPlayerInput != null)
+                    {
+                        localPlayerInput.PrepareForApplyInput();
+                        while (_inputDataReadInx < _inputDatas.Count-1
+                               && _inputDatas[_inputDataReadInx] == GameRun.Instance.LogicFrameCnt)
+                        {
+                            _inputDataReadInx++;
+                            localPlayerInput.ApplyKeyChangeCode(_inputDatas[_inputDataReadInx]);
+                            _inputDataReadInx++;
+                        }
+                    }
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
         }
 
         public override void OnGameFailed()
@@ -69,8 +94,7 @@ namespace GameA.Game
 				GM2DGame.Instance.OnGameLoadError("录像解析失败");
                 return;
 			}
-			PlayMode.Instance.ERunMode = ERunMode.Record;
-            PlayMode.Instance.InputDatas.AddRange(_gm2drecordData.Data);
+            _inputDatas.AddRange(_gm2drecordData.Data);
         }
 
         protected virtual void InitUI()
@@ -79,12 +103,13 @@ namespace GameA.Game
 //            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
 //            SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             InputManager.Instance.HideGameInput();
         }
 
         protected virtual void InitGame()
         {
-            MainUnit mainPlayer = PlayMode.Instance.MainUnit;
+            MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
             if (mainPlayer == null)
                 return;
             // todo set data

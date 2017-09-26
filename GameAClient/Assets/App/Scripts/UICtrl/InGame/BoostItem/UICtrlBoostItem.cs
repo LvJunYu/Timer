@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 using UnityEngine;
 using SoyEngine.Proto;
@@ -46,13 +47,34 @@ namespace GameA
             }
 
             _cachedView.OKBtn.onClick.AddListener (OnOKBtn);
-            _cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
+            //_cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
         }
 
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
 
+            ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
+            if (situation != null && situation.GetLevelInfo() != null)
+            {
+                var param = situation.GetLevelInfo();
+                Table_StandaloneLevel table = param.Table;
+                if (table == null)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();    
+                }
+                for (int j = 0; j < _boostItems.Length; j++) 
+                {
+                    if (table.HelperItems.Contains(_boostItems[j].BoostItemType))
+                    {
+                        _cachedView.BoostItems[j].gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        _cachedView.BoostItems [j].gameObject.SetActive(false);
+                    }
+                }
+            }
             if (!LocalUser.Instance.UserProp.IsInited) {
                 SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
             }
@@ -119,10 +141,6 @@ namespace GameA
             }
         }
 
-        private void OnCloseBtn ()
-        {
-            SocialGUIManager.Instance.CloseUI <UICtrlBoostItem>();
-        }
 
         private void OnReady2Play ()
         {

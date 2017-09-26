@@ -17,28 +17,31 @@ namespace GameA.Game
     {
         private static EnvManager _instance;
 
-        public const int ItemLayer = 1 << (int)ESceneLayer.Item | 1 << (int)ESceneLayer.RigidbodyItem | 1 << (int)ESceneLayer.AttackPlayerItem;
+        public const int ItemLayer = 1 << (int)ESceneLayer.Item | 1 << (int)ESceneLayer.RigidbodyItem;
         public const int MainPlayerLayer = 1 << (int)ESceneLayer.MainPlayer;
-        public const int HeroLayer = 1 << (int)ESceneLayer.Hero;
+        public const int MonsterLayer = 1 << (int)ESceneLayer.Monster;
+        public const int RemotePlayer = 1 << (int)ESceneLayer.RemotePlayer;
+        public const int ActorLayer = MonsterLayer | MainPlayerLayer | RemotePlayer;
 
 	    public const int EffectLayer = 1 << (int) ESceneLayer.Effect;
 
 		public const int MaxLayer = 1 << (int)ESceneLayer.Max;
-        public const int UnitLayer = ItemLayer | HeroLayer;
+        public const int UnitLayer = ItemLayer | MonsterLayer | RemotePlayer;
 	    public const int UnitLayerWithMainPlayer = ItemLayer | MainPlayerLayer;
 
 	    public const int UnitLayerWithoutEffect = (~MaxLayer) & (~EffectLayer);
 		public const int MainPlayerAndEffectLayer = 1 << (int)ESceneLayer.Effect |1<<(int)ESceneLayer.MainPlayer;
 
-        public const int LazerShootLayer = MainPlayerLayer | HeroLayer | ItemLayer;
-        public const int LazerBlockLayer = ItemLayer;
+        public const int FanBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer | 1<<(int)ESceneLayer.Bullet;
+	    
+	    public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
+        public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
+        public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
-        public const int BridgeBlockLayer = MainPlayerLayer | HeroLayer | ItemLayer;
-
-        public const int MovingEarthBlockLayer = MainPlayerLayer | HeroLayer | ItemLayer;
-        public const int MovingEarthBlockUpLayer = 1 << (int)ESceneLayer.Item;
-
-        public const int BulletHitLayer = HeroLayer | ItemLayer;
+        public const int BulletHitLayer = MonsterLayer | ItemLayer;
+        public const int BulletHitLayerWithMainPlayer = MonsterLayer | ItemLayer | MainPlayerLayer;
+	    
+        public const int MonsterViewLayer = MainPlayerLayer | ItemLayer;
 
 		public static EnvManager Instance
         {
@@ -47,41 +50,31 @@ namespace GameA.Game
 
 		public void Init()
         {
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.AttackPlayerItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.AttackPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.Hero);
-			JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer,(int)ESceneLayer.Effect);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Effect);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Decoration);
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Hero, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Hero, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Hero, (int)ESceneLayer.MainPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Hero, (int)ESceneLayer.Hero);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Monster);
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayer, (int)ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Monster);
+	        
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Bullet);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.MainPlayer);
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.MainPlayer);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.Hero);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.MainPlayer);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.MainPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.Hero);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Hero);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Hero);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Monster);
 		}
 
         public void Dispose()
@@ -101,18 +94,15 @@ namespace GameA.Game
     public enum ESceneLayer
     {
         Default,
-        UI = 1,
         MainPlayer,
-        Hero,
+        RemotePlayer,
+        Monster,
         Item,
-        AttackPlayer,
-        AttackPlayerItem,
-        Decoration,
 		Effect,
-        AttackMonsterItem,  // 可以和Monster、Player、Earth碰撞
-        RigidbodyItem,  // 可以和Monster、Player、Earth碰撞
+        RigidbodyItem,
         Bullet,
         Gun,
+	    Decoration,
 		HomeAvatar = 30,
         Max = 31
     }
@@ -127,12 +117,11 @@ namespace GameA.Game
         Flame,
         Hero,
         Bullet,
-		AttTexture,
-        AttTexture2,
         DeadMark,
 		EffectEditorLayMask,
-		MainPlayer,
 		EffectItem,
+	    AttTexture,
+	    AttTexture2,
         DragingItem,
 		Mask,
         Max

@@ -16,52 +16,25 @@ namespace GameA.Game
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
     public class SwitchEarth : BlockBase
     {
-        protected bool _currentCtrlBySwitch;
+        protected EActiveState _curActiveState;
         protected SpineObject _effect;
 
-        public bool CurrentCtrlBySwitch
+        public EActiveState CurActiveState
         {
             set
             {
-                if (_currentCtrlBySwitch == value)
+                if (_curActiveState == value)
                 {
                     return;
                 }
-                _currentCtrlBySwitch = value;
-                if (_view != null)
-                {
-                    _view.SetRendererEnabled(!_currentCtrlBySwitch);
-                }
-                if (_effect != null)
-                {
-                    _effect.SetActive(_currentCtrlBySwitch);
-                }
-                _canLazerCross = _currentCtrlBySwitch;
-                _canMagicCross = _currentCtrlBySwitch;
-                _canBridgeCross = _currentCtrlBySwitch;
+                _curActiveState = value;
+                UpdateActiveState();
             }
         }
 
         public override bool CanControlledBySwitch
         {
             get { return true; }
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            _canLazerCross = false;
-            _canMagicCross = false;
-            _canBridgeCross = false;
-            _currentCtrlBySwitch = false;
-            if (_view != null)
-            {
-                _view.SetRendererEnabled(!_currentCtrlBySwitch);
-            }
-            if (_effect != null)
-            {
-                _effect.SetActive(_currentCtrlBySwitch);
-            }
         }
 
         internal override void OnObjectDestroy()
@@ -74,6 +47,13 @@ namespace GameA.Game
             }
         }
 
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            _curActiveState = _eActiveState;
+            UpdateActiveState();
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -82,21 +62,33 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                _view.SetRendererEnabled(!_currentCtrlBySwitch);
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
                 _effect.Trans.parent = _trans;
-                _effect.SetActive(_currentCtrlBySwitch);
+                UpdateActiveState();
             }
             return true;
         }
-
-        private void SetCtrlBySwitchState(bool value)
+        
+        private void UpdateActiveState()
         {
-            if (_currentCtrlBySwitch == value)
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(_curActiveState == EActiveState.Active);
+            }
+            if (_effect != null)
+            {
+                _effect.SetActive(_curActiveState == EActiveState.Deactive);
+            }
+            SetCross(_curActiveState == EActiveState.Deactive);
+        }
+
+        private void SetCurrentActiveState(EActiveState value)
+        {
+            if (_curActiveState == value)
             {
                 return;
             }
-            if (_currentCtrlBySwitch && !_ctrlBySwitch)
+            if (_curActiveState != EActiveState.Active && _eActiveState == EActiveState.Active)
             {
                 var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
                 for (int i = 0; i < units.Count; i++)
@@ -107,23 +99,23 @@ namespace GameA.Game
                         return;
                     }
                 }
-                CurrentCtrlBySwitch = value;
+                CurActiveState = value;
             }
             else
             {
-                CurrentCtrlBySwitch = value;
+                CurActiveState = value;
             }
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            SetCtrlBySwitchState(_ctrlBySwitch);
+            SetCurrentActiveState(_eActiveState);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_currentCtrlBySwitch)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -132,7 +124,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_currentCtrlBySwitch)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -141,7 +133,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_currentCtrlBySwitch)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -150,7 +142,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_currentCtrlBySwitch)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }

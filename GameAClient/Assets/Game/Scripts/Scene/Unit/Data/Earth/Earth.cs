@@ -19,13 +19,14 @@ namespace GameA.Game
     {
         protected override void InitAssetPath()
         {
-            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, Random.Range(1, 3));
+            var v = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model,  (byte) Mathf.Clamp(v, 1, 2));
         }
 
         public override Edge GetUpEdge(UnitBase other)
         {
             int start, end;
-            if (GetPos(other, EDirectionType.Up, out start, out end))
+            if (GetPos(other.ColliderGrid, EDirectionType.Up, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
@@ -39,42 +40,42 @@ namespace GameA.Game
             return base.GetUpEdge(other);
         }
 
-        protected override bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        protected override bool CanEdgeClimbed(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
         {
             int start, end;
-            if (GetPos(other, eDirectionType, out start, out end))
+            if (GetPos(checkGrid, eDirectionType, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
                     if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(start, end))
                     {
-                        return _edges[i].ESkillType == ESkillType.Clay;
+                        return _edges[i].EPaintType == EPaintType.Clay;
                     }
                 }
             }
-            return base.CanEdgeClimbed(other, eDirectionType);
+            return base.CanEdgeClimbed(other, checkGrid, eDirectionType);
         }
     }
 
-    public struct Edge
+    public struct Edge : IEquatable<Edge>
     {
         public static Edge zero = new Edge();
         public int Start;
         public int End;
         public EDirectionType Direction;
-        public ESkillType ESkillType;
+        public EPaintType EPaintType;
 
-        public Edge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        public Edge(int start, int end, EDirectionType direction, EPaintType ePaintType)
         {
             Start = start;
             End = end;
             Direction = direction;
-            ESkillType = eSkillType;
+            EPaintType = ePaintType;
         }
 
         public override string ToString()
         {
-            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, ESkillType);
+            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, EPaintType);
         }
 
         private bool Intersect(ref Edge edge)
@@ -107,13 +108,36 @@ namespace GameA.Game
             edges.Remove(this);
             int cutStart = Math.Max(Start, edge.Start);
             int cutEnd = Math.Min(End, edge.End);
-            if (cutStart - 1 >= Start + Earth.MinEdgeLength)
+            if (cutStart - 1 >= Start + PaintBlock.MinEdgeLength)
             {
-                edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
+                edges.Add(new Edge(Start, cutStart - 1, Direction, EPaintType));
             }
-            if (End >= cutEnd + 1 + +Earth.MinEdgeLength)
+            if (End >= cutEnd + 1 + +PaintBlock.MinEdgeLength)
             {
-                edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
+                edges.Add(new Edge(cutEnd + 1, End, Direction, EPaintType));
+            }
+        }
+
+        public bool Equals(Edge other)
+        {
+            return Start == other.Start && End == other.End && Direction == other.Direction && EPaintType == other.EPaintType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Edge && Equals((Edge) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Start;
+                hashCode = (hashCode * 397) ^ End;
+                hashCode = (hashCode * 397) ^ (int) Direction;
+                hashCode = (hashCode * 397) ^ (int) EPaintType;
+                return hashCode;
             }
         }
     }

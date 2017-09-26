@@ -6,23 +6,12 @@
 ***********************************************************************/
 
 using SoyEngine;
-using Spine.Unity;
 using UnityEngine;
 
 namespace GameA.Game
 {
-	public partial class Table_Unit
+    public partial class Table_Unit
 	{
-        public bool IsHero
-        {
-            get { return EUnitType == EUnitType.MainPlayer || EUnitType == EUnitType.Monster; }
-        }
-
-        public bool IsMorphUnit
-        {
-            get { return EGeneratedType == EGeneratedType.Morph; }
-        }
-
         public virtual EColliderType EColliderType
         {
             get { return (EColliderType)ColliderType; }
@@ -48,19 +37,90 @@ namespace GameA.Game
 			get { return (EUnitType) UnitType; }
 		}
 
-	    public bool CanRotate
-	    {
-	        get { return RotationMask != 0; }
-	    }
-
-        public bool CanMove
-        {
-            get { return OriginMoveDirection != 0; }
-        }
-
 	    public EPairType EPairType
 	    {
 	        get { return (EPairType) PairType; }
+	    }
+
+	    public EDirectionType DefaultDirection
+	    {
+	        get
+	        {
+	            return (EDirectionType) (Direction - 1);
+	        }
+	    }
+
+	    public EMoveDirection DefaultMoveDirection
+	    {
+	        get
+	        {
+	            if (MoveDirection == 5)
+	            {
+	                return EMoveDirection.None;
+	            }
+	            return (EMoveDirection) MoveDirection;
+	        }
+	    }
+
+	    public EActiveState DefaultActiveState
+	    {
+	        get
+	        {
+	            return (EActiveState) ActiveState;
+	        }
+	    }
+
+		public ERotateMode DefaultRotateMode
+		{
+			get
+			{
+				if (RotateState == 3)
+				{
+					return ERotateMode.None;
+				}
+				return (ERotateMode) (RotateState - 1);
+			}
+		}
+
+		public EDirectionType DefaultRotateEnd
+		{
+			get
+			{
+				var forward = (int) DefaultDirection;
+				int v = forward / 4;
+				var opposite = (forward + 2) % 4 + v * 4;
+				return (EDirectionType) opposite;
+			}
+		}
+
+		public bool HasDirection8
+		{
+			get { return DirectionMask == 127; }
+		}
+
+		public bool CanEdit(EEditType editType)
+	    {
+	        switch (editType)
+	        {
+	            case EEditType.Direction:
+	                return Direction > 0;
+	            case EEditType.MoveDirection:
+	                return MoveDirection > 0;
+	            case EEditType.Active:
+	                return ActiveState > 0;
+	            case EEditType.Child:
+	                return ChildState != null;
+	            case EEditType.Rotate:
+	                return RotateState > 0;
+	            case EEditType.TimeDelay:
+	            case EEditType.TimeInterval:
+	                return TimeState != null;
+	            case EEditType.Text:
+	                return TextState > 0;
+	            case EEditType.Style:
+	                return Id == 4001;
+	        }
+	        return false;
 	    }
 
 	    // 碰撞体偏移

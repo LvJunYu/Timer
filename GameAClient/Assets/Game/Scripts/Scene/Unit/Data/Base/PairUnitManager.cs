@@ -81,7 +81,7 @@ namespace GameA.Game
 
         public override string ToString()
         {
-            return string.Format("UnitA: {0}, UnitB: {1}, TriggeredCnt: {2}, Sender: {3}", UnitA, UnitB, TriggeredCnt, Sender);
+            return string.Format("Num: {0}, UnitA: {1}, UnitB: {2}", Num, UnitA, UnitB);
         }
     }
 
@@ -104,7 +104,7 @@ namespace GameA.Game
 
         public PairUnitManager()
         {
-            _pairUnits.Add(EPairType.ProtalDoor, new PairUnit[20]);
+            _pairUnits.Add(EPairType.PortalDoor, new PairUnit[20]);
             foreach (var pairUnits in _pairUnits.Values)
             {
                 for (int i = 0; i < pairUnits.Length; i++)
@@ -183,7 +183,7 @@ namespace GameA.Game
             pairUnit.TriggeredCnt++;
             pairUnit.Sender = sender;
             //传送门要特殊处理
-            if (unit.TableUnit.EPairType == EPairType.ProtalDoor)
+            if (unit.TableUnit.EPairType == EPairType.PortalDoor)
             {
                 Portal.OnPortal(pairUnit, unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB : pairUnit.UnitA);
                 return;

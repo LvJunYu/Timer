@@ -239,7 +239,7 @@ namespace GameA
                                 }
                                 _isRequestPlayChallenge = false;
                                 GameManager.Instance.RequestPlay(targetProject);
-                                SocialGUIManager.Instance.ChangeToGameMode();
+                                SocialApp.Instance.ChangeToGame();
                             },
                             () => {
                                 // todo err handle
@@ -267,40 +267,60 @@ namespace GameA
             );
         }
 
-        public void CommitChallengeResult (bool isSuccess, float usedTime, Action successCB, Action<ENetResultCode> failureCB) {
+        public void CommitChallengeResult (
+            bool success,
+            int usedTime,
+            int score,
+            int scoreItemCount,
+            int killMonsterCount,
+            int leftTime,
+            int leftLife,
+            byte [] recordBytes,
+            Action successCb,
+            Action<ENetResultCode> failureCb) {
             if (0 == _playChallengeToken) {
-                if (null != failureCB) {
-                    failureCB.Invoke (ENetResultCode.NR_Error);
+                if (null != failureCb) {
+                    failureCb.Invoke (ENetResultCode.NR_Error);
                 }
                 return;
             }
+            Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+            {
+                Success = success,
+                UsedTime = usedTime,
+                Score = score,
+                ScoreItemCount = scoreItemCount,
+                KillMonsterCount = killMonsterCount,
+                LeftTime = leftTime,
+                LeftLife = leftLife,
+                DeadPos = null
+            };
             RemoteCommands.CommitMatchChallengeLevelResult (
                 _playChallengeToken,
-                isSuccess,
-                usedTime,
+                recordUploadParam,
                 msg => {
                     if ((int)ECommitMatchChallengeLevelResultCode.CMCLRC_Success == msg.ResultCode) {
                         _lastChallengeReward.OnSyncFromParent (msg.Reward);
                         _playChallengeToken = 0;
-                        if (isSuccess) {
+                        if (success) {
                             _curSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
                             _easyChallengeProjectData = new Project ();
                             _mediumChallengeProjectData = new Project ();
                             _difficultChallengeProjectData = new Project ();
                             _randomChallengeProjectData = new Project ();
                         }
-                        if (null != successCB) {
-                            successCB.Invoke ();
+                        if (null != successCb) {
+                            successCb.Invoke ();
                         }
                     } else {
-                        if (null != failureCB) {
-                            failureCB.Invoke(ENetResultCode.NR_Error);
+                        if (null != failureCb) {
+                            failureCb.Invoke(ENetResultCode.NR_Error);
                         }
                     }
                 },
                 code => {
-                    if (null != failureCB) {
-                        failureCB.Invoke(code);
+                    if (null != failureCb) {
+                        failureCb.Invoke(code);
                     }
                 }
             );

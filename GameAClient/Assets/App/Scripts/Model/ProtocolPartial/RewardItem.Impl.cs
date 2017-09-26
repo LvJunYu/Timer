@@ -1,12 +1,14 @@
 ﻿//  | 奖励条目
-using System;
-using System.Collections.Generic;
-using SoyEngine.Proto;
+
+using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
-    public partial class RewardItem : SyncronisticData
+    public partial class RewardItem
     {
         private const string _goldName = "金币";
         private const string _diamondName = "钻石";
@@ -16,8 +18,8 @@ namespace GameA
         private const string _defaultRaffleTicketName = "低级抽奖券";
         private const string _randomUnitName = "随机改造地块";
 
-        private const string _goldSprite = "icon_gold_240";
-        private const string _diamondSprite = "icon_diam_240";
+        private const string _goldSprite = "icon_gold_1";
+        private const string _diamondSprite = "icon_diam_1";
         private const string _playerExpSprite = "icon_exp_240";
         private const string _creatorExpSprite = "icon_exp_240";
         private const string _fashionCouponSprite = "icon_one_240";
@@ -28,54 +30,53 @@ namespace GameA
         private const string _randomUnitSprite = "icon_gift_1_240";
 
 
-        public UnityEngine.Sprite GetSprite () {
-            if (GameResourceManager.Instance == null) return null;
+        public Sprite GetSprite () {
             switch ((ERewardType)_type) {
             case ERewardType.RT_Gold: {
-                    return GameResourceManager.Instance.GetSpriteByName (_goldSprite);
+                    return JoyResManager.Instance.GetSprite (_goldSprite);
                 }
             case ERewardType.RT_Diamond: {
-                    return GameResourceManager.Instance.GetSpriteByName (_diamondSprite);
+                    return JoyResManager.Instance.GetSprite (_diamondSprite);
                 }
             case ERewardType.RT_PlayerExp: {
-                    return GameResourceManager.Instance.GetSpriteByName (_playerExpSprite);
+                    return JoyResManager.Instance.GetSprite (_playerExpSprite);
                 }
             case ERewardType.RT_CreatorExp: {
-                    return GameResourceManager.Instance.GetSpriteByName (_creatorExpSprite);
+                    return JoyResManager.Instance.GetSprite (_creatorExpSprite);
                 }
             case ERewardType.RT_FashionCoupon: {
-                    return GameResourceManager.Instance.GetSpriteByName (_fashionCouponSprite);
+                    return JoyResManager.Instance.GetSprite (_fashionCouponSprite);
                 }
             case ERewardType.RT_RaffleTicket: {
                     switch (Id) {
                         case 1:
-                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite1);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite1);
                         case 2:
-                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite2);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite2);
                         case 3:
-                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite3);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite3);
                         case 4:
-                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite4);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite4);
                     }
-                    return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite1);
+                    return JoyResManager.Instance.GetSprite (_raffleTicketSprite1);
                 }
             case ERewardType.RT_BoostItem:
                 {
-                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
+                    var table = TableManager.Instance.GetBoostItem ((int)_id);
                     if (null == table)
                         return null;
-                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
+                    return JoyResManager.Instance.GetSprite (table.Icon);
                 }
             case ERewardType.RT_ReformUnit:
                 {
-                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
+                    var table = TableManager.Instance.GetUnit ((int)_id);
                     if (null == table)
                         return null;
-                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
+                    return JoyResManager.Instance.GetSprite (table.Icon);
                 }
             case ERewardType.RT_RandomReformUnit:
                 {
-                    return GameResourceManager.Instance.GetSpriteByName (_randomUnitSprite);
+                    return JoyResManager.Instance.GetSprite (_randomUnitSprite);
                 }
             }
             return null;
@@ -99,7 +100,7 @@ namespace GameA
                     return _fashionCouponName;
                 }
             case ERewardType.RT_RaffleTicket: {
-                    var table = Game.TableManager.Instance.GetTurntable ((int)Id);
+                    var table = TableManager.Instance.GetTurntable ((int)Id);
                     if (null == table) {
                         // todo error handle
                         return _defaultRaffleTicketName;
@@ -108,14 +109,14 @@ namespace GameA
                 }
             case ERewardType.RT_BoostItem:
                 {
-                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
+                    var table = TableManager.Instance.GetBoostItem ((int)_id);
                     if (null == table)
                         return string.Empty;
                     return table.Name;
                 }
             case ERewardType.RT_ReformUnit:
                 {
-                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
+                    var table = TableManager.Instance.GetUnit ((int)_id);
                     if (null == table)
                         return null;
                     return table.Name;
@@ -154,7 +155,6 @@ namespace GameA
                 // todo 这里不要引用界面，应该发消息通知界面更新
                 LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
                     SocialGUIManager.Instance.GetUI<UICtrlLottery>().RefreshRaffleCount();
-
                 }, code => {
                     LogHelper.Error("Network error when get RaffleCount, {0}", code);
                 });
@@ -168,7 +168,7 @@ namespace GameA
                         item.Count += (int)_count;
                         allBoostItem [i] = item;
                         found = true;
-                        continue;
+                        break;
                     }
                 }
                 if (!found) {

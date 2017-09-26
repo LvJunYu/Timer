@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4010, Type = typeof(Fire))]
-    public class Fire : BlockBase
+    public class Fire : SkillBlock
     {
         internal override bool InstantiateView()
         {
@@ -23,45 +24,21 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            if (!checkOnly && other.IsHero)
+//            if (_colliderGrid.Intersects(grid))
             {
                 OnEffect(other);
             }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                OnEffect(other);
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                OnEffect(other);
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsHero)
-            {
-                OnEffect(other);
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         public static void OnEffect(UnitBase other)
         {
-            other.InFire();
+            State state;
+            if (!other.TryGetState(EStateType.Fire, out state))
+            {
+                other.AddStates(21);
+            }
         }
     }
 }

@@ -6,18 +6,13 @@
  ***********************************************************************/
 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup]
     public class UICtrlGMTool : UICtrlGenericBase<UIViewGMTool>
     {
         #region 常量与字段
@@ -28,10 +23,6 @@ namespace GameA
         #endregion
 
         #region 方法
-        public override void Open(object parameter)
-        {
-            base.Open(parameter);
-        }
         public override void OnUpdate ()
         {
             base.OnUpdate ();
@@ -99,8 +90,6 @@ namespace GameA
                 _cachedView.InputObj.SetActive (true);
             }
         }
-
-
         #endregion
     }
 }

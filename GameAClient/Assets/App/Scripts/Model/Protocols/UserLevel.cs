@@ -193,6 +193,7 @@ namespace GameA
         }
 
         public UserLevel () { 
+            OnCreate();
         }
         #endregion
     }

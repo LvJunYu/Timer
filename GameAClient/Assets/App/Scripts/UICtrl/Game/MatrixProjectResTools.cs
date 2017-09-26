@@ -9,74 +9,15 @@ using UnityEngine;
 using SoyEngine;
 using SevenZip;
 using SoyEngine.Proto;
+using SevenZip.Compression.LZMA;
 
 namespace GameA
 {
     public static class MatrixProjectTools
     {
         private static int _playCount;
-        #region CheckResource
-        public static void InitAndCheckOnStart()
-        {
-            if(!GlobalVar.Instance.IsDebug)
-            {
-                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-            }
-//            if(MatrixManager.Instance.AllMatrixList != null)
-//            {
-                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-//            }
-            Messenger.AddListener(GameA.EMessengerType.OnAppDataChanged, OnAppDataChanged);
-            Messenger.AddListener(GameA.EMessengerType.CheckAppVersionComplete, OnCheckComplete);
-        }
-        private static void OnCheckComplete()
-        {
-            LogHelper.Info("OnCheckComplete");
-        }
-
-        private static void OnAppDataChanged()
-        {
-            LogHelper.Info("OnAppDataChanged");
-            if(!GlobalVar.Instance.IsDebug)
-            {
-                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-            }
-            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-        }
-        #endregion CheckResource
 
         #region Tools
-        public static bool CheckMatrixStateForRun(out EMatrixProjectResState state)
-        {
-            state = EMatrixProjectResState.None;
-//            if(LocalResourceManager.Instance.AppResVersionCheckState != LocalResourceManager.EAppResVersionCheckState.Checked)
-//            {
-//                state = EMatrixProjectResState.AppResVersionNotReady;
-//                return false;
-//            }
-//            if(AppData.Instance.AppResVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
-//            {
-//                state = EMatrixProjectResState.AppResVersionExpired;
-//                return false;
-//            }
-//            EGameUpdateCheckResult gameResCheckResult = LocalResourceManager.Instance.CheckGameLocalFile("GameMaker2D");
-//            if(gameResCheckResult == EGameUpdateCheckResult.Error)
-//            {
-//                state = EMatrixProjectResState.MatrixResExpired;
-//                return false;
-//            }
-//            if((gameResCheckResult == EGameUpdateCheckResult.NeedUpdate
-//                || gameResCheckResult == EGameUpdateCheckResult.NeedUpdate)
-//                && Application.internetReachability == NetworkReachability.NotReachable)
-//            {
-//                state = EMatrixProjectResState.MatrixResExpired;
-//                return false;
-//            }
-//
-            state = EMatrixProjectResState.Ready;
-            return true;
-        }
-
 
         public static bool CheckProjectStateForRun(Project project, out EMatrixProjectResState state)
         {
@@ -164,17 +105,17 @@ namespace GameA
             }
             if(tip != null)
             {
-                if(state == EMatrixProjectResState.ProjectProgramVersionAhead && VersionManager.Instance.HasNewDownload())
-                {
-                    CommonTools.ShowPopupDialog("当前作品基于新版本的匠游发布，请更新后进入", "提示",
-                        new System.Collections.Generic.KeyValuePair<string, Action>("更新", ()=>{
-                            VersionManager.Instance.GoToUpdate();
-                        }), 
-                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-
-                        }));
-                }
-                else
+//                if(state == EMatrixProjectResState.ProjectProgramVersionAhead && VersionManager.Instance.HasNewDownload())
+//                {
+//                    CommonTools.ShowPopupDialog("当前作品基于新版本的匠游发布，请更新后进入", "提示",
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("更新", ()=>{
+//                            VersionManager.Instance.GoToUpdate();
+//                        }), 
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//
+//                        }));
+//                }
+//                else
                 {
                     CommonTools.ShowPopupDialog(tip, null);
                 }
@@ -206,7 +147,7 @@ namespace GameA
             CommonTools.ShowPopupDialog("登录后玩游戏可以获取成绩进入排行榜，速度登录吧~", null,
                 new System.Collections.Generic.KeyValuePair<string, Action>("暂不登录", onPlay),
                 new System.Collections.Generic.KeyValuePair<string, Action>("立即登录", ()=>{
-                    SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//                    SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
                 }));
         }
 
@@ -519,7 +460,7 @@ namespace GameA
                     holderInput.Content.SetBufForRead(data);
                     using (PooledFixedByteBufHolder holderOutput = PoolFactory<PooledFixedByteBufHolder>.Get())
                     {
-                        LzmaEncoder coder = new LzmaEncoder();
+                        Encoder coder = new Encoder();
                         // Write the encoder properties
                         coder.WriteCoderProperties(holderOutput.Content);
 
@@ -548,7 +489,7 @@ namespace GameA
                     holderInput.Content.SetBufForRead(data);
                     using (PooledFixedByteBufHolder holderOutput = PoolFactory<PooledFixedByteBufHolder>.Get())
                     {
-                        LzmaDecoder coder = new LzmaDecoder();
+                        Decoder coder = new Decoder();
                         //// Read the decoder properties
                         byte[] properties = new byte[5];
                         holderInput.Content.Read(properties, 0, 5);

@@ -5,9 +5,12 @@
 ** Summary : SpineUnit
 ***********************************************************************/
 
+using System;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
+using NewResourceSolution;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -15,7 +18,9 @@ namespace GameA.Game
     public class SpineUnit : UnitView
     {
         protected SkeletonAnimation _skeletonAnimation;
-		protected Renderer _renderer;
+        protected Renderer _renderer;
+        protected Shader _damageShader;
+        private bool _hasSetShader;
 
         public SpineUnit()
         {
@@ -26,8 +31,10 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
+            string skeletonDataAssetName = string.Format("{0}_SkeletonData", _unit.AssetPath);
+            SkeletonDataAsset data =
+                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
+            if (null == data)
             {
                 LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
                 return false;
@@ -49,11 +56,51 @@ namespace GameA.Game
             }
         }
 
-        public override void SetRendererColor (Color color)
+        public override void SetRendererColor(Color color)
         {
-			if (_skeletonAnimation != null && _skeletonAnimation.skeleton != null) {
-                _skeletonAnimation.skeleton.SetColor (color);
+            if (_skeletonAnimation != null && _skeletonAnimation.skeleton != null)
+            {
+                _skeletonAnimation.skeleton.SetColor(color);
             }
+        }
+
+        public override void SetDamageShaderValue(string name, float value)
+        {
+            InitShader();
+            if (_renderer == null) return;
+            Material[] materials;
+            //玩家只有一個，直接改shareMals，不頻繁創創建实例
+            if (_unit.IsMain)
+            {
+                materials = _renderer.sharedMaterials;
+            }
+            else
+            {
+                materials = _renderer.materials;
+            }
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (name != null && materials[i] != null)
+                {
+                    materials[i].SetFloat(name, value);
+                }
+            }
+        }
+
+        private void InitShader()
+        {
+            if (_hasSetShader) return;
+            var materials = _renderer.sharedMaterials;
+            if (_damageShader == null)
+            {
+                _damageShader = Shader.Find("Spine/SkeletonWhite");
+            }
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (materials[i] != null && materials[i].shader.name == "Spine/Skeleton")
+                    materials[i].shader = _damageShader;
+            }
+            _hasSetShader = true;
         }
 
         public override void SetSortingOrder(int sortingOrder)
@@ -63,6 +110,8 @@ namespace GameA.Game
 
         public override void OnFree()
         {
+            //重置ShaderValue
+            SetDamageShaderValue("Value", 0);
             if (_animation != null)
             {
                 _animation.OnFree();

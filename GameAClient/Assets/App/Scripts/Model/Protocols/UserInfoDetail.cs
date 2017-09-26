@@ -53,6 +53,14 @@ namespace GameA
         /// 社交关系统计
         /// </summary>
         private UserRelationStatistic _relationStatistic;
+        /// <summary>
+        /// 登录次数
+        /// </summary>
+        private int _loginCount;
+        /// <summary>
+        /// 最后登录时间
+        /// </summary>
+        private long _lastLoginTime;
 
         // cs fields----------------------------------
         /// <summary>
@@ -173,6 +181,26 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 登录次数
+        /// </summary>
+        public int LoginCount { 
+            get { return _loginCount; }
+            set { if (_loginCount != value) {
+                _loginCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最后登录时间
+        /// </summary>
+        public long LastLoginTime { 
+            get { return _lastLoginTime; }
+            set { if (_lastLoginTime != value) {
+                _lastLoginTime = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -250,6 +278,8 @@ namespace GameA
             } else {
                 _relationStatistic.OnSyncFromParent(msg.RelationStatistic);
             }
+            _loginCount = msg.LoginCount;           
+            _lastLoginTime = msg.LastLoginTime;           
             OnSyncPartial();
             return true;
         }
@@ -269,6 +299,7 @@ namespace GameA
         public UserInfoDetail () { 
             _userInfoSimple = new UserInfoSimple();
             _relationStatistic = new UserRelationStatistic();
+            OnCreate();
         }
         #endregion
     }

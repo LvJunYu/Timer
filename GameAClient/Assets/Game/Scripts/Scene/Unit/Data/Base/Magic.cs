@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Diagnostics.Contracts;
 using SoyEngine;
 using UnityEngine;
 
@@ -23,19 +24,11 @@ namespace GameA.Game
         protected IntVec2 _pointACheck;
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
-        protected bool _run = true;
         protected bool _enabled = true;
-
-        public override void UpdateExtraData()
-        {
-            base.UpdateExtraData();
-            InitSpeed();
-        }
 
         protected override void Clear()
         {
             base.Clear();
-            _run = true;
             _enabled = true;
             _magicRotate = null;
             InitSpeed();
@@ -43,12 +36,12 @@ namespace GameA.Game
 
         protected void InitSpeed()
         {
-            if (!IsHero && _curMoveDirection != EMoveDirection.None)
+            if (!IsActor && _moveDirection != EMoveDirection.None)
             {
                 Speed = IntVec2.zero;
                 _timerMagic = 0;
                 _velocity = 20;
-                switch (_curMoveDirection)
+                switch (_moveDirection)
                 {
                     case EMoveDirection.Up:
                         SpeedY = _velocity;
@@ -66,12 +59,6 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnCtrlBySwitch()
-        {
-            base.OnCtrlBySwitch();
-            _run = !_run;
-        }
-
         internal void SetEnabled(bool value)
         {
             _enabled = value;
@@ -79,53 +66,73 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (!_enabled || !_run || !UseMagic())
+            base.UpdateLogic();
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 if (Speed != IntVec2.zero)
                 {
-                    GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref _pointACheck, ref _pointBCheck);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_curMoveDirection - 1), _velocity);
-                    if (!DataScene2D.Instance.IsInTileMap(checkGrid))
-                    {
-                        _timerMagic = 0;
-                        Speed = IntVec2.zero;
-                        ChangeMoveDirection();
-                        return;
-                    }
-                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, _curMoveDirection == EMoveDirection.Up
-                        ? EnvManager.MovingEarthBlockUpLayer
-                        : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
+                    GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
+                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_moveDirection - 1), _velocity);
+                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
-                        if (units[i].IsAlive && !units[i].CanMagicCross)
+                        var unit = units[i];
+                        if (unit.IsAlive)
                         {
-                            if (IsValidBlueStoneRotation(units[i]))
+                            //朝上运动时，如果是角色或者箱子。
+                            if (_moveDirection == EMoveDirection.Up)
                             {
-                                _magicRotate = units[i];
-                                break;
+                                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                                {
+                                    //如果远离
+                                    if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                                    {
+                                        Speed = IntVec2.zero;
+                                        _timerMagic = 24;
+                                    }
+                                    continue;
+                                }
                             }
-                            //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
-                            if (_magicRotate == null)
+                            if (UnitDefine.IsSwitchTrigger(unit.Id))
                             {
+                                unit.OnIntersect(this);
+                            }
+                            if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
+                            {
+                                if (unit.Id == UnitDefine.ScorchedEarthId)
+                                {
+                                    var se = unit as ScorchedEarth;
+                                    if (se != null)
+                                    {
+                                        se.OnExplode();
+                                    }
+                                }
                                 _timerMagic = 0;
                                 Speed = IntVec2.zero;
-                                _magicRotate = null;
                                 ChangeMoveDirection();
+                                _magicRotate = null;
                                 break;
+                            }
+                            if (unit.Id == UnitDefine.BlueStoneRotateId)
+                            {
+                                if (_magicRotate ==null)
+                                {
+                                    _magicRotate = unit;
+                                }
                             }
                         }
                     }
                     if (_magicRotate != null)
                     {
-                        if (_magicRotate.CurPos == _curPos)
+                        if (_curPos == _magicRotate.CurPos)
                         {
                             _timerMagic = 0;
                             Speed = IntVec2.zero;
-                            _curMoveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
+                            _moveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
                             _magicRotate = null;
                         }
                     }
@@ -135,7 +142,7 @@ namespace GameA.Game
                     _timerMagic++;
                     if (_timerMagic == 25)
                     {
-                        switch (_curMoveDirection)
+                        switch (_moveDirection)
                         {
                             case EMoveDirection.Up:
                                 SpeedY = _velocity;
@@ -155,46 +162,32 @@ namespace GameA.Game
             }
         }
 
-        private bool IsValidBlueStoneRotation(UnitBase unit)
-        {
-            if (unit == null || unit.Id != UnitDefine.BlueStoneRotateId)
-            {
-                return false;
-            }
-            //var delta = Mathf.Abs(unit.Rotation + 1 - (int) _curMoveDirection);
-            //if (delta == 0 || delta == 2)
-            //{
-            //    return false;
-            //}
-            return true;
-        }
-
         private void ChangeMoveDirection()
         {
-            switch (_curMoveDirection)
+            switch (_moveDirection)
             {
                 case EMoveDirection.Up:
-                    _curMoveDirection = EMoveDirection.Down;
+                    _moveDirection = EMoveDirection.Down;
                     break;
                 case EMoveDirection.Down:
-                    _curMoveDirection = EMoveDirection.Up;
+                    _moveDirection = EMoveDirection.Up;
                     break;
                 case EMoveDirection.Left:
-                    _curMoveDirection = EMoveDirection.Right;
+                    _moveDirection = EMoveDirection.Right;
                     break;
                 case EMoveDirection.Right:
-                    _curMoveDirection = EMoveDirection.Left;
+                    _moveDirection = EMoveDirection.Left;
                     break;
             }
         }
 
         public override void UpdateView(float deltaTime)
         {
-            if (!_run || !UseMagic())
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
@@ -220,45 +213,13 @@ namespace GameA.Game
             }
         }
 
-        public override IntVec2 GetDeltaImpactPos()
+        public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            if (!_run || !UseMagic())
+            if (_eActiveState != EActiveState.Active || !UseMagic())
             {
-                return _deltaImpactPos;
+                return IntVec2.zero;
             }
-            return _deltaImpactPos + Speed;
-            if (!_isCalculated && _dynamicCollider != null)
-            {
-                if (_downUnits.Count > 0)
-                {
-                    int right = 0;
-                    int left = 0;
-                    int deltaY = int.MinValue;
-                    for (int i = 0; i < _downUnits.Count; i++)
-                    {
-                        var deltaPos = _downUnits[i].GetDeltaImpactPos();
-                        if (deltaPos.x > 0 && deltaPos.x > right)
-                        {
-                            right = deltaPos.x;
-                        }
-                        if (deltaPos.x < 0 && deltaPos.x < left)
-                        {
-                            left = deltaPos.x;
-                        }
-                        if (deltaPos.y > deltaY)
-                        {
-                            deltaY = deltaPos.y;
-                        }
-                    }
-                    int deltaX = right + left;
-                    _deltaImpactPos = new IntVec2(SpeedX + deltaX, SpeedY + deltaY);
-                }
-                else
-                {
-                    _deltaImpactPos = Speed;
-                }
-                _isCalculated = true;
-            }
+            _deltaImpactPos = _deltaPos;
             return _deltaImpactPos;
         }
     }

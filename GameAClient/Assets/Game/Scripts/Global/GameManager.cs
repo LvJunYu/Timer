@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,13 +18,14 @@ namespace GameA
     {
         #region 常量与字段
 
-        public static GameManager _instance;
+        private static GameManager _instance;
 
         private GameBase _currentGame;
         private Type _gameType;
 
         private List<Project> _projectList = new List<Project>();
         private int _curProjectInx = 0;
+
         #endregion
 
         #region 属性
@@ -148,6 +150,23 @@ namespace GameA
             return PlayNext();
         }
 
+
+        public bool RequestPlayMultiCooperation(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.MultiCooperationPlay, null);
+        }
+
+        public bool RequestPlayMultiBattle(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.MultiBattlePlay, null);
+        }
+        
         public bool PlayNext()
         {
             if (!HasNext())
@@ -208,6 +227,8 @@ namespace GameA
             AdventureNormalPlay,
             AdventureNormalPlayRecord,
             AdventureBonusPlay,
+            MultiCooperationPlay,
+            MultiBattlePlay,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)
@@ -221,15 +242,11 @@ namespace GameA
                 game = go.AddComponent(_gameType) as GameBase;
             }
             //做成Component 为了切换Game时候的内存释放
-
-
             if (game == null)
             {
                 return false;
             }
-            if (go.GetComponent<ResourceManager> () == null) {
-                go.AddComponent<ResourceManager> ();
-            }
+            JoyResManager.Instance.SetDefaultResScenary(EResScenary.Game);
             game.Play(project, param, eStartType);
             _currentGame = game;
             Messenger.Broadcast(EMessengerType.OnRequestStartGame);

@@ -22,16 +22,18 @@ namespace GameA.Game
         /// <summary>
         /// 是否相撞
         /// </summary>
-        private static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
+        protected static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
         /// <summary>
         /// 是否相交
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
+        
         protected bool _onClay;
         protected bool _onIce;
-        protected const float SpeedClayRatio = 0.2f;
-        protected const float SpeedFireRatio = 1.5f;
-        protected const float SpeedHoldingBoxRatio = 0.3f;
+        [SerializeField] protected IntVec2 _fanForce;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
+
+        protected UnitBase _excludeUnit;
 
         protected override void Clear()
         {
@@ -43,6 +45,34 @@ namespace GameA.Game
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
+            _onClay = false;
+            _onIce = false;
+            _fanForce = IntVec2.zero;
+            _fanForces.Clear();
+            _excludeUnit = null;
+        }
+        
+        public override void SetStepOnClay()
+        {
+            _onClay = true;
+        }
+
+        public override void SetStepOnIce()
+        {
+            _onIce = true;
+        }
+        
+        public override void CheckStart()
+        {
+            _downUnit = null;
+            _downUnits.Clear();
+            _isCalculated = false;
+            Speed += ExtraSpeed;
+            ExtraSpeed = IntVec2.zero;
+            if (_curBanInputTime > 0)
+            {
+                _curBanInputTime--;
+            }
         }
 
         protected override void UpdateCollider(IntVec2 min)
@@ -80,7 +110,7 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
+                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
                 _lastColliderGrid = _colliderGrid;
             }
             else if(!_isFreezed)  //静止的时候检测是否交叉
@@ -89,7 +119,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                     }
@@ -99,11 +129,11 @@ namespace GameA.Game
 
         private bool Intersect(UnitBase unit)
         {
-            //俩移动物体不相交
-            if (unit.DynamicCollider != null)
-            {
-                return false;
-            }
+//            //俩移动物体不相交
+//            if (unit.DynamicCollider != null)
+//            {
+//                return false;
+//            }
             return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
@@ -120,13 +150,16 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
+                        if (unit.OnDownHit(this, ref ymin, true))
                         {
                             CheckHit(unit, EDirectionType.Up);
+                        }
+                        if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
+                        {
                             flag = true;
                             if (ymin < y)
                             {
@@ -161,18 +194,21 @@ namespace GameA.Game
                 {
                     var unit = units[i];
                     _cacheCheckedDownUnits.Add(unit.Guid);
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
+                        if (unit.OnUpHit(this, ref ymin, true))
                         {
                             CheckHit(unit, EDirectionType.Down);
+                        }
+                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
+                        {
                             flag = true;
                             if (ymin > y)
                             {
                                 y = ymin;
-                                var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
+                                var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                                 if (deltaX > delta)
                                 {
                                     deltaX = delta;
@@ -196,10 +232,14 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                if (unit.IsAlive)
+                if (unit.IsAlive && unit !=  _excludeUnit)
                 {
+                    CheckIntersect(unit);
                     int ymin = 0;
-                    unit.OnUpHit(this, ref ymin);
+                    if (unit.OnUpHit(this, ref ymin))
+                    {
+                        CheckHit(unit, EDirectionType.Down);
+                    }
                 }
             }
         }
@@ -213,18 +253,20 @@ namespace GameA.Game
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                //var grid = _deltaPos.y >= 0 ? new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin + _deltaPos.y) : new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin + _deltaPos.y, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
                 var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
+                        if (unit.OnRightHit(this, ref xmin, true))
                         {
                             CheckHit(unit, EDirectionType.Left);
+                        }
+                        if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
+                        {
                             flag = true;
                             if (xmin > x)
                             {
@@ -251,18 +293,20 @@ namespace GameA.Game
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                //var grid = _deltaPos.y >= 0 ? new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin + _deltaPos.y) : new Grid2D(min.x, min.y + _deltaPos.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
                 var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
+                        if (unit.OnLeftHit(this, ref xmin, true))
                         {
                             CheckHit(unit, EDirectionType.Right);
+                        }
+                        if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
+                        {
                             flag = true;
                             if (xmin < x)
                             {
@@ -289,7 +333,7 @@ namespace GameA.Game
             }
         }
 
-        private void CheckHit(UnitBase unit, EDirectionType eDirectionType)
+        protected virtual void CheckHit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (!_cacheHitUnits.Contains(unit.Guid))
             {
@@ -300,6 +344,73 @@ namespace GameA.Game
 
         protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+        }
+        
+        internal override void InFan(UnitBase fanUnit, IntVec2 force)
+        {
+            if (_fanForces.ContainsKey(fanUnit.Guid))
+            {
+                _fanForces[fanUnit.Guid] = force;
+            }
+            else
+            {
+                _fanForces.Add(fanUnit.Guid, force);
+            }
+            _fanForce= IntVec2.zero;
+            var iter = _fanForces.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                _fanForce += iter.Current.Value;
+            }
+            ExtraSpeed.x = _fanForce.x;
+        }
+
+        internal override void OutFan(UnitBase fanUnit)
+        {
+            _fanForces.Remove(fanUnit.Guid);
+            _fanForce = IntVec2.zero;
+            if (_fanForces.Count > 0)
+            {
+                var iter = _fanForces.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    _fanForce += iter.Current.Value;
+                }
+            }
+        }
+        
+        public override IntVec2 GetDeltaImpactPos(UnitBase unit)
+        {
+            IntVec2 deltaImpactPos = IntVec2.zero;
+            if (!_isCalculated)
+            {
+                if (_downUnits.Count > 0)
+                {
+                    int right = 0;
+                    int left = 0;
+                    int deltaY = int.MinValue;
+                    for (int i = 0; i < _downUnits.Count; i++)
+                    {
+                        var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
+                        if (deltaPos.x > 0 && deltaPos.x > right)
+                        {
+                            right = deltaPos.x;
+                        }
+                        if (deltaPos.x < 0 && deltaPos.x < left)
+                        {
+                            left = deltaPos.x;
+                        }
+                        if (deltaPos.y > deltaY)
+                        {
+                            deltaY = deltaPos.y;
+                        }
+                    }
+                    int deltaX = right + left;
+                    deltaImpactPos = new IntVec2(deltaX, deltaY);
+                }
+                _isCalculated = true;
+            }
+            return deltaImpactPos;
         }
     }
 }

@@ -26,10 +26,10 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void OnTrigger()
+        protected override void OnTrigger(UnitBase other)
         {
             PlayMode.Instance.SceneState.AddKey();
-            base.OnTrigger();
+            base.OnTrigger(other);
         }
     }
 }

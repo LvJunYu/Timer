@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
 using System.IO;
-using SoyEngine;
 using GameA;
+using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
+using EMessengerType = SoyEngine.EMessengerType;
 
 public class JoyNativeTool:IJoyNativeTool
 {
@@ -36,7 +37,7 @@ public class JoyNativeTool:IJoyNativeTool
                 {
                     _userGuid = LocalUser.Instance.UserGuid;
                 }
-                Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountStateChanged);
+                Messenger.AddListener(EMessengerType.OnAccountLoginStateChanged, OnAccountStateChanged);
             }
             return _instance;
         }
@@ -99,6 +100,38 @@ public class JoyNativeTool:IJoyNativeTool
         return texture;
     }
 
+    public bool TryGetFromStreamingAssets(string fileName, out byte[] bytes)
+    {
+        string fileFullName = Path.Combine(ResPath.StreamingAssetsPath, fileName);
+        bytes = null;
+        if (!File.Exists(fileFullName)) {
+            return false;
+        }
+
+        bool success;
+        FileStream fs = null;
+        try
+        {
+            fs = new FileStream(fileFullName, FileMode.Open, FileAccess.Read);
+            bytes = new byte[fs.Length];
+            fs.Read (bytes, 0, (int)fs.Length);
+            success = true;
+        }
+        catch (Exception e)
+        {
+            LogHelper.Error(e.ToString());
+            success = false;
+        }
+        finally
+        {
+            if (fs != null)
+            {
+                fs.Close();
+            }
+        }
+        return success;
+    }
+
     private static void OnAccountStateChanged()
     {
         if(LocalUser.Instance.Account.HasLogin)
@@ -132,4 +165,5 @@ public interface IJoyNativeTool
     string GetCustomNotificationField();
     void CopyTextToClipboard(string text);
     string GetTextFromClipboard();
+    bool TryGetFromStreamingAssets(string fileName, out byte[] data);
 }

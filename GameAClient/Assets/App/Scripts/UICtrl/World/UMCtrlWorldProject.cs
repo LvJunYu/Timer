@@ -6,7 +6,6 @@
   ***********************************************************************/
 
 using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace GameA
     public class UMCtrlWorldProject : UMCtrlBase<UMViewWorldProject>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Project> _wrapper;
+        private Func<Project, string> _getTimeFunc;
         private int _index;
         public int Index
         {
@@ -26,6 +26,11 @@ namespace GameA
             {
                 _index = value;
             }
+        }
+
+        public Func<Project, string> GetTimeFunc
+        {
+            set { _getTimeFunc = value; }
         }
 
         public RectTransform Transform
@@ -82,23 +87,17 @@ namespace GameA
             }
             Project p = _wrapper.Content;
             DictionaryTools.SetContentText(_cachedView.Title, p.Name);
-//            if (false)//subtitle
-//            {
-//                _cachedView.SubTitle.gameObject.SetActive(true);
-//                DictionaryTools.SetContentText(_cachedView.SubTitle, String.Empty);
-//            }
-//            else
-//            {
-                _cachedView.SubTitle.gameObject.SetActive(false);
-//            }
-            DictionaryTools.SetContentText(_cachedView.PlayCount, p.PlayCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.LikeCount, p.LikeCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));
-            DictionaryTools.SetContentText(_cachedView.CommentCount, p.ExtendData.CommentCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime));
+            string time;
+            if (_getTimeFunc != null)
+            {
+                time = _getTimeFunc(p);
+            }
+            else
+            {
+                time = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime);
+            }
+            DictionaryTools.SetContentText(_cachedView.Time, time);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
-            _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-            _cachedView.Button.enabled = !_wrapper.IsSelected;
         }
 
         public void Unload()

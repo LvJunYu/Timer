@@ -95,9 +95,16 @@ namespace GameA.Game
 
 		private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
 		{
+			var pm = PlayMode.Instance;
 			LocalUser.Instance.MatchUserData.CommitChallengeResult(
 				PlayMode.Instance.SceneState.GameSucceed,
-				PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime,
+				PlayMode.Instance.GameSuccessFrameCnt,
+				PlayMode.Instance.SceneState.CurScore,
+				PlayMode.Instance.SceneState.GemGain,
+				PlayMode.Instance.SceneState.MonsterKilled,
+				PlayMode.Instance.SceneState.SecondLeft,
+				PlayMode.Instance.MainPlayer.Life,
+				null,
 				() =>
 				{
 					LogHelper.Info("——————————————————————提交挑战成功");

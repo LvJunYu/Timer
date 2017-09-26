@@ -25,6 +25,11 @@ namespace GameA.Game
             get { return _isHoldingByMain; }
             set { _isHoldingByMain = value; }
         }
+        
+        public override bool CanPortal
+        {
+            get { return true; }
+        }
 
         public EDirectionType DirectionRelativeMain
         {
@@ -50,35 +55,24 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isAlive && _isStart)
+            if (_isAlive)
             {
-                bool air = false;
-                int friction = 0;
-                if (SpeedY != 0)
-                {
-                    air = true;
-                }
+                bool air = SpeedY != 0;
                 if (!air)
                 {
+                    _onClay = false;
+                    _onIce = false;
                     bool downExist = false;
                     var units = EnvManager.RetriveDownUnits(this);
                     for (int i = 0; i < units.Count; i++)
                     {
                         var unit = units[i];
-                        if (unit.IsMain || unit.IsMonster)
-                        {
-                            continue;
-                        }
                         int ymin = 0;
-                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                        if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
                         {
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            if (unit.Friction > friction)
-                            {
-                                friction = unit.Friction;
-                            }
                         }
                     }
                     if (!downExist)
@@ -91,8 +85,16 @@ namespace GameA.Game
                     Speed += _lastExtraDeltaPos;
                     _grounded = false;
                 }
-                SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
-                if (!_grounded)
+                if (_grounded)
+                {
+                    var friction = MaxFriction;
+                    if (_onIce)
+                    {
+                        friction = 1;
+                    }
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
+                }
+                else
                 {
                     SpeedY -= 15;
                     if (SpeedY < -160)
@@ -105,13 +107,13 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (_isStart && _isAlive && _dynamicCollider != null)
+            if (_isAlive && _dynamicCollider != null)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 if (_isHoldingByMain)
                 {
                     _deltaPos.x = 0;
-                    var mainUnit = PlayMode.Instance.MainUnit;
+                    var mainUnit = PlayMode.Instance.MainPlayer;
                     if (_deltaPos.y != 0)
                     {
                         mainUnit.OnBoxHoldingChanged();
@@ -123,11 +125,9 @@ namespace GameA.Game
                     }
                 }
                 _curPos += _deltaPos;
-                LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                CheckOutOfMap();
             }
         }
     }

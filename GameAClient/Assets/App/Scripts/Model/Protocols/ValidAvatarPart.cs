@@ -129,6 +129,7 @@ namespace GameA
 
         public ValidAvatarPart () { 
             _itemDataList = new List<AvatarPartItem>();
+            OnCreate();
         }
         #endregion
     }

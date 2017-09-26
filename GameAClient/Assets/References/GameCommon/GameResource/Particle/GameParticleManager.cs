@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using GameA;
 using GameA.Game;
+using NewResourceSolution;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -61,29 +62,28 @@ namespace SoyEngine
             _rootParticleParent = new GameObject("ParticleRoot").transform;
         }
 
+        public void PreLoadParticle(string itemName, EResScenary? resScenary = null)
+        {
+            var p = GetUnityNativeParticleItem(itemName, null, ESortingOrder.Item, resScenary);
+            if (p != null)
+            {
+                FreeParticleItem(p);
+            }
+        }
+
         public UnityNativeParticleItem GetUnityNativeParticleItem(string itemName, Transform parent,
-            ESortingOrder sortingOrder = ESortingOrder.Item)
+            ESortingOrder sortingOrder = ESortingOrder.Item, EResScenary? resScenary = null)
         {
             if (string.IsNullOrEmpty(itemName)) return null;
-            //#if UNITY_EDITOR
-            //itemPrefab = Resources.Load (itemName);
-            //if (itemPrefab != null) {
-            //    GameObject resGo1 = GameObject.Instantiate (itemPrefab) as GameObject;
-            //    UnityNativeParticleItem com1 = new UnityNativeParticleItem ();
-            //    com1.Init (resGo1);
-            //    com1.SetParent (parent, Vector3.zero);
-            //    return com1;
-            //}
-            //#endif
 
             Transform realParent = parent == null ? _rootParticleParent : parent;
-            UnityNativeParticleItem com = GetParticleItem(itemName);
+            UnityNativeParticleItem com = GetParticleItem(itemName, resScenary);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("GetUnityNativeParticleItem failed! itemName is {0}", itemName);
                 return null;
             }
-            com.SetData(false, 0);
+            com.SetData(false);
             com.SetParent(realParent, Vector3.zero);
             com.SetSortingOrder(sortingOrder);
             AddToSceneItems(com);
@@ -110,71 +110,79 @@ namespace SoyEngine
             return item;
         }
 
-        public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+        public UIParticleItem EmitUIParticleLoop(string itemName, Transform parent, int groupId, Vector3 pos = default(Vector3))
+        {
+            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
+            if (uiparticle == null)
+            {
+                return null;
+            }
+            uiparticle.Particle.Trans.localPosition = pos;
+            uiparticle.Particle.Play();
+            return uiparticle;
+        }
+
+        public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, Vector3 pos = default(Vector3))
+        {
+            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
+            if (uiparticle == null)
+            {
+                return null;
+            }
+            uiparticle.Particle.SetData(true);
+            uiparticle.Particle.Trans.localPosition = pos;
+            uiparticle.Particle.Play();
+            return uiparticle;
+        }
+
+        public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale, ESortingOrder sortingOrder = ESortingOrder.Item)
         {
             if (string.IsNullOrEmpty(itemName))
             {
                 return false;
             }
-
             UnityNativeParticleItem com = GetParticleItem(itemName);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("Emit failed! itemName is {0}", itemName);
                 return false;
             }
-            com.SetData(true, lifeTime);
+            com.SetData(true);
             com.SetParent(null, pos);
             com.Trans.localEulerAngles = rotation;
             com.Trans.localScale = scale;
             com.SetSortingOrder(sortingOrder);
-            com.Play(lifeTime);
+            com.Play(com.LifeTime);
             AddToSceneItems(com);
             return true;
         }
 
-        public bool Emit(string itemName, Vector3 pos, Vector3 scale,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+        public bool Emit(string itemName, Vector3 pos, Vector3 scale,ESortingOrder sortingOrder = ESortingOrder.Item)
         {
-            return Emit(itemName, pos, Vector3.zero, scale, lifeTime, sortingOrder);
+            return Emit(itemName, pos, Vector3.zero, scale, sortingOrder);
         }
 
-        public bool Emit(string itemName, Vector3 pos, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime,
+        public bool Emit(string itemName, Vector3 pos, 
             ESortingOrder sortingOrder = ESortingOrder.Item)
         {
-            return Emit(itemName, pos, Vector3.zero, Vector3.one, lifeTime, sortingOrder);
+            return Emit(itemName, pos, Vector3.zero, Vector3.one, sortingOrder);
         }
-
-        public UnityNativeParticleItem Emit(string itemName, Transform parent,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime)
+        
+        public UnityNativeParticleItem Emit(string itemName, Transform parent)
         {
             if (string.IsNullOrEmpty(itemName))
             {
                 return null;
             }
-//#if UNITY_EDITOR
-//            itemPrefab = Resources.Load (itemName);
-//            if (itemPrefab != null) {
-//                GameObject resGo1 = Instantiate (itemPrefab) as GameObject;
-//                UnityNativeParticleItem com1 = new UnityNativeParticleItem ();
-//                com1.Init (resGo1, true, lifeTime);
-//                com1.SetParent (parent, Vector3.zero);
-//                com1.Play (lifeTime);
-//                _sceneParticleItems.Add (com1);
-//                return true;
-//            }
-//#endif
-
             UnityNativeParticleItem com = GetParticleItem(itemName);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("Emit failed! itemName is {0}", itemName);
                 return null;
             }
-            com.SetData(true, lifeTime);
+            com.SetData(true);
             com.SetParent(parent, Vector3.zero);
-            com.Play(lifeTime);
+            com.Play(com.LifeTime);
             AddToSceneItems(com);
             return com;
         }
@@ -186,6 +194,29 @@ namespace SoyEngine
 
         public void ClearAll()
         {
+        }
+
+        public void OnChangeScene()
+        {
+            var cur = JoyResManager.Instance.DefaultResScenary;
+            List<ParticleItemPool> list = new List<ParticleItemPool>();
+            using (var enumerator = _particlePoolDic.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    ParticleItemPool item = enumerator.Current.Value;
+                    if (item.ResScenary != cur)
+                    {
+                        list.Add(item);
+                    }
+                }
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+                item.Dispose();
+                _particlePoolDic.Remove(item.PoolName);
+            }
         }
 
         public void RemoveFromSceneItems(UnityNativeParticleItem item)
@@ -208,19 +239,11 @@ namespace SoyEngine
             }
         }
 
-        public static void FreeSpineObject(SpineObject item)
-        {
-            if (item != null)
-            {
-                PoolFactory<SpineObject>.Free(item);
-            }
-        }
-
         public static void FreeParticleItem(UnityNativeParticleItem item)
         {
             if (item == null || item.Trans == null)
             {
-                LogHelper.Warning("FreeParticleItem called but item is invalid!");
+//                LogHelper.Warning("FreeParticleItem called but item is invalid!");
                 return;
             }
             if (Instance == null)
@@ -243,34 +266,54 @@ namespace SoyEngine
 
         internal SpineObject EmitLoop(string path, Vector3 pos)
         {
-            SpineObject so;
-            if (GM2DTools.TryGetSpineObject(path, out so))
+            SpineObject so = GetSpineObject(path);
+            if (so != null)
             {
                 so.Trans.position = pos;
-                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+                so.Play(true);
+            }
+            return so;
+        }
+        
+        internal SpineObject EmitOnce(string path, Transform parent)
+        {
+            SpineObject so = GetSpineObject(path);
+            if (so != null)
+            {
+                CommonTools.SetParent(so.Trans, parent);
+                so.Play(false);
             }
             return so;
         }
 
-        internal SpineObject EmitLoop(string path, Transform parent)
+        private SpineObject GetSpineObject(string path)
         {
-            SpineObject so;
-            if (GM2DTools.TryGetSpineObject(path, out so))
+            SpineObject so = PoolManager<SpineObject>.Get(path);
+            if (!so.Init(path))
             {
-                so.Trans.SetParent(parent, false);
-                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+                PoolManager<SpineObject>.Free(path, so);
+                return null;
             }
             return so;
+        }
+
+        public static void FreeSpineObject(SpineObject item)
+        {
+            if (item != null)
+            {
+                PoolManager<SpineObject>.Free(item.Path, item);
+            }
         }
 
         #region private
 
-        private UnityNativeParticleItem GetParticleItem(string itemName)
+        private UnityNativeParticleItem GetParticleItem(string itemName, EResScenary? resScenary = null)
         {
             ParticleItemPool pool;
             if (!_particlePoolDic.TryGetValue(itemName, out pool))
             {
-                pool = new ParticleItemPool(itemName, _rootParticleParent);
+                pool = new ParticleItemPool(itemName, _rootParticleParent,
+                    resScenary ?? JoyResManager.Instance.DefaultResScenary);
                 _particlePoolDic.Add(itemName, pool);
             }
             return pool.Get();
@@ -294,29 +337,31 @@ namespace SoyEngine
         private void UpdatePlayingParticleItem()
         {
             _isDoingTick = true;
-            Dictionary<int, UnityNativeParticleItem>.Enumerator sceneItemsEnumerator =
-                _sceneParticleItems.GetEnumerator();
-            while (sceneItemsEnumerator.MoveNext())
+            using (var sceneItemsEnumerator =
+                _sceneParticleItems.GetEnumerator())
             {
-                UnityNativeParticleItem cur = sceneItemsEnumerator.Current.Value;
-                if (cur.Trans == null)
+                while (sceneItemsEnumerator.MoveNext())
                 {
-                    _removeBuffer.Add(cur.UUID);
-                    continue;
-                }
-                if (cur.HasBeenDestory)
-                {
-                    _removeBuffer.Add(cur.UUID);
-                    continue;
-                }
-                if (cur.NeedToDestroy)
-                {
-                    cur.DestroySelf();
-                    continue;
-                }
-                if (cur.IsPlaying && cur.HasFinish)
-                {
-                    cur.Stop();
+                    UnityNativeParticleItem cur = sceneItemsEnumerator.Current.Value;
+                    if (cur.Trans == null)
+                    {
+                        _removeBuffer.Add(cur.UUID);
+                        continue;
+                    }
+                    if (cur.HasBeenDestory)
+                    {
+                        _removeBuffer.Add(cur.UUID);
+                        continue;
+                    }
+                    if (cur.NeedToDestroy)
+                    {
+                        cur.DestroySelf();
+                        continue;
+                    }
+                    if (cur.IsPlaying && cur.HasFinish)
+                    {
+                        cur.Stop();
+                    }
                 }
             }
 
@@ -333,16 +378,22 @@ namespace SoyEngine
 
             if (Time.realtimeSinceStartup - _lastTickPoolTime > TickPoolInterval)
             {
-                _lastTickPoolTime = Time.realtimeSinceStartup;
+                PoolTick();
+            }
+            _isDoingTick = false;
+        }
 
-                Dictionary<string, ParticleItemPool>.Enumerator enumerator = _particlePoolDic.GetEnumerator();
+        private void PoolTick()
+        {
+            _lastTickPoolTime = Time.realtimeSinceStartup;
+            using (var enumerator = _particlePoolDic.GetEnumerator())
+            {
                 while (enumerator.MoveNext())
                 {
                     ParticleItemPool item = enumerator.Current.Value;
                     item.Tick();
                 }
             }
-            _isDoingTick = false;
         }
 
         #endregion

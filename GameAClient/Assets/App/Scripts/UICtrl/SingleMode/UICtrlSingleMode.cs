@@ -5,20 +5,17 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSingleMode : UICtrlGenericBase<UIViewSingleMode>
+    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
+    public class UICtrlSingleMode : UICtrlAnimationBase<UIViewSingleMode>
     {
         #region 常量与字段
 		/// <summary>
@@ -49,11 +46,16 @@ namespace GameA
 		/// <summary>
 		/// 是否正在拖拽
 		/// </summary>
-		private bool _dragging = false;
+		private bool _dragging;
 		/// <summary>
 		/// 屏蔽玩家输入计时器
 		/// </summary>
 		private float _blockInputTimer;
+
+	    private USCtrlChapter[] _chapterAry;
+
+	    private UIParticleItem[] _uiParticleItemAry;
+	    private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -61,25 +63,33 @@ namespace GameA
 		/// 当前显示章节
 		/// </summary>
 		/// <value>The current chapter.</value>
-		private int CurrentChapter {
-			get {
-				return _currentChapter;
-			}
-			set {
+		public int CurrentChapter {
+			private set {
 				if (_currentChapter != value) {
 					_currentChapter = value;
 					RefreshChapterInfo ();
 				}
 			}
+			get { return _currentChapter; }
 		}
 
         #endregion
 
         #region 方法
+
+	    public void SetChapterBonusLevelLockState(int chapter, int levelInx, bool isLock, bool playAnimation = false)
+	    {
+		    _chapterAry[chapter-1].SetBonusLevelLockState(levelInx, isLock, playAnimation);
+	    }
+	    
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
 			_dragging = true;
+	        if (_currentChapter <= 0)
+	        {
+		        _currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+	        }
 
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
@@ -87,6 +97,9 @@ namespace GameA
 			if (_currentChapter > ChapterCnt) {
 				CurrentChapter = ChapterCnt;
 			}
+	        var curChapter = _currentChapter;
+	        _currentChapter = -1;
+	        CurrentChapter = curChapter;
 
 			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
 				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {
@@ -99,7 +112,11 @@ namespace GameA
 					);
 				}
 			}
-            SocialGUIManager.ShowGoldEnergyBar (true);
+	        if (!_pushGoldEnergyStyle)
+	        {
+		        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.EnergyGoldDiamond);
+		        _pushGoldEnergyStyle = true;
+	        }
 //			AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
 //				LocalUser.Instance.UserGuid,
 //				() => {
@@ -110,16 +127,37 @@ namespace GameA
 			RefreshChapterInfo ();
 
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
-                _cachedView.MatchBtn.gameObject.SetActive (true);
+                _cachedView.MatchBtn.gameObject.SetActive (false); //todo
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
+	        //打开匹配挑战
+            #if UNITY_EDITOR
+//	        _cachedView.MatchBtn.SetActiveEx(true);
+             #endif
+	       
         }
 
         protected override void OnClose()
         {
-            base.OnClose();
+	        if (_pushGoldEnergyStyle)
+	        {
+		        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+		        _pushGoldEnergyStyle = false;
+	        }
 			_dragging = false;
+	        if (null != _uiParticleItemAry)
+	        {
+		        for (int i = 0; i < _uiParticleItemAry.Length; i++)
+		        {
+			        var particle = _uiParticleItemAry[i];
+			        if (particle != null)
+			        {
+				        particle.Particle.Stop();
+			        }
+		        }
+	        }
+            base.OnClose();
         }
 
         protected override void InitEventListener()
@@ -129,13 +167,29 @@ namespace GameA
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
-        protected override void OnViewCreated()
+	    protected override void SetAnimationType()
+	    {
+		    base.SetAnimationType();
+		    _firstDelayFrames = 3;
+	    }
+
+	    protected override void SetPartAnimations()
+	    {
+		    base.SetPartAnimations();
+		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.1f);
+		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+		    SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+		    SetPart(_cachedView.LeftBtnRtf, EAnimationType.MoveFromDown);
+		    SetPart(_cachedView.RightBtnRtf, EAnimationType.MoveFromDown);
+	    }
+
+	    protected override void OnViewCreated()
         {
             base.OnViewCreated();
 
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtnClick);
 			_cachedView.MatchBtn.onClick.AddListener (OnMatchBtnClick);
-			_cachedView.TreasureBtn.onClick.AddListener (OnTreasureBtnClick);
+			//_cachedView.TreasureBtn.onClick.AddListener (OnTreasureBtnClick);
 			_cachedView.EncBtn.onClick.AddListener (OnEncBtnClick);
             _cachedView.NextBtn.onClick.AddListener (OnNextBtn);
             _cachedView.PrevBtn.onClick.AddListener (OnPrevBtn);
@@ -152,18 +206,30 @@ namespace GameA
 			_cachedView.ChapterScrollRect.OnBeginDragEvent.AddListener (OnBeginDrag);
 			_cachedView.ChapterScrollRect.OnEndDragEvent.AddListener (OnEndDrag);
 			_cachedView.ChapterScrollRect.onValueChanged.AddListener (OnValueChanged);
-			_cachedView.LevelClickedCB = OnLevelClicked;
 
 			_dragging = false;
 			_blockInputTimer = 0f;
 			_cachedView.InputBlock.enabled = false;
-
-			_currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+	        
+	        _cachedView.MatchBtn.SetActiveEx(false);
+			
+	        _cachedView.SetActiveEx(false);
+	        _chapterAry = new USCtrlChapter[_cachedView.Chapters.Length];
+	        for (int i = 0; i < _chapterAry.Length; i++)
+	        {
+		        _chapterAry[i] = new USCtrlChapter();
+		        _chapterAry[i].Init(_cachedView.Chapters[i]);
+	        }
+	        _cachedView.ChapterBg[_currentChapter-1].gameObject.SetActive(true);
+	        _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos [_currentChapter - 1];
+	        _uiParticleItemAry = new UIParticleItem[_cachedView.Chapters.Length];
         }
 			
 		public override void OnUpdate ()
 		{
-			base.OnUpdate ();
+			_cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70f, -16);
+			_cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
+            base.OnUpdate ();
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
 			}
@@ -191,7 +257,6 @@ namespace GameA
 			if ((Input.touchCount == 0 && !Input.anyKey) && _cachedView.ChapterScrollRect.isForceReleased) {
 				_cachedView.ChapterScrollRect.EnableDrag ();
 			}
-			///----------------------------------------------
 		}
 
 		/// <summary>
@@ -214,9 +279,7 @@ namespace GameA
 			_cachedView.InputBlock.enabled = true;
 		}
 
-		
-
-		private void RefreshChapterInfo () {
+		private void RefreshChapterInfo (bool doPassAnimate = false) {
 			if (_currentChapter < 1) {
 				_currentChapter = 1;
 			}
@@ -238,8 +301,39 @@ namespace GameA
 				);
 			}
 
-			if (_cachedView.Chapters [_currentChapter - 1] != null) {
-				_cachedView.Chapters [_currentChapter - 1].RefreshInfo (tableChapter);
+			if (_chapterAry[_currentChapter - 1] != null) {
+				_chapterAry[_currentChapter - 1].RefreshInfo (tableChapter, _currentChapter, doPassAnimate);
+				
+				if (null != _uiParticleItemAry)
+				{
+					for (int i = 0; i < _uiParticleItemAry.Length; i++)
+					{
+						var uiParticle = _uiParticleItemAry[i];
+						if (_currentChapter - 1 == i)
+						{
+							if (uiParticle != null)
+							{
+								uiParticle.Particle.Play();
+							}
+							else
+							{
+								uiParticle = GameParticleManager.Instance.GetUIParticleItem(
+									ParticleNameConstDefineGM2D.SingleModeBgEffect + (i + 1),
+									_chapterAry[_currentChapter - 1].UITran, _groupId);
+								uiParticle.Particle.Trans.localPosition = new Vector3(ChapterDistance/2f, 0, 0);
+								_uiParticleItemAry[i] = uiParticle;
+								uiParticle.Particle.Play();
+							}
+						}
+						else
+						{
+							if (uiParticle != null)
+							{
+								uiParticle.Particle.Stop();
+							}
+						}
+					}
+				}
 			}
 
             if (_currentChapter == 1) {
@@ -283,7 +377,9 @@ namespace GameA
                 _currentChapter = ChapterCnt;
                 return;
             }
+	        FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
             _currentChapter += 1;
+	        FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
             RefreshChapterInfo ();
             BeginChangeChapter ();
             _dragging = false;
@@ -293,7 +389,9 @@ namespace GameA
                 _currentChapter = 1;
                 return;
             }
+	        FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
             _currentChapter -= 1;
+	        FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
             RefreshChapterInfo ();
             BeginChangeChapter ();
             _dragging = false;
@@ -303,10 +401,8 @@ namespace GameA
 		/// 关卡被点击，从关卡图标按钮发出的消息调用
 		/// </summary>
 		/// <param name="param">Parameter.</param>
-		private void OnLevelClicked (object param) {
+		public void OnLevelClicked (object param) {
             IntVec3 intVec3Param = (IntVec3)param;
-            if (intVec3Param == null)
-                return;
             var chapterIdx = intVec3Param.x;
             var levelIdx = intVec3Param.y;
             bool isBonus = intVec3Param.z == 1;
@@ -317,7 +413,7 @@ namespace GameA
                 // 奖励关直接进去游戏 todo
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
                     this, 
-                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", isBonus ? "奖励" : "普通", chapterIdx, levelIdx));
+                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", "奖励", chapterIdx, levelIdx));
 
                 AppData.Instance.AdventureData.PlayAdventureLevel (
                     chapterIdx,
@@ -363,8 +459,11 @@ namespace GameA
 				}
 				return;
 			}
-			if (Mathf.Abs (x - _chapterRightNormalizedHorizontalPos [_currentChapter - 1]) > (200 / _cachedView.ChapterScrollRect.content.GetWidth ())) {
+			if (Mathf.Abs (x - _chapterRightNormalizedHorizontalPos [_currentChapter - 1]) > (200 / _cachedView.ChapterScrollRect.content.GetWidth ())) 
+			{
+				FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
 				_currentChapter += x > _chapterRightNormalizedHorizontalPos [_currentChapter - 1] ? 1 : -1;
+				FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
 				RefreshChapterInfo ();
 				BeginChangeChapter ();
 				_dragging = false;
@@ -378,13 +477,16 @@ namespace GameA
 		}
 
 		private void OnReturnToApp () {
-            if (!_isOpen)
-                return;
+			if (!_isViewCreated || !_isOpen)
+			{
+				return;
+			}
 //            _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos[_currentChapter - 1];
-			RefreshChapterInfo ();
-			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
-				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {
-					AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].Request (
+			var advData = AppData.Instance.AdventureData;
+			RefreshChapterInfo(advData.LastAdvSuccess);
+			if (_currentChapter <= advData.UserData.SectionList.Count) {
+				if (advData.UserData.SectionList [_currentChapter - 1].IsDirty) {
+					advData.UserData.SectionList [_currentChapter - 1].Request (
 						LocalUser.Instance.UserGuid,
 						_currentChapter,
 						() => {
@@ -395,12 +497,34 @@ namespace GameA
 			}
 
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
-                _cachedView.MatchBtn.gameObject.SetActive (true);
+//                _cachedView.MatchBtn.gameObject.SetActive (true);
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
 		}
-        #endregion 接口
+
+	    private void FadeOutChanterBg(CanvasGroup chapterBg)
+	    {
+		  
+		    chapterBg.alpha = 1.0f;
+		    chapterBg.DOFade(0,1);
+		    chapterBg.gameObject.SetActive(false);
+	    }
+
+	    private void FadeInChanterBg(CanvasGroup chapterBg)
+	    {
+		    chapterBg.gameObject.SetActive(true);
+		    chapterBg.alpha = 0.0f;
+		    chapterBg.DOFade(1,1);
+	    }
+
+	    protected override void OnDestroy()
+	    {
+		    _uiParticleItemAry = null;
+		    base.OnDestroy();
+	    }
+
+	    #endregion 接口
         #endregion
 
     }

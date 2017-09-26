@@ -72,9 +72,20 @@ namespace GameA.Game
 				);
 				return;
 			}
+			if (null != successCB)
+			{
+				successCB.Invoke();
+			}
+			SocialApp.Instance.ReturnToApp();
         }
 
-        public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
+	    public override bool Stop()
+	    {
+		    SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
+		    return base.Stop();
+	    }
+
+	    public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
 		{
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			byte[] compressedBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
@@ -93,14 +104,25 @@ namespace GameA.Game
 
 			if (mode == EMode.EditTest)
 			{
+				EditMode.Instance.StopEdit();
+				PlayMode.Instance.SceneState.Init(EditMode.Instance.MapStatistics);
+				if (!GameRun.Instance.ChangeState(ESceneState.Play))
+				{
+					ChangeMode(EMode.Edit);
+					return;
+				}
+				_inputDatas.Clear();
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
 				SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 				SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
 				InputManager.Instance.ShowGameInput();
+				GameRun.Instance.Playing();
 			}
 			else if (mode == EMode.Edit)
 			{
+				EditMode.Instance.StartEdit();
+				GameRun.Instance.ChangeState(ESceneState.Edit);
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToModifyMode();
 				SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.OpenUI<UICtrlModifyEdit>();

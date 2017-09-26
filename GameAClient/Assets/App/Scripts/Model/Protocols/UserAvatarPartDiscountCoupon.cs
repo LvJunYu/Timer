@@ -129,6 +129,7 @@ namespace GameA
 
         public UserAvatarPartDiscountCoupon () { 
             _groupList = new List<AvatarPartDiscountCouponGroup>();
+            OnCreate();
         }
         #endregion
     }

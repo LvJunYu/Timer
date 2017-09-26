@@ -16,7 +16,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.IsMain || other.ELayerType == ELayerType.AttackPlayerItem)
+                if (other.IsMain || UnitDefine.IsBullet(other.Id))
                 {
                     DestroyBrick();
                 }
@@ -26,35 +26,49 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            CheckItem(other, checkOnly);
+            Check(other, checkOnly);
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            CheckItem(other, checkOnly);
+            if (other.CanDashBrick)
+            {
+                DestroyBrick();
+                return false;
+            }
+            Check(other, checkOnly);
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            CheckItem(other, checkOnly);
+            if (other.CanDashBrick)
+            {
+                DestroyBrick();
+                return false;
+            }
+            Check(other, checkOnly);
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
-        protected void CheckItem(UnitBase other, bool checkOnly)
+        protected void Check(UnitBase other, bool checkOnly)
         {
             if (!checkOnly)
             {
-                if (other.ELayerType == ELayerType.AttackPlayerItem)
+                if (UnitDefine.IsBullet(other.Id))
                 {
                     DestroyBrick();
                 }
             }
         }
 
-        private void DestroyBrick()
+        public void DestroyBrick()
         {
+            if (!_isAlive)
+            {
+                return;
+            }
             PlayMode.Instance.DestroyUnit(this);
             OnDead();
         }

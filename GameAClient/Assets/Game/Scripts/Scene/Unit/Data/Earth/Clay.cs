@@ -7,25 +7,16 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4011, Type = typeof(Clay))]
-    public class Clay : BlockBase
+    public class Clay : SkillBlock
     {
         public override bool CanClimbed
         {
             get { return true; }
-        }
-
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _friction = 30;
-            return true;
         }
 
         internal override bool InstantiateView()
@@ -37,10 +28,36 @@ namespace GameA.Game
             _animation.Init("Run");
             return true;
         }
-
-        public override bool StepOnClay()
+        
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            return true;
+            if (_colliderGrid.Intersects(grid))
+            {
+                OnEffect(other, eDirectionType);
+            }
+        }
+
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        {
+            if (other.IsInState(EEnvState.Ice))
+            {
+                return;
+            }
+            switch (eDirectionType)
+            {
+                case EDirectionType.Up:
+                    other.SetStepOnClay();
+                    break;
+                case EDirectionType.Down:
+                    other.SetClimbState(EClimbState.Up);
+                    break;
+                case EDirectionType.Left:
+                    other.SetClimbState(EClimbState.Right);
+                    break;
+                case EDirectionType.Right:
+                    other.SetClimbState(EClimbState.Left);
+                    break;
+            }
         }
     }
 }

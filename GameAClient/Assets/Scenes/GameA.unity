@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 574366971}
   - component: {fileID: 574366972}
-  - component: {fileID: 574366974}
+  - component: {fileID: 574366973}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -140,8 +140,10 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _env: 1
+  _isMaster: 1
+  _env: 4
   _clearCache: 0
+  _roomServerAddress: 192.168.1.91
   _appServerAddress:
   - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
@@ -161,13 +163,10 @@ MonoBehaviour:
   - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
     GameResoureRoot: http://127.0.0.1:7888
-  - Enable: 0
-    AppServerApiRoot: http://192.168.3.158:8080/GameAServer/gameaapi
-    GameResoureRoot: http://127.0.0.1:7888
-  AppVersion: 1
-  PackageAppResourceVersion: 0
-  UseLocalDebugRes: 0
---- !u!114 &574366974
+  - Enable: 1
+    AppServerApiRoot: http://192.168.1.91:8080/GameAServer/gameaapi
+    GameResoureRoot: http://192.168.0.73:7888/Joyyou
+--- !u!114 &574366973
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -175,83 +174,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 574366970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a0ddde4b6006fa4a912bec7ca093d37, type: 3}
+  m_Script: {fileID: 11500000, guid: c88802095eed046aebe0f7d68b8489c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appKey: 1098f8598d040
-  devInfo:
-    sinaweibo:
-      Enable: 1
-    tencentweibo:
-      Enable: 0
-    facebook:
-      Enable: 0
-    twitter:
-      Enable: 0
-    email:
-      Enable: 0
-    shortMessage:
-      Enable: 0
-    douban:
-      Enable: 0
-    renren:
-      Enable: 0
-    googlePlus:
-      Enable: 0
-    kaiXin:
-      Enable: 0
-    pocket:
-      Enable: 0
-    instagram:
-      Enable: 0
-    linkedIn:
-      Enable: 0
-    tumblr:
-      Enable: 0
-    youDao:
-      Enable: 0
-    flickr:
-      Enable: 0
-    evernote:
-      Enable: 0
-    whatsApp:
-      Enable: 0
-    line:
-      Enable: 0
-    dropbox:
-      Enable: 0
-    vkontakte:
-      Enable: 0
-    pinterest:
-      Enable: 0
-    mingdao:
-      Enable: 0
-    kakaoTalk:
-      Enable: 0
-    kakaoStory:
-      Enable: 0
-    qq:
-      Enable: 1
-    qzone:
-      Enable: 1
-    wechat:
-      Enable: 1
-    wechatMoments:
-      Enable: 1
-    wechatFavorites:
-      Enable: 1
-    yixin:
-      Enable: 0
-    yixinMoments:
-      Enable: 0
-    facebookMessenger:
-      Enable: 0
-    instapaper:
-      Enable: 0
-    alipay:
-      Enable: 1
-    alipayMoments:
-      Enable: 1
+  _version: 0.1.0
+  _defaultLocale: 6
+  _useAssetBundleRes: 0
+  _useDebugMobileInput: 0
 --- !u!1 &1148256115
 GameObject:
   m_ObjectHideFlags: 0

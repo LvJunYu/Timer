@@ -10,17 +10,6 @@ namespace GameA.Game
     [Unit(Id = 4004, Type = typeof (TransparentEarth))]
     public class TransparentEarth : BlockBase
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _canLazerCross = true;
-            SetSortingOrderBack();
-            return true;
-        }
-
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (other is Box)

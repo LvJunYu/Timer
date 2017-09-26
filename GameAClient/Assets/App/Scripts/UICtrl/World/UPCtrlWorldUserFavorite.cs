@@ -5,14 +5,10 @@
 ** Summary : UPCtrlWorldUserFavorite.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 namespace GameA
 {
@@ -23,8 +19,8 @@ namespace GameA
         private List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
         private Dictionary<long, CardDataRendererWrapper<Project>> _dict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private UserFavoriteWorldProjectList _data;
-        private Vector2 _pagePosition = Vector2.zero;
-        private CardDataRendererWrapper<Project> _curSelectedProject;
+        private EResScenary _resScenary;
+        private bool _unload;
         #endregion
 
         #region 属性
@@ -32,41 +28,73 @@ namespace GameA
         #endregion
 
         #region 方法
+        public void Set(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
+        }
+
         public override void Open()
         {
             base.Open();
+            _unload = false;
+            _cachedView.FavoritePanel.SetActiveEx(true);
             _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             RefreshView();
             RequestData();
-            _cachedView.GridScroller.ContentPosition = _pagePosition;
         }
 
         public override void Close()
         {
-            _pagePosition = _cachedView.GridScroller.ContentPosition;
+            _unload = true;
+            _cachedView.FavoriteGridScroller.RefreshCurrent();
+            _cachedView.FavoritePanel.SetActiveEx(false);
             base.Close();
         }
 
         private void OnItemClick(CardDataRendererWrapper<Project> item)
         {
-            SelectItem(item);
+            if (item == null || item.Content == null)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
+        }
+        
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlWorldProject();
+            item.Init(parent, _resScenary);
+            item.GetTimeFunc = GetTime;
+            return item;
         }
 
         public void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _contentList.Count)
+            if (_unload)
             {
-                LogHelper.Error("OnItemRefresh Error Inx > count");
-                return;
+                item.Set(null);
             }
-            item.Set(_contentList[inx]);
-            if (!_data.IsEnd)
+            else
             {
-                if(inx > _contentList.Count - 2)
+                if(inx >= _contentList.Count)
                 {
-                    RequestData(true);
+                    LogHelper.Error("OnItemRefresh Error Inx > count");
+                    return;
+                }
+                item.Set(_contentList[inx]);
+                if (!_data.IsEnd)
+                {
+                    if(inx > _contentList.Count - 2)
+                    {
+                        RequestData(true);
+                    }
                 }
             }
+        }
+        
+        private string GetTime(Project p)
+        {
+            return DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.ProjectUserData.LastFavoriteTime);
         }
         #region private
         private void RequestData(bool append = false)
@@ -92,53 +120,25 @@ namespace GameA
             _contentList.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, list.Count);
             _dict.Clear();
-            bool findFlag = false;
             for (int i = 0; i < list.Count; i++)
             {
                 Project p = list[i];
                 CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(p, OnItemClick);
-                if (_curSelectedProject != null
-                    && _curSelectedProject.Content.ProjectId == p.ProjectId)
-                {
-                    SelectItem(w);
-                    findFlag = true;
-                }
-                w.IsSelected = false;
                 _contentList.Add(w);
                 _dict.Add(p.ProjectId, w);
             }
-            if (!findFlag)
-            {
-                if (_contentList.Count > 0)
-                {
-                    SelectItem(_contentList[0]);
-                }
-                else
-                {
-                    SelectItem(null);
-                }
-            }
-            _cachedView.GridScroller.SetItemCount(_contentList.Count);
+            _cachedView.FavoriteGridScroller.SetItemCount(_contentList.Count);
         }
 
-        private void SelectItem(CardDataRendererWrapper<Project> item)
-        {
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = false;
-                _curSelectedProject.BroadcastDataChanged();
-            }
-            _curSelectedProject = item;
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = true;
-                _curSelectedProject.BroadcastDataChanged();
-            }
-            _mainCtrl.SetProject(item == null ? null : item.Content);
-        }
         #endregion private
 
         #region 接口
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.FavoriteGridScroller.Set(OnItemRefresh, GetItemRenderer);
+        }
+        
         public void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;

@@ -18,15 +18,16 @@ namespace GameA.Game
             {
                 return false;
             }
-            _canLazerCross = true;
-            _canMagicCross = true;
-            SetSortingOrderFront();
+            SetSortingOrderFrontest();
             return true;
         }
      
         public override void OnIntersect(UnitBase other)
         {
-            OnTrigger(other);
+            if (other.IsMain)
+            {
+                OnTrigger(other);
+            }
         }
 
         protected virtual void OnTrigger(UnitBase other)

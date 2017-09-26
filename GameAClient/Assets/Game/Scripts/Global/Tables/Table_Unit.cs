@@ -31,10 +31,15 @@ namespace GameA.Game
 		[ColumnMapping("Model")]
 		public string Model;
 		/// <summary>
-        /// 模型1
+        /// 模型额外
         /// </summary>
-		[ColumnMapping("Model1")]
-		public string Model1;
+		[ColumnMapping("ModelExtras")]
+		public string[] ModelExtras;
+		/// <summary>
+        /// 生命值
+        /// </summary>
+		[ColumnMapping("Hp")]
+		public int Hp;
 		/// <summary>
         /// 类别
         /// </summary>
@@ -60,6 +65,41 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("ColliderType")]
 		public int ColliderType;
+		/// <summary>
+        /// 是否地面
+        /// </summary>
+		[ColumnMapping("IsGround")]
+		public int IsGround;
+		/// <summary>
+        /// 蓝石
+        /// </summary>
+		[ColumnMapping("IsMagicBlock")]
+		public int IsMagicBlock;
+		/// <summary>
+        /// 桥梁
+        /// </summary>
+		[ColumnMapping("IsBridgeBlock")]
+		public int IsBridgeBlock;
+		/// <summary>
+        /// 激光
+        /// </summary>
+		[ColumnMapping("IsLazerBlock")]
+		public int IsLazerBlock;
+		/// <summary>
+        /// 视野
+        /// </summary>
+		[ColumnMapping("IsViewBlock")]
+		public int IsViewBlock;
+		/// <summary>
+        /// 风扇
+        /// </summary>
+		[ColumnMapping("IsFanBlock")]
+		public int IsFanBlock;
+		/// <summary>
+        /// 子弹
+        /// </summary>
+		[ColumnMapping("IsBulletBlock")]
+		public int IsBulletBlock;
 		/// <summary>
         /// 数量
         /// </summary>
@@ -96,35 +136,50 @@ namespace GameA.Game
 		[ColumnMapping("ModelAnchore")]
 		public int ModelAnchore;
 		/// <summary>
-        /// 父亲类别
+        /// 朝向
         /// </summary>
-		[ColumnMapping("ParentType")]
-		public int ParentType;
+		[ColumnMapping("Direction")]
+		public int Direction;
 		/// <summary>
-        /// 孩子类别
+        /// 朝向集合
         /// </summary>
-		[ColumnMapping("ChildType")]
-		public int ChildType;
+		[ColumnMapping("DirectionMask")]
+		public int DirectionMask;
 		/// <summary>
-        /// 初始移动方向
+        /// 移动
         /// </summary>
-		[ColumnMapping("OriginMoveDirection")]
-		public int OriginMoveDirection;
+		[ColumnMapping("MoveDirection")]
+		public int MoveDirection;
 		/// <summary>
-        /// 初始蓝石移动方向
-        /// </summary>
-		[ColumnMapping("OriginMagicDirection")]
-		public int OriginMagicDirection;
-		/// <summary>
-        /// 移动方向集合
+        /// 移动集合
         /// </summary>
 		[ColumnMapping("MoveDirectionMask")]
 		public int MoveDirectionMask;
 		/// <summary>
-        /// 旋转方向集合
+        /// 激活
         /// </summary>
-		[ColumnMapping("RotationMask")]
-		public int RotationMask;
+		[ColumnMapping("ActiveState")]
+		public int ActiveState;
+		/// <summary>
+        /// 装载
+        /// </summary>
+		[ColumnMapping("ChildState")]
+		public int[] ChildState;
+		/// <summary>
+        /// 旋转
+        /// </summary>
+		[ColumnMapping("RotateState")]
+		public int RotateState;
+		/// <summary>
+        /// 时间状态
+        /// </summary>
+		[ColumnMapping("TimeState")]
+		public float[] TimeState;
+		/// <summary>
+        /// 文字
+        /// </summary>
+		[ColumnMapping("TextState")]
+		public int TextState;
 		/// <summary>
         /// 成对类别
         /// </summary>
@@ -136,15 +191,10 @@ namespace GameA.Game
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
 		/// <summary>
-        /// 行走音效
+        /// 伴随特效
         /// </summary>
-		[ColumnMapping("WalkAudioNames")]
-		public string[] WalkAudioNames;
-		/// <summary>
-        /// 行走特效
-        /// </summary>
-		[ColumnMapping("WalkEffectName")]
-		public string WalkEffectName;
+		[ColumnMapping("WithEffctName")]
+		public string WithEffctName;
 		/// <summary>
         /// 破坏音效
         /// </summary>
@@ -155,6 +205,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("DestroyEffectName")]
 		public string DestroyEffectName;
+		/// <summary>
+        /// 描述
+        /// </summary>
+		[ColumnMapping("Summary")]
+		public string Summary;
 	}
 
     public class TableUnitAsset:BaseTableAsset

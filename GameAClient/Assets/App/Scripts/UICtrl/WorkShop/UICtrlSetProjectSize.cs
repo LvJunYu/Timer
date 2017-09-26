@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSetProjectSize : UICtrlGenericBase<UIViewSetProjectSize>
+    public class UICtrlSetProjectSize : UICtrlAnimationBase<UIViewSetProjectSize>
     {
         #region Fields
         private static IntVec2 DefaultSelectedIdx = new IntVec2(2, 1);
@@ -28,6 +28,13 @@ namespace GameA
 
             _selectedIdx = DefaultSelectedIdx;
             RefreshView ();
+        }
+        
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.transform, EAnimationType.Fade);
         }
         
         protected override void OnClose() {
@@ -58,7 +65,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void RefreshView () {
@@ -113,37 +120,15 @@ namespace GameA
             //                return;
             //            }
 
-            EMatrixProjectResState resState = EMatrixProjectResState.None;
-            if(!MatrixProjectTools.CheckMatrixStateForRun(out resState))
-            {
-                MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
-                return;
-            }
-            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-            if(Application.internetReachability != NetworkReachability.NotReachable
-                && !Util.IsFloatEqual(needDownloadSize, 0))
-            {
-                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-                        InternalCreate();
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                        LogHelper.Debug("Cancel RunCreate");
-                    })
-                );
-            }
-            else
-            {
-                InternalCreate();
-            }
+//            EMatrixProjectResState resState = EMatrixProjectResState.None;
+            InternalCreate();
         }
         private void InternalCreate()
         {
             Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
             GameManager.Instance.RequestCreate (project);
-            SocialGUIManager.Instance.ChangeToGameMode();
+            SocialApp.Instance.ChangeToGame();
         }
 
         #endregion

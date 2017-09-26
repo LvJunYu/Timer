@@ -6,10 +6,10 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using DG.Tweening;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -18,21 +18,33 @@ namespace GameA.Game
     {
         protected Table_Background _tableBg;
         protected Transform _trans;
+        protected Vector3 _basePos;
+        protected Vector3 _baseFollowPos;
+        protected Vector3 _deltaMove;
         protected Vector3 _curPos;
         protected SpriteRenderer _spriteRenderer;
         protected SceneNode _node;
+        protected float _sizeX;
+        protected float _halfSizeX;
 
         public Transform Trans
         {
             get { return _trans; }
         }
+        public int Depth{get { return _tableBg.Depth; }}
 
         public virtual bool Init(Table_Background table, SceneNode node)
         {
             _tableBg = table;
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
-            _curPos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, table.Depth + 10);
+            int zDepth = table.Depth + UnitDefine.ZOffsetBackground;
+            //草、藤蔓、前面的地面、左右柱子最前显示
+            if (table.Depth <= 4)
+            {
+                zDepth -= 850;
+            }
+            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
             GameObject go;
             if (!TryCreateObject(out go))
             {
@@ -41,47 +53,58 @@ namespace GameA.Game
             _trans = go.transform;
             _trans.localPosition = _curPos;
             _trans.localScale = new Vector3(_node.Scale.x, _node.Scale.y, 1);
+
+            _sizeX = (_node.Grid.XMax - _node.Grid.XMin + 1) * ConstDefineGM2D.ClientTileScale;
+            _halfSizeX = _sizeX / 2;
+            _deltaMove = Vector3.zero;
             return true;
         }
 
-        public virtual void Update(IntVec2 deltaPos)
+        public virtual void SetBaseFollowPos(Vector2 baseFollowPos)
+        {
+            _baseFollowPos = baseFollowPos;
+        }
+
+        public virtual void ResetPos()
+        {
+            _deltaMove = Vector3.zero;
+            Update(_baseFollowPos);
+        }
+
+        public virtual void Update(Vector3 followPos)
         {
             if (_trans == null)
             {
                 return;
             }
-            UpdateMove();
-            UpdateFollow(GM2DTools.TileToWorld(deltaPos));
+            UpdateMove(followPos);
             _trans.position = _curPos;
         }
 
-        protected virtual  bool UpdateMove()
+        protected virtual bool UpdateMove(Vector3 followPos)
         {
-            if (_tableBg.MoveSpeedX != 0)
+            if (Math.Abs(_tableBg.MoveSpeedX) > 0)
             {
-                _curPos += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
+                _deltaMove += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime;
             }
+            _curPos = _basePos + (followPos - _baseFollowPos) * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth)) +
+                      _deltaMove * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
             var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
-            var tilePos = GM2DTools.WorldToTile(_curPos);
-            var sizeX = _node.Grid.XMax - _node.Grid.XMin + 1;
-            if (tilePos.x + sizeX / 2 <= followRect.XMin)
+            float w = followRect.width + _sizeX;
+            float modX = (_curPos.x - followRect.xMin + _halfSizeX) % w;
+            if (modX < 0)
             {
-                tilePos.x += followRect.XMax - followRect.XMin + 1 + sizeX;
+                modX += w;
             }
-            _curPos = GM2DTools.TileToWorld(tilePos, _curPos.z);
+            _curPos.x = modX + followRect.xMin - _halfSizeX;
             return true;
-        }
-
-        private void UpdateFollow(Vector3 deltaPos)
-        {
-            _curPos += deltaPos * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth));
         }
 
         private bool TryCreateObject(out GameObject go)
         {
             go = null;
             Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(_tableBg.Model, out sprite))
+            if (!JoyResManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
                 return false;
@@ -93,7 +116,7 @@ namespace GameA.Game
             {
                 _spriteRenderer.material.color = new Color(1, 1, 1, _tableBg.Alpha);
             }
-            _spriteRenderer.sortingOrder = (int)ESortingOrder.Item;
+            _spriteRenderer.sortingOrder = (int) ESortingOrder.Item;
             go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;
         }
@@ -117,7 +140,7 @@ namespace GameA.Game
                 {
                     if (scripts[i] != null)
                     {
-                        UnityEngine.Object.Destroy(scripts[i]);
+                        Object.Destroy(scripts[i]);
                     }
                 }
                 _trans.position = Vector3.zero;

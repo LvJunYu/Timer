@@ -84,7 +84,7 @@ namespace GameA
                     //}
                 default:
                     {
-                        return "Error£¡";
+                        return "Error??";
                     }
             }
         }

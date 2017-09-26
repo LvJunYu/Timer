@@ -17,25 +17,20 @@ namespace GameA.Game
     public class Lazer : Magic
     {
         protected GridCheck _gridCheck;
-        protected Grid2D _checkGrid;
-        protected int _distance;
-        protected IntVec2 _borderCenterPoint;
 
-        protected UnityNativeParticleItem _effect;
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
-
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
+        
+        protected Vector3 _direction;
+        protected int _distance;
+        
+        protected ERotateMode _eRotateType;
+        protected float _endAngle;
+        protected float _curAngle;
 
         public override bool CanControlledBySwitch
         {
             get { return true; }
-        }
-
-        protected override void InitAssetPath()
-        {
-            InitAssetRotation();
         }
 
         protected override bool OnInit()
@@ -45,17 +40,16 @@ namespace GameA.Game
                 return false;
             }
             _gridCheck = new GridCheck(this);
-            SetSortingOrderBack();
-            Calculate();
+            SetSortingOrderBackground();
             return true;
         }
-
-        private void Calculate()
+        
+        public override void UpdateExtraData()
         {
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB, -240);
-            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-            _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
-            _borderCenterPoint = (_pointA + _pointB) / 2;
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _eRotateType = (ERotateMode) unitExtra.RotateMode;
+            _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
+            base.UpdateExtraData();
         }
 
         internal override bool InstantiateView()
@@ -64,35 +58,25 @@ namespace GameA.Game
             {
                 return false;
             }
-            var euler = new Vector3(0, 0, Rotation*-90);
-            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerRun", _trans);
-            if (_effect != null)
+            _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            if (_withEffect != null)
             {
-                _effect.Trans.position += Vector3.back * 0.1f;
-                _effect.Trans.localEulerAngles = euler;
-                _effect.Play();
+                _withEffect.Trans.position += Vector3.back * 0.1f;
             }
-
             _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
-            if (_lazerEffect != null)
-            {
-                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
-                _lazerEffect.Trans.localEulerAngles = euler;
-            }
-
             _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
-            if (_lazerEffectEnd != null)
-            {
-                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
-                _lazerEffectEnd.Trans.localEulerAngles = euler;
-            }
-
             return true;
         }
 
         protected override void Clear()
         {
             base.Clear();
+            _curAngle = _angle;
+            _direction = GM2DTools.GetDirection(_curAngle);
+            if (_trans != null)
+            {
+                _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
             _gridCheck.Clear();
             if (_lazerEffect != null)
             {
@@ -107,65 +91,79 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            FreeEffect(_effect);
-            _effect = null;
             FreeEffect(_lazerEffect);
             _lazerEffect = null;
             FreeEffect(_lazerEffectEnd);
             _lazerEffectEnd = null;
         }
 
-        private void Pause()
+        protected override void OnActiveStateChanged()
         {
-            _gridCheck.Clear();
-            if (_lazerEffect != null)
-            {
-                _lazerEffect.Pause();
-            }
-            if (_lazerEffectEnd != null)
-            {
-                _lazerEffectEnd.Pause();
-            }
+            base.OnActiveStateChanged();
+            _lazerEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
+            _lazerEffectEnd.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            _gridCheck.Before();
             //停止
-            if (_ctrlBySwitch)
+            if (_eActiveState != EActiveState.Active)
             {
-                Pause();
+                _gridCheck.Clear();
                 return;
             }
-            _gridCheck.Before();
-            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-            if (_dynamicCollider != null)
+            _distance = ConstDefineGM2D.MaxMapDistance;
+            if (_eRotateType != ERotateMode.None)
             {
-                Calculate();
+                switch (_eRotateType)
+                {
+                    case ERotateMode.Clockwise:
+                        _curAngle += 1;
+                        break;
+                    case ERotateMode.Anticlockwise:
+                        _curAngle += -1;
+                        break;
+                }
+                Util.CorrectAngle360(ref _curAngle);
+                if (!Util.IsFloatEqual(_angle, _endAngle) )
+                {
+                    if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                    {
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                    }
+                }
+                _direction = GM2DTools.GetDirection(_curAngle);
+                if (_trans != null)
+                {
+                    _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
+                }
             }
-            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
+            var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsLaserBlock(hit.node))
+                    var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                    if (tableUnit != null && tableUnit.IsLazerBlock == 1)
                     {
                         if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                         {
                             UnitBase switchTrigger;
                             if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
                             {
-                                _gridCheck.Do((SwitchTrigger) switchTrigger);
+                                _gridCheck.Do((SwitchTriggerPress) switchTrigger);
                                 _distance = hit.distance + 80;
                                 break;
                             }
                         }
                         bool flag = false;
-                        var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
+                        var units = ColliderScene2D.GetUnits(hit);
                         for (int j = 0; j < units.Count; j++)
                         {
-                            if (units[j].IsAlive && !units[j].CanLazerCross)
+                            if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
                             {
                                 _distance = hit.distance;
                                 flag = true;
@@ -182,7 +180,7 @@ namespace GameA.Game
                         UnitBase unit;
                         if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
                         {
-                            if (unit != null && unit.IsAlive && unit.IsHero)
+                            if (unit != null && unit.IsAlive && unit.IsActor)
                             {
                                 unit.InLazer();
                             }
@@ -198,32 +196,15 @@ namespace GameA.Game
         {
             if (_lazerEffect != null)
             {
-                float z;
                 _lazerEffect.Play();
-                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
+                var distanceWorld = _distance * ConstDefineGM2D.ClientTileScale;
                 _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
-                    switch (Rotation)
-                    {
-                        case 0:
-                            z = GetZ(_borderCenterPoint + _distance * IntVec2.up);
-                            _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.up;
-                            break;
-                        case 1:
-                            z = GetZ(_borderCenterPoint + _distance * IntVec2.right);
-                            _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.right;
-                            break;
-                        case 2:
-                            z = GetZ(_borderCenterPoint + _distance * IntVec2.down);
-                            _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.down;
-                            break;
-                        case 3:
-                            z = GetZ(_borderCenterPoint + _distance * IntVec2.left);
-                            _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.left;
-                            break;
-                    }
+                    _lazerEffectEnd.Trans.position =
+                        GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) +
+                        distanceWorld * _direction;
                 }
             }
         }

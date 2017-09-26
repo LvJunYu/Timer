@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-namespace UnitySampleAssets.CrossPlatformInput.PlatformSpecific
+namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
 {
     public class StandaloneInput : VirtualInput
     {
         // 需要监听的输入按钮
-        private string[] _virtualBtnNames = { "Jump", "Fire1", "Fire2", "Fire3", "Horizontal", "Vertical" };
+        private string[] _virtualBtnNames = { "Jump", "Fire1", "Fire2", "Fire3", "Horizontal", "Vertical", "Assist" };
 
         private void AddButton (string name)
         {
@@ -58,43 +58,43 @@ namespace UnitySampleAssets.CrossPlatformInput.PlatformSpecific
 
         public override void SetButtonDown(string name)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 
         public override void SetButtonUp(string name)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 
         public override void SetAxisPositive(string name)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 
         public override void SetAxisNegative(string name)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 
         public override void SetAxisZero(string name)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 
         public override void SetAxis(string name, float value)
         {
-            throw new Exception(
-                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+//            throw new Exception(
+//                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
         }
 
 

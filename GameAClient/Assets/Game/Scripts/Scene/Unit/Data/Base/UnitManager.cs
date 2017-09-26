@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,7 +16,7 @@ namespace GameA.Game
 {
     public class UnitManager : IDisposable
     {
-        public static UnitManager _instance;
+        private static UnitManager _instance;
         private readonly Dictionary<EUIType, List<Table_Unit>> _typeUnits = new Dictionary<EUIType, List<Table_Unit>>();
         private readonly Dictionary<int, Type> _unitTypes = new Dictionary<int, Type>();
         public readonly Dictionary<int, Table_Unit> _units = new Dictionary<int, Table_Unit>();
@@ -50,10 +51,6 @@ namespace GameA.Game
             _unitParents = new Transform[(int)EUnitType.Max];
             for (int i = 0; i < (int)EUnitType.Max; i++)
             {
-                if (i == (int)EUnitType.MainPlayer)
-                {
-                    continue;
-                }
                 _unitParents[i] = new GameObject(((EUnitType)i).ToString()).transform;
                 _unitParents[i].parent = App.GamePoolTrans;
             }
@@ -92,7 +89,7 @@ namespace GameA.Game
                 Table_Unit tableUnit = pair.Value;
                 tableUnit.Init();
                 _units.Add(pair.Key, tableUnit);
-                if (tableUnit.Use == 1)
+                if (tableUnit.Use == 1 || (LocalUser.Instance.User.RoleType == (int)EAccountRoleType.AcRT_Admin && tableUnit.Use == 2))
                 {
                     var unitType = (EUIType) tableUnit.UIType;
                     if (!_typeUnits.ContainsKey(unitType))
@@ -115,9 +112,20 @@ namespace GameA.Game
             return tableItems;
         }
 
+        private Table_Unit _lastTableUnit;
+        /// <summary>
+        /// 缓存最后一次查询的table 加速查询
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public Table_Unit GetTableUnit(int key)
         {
-            return TableManager.Instance.GetUnit(key);
+            if (_lastTableUnit != null && _lastTableUnit.Id == key)
+            {
+                return _lastTableUnit;
+            }
+            _lastTableUnit = TableManager.Instance.GetUnit(key);
+            return _lastTableUnit;
         }
 
         public Transform GetOriginParent()
@@ -149,20 +157,16 @@ namespace GameA.Game
             {
                 case (int) ELayerType.MainPlayer:
                     return (int) ESceneLayer.MainPlayer;
+                case (int)ELayerType.RemotePlayer:
+                    return (int)ESceneLayer.RemotePlayer;
                 case (int) ELayerType.Monster:
-                    return (int) ESceneLayer.Hero;
+                    return (int) ESceneLayer.Monster;
                 case (int) ELayerType.Item:
                     return (int) ESceneLayer.Item;
-                case (int) ELayerType.AttackPlayer:
-                    return (int) ESceneLayer.AttackPlayer;
-                case (int) ELayerType.AttackPlayerItem:
-                    return (int) ESceneLayer.AttackPlayerItem;
                 case (int) ELayerType.Decoration:
                     return (int) ESceneLayer.Decoration;
                 case (int) ELayerType.Effect:
                     return (int) ESceneLayer.Effect;
-                case (int) ELayerType.AttackMonsterItem:
-                    return (int) ESceneLayer.AttackMonsterItem;
                 case (int) ELayerType.RigidbodyItem:
                     return (int) ESceneLayer.RigidbodyItem;
                 case (int) ELayerType.Bullet:
@@ -176,26 +180,12 @@ namespace GameA.Game
 
         public int GetSortingOrder(Table_Unit tableUnit)
         {
-            //switch (tableUnit.EUnitType)
-            //{
-            //    case EUnitType.Earth:
-            //    case EUnitType.Collection:
-            //    case EUnitType.Decoration:
-            //        return (int)ESortingOrder.Item;
-            //    case EUnitType.Mechanism:
-            //        return (int)ESortingOrder.Mechanism;
-            //    case EUnitType.MainPlayer:
-            //        return (int) ESortingOrder.MainPlayer;
-            //    case EUnitType.Monster:
-            //        return (int)ESortingOrder.Hero;
-            //    case EUnitType.Bullet:
-            //        return (int)ESortingOrder.Bullet;
-            //    case EUnitType.Missle:
-            //        return (int)ESortingOrder.Missle;
-            //    case EUnitType.Effect:
-            //        return (int) ESortingOrder.EffectItem;
-            //}
-            //LogHelper.Error("GetSortingOrder Failed,EUnitType:{0}", tableUnit.EUnitType);
+            switch (tableUnit.EUnitType)
+            {
+                case EUnitType.Effect:
+                    return (int) ESortingOrder.EffectItem;
+            }
+//            LogHelper.Error("GetSortingOrder Failed,EUnitType:{0}", tableUnit.EUnitType);
             return (int) ESortingOrder.Item;
         }
 
@@ -207,7 +197,23 @@ namespace GameA.Game
                 LogHelper.Error("GetUnit Failed,{0}", tableUnit.Id);
                 return null;
             }
-            unit.Init(tableUnit, (byte) dir);
+            var unitDesc = new UnitDesc();
+            unitDesc.Id = tableUnit.Id;
+            unitDesc.Rotation = (byte)dir;
+            unitDesc.Scale = Vector2.one;
+            unit.Init(unitDesc, tableUnit);
+            return unit;
+        }
+        
+        public UnitBase GetUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            UnitBase unit = GetUnit(unitDesc.Id);
+            if (unit == null)
+            {
+                LogHelper.Error("GetUnit Failed,{0}", unitDesc.Id);
+                return null;
+            }
+            unit.Init(unitDesc, tableUnit);
             return unit;
         }
 
@@ -218,28 +224,26 @@ namespace GameA.Game
             {
                 return new UnitBase();
             }
-            if (id >= 10001 && id < 11001)
+            switch (id)
             {
-                switch (id)
-                {
-                    case 10001:
-                        return PoolFactory<BulletWater>.Get();
-                }
+                case 10002:
+                    return PoolFactory<ProjectileFire>.Get();
+                case 10003:
+                    return PoolFactory<ProjectileIce>.Get();
             }
             return (UnitBase) Activator.CreateInstance(type);
         }
 
         public void FreeUnitView(UnitBase unit)
         {
-            int id = unit.Id;
-            if (id >= 10001 && id < 11001)
+            switch (unit.Id)
             {
-                switch (id)
-                {
-                    case 10001:
-                        PoolFactory<BulletWater>.Free((BulletWater) unit);
-                        break;
-                }
+                case 10002:
+                    PoolFactory<ProjectileFire>.Free((ProjectileFire) unit);
+                    break;
+                case 10003:
+                    PoolFactory<ProjectileIce>.Free((ProjectileIce) unit);
+                    break;
             }
             if (unit.View == null)
             {
@@ -256,37 +260,65 @@ namespace GameA.Game
                     {
                         PoolFactory<SpineUnit>.Free((SpineUnit) unit.View);
                     }
-                    if (unit.View1 != null)
+                    if (unit.ViewExtras != null)
                     {
-                        PoolFactory<SpineUnit>.Free((SpineUnit) unit.View1);
+                        for (int i = 0; i < unit.ViewExtras.Length; i++)
+                        {
+                            var view = unit.ViewExtras[i];
+                            if (view != null)
+                            {
+                                PoolFactory<SpineUnit>.Free((SpineUnit) view);
+                            }
+                        }
                     }
                     break;
                 case EGeneratedType.Tiling:
                     PoolFactory<SpriteUnit>.Free((SpriteUnit) unit.View);
-                    if (unit.View1 != null)
+                    if (unit.ViewExtras != null)
                     {
-                        PoolFactory<SpriteUnit>.Free((SpriteUnit) unit.View1);
+                        for (int i = 0; i < unit.ViewExtras.Length; i++)
+                        {
+                            var view = unit.ViewExtras[i];
+                            if (view != null)
+                            {
+                                PoolFactory<SpriteUnit>.Free((SpriteUnit) view);
+                            }
+                        }
                     }
                     break;
                 case EGeneratedType.Morph:
                     PoolFactory<MorphUnit>.Free((MorphUnit) unit.View);
-                    if (unit.View1 != null)
+                    if (unit.ViewExtras != null)
                     {
-                        PoolFactory<MorphUnit>.Free((MorphUnit) unit.View1);
+                        for (int i = 0; i < unit.ViewExtras.Length; i++)
+                        {
+                            var view = unit.ViewExtras[i];
+                            if (view != null)
+                            {
+                                PoolFactory<MorphUnit>.Free((MorphUnit) view);
+                            }
+                        }
                     }
                     break;
                 case EGeneratedType.Empty:
                     PoolFactory<EmptyUnit>.Free((EmptyUnit) unit.View);
-                    if (unit.View1 != null)
+                    if (unit.ViewExtras != null)
                     {
-                        PoolFactory<EmptyUnit>.Free((EmptyUnit) unit.View1);
+                        for (int i = 0; i < unit.ViewExtras.Length; i++)
+                        {
+                            var view = unit.ViewExtras[i];
+                            if (view != null)
+                            {
+                                PoolFactory<EmptyUnit>.Free((EmptyUnit) view);
+                            }
+                        }
                     }
                     break;
             }
             unit.OnObjectDestroy();
         }
 
-        public bool TryGetUnitView(UnitBase unit, out UnitView unitView)
+        public bool TryGetUnitView(UnitBase unit, bool isPart, out UnitView unitView)
         {
             unitView = null;
             switch (unit.TableUnit.EGeneratedType)
@@ -313,7 +345,7 @@ namespace GameA.Game
             }
             if (unitView != null)
             {
-                return unitView.Init(unit);
+                return unitView.Init(unit, isPart);
             }
             return false;
         }

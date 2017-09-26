@@ -1,7 +1,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace UnitySampleAssets.CrossPlatformInput.Inspector
+namespace UnityStandardAssets.CrossPlatformInput.Inspector
 {
     [InitializeOnLoad]
     public class CrossPlatformInitialize
@@ -85,19 +85,17 @@ namespace UnitySampleAssets.CrossPlatformInput.Inspector
         private static BuildTargetGroup[] buildTargetGroups = new BuildTargetGroup[]
             {
                 BuildTargetGroup.Standalone,
-                BuildTargetGroup.WebPlayer,
+                BuildTargetGroup.WebGL,
                 BuildTargetGroup.Android,
                 BuildTargetGroup.iOS,
-                BuildTargetGroup.WP8,
-                BuildTargetGroup.BlackBerry,
+                BuildTargetGroup.WSA,
             };
 
         private static BuildTargetGroup[] mobileBuildTargetGroups = new BuildTargetGroup[]
             {
                 BuildTargetGroup.Android,
                 BuildTargetGroup.iOS,
-                BuildTargetGroup.WP8,
-                BuildTargetGroup.BlackBerry,
+                BuildTargetGroup.WSA,
             };
 
 

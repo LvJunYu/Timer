@@ -6,10 +6,10 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -19,7 +19,6 @@ namespace GameA.Game
         #region 常量与字段
 
         private static DataScene2D _instance;
-        private SceneNode _mainPlayer;
         [SerializeField]
         private static Vector3 _startPos;
         [SerializeField]
@@ -29,7 +28,7 @@ namespace GameA.Game
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
-
+        private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
 		/// <summary>
 		/// 删除修改的物体堆栈
 		/// </summary>
@@ -52,9 +51,9 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new DataScene2D()); }
         }
 
-        public SceneNode MainPlayer
+        public List<UnitDesc> SpawnDatas
         {
-            get { return _mainPlayer; }
+            get { return _spawnDatas; }
         }
 
         public Vector3 StartPos
@@ -79,27 +78,21 @@ namespace GameA.Game
 
 		public List<ModifyData> RemovedUnits {
 			get {
-				return this._removedUnits;
+				return _removedUnits;
 			}
 		}
 
 		public List<ModifyData> ModifiedUnits {
 			get {
-				return this._modifiedUnits;
+				return _modifiedUnits;
 			}
 		}
 
 		public List<ModifyData> AddedUnits {
 			get {
-				return this._addedUnits;
+				return _addedUnits;
 			}
 		}
-
-        public Dictionary<IntVec3, List<IntVec3>> SwitchedUnits {
-            get {
-                return this._switchedUnits;
-            }
-        }
         #endregion
 
         #region 方法
@@ -116,7 +109,7 @@ namespace GameA.Game
         /// <summary>
         /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
         /// </summary>
-        /// <param name="rect">Rect.</param>
+        /// <param name="size"></param>
         public void SetDefaultMapSize (IntVec2 size)
         {
             _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
@@ -176,7 +169,7 @@ namespace GameA.Game
 
         #endregion
 
-        public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit, bool isInitAdd = false)
+        public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid);
             SceneNode hit;
@@ -191,37 +184,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!isInitAdd)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
-                SetUnitExtra(unitDesc, tableUnit);
-            }
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
-            {
-                _mainPlayer = dataNode;
+                _spawnDatas.Add(unitDesc);
             }
             return true;
-        }
-
-        private void SetUnitExtra(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (tableUnit.CanMove)
-            {
-                UnitExtra unitExtra;
-                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.MoveDirection = (EMoveDirection)tableUnit.OriginMoveDirection;
-                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-                }
-            }
-            if (tableUnit.Id == UnitDefine.RollerId)
-            {
-                UnitExtra unitExtra;
-                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.RollerDirection = EMoveDirection.Right;
-                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-                }
-            }
         }
 
         public bool DeleteData(UnitDesc unitDesc, Table_Unit tableUnit)
@@ -232,9 +199,9 @@ namespace GameA.Game
                 return false;
             }
             DeleteUnitExtra(unitDesc.Guid);
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
-                _mainPlayer = null;
+                _spawnDatas.Remove(unitDesc);
             }
             return true;
         }
@@ -253,32 +220,58 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
+        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra, EditRecordBatch editRecordBatch = null)
         {
-            if (null != EditMode.Instance) {
-                EditMode.Instance.MapStatistics.NeedSave = true;
-            }
-            if (unitExtra.Equals(UnitExtra.zero))
+            UnitBase unit;
+            bool canSwitch = false;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
-                DeleteUnitExtra(guid);
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                bool needCreate = false;
+                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    var oldUnitDesc = unit.UnitDesc;
+                    EditMode.Instance.DeleteUnit(oldUnitDesc);
+                    canSwitch = unit.CanControlledBySwitch;
+                    needCreate = true;
+                }
+                if (unitExtra.Equals(UnitExtra.zero))
+                {
+                    DeleteUnitExtra(unitDesc.Guid);
+                }
+                else
+                {
+                    _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                }
+                if (needCreate)
+                {
+                    EditMode.Instance.AddUnit(unitDesc);
+                }
+                if (canSwitch)
+                {
+                    if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                    {
+                        if (!unit.CanControlledBySwitch)
+                        {
+                            OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                        }
+                    }
+                    else
+                    {
+                        OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                        LogHelper.Error("ProcessUnitExtra UnitBase missing");
+                    }
+                }
             }
             else
             {
-                _unitExtras.AddOrReplace(guid, unitExtra);
+                _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                // 更新unit
+                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    unit.UpdateExtraData ();
+                }
             }
-            // 更新unit
-            UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
-            {
-                unit.UpdateExtraData ();
-            }
-        }
-
-        public void ProcessUnitChild(IntVec3 guid, UnitChild unitChild)
-        {
-            UnitExtra unitExtra = GetUnitExtra(guid);
-            unitExtra.Child = unitChild;
-            ProcessUnitExtra(guid, unitExtra);
         }
 
         public void DeleteUnitExtra(IntVec3 guid)
@@ -324,13 +317,18 @@ namespace GameA.Game
         public List<IntVec3> GetSwitchUnitsConnected(IntVec3 guid)
         {
             var result = new List<IntVec3>();
-            Dictionary<IntVec3, List<IntVec3>>.Enumerator itor = _switchedUnits.GetEnumerator();
-            while (itor.MoveNext())
+            if (_switchedUnits != null)
             {
-                List<IntVec3> units = itor.Current.Value;
-                if (units.Contains(guid))
+                using (var itor = _switchedUnits.GetEnumerator())
                 {
-                    result.Add(itor.Current.Key);
+                    while (itor.MoveNext())
+                    {
+                        List<IntVec3> units = itor.Current.Value;
+                        if (units.Contains(guid))
+                        {
+                            result.Add(itor.Current.Key);
+                        }
+                    }
                 }
             }
             return result;
@@ -347,6 +345,8 @@ namespace GameA.Game
                 return false;
             }
             _switchedUnits[switchGuid].Add(unitGuid);
+            Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                switchGuid, unitGuid, true);
             return true;
         }
 
@@ -363,7 +363,126 @@ namespace GameA.Game
             {
                 _switchedUnits.Remove(switchGuid);
             }
+            Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                switchGuid, unitGuid, false);
             return true;
+        }
+
+        public void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc, EditRecordBatch recordBatch = null)
+        {
+            if (UnitDefine.IsSwitch(unitDesc.Id))
+            {
+                List<IntVec3> list;
+                if (_switchedUnits.TryGetValue(unitDesc.Guid, out list))
+                {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        IntVec3 unitGuid = list[i];
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            unitDesc.Guid, unitGuid, false);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(unitDesc.Guid, unitGuid);
+                        }
+                    }
+                    _switchedUnits.Remove(unitDesc.Guid);
+                }
+            }
+            else
+            {
+                using (var itor = _switchedUnits.GetEnumerator())
+                {
+                    while (itor.MoveNext())
+                    {
+                        var switchGuid = itor.Current.Key;
+                        List<IntVec3> units = itor.Current.Value;
+                        int unitInx = units.IndexOf(unitDesc.Guid);
+                        if (unitInx < 0)
+                        {
+                            continue;
+                        }
+                        units.RemoveAt(unitInx);
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            switchGuid, unitDesc.Guid, true);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(switchGuid, unitDesc.Guid);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc,
+            EditRecordBatch recordBatch = null)
+        {
+            if (UnitDefine.IsSwitch(newUnitDesc.Id))
+            {
+                List<IntVec3> list;
+                if (_switchedUnits.TryGetValue(oldUnitDesc.Guid, out list))
+                {
+                    _switchedUnits.Remove(oldUnitDesc.Guid);
+                    _switchedUnits.Add(newUnitDesc.Guid, list);
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            oldUnitDesc.Guid, list[i], false);
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            newUnitDesc.Guid, list[i], true);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(oldUnitDesc.Guid, list[i]);
+                            recordBatch.RecordAddSwitchConnection(newUnitDesc.Guid, list[i]);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (var itor = _switchedUnits.GetEnumerator())
+                {
+                    while (itor.MoveNext())
+                    {
+                        var switchGuid = itor.Current.Key;
+                        List<IntVec3> units = itor.Current.Value;
+                        for (int i = 0; i < units.Count; i++)
+                        {
+                            if (units[i] == oldUnitDesc.Guid)
+                            {
+                                units[i] = newUnitDesc.Guid;
+                                
+                                Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                                    switchGuid, oldUnitDesc.Guid, false);
+                                Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                                    switchGuid, newUnitDesc.Guid, true);
+                                if (null != recordBatch)
+                                {
+                                    recordBatch.RecordRemoveSwitchConnection(switchGuid, oldUnitDesc.Guid);
+                                    recordBatch.RecordAddSwitchConnection(switchGuid, newUnitDesc.Guid);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SaveSwitchUnitData(List<SwitchUnitData> list)
+        {
+            using (var switchUnitItor = _switchedUnits.GetEnumerator())
+            {
+                while (switchUnitItor.MoveNext())
+                {
+                    SwitchUnitData newData = new SwitchUnitData();
+                    newData.SwitchGUID = GM2DTools.ToProto(switchUnitItor.Current.Key);
+                    for (int i = 0; i < switchUnitItor.Current.Value.Count; i++)
+                    {
+                        newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
+                    }
+                    list.Add(newData);
+                }
+            }
         }
 
         #endregion
@@ -387,7 +506,7 @@ namespace GameA.Game
             return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth, excludeNode);
         }
 
-        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc, int layerMask = JoyPhysics2D.LayMaskAll)
+        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             Grid2D outValue;
             if (!TryGetGridByUnitObject(unitDesc, out outValue))
@@ -395,7 +514,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetGridByUnitObject falied! UnitDesc is {0}", unitDesc);
                 return null;
             }
-            return GridCastAllReturnUnits(outValue, layerMask);
+            return GridCastAllReturnUnits(outValue, layerMask, minDepth, maxDepth);
         }
 
         internal static bool TryGetGridByUnitObject(UnitDesc unitDesc, out Grid2D outValue)
@@ -415,6 +534,12 @@ namespace GameA.Game
         {
             _cachedUnitObjects.Clear();
             var nodes = GridCastAll(grid2D, layerMask, minDepth, maxDepth, excludeNode);
+            return GetUnits(grid2D, nodes);
+        }
+
+        public static List<UnitDesc> GetUnits(Grid2D grid2D, List<SceneNode> nodes)
+        {
+            _cachedUnitObjects.Clear();
             for (int i = 0; i < nodes.Count; i++)
             {
                 var node = nodes[i];
@@ -443,6 +568,35 @@ namespace GameA.Game
         #endregion
     }
 
+#pragma warning disable 0660 0661
+
+    public struct UnitEditData : IEquatable<UnitEditData>
+    {
+        public UnitDesc UnitDesc;
+        public UnitExtra UnitExtra;
+
+        public UnitEditData(UnitDesc unitDesc, UnitExtra unitExtra)
+        {
+            UnitDesc = unitDesc;
+            UnitExtra = unitExtra;
+        }
+        public static bool operator ==(UnitEditData a, UnitEditData other)
+        {
+            return (a.UnitDesc == other.UnitDesc) && (a.UnitExtra == other.UnitExtra);
+        }
+
+        public static bool operator !=(UnitEditData a, UnitEditData other)
+        {
+            return !(a == other);
+        }
+
+        public bool Equals (UnitEditData other)
+        {
+            return (UnitDesc == other.UnitDesc) && (UnitExtra == other.UnitExtra);
+        }
+    }
+
+    
 	public struct ModifyData {
 		public UnitEditData OrigUnit;
 		public UnitEditData ModifiedUnit;
@@ -451,7 +605,7 @@ namespace GameA.Game
 			ModifiedUnit = modified;
 		}
         // 从地图文件方序列化出来的构造函数
-        public ModifyData (SoyEngine.Proto.ModifyItemData modifyItemData) {
+        public ModifyData (ModifyItemData modifyItemData) {
             OrigUnit = new UnitEditData ();
             ModifiedUnit = new UnitEditData ();
             if (DataScene2D.Instance == null) {
@@ -472,32 +626,34 @@ namespace GameA.Game
                     modifyItemData.OrigData.Scale==null ? 1 : modifyItemData.OrigData.Scale.Y)
             );
             UnitExtra origExtra = new UnitExtra ();
-            origExtra.Child = new UnitChild (
-                (ushort)modifyItemData.OrigExtra.UnitChild.Id,
-                (byte)modifyItemData.OrigExtra.UnitChild.Rotation,
-                (EMoveDirection)modifyItemData.OrigExtra.UnitChild.MoveDirection
-            );
             origExtra.MoveDirection = (EMoveDirection)modifyItemData.OrigExtra.MoveDirection;
-            origExtra.RollerDirection = (EMoveDirection)modifyItemData.OrigExtra.RollerDirection;
-            OrigUnit = new UnitEditData (origDesc, origExtra);
-            UnitDesc modifiedDesc = new UnitDesc (
+            origExtra.Active = (byte) modifyItemData.OrigExtra.Active;
+            origExtra.ChildId = (ushort) modifyItemData.OrigExtra.ChildId;
+            origExtra.ChildRotation = (byte) modifyItemData.OrigExtra.ChildRotation;
+            origExtra.RotateMode = (byte) modifyItemData.OrigExtra.RotateMode;
+            origExtra.RotateValue = (byte) modifyItemData.OrigExtra.RotateValue;
+            origExtra.TimeDelay =  (ushort) modifyItemData.OrigExtra.TimeDelay;
+            origExtra.TimeInterval = (ushort) modifyItemData.OrigExtra.TimeInterval;
+
+            OrigUnit = new UnitEditData(origDesc, origExtra);
+            UnitDesc modifiedDesc = new UnitDesc(
                 modifyItemData.ModifiedData.Id,
                 new IntVec3(modifyItemData.ModifiedData.XMin, modifyItemData.ModifiedData.YMin, depth),
-                (byte)modifyItemData.ModifiedData.Rotation,
-                new Vector2(modifyItemData.ModifiedData.Scale== null ? 1 : modifyItemData.ModifiedData.Scale.X,
-                    modifyItemData.ModifiedData.Scale==null ? 1 : modifyItemData.ModifiedData.Scale.Y)
+                (byte) modifyItemData.ModifiedData.Rotation,
+                new Vector2(modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.X,
+                    modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.Y)
             );
             UnitExtra modifiedExtra;
             DataScene2D.Instance.TryGetUnitExtra (modifiedDesc.Guid, out modifiedExtra);
             ModifiedUnit = new UnitEditData (modifiedDesc, modifiedExtra);
         }
 
-        public SoyEngine.Proto.ModifyItemData ToModifyItemData () {
-            SoyEngine.Proto.ModifyItemData mid = new SoyEngine.Proto.ModifyItemData ();
-            mid.OrigData = new SoyEngine.Proto.MapRect2D ();
+        public ModifyItemData ToModifyItemData () {
+            ModifyItemData mid = new ModifyItemData ();
+            mid.OrigData = new MapRect2D ();
             mid.OrigData.Id = OrigUnit.UnitDesc.Id;
-            mid.OrigData.Rotation = (int)OrigUnit.UnitDesc.Rotation;
-            mid.OrigData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.OrigData.Rotation = OrigUnit.UnitDesc.Rotation;
+            mid.OrigData.Scale = new Vec2Proto ();
             mid.OrigData.Scale.X = OrigUnit.UnitDesc.Scale.x;
             mid.OrigData.Scale.Y = OrigUnit.UnitDesc.Scale.y;
             mid.OrigData.XMin = OrigUnit.UnitDesc.Guid.x;
@@ -506,10 +662,10 @@ namespace GameA.Game
             mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
             mid.OrigExtra = GM2DTools.ToProto (OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
 
-            mid.ModifiedData = new SoyEngine.Proto.MapRect2D ();
+            mid.ModifiedData = new MapRect2D ();
             mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
-            mid.ModifiedData.Rotation = (int)ModifiedUnit.UnitDesc.Rotation;
-            mid.ModifiedData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.ModifiedData.Rotation = ModifiedUnit.UnitDesc.Rotation;
+            mid.ModifiedData.Scale = new Vec2Proto ();
             mid.ModifiedData.Scale.X = ModifiedUnit.UnitDesc.Scale.x;
             mid.ModifiedData.Scale.Y = ModifiedUnit.UnitDesc.Scale.y;
             mid.ModifiedData.XMin = ModifiedUnit.UnitDesc.Guid.x;

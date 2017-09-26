@@ -220,6 +220,7 @@ namespace GameA
 
         public UserFavoriteWorldProjectList () { 
             _projectList = new List<Project>();
+            OnCreate();
         }
         #endregion
     }

@@ -5,15 +5,13 @@
   ** Summary : UICtrlShareMenu.cs
   ***********************************************************************/
 
-using System.Collections.Generic;
+using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
-using System;
-using DG.Tweening;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlShareMenu : UICtrlGenericBase<UIViewShareMenu>
     {
         #region 常量与字段
@@ -21,8 +19,8 @@ namespace GameA
         private Color _bgAnimationStartColor = new Color(0f, 0f, 0f, 0f);
         private Vector2 _contentTargetPos = Vector2.zero;
         private Vector2 _contentAnimationStartPos;
-        private bool _isTweening = false;
-        private object _shareObj;
+        private bool _isTweening;
+//        private object _shareObj;
         #endregion
 
         #region 属性
@@ -56,7 +54,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             StartOpenAnimation();
-            _shareObj = parameter;
+//            _shareObj = parameter;
         }
 
         private void StartOpenAnimation()
@@ -107,25 +105,25 @@ namespace GameA
 
         private void OnWechatFriendsClick()
         {
-            ShareUtil.ShareWechatFriends(_shareObj);
+//            ShareUtil.ShareWechatFriends(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnWechatMomentsClick()
         {
-            ShareUtil.ShareToWechatMoments(_shareObj);
+//            ShareUtil.ShareToWechatMoments(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnQQFriendsClick()
         {
-            ShareUtil.ShareToQQFriends(_shareObj);
+//            ShareUtil.ShareToQQFriends(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnQZoneClick()
         {
-            ShareUtil.ShareToQZone(_shareObj);
+//            ShareUtil.ShareToQZone(_shareObj);
             StartCloseAnimation();
         }
         #endregion

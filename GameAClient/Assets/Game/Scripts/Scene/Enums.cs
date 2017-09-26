@@ -14,14 +14,8 @@ namespace GameA.Game
     {
         None,
         Left,
-        Right
-    }
-
-    public enum ERunMode
-    {
-        None,
-        Normal,
-        Record,
+        Right,
+        Up,
     }
 
     public enum EUnitState
@@ -29,12 +23,5 @@ namespace GameA.Game
         Normal,
         Portaling,
         Reviving,
-    }
-
-    public enum ESwitchType
-    {
-        None,
-        Switch,
-        Switched
     }
 }

@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace GameA
 {
-    [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlAdvLvlDetail : UICtrlGenericBase<UIViewAdvLvlDetail>
+    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
+    public class UICtrlAdvLvlDetail : UICtrlAnimationBase<UIViewAdvLvlDetail>
     {
         #region Fields
+
         private USCtrlAdvLvlDetailInfo _infoPanel;
         private USCtrlAdvLvlDetailRecord _recordPanel;
         private USCtrlAdvLvlDetailRank _rankPanel;
+
+        private EPanel _currentPanel;
 
         private int _chapterIdx;
         private int _levelIdx;
@@ -23,241 +24,335 @@ namespace GameA
         private int EndDisplayOnRank = 20;
         private int BeginningDisplayOnRank = 0;
 
-        private Game.Table_StandaloneLevel _table;
+        private Table_StandaloneLevel _table;
+        private Project _project;
+        private AdventureUserLevelDataDetail _userLevelDataDetail;
+
         #endregion
 
         #region Properties
+
         public int ChapterIdx
         {
-            get
-            {
-                return this._chapterIdx;
-            }
+            get { return _chapterIdx; }
         }
 
         public int LevelIdx
         {
-            get
-            {
-                return this._levelIdx;
-            }
+            get { return _levelIdx; }
         }
 
         public EAdventureProjectType ProjectType
         {
-            get
-            {
-                return this._isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
-            }
+            get { return _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal; }
         }
 
         public Project Project
         {
-            get { return AppData.Instance.AdventureData.GetAdvLevelProject(ChapterIdx, LevelIdx, ProjectType); }
+            get { return _project; }
         }
+
         #endregion
 
         #region Methods
-        protected override void OnOpen (object parameter)
+
+        protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            IntVec3 intVec3Param = (IntVec3)parameter;
-            if (intVec3Param == null)
-                return;
+            IntVec3 intVec3Param = (IntVec3) parameter;
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
-
-            _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx, _levelIdx,
-                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal);
-            if (null == _table) {
-                LogHelper.Error ("Get table standalonelevel failed");
-                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
+            _cachedView.Title.text = string.Format("{0} - {1}", _chapterIdx, _levelIdx);
+            _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
+            if (null == _table)
+            {
+                LogHelper.Error("Get table standalonelevel failed");
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
                 return;
             }
+            _project = AppData.Instance.AdventureData.GetAdvLevelProject(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
+            if (null == _project)
+            {
+                LogHelper.Error("Get Project failed");
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                return;
+            }
+            _userLevelDataDetail = AppData.Instance.AdventureData.GetAdventureUserLevelDataDetail(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
 
-            OpenInfoPanel ();
-            //RefreshRankData();
-            //RefreshAdventureUserLevelDataDetail();
-        }
-        
-        protected override void OnClose() {
-            
-            base.OnClose ();
-        }
-        
-        protected override void InitEventListener() {
-            base.InitEventListener ();
-        }
-        
-        protected override void OnViewCreated() {
-            base.OnViewCreated ();
-
-            _infoPanel = new USCtrlAdvLvlDetailInfo ();
-            _infoPanel.Init (_cachedView.InfoPanel);
-            _recordPanel= new USCtrlAdvLvlDetailRecord ();
-            _recordPanel.Init (_cachedView.RecordPanel);
-            _rankPanel = new USCtrlAdvLvlDetailRank ();
-            _rankPanel.Init (_cachedView.RankPanel);
-
-            _cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
-            _cachedView.PlayBtn.onClick.AddListener (OnPlayBtn);
-            _cachedView.InfoBtn1.onClick.AddListener (OnInfoBtn1);
-            _cachedView.RecordBtn1.onClick.AddListener (OnRecordBtn1);
-            _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
-            
+            InitPanel();
+            switch (_currentPanel)
+            {
+                case EPanel.Info:
+                    OpenInfoPanel();
+                    break;
+                case EPanel.Record:
+                    OpenRecordPanel();
+                    break;
+                case EPanel.Rank:
+                    OpenRankPanel();
+                    break;
+            }
         }
 
-        private void RefreshAdventureUserLevelDataDetail()
+        protected override void OnClose()
         {
-            LocalUser.Instance.AdventureUserLevelDataDetail.Request(
+            _currentPanel = EPanel.Info;
+            base.OnClose();
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+
+            _infoPanel = new USCtrlAdvLvlDetailInfo();
+            _infoPanel.Init(_cachedView.InfoPanel);
+            _recordPanel = new USCtrlAdvLvlDetailRecord();
+            _recordPanel.Init(_cachedView.RecordPanel);
+            _rankPanel = new USCtrlAdvLvlDetailRank();
+            _rankPanel.Init(_cachedView.RankPanel);
+
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
+//            _cachedView.PlayBtn.onClick.AddListener (TestPlayBtn);
+            _cachedView.InfoBtn1.onClick.AddListener(OnInfoBtn1);
+            _cachedView.RecordBtn1.onClick.AddListener(OnRecordBtn1);
+            _cachedView.RankBtn1.onClick.AddListener(OnRankBtn1);
+        }
+
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _firstDelayFrames = 4;
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
+        public void RefreshAdventureUserLevelDataDetail()
+        {
+            _userLevelDataDetail.Request(
                 LocalUser.Instance.UserGuid,
                 _chapterIdx,
                 JudgeBonus(),
                 _levelIdx,
-                () => { _recordPanel.Set(); }
+                () => { _recordPanel.Set(_userLevelDataDetail, ResScenary); }
                 , null);
-
         }
 
-        public override void OnUpdate ()
-        {
-            base.OnUpdate ();
-        }
-        
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void RefreshRankData()
         {
-            LocalUser.Instance.AdventureLevelRankList.Request(
-            _chapterIdx,
-            JudgeBonus(),
-            _levelIdx,
-            BeginningDisplayOnRank,
-            EndDisplayOnRank,
-                () =>
-                {
-                    //RefreshAdventureUserLevelDataDetail();
-                    _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
-                }
-            , null)
-            ;
-
+            _project.AdventureLevelRankList.Request(
+                    _chapterIdx,
+                    JudgeBonus(),
+                    _levelIdx,
+                    BeginningDisplayOnRank,
+                    EndDisplayOnRank,
+                    () =>
+                    {
+                        //RefreshAdventureUserLevelDataDetail();
+                        _rankPanel.Set(_project.AdventureLevelRankList.RecordList, ResScenary);
+                        if (_project.AdventureLevelRankList.RecordList.Count > 0)
+                        {
+                            _cachedView.FirstName.text =
+                                _project.AdventureLevelRankList.RecordList[0].UserInfo.NickName;
+                            _cachedView.FirstScore.text =
+                                "<color=#84684CFF><size=24>最高得分: </size></color>"
+                                + "<color=#FE8300FF><size=28>" + _project.AdventureLevelRankList.RecordList[0].Score +
+                                "</size></color>";
+                        }
+                        else
+                        {
+                            _cachedView.FirstName.text = "--";
+                            _cachedView.FirstScore.text =
+                                "<color=#84684CFF><size=24>最高得分: </size></color>"
+                                + "<color=#FE8300FF><size=28>--</size></color>";
+                        }
+                    }
+                    , null)
+                ;
         }
 
         private EAdventureProjectType JudgeBonus()
         {
             if (_isBonus)
                 return EAdventureProjectType.APT_Bonus;
-            else if (_isBonus == false)
+            if (_isBonus == false)
                 return EAdventureProjectType.APT_Normal;
-            else return EAdventureProjectType.APT_None;
+            return EAdventureProjectType.APT_None;
         }
 
-        private void OpenInfoPanel () {
-            Project project;
-            if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx) {
-                LogHelper.Error ("No project data of chapter {0}", _chapterIdx);
-                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                return;
-            } else {
-                List<Project> projectList = _isBonus ?
-                    AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
-                    AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
-                if (projectList.Count <= _levelIdx - 1) {
-                    LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                    return;
-                } else {
-                    project = projectList [_levelIdx - 1];
-                }
-            }
-            _infoPanel.Open (project, _table);
-            _recordPanel.Close ();
-            _rankPanel.Close ();
-
-            _cachedView.InfoBtn1.gameObject.SetActive (false);
-            _cachedView.InfoBtn2.gameObject.SetActive (true);
-            _cachedView.RecordBtn1.gameObject.SetActive (true);
-            _cachedView.RecordBtn2.gameObject.SetActive (false);
-            _cachedView.RankBtn1.gameObject.SetActive (true);
-            _cachedView.RankBtn2.gameObject.SetActive (false);
-        }
-        private void OpenRecordPanel ()
+        private void InitPanel()
         {
+            Project project;
+            if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx)
+            {
+                LogHelper.Error("No project data of chapter {0}", _chapterIdx);
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+            }
+            else
+            {
+                List<Project> projectList = _isBonus
+                    ? AppData.Instance.AdventureData.ProjectList.SectionList[_chapterIdx - 1].BonusProjectList
+                    : AppData.Instance.AdventureData.ProjectList.SectionList[_chapterIdx - 1].NormalProjectList;
+                if (projectList.Count <= _levelIdx - 1)
+                {
+                    LogHelper.Error("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    return;
+                }
+                project = projectList[_levelIdx - 1];
+
+                if (null == project) return;
+                ImageResourceManager.Instance.SetDynamicImage(
+                    _cachedView.Cover1,
+                    project.IconPath,
+                    _cachedView.DefaultCover);
+                RefreshRankData();
+            }
+        }
+
+        private void OpenInfoPanel()
+        {
+            _currentPanel = EPanel.Info;
+            _infoPanel.Open(_project, _table, _userLevelDataDetail);
+            _recordPanel.Close();
+            _rankPanel.Close();
+
+            _cachedView.InfoBtn1.gameObject.SetActive(false);
+            _cachedView.InfoBtn2.gameObject.SetActive(true);
+            _cachedView.RecordBtn1.gameObject.SetActive(true);
+            _cachedView.RecordBtn2.gameObject.SetActive(false);
+            _cachedView.RankBtn1.gameObject.SetActive(true);
+            _cachedView.RankBtn2.gameObject.SetActive(false);
+        }
+
+        private void OpenRecordPanel()
+        {
+            _currentPanel = EPanel.Record;
             //RefreshRankData();
             RefreshAdventureUserLevelDataDetail();
             //_recordPanel.Set();
 
-            _infoPanel.Close ();
-            _recordPanel.Open ();
-            _rankPanel.Close ();
+            _infoPanel.Close();
+            _recordPanel.Open();
+            _rankPanel.Close();
 
-            _cachedView.InfoBtn1.gameObject.SetActive (true);
-            _cachedView.InfoBtn2.gameObject.SetActive (false);
-            _cachedView.RecordBtn1.gameObject.SetActive (false);
-            _cachedView.RecordBtn2.gameObject.SetActive (true);
-            _cachedView.RankBtn1.gameObject.SetActive (true);
-            _cachedView.RankBtn2.gameObject.SetActive (false);
-            
+            _cachedView.InfoBtn1.gameObject.SetActive(true);
+            _cachedView.InfoBtn2.gameObject.SetActive(false);
+            _cachedView.RecordBtn1.gameObject.SetActive(false);
+            _cachedView.RecordBtn2.gameObject.SetActive(true);
+            _cachedView.RankBtn1.gameObject.SetActive(true);
+            _cachedView.RankBtn2.gameObject.SetActive(false);
         }
-        private void OpenRankPanel ()
+
+        private void OpenRankPanel()
         {
-            _infoPanel.Close ();
-            _recordPanel.Close ();
-            _rankPanel.Open ();
+            _currentPanel = EPanel.Rank;
+            _infoPanel.Close();
+            _recordPanel.Close();
+            _rankPanel.Open();
             RefreshRankData();
 
-            _cachedView.InfoBtn1.gameObject.SetActive (true);
-            _cachedView.InfoBtn2.gameObject.SetActive (false);
-            _cachedView.RecordBtn1.gameObject.SetActive (true);
-            _cachedView.RecordBtn2.gameObject.SetActive (false);
-            _cachedView.RankBtn1.gameObject.SetActive (false);
-            _cachedView.RankBtn2.gameObject.SetActive (true);
-            
+            _cachedView.InfoBtn1.gameObject.SetActive(true);
+            _cachedView.InfoBtn2.gameObject.SetActive(false);
+            _cachedView.RecordBtn1.gameObject.SetActive(true);
+            _cachedView.RecordBtn2.gameObject.SetActive(false);
+            _cachedView.RankBtn1.gameObject.SetActive(false);
+            _cachedView.RankBtn2.gameObject.SetActive(true);
         }
-        private void OnCloseBtn () {
-            SocialGUIManager.Instance.CloseUI <UICtrlAdvLvlDetail> ();
+
+        private void OnCloseBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
         }
-        private void OnPlayBtn () {
-            if (!_isBonus && !GameATools.CheckEnergy (_table.EnergyCost))
+
+        private void OnPlayBtn()
+        {
+            if (!_isBonus && !GameATools.CheckEnergy(_table.EnergyCost))
                 return;
-            EAdventureProjectType eAPType = _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            EAdventureProjectType eAPType =
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
             //          Debug.Log ("_________________onLevelClicked " + chapterIdx + " " + levelIdx + " isBonus: " + isBonusLevel);
 
 
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
-                this, 
-                string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
+                this,
+                string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
 
-            AppData.Instance.AdventureData.PlayAdventureLevel (
+            AppData.Instance.AdventureData.PlayAdventureLevel(
                 _chapterIdx,
                 _levelIdx,
                 eAPType,
-                () => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     // set local energy data
-                    GameATools.LocalUseEnergy (_table.EnergyCost);
+                    GameATools.LocalUseEnergy(_table.EnergyCost);
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
                 },
-                (error) => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                }
+                error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
             );
         }
-        private void OnInfoBtn1 () {
-            OpenInfoPanel ();
-        }
-        private void OnRecordBtn1 ()
+
+        //TEST
+        private void TestPlayBtn()
         {
-            OpenRecordPanel ();
+            EAdventureProjectType eAPType =
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
+                this,
+                string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
+
+            AppData.Instance.AdventureData.TestPlayAdventureLevel(
+                _chapterIdx,
+                _levelIdx,
+                eAPType,
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    // set local energy data
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
+                },
+                error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
+            );
         }
-        private void OnRankBtn1 ()
+
+        private void OnInfoBtn1()
         {
-            OpenRankPanel ();
+            OpenInfoPanel();
         }
+
+        private void OnRecordBtn1()
+        {
+            OpenRecordPanel();
+        }
+
+        private void OnRankBtn1()
+        {
+            OpenRankPanel();
+        }
+
+        private enum EPanel
+        {
+            Info,
+            Record,
+            Rank,
+        }
+
         #endregion
     }
 }

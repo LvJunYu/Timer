@@ -36,7 +36,7 @@ namespace GameA.Game
 
         public bool IsMainPlayerCreated
         {
-            get { return _mapStatistics.MainPlayerCount > 0; }
+            get { return _mapStatistics.SpawnCount > 0; }
         }
 
         public bool HasKey
@@ -64,10 +64,10 @@ namespace GameA.Game
         {
             get
             {
-                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
-                {
-                    return _mapStatistics.TimeLimit * 12;
-                }else
+//                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
+//                {
+//                    return _mapStatistics.TimeLimit * 10+60;
+//                }else
                 {
                     return _mapStatistics.TimeLimit * 10;
                 }
@@ -147,7 +147,19 @@ namespace GameA.Game
 
         public int Life
         {
-            get { return _mapStatistics.LifeCount; }
+
+            get
+            {
+//                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
+//                {
+//                    return _mapStatistics.LifeCount * 11/10;
+//                }
+//                else
+                {
+                    return _mapStatistics.LifeCount;
+                }
+               
+            }
         }
 
         public bool GameSucceed
@@ -175,14 +187,14 @@ namespace GameA.Game
                 if (_runState == ESceneState.Win)
                 {
                     total += ((int)(RunTimeTimeLimit - _gameTimer)) * 10;
-                    total += PlayMode.Instance.MainUnit.Life * 200;
+                    total += PlayMode.Instance.MainPlayer.Life * 200;
                 }
                 total += _gemGain * 100;
                 total += _monsterKilled * 200;
-                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
-                {
-                    total += total / 5;
-                }
+                //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
+                //{
+                //    total += total / 5;
+                //}
                 return total;
             }
         }
@@ -252,7 +264,7 @@ namespace GameA.Game
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            _mapStatistics.RemoveCondition(eWinCondition);
+            _mapStatistics.SetWinCondition(eWinCondition, false);
         }
 
         public void UpdateLogic(float deltaTime)
@@ -263,7 +275,7 @@ namespace GameA.Game
             }
             //录像模式下如果出了问题至少保证时间超过录像长度就退出。
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord &&
-                _gameTimer >= ((GameModePlayRecord)GM2DGame.Instance.GameMode).Record.UsedTime + 5)
+                GameRun.Instance.LogicFrameCnt >= ((GameModePlayRecord)GM2DGame.Instance.GameMode).Record.UsedTime + 250)
             {
                 _runState = ESceneState.Win;
                 SocialApp.Instance.ReturnToApp();
@@ -289,7 +301,6 @@ namespace GameA.Game
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
                     //_secondLeft = 0;
-                    return;
                 }
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
             }
@@ -336,7 +347,7 @@ namespace GameA.Game
                 }
                 return false;
             }
-            if (PlayMode.Instance.MainUnit == null)
+            if (PlayMode.Instance.MainPlayer == null)
             {
                 return false;
             }

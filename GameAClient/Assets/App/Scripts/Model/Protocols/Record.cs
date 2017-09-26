@@ -36,7 +36,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private float _usedTime;
+        private int _usedTime;
         /// <summary>
         /// 
         /// </summary>
@@ -166,7 +166,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public float UsedTime { 
+        public int UsedTime { 
             get { return _usedTime; }
             set { if (_usedTime != value) {
                 _usedTime = value;
@@ -419,6 +419,7 @@ namespace GameA
         public Record () { 
             _userInfo = new UserInfoSimple();
             _projectData = new Project();
+            OnCreate();
         }
         #endregion
     }

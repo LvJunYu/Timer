@@ -5,10 +5,10 @@ using UnityEngine;
 namespace GameA.Game
 {
 	public class Character2Guide : Guide {
-		UnitBase _sight;
+		UnitBase _sight = new ActorBase();
 		UnityNativeParticleItem _sightParticle;
 		public override void OnStart () {
-			MoveMainPlayer(PlayMode.Instance.MainUnit.CenterPos + new IntVec2(160, 0));
+			MoveMainPlayer(PlayMode.Instance.MainPlayer.CenterDownPos + new IntVec2(160, 0));
 			ShowText("Hi，我又来了，这次要介绍的是我们可爱又头绿的游酱～");
 			BlockTouchInput();
 		}
@@ -256,11 +256,12 @@ namespace GameA.Game
 		}
 
 		public override void OnUpdate () {
-			if (PlayMode.Instance.MainUnit.CenterPos.x > 166666) {
-				PlayMode.Instance.MainUnit.CenterPos = new IntVec2(PlayMode.Instance.MainUnit.CenterPos.x - 64000,
-				PlayMode.Instance.MainUnit.CenterPos.y);
-				CameraManager.Instance.CurRollPos = new IntVec2(CameraManager.Instance.CurRollPos.x - 64000,
-				CameraManager.Instance.CurRollPos.y);
+			if (PlayMode.Instance.MainPlayer.CenterDownPos.x > 166666) {
+				PlayMode.Instance.MainPlayer.CenterDownPos = new IntVec2(PlayMode.Instance.MainPlayer.CenterDownPos.x - 64000,
+				PlayMode.Instance.MainPlayer.CenterDownPos.y);
+				CameraManager.Instance.CameraCtrlPlay.CurRollPos = new IntVec2(
+					CameraManager.Instance.CameraCtrlPlay.CurRollPos.x - 64000,
+					CameraManager.Instance.CameraCtrlPlay.CurRollPos.y);
 			}
 		}
 	}

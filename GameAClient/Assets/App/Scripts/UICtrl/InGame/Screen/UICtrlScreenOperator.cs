@@ -26,7 +26,7 @@ namespace GameA
 		protected override void OnViewCreated()
 		{
 			base.OnViewCreated();
-			Messenger.AddListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
+//			Messenger.AddListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
 //			Messenger.AddListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
 
 		}
@@ -34,7 +34,7 @@ namespace GameA
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();
-			Messenger.RemoveListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
+//			Messenger.RemoveListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
 //			Messenger.RemoveListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
 		}
 
@@ -48,17 +48,17 @@ namespace GameA
 
 		private void OnEditorModeCameraMove()
 		{
-			Vector3 pos = Game.CameraManager.Instance.FinalPos;
-			bool reachLeft = Game.CameraManager.Instance.CheckReachLimitLeft(pos);
-			bool reachRight = Game.CameraManager.Instance.CheckReachLimitRight(pos);
-			bool reachTop = Game.CameraManager.Instance.CheckReachLimitTop(pos);
-            _cachedView.TopGo.SetActiveEx(false);
-            if (reachTop && MapConfig.PermitMapSize.y != ConstDefineGM2D.DefaultValidMapRectSize.y)
-		    {
-                _cachedView.TopGo.SetActiveEx(true);
-		    }
-			_cachedView.LeftGo.SetActiveEx(false);
-			_cachedView.RightGo.SetActiveEx(reachRight);
+//			Vector3 pos = Game.CameraManager.Instance.FinalPos;
+//			bool reachLeft = Game.CameraManager.Instance.CheckReachLimitLeft(pos);
+//			bool reachRight = Game.CameraManager.Instance.CheckReachLimitRight(pos);
+//			bool reachTop = Game.CameraManager.Instance.CheckReachLimitTop(pos);
+//            _cachedView.TopGo.SetActiveEx(false);
+//            if (reachTop && MapConfig.PermitMapSize.y != ConstDefineGM2D.DefaultValidMapRectSize.y)
+//		    {
+//                _cachedView.TopGo.SetActiveEx(true);
+//		    }
+//			_cachedView.LeftGo.SetActiveEx(false);
+//			_cachedView.RightGo.SetActiveEx(reachRight);
 		}
 
 		#endregion

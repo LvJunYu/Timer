@@ -109,17 +109,17 @@ namespace GameA.Game
         public void RefreshHomeUIUnlock() 
         {
             var uiTaskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar> ();
-            if (null != uiTaskBar) {
-                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, true);
-                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, true);
+            if (null != uiTaskBar && uiTaskBar.IsOpen) {
+//                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, true);
+//                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, true);
                 uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, true);
                 uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_World, true);
                 // todo 改表结构，增加枚举列，不能判断id
                 for (int i = 0; i < _itemsToUnlock.Count; i++) {
                     if (_itemsToUnlock [i].Table.Id == 4) {
-                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, false);
+//                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, false);
                     } else if (_itemsToUnlock [i].Table.Id == 5) {
-                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, false);
+//                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, false);
                     } else if (_itemsToUnlock [i].Table.Id == 6) {
                         uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, false);
                     } else if (_itemsToUnlock [i].Table.Id == 7) {
@@ -184,6 +184,27 @@ namespace GameA.Game
     /// </summary>
     public class AdvGameProcess : IComparable<AdvGameProcess>
     {
+        protected bool Equals(AdvGameProcess other)
+        {
+            return Chapter == other.Chapter && Level == other.Level;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AdvGameProcess) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Chapter * 397) ^ Level;
+            }
+        }
+
         public int Chapter;
         public int Level;
 
@@ -275,6 +296,11 @@ namespace GameA.Game
             get { return _run; }
         }
 
+        public UnlockItem UnlockItem
+        {
+            get { return _unlockItem; }
+        }
+
         public UnlockProcess (UnlockItem item)
         {
             _unlockItem = item;
@@ -333,7 +359,7 @@ namespace GameA.Game
 
         public ProcessActionShowRewardWindow (bool isSystem, string title, string icon)
         {
-            _isSystem = _isSystem;
+            _isSystem = isSystem;
             _title = title;
             _icon = icon;
         }
@@ -389,5 +415,11 @@ namespace GameA.Game
         WorkShop,
         ModifyMatch,
         World,
+        SocialReLationShip,
+        Mail,
+        Puzzle,
+        Weapon,
+        Train,
+        Achievement
     }
 }

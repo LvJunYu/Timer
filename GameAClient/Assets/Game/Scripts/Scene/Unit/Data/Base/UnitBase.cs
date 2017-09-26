@@ -9,118 +9,104 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Object = System.Object;
+
+#pragma warning disable 0660 0661
 
 namespace GameA.Game
 {
-    [System.Serializable]
-    public class UnitBase : IEquatable<UnitBase>
+    public enum EEnvState
     {
-        protected const float BackZOffset = 0.4f;
-        protected const float FrontZOffset = -0.4f;
+        Ice,
+        Clay,
+        Stun,
+    }
+
+    [Serializable]
+    public class UnitBase : ColliderBase, IEquatable<UnitBase>
+    {
+        protected const int MaxFriction = 100;
 
         #region base data
 
-        protected int _hp;
-
         protected bool _isFreezed;
 
-        [SerializeField]
-        protected int _life;
+        [SerializeField] protected int _life;
 
         protected Table_Unit _tableUnit;
 
         protected UnitDesc _unitDesc;
 
-        protected EMoveDirection _moveDirection;
-        protected ESwitchType _switchType;
+        [SerializeField] protected IntVec2 _curPos;
 
-        [SerializeField]
-        protected IntVec2 _curPos;
-        [SerializeField]
-        protected IntVec2 _colliderPos;
-        protected Grid2D _colliderGrid;
-        protected Grid2D _colliderGridInner;
-        protected Grid2D _lastColliderGrid;
-
-        [SerializeField]
-        protected bool _isAlive;
-        protected bool _canLazerCross;
-        protected bool _canMagicCross;
-        protected bool _canBridgeCross;
-        [SerializeField]
-        protected bool _isStart;
-        protected int _friction;
-
+        [SerializeField] protected bool _isAlive;
+        protected bool _canCross;
+        
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
         protected bool _isDisposed = false;
-
-        protected int _shootAngle;
-
+        
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
-        protected bool _ctrlBySwitch;
+        protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
+        protected bool _hasSwitchRectOnce;
+
+        protected int _maxHp;
+        protected int _hp;
 
         #endregion
 
         #region motor
 
-        protected bool _canMotor;
-        protected bool _canAttack;
+        protected  int _wingCount;
 
-        [SerializeField]
-        protected IntVec2 _deltaPos;
-        [SerializeField]
+        protected int _envState;
+
+        [SerializeField] protected IntVec2 _deltaPos;
+
+        [SerializeField] protected IntVec2 _speed;
+
+        [SerializeField] public IntVec2 ExtraSpeed;
+
         protected IntVec2 _deltaImpactPos;
-
-        [SerializeField]
-        protected IntVec2 _speed;
-
-        [SerializeField]
-        public IntVec2 ExtraSpeed;
-
-        [SerializeField]
-        protected bool _grounded;
-        [SerializeField]
-        protected bool _lastGrounded = true;
+        
+        [SerializeField] protected bool _grounded;
+        [SerializeField] protected bool _lastGrounded = true;
 
         protected bool _isCalculated;
-        [SerializeField]
-        protected IntVec2 _extraDeltaPos;
-        [SerializeField]
-        protected IntVec2 _lastExtraDeltaPos;
+        [SerializeField] protected IntVec2 _extraDeltaPos;
+        [SerializeField] protected IntVec2 _lastExtraDeltaPos;
 
         protected int _curBanInputTime;
 
-        [SerializeField]
-        protected SceneNode _dynamicCollider;
+        [SerializeField] protected SceneNode _dynamicCollider;
 
-        [SerializeField]
-        protected bool _isMoving;
         protected bool _isMonster = false;
 
         protected EUnitState _eUnitState;
 
-        [SerializeField]
-        protected EMoveDirection _curMoveDirection;
+        [SerializeField] protected EMoveDirection _moveDirection;
+        [SerializeField] protected EActiveState _eActiveState;
+        protected float _angle;
 
-        protected IntVec2 _minPos;
-        protected IntVec2 _maxPos;
+        /// <summary>
+        /// 加速减速参数
+        /// </summary>
+        protected float _speedStateRatio;
 
         #endregion
 
         #region view
 
         protected float _viewZOffset;
-        protected float _view1ZOffset;
 
         /// <summary>
         /// 可能会为NULL
         /// </summary>
         protected UnitView _view;
-        protected UnitView _view1;
+
+        protected UnitView[] _viewExtras;
+
+        protected UnityNativeParticleItem _withEffect;
 
         protected string _assetPath;
 
@@ -132,15 +118,56 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Trans; }
         }
+        
+        public int WingCount
+        {
+            get { return _wingCount; }
+            set { _wingCount = value; }
+        }
+
+        public int Hp
+        {
+            get { return _hp; }
+        }
+
+        public int MaxHp
+        {
+            get { return _maxHp; }
+        }
+
+        public virtual bool CanDashBrick
+        {
+            get { return false; }
+        }
 
         public virtual EDieType EDieType
         {
             get { return EDieType.None; }
         }
+        
+        protected virtual bool IsClimbing
+        {
+            get { return false; }
+        }
+        
+        protected virtual bool IsClimbingVertical
+        {
+            get { return false; }
+        }
+
+        public EActiveState EActiveState
+        {
+            get { return _eActiveState; }
+        }
 
         protected AnimationSystem _animation
         {
             get { return _view == null ? null : _view.Animation; }
+        }
+        
+        public IntVec2 DeltaImpactPos
+        {
+            get { return _deltaImpactPos; }
         }
 
         public AnimationSystem Animation
@@ -148,8 +175,7 @@ namespace GameA.Game
             get { return _animation; }
         }
 
-        [SerializeField]
-        protected int _dieTime;
+        [SerializeField] protected int _dieTime;
 
         #endregion
 
@@ -162,24 +188,9 @@ namespace GameA.Game
             get { return UseMagic(); }
         }
 
-        public bool CanLazerCross
+        public bool CanCross
         {
-            get { return _canLazerCross; }
-        }
-
-        public bool CanMagicCross
-        {
-            get { return _canMagicCross; }
-        }
-
-        public bool CanBridgeCross
-        {
-            get { return _canBridgeCross; }
-        }
-
-        public int Hp
-        {
-            get { return _hp; }
+            get { return _canCross; }
         }
 
         /// <summary>
@@ -187,7 +198,7 @@ namespace GameA.Game
         /// </summary>
         public virtual bool CanPainted
         {
-            get { return false;}
+            get { return false; }
         }
 
         public Table_Unit TableUnit
@@ -195,29 +206,17 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
-        public bool CanMotor
+        public virtual bool CanMove
         {
-            get { return _canMotor; }
-            set { _canMotor = value; }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
         }
 
         public bool CanAttack
         {
-            get { return _canAttack; }
-            set { _canAttack = value; }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
-        public virtual SkillManager SkillMgr1
-        {
-            get { return null; }
-        }
-
-        public virtual SkillManager SkillMgr2
-        {
-            get { return null; }
-        }
-
-        public virtual EffectManager EffectMgr
+        public virtual SkillCtrl SkillCtrl
         {
             get { return null; }
         }
@@ -232,24 +231,9 @@ namespace GameA.Game
             get { return _unitDesc; }
         }
 
-        public EMoveDirection MoveDirection
-        {
-            get { return _moveDirection; }
-        }
-
-        public virtual Grid2D LastColliderGrid
-        {
-            get { return _lastColliderGrid; }
-        }
-
         public virtual Grid2D ColliderGrid
         {
             get { return _colliderGrid; }
-        }
-
-        public virtual Grid2D ColliderGridInnder
-        {
-            get { return  _colliderGridInner; }
         }
 
         public bool IsAlive
@@ -258,9 +242,9 @@ namespace GameA.Game
             set { _isAlive = value; }
         }
 
-        public bool IsStart
+        protected virtual bool IsInWater
         {
-            get { return _isStart; }
+            get { return false; }
         }
 
         public List<UnitBase> DownUnits
@@ -268,9 +252,9 @@ namespace GameA.Game
             get { return _downUnits; }
         }
 
-        public int Friction
+        public UnitBase DownUnit
         {
-            get { return _friction; }
+            get { return _downUnit; }
         }
 
         public bool UseCorner
@@ -314,13 +298,22 @@ namespace GameA.Game
         public int SpeedY
         {
             get { return _speed.y; }
-            set { _speed.y = value; }
+            set
+            {
+                _speed.y = value;
+            }
         }
 
         public IntVec2 Speed
         {
             get { return _speed; }
             set { _speed = value; }
+        }
+
+        public float SpeedStateRatio
+        {
+            get { return _speedStateRatio; }
+            set { _speedStateRatio = value; }
         }
 
         public bool Grounded
@@ -364,9 +357,9 @@ namespace GameA.Game
             get { return _eUnitState; }
         }
 
-        public EMoveDirection CurMoveDirection
+        public EMoveDirection MoveDirection
         {
-            get { return _curMoveDirection; }
+            get { return _moveDirection; }
         }
 
         public UnitView View
@@ -374,9 +367,9 @@ namespace GameA.Game
             get { return _view; }
         }
 
-        public UnitView View1
+        public UnitView[] ViewExtras
         {
-            get { return _view1; }
+            get { return _viewExtras; }
         }
 
         public Transform Trans
@@ -399,14 +392,19 @@ namespace GameA.Game
             get { return _unitDesc.Rotation; }
         }
 
+        public Vector2 Scale
+        {
+            get { return _unitDesc.Scale; }
+        }
+
         public int Id
         {
             get { return _tableUnit.Id; }
         }
 
-        public virtual bool IsHero
+        public virtual bool IsActor
         {
-            get { return _isMonster || IsMain; }
+            get { return false; }
         }
 
         public IntVec3 Guid
@@ -417,7 +415,7 @@ namespace GameA.Game
         /// <summary>
         /// 下面的Center
         /// </summary>
-        public IntVec2 CenterPos
+        public IntVec2 CenterDownPos
         {
             get
             {
@@ -428,6 +426,34 @@ namespace GameA.Game
             {
                 IntVec2 dataSize = GetDataSize();
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
+            }
+        }
+        
+        public IntVec2 CenterPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2 , _curPos.y+ dataSize.y / 2 );
+            }
+            set
+            {
+                IntVec2 dataSize = GetDataSize();
+                _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y / 2);
+            }
+        }
+        
+        public IntVec2 CenterUpFloorPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y + 1);
+            }
+            set
+            {
+                IntVec2 dataSize = GetDataSize();
+                _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y - 1);
             }
         }
 
@@ -451,6 +477,11 @@ namespace GameA.Game
         {
             get { return false; }
         }
+        
+        public virtual bool IsPlayer
+        {
+            get { return false; }
+        }
 
         public virtual bool IsMonster
         {
@@ -459,22 +490,12 @@ namespace GameA.Game
 
         public ELayerType ELayerType
         {
-            get { return (ELayerType)_tableUnit.Layer; }
+            get { return (ELayerType) _tableUnit.Layer; }
         }
 
-        public int ShootAngle
+        public virtual float Angle
         {
-            get { return _shootAngle; }
-            set { _shootAngle = value; }
-        }
-
-        public virtual IntVec2 FirePos
-        {
-            get
-            {
-                var halfSize = GetDataSize() / 2;
-                return new IntVec2(_curPos.x + halfSize.x, _curPos.y + halfSize.y);
-            }
+            get { return _angle; }
         }
 
         public string AssetPath
@@ -482,29 +503,38 @@ namespace GameA.Game
             get { return _assetPath; }
         }
 
-        public bool UseMagic()
+        public virtual bool UseMagic()
         {
-            return !IsHero && _curMoveDirection != EMoveDirection.None;
+            return !IsActor && _moveDirection != EMoveDirection.None;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        internal void Init(Table_Unit tableUnit, byte dir)
+        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            _unitDesc = unitDesc;
             _tableUnit = tableUnit;
-            _unitDesc.Id = _tableUnit.Id;
-            _unitDesc.Rotation = dir;
-            _unitDesc.Scale = Vector3.one;
-            InitAssetPath();
+            _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
+            InitAssetPath();
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
                 return;
             }
-            SetFacingDir(_curMoveDirection, true);
-            _view.SetSortingOrder((int)ESortingOrder.DragingItem);
+            SetFacingDir(_moveDirection, true);
+            _view.SetSortingOrder((int) ESortingOrder.DragingItem);
+            if (_viewExtras != null)
+            {
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    if (_viewExtras[i].Trans != null)
+                    {
+                        _viewExtras[i].SetSortingOrder((int) ESortingOrder.DragingItem);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -513,22 +543,22 @@ namespace GameA.Game
         /// <param name="tableUnit"></param>
         /// <param name="unitDesc"></param>
         /// <returns></returns>
-        internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
-        {
-            _tableUnit = tableUnit;
-            _unitDesc = unitDesc;
-            _curPos = new IntVec2(_guid.x, _guid.y);
-            InitAssetPath();
-            UpdateExtraData();
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
-            {
-                LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
-                return true;
-            }
-            _view.OnIsChild();
-            SetFacingDir(_curMoveDirection, true);
-            return true;
-        }
+//        internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
+//        {
+//            _tableUnit = tableUnit;
+//            _unitDesc = unitDesc;
+//            _curPos = new IntVec2(_guid.x, _guid.y);
+//            UpdateExtraData();
+//            InitAssetPath();
+//            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
+//            {
+//                LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
+//                return true;
+//            }
+//            _view.OnIsChild();
+//            SetFacingDir(_moveDirection, true);
+//            return true;
+//        }
 
         internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc, SceneNode dynamicCollider)
         {
@@ -536,17 +566,15 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            _friction = 6;
             if (dynamicCollider != null)
             {
-                _friction = 12;
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
-            _view1ZOffset = FrontZOffset;
-            InitAssetPath();
+            _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
             OnInit();
+            InitAssetPath();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;
         }
@@ -564,8 +592,32 @@ namespace GameA.Game
             }
             else
             {
-                _animation.Init(((EDirectionType)Rotation).ToString(), loop);
+                _animation.Init(((EDirectionType) Rotation).ToString(), loop);
             }
+        }
+
+        protected Vector2 GetDirection()
+        {
+            switch ((EDirectionType) Rotation)
+            {
+                case EDirectionType.Up:
+                    return Vector2.up;
+                case EDirectionType.Right:
+                    return Vector2.right;
+                case EDirectionType.Down:
+                    return Vector2.down;
+                case EDirectionType.Left:
+                    return Vector2.left;
+                case EDirectionType.RightUp:
+                    return new Vector2(1, 1);
+                case EDirectionType.RightDown:
+                    return new Vector2(1, -1);
+                case EDirectionType.LeftDown:
+                    return new Vector2(-1, -1);
+                case EDirectionType.LeftUp:
+                    return new Vector2(-1, 1);
+            }
+            return Vector2.zero;
         }
 
         protected virtual bool OnInit()
@@ -576,23 +628,63 @@ namespace GameA.Game
 
         internal virtual bool InstantiateView()
         {
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this,false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
-            if (!string.IsNullOrEmpty(_tableUnit.Model1))
+            if (_tableUnit.ModelExtras != null && _tableUnit.ModelExtras.Length > 0)
             {
-                _assetPath = _tableUnit.Model1;
-                if (!UnitManager.Instance.TryGetUnitView(this, out _view1))
+                _viewExtras = new UnitView[_tableUnit.ModelExtras.Length];
+                for (int i = 0; i < _viewExtras.Length; i++)
                 {
-                    LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
-                    return false;
+                    if (string.IsNullOrEmpty(_tableUnit.ModelExtras[i]))
+                    {
+                        continue;
+                    }
+                    _assetPath = _tableUnit.ModelExtras[i];
+                    if (!UnitManager.Instance.TryGetUnitView(this, true, out _viewExtras[i]))
+                    {
+                        LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
+                        return false;
+                    }
+                    CommonTools.SetParent(_viewExtras[i].Trans, _trans);
+                    if (UnitDefine.IsPlant(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                    }
+                    else if (UnitDefine.IsRevive(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetBackground - _viewZOffset);
+                    }
+                    else
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetFront - _viewZOffset);
+                    }
                 }
-                CommonTools.SetParent(_view1.Trans, _trans);
             }
             UpdateTransPos();
-            SetFacingDir(_curMoveDirection, true);
+            SetFacingDir(_moveDirection, true);
+            if (GameRun.Instance.IsEdit)
+            {
+                _view.UpdateSign();
+            }
+            if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
+            {
+                _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName , _trans);
+                if (_withEffect != null)
+                {
+                    _withEffect.Play();
+                }
+                if (_eActiveState != EActiveState.None)
+                {
+                    OnActiveStateChanged();
+                }
+            }
+            if (!string.IsNullOrEmpty(_tableUnit.DestroyEffectName))
+            {
+                GameParticleManager.Instance.PreLoadParticle(_tableUnit.DestroyEffectName);
+            }
             return true;
         }
 
@@ -610,23 +702,35 @@ namespace GameA.Game
 
         protected virtual void OnDead()
         {
-            Clear();
             _isAlive = false;
             --Life;
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-				GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, GM2DTools.TileToWorld(CenterPos, _trans.position.z));
             }
         }
 
         internal virtual void Reset()
         {
+            UpdateExtraData();
+            if (_eActiveState != EActiveState.None)
+            {
+                OnActiveStateChanged();
+            }
             if (_view != null)
             {
                 _view.Reset();
             }
             _curPos = new IntVec2(_guid.x, _guid.y);
+            _colliderPos = GetColliderPos(_curPos);
+            _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
+            if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
+            {
+                _dynamicCollider.Grid = _colliderGrid;
+                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
+            }
+            _lastColliderGrid = _colliderGrid;
             Clear();
             UpdateTransPos();
             if (_dynamicCollider != null)
@@ -638,24 +742,24 @@ namespace GameA.Game
                 _animation.Reset();
             }
         }
-    
+
         protected virtual void Clear()
         {
+            _envState = 0;
             ClearRunTime();
-            _canAttack = true;
-            _canMotor = true;
+            if (_tableUnit.Hp > 0)
+            {
+                _maxHp = _tableUnit.Hp;
+            }
+            _hp = _maxHp;
+            _wingCount = 0;
+            _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
+
             _colliderPos = GetColliderPos(_curPos);
-            _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
-            _curMoveDirection = _moveDirection;
-            if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
-            {
-                _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
-            }
-            _lastColliderGrid = _colliderGrid;
+            _lastColliderGrid = _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
 
             _downUnits.Clear();
@@ -663,11 +767,11 @@ namespace GameA.Game
             _curBanInputTime = 0;
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
-            _ctrlBySwitch = false;
+            _switchRectUnits.Clear();
+            _hasSwitchRectOnce = false;
             if (_dynamicCollider != null)
             {
-                CalculateMinMax();
-                SetFacingDir(_curMoveDirection, true);
+                SetFacingDir(_moveDirection, true);
             }
         }
 
@@ -680,108 +784,36 @@ namespace GameA.Game
             _isCalculated = false;
             _extraDeltaPos = IntVec2.zero;
             _lastExtraDeltaPos = IntVec2.zero;
-            _isMoving = false;
         }
 
         public virtual void CheckStart()
         {
-            _downUnit = null;
-            _downUnits.Clear();
-            _isCalculated = false;
-            Speed += ExtraSpeed;
-            ExtraSpeed = IntVec2.zero;
-            if (_curBanInputTime > 0)
-            {
-                _curBanInputTime--;
-            }
-            _isStart = true;
-            //if (!MapConfig.UseAOI)
-            //{
-            //    _isStart = true;
-            //    return;
-            //}
-            //IntVec2 focusPos = PlayMode.Instance.FocusPos;
-            //IntVec2 rel = _curPos - focusPos;
-            //if (Mathf.Abs(rel.x) > ConstDefineGM2D.Start.x || rel.y > ConstDefineGM2D.Start.y || rel.y < -ConstDefineGM2D.Start.x)
-            //{
-            //    _isStart = false;
-            //}
-            //else
-            //{
-            //    _isStart = true;
-            //}
         }
 
         public virtual void UpdateLogic()
         {
-          
         }
 
         public virtual void UpdateView(float deltaTime)
         {
-
         }
 
         protected Grid2D GetColliderGrid(IntVec2 min)
         {
-            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
-        public virtual void UpdateRenderer(float deltaTime)
+        public virtual void OnSelectStateChanged(bool value)
         {
-        }
-
-	    public virtual void OnSelectStateChanged(bool value)
-	    {
-		    if (value)
-		    {
-			    _view.OnSelect();
-		    }
-		    else
-		    {
-			    _view.OnCancelSelect();
-		    }
-	    }
-
-        protected void LimitPos()
-        {
-            if (_curPos.x <= _minPos.x)
+            if (value)
             {
-                _curPos.x = _minPos.x;
-                if (SpeedX < 0)
-                {
-                    SpeedX = 0;
-                }
+                _view.OnSelect();
             }
-            if (_curPos.x >= _maxPos.x)
+            else
             {
-                _curPos.x = _maxPos.x;
-                if (SpeedX > 0)
-                {
-                    SpeedX = 0;
-                }
+                _view.OnCancelSelect();
             }
-            _curPos.y = Mathf.Clamp(_curPos.y, _minPos.y - 1, _maxPos.y);
-        }
-
-        protected virtual bool CheckOutOfMap()
-        {
-            if (_curPos.y < _minPos.y)
-            {
-                OnDead();
-                return true;
-            }
-            return false;
-        }
-
-        public virtual bool StepOnClay()
-        {
-            return false;
-        }
-
-        public virtual bool StepOnIce()
-        {
-            return false;
         }
 
         /// <summary>
@@ -790,75 +822,53 @@ namespace GameA.Game
         internal virtual void InLazer()
         {
         }
+        
+        internal virtual void InSaw()
+        {
+        }
+        
+        internal virtual void InFan(UnitBase fanUnit, IntVec2 force)
+        {
+        }
+        
+        internal virtual void OutFan(UnitBase fanUnit)
+        {
+        }
 
         internal virtual void InWater()
         {
         }
 
-        internal virtual void InFire()
-        {
-        }
-
-        internal virtual void OutFire()
+        public virtual void OnHpChanged(int hpChanged)
         {
         }
 
         /// <summary>
-        /// 怪物触碰打击
-        /// </summary>
-        public virtual void OnHeroTouch(UnitBase other)
-        {
-        }
-
-        /// <summary>
-        /// 无敌打击
-        /// </summary>
-        public virtual void OnInvincibleHit(UnitBase other)
-        {
-        }
-
-        /// <summary>
-        /// 射击打击
-        /// </summary>
-        public virtual void OnShootHit(UnitBase other)
-        {
-        }
-
-        /// <summary>
-        /// 压死
-        /// </summary>
-        public virtual void OnCrushHit(UnitBase other)
-        {
-        }
-
-        public virtual void OnDamage()
-        {
-        }
-
-        /// <summary>
-        /// 更新额外信息
+        /// 更新额外信息e
         /// </summary>
         public virtual void UpdateExtraData()
         {
-            _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
-            if (_view != null)
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _moveDirection = unitExtra.MoveDirection;
+            _eActiveState = (EActiveState)unitExtra.Active;
+            if (_eActiveState == EActiveState.None)
             {
-                if (IsHero)
-                {
-                    SetFacingDir(_curMoveDirection, true);
-                }
-                _view.UpdateSign();
+                _eActiveState = EActiveState.Active;
+            }
+            if (IsMain)
+            {
+                _moveDirection = EMoveDirection.Right;
             }
         }
 
         public bool Equals(UnitBase other)
         {
-            return other.Guid == _guid;
+            return other == this;
         }
 
         public override string ToString()
         {
-            return string.Format("UnitDesc: {0}, MoveDirection: {1}", _unitDesc, _moveDirection);
+            return string.Format("Hp: {0}, UnitDesc: {1}, MoveDirection: {2}", _hp, _unitDesc, _moveDirection);
         }
 
         public static bool operator ==(UnitBase a, UnitBase b)
@@ -880,22 +890,18 @@ namespace GameA.Game
             return false;
         }
 
-        public static bool operator != (UnitBase a, UnitBase b)
+        public static bool operator !=(UnitBase a, UnitBase b)
         {
             return !(a == b);
         }
 
-		#region private 
+        #region private 
 
         public void UpdateTransPos()
         {
             if (_view != null)
             {
                 _trans.position = GetTransPos();
-                if (_view1 != null)
-                {
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
-                }
             }
         }
 
@@ -913,7 +919,8 @@ namespace GameA.Game
                         var sr = _view.Trans.GetComponent<SpriteRenderer>();
                         if (sr != null && sr.sprite != null)
                         {
-                            modelSize = new Vector3(sr.sprite.rect.width, sr.sprite.rect.height) * ConstDefineGM2D.InverseTextureSize;
+                            modelSize = new Vector3(sr.sprite.rect.width, sr.sprite.rect.height) *
+                                        ConstDefineGM2D.InverseTextureSize;
                         }
                     }
                     IntVec2 tileTextureSize = GM2DTools.WorldToTile(modelSize);
@@ -924,18 +931,35 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfSize = GetDataSize() / 2;
-            float z =- (_curPos.x + halfSize.x + _curPos.y  + halfSize.y) * 0.00078125f + _viewZOffset;
+            var z = GetZ(_colliderPos);
+            if (IsInWater)
+            {
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
+                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
+            }
+            else if (_deltaPos.y != 0 || IsClimbingVertical)
+            {
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f,
+                GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f);
+            }
+            if (UnitDefine.IsJet(Id))
+            {
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
+            }
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
-			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
+            return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
         protected float GetZ(IntVec2 pos)
         {
-            return  -(pos.x + pos.y) * 0.00078125f ;
+            //为了子弹
+            var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
+            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -945,7 +969,7 @@ namespace GameA.Game
                 return;
             }
             //默认等同于此Unit
-            if (viewZOffset == 0)
+            if (Math.Abs(viewZOffset) < float.Epsilon)
             {
                 viewZOffset = _viewZOffset;
             }
@@ -974,8 +998,13 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
-            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
-            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, 0, z);
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * UnitDefine.UnitSorttingLayerRatio + viewZOffset;
+            float y = 0f;
+            if (UnitDefine.IsDownY(_tableUnit))
+            {
+                y = -0.1f;
+            }
+            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, y, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
 
@@ -985,30 +1014,34 @@ namespace GameA.Game
         {
             var size = GetDataSize();
             var keys = new IntVec3[4];
-            keys[0] = new IntVec3(_guid.x,                 _guid.y + size.y,    _guid.z);
-            keys[1] = new IntVec3(_guid.x + size.x,  _guid.y,                   _guid.z);
-            keys[2] = new IntVec3(_guid.x,                 _guid.y - size.y,     _guid.z);
-            keys[3] = new IntVec3(_guid.x - size.x,    _guid.y,                  _guid.z);
+            keys[0] = new IntVec3(_guid.x, _guid.y + size.y, _guid.z);
+            keys[1] = new IntVec3(_guid.x + size.x, _guid.y, _guid.z);
+            keys[2] = new IntVec3(_guid.x, _guid.y - size.y, _guid.z);
+            keys[3] = new IntVec3(_guid.x - size.x, _guid.y, _guid.z);
             int id = _tableUnit.Id;
             byte neighborDir = 0;
             UnitBase upUnit, downUnit, leftUnit, rightUnit;
             var units = ColliderScene2D.Instance.Units;
-            if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.IsFakePart(upUnit.Id, id))&& upUnit.View != null)
+            if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.IsFakePart(upUnit.Id, id)) &&
+                upUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Up);
                 upUnit.View.OnNeighborDirChanged(ENeighborDir.Down, add);
             }
-            if (units.TryGetValue(keys[1], out rightUnit) && (rightUnit.Id == id || UnitDefine.IsFakePart(rightUnit.Id, id)) && rightUnit.View != null)
+            if (units.TryGetValue(keys[1], out rightUnit) &&
+                (rightUnit.Id == id || UnitDefine.IsFakePart(rightUnit.Id, id)) && rightUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Right);
                 rightUnit.View.OnNeighborDirChanged(ENeighborDir.Left, add);
             }
-            if (units.TryGetValue(keys[2], out downUnit) && (downUnit.Id == id || UnitDefine.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
+            if (units.TryGetValue(keys[2], out downUnit) &&
+                (downUnit.Id == id || UnitDefine.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Down);
                 downUnit.View.OnNeighborDirChanged(ENeighborDir.Up, add);
             }
-            if (units.TryGetValue(keys[3], out leftUnit) && (leftUnit.Id == id || UnitDefine.IsFakePart(leftUnit.Id, id)) && leftUnit.View != null)
+            if (units.TryGetValue(keys[3], out leftUnit) &&
+                (leftUnit.Id == id || UnitDefine.IsFakePart(leftUnit.Id, id)) && leftUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Left);
                 leftUnit.View.OnNeighborDirChanged(ENeighborDir.Right, add);
@@ -1060,30 +1093,32 @@ namespace GameA.Game
 
         public virtual void OnRevivePos(IntVec2 pos)
         {
-
         }
 
         public Grid2D GetXGrid(int deltaX)
         {
             var min = new IntVec2(_colliderGrid.XMin + deltaX, _colliderGrid.YMin);
-            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
         public Grid2D GetYGrid(int deltaY)
         {
             var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + deltaY);
-            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
-
-        public bool CheckRightFloor()
+        
+        public bool CheckRightClimbFloor(int deltaPosY = 0)
         {
-            var min = new IntVec2(_colliderGrid.XMin + 1, _colliderGrid.YMin);
-            var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
+            var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1091,15 +1126,33 @@ namespace GameA.Game
             return false;
         }
 
-        public bool CheckLeftFloor()
+        public bool CheckLeftClimbFloor(int deltaPosY = 0)
         {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
-            var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+            var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) && CheckLeftFloor(unit))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool CheckUpClimbFloor(int deltaPosX = 0)
+        {
+            var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) && CheckUpFloor(unit))
                 {
                     return true;
                 }
@@ -1107,7 +1160,7 @@ namespace GameA.Game
             return false;
         }
 
-        protected virtual bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        protected virtual bool CanEdgeClimbed(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
         {
             return false;
         }
@@ -1117,17 +1170,23 @@ namespace GameA.Game
             return _colliderGrid.YMin - 1 == unit.ColliderGrid.YMax && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
                    _colliderGrid.XMin <= unit.ColliderGrid.XMax;
         }
+        
+        public bool CheckUpFloor(UnitBase unit)
+        {
+            return _colliderGrid.YMax + 1 == unit.ColliderGrid.YMin && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
+                   _colliderGrid.XMin <= unit.ColliderGrid.XMax;
+        }
 
         public bool CheckLeftFloor(UnitBase unit)
         {
-            return _colliderGrid.XMin - 1 == unit.ColliderGrid.XMax && _colliderGrid.YMin >= unit.ColliderGrid.YMin &&
-                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;
+            return _colliderGrid.XMin - 1 == unit.ColliderGrid.XMax && _colliderGrid.YMax >= unit.ColliderGrid.YMin &&
+                   _colliderGrid.YMin <= unit.ColliderGrid.YMax;
         }
 
         public bool CheckRightFloor(UnitBase unit)
         {
-            return _colliderGrid.XMax + 1 == unit.ColliderGrid.XMin && _colliderGrid.YMin >= unit.ColliderGrid.YMin &&
-                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;
+            return _colliderGrid.XMax + 1 == unit.ColliderGrid.XMin && _colliderGrid.YMax >= unit.ColliderGrid.YMin &&
+                   _colliderGrid.YMin <= unit.ColliderGrid.YMax;
         }
 
         public virtual void CalculateExtraDeltaPos()
@@ -1140,7 +1199,7 @@ namespace GameA.Game
                 int extraDeltaY = int.MinValue;
                 for (int i = 0; i < _downUnits.Count; i++)
                 {
-                    var deltaPos = _downUnits[i].GetDeltaImpactPos();
+                    var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
                     if (deltaPos.x > 0 && deltaPos.x > right)
                     {
                         right = deltaPos.x;
@@ -1160,7 +1219,7 @@ namespace GameA.Game
                     extraDeltaX = 0;
                 }
                 _extraDeltaPos = new IntVec2(extraDeltaX, extraDeltaY);
-                if (!_lastGrounded && IsMain)
+                if (!_lastGrounded && IsMain && !IsClimbing)
                 {
                     SpeedX -= extraDeltaX;
                 }
@@ -1174,23 +1233,26 @@ namespace GameA.Game
 
         protected void UpdateRotation(float rad)
         {
-            float y = _curMoveDirection != EMoveDirection.Right ? 180 : 0;
+            float y = _moveDirection != EMoveDirection.Right ? 180 : 0;
             _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);
             IntVec2 size = GetDataSize();
             var up = new Vector2(0, 0.5f * size.y / ConstDefineGM2D.ServerTileScale);
-            Vector2 newTransPos = (Vector2)_trans.position + up - (Vector2)_trans.up.normalized * up.y;
+            Vector2 newTransPos = (Vector2) _trans.position + up - (Vector2) _trans.up.normalized * up.y;
             _trans.position = newTransPos;
         }
 
         /// <summary>
         /// 当这个物体被连上开关时的处理函数
         /// </summary>
-        protected virtual void OnConnectToSwitch (UnitBase switchUnit) {
+        protected virtual void OnConnectToSwitch(UnitBase switchUnit)
+        {
         }
+
         /// <summary>
         /// 当这个物体被取消开关连接时的处理函数
         /// </summary>
-        protected virtual void OnDisconnectToSwitch (UnitBase switchUnit) {
+        protected virtual void OnDisconnectToSwitch(UnitBase switchUnit)
+        {
         }
 
         #region OnIntersect
@@ -1315,24 +1377,6 @@ namespace GameA.Game
 
         #endregion
 
-        protected void CalculateMinMax()
-        {
-            var limit = DataScene2D.Instance.ValidMapRect;
-            var size = GetDataSize();
-            _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-            _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            //if (IsMain)
-            //{
-            //    _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-            //    _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            //}
-            //else
-            //{
-            //    _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
-            //    _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
-            //}
-        }
-
         protected IntVec2 GetPos(IntVec2 colliderPos)
         {
             return _tableUnit.ColliderToRenderer(colliderPos, Rotation);
@@ -1340,7 +1384,6 @@ namespace GameA.Game
 
         public virtual void SetPos(IntVec2 pos)
         {
-            _isStart = true;
             _curPos = pos;
             //TODO StaticCollider也可以设置位置 改变SceneNode
             if (_dynamicCollider != null)
@@ -1351,7 +1394,7 @@ namespace GameA.Game
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;
-                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
+                    ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
                     _lastColliderGrid = _colliderGrid;
                 }
             }
@@ -1368,22 +1411,24 @@ namespace GameA.Game
             return _tableUnit.RendererToCollider(_curPos, Rotation);
         }
 
-        public virtual IntVec2 GetDeltaImpactPos()
+        public virtual IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            return _deltaImpactPos;
+            return IntVec2.zero;
         }
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if (_dynamicCollider == null && !initView && _curMoveDirection == eMoveDirection)
+            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection)
             {
                 return;
             }
-            _curMoveDirection = eMoveDirection;
-            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsHero)
+            _moveDirection = eMoveDirection;
+            if (_trans != null && _moveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
-                _trans.eulerAngles = _curMoveDirection != EMoveDirection.Right ? new Vector3(euler.x, 180, euler.z) : new Vector3(euler.x, 0, euler.z);
+                _trans.eulerAngles = _moveDirection != EMoveDirection.Right
+                    ? new Vector3(euler.x, 180, euler.z)
+                    : new Vector3(euler.x, 0, euler.z);
             }
         }
 
@@ -1399,21 +1444,27 @@ namespace GameA.Game
 
         protected void SetSortingOrderBackground()
         {
-            _viewZOffset = 20;
+            _viewZOffset = UnitDefine.ZOffsetBackground;
+        }
+        
+        protected void SetSortingOrderFrontest()
+        {
+            _viewZOffset = UnitDefine.ZOffsetFrontest;
         }
 
         protected void SetSortingOrderBack()
         {
-            _viewZOffset = BackZOffset;
+            _viewZOffset = UnitDefine.ZOffsetBack;
         }
-
+        
         protected void SetSortingOrderFront()
         {
-            _viewZOffset = FrontZOffset;
+            _viewZOffset = UnitDefine.ZOffsetFront;
         }
-
-        protected void SetFront()
+        
+        protected void SetSortingOrderNormal()
         {
+            _viewZOffset = 0;
         }
 
         public int GetRotation(byte rotation)
@@ -1421,35 +1472,12 @@ namespace GameA.Game
             return -90 * rotation;
         }
 
-        public Vector3 GetRotationPosOffset()
-        {
-            if (UnitDefine.IsBullet(Id))
-            {
-                Vector3 res = Vector3.zero;
-                Vector3 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
-                switch ((EDirectionType)Rotation)
-                {
-                    case EDirectionType.Right:
-                        res.x = -size.x;
-                        res.y = size.y;
-                        break;
-                    case EDirectionType.Down:
-                        res.y = size.y * 2;
-                        break;
-                    case EDirectionType.Left:
-                        res.x = size.x;
-                        res.y = size.y;
-                        break;
-                }
-                return res;
-            }
-            return Vector3.zero;
-        }
-
         internal virtual void OnObjectDestroy()
         {
             _view = null;
-            _view1 = null;
+            _viewExtras = null;
+            FreeEffect(_withEffect);
+            _withEffect = null;
         }
 
         internal virtual void OnDispose()
@@ -1457,17 +1485,18 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
+        public virtual void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom,
+            bool draw = true)
         {
         }
 
-        internal bool OnSwitchPressStart(SwitchPress switchPress)
+        internal bool OnSwitchPressStart(SwitchUnit switchUnit)
         {
-            if (_switchPressUnits.Contains(switchPress))
+            if (_switchPressUnits.Contains(switchUnit))
             {
                 return false;
             }
-            _switchPressUnits.Add(switchPress);
+            _switchPressUnits.Add(switchUnit);
             if (_switchPressUnits.Count == 1)
             {
                 OnCtrlBySwitch();
@@ -1475,9 +1504,9 @@ namespace GameA.Game
             return true;
         }
 
-        internal bool OnSwitchPressEnd(SwitchPress switchPress)
+        internal bool OnSwitchPressEnd(SwitchUnit switchUnit)
         {
-            if (!_switchPressUnits.Remove(switchPress))
+            if (!_switchPressUnits.Remove(switchUnit))
             {
                 return false;
             }
@@ -1487,15 +1516,66 @@ namespace GameA.Game
             }
             return true;
         }
-
-        internal virtual void OnCtrlBySwitch()
+        
+        internal bool OnSwitchRectStart(SwitchRect switchRect)
         {
-            _ctrlBySwitch = !_ctrlBySwitch;
+            if (_switchRectUnits.Contains(switchRect))
+            {
+                return false;
+            }
+            _switchRectUnits.Add(switchRect);
+            if (_switchRectUnits.Count == 1)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+
+        internal bool OnSwitchRectEnd(SwitchRect switchRect)
+        {
+            if (!_switchRectUnits.Remove(switchRect))
+            {
+                return false;
+            }
+            if (_switchRectUnits.Count == 0)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+        
+        internal void OnSwitchRectOnce()
+        {
+            if (_hasSwitchRectOnce)
+            {
+                return;
+            }
+            _hasSwitchRectOnce = true;
+            OnCtrlBySwitch();
+        }
+
+        internal void OnCtrlBySwitch()
+        {
+            SetActiveState(_eActiveState == EActiveState.Deactive ? EActiveState.Active : EActiveState.Deactive);
+        }
+
+        public virtual void SetActiveState(EActiveState value)
+        {
+            if (_eActiveState != value)
+            {
+                _eActiveState = value;
+                OnActiveStateChanged();
+            }
+        }
+        
+        protected virtual void OnActiveStateChanged()
+        {
+            _withEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 
         public bool IsBlockedBy(UnitBase unit)
         {
-            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+            if (unit != null && unit.IsAlive && unit != this && unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
             {
                 return true;
             }
@@ -1515,14 +1595,105 @@ namespace GameA.Game
             }
         }
 
-        internal virtual int AddMp(int mp)
+        protected void PlayEffect(UnityNativeParticleItem effect)
         {
-            return 0;
+            if (effect != null)
+            {
+                effect.Play();
+            }
         }
 
-        public virtual void ChangeSkill<T>() where T : class
+        protected void StopEffect(UnityNativeParticleItem effect)
         {
+            if (effect != null)
+            {
+                effect.Stop();
+            }
+        }
 
+        #region  skill State
+
+        public virtual void AddStates(params int[] ids)
+        {
+        }
+
+        public virtual void RemoveStates(params int[] ids)
+        {
+        }
+
+        public virtual void RemoveState(State state)
+        {
+        }
+
+        public virtual void RemoveAllDebuffs()
+        {
+        }
+        
+        public virtual bool TryGetState(EStateType stateType, out State state)
+        {
+            state = null;
+            return false;
+        }
+
+        public void AddEnvState(EEnvState eEnvState)
+        {
+            _envState |= 1 << (int)eEnvState;
+        }
+
+        public void RemoveEnvState(EEnvState eEnvState)
+        {
+            _envState &= ~(1 << (int)eEnvState);
+        }
+
+        public bool IsInState(EEnvState eEnvState)
+        {
+            return (_envState & (1 << (int) eEnvState)) != 0;
+        }
+
+        public virtual bool SetWeapon(int weaponId)
+        {
+            return true;
+        }
+        
+        public virtual void OnSkillCast()
+        {
+        }
+        
+        public virtual void StartSkill()
+        {
+        }
+
+        #endregion
+
+        public virtual void SetClimbState(EClimbState eClimbState)
+        {
+        }
+
+        public virtual void SetStepOnClay()
+        {
+        }
+        
+        public virtual void SetStepOnIce()
+        {
+        }
+        
+        protected void SetCross(bool value)
+        {
+            _canCross = value;
+        }
+
+        public virtual void SetLifeTime(int lifeTime)
+        {
+        }
+
+        public virtual bool IntersectX(UnitBase other, Grid2D grid)
+        {
+            return other.ColliderGrid.XMin <= grid.XMax && other.ColliderGrid.XMax >= grid.XMin;
+        }
+        
+        public virtual bool IntersectY(UnitBase other, Grid2D grid)
+        {
+            return other.ColliderGrid.YMin <= grid.YMax && other.ColliderGrid.YMax >= grid.YMin;
         }
     }
 }

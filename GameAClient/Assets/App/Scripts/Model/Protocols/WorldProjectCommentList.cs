@@ -235,6 +235,7 @@ namespace GameA
 
         public WorldProjectCommentList () { 
             _commentList = new List<ProjectComment>();
+            OnCreate();
         }
         #endregion
     }

@@ -160,6 +160,7 @@ namespace GameA
             _userEnergyData = new UserEnergy();
             _adventureUserProgress = new AdventureUserProgress();
             _sectionList = new List<AdventureUserSection>();
+            OnCreate();
         }
         #endregion
     }

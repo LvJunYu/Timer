@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,10 +15,22 @@ namespace GameA.Game
 {
     public class MonsterBase : ActorBase
     {
-        protected IntVec2 _lastPos;
-        protected int _monsterSpeed;
-        protected int _curMaxSpeedX;
-        protected int _curFriction;
+        protected int _fireTimer;
+        
+        public override bool CanMove
+        {
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+        }
+
+        protected override bool IsCheckClimb()
+        {
+            return false;
+        }
+        
+        public override bool CanControlledBySwitch
+        {
+            get { return true; }
+        }
 
         protected override bool OnInit()
         {
@@ -26,146 +39,79 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 30;
+            _maxSpeedX = 40;
+            return true;
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            CreateStatusBar();
             return true;
         }
 
         protected override void Clear()
         {
             base.Clear();
-            _lastPos = _curPos;
-            _curMaxSpeedX = _monsterSpeed;
-        }
-
-        public override void UpdateLogic()
-        {
-            if (_isAlive && _isStart && !_isFreezed)
+            _input = _input ?? new InputBase();
+            _input.Clear();
+            _fireTimer = 0;
+            if (_statusBar != null)
             {
-                bool air = false;
-                _curFriction = _friction;
-                if (SpeedY != 0)
-                {
-                    air = true;
-                }
-                if (!air)
-                {
-                    _onClay = false;
-                    bool downExist = false;
-                    int deltaX = int.MaxValue;
-                    var units = EnvManager.RetriveDownUnits(this);
-                    for (int i = 0; i < units.Count; i++)
-                    {
-                        var unit = units[i];
-                        int ymin = 0;
-                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
-                        {
-                            downExist = true;
-                            _grounded = true;
-                            _downUnits.Add(unit);
-                            if (unit.Friction > _curFriction)
-                            {
-                                _curFriction = unit.Friction;
-                            }
-                            var edge = unit.GetUpEdge(this);
-                            if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                            {
-                                _onClay = true;
-                            }
-                            else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                            {
-                                _onIce = true;
-                            }
-                            var delta = Math.Abs(CenterPos.x - unit.CenterPos.x);
-                            if (deltaX > delta)
-                            {
-                                deltaX = delta;
-                                _downUnit = unit;
-                            }
-                        }
-                    }
-                    if (!downExist)
-                    {
-                        air = true;
-                    }
-                }
-                if (air && _grounded)
-                {
-                    Speed += _lastExtraDeltaPos;
-                    _grounded = false;
-                }
-                _curMaxSpeedX = _monsterSpeed;
-                if (_onClay)
-                {
-                    _curFriction = 30;
-                    _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
-                }
-                else if (_onIce)
-                {
-                    _curFriction = 1;
-                }
-                if (_eDieType == EDieType.Fire)
-                {
-                    OnFire();
-                }
-                else
-                {
-                    _fireTimer = 0;
-                    UpdateMonsterAI();
-                }
-                if (!air)
-                {
-                    // 判断左右踩空
-                    if (_downUnits.Count == 1)
-                    {
-                        if (SpeedX > 0 && _downUnits[0].ColliderGrid.XMax < _colliderGrid.XMax)
-                        {
-                            OnRightStampedEmpty();
-                        }
-                        else if (SpeedX < 0 && _downUnits[0].ColliderGrid.XMin > _colliderGrid.XMin)
-                        {
-                            OnLeftStampedEmpty();
-                        }
-                    }
-                }
-                if (!_grounded)
-                {
-                    SpeedY -= 12;
-                    if (SpeedY < -120)
-                    {
-                        SpeedY = -120;
-                    }
-                }
+                _statusBar.SetHPActive(false);
             }
         }
 
-        protected virtual void OnFire()
+        protected override void CalculateSpeedRatio()
         {
-            _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedFireRatio);
-            if (_curMoveDirection == EMoveDirection.Right)
+            base.CalculateSpeedRatio();
+            if (HasStateType(EStateType.Fire))
             {
-                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+                _speedRatio *= SpeedFireRatio;
+                OnFire();
+            }
+        }
+
+        protected override void AfterCheckGround()
+        {
+            if (_grounded)
+            {
+                // 判断左右踩空
+                if (_downUnits.Count == 1 && !_downUnits[0].IsActor)
+                {
+                    if (SpeedX > 0 && _downUnits[0].ColliderGrid.XMax < _colliderGrid.XMax)
+                    {
+                        OnRightStampedEmpty();
+                    }
+                    else if (SpeedX < 0 && _downUnits[0].ColliderGrid.XMin > _colliderGrid.XMin)
+                    {
+                        OnLeftStampedEmpty();
+                    }
+                }
+            }
+            if (HasStateType(EStateType.Fire))
+            {
+                OnFire();
             }
             else
             {
-                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+                _fireTimer = 0;
+                UpdateMonsterAI();
             }
-            _fireTimer++;
-            //碰到墙壁转头
-            CheckWay();
-            //每隔转头
-            if (_fireTimer == 50)
+        }
+
+        protected override void OnActiveStateChanged()
+        {
+            base.OnActiveStateChanged();
+            if (_eActiveState != EActiveState.Active)
             {
-                ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
-            }
-            //4秒后还是这个状态挂掉
-            else if (_fireTimer == 100)
-            {
-                OnDead();
-                if (_animation != null)
-                {
-                    _animation.Reset();
-                    _animation.PlayOnce("DeathFire");
-                }
+                SetInput(EInputType.Right, false);
+                SetInput(EInputType.Left, false);
+                SetInput(EInputType.Skill1, false);
+                SpeedX = 0;
             }
         }
 
@@ -173,22 +119,24 @@ namespace GameA.Game
         {
         }
 
-        public override void UpdateView(float deltaTime)
+        protected virtual void OnFire()
         {
-            if (_isStart && _isAlive)
+            _fireTimer++;
+            if (_fireTimer % 80 == 0)
             {
-                _deltaPos = _speed + _extraDeltaPos;
-                _curPos += _deltaPos;
-                LimitPos();
-                UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
-                UpdateTransPos();
-                CheckOutOfMap();
-                UpdateMonsterView(deltaTime);
-                _lastGrounded = _grounded;
-                _lastPos = _curPos;
+                ChangeWay(_moveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
             }
-            if (!_isAlive)
+            CheckWay();
+        }
+
+        protected override void UpdateDynamicView(float deltaTime)
+        {
+            base.UpdateDynamicView(deltaTime);
+            if (_isAlive)
+            {
+                UpdateMonsterView(deltaTime);
+            }
+            else
             {
                 _dieTime ++;
                 if (_dieTime == 100)
@@ -204,21 +152,18 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (_canMotor)
+                    if (CanMove)
                     {
                         _animation.PlayLoop("Idle");
                     }
                 }
                 else
                 {
-                    float speed = (int)(SpeedX * 1f);
-                    speed = Math.Abs(speed);
-                    speed = Mathf.Clamp(speed, 30, 100) * deltaTime;
-                    _animation.PlayLoop("Run", speed);
+                    _animation.PlayLoop("Run", Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }
         }
-
+        
         protected virtual void OnRightStampedEmpty()
         {
         }
@@ -231,12 +176,14 @@ namespace GameA.Game
         {
             if (_hitUnits != null)
             {
-                if (_curMoveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
+                if (_moveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
                 {
+                    _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Right);
                 }
-                else if (_curMoveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
+                else if (_moveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
                 {
+                    _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Left);
                 }
             }
@@ -249,11 +196,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_curMaxSpeedX != 0)
-            {
-                SpeedX = eMoveDirection == EMoveDirection.Right ? _curMaxSpeedX : -_curMaxSpeedX;
-            }
-            SetFacingDir(eMoveDirection);
+            SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+            SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;
         }
 
@@ -261,6 +205,11 @@ namespace GameA.Game
         {
             base.OnDead ();
             Messenger<EDieType>.Broadcast (EMessengerType.OnMonsterDead, _eDieType);
+        }
+
+        protected void SetInput(EInputType eInputType, bool value)
+        {
+            _input.CurAppliedInputKeyAry[(int)eInputType] = value;
         }
     }
 }

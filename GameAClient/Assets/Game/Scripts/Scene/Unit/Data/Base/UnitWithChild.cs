@@ -15,7 +15,8 @@ namespace GameA.Game
 {
     public class UnitWithChild : BlockBase
     {
-        protected UnitChild _unitChild;
+        protected int _childId;
+        protected int _childDirection;
         protected UnitBase _childUnit;
         protected bool _trigger;
 
@@ -25,7 +26,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _unitChild = DataScene2D.Instance.GetUnitExtra(_guid).Child;
+//            _unitChild = DataScene2D.Instance.GetUnitExtra(_guid).Child;
             return true;
         }
 
@@ -35,12 +36,12 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_unitChild.Id > 0)
-            {
-                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation);
-                _childUnit.SetFacingDir(_unitChild.MoveDirection);
-                PlayMode.Instance.Freeze(_childUnit);
-            }
+//            if (_childId > 0)
+//            {
+//                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation);
+//                _childUnit.SetFacingDir(_unitChild.MoveDirection);
+//                PlayMode.Instance.Freeze(_childUnit);
+//            }
             return true;
         }
 

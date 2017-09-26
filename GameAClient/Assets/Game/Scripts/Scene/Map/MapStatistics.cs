@@ -20,7 +20,7 @@ namespace GameA.Game
         [SerializeField] private int _gemCount;
         [SerializeField] private int _finalCount;
         [SerializeField] private int _heroCageCount;
-        [SerializeField] private int _mainPlayerCount;
+        [SerializeField] private int _spawnCount;
         [SerializeField] private int _monsterCount;
         [SerializeField] private int _keyCount;
 
@@ -48,9 +48,9 @@ namespace GameA.Game
             get { return _finalCount; }
         }
 
-        public int MainPlayerCount
+        public int SpawnCount
         {
-            get { return _mainPlayerCount; }
+            get { return _spawnCount; }
         }
 
         public int GemCount
@@ -166,12 +166,11 @@ namespace GameA.Game
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
+            if (eWinCondition == EWinCondition.TimeLimit)
+            {
+                return true;
+            }
             return (_winCondition & (1 << (int) eWinCondition)) != 0;
-        }
-
-        public void RemoveCondition(EWinCondition eWinCondition)
-        {
-            _winCondition = (byte)(_winCondition & ~(1 << (int)eWinCondition));
         }
 
         public void AddFinishCount()
@@ -190,34 +189,30 @@ namespace GameA.Game
             {
                 NeedSave = true;
             }
-            switch (tableUnit.EUnitType)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
-                case EUnitType.MainPlayer:
-                    _mainPlayerCount = value ? ++_mainPlayerCount : --_mainPlayerCount;
-                    break;
-                case EUnitType.Monster:
-                    _monsterCount = value ? ++_monsterCount : --_monsterCount;
-                    break;
-                case EUnitType.Mechanism:
-                    if (tableUnit.Id == 5001)
-                    {
-                        _finalCount = value ? ++_finalCount : --_finalCount;
-                    }
-                    else if (tableUnit.Id == 5012)
-                    {
-                        _keyCount = value ? ++_keyCount : --_keyCount;
-                    }
-                    break;
-                case EUnitType.Collection:
-                    if (tableUnit.Id == 6001)
-                    {
-                        _gemCount = value ? ++_gemCount : --_gemCount;
-                    }
-                    break;
+                _spawnCount = value ? ++_spawnCount : --_spawnCount;
+            }
+            else if (UnitDefine.IsMonster(tableUnit.Id))
+            {
+                _monsterCount = value ? ++_monsterCount : --_monsterCount;
+            }
+            else if (tableUnit.Id == 5001)
+            {
+                _finalCount = value ? ++_finalCount : --_finalCount;
+            }
+            else if (tableUnit.Id == 5012)
+            {
+                _keyCount = value ? ++_keyCount : --_keyCount;
+            }
+            else if (tableUnit.Id == 6001)
+            {
+                _gemCount = value ? ++_gemCount : --_gemCount;
             }
         }
 
-        public void AddOrDeleteConnection () {
+        public void AddOrDeleteConnection () 
+        {
             NeedSave = true;
         }
     }

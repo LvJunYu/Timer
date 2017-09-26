@@ -12,7 +12,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
 	public class UICtrlGameItemAddMessage: UICtrlInGameBase<UIViewGameItemAddMessage>
 	{
 		private UnitDesc _selectItem;
@@ -63,12 +63,6 @@ namespace GameA
 			if (item == null)
 			{
 				LogHelper.Error("_selectItem.id is invalid! {0}", _selectItem.Id);
-				return;
-			}
-			if (item.Id==7001)
-			{
-				LogHelper.Error("_selectItem {0} .EScriptType is not BulletinBoard!", _selectItem.Id);
-				return;
 			}
 		}
 
@@ -83,10 +77,7 @@ namespace GameA
 
 	    private void SetData(string value)
 	    {
-	        EditMode.Instance.MapStatistics.NeedSave = true;
-	        UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(_selectItem.Guid);
-	        unitExtra.Msg = value;
-	        DataScene2D.Instance.ProcessUnitExtra(_selectItem.Guid, unitExtra);
+		    EditModeState.Global.Instance.ChangeBillboardMessage(_selectItem, value);
 	    }
 
 		#endregion

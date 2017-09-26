@@ -5,6 +5,8 @@ using SoyEngine.Proto;
 using UnityEngine;
 using SoyEngine;
 using System;
+using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -12,11 +14,9 @@ namespace GameA
     public class UMCtrlCartCard : UMCtrlBase<UMViewCartCard>
     {
         private EBuyAvatarPartDurationType _durationType;
-        private bool _ifChecked;
-        private ShopItem _itemInfo;
+        //private bool _ifChecked;
+        private Table_FashionUnit _itemInfo;
         private Msg_BuyAvatarPartItem _msg = new Msg_BuyAvatarPartItem();
-
-
 
         private void SetMsgToDic()
         {
@@ -31,9 +31,9 @@ namespace GameA
         }
 
 
-        public void Set(ShopItem listItem)
+        public void Set(Table_FashionUnit listItem)
         {
-            _msg.PartType = listItem._avatarType;
+            _msg.PartType = (EAvatarPart)listItem.Type;
             _msg.PartId = listItem.Id;
             _msg.CurrencyType = ECurrencyType.CT_Gold;
             _msg.DiscountCouponId = 0;
@@ -45,16 +45,9 @@ namespace GameA
             _cachedView.PriceDiamond.text = listItem.PriceDiamondDay.ToString();
             _cachedView.TimeElect.onValueChanged.AddListener(Timeselect);
             _cachedView.PitchOn.onValueChanged.AddListener(Checked);
-            //_cachedView.Destory.onClick.AddListener(OnDestroy);
-            //if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
-            //{
-            //    Debug.Log("____________时装" + fashion.name);
-            //    _cachedView.FashionPreview.sprite = fashion;
-            //}
             Sprite fashion=null;
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            if (JoyResManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
-                Debug.Log("____________时装" + fashion.name);
                 _cachedView.FashionPreview.sprite = fashion;
             }
         }
@@ -107,17 +100,9 @@ namespace GameA
             {
                 SetMsgToDic();
             }
-            _ifChecked = ifChecked;
+            //_ifChecked = ifChecked;
         }
 
-        //public void DestoryUmCard()
-        //{
-        //    OnDestroy();
-        //}
 
-        //protected override void OnDestroy()
-        //{
-        //    base.OnDestroy();
-        //}
     }
 }

@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -15,6 +14,8 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
+            _record = param as Record;
+            InitRecord();
             return true;
         }
 
@@ -27,8 +28,9 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
-            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+//            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+//            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            yield return null;
             GameRun.Instance.Playing();
         }
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace SoyEngine
+﻿namespace SoyEngine
 {
     public class UPCtrlBase<C, V> where C:UICtrlBase where V:UIViewBase
 	{
@@ -21,6 +17,11 @@ namespace SoyEngine
 		/// </summary>
 		protected virtual void OnViewCreated()
 		{
+		}
+
+		public virtual void OnDestroy()
+		{
+			
 		}
 
         public virtual void Open() { _isOpen = true; }

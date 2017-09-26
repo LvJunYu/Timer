@@ -194,6 +194,7 @@ namespace GameA
         public UserInfoSimple () { 
             _relationWithMe = new UserRelationWithMe();
             _levelData = new UserLevel();
+            OnCreate();
         }
         #endregion
     }

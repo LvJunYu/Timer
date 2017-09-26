@@ -37,7 +37,7 @@ namespace J3Tech
 	        var winrdow = GetWindow<CryptWindowsAssemblyEditor>();
             winrdow.maxSize = _appPath.Length > 0 ? new Vector2(400, 510) : new Vector2(400, 240);
             winrdow.minSize = new Vector2(400, 230);
-            winrdow.title = "CodeEncipher";
+            winrdow.titleContent.text = "CodeEncipher";
 	    }
 
 	    private void OnEnable()

@@ -75,6 +75,8 @@ namespace GameA
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx (false);
+                //_cachedView.Title.text= "<color=#ffffff><size=26></size></color>";
+                //_cachedView.PublishTime.text
                 return;
             }
 //            RefreshCardMode(_wrapper.CardMode, _wrapper.IsSelected);
@@ -85,12 +87,24 @@ namespace GameA
             }
             else
             {
-//                _cachedView.EmptyDock.SetActive(false);
-//                _cachedView.InfoDock.SetActive(true);
+                _cachedView.PlayerCnt.text = _wrapper.Content.ExtendData.PlayCount.ToString();
+                _cachedView.PassRate.text = _wrapper.Content.ExtendData.CompleteCount.ToString();
                 DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
-//                _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-                _cachedView.PublishTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
+                _cachedView.SeletedMark.SetActiveEx(_wrapper.IsSelected);
+                //                _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
+                if (_wrapper.IsSelected)
+                {
+                    _cachedView.Title.text = "<color=#ffffff>" + _wrapper.Content.Name + "</color>";
+                    _cachedView.PublishTime.text = "<color=#ffffff>" + GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.CreateTime, 1) + "</color>";
+                }
+                else
+                {
+                    _cachedView.PublishTime.text =
+                        GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.CreateTime, 1);
+                    //DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
+                }
+                  //_cachedView.PublishTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
 //                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
             }
         }

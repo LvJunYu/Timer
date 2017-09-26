@@ -5,38 +5,32 @@
 ** Summary : UnitView
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
-using DG.Tweening;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
     public class UnitView : IPoolableObject
     {
-        protected static Vector2 _hidePos = Vector3.one * -5;
-
+        public static Color SelectedColor = Color.red;
+        public static Color NormalColor = Color.white;
+        
         protected Transform _trans;
 
-		protected Transform _dirTrans;
-        protected Transform _dirTrans2;
+        protected Transform _pairTrans;
 
         protected UnitBase _unit;
-
         protected AnimationSystem _animation;
+
+        protected UnitPropertyViewWrapper _propertyViewWrapper;
+
+        protected bool _isPart;
 
 		public Transform Trans
         {
             get { return _trans; }
         }
-
-	    public Transform DirTrans
-	    {
-		    get { return _dirTrans; }
-	    }
 
         public AnimationSystem Animation
         {
@@ -56,12 +50,13 @@ namespace GameA.Game
         {
         }
 
-        public bool Init(UnitBase unit)
+        public bool Init(UnitBase unit, bool isPart)
         {
 #if UNITY_EDITOR
             _trans.name = string.Format("{0}_{1}", unit.Id, unit.TableUnit.Name);
 #endif
             _unit = unit;
+            _isPart = isPart;
             if (!OnInit())
             {
                 return false;
@@ -93,33 +88,39 @@ namespace GameA.Game
             
         }
 
+        public virtual void SetDamageShaderValue(string name = null,float value = 1)
+        {
+            
+        }
+
         public virtual void OnFree()
         {
 #if UNITY_EDITOR
             _trans.name = GetType().Name;
 #endif
             _unit = null;
+            _isPart = false;
             _trans.SetActiveEx(true);
-            _trans.position = _hidePos;
+            _trans.position = UnitDefine.HidePos;
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
+            _trans.rotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
-			if (_dirTrans != null)
-			{
-				Object.Destroy(_dirTrans.gameObject);
-			    _dirTrans = null;
-			}
-            if (_dirTrans2 != null)
+            SetRendererEnabled(true);
+            SetRendererColor(Color.white);
+            if (_pairTrans != null)
             {
-                Object.Destroy(_dirTrans2.gameObject);
-                _dirTrans2 = null;
+                Object.Destroy(_pairTrans.gameObject);
+                _pairTrans = null;
+            }
+            if (_propertyViewWrapper != null)
+            {
+                _propertyViewWrapper.Hide();
+                _propertyViewWrapper = null;
             }
         }
 
-	    public static Color SelectedColor = Color.red;
-	    public static Color NormalColor = Color.white;
-
-	    public virtual void OnSelect()
+        public virtual void OnSelect()
 	    {
 		    
 	    }
@@ -146,29 +147,43 @@ namespace GameA.Game
             if (_trans != null)
             {
                 _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
-                _trans.localRotation = Quaternion.identity;
+//                _trans.localRotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
             }
-            if (_dirTrans != null)
+            if (_pairTrans != null)
             {
-                _dirTrans.SetActiveEx(true);
+                _pairTrans.SetActiveEx(true);
             }
-            if (_dirTrans2 != null)
+            if (_propertyViewWrapper != null)
             {
-                _dirTrans2.SetActiveEx(true);
+                _propertyViewWrapper.Hide();
             }
             UpdateSign();
         }
-
+        
         public virtual void OnPlay()
         {
-            if (_dirTrans != null)
+            SetEditAssistActive(false);
+        }
+
+        public virtual void SetEditAssistActive(bool active)
+        {
+            if (_pairTrans != null)
             {
-                _dirTrans.SetActiveEx(false);
+                _pairTrans.SetActiveEx(active);
             }
-            if (_dirTrans2 != null)
+            if (_propertyViewWrapper != null)
             {
-                _dirTrans2.SetActiveEx(false);
+                if (active)
+                {
+                    var unitDesc = _unit.UnitDesc;
+                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                }
+                else
+                {
+                    _propertyViewWrapper.Hide();
+                }
             }
         }
 
@@ -183,63 +198,36 @@ namespace GameA.Game
 
         public void OnIsChild()
         {
-            if (_dirTrans != null)
+            if (_pairTrans != null)
             {
-                _dirTrans.SetActiveEx(false);
-            }
-            if (_dirTrans2 != null)
-            {
-                _dirTrans2.SetActiveEx(false);
-            }
-        }
-
-        private void CreateDirTrans(string attName)
-        {
-            if (_dirTrans != null)
-            {
-                return;
-            }
-            _dirTrans = new GameObject("AttTexture").transform;
-            CommonTools.SetParent(_dirTrans, _trans);
-            if (this is SpineUnit)
-            {
-                var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
-                offset.x = 0;
-                _dirTrans.localPosition = offset;
-            }
-            var meshRenderer = _dirTrans.gameObject.AddComponent<SpriteRenderer>();
-            meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture;
-            var tweener = _dirTrans.DOScale(0.7f, 0.5f);
-            tweener.SetLoops(-1, LoopType.Yoyo);
-            Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
-            {
-                meshRenderer.sprite = arrowTexture;
+                _pairTrans.SetActiveEx(false);
             }
         }
 
         public void UpdateSign()
         {
+            if (_isPart)
+            {
+                return;
+            }
+            if (_unit.Guid == IntVec3.zero)
+            {
+                return;
+            }
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                if (GameRun.Instance.IsEdit)
                 {
-                    if (_unit.MoveDirection != EMoveDirection.None)
+                    if (EditHelper.CheckCanEdit(tableUnit.Id))
                     {
-                        CreateDirTrans("M1Move");
-                    }
-                    else if (tableUnit.Id == UnitDefine.BlueStoneRotateId)
-                    {
-                        CreateDirTrans("M1Rotate_1");
-                    }
-                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
-                    {
-                        CreateDirTrans("M1Rotate");
-                    }
-                    else if (UnitDefine.IsEditClick(tableUnit.Id))
-                    {
-                        CreateDirTrans("M1Click");
+                        if (_propertyViewWrapper == null)
+                        {
+                            _propertyViewWrapper = new UnitPropertyViewWrapper();
+                        }
+                        var unitDesc = _unit.UnitDesc;
+                        var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                        _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
                     }
                 }
             }
@@ -247,65 +235,35 @@ namespace GameA.Game
             {
                 SetPairRenderer();
             }
-            if (_dirTrans != null)
-            {
-                if (tableUnit.CanRotate)
-                {
-                    //Vector3 offset = GetRotationPosOffset();
-                    _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
-                    //_dirTrans.localPosition = offset + _unit.GetTransPos();
-                }
-
-                if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)
-                {
-                    if (tableUnit.Id == UnitDefine.RollerId)
-                    {
-                        var rollerUnit = _unit as Roller;
-                        if (rollerUnit != null)
-                        {
-                            _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
-                        }
-                    } 
-                    else
-                    {
-                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(_unit.MoveDirection - 1)));
-                    }
-                    //角色单独处理
-                    if (UnitDefine.IsHero(tableUnit.Id))
-                    {
-                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(EMoveDirection.Right - 1)));
-                    }
-                }
-            }
 	    }
 
         private void SetPairRenderer()
         {
             SpriteRenderer spriteRenderer;
-            if (_dirTrans2 == null)
+            if (_pairTrans == null)
             {
-                _dirTrans2 = new GameObject("Pair").transform;
-                CommonTools.SetParent(_dirTrans2, _trans);
-                spriteRenderer = _dirTrans2.gameObject.AddComponent<SpriteRenderer>();
+                _pairTrans = new GameObject("Pair").transform;
+                CommonTools.SetParent(_pairTrans, _trans);
+                spriteRenderer = _pairTrans.gameObject.AddComponent<SpriteRenderer>();
                 spriteRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
                 if (this is SpineUnit)
                 {
                     var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
                     offset.x = 0;
-                    _dirTrans2.localPosition = offset;
+                    _pairTrans.localPosition = offset;
                 }
             }
-            spriteRenderer = _dirTrans2.GetComponent<SpriteRenderer>();
+            spriteRenderer = _pairTrans.GetComponent<SpriteRenderer>();
             PairUnit pairUnit;
             if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, out pairUnit))
             {
                 LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
                 return;
             }
-            Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
+            Sprite arrowSprite;
+            if (JoyResManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
             {
-                spriteRenderer.sprite = arrowTexture;
+                spriteRenderer.sprite = arrowSprite;
             }
         }
 
@@ -333,10 +291,5 @@ namespace GameA.Game
             }
             return res;
         }
-
-        private int GetRotation(byte rotation)
-        {
-            return -90 * rotation;
-        }
-	}
+    }
 }

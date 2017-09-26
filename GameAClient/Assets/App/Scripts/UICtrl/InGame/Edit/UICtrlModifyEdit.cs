@@ -12,6 +12,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -19,8 +20,10 @@ namespace GameA
     public class UICtrlModifyEdit : UICtrlInGameBase<UIViewModifyEdit>
     {
         #region 常量与字段
+
         // 目前版本可能的最大数量限制
         private const int _maxAltLimit = 5;
+
         private const int _maxDelLimit = 5;
         private const int _maxAddLimit = 5;
 
@@ -50,16 +53,17 @@ namespace GameA
         {
             base.OnViewCreated();
 
-			_cachedView.ModifyEraseBtn.onClick.AddListener (OnModifyEraseBtn);
-			_cachedView.ModifyModifyBtn.onClick.AddListener (OnModifyModifyBtn);
-			_cachedView.ModifyAddBtn.onClick.AddListener (OnModifyAddBtn);
+            _cachedView.ModifyEraseBtn.onClick.AddListener(OnModifyEraseBtn);
+            _cachedView.ModifyModifyBtn.onClick.AddListener(OnModifyModifyBtn);
+            _cachedView.ModifyAddBtn.onClick.AddListener(OnModifyAddBtn);
 
-            _cachedView.SelectAddItemPanel.SetActive (false);
+            _cachedView.SelectAddItemPanel.SetActive(false);
 
-            for (int i = 0; i < _cachedView.ModifyItems.Length; i++) {
-                _cachedView.ModifyItems [i].id = i;
+            for (int i = 0; i < _cachedView.ModifyItems.Length; i++)
+            {
+                _cachedView.ModifyItems[i].id = i;
                 _cachedView.ModifyItems[i].DelBtnCb = OnModifyItemDelBtn;
-                _cachedView.ModifyItems [i].IconBtnCb = OnModifyItemIconBtn;
+                _cachedView.ModifyItems[i].IconBtnCb = OnModifyItemIconBtn;
             }
 
             _selectedItemIdx = -1;
@@ -68,7 +72,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+            RegisterEvent(EMessengerType.AfterEditModeStateChange, AfterCommandChanged);
             RegisterEvent(EMessengerType.OnModifyUnitChanged, OnModifyUnitChanged);
         }
 
@@ -77,241 +81,254 @@ namespace GameA
             base.OnOpen(parameter);
 
             _altLimit = Mathf.Min(LocalUser.Instance.MatchUserData.ReformModifyUnitCapacity, _maxAltLimit);
-            _delLimit = Mathf.Min (LocalUser.Instance.MatchUserData.ReformDeleteUnitCapacity, _maxDelLimit);
-            _addLimit = Mathf.Min (LocalUser.Instance.MatchUserData.ReformAddUnitCapacity, _maxAddLimit);
+            _delLimit = Mathf.Min(LocalUser.Instance.MatchUserData.ReformDeleteUnitCapacity, _maxDelLimit);
+            _addLimit = Mathf.Min(LocalUser.Instance.MatchUserData.ReformAddUnitCapacity, _maxAddLimit);
 
-            UpdateModifyItemList ();
-            UpdateSelectItemList ();
+            AfterCommandChanged();
         }
 
-		protected override void OnDestroy ()
-		{
-			base.OnDestroy ();
-			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
-			Messenger.RemoveListener(EMessengerType.OnModifyUnitChanged, OnModifyUnitChanged);
-		}
-
-        public override void OnUpdate ()
+        protected override void OnDestroy()
         {
-            base.OnUpdate ();
+            base.OnDestroy();
+            Messenger.RemoveListener(EMessengerType.AfterEditModeStateChange, AfterCommandChanged);
+            Messenger.RemoveListener(EMessengerType.OnModifyUnitChanged, OnModifyUnitChanged);
         }
 
 
-		private void OnModifyAddBtn () {
-			if (EditMode.Instance.CurCommandType != ECommandType.Create) {
-				SwitchModifyMode (ECommandType.Create);
-			}
-		}
-		private void OnModifyEraseBtn () {
-			if (EditMode.Instance.CurCommandType != ECommandType.Erase) {
-				SwitchModifyMode (ECommandType.Erase);
-			}
-		}
-		private void OnModifyModifyBtn () {
-			if (EditMode.Instance.CurCommandType != ECommandType.Modify) {
-				SwitchModifyMode (ECommandType.Modify);
-			}
-		}
+        private void OnModifyAddBtn()
+        {
+            EditMode.Instance.StartModifyAdd();
+        }
 
-		private void SwitchModifyMode (ECommandType type) {
-			switch (type) {
-            case ECommandType.Create:
-                _cachedView.ModifyAddBtn.transform.localScale = Vector3.one * 1.2f;
-                _cachedView.ModifyEraseBtn.transform.localScale = Vector3.one;
-                _cachedView.ModifyModifyBtn.transform.localScale = Vector3.one;
+        private void OnModifyEraseBtn()
+        {
+            EditMode.Instance.StartModifyRemove();
+        }
 
-                _cachedView.SelectAddItemPanel.SetActive (true);
-                UpdateSelectItemList ();
-				break;
-			case ECommandType.Erase:
-				_cachedView.ModifyAddBtn.transform.localScale = Vector3.one;
-				_cachedView.ModifyEraseBtn.transform.localScale = Vector3.one * 1.2f;
-				_cachedView.ModifyModifyBtn.transform.localScale = Vector3.one;
+        private void OnModifyModifyBtn()
+        {
+            EditMode.Instance.StartModifyModify();
+        }
 
-                _cachedView.SelectAddItemPanel.SetActive (false);
-				break;
-			case ECommandType.Modify:
-				_cachedView.ModifyAddBtn.transform.localScale = Vector3.one;
-				_cachedView.ModifyEraseBtn.transform.localScale = Vector3.one;
-				_cachedView.ModifyModifyBtn.transform.localScale = Vector3.one * 1.2f;
 
-                _cachedView.SelectAddItemPanel.SetActive (false);
-				break;
-			}
-			Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, type);
-
-			// update modifyItemList
-			UpdateModifyItemList();
-		}
-
-		/// <summary>
-		/// 改造列表删除按钮响应函数
-		/// </summary>
-		/// <param name="idx">Index.</param>
-		private void OnModifyItemDelBtn (int idx) {
-			if (EditMode.Instance.CurCommandType == ECommandType.Create) {
-                ((ModifyEditMode)EditMode.Instance).UndoModifyAdd (idx);
-			} else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
-				((ModifyEditMode)EditMode.Instance).UndoModifyErase (idx);
-			} else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
-				((ModifyEditMode)EditMode.Instance).UndoModifModify (idx);
-			}
-		}
+        /// <summary>
+        /// 改造列表删除按钮响应函数
+        /// </summary>
+        /// <param name="idx">Index.</param>
+        private void OnModifyItemDelBtn(int idx)
+        {
+            if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+            {
+                EditModeState.ModifyAdd.Instance.UndoModifyAdd(idx);
+            }
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance))
+            {
+                EditModeState.ModifyRemove.Instance.UndoModifyErase(idx);
+            }
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance))
+            {
+                EditModeState.ModifyModify.Instance.UndoModifModify(idx);
+            }
+        }
 
         /// <summary>
         /// 改造列表图标按钮响应函数
         /// </summary>
         /// <param name="idx">Index.</param>
-        private void OnModifyItemIconBtn (int idx) {
+        private void OnModifyItemIconBtn(int idx)
+        {
             IntVec3 unitPos = IntVec3.zero;
-            if (EditMode.Instance.CurCommandType == ECommandType.Create) {
-                unitPos = ((ModifyEditMode)EditMode.Instance).AddedUnits [idx].ModifiedUnit.UnitDesc.Guid;
-            } else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
-                unitPos = ((ModifyEditMode)EditMode.Instance).RemovedUnits [idx].OrigUnit.UnitDesc.Guid;
-            } else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
-                unitPos = ((ModifyEditMode)EditMode.Instance).ModifiedUnits [idx].ModifiedUnit.UnitDesc.Guid;
+            if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+            {
+                unitPos = DataScene2D.Instance.AddedUnits[idx].ModifiedUnit.UnitDesc.Guid;
+            }
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance))
+            {
+                unitPos = DataScene2D.Instance.RemovedUnits[idx].OrigUnit.UnitDesc.Guid;
+            }
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance))
+            {
+                unitPos = DataScene2D.Instance.ModifiedUnits[idx].ModifiedUnit.UnitDesc.Guid;
             }
 
-            Game.CameraManager.Instance.LerpPosInEditor(GM2DTools.TileToWorld(unitPos));
-            ((ModifyEditMode)EditMode.Instance).ShowUnitPosEffect (unitPos);
+            CameraManager.Instance.CameraCtrlEdit.SetPos(GM2DTools.TileToWorld(unitPos));
+            EditModeState.ModifyAdd.Instance.ShowUnitPosEffect(unitPos);
         }
 
-        private void OnModifySelectItemBtn (int idx) {
-            if (_selectedItemIdx == idx) {
-                _cachedView.SelectItems [idx].SetSelected (false);
+        private void OnModifySelectItemBtn(int idx)
+        {
+            if (_selectedItemIdx == idx)
+            {
+                _cachedView.SelectItems[idx].SetSelected(false);
                 _selectedItemIdx = -1;
                 Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, 0);
                 return;
             }
             int unitId = 0;
-            ModifyEditMode editMode = EditMode.Instance as ModifyEditMode;
-            for (int i = 0; i < _cachedView.SelectItems.Length; i++) {
-                if (idx == i) {
+            for (int i = 0; i < _cachedView.SelectItems.Length; i++)
+            {
+                if (idx == i)
+                {
                     if (LocalUser.Instance.MatchUserData.UnitData.ItemList.Count <= idx ||
-                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount <= 0) {
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount <= 0)
+                    {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "这种东西用完了");
                         return;
                     }
-                    unitId = (int)LocalUser.Instance.MatchUserData.UnitData.ItemList [i].UnitId;
-                    _cachedView.SelectItems [i].SetSelected (true);
-                } else {
-                    _cachedView.SelectItems [i].SetSelected (false);
+                    unitId = (int) LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId;
+                    _cachedView.SelectItems[i].SetSelected(true);
+                }
+                else
+                {
+                    _cachedView.SelectItems[i].SetSelected(false);
                 }
             }
 
-            Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, (ushort)unitId);
+            Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, (ushort) unitId);
         }
-		/// <summary>
-		/// 更新改造地块列表界面
-		/// </summary>
-		private void UpdateModifyItemList () {
-			
-			ModifyEditMode modifyEditMode = EditMode.Instance as ModifyEditMode;
-			if (null == modifyEditMode)
-				return;
+
+        /// <summary>
+        /// 更新改造地块列表界面
+        /// </summary>
+        private void UpdateModifyItemList()
+        {
             int slotNumLimit = 1;
             List<ModifyData> descs = null;
-			switch (EditMode.Instance.CurCommandType) {
-            case ECommandType.Create:
-                descs = modifyEditMode.AddedUnits;
+            if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+            {
+                descs = DataScene2D.Instance.AddedUnits;
                 slotNumLimit = _addLimit;
-				break;
-			case ECommandType.Erase:
-				descs = modifyEditMode.RemovedUnits;
-                slotNumLimit = _delLimit;
-				break;
-			case ECommandType.Modify:
-				descs = modifyEditMode.ModifiedUnits;
-                slotNumLimit = _altLimit;
-				break;
-			}
-			if (null == descs)
-				return;
-			int i = 0;
-            for (; i < slotNumLimit && i < descs.Count; i++) {
-                var tableUnit = TableManager.Instance.GetUnit (descs [i].OrigUnit.UnitDesc.Id);
-				if (null == tableUnit) {
-                    LogHelper.Error ("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.UnitDesc.Id);
-                    return;
-				} else {
-					Sprite texture;
-					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
-					{
-                        _cachedView.ModifyItems [i].gameObject.SetActive (true);
-						_cachedView.ModifyItems [i].SetItem (texture);
-					}
-					else
-					{
-						LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-							tableUnit.Icon, tableUnit.EGeneratedType);
-                        return;
-					}
-				}
-			}
-            for (; i < _cachedView.ModifyItems.Length && i < slotNumLimit; i++) {
-                _cachedView.ModifyItems [i].gameObject.SetActive (true);
-				_cachedView.ModifyItems [i].SetEmpty ();
-			}
-            for (; i < _cachedView.ModifyItems.Length; i++) {
-                _cachedView.ModifyItems [i].gameObject.SetActive (false);
             }
-		}
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance))
+            {
+                descs = DataScene2D.Instance.RemovedUnits;
+                slotNumLimit = _delLimit;
+            }
+            else if (EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance))
+            {
+                descs = DataScene2D.Instance.ModifiedUnits;
+                slotNumLimit = _altLimit;
+            }
+            if (null == descs)
+                return;
+            int i = 0;
+            for (; i < slotNumLimit && i < descs.Count; i++)
+            {
+                var tableUnit = TableManager.Instance.GetUnit(descs[i].OrigUnit.UnitDesc.Id);
+                if (null == tableUnit)
+                {
+                    LogHelper.Error("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.UnitDesc.Id);
+                    return;
+                }
+                else
+                {
+                    Sprite texture;
+                    if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
+                    {
+                        _cachedView.ModifyItems[i].gameObject.SetActive(true);
+                        _cachedView.ModifyItems[i].SetItem(texture);
+                    }
+                    else
+                    {
+                        LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
+                            tableUnit.Icon, tableUnit.EGeneratedType);
+                        return;
+                    }
+                }
+            }
+            for (; i < _cachedView.ModifyItems.Length && i < slotNumLimit; i++)
+            {
+                _cachedView.ModifyItems[i].gameObject.SetActive(true);
+                _cachedView.ModifyItems[i].SetEmpty();
+            }
+            for (; i < _cachedView.ModifyItems.Length; i++)
+            {
+                _cachedView.ModifyItems[i].gameObject.SetActive(false);
+            }
+        }
 
         /// <summary>
         /// 更新添加地块列表
         /// </summary>
-        private void UpdateSelectItemList () {
-            ModifyEditMode editMode = EditMode.Instance as ModifyEditMode;
+        private void UpdateSelectItemList()
+        {
             int avilableAddUnitCnt = LocalUser.Instance.MatchUserData.UnitData.ItemList.Count;
             int i = 0;
-            for (; i < _cachedView.SelectItems.Length && i < avilableAddUnitCnt; i++) {
-                _cachedView.SelectItems [i].gameObject.SetActive (true);
-                _cachedView.SelectItems [i].id = i;
+            for (; i < _cachedView.SelectItems.Length && i < avilableAddUnitCnt; i++)
+            {
+                _cachedView.SelectItems[i].gameObject.SetActive(true);
+                _cachedView.SelectItems[i].id = i;
                 _cachedView.SelectItems[i].BtnCb = OnModifySelectItemBtn;
-                Table_Unit tableUnit = TableManager.Instance.GetUnit (
-                    (int)LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
-                if (null == tableUnit) {
-                    LogHelper.Error ("Can't find table of unit id: {0}", LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
-                    _cachedView.SelectItems [i].gameObject.SetActive (false);
+                Table_Unit tableUnit = TableManager.Instance.GetUnit(
+                    (int) LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
+                if (null == tableUnit)
+                {
+                    LogHelper.Error("Can't find table of unit id: {0}",
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
+                    _cachedView.SelectItems[i].gameObject.SetActive(false);
                     continue;
                 }
-                Sprite texture;
-                if (GameResourceManager.Instance.TryGetSpriteByName (tableUnit.Icon, out texture)) {
-                    _cachedView.SelectItems [i].SetItem (texture,
-                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
-                } else {
-                    LogHelper.Error ("Can't find icon of unit id: {0}", tableUnit.Id);
-                    _cachedView.SelectItems [i].SetItem (null,
-                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
+                Sprite sprite;
+                if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
+                {
+                    _cachedView.SelectItems[i].SetItem(sprite,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount -
+                        EditModeState.ModifyAdd.Instance.UsedModifyAddUnitCnt(tableUnit.Id));
+                }
+                else
+                {
+                    LogHelper.Error("Can't find icon of unit id: {0}", tableUnit.Id);
+                    _cachedView.SelectItems[i].SetItem(null,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount -
+                        EditModeState.ModifyAdd.Instance.UsedModifyAddUnitCnt(tableUnit.Id));
                 }
             }
-            for (; i < _cachedView.SelectItems.Length; i++) {
-                _cachedView.SelectItems [i].gameObject.SetActive (false);
+            for (; i < _cachedView.SelectItems.Length; i++)
+            {
+                _cachedView.SelectItems[i].gameObject.SetActive(false);
             }
         }
 
         #region event 
-		private void OnModifyUnitChanged () {
-			UpdateModifyItemList ();
-            ModifyEditMode editMode = EditMode.Instance as ModifyEditMode;
-//            if (editMode.SelectedItemId == 0) {
-//                _selectedItemIdx = -1;
-//                for (int i = 0; i < _cachedView.SelectItems.Length; i++) {
-//                    _cachedView.SelectItems [i].SetSelected (false);
-//                }
-//            }
-            if (EditMode.Instance.CurCommandType == ECommandType.Create) {
-                UpdateSelectItemList ();
+
+        private void OnModifyUnitChanged()
+        {
+            if (!_isViewCreated)
+            {
+                return;
             }
-		}
+            UpdateModifyItemList();
+            if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+            {
+                UpdateSelectItemList();
+            }
+        }
 
 
-	    private void AfterCommandChanged()
-	    {
-		}
+        private void AfterCommandChanged()
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            bool isInModifyAdd = EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance);
+            bool isInModifyRemove = EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance);
+            bool isInModifyModify = EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance);
+            _cachedView.ModifyAddBtn.transform.localScale = isInModifyAdd ? Vector3.one * 1.2f : Vector3.one;
+            _cachedView.ModifyEraseBtn.transform.localScale = isInModifyRemove ? Vector3.one * 1.2f : Vector3.one;
+            _cachedView.ModifyModifyBtn.transform.localScale = isInModifyModify ? Vector3.one * 1.2f : Vector3.one;
 
-		#endregion
+            _cachedView.SelectAddItemPanel.SetActive(isInModifyAdd);
+            if (isInModifyAdd)
+            {
+                UpdateSelectItemList();
+            }
+            // update modifyItemList
+            UpdateModifyItemList();
+        }
 
-		#endregion
-	}
+        #endregion
+
+        #endregion
+    }
 }
