@@ -17,26 +17,26 @@ namespace UnityStandardAssets.CrossPlatformInput
         {
             if (RuntimeConfig.Instance.UseDebugMobileInput && Application.isEditor)
             {
-                virtualInput = new MobileInput ();
+                virtualInput = new MobileInput();
                 return;
             }
-            if(Application.isEditor)
+            if (Application.isEditor)
             {
                 virtualInput = new StandaloneInput();
             }
             else
             {
-                #if MOBILE_INPUT
-                virtualInput = new MobileInput ();
-                #else
+#if MOBILE_INPUT
+                virtualInput = new MobileInput();
+#else
                 virtualInput = new StandaloneInput();
                 #endif
             }
         }
 
-        public static void Update ()
+        public static void Update()
         {
-            virtualInput.Update ();
+            virtualInput.Update();
         }
 
 
@@ -173,9 +173,9 @@ namespace UnityStandardAssets.CrossPlatformInput
             virtualInput.SetVirtualMousePositionZ(f);
         }
 
-        public static void ClearVirtualInput ()
+        public static void ClearVirtualInput()
         {
-            virtualInput.UnRegisterAllVirtualButtonAndAxis ();
+            virtualInput.UnRegisterAllVirtualButtonAndAxis();
         }
 
         // virtual axis and button classes - applies to mobile input
@@ -237,25 +237,53 @@ namespace UnityStandardAssets.CrossPlatformInput
             private int releasedFrame = -5;
             private bool pressed;
             public bool matchWithInputManager { get; private set; }
-
+            //为了PC玩家自定义按键，这里设置按键
+            public KeyCode PositiveKey;
+            public KeyCode NegativeKey;
 
             public VirtualButton(string name) : this(name, true)
             {
             }
 
-
             public VirtualButton(string name, bool matchToInputSettings)
             {
+                //默认配置
+                switch (name)
+                {
+                    case InputManager.TagJump:
+                        PositiveKey = KeyCode.Space;
+                        break;
+                    case InputManager.TagSkill1:
+                        PositiveKey = KeyCode.J;
+                        break;
+                    case InputManager.TagSkill2:
+                        PositiveKey = KeyCode.K;
+                        break;
+                    case InputManager.TagSkill3:
+                        PositiveKey = KeyCode.L;
+                        break;
+                    case InputManager.TagAssist:
+                        PositiveKey = KeyCode.E;
+                        break;
+                    case InputManager.TagHorizontal:
+                        PositiveKey = KeyCode.D;
+                        NegativeKey = KeyCode.A;
+                        break;
+                    case InputManager.TagVertical:
+                        PositiveKey = KeyCode.W;
+                        NegativeKey = KeyCode.S;
+                        break;
+                }
                 this.name = name;
                 matchWithInputManager = matchToInputSettings;
-              //  RegisterVirtualButton(this);
+                //  RegisterVirtualButton(this);
             }
-
 
             // A controller gameobject should call this function when the button is pressed down
             public void Pressed()
             {
-                if (pressed) {
+                if (pressed)
+                {
                     // 如果这一逻辑帧发生了按下又发生了抬起
                     if (releasedFrame == GameRun.Instance.LogicFrameCnt + 1)
                     {
@@ -264,14 +292,18 @@ namespace UnityStandardAssets.CrossPlatformInput
                         //Debug.Log (name + " 1 0 1");
                     }
                     //Debug.Log (name + " 1 1");
-                } else {
+                }
+                else
+                {
                     // 如果这一逻辑帧发生了抬起事件
                     if (releasedFrame == GameRun.Instance.LogicFrameCnt)
                     {
                         // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
                         lastPressedFrame = GameRun.Instance.LogicFrameCnt + 1;
                         //Debug.Log (name + " 0 1");
-                    } else {
+                    }
+                    else
+                    {
                         pressed = true;
                         lastPressedFrame = GameRun.Instance.LogicFrameCnt;
                         //Debug.Log (name + " 1 " + PlayMode.Instance.LogicFrameCnt);
@@ -279,11 +311,11 @@ namespace UnityStandardAssets.CrossPlatformInput
                 }
             }
 
-
             // A controller gameobject should call this function when the button is released
             public void Released()
             {
-                if (!pressed) {
+                if (!pressed)
+                {
                     // 如果这一逻辑帧发生了抬起又发生了按下
                     if (lastPressedFrame == GameRun.Instance.LogicFrameCnt + 1)
                     {
@@ -292,14 +324,18 @@ namespace UnityStandardAssets.CrossPlatformInput
                         //Debug.Log (name + " 0 1 0");
                     }
                     //Debug.Log (name + " 0 0");
-                } else {
+                }
+                else
+                {
                     // 如果这一逻辑帧发生了按下事件
                     if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
                     {
                         // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
                         releasedFrame = GameRun.Instance.LogicFrameCnt + 1;
                         //Debug.Log (name + " 1 0");
-                    } else {
+                    }
+                    else
+                    {
                         pressed = false;
                         releasedFrame = GameRun.Instance.LogicFrameCnt;
                         //Debug.Log (name + " 0 " + PlayMode.Instance.LogicFrameCnt);
@@ -307,18 +343,17 @@ namespace UnityStandardAssets.CrossPlatformInput
                 }
             }
 
-
             // the controller gameobject should call Remove when the button is destroyed or disabled
             public void Remove()
             {
                 UnRegisterVirtualButton(name);
             }
 
-
             // these are the states of the button which can be read via the cross platform input system
             public bool GetButton
             {
-                get {
+                get
+                {
                     // 先修正延后的事件
                     if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
                     {
@@ -328,26 +363,18 @@ namespace UnityStandardAssets.CrossPlatformInput
                     {
                         pressed = false;
                     }
-                    return pressed; 
+                    return pressed;
                 }
             }
-
 
             public bool GetButtonDown
             {
-                get
-                {
-                    return lastPressedFrame - GameRun.Instance.LogicFrameCnt == 0;
-                }
+                get { return lastPressedFrame - GameRun.Instance.LogicFrameCnt == 0; }
             }
-
 
             public bool GetButtonUp
             {
-                get
-                {
-                    return (releasedFrame == GameRun.Instance.LogicFrameCnt - 0);
-                }
+                get { return (releasedFrame == GameRun.Instance.LogicFrameCnt - 0); }
             }
         }
     }

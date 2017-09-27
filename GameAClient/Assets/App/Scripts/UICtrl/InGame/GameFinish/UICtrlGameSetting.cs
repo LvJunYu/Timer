@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using UnityEngine;
+using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
@@ -134,6 +136,10 @@ namespace GameA
         {
             _cachedView.BtnGroup1.SetActiveEx(false);
             _cachedView.BtnGroup2.SetActiveEx(true);
+        }
+
+        public void Change()
+        {
         }
 
         #region private 

@@ -8,7 +8,6 @@
 using System;
 using HedgehogTeam.EasyTouch;
 using NewResourceSolution;
-using SoyEngine;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
@@ -19,13 +18,13 @@ namespace GameA.Game
     {
         private static InputManager _instance;
 
-        public static readonly string TagJump = "Jump";
-        public static readonly string TagSkill1 = "Fire1";
-        public static readonly string TagSkill2 = "Fire2";
-        public static readonly string TagSkill3 = "Fire3";
-        public static readonly string TagAssist = "Assist";
-        public static readonly string TagHorizontal = "Horizontal";
-        public static readonly string TagVertical = "Vertical";
+        public const string TagJump = "Jump";
+        public const string TagSkill1 = "Fire1";
+        public const string TagSkill2 = "Fire2";
+        public const string TagSkill3 = "Fire3";
+        public const string TagAssist = "Assist";
+        public const string TagHorizontal = "Horizontal";
+        public const string TagVertical = "Vertical";
 
         public UICtrlMobileInputControl MobileInputCtrl;
         private GameObject _easyTouchObject;
