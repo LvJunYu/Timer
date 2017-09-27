@@ -39,3 +39,4 @@ GameAClient/GameAClient.CSharp.Editor.Plugins.csproj
 *.user
 GameAClient/iOSProject
 *.apk
+*.app
