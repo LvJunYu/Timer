@@ -32,6 +32,10 @@ public static class PostProcessBuildCopyStreamingAssets
 	private static void CopyiOS(string targetPath)
 	{
 		string dstPath = string.Format(XCodeResPathFormat, targetPath);
+		if (Directory.Exists(dstPath))
+		{
+			FileUtil.DeleteFileOrDirectory(dstPath);
+		}
 		FileTools.CheckAndCreateFolder(dstPath);
 		var dstDir = new DirectoryInfo(dstPath);
 		string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.iOS);
