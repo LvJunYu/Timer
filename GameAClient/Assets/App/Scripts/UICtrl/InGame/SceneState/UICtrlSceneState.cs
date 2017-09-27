@@ -486,7 +486,7 @@ namespace GameA
                 case EWinCondition.Arrived:
                     return "到达终点";
                 case EWinCondition.CollectTreasure:
-                    return "收集所有兽角";
+                    return "收集所有兽牙";
                 case EWinCondition.KillMonster:
                     return "杀死所有怪物";
             }

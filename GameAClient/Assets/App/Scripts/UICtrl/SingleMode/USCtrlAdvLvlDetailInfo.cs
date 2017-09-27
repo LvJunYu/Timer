@@ -75,7 +75,7 @@ namespace GameA
                             winCondition = "到达终点";
                             break;
                         case EWinCondition.CollectTreasure:
-                            winCondition = "收集所有兽角";
+                            winCondition = "收集所有兽牙";
                             break;
                         case EWinCondition.KillMonster:
                             winCondition = "杀死所有怪物";
