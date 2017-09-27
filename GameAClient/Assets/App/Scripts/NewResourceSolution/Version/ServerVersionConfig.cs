@@ -8,6 +8,6 @@ namespace NewResourceSolution
 		public Version MinimumAppVersion;
 
 		public Version LatestResVersion;
-		public string LatestResManifestPath;
+		public string LatestAppDownloadPath;
 	}
 }

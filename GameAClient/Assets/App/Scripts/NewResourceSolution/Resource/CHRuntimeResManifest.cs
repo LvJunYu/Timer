@@ -71,6 +71,7 @@ namespace NewResourceSolution
 	    #endregion
 
 		#region methods
+	    public CHRuntimeResManifest(){}
         public CHRuntimeResManifest(Version version) : base(version) {}
 
 		public void MapBundles ()

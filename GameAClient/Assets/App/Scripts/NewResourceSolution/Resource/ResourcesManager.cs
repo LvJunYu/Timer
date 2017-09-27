@@ -155,8 +155,6 @@ namespace NewResourceSolution
             }
 
 		    Debug.Log("ResourcesManager.Init");
-		    Debug.Log("Per: " + Application.persistentDataPath);
-		    Debug.Log("Streaming: " + Application.streamingAssetsPath);
             // 读取本地版本
 			if (UnityTools.TryGetObjectFromLocal (ResDefine.CHResManifestFileName, out _manifest))
 			{

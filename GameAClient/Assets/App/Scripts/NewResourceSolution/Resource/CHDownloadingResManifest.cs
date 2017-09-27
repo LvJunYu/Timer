@@ -7,7 +7,7 @@ using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 namespace NewResourceSolution
 {
-    public class CHDownloadingResManifest : CHResManifest
+    public class CHDownloadingResManifest : CHRuntimeResManifest
     {
         /// <summary>
         /// 同时并发的www请求数
@@ -90,7 +90,7 @@ namespace NewResourceSolution
             _adamBundleNameList = runtimeManifest.AdamBundleNameList;
         }
         /// <summary>
-        /// 混合下载manifest和(包内/本地/临时)manifest (现在仅为混合包内和persistent)
+        /// 混合下载manifest和(包内/本地/临时)manifest
         /// </summary>
         /// <param name="existingManifest">Existing manifest.</param>
         public IEnumerator MergeExistingManifest (CHRuntimeResManifest existingManifest)
@@ -328,7 +328,7 @@ namespace NewResourceSolution
                         {
                             LogHelper.Error ("Error when serialize assetBundle: {0}", currentSerializeDownloader.Error);
                             _serializeFailed = true;
-//                            yield break;
+                            yield break;
                         }
                         else
                         {
@@ -355,7 +355,8 @@ namespace NewResourceSolution
                 {
                     if (EFileLocation.Server == _bundles [i].FileLocation)
                     {
-                        _bundles [i].FileLocation = EFileLocation.TemporaryCache;
+                        _bundles[i].FileLocation = EFileLocation.TemporaryCache;
+                        _bundles[i].CompressType = EAssetBundleCompressType.NoCompress;
                     }
                 }
                 Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, _needsDownloadTotalByte, _needsDownloadTotalByte);

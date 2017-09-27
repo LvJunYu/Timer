@@ -9,13 +9,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b983436fb90464747ab62d19a9abb9c3, type: 3}
-  m_Name: BuildABConfig
+  m_Name: BuildConfig_iOS
   m_EditorClassIdentifier: 
   _debug: 1
   _outputPath: ../../AssetBundles
   _includeLocales: -1
   _fullResPackage: 1
-  _version: 0.1.24
+  _appVersion: 0.1.0
+  _minimumAppVersion: 0.1.0
+  _baseResVersion: 0
+  _resVersion: 0.1.23
   _singleAdamResList:
   - 67979d915f7944ef0a171d534c13d1ec
   - 7021c4e00defc0a45bf964f888bf32d0

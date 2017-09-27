@@ -57,7 +57,7 @@ namespace NewResourceSolution
 
         public static bool TryGetObjectFromStreamingAssets<T> (string fileName, out T obj)
         {
-			string fullPath = StringUtil.Format (StringFormat.TwoLevelPath, ResPath.StreamingAssetsPath, fileName);
+			string fullPath = StringUtil.Format (StringFormat.TwoLevelPath, ResPath.RuntimeStreamingAssetsPath, fileName);
             return TryGetObjectFromStorage (fullPath, out obj);
         }
 

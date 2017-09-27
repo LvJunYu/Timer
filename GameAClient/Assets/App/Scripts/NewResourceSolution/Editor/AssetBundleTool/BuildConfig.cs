@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NewResourceSolution.EditorTool
 {
-    public class BuildABConfig : ScriptableObject
+    public class BuildConfig : ScriptableObject
     {
 		#region fields
 		/// <summary>
@@ -31,10 +31,17 @@ namespace NewResourceSolution.EditorTool
         /// 所有打包资源种类
         /// </summary>
         private readonly List<ResList> _allResLists = new List<ResList>();
-		/// <summary>
-		/// 资源版本
-		/// </summary>
-		[SerializeField] private string _version;
+	    
+	    [SerializeField] private string _appVersion;
+	    [SerializeField] private string _minimumAppVersion;
+	    /// <summary>
+	    /// 基础资源版本
+	    /// </summary>
+	    [SerializeField] private string _baseResVersion;
+	    /// <summary>
+	    /// 资源版本
+	    /// </summary>
+	    [SerializeField] private string _resVersion;
 
         /// <summary>
         /// 单包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
@@ -63,21 +70,35 @@ namespace NewResourceSolution.EditorTool
     			_debug = value;
     		}
     	}
+	    
+	    public string AppVersion
+	    {
+		    get { return _appVersion; }
+		    set { _appVersion = value; }
+	    }
+
+	    public string MinimumAppVersion
+	    {
+		    get { return _minimumAppVersion; }
+		    set { _minimumAppVersion = value; }
+	    }
+
+	    public string BaseResVersion
+	    {
+		    get { return _baseResVersion; }
+		    set { _baseResVersion = value; }
+	    }
 		/// <summary>
 		/// 资源版本
 		/// </summary>
-		public string Version
+		public string ResVersion
 		{
-			get
-			{
-				return _version;
-			}
-			set
-			{
-				_version = value;
-			}
+			get { return _resVersion; }
+			set { _resVersion = value; }
 		}
-		/// <summary>
+
+
+	    /// <summary>
 		/// 打包包含的语言
 		/// </summary>
 		public int IncludeLocales
@@ -91,19 +112,6 @@ namespace NewResourceSolution.EditorTool
 				_includeLocales = value;
 			}
 		}
-		/// <summary>
-		/// asset bundle 输出目录
-		/// </summary>
-		public string OutputPath {
-    		get 
-			{
-    			return _outputPath;
-    		}
-    		set
-			{
-    			_outputPath = value;
-    		}
-    	}
         /// <summary>
         /// 全资源出包
         /// </summary>
@@ -125,7 +133,8 @@ namespace NewResourceSolution.EditorTool
         {
             get { return _allResLists; }
         }
-        /// <summary>
+
+	    /// <summary>
         /// 单包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
         /// </summary>
         public List<string> SingleAdamResList
@@ -142,7 +151,7 @@ namespace NewResourceSolution.EditorTool
 		#endregion
 
 		#region methods
-        public BuildABConfig ()
+        public BuildConfig ()
         {
             _allResLists.Add (new ResList (EResType.Animation,      null,           true,   false));
             _allResLists.Add (new ResList (EResType.AudioClip,      "t:AudioClip",  false,  false));

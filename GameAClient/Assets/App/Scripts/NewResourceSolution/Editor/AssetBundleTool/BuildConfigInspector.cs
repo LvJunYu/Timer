@@ -1,14 +1,16 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using SoyEngine;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace NewResourceSolution.EditorTool
 {
-    [CustomEditor(typeof(BuildABConfig))]
-    public class BuildABConfigInspector : Editor
+    [CustomEditor(typeof(BuildConfig))]
+    public class BuildConfigInspector : Editor
     {
-    	private BuildABConfig _data;
+    	private BuildConfig _data;
     	/// <summary>
     	/// 是否在添加asset模式
     	/// </summary>
@@ -21,7 +23,7 @@ namespace NewResourceSolution.EditorTool
 
     	public void OnEnable()
     	{
-    		_data = (BuildABConfig)target;
+    		_data = (BuildConfig)target;
     		_addAssetMode = 0;
     		_lastTryAddObj = null;
     	}
@@ -36,22 +38,34 @@ namespace NewResourceSolution.EditorTool
     			dirty = true;
     		}
 
-    		string version = EditorGUILayout.TextField("Version", _data.Version);
-    		if (string.Compare(version, _data.Version) != 0)
-    		{
-    			_data.Version = version;
-    			dirty = true;
-    		}
+		    string appVersion = EditorGUILayout.TextField("AppVersion", _data.AppVersion);
+		    if (String.CompareOrdinal(appVersion, _data.AppVersion) != 0)
+		    {
+			    _data.AppVersion = appVersion;
+			    dirty = true;
+		    }
+		    string minimumAppVersion = EditorGUILayout.TextField("MinimumAppVersion", _data.MinimumAppVersion);
+		    if (String.CompareOrdinal(minimumAppVersion, _data.MinimumAppVersion) != 0)
+		    {
+			    _data.MinimumAppVersion = minimumAppVersion;
+			    dirty = true;
+		    }
+		    string baseResVersion = EditorGUILayout.TextField("BaseResVersion", _data.BaseResVersion);
+		    if (String.CompareOrdinal(baseResVersion, _data.BaseResVersion) != 0)
+		    {
+			    _data.BaseResVersion = baseResVersion;
+			    dirty = true;
+		    }
+		    string resVersion = EditorGUILayout.TextField("ResVersion", _data.ResVersion);
+		    if (String.CompareOrdinal(resVersion, _data.ResVersion) != 0)
+		    {
+			    _data.ResVersion = resVersion;
+			    dirty = true;
+		    }
     		ELocale includeLocales = (ELocale)EditorGUILayout.EnumMaskPopup("Include locales", (ELocale)_data.IncludeLocales);
     		if ((int)includeLocales != _data.IncludeLocales)
     		{
     			_data.IncludeLocales = (int)includeLocales;
-    			dirty = true;
-    		}
-    		string outputPath = EditorGUILayout.TextField("Output path", _data.OutputPath);
-    		if (string.Compare(outputPath, _data.OutputPath) != 0)
-    		{
-    			_data.OutputPath = outputPath;
     			dirty = true;
     		}
     		EditorGUILayout.Separator();
@@ -202,7 +216,7 @@ namespace NewResourceSolution.EditorTool
     					allResList[i].FoldoutInEditorUI = true;
     					if (allResList[i].IsFolderRes)
     					{
-    						path = System.IO.Directory.GetParent(path).ToString();
+    						path = Directory.GetParent(path).ToString();
     					}
     					string guid = AssetDatabase.AssetPathToGUID(path);
     					if (!allResList[i].InPacakgeContains(guid))
@@ -225,30 +239,29 @@ namespace NewResourceSolution.EditorTool
     			for (int i = 0; i < allResList.Count; i++)
     			{
     				if (allResList[i].ResType == resType)
-    				{
-    					if (allResList[i].IsFolderRes)
+				    {
+					    if (allResList[i].IsFolderRes)
     					{
-    						path = System.IO.Directory.GetParent(path).ToString();
+    						path = Directory.GetParent(path).ToString();
                             return !string.IsNullOrEmpty (_data.AddFolderAdamRes (path));
     					}
-    					else
-    					{
-                            return !string.IsNullOrEmpty (_data.AddSingleAdamRes(path));
-    					}
-    				}
+					    return !string.IsNullOrEmpty (_data.AddSingleAdamRes(path));
+				    }
     			}
     		}
     		return false;
     	}
 
-    	/// <summary>
-    	/// 显示单一打包资源列表
-    	/// </summary>
-    	/// <param name="foldout">Foldout.</param>
-    	/// <param name="title">Title.</param>
-    	/// <param name="assetGuidList">Asset GUID list.</param>
-    	/// <param name="dirty">Dirty.</param>
-        private void DisplayResList(
+	    /// <summary>
+	    /// 显示单一打包资源列表
+	    /// </summary>
+	    /// <param name="foldout">Foldout.</param>
+	    /// <param name="title">Title.</param>
+	    /// <param name="assetGuidList">Asset GUID list.</param>
+	    /// <param name="addDependencDelegate"></param>
+	    /// <param name="dirty">Dirty.</param>
+	    /// <param name="isfolderList"></param>
+	    private void DisplayResList(
             ref bool foldout,
             string title,
             List<string> assetGuidList,
@@ -286,7 +299,7 @@ namespace NewResourceSolution.EditorTool
     			}
     			else
     			{
-    				System.Type targetAssetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
+    				Type targetAssetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
     				var assetObj = AssetDatabase.LoadAssetAtPath(assetPath, targetAssetType);
     				if (null != assetObj)
     				{
@@ -300,7 +313,7 @@ namespace NewResourceSolution.EditorTool
     							for (int j = 0; j < dependencies.Length; j++)
     							{
     								// if not self, add to
-                                    if (string.Compare (dependencies [j], assetPath) != 0)
+                                    if (String.CompareOrdinal (dependencies [j], assetPath) != 0)
                                     {
                                         dirty = addDependencDelegate (dependencies [j]) || dirty;
                                     }

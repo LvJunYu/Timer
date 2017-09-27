@@ -57,7 +57,7 @@ namespace GameA
                 {
                     Enable = true,
                     AppServerApiRoot = "https://app.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://res.joy-you.com"
+                    GameResoureRoot = "http://res.joy-you.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Staging)
@@ -66,7 +66,7 @@ namespace GameA
                 {
                     Enable = true,
                     AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res"
+                    GameResoureRoot = "http://dev.joy-you.com/res/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Test)
@@ -75,7 +75,7 @@ namespace GameA
                 {
                     Enable = true,
                     AppServerApiRoot = "http://devtest.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://devtest.joy-you.com/res"
+                    GameResoureRoot = "http://devtest.joy-you.com/res/gamea"
                 };
             }
             if(GlobalVar.Instance.Env == EEnvironment.Development)
@@ -84,7 +84,7 @@ namespace GameA
                 {
                     Enable = true,
                     AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res"
+                    GameResoureRoot = "http://dev.joy-you.com/res/gamea"
                 };
             }
             for (int i = 0; i < Instance._appServerAddress.Length; i++)
@@ -99,7 +99,7 @@ namespace GameA
             {
                 Enable = true,
                 AppServerApiRoot = "http://localhost:8080/GameAServer/gameaapi",
-                GameResoureRoot = "http://dev.joy-you.com/res"
+                GameResoureRoot = "http://dev.joy-you.com/res/gamea"
             };
         }
 

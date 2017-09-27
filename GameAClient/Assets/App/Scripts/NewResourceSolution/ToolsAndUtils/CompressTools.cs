@@ -26,7 +26,7 @@ namespace NewResourceSolution
 		{
 //            LogHelper.Info ("DecompressFile, {0} to {1}", inFile, outFile);
 			Stream inputStream = null;
-			if (inFile.StartsWith(ResPath.StreamingAssetsPath))
+			if (inFile.StartsWith(ResPath.RuntimeStreamingAssetsPath))
 			{
 				byte[] bytes;
 				if (!FileTools.TryReadFileToBytes(inFile, out bytes))

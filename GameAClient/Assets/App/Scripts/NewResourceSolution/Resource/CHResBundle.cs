@@ -76,7 +76,7 @@ namespace NewResourceSolution
                 if (null == _filePathStreamingAsset)
                 {
                     _filePathStreamingAsset = StringUtil.Format(StringFormat.TwoLevelPathWithExtention,
-                        ResPath.StreamingAssetsPath, AssetBundleName, md5Str);
+                        ResPath.RuntimeStreamingAssetsPath, AssetBundleName, md5Str);
                 }
                 return _filePathStreamingAsset;
             }
@@ -93,8 +93,8 @@ namespace NewResourceSolution
             {
                 if (null == _filePathServer)
                 {
-                    _filePathServer = StringUtil.Format(StringFormat.ThreeLevelPathWithExtention,
-                        SocialApp.GetAppServerAddress().GameResoureRoot, resVersion, AssetBundleName, md5Str);
+                    _filePathServer = StringUtil.Format(StringFormat.FiveLevelPathWithExtention,
+                        SocialApp.GetAppServerAddress().GameResoureRoot, ResPath.GetPlatformFolder(), resVersion, AssetBundleName, md5Str);
                 }
                 return _filePathServer;
             }
@@ -264,7 +264,8 @@ namespace NewResourceSolution
         
         public bool NeedWriteToPersistent()
         {//不在本地 并且是压缩资源或者是安卓
-            return EFileLocation.Persistent != FileLocation
+            return EFileLocation.TemporaryCache == FileLocation
+                   ||EFileLocation.Persistent != FileLocation
                    && (CompressType != EAssetBundleCompressType.NoCompress
                        || Application.platform == RuntimePlatform.Android);
         }
@@ -418,8 +419,15 @@ namespace NewResourceSolution
                 State = EDownloaderState.Serializing;
                 Loom.RunAsync(() =>
                 {
-                    //TODO 异常处理
-                    FileTools.WriteBytesToFile(bytes, destPath);
+                    try
+                    {
+                        FileTools.WriteBytesToFile(bytes, destPath);
+                    }
+                    catch (Exception e)
+                    {
+                        LogHelper.Error(e.ToString());
+                        Error = e.ToString();
+                    }
                     State = EDownloaderState.SerializeDone;
                 });
             }
@@ -428,8 +436,15 @@ namespace NewResourceSolution
                 State = EDownloaderState.Serializing;
                 Loom.RunAsync(() =>
                 {
-                    //TODO 异常处理
-                    CompressTools.DecompressBytesLZMA(bytes, destPath);
+                    try
+                    {
+                        CompressTools.DecompressBytesLZMA(bytes, destPath);
+                    }
+                    catch (Exception e)
+                    {
+                        LogHelper.Error(e.ToString());
+                        Error = e.ToString();
+                    }
                     State = EDownloaderState.SerializeDone;
                 });
             }

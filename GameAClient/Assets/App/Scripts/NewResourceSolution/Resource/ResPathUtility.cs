@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace NewResourceSolution
+﻿namespace NewResourceSolution
 {
 	public static class ResPathUtility
 	{
@@ -133,57 +129,6 @@ namespace NewResourceSolution
 					ResPath.Models);
 			}
 			return string.Empty;
-		}
-
-		/// <summary>
-		/// 得到特定资源的原始文件路径
-		/// </summary>
-		/// <returns>The editor debug res path.</returns>
-		/// <param name="resType">Res type.</param>
-		/// <param name="name">Name.</param>
-		/// <param name="localeOverride">If set to <c>true</c> locale override.</param>
-		/// <param name="locale">Locale.</param>
-//		public static string GetEditorDebugResPath (
-//			EResType resType,
-//			string name,
-//			bool localeOverride = false,
-//			ELocale locale = ELocale.WW)
-//		{
-//			string extension = string.Empty;
-//			if (EResType.Txt == resType)
-//			{
-//				extension = ResPath.JsonExtension;
-//			}
-//            else if (EResType.Table == resType)
-//			{
-//				extension = ResPath.JsonExtension;
-//			}
-//			else if (EResType.UIPrefab == resType)
-//			{
-//				extension = ResPath.PrefabExtension;
-//			}
-//			else if (EResType.Model == resType)
-//			{
-//				extension = ResPath.PrefabExtension;
-//			}
-//			string folder = GetEditorDebugResFolderPath(resType, localeOverride, locale);
-//			if (string.IsNullOrEmpty(folder))
-//			{
-//				return null;
-//			}
-//			else
-//			{
-//				return string.Format(
-//					"{0}/{1}{2}",
-//					folder,
-//					name,
-//					extension);
-//			}
-//		}
-
-		public static string GetStreamingAssetsPath ()
-		{
-			return StringUtil.Format(StringFormat.TwoLevelPath, ResPath.Assets, ResPath.StreamingAssets);
 		}
 	}
 }

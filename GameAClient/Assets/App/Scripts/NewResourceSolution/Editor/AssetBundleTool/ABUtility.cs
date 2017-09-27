@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using UnityEngine;
 using UnityEditor;
-using NewResourceSolution;
+using UnityEngine;
 
 namespace NewResourceSolution.EditorTool
 {
@@ -21,105 +19,105 @@ namespace NewResourceSolution.EditorTool
 			string extension = Path.GetExtension(assetPath);
 			for (int i = 0; i < parts.Length; i++)
 			{
-				if (i == 0 && string.Compare(parts[i], ResPath.Assets) != 0)
+				if (i == 0 && String.CompareOrdinal(parts[i], ResPath.Assets) != 0)
 				{
 					return EResType.None;
 				}
-				if (i == 1 && string.Compare(parts[i], ResPath.EditorRawRes) != 0)
+				if (i == 1 && String.CompareOrdinal(parts[i], ResPath.EditorRawRes) != 0)
 				{
 					return EResType.None;
 				}
-				if (i == 2 && string.Compare(parts[i], ResPath.Textures) == 0 &&
-					string.Compare(extension, ResPath.TextureExtension) == 0)
+				if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Textures) == 0 &&
+					String.CompareOrdinal(extension, ResPath.TextureExtension) == 0)
 				{
 //					if (i == parts.Length - 2)
 					{
 						return EResType.Texture;
 					}
 				}
-                if (i == 2 && string.Compare(parts[i], ResPath.Materials) == 0 &&
-                    string.Compare(extension, ResPath.MaterialExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Materials) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.MaterialExtension) == 0)
                 {
 //                    if (i == parts.Length - 2)
                     {
                         return EResType.Material;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Audio) == 0 &&
-                    string.Compare(extension, ResPath.AudioExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Audio) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.AudioExtension) == 0)
                 {
                     //                    if (i == parts.Length - 2)
                     {
                         return EResType.AudioClip;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Fonts) == 0 &&
-                    string.Compare(extension, ResPath.FontExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Fonts) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.FontExtension) == 0)
                 {
                     //                    if (i == parts.Length - 2)
                     {
                         return EResType.Font;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.MeshDatas) == 0 &&
-                    string.Compare(extension, ResPath.MeshExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.MeshDatas) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.MeshExtension) == 0)
                 {
                     //                    if (i == parts.Length - 2)
                     {
                         return EResType.MeshData;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Shaders) == 0 &&
-                    string.Compare(extension, ResPath.ShaderExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Shaders) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.ShaderExtension) == 0)
                 {
                     //                    if (i == parts.Length - 2)
                     {
                         return EResType.Shader;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Tables) == 0 &&
-                    string.Compare(extension, ResPath.TableExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Tables) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.TableExtension) == 0)
                 {
                     //                    if (i == parts.Length - 2)
                     {
                         return EResType.Table;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Sprites) == 0 &&
-                    string.Compare(extension, ResPath.SpriteExtension) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Sprites) == 0 &&
+                    String.CompareOrdinal(extension, ResPath.SpriteExtension) == 0)
                 {
                     //                  if (i == parts.Length - 2)
                     {
                         return EResType.Sprite;
                     }
                 }
-                if (i == 2 && string.Compare(parts[i], ResPath.Animations) == 0)
+                if (i == 2 && String.CompareOrdinal(parts[i], ResPath.Animations) == 0)
                 {
                     //                  if (i == parts.Length - 2)
                     {
                         return EResType.Animation;
                     }
                 }
-				if (i == 5 && string.Compare(parts[i], ResPath.Models) == 0)
+				if (i == 5 && String.CompareOrdinal(parts[i], ResPath.Models) == 0)
 				{
-					if (string.Compare(parts[i - 1], ResPath.Prefabs) == 0 &&
-						string.Compare(extension, ResPath.PrefabExtension) == 0)
+					if (String.CompareOrdinal(parts[i - 1], ResPath.Prefabs) == 0 &&
+						String.CompareOrdinal(extension, ResPath.PrefabExtension) == 0)
 					{
 						return EResType.ModelPrefab;
 					}
 				}
-                if (i == 5 && string.Compare(parts[i], ResPath.Particles) == 0)
+                if (i == 5 && String.CompareOrdinal(parts[i], ResPath.Particles) == 0)
                 {
-                    if (string.Compare(parts[i - 1], ResPath.Prefabs) == 0 &&
-                        string.Compare(extension, ResPath.PrefabExtension) == 0)
+                    if (String.CompareOrdinal(parts[i - 1], ResPath.Prefabs) == 0 &&
+                        String.CompareOrdinal(extension, ResPath.PrefabExtension) == 0)
                     {
                         return EResType.ParticlePrefab;
                     }
                 }
-                if (i == 5 && string.Compare(parts[i], ResPath.UIPrefabs) == 0)
+                if (i == 5 && String.CompareOrdinal(parts[i], ResPath.UIPrefabs) == 0)
                 {
-                    if (string.Compare(parts[i - 1], ResPath.Prefabs) == 0 &&
-                        string.Compare(extension, ResPath.PrefabExtension) == 0)
+                    if (String.CompareOrdinal(parts[i - 1], ResPath.Prefabs) == 0 &&
+                        String.CompareOrdinal(extension, ResPath.PrefabExtension) == 0)
                     {
                         return EResType.UIPrefab;
                     }
@@ -132,42 +130,52 @@ namespace NewResourceSolution.EditorTool
 		/// 获得打包assetbundle的未压缩输出目录
 		/// </summary>
 		/// <returns>The output path.</returns>
-		/// <param name="config">Config.</param>
 		/// <param name="buildTarget">Build target.</param>
-		public static string GetUnCompressedOutputPath (BuildABConfig config, BuildTarget buildTarget)
+		public static string GetUnCompressedOutputPath(BuildTarget buildTarget)
 		{
-			return string.Format(StringFormat.TwoLevelPath, GetOutputPath(config, buildTarget), ABConstDefine.OutputPathUnCompressed);
+			return Path.Combine(GetOutputPath(buildTarget), ABConstDefine.OutputPathUnCompressed);
 		}
 
 		/// <summary>
 		/// 获得打包assetbundle的输出目录
 		/// </summary>
 		/// <returns>The output path.</returns>
-		/// <param name="config">Config.</param>
 		/// <param name="buildTarget">Build target.</param>
-		public static string GetOutputPath(BuildABConfig config, BuildTarget buildTarget)
+		public static string GetOutputPath(BuildTarget buildTarget)
 		{
-			DirectoryInfo projectParrentDir = new DirectoryInfo(config.OutputPath);
-			string platformFolder = ABConstDefine.OutputPathOSX;
+			DirectoryInfo projectRelativeOutputDir = new DirectoryInfo(ResPath.AssetBundleOutputPath);
+			string platformFolder = GetPlatformFolderName(buildTarget);
+			return string.Format(StringFormat.ThreeLevelPath, Application.dataPath, projectRelativeOutputDir, platformFolder);
+		}
+
+		public static string GetPlatformFolderName(BuildTarget buildTarget)
+		{
+			string platformFolder;
 			switch (buildTarget)
 			{
 				case BuildTarget.Android:
-					platformFolder = ABConstDefine.OutputPathAndroid;
+					platformFolder = ResPath.PlatformFolderAndroid;
 					break;
 				case BuildTarget.iOS:
-					platformFolder = ABConstDefine.OutputPathIOS;
+					platformFolder = ResPath.PlatformFolderiOS;
 					break;
-                case BuildTarget.StandaloneWindows64:
-					platformFolder = ABConstDefine.OutputPathWindows;
+				case BuildTarget.StandaloneWindows64:
+					platformFolder = ResPath.PlatformFolderWin;
 					break;
 				case BuildTarget.StandaloneOSXIntel64:
-					platformFolder = ABConstDefine.OutputPathOSX;
+					platformFolder = ResPath.PlatformFolderOSX;
 					break;
 				default:
-					platformFolder = ABConstDefine.OutputPathOSX;
+					platformFolder = ResPath.PlatformFolderOSX;
 					break;
 			}
-			return string.Format(StringFormat.FourLevelPath, Application.dataPath, projectParrentDir, platformFolder, config.Version);
+			return platformFolder;
+		}
+		
+
+		public static string GetBuildOutputStreamingAssetsPath(BuildTarget buildTarget)
+		{
+			return Path.Combine(GetOutputPath(buildTarget), ResPath.StreamingAssets);
 		}
 
 		/// <summary>
@@ -188,11 +196,11 @@ namespace NewResourceSolution.EditorTool
             {
                 assetPath = assetPath.Substring (0, pointIdx);
             }
-			string[] parts = assetPath.Split(new[] {rootPath}, System.StringSplitOptions.None);
+			string[] parts = assetPath.Split(new[] {rootPath}, StringSplitOptions.None);
 			string subPath = parts[parts.Length - 1];
 			if (rootPath.Contains(ResPath.LocaleResRoot))
 			{
-				parts = rootPath.Split(new[] {ResPath.LocaleResRoot}, System.StringSplitOptions.None);
+				parts = rootPath.Split(new[] {ResPath.LocaleResRoot}, StringSplitOptions.None);
 				if (parts.Length < 2) return string.Empty;
 				string localeName = parts[1].Substring(1).Split('/')[0];
 				assetBundleName = string.Format(
