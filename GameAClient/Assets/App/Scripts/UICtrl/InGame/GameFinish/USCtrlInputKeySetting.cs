@@ -1,16 +1,15 @@
-﻿using System;
-using GameA.Game;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {
     public class USCtrlInputKeySetting : USCtrlBase<USViewInputKeySetting>
     {
+        public static USCtrlInputKeySetting CurSettingUSCtrl;
         private EInputKey _eInputKey;
         private KeyCode _keyCode;
-        private UPCtrlInputKeysSetting _upCtrlInputKeysSetting;
         private bool _needSave;
 
         public KeyCode KeyCode
@@ -18,15 +17,8 @@ namespace GameA
             get { return _keyCode; }
         }
 
-        protected override void OnViewCreated()
+        public void InitInputKey(EInputKey eInputKey)
         {
-            base.OnViewCreated();
-            _cachedView.SettingBtn.onClick.AddListener(OnSettingBtn);
-        }
-
-        public void InitInputKey(UPCtrlInputKeysSetting upCtrlInputKeysSetting, EInputKey eInputKey)
-        {
-            _upCtrlInputKeysSetting = upCtrlInputKeysSetting;
             _eInputKey = eInputKey;
             UpdateKeyCode();
         }
@@ -44,12 +36,15 @@ namespace GameA
             UpdateKeyText(_keyCode);
         }
 
+        public void AddBtnCallBack(UnityAction action)
+        {
+            _cachedView.SettingBtn.onClick.AddListener(OnSettingBtn);
+            _cachedView.SettingBtn.onClick.AddListener(action);
+        }
+
         private void OnSettingBtn()
         {
-            if (_upCtrlInputKeysSetting.InputState == UPCtrlInputKeysSetting.EInputState.Normal)
-            {
-                _upCtrlInputKeysSetting.StartSettingInputKey(this);
-            }
+            CurSettingUSCtrl = this;
         }
 
         public void SetColor(Color color)

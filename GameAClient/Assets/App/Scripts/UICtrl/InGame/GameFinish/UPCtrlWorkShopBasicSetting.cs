@@ -133,20 +133,10 @@ namespace GameA
             _cachedView.SettingPannel.SetActive(false);
         }
 
-        private void OnClickMusicButton(bool isOn)
-        {
-            GameSettingData.Instance.PlayMusic = isOn;
-        }
-
-        private void OnClickSoundsEffectsButton(bool isOn)
-        {
-            GameSettingData.Instance.PlaySoundsEffects = isOn;
-        }
-
         private void UpdateSettingItem()
         {
-            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, OnClickMusicButton);
-            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects, OnClickSoundsEffectsButton);
+            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
+            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects, _mainCtrl.OnClickSoundsEffectsButton);
         }
 
         private void UpdateBtns()

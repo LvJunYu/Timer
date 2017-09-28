@@ -25,7 +25,7 @@ namespace GameA
             Standalone
         }
 
-        private UPCtrlInputKeysSetting _upCtrlInputKeysSetting;
+        private UPCtrlGameSettingInputKeys _upCtrlGameSettingInputKeys;
         private USCtrlGameSettingItem _showShadow;
         private USCtrlGameSettingItem _showRoute;
         private USCtrlGameSettingItem _playBGMusic;
@@ -79,8 +79,8 @@ namespace GameA
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.RestartBtn_2.onClick.AddListener(OnRestartBtn);
 
-            _upCtrlInputKeysSetting = new UPCtrlInputKeysSetting();
-            _upCtrlInputKeysSetting.Init(this, _cachedView);
+            _upCtrlGameSettingInputKeys = new UPCtrlGameSettingInputKeys();
+            _upCtrlGameSettingInputKeys.Init(this, _cachedView);
         }
 
         protected override void OnOpen(object parameter)
@@ -109,7 +109,7 @@ namespace GameA
         protected override void OnClose()
         {
             GameSettingData.Instance.Save();
-            _upCtrlInputKeysSetting.Close();
+            _upCtrlGameSettingInputKeys.Close();
             if (PlayMode.Instance == null)
             {
                 return;
@@ -150,7 +150,7 @@ namespace GameA
             _cachedView.PCPanel.SetActive(ePlatform == EPlatform.Standalone);
             if (ePlatform == EPlatform.Standalone)
             {
-                _upCtrlInputKeysSetting.Open();
+                _upCtrlGameSettingInputKeys.Open();
             }
         }
 
@@ -199,13 +199,12 @@ namespace GameA
             _cachedView.BtnGroup2_2.SetActiveEx(true);
         }
 
-        public void Change()
-        {
-        }
-        
         private void OnGetInputKeyCode(KeyCode keyCode)
         {
-            _upCtrlInputKeysSetting.ChangeInputKey(keyCode);
+            if (_isOpen)
+            {
+                _upCtrlGameSettingInputKeys.ChangeInputKey(keyCode);
+            }
         }
 
         private void UpdateSettingItem()

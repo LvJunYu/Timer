@@ -14,7 +14,6 @@ namespace GameA
             InitData();
             InitUI();
             _cachedView.SureBtn.onClick.AddListener(OnButtonEnsureClick);
-            _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
         }
 
         public override void Open()
