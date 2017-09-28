@@ -95,7 +95,7 @@ namespace GameA
             _guiEvent.IsInputing = false;
             if (_curUsCtrl != null)
             {
-                _curUsCtrl.ClearColor();
+                _curUsCtrl.SetColor(Color.white);
                 _curUsCtrl = null;
             }
         }
@@ -105,6 +105,7 @@ namespace GameA
             InputState = EInputState.SettingKey;
             _guiEvent.IsInputing = true;
             _curUsCtrl = usCtrlInputKeySetting;
+            _curUsCtrl.SetColor(_cachedView.SettingColor);
         }
 
         public void ChangeInputKey(KeyCode keyCode)

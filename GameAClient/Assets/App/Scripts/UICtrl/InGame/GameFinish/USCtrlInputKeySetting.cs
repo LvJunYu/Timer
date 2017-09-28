@@ -48,14 +48,13 @@ namespace GameA
         {
             if (_upCtrlInputKeysSetting.InputState == UPCtrlInputKeysSetting.EInputState.Normal)
             {
-                _cachedView.SettingImg.color = Color.yellow;
                 _upCtrlInputKeysSetting.StartSettingInputKey(this);
             }
         }
 
-        public void ClearColor()
+        public void SetColor(Color color)
         {
-            _cachedView.SettingImg.color = Color.white;
+            _cachedView.SettingImg.color = color;
         }
 
         public void ChangeKeyCode(KeyCode keyCode)
