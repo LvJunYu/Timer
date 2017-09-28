@@ -35,40 +35,12 @@ namespace GameA.Game
             base.OnObjectDestroy();
         }
 
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
+        public override void OnIntersect(UnitBase other)
         {
-            if (!checkOnly && other.IsMain)
+            if (_isAlive && other.IsMain)
             {
                 OnTrigger(other);
             }
-            return base.OnRightHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsMain)
-            {
-                OnTrigger(other);
-            } 
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsMain)
-            {
-                OnTrigger(other);
-            }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsMain)
-            {
-                OnTrigger(other);
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
         }
 
         protected virtual void OnTrigger(UnitBase other)
@@ -77,7 +49,7 @@ namespace GameA.Game
             PlayMode.Instance.DestroyUnit(this);
         }
 
-        public void StopTwenner ()
+        public void StopTwenner()
         {
             if (_tweener != null)
             {
