@@ -1,17 +1,20 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using JoyEditorTools;
 using NewResourceSolution;
 using NewResourceSolution.EditorTool;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public static class PostProcessBuildCopyStreamingAssets
 {
     public const string XCodeResPathFormat = "{0}/Data/Raw";
     public const string OSXResPathFormat = "{0}/Contents/Resources/Data/StreamingAssets";
     public const string WinResPathFormat = "{0}_Data/StreamingAssets";
-
+    public const string AndroidInjectToolFormat = "\"{0}/../../Tools/Bin/AndroidStreamingInject/inject.sh\" \"{1}\" \"{2}\"";
 
     [PostProcessBuild(100)]
     public static void OnPostProcessBuild(BuildTarget target, string targetPath)
@@ -34,6 +37,10 @@ public static class PostProcessBuildCopyStreamingAssets
         else if (target == BuildTarget.StandaloneWindows64)
         {
             CopyWin(targetPath);
+        }
+        else if (target == BuildTarget.Android)
+        {
+            CopyAndroid(targetPath);
         }
         Debug.Log("Copy res to xcodeProject success!");
     }
@@ -78,6 +85,19 @@ public static class PostProcessBuildCopyStreamingAssets
         string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.StandaloneWindows64);
         DirectoryInfo resDir = new DirectoryInfo(resPath);
         CopyDir(resDir.FullName, dstDir.FullName);
+    }
+
+
+    [MenuItem("QuanTools/TestCopyToAndroid")]
+    private static void Test()
+    {
+        CopyAndroid("/Users/quan/Work/WorkSpace/Soy/GameAClient_Android/GameAClient/gamea.apk");
+    }
+
+    private static void CopyAndroid(string targetPath)
+    {
+        string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.Android);
+        JoyToolUtility.RunBash(string.Format(AndroidInjectToolFormat, Application.dataPath, resPath, targetPath));
     }
 
     public static bool CopyDir(string srcPath, string aimPath)

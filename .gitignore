@@ -40,3 +40,4 @@ GameAClient/GameAClient.CSharp.Editor.Plugins.csproj
 GameAClient/iOSProject
 *.apk
 *.app
+ProjectVersion.txt
