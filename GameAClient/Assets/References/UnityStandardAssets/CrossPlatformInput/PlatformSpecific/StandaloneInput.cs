@@ -25,13 +25,14 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
             {
                 AddButton(name);
             }
-            if (Input.GetKey(virtualButtons[name].PositiveKey))
+            var PositiveKey = virtualButtons[name].PositiveKey;
+            var NegativeKey = virtualButtons[name].NegativeKey;
+            if (Input.GetKey(PositiveKey))
                 return 1;
-            if (Input.GetKey(virtualButtons[name].NegativeKey))
+            if (Input.GetKey(NegativeKey))
                 return -1;
             return 0;
         }
-
 
         public override bool GetButton(string name)
         {
@@ -45,23 +46,24 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
             return virtualButtons[name].GetButton;
         }
 
-        public void SetButtonKey(string name, KeyCode positiveKey, KeyCode negativeKey = KeyCode.None)
+        public override void SetButtonPositiveKey(string name, KeyCode positiveKey)
         {
             if (!virtualButtons.ContainsKey(name))
             {
                 AddButton(name);
             }
-            if (positiveKey != KeyCode.None)
-            {
-                virtualButtons[name].PositiveKey = positiveKey;
-            }
-            if (negativeKey != KeyCode.None)
-            {
-                virtualButtons[name].PositiveKey = negativeKey;
-            }
+            virtualButtons[name].PositiveKey = positiveKey;
         }
 
-
+        public override void SetButtonNegativeKey(string name, KeyCode negativeKey)
+        {
+            if (!virtualButtons.ContainsKey(name))
+            {
+                AddButton(name);
+            }
+            virtualButtons[name].NegativeKey = negativeKey;
+        }
+        
         public override bool GetButtonDown(string name)
         {
             //return Input.GetButtonDown(name);

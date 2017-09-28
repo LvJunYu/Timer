@@ -126,7 +126,10 @@ namespace UnityStandardAssets.CrossPlatformInput
         public abstract void SetAxisZero(string name);
         public abstract void SetAxis(string name, float value);
         public abstract Vector3 MousePosition();
+        public abstract void SetButtonPositiveKey(string name, KeyCode positiveKey);
+        public abstract void SetButtonNegativeKey(string name, KeyCode negativeKey);
 
         public abstract void Update ();
+
     }
 }
