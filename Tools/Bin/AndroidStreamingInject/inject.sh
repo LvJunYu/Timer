@@ -24,7 +24,9 @@ cp -f $apkFullPath ./app.apk
 
 java -jar -Duser.language=en "./apktool.jar" d app.apk -f
 
+echo copy res
 cp -f $resFullPath/* ./app/assets/
+echo copy res complete
 
 java -jar -Duser.language=en "./apktool.jar" b app -f
 

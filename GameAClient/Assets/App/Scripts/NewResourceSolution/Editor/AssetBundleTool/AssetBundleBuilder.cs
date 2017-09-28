@@ -48,7 +48,7 @@ namespace NewResourceSolution.EditorTool
             config.LatestResVersion = new Version(buildConfig.ResVersion);
             FileTools.CheckAndCreateFolder(outputRootPath);
             string str = JsonConvert.SerializeObject(config, Formatting.Indented, new VersionJsonConverter());
-            string path = Path.Combine(outputRootPath, "ServerVersionConfig");
+            string path = string.Format(StringFormat.TwoLevelPath, outputRootPath, "ServerVersionConfig");
             FileTools.WriteStringToFile(str, path);
             
             LogHelper.Info("MakeServerVersionConfig Success");
@@ -388,9 +388,9 @@ namespace NewResourceSolution.EditorTool
             BuildTarget buildTarget)
         {
             string outputPathUnCompressed = ABUtility.GetUnCompressedOutputPath(buildTarget);
-            string outputPathCompressed = Path.Combine(ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
-            string baseResPathCompressed = Path.Combine(ABUtility.GetOutputPath(buildTarget), buildConfig.BaseResVersion);
-            string lastBuildManifestPath = Path.Combine(baseResPathCompressed, ResDefine.CHResManifestFileName);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
+            string baseResPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.BaseResVersion);
+            string lastBuildManifestPath = string.Format(StringFormat.TwoLevelPath, baseResPathCompressed, ResDefine.CHResManifestFileName);
             FileTools.CheckAndCreateFolder(outputPathCompressed);
             string baseBuildManifestStr;
             CHRuntimeResManifest baseBuildManifest = null;
@@ -475,7 +475,7 @@ namespace NewResourceSolution.EditorTool
                             }
                         }
 
-                        string compressedAssetBundlePath = Path.Combine(outputPathCompressed, bundle.AssetBundleName);
+                        string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathCompressed, bundle.AssetBundleName);
                         try
                         {
                             CompressTools.CompressFileLZMA(unCompressedAssetBundlePath, compressedAssetBundlePath);
@@ -552,7 +552,7 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             FileTools.CheckAndCreateFolder(buildStreamingAssets);
-            string outputPathCompressed = Path.Combine(ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
             string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath(buildTarget);
             var allBundles = manifest.Bundles;
             for (int i = 0; i < allBundles.Count; i++)
@@ -594,10 +594,10 @@ namespace NewResourceSolution.EditorTool
         private static void MakeManifest(BuildConfig buildConfig, CHBuildingResManifest manifest,
             BuildTarget buildTarget)
         {
-            string outputPathCompressed = Path.Combine(ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
             string manifestInStreamingAssetsFolder =
-                Path.Combine(ABUtility.GetBuildOutputStreamingAssetsPath(buildTarget), ResDefine.CHResManifestFileName);
-            string manifestInCompressedAbFolder = Path.Combine(outputPathCompressed, ResDefine.CHResManifestFileName);
+                string.Format(StringFormat.TwoLevelPath, ABUtility.GetBuildOutputStreamingAssetsPath(buildTarget), ResDefine.CHResManifestFileName);
+            string manifestInCompressedAbFolder = string.Format(StringFormat.TwoLevelPath, outputPathCompressed, ResDefine.CHResManifestFileName);
             string str = JsonTools.SerializeObject(manifest, buildConfig.Debug);
             FileTools.WriteStringToFile(str, manifestInStreamingAssetsFolder);
             string manifestInStreamingAssetsFolderCopy = string.Format("{0}_buildin", manifestInCompressedAbFolder);

@@ -133,7 +133,7 @@ namespace NewResourceSolution.EditorTool
 		/// <param name="buildTarget">Build target.</param>
 		public static string GetUnCompressedOutputPath(BuildTarget buildTarget)
 		{
-			return Path.Combine(GetOutputPath(buildTarget), ABConstDefine.OutputPathUnCompressed);
+			return string.Format(StringFormat.TwoLevelPath, GetOutputPath(buildTarget), ABConstDefine.OutputPathUnCompressed);
 		}
 
 		/// <summary>
@@ -175,7 +175,7 @@ namespace NewResourceSolution.EditorTool
 
 		public static string GetBuildOutputStreamingAssetsPath(BuildTarget buildTarget)
 		{
-			return Path.Combine(GetOutputPath(buildTarget), ResPath.StreamingAssets);
+			return string.Format(StringFormat.TwoLevelPath, GetOutputPath(buildTarget), ResPath.StreamingAssets);
 		}
 
 		/// <summary>

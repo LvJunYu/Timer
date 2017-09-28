@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using JoyEditorTools;
 using NewResourceSolution;
@@ -7,14 +6,15 @@ using NewResourceSolution.EditorTool;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 public static class PostProcessBuildCopyStreamingAssets
 {
     public const string XCodeResPathFormat = "{0}/Data/Raw";
     public const string OSXResPathFormat = "{0}/Contents/Resources/Data/StreamingAssets";
     public const string WinResPathFormat = "{0}_Data/StreamingAssets";
-    public const string AndroidInjectToolFormat = "\"{0}/../../Tools/Bin/AndroidStreamingInject/inject.sh\" \"{1}\" \"{2}\"";
+
+    public const string AndroidInjectToolFormat =
+        "\"{0}/../../Tools/Bin/AndroidStreamingInject/inject.sh\" \"{1}\" \"{2}\"";
 
     [PostProcessBuild(100)]
     public static void OnPostProcessBuild(BuildTarget target, string targetPath)
@@ -72,10 +72,10 @@ public static class PostProcessBuildCopyStreamingAssets
         DirectoryInfo resDir = new DirectoryInfo(resPath);
         CopyDir(resDir.FullName, dstDir.FullName);
     }
-    
+
     private static void CopyWin(string targetPath)
     {
-        string dstPath = string.Format(WinResPathFormat, targetPath.Substring(0, targetPath.Length-4));
+        string dstPath = string.Format(WinResPathFormat, targetPath.Substring(0, targetPath.Length - 4));
         if (Directory.Exists(dstPath))
         {
             FileUtil.DeleteFileOrDirectory(dstPath);
@@ -85,13 +85,6 @@ public static class PostProcessBuildCopyStreamingAssets
         string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.StandaloneWindows64);
         DirectoryInfo resDir = new DirectoryInfo(resPath);
         CopyDir(resDir.FullName, dstDir.FullName);
-    }
-
-
-    [MenuItem("QuanTools/TestCopyToAndroid")]
-    private static void Test()
-    {
-        CopyAndroid("/Users/quan/Work/WorkSpace/Soy/GameAClient_Android/GameAClient/gamea.apk");
     }
 
     private static void CopyAndroid(string targetPath)
