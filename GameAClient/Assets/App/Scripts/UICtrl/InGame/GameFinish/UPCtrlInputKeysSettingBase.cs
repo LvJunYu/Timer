@@ -30,13 +30,13 @@ namespace GameA
     {
         public EInputState InputState;
         protected USCtrlInputKeySetting[] _usCtrls;
-        protected GUIEvent _guiEvent;
+        protected GUIInputCaptor GuiInputCaptor;
         protected Color _settingColor;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _guiEvent = _cachedView.gameObject.AddComponent<GUIEvent>();
+            GuiInputCaptor = _cachedView.gameObject.AddComponent<GUIInputCaptor>();
             _settingColor = new Color(1, 200 / (float) 255, 0);
         }
 
@@ -76,7 +76,7 @@ namespace GameA
         protected void CompleteSettingInputKey()
         {
             InputState = EInputState.Normal;
-            _guiEvent.IsInputing = false;
+            GuiInputCaptor.IsInputing = false;
             if (USCtrlInputKeySetting.CurSettingUSCtrl != null)
             {
                 USCtrlInputKeySetting.CurSettingUSCtrl.SetColor(Color.white);
@@ -87,7 +87,7 @@ namespace GameA
         protected void StartSettingInputKey()
         {
             InputState = EInputState.SettingKey;
-            _guiEvent.IsInputing = true;
+            GuiInputCaptor.IsInputing = true;
             USCtrlInputKeySetting.CurSettingUSCtrl.SetColor(_settingColor);
         }
 

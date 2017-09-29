@@ -14,7 +14,8 @@ namespace GameA
             Moblie,
             Standalone
         }
-        
+
+        private EPlatform _ePlatform;
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
         private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
@@ -50,10 +51,17 @@ namespace GameA
         {
             if (arg0)
             {
-                _upCtrlWorkShopBasicSetting.Close();
-                _upCtrlWorkShopWinConditionSetting.Open();
-                _upCtrlWorkShopCommonSetting.Close();
-                _upCtrlWorkShopLevelSetting.Open();
+                if (_ePlatform == EPlatform.Moblie)
+                {
+                    _upCtrlWorkShopBasicSetting.Close();
+                    _upCtrlWorkShopWinConditionSetting.Open();
+                }
+                else
+                {
+                    _upCtrlWorkShopCommonSetting.Close();
+                    _upCtrlWorkShopLevelSetting.Open();
+                }
+               
             }
         }
 
@@ -61,17 +69,16 @@ namespace GameA
         {
             if (arg0)
             {
-                //如果在测试状态，则先退出测试状态
-//                if (_curMode == UICtrlEdit.EMode.EditTest)
-//                {
-//                    GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-//                    if (null != gameModeEdit)
-//                        gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
-//                }
-                _upCtrlWorkShopBasicSetting.Open();
-                _upCtrlWorkShopWinConditionSetting.Close();
-                _upCtrlWorkShopCommonSetting.Open();
-                _upCtrlWorkShopLevelSetting.Close();
+                if (_ePlatform == EPlatform.Moblie)
+                {
+                    _upCtrlWorkShopBasicSetting.Open();
+                    _upCtrlWorkShopWinConditionSetting.Close();
+                }
+                else
+                {
+                    _upCtrlWorkShopCommonSetting.Open();
+                    _upCtrlWorkShopLevelSetting.Close();
+                }
             }
         }
         
@@ -126,6 +133,7 @@ namespace GameA
 
         private void SetPlatform(EPlatform ePlatform)
         {
+            _ePlatform = ePlatform;
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
             _cachedView.PCPannel.SetActive(ePlatform == EPlatform.Standalone);
             if (ePlatform == EPlatform.Standalone)

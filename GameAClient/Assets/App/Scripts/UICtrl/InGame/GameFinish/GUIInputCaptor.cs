@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class GUIEvent : MonoBehaviour
+    public class GUIInputCaptor : MonoBehaviour
     {
         public bool IsInputing;
 
@@ -14,7 +14,7 @@ namespace GameA
                 Event e = Event.current;
                 if (e.isKey)
                 {
-                    if (e.keyCode == KeyCode.Escape)
+                    if (e.keyCode == KeyCode.Escape ||e.keyCode == KeyCode.Return)
                     {
                         Messenger<KeyCode>.Broadcast(EMessengerType.OnGetInputKeyCode, KeyCode.None);
                     }
