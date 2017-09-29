@@ -196,9 +196,6 @@ namespace UnityStandardAssets.CrossPlatformInput
                 case EInputKey.Jump:
                     SetButtonPositiveKey(InputManager.TagJump, keyCode);
                     break;
-                case EInputKey.Help:
-//                    SetButtonPositiveKey(InputManager.TagJump, _keyCode);
-                    break;
                 case EInputKey.Skill1:
                     SetButtonPositiveKey(InputManager.TagSkill1, keyCode);
                     break;
@@ -232,8 +229,6 @@ namespace UnityStandardAssets.CrossPlatformInput
                     return KeyCode.D;
                 case EInputKey.Jump:
                     return KeyCode.Space;
-                case EInputKey.Help:
-                    return KeyCode.H;
                 case EInputKey.Skill1:
                     return KeyCode.J;
                 case EInputKey.Skill2:

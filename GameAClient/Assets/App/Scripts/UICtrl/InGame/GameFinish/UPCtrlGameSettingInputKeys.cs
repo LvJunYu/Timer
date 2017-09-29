@@ -7,6 +7,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _settingColor = _cachedView.SettingColor;
             if ((int) EInputKey.Max != _cachedView.UsInputKeyViews.Length)
             {
                 LogHelper.Error("EInputKey.Max != _cachedView.UMInputKeyViews.Length");

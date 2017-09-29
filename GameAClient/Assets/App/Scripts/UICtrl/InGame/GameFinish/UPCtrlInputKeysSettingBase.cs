@@ -10,11 +10,10 @@ namespace GameA
         Down,
         Right,
         Jump,
-        Help,
+        Assist,
         Skill1,
         Skill2,
         Skill3,
-        Assist,
         PutObj,
         DragScreen,
         ScaleScreen,
@@ -32,11 +31,13 @@ namespace GameA
         public EInputState InputState;
         protected USCtrlInputKeySetting[] _usCtrls;
         protected GUIEvent _guiEvent;
+        protected Color _settingColor;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _guiEvent = _cachedView.gameObject.AddComponent<GUIEvent>();
+            _settingColor = Color.cyan;
         }
 
         protected void OnRestoreDefaultBtn()
@@ -87,7 +88,7 @@ namespace GameA
         {
             InputState = EInputState.SettingKey;
             _guiEvent.IsInputing = true;
-            USCtrlInputKeySetting.CurSettingUSCtrl.SetColor(Color.cyan);
+            USCtrlInputKeySetting.CurSettingUSCtrl.SetColor(_settingColor);
         }
 
         public void ChangeInputKey(KeyCode keyCode)

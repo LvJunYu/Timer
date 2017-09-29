@@ -108,7 +108,7 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-            UpdateShowHelper();
+//            UpdateShowHelper();
             UpdateTimeLimit();
 
             if (_showStar)
