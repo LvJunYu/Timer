@@ -100,6 +100,7 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
+            LogHelper.LogLevel = LogHelper.ELogLevel.Info;
             if (_clearCache)
             {
                 ClearCache();

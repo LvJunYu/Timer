@@ -258,7 +258,7 @@ namespace GameA
             if (_projectStatus == EProjectStatus.PS_Reform && null != _bytesData) {
                 return _bytesData;
             }
-            return LocalCacheManager.Instance.Load (LocalCacheManager.EType.File, targetRes);
+            return LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, targetRes);
         }
 
         public void Save(
@@ -502,7 +502,7 @@ namespace GameA
                     return;
                 }
             }
-            byte[] data = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, targetRes);
+            byte[] data = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, targetRes);
             if (data != null)
             {
                 if (successCallback != null)

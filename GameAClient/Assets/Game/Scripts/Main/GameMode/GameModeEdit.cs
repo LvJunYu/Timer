@@ -86,7 +86,7 @@ namespace GameA.Game
 			{
 				if (_iconBytes == null)
 				{
-					_iconBytes = LocalCacheManager.Instance.Load(LocalCacheManager.EType.Image, _project.IconPath);
+					_iconBytes = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.Image, _project.IconPath);
 				}
 				return _iconBytes;
 			}

@@ -22,10 +22,7 @@ namespace GameA
                 {
                     return null;
                 }
-                else
-                {
-                    return LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, _recordPath);
-                }
+                return LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, _recordPath);
             }
         }
 
@@ -55,7 +52,7 @@ namespace GameA
                 }
                 return;
             }
-            byte[] recordData = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, _recordPath);
+            byte[] recordData = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, _recordPath);
             if (recordData != null)
             {
                 if (successCallback != null)
