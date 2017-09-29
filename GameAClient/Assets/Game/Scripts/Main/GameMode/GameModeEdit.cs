@@ -338,8 +338,8 @@ namespace GameA.Game
 
 		public byte[] CaptureLevel()
 		{
-			const int imageWidth = 1280;
-			const int imageHeight = 720;
+			const int imageWidth = 640;
+			const int imageHeight = 360;
 			float imageAspectRatio = 1f * imageWidth / imageHeight;
 			Vector2 captureScreenSize = Vector2.zero;
 			Rect captureRect = new Rect();
