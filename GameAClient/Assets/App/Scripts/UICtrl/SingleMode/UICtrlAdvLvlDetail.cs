@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -285,9 +284,13 @@ namespace GameA
                 return;
             EAdventureProjectType eAPType =
                 _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
-            //          Debug.Log ("_________________onLevelClicked " + chapterIdx + " " + levelIdx + " isBonus: " + isBonusLevel);
 
 
+            var param = new SituationAdventureParam();
+            param.ProjectType = eAPType;
+            param.Section = _chapterIdx;
+            param.Level = _levelIdx;
+            var project = AppData.Instance.AdventureData.GetAdvLevelProject(_chapterIdx, eAPType, _levelIdx);
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
                 this,
                 string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
@@ -302,6 +305,8 @@ namespace GameA
                     // set local energy data
                     GameATools.LocalUseEnergy(_table.EnergyCost);
                     SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    GameManager.Instance.RequestPlayAdvBonus(project, param);
+                    SocialApp.Instance.ChangeToGame();
                 },
                 error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
             );

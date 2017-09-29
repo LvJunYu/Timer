@@ -131,11 +131,44 @@ namespace GameA.Game
 
         public override bool Restart(Action successCb, Action failedCb)
         {
-            if (successCb != null)
+            if (_adventureLevelInfo.ProjectType != EAdventureProjectType.APT_Bonus
+                && !GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
             {
-                successCb.Invoke();
+                if (successCb != null)
+                {
+                    successCb.Invoke();
+                }
+                return true;
             }
-            SocialApp.Instance.ReturnToApp();
+            EAdventureProjectType eAPType = _adventureLevelInfo.ProjectType;
+
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
+
+            AppData.Instance.AdventureData.PlayAdventureLevel(
+                _adventureLevelInfo.Section,
+                _adventureLevelInfo.Level,
+                eAPType,
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    // set local energy data
+                    GameATools.LocalUseEnergy(_adventureLevelInfo.Table.EnergyCost);
+                    GameRun.Instance.RePlay();
+                    OnGameStart();
+                    if (successCb != null)
+                    {
+                        successCb.Invoke();
+                    }
+                },
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (failedCb != null)
+                    {
+                        failedCb.Invoke();
+                    }
+                }
+            );
             return true;
         }
 

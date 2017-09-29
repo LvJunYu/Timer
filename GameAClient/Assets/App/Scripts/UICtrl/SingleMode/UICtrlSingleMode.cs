@@ -400,15 +400,21 @@ namespace GameA
 		/// <summary>
 		/// 关卡被点击，从关卡图标按钮发出的消息调用
 		/// </summary>
-		/// <param name="param">Parameter.</param>
-		public void OnLevelClicked (object param) {
-            IntVec3 intVec3Param = (IntVec3)param;
+		/// <param name="data">Parameter.</param>
+		public void OnLevelClicked (object data) {
+            IntVec3 intVec3Param = (IntVec3)data;
             var chapterIdx = intVec3Param.x;
             var levelIdx = intVec3Param.y;
             bool isBonus = intVec3Param.z == 1;
             EAdventureProjectType eAPType = isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+			
+			var param = new SituationAdventureParam();
+			param.ProjectType = eAPType;
+			param.Section = chapterIdx;
+			param.Level = levelIdx;
+			var project = AppData.Instance.AdventureData.GetAdvLevelProject(chapterIdx, eAPType, levelIdx);
             if (!isBonus) {
-                SocialGUIManager.Instance.OpenUI <UICtrlAdvLvlDetail> (param);
+                SocialGUIManager.Instance.OpenUI <UICtrlAdvLvlDetail> (data);
             } else {
                 // 奖励关直接进去游戏 todo
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
@@ -421,6 +427,8 @@ namespace GameA
                     eAPType,
                     () => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+	                    GameManager.Instance.RequestPlayAdvNormal(project, param);
+	                    SocialApp.Instance.ChangeToGame();
                     },
                     (error) => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);

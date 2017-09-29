@@ -185,7 +185,7 @@ namespace GameA
             }
             else //升级
             {
-                long initialExp = 0;
+                long initialExp;
                 if (LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel == 2)
                 {
                     initialExp = (currentPlayerExp - RewardExp);
