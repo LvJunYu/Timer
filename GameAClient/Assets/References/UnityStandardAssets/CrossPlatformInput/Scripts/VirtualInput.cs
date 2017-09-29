@@ -128,6 +128,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         public abstract Vector3 MousePosition();
         public abstract void SetButtonPositiveKey(string name, KeyCode positiveKey);
         public abstract void SetButtonNegativeKey(string name, KeyCode negativeKey);
+        public abstract KeyCode GetButtonPositiveKey(string name);
 
         public abstract void Update ();
 

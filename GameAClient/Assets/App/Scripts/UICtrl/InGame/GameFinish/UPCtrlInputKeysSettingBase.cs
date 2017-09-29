@@ -50,9 +50,17 @@ namespace GameA
 
         protected void OnOKBtn()
         {
+            bool changeInputKey = false;
             for (int i = 0; i < _usCtrls.Length; i++)
             {
-                _usCtrls[i].Save();
+                if (_usCtrls[i].Save())
+                {
+                    changeInputKey = true;
+                }
+            }
+            if (changeInputKey)
+            {
+                Messenger.Broadcast(EMessengerType.OnInputKeyCodeChanged);
             }
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }

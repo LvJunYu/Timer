@@ -7,7 +7,6 @@
 
 using System;
 using HedgehogTeam.EasyTouch;
-using NewResourceSolution;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
@@ -43,10 +42,12 @@ namespace GameA.Game
         public event Action<Gesture> OnTouchStart;
         public event Action<Gesture> OnTouchDown;
         public event Action<Gesture> OnTouchUp;
+
         /// <summary>
         /// Pos, Delta
         /// </summary>
         public event Action<Vector3, Vector2> OnMouseWheelChange;
+
         public event Action<Vector3> OnMouseRightButtonDragStart;
         public event Action<Vector3, Vector2> OnMouseRightButtonDrag;
         public event Action<Vector3, Vector2> OnMouseRightButtonDragEnd;
@@ -148,7 +149,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public void Dispose()
         {
             if (_easyTouchObject != null)
@@ -160,7 +161,7 @@ namespace GameA.Game
             {
                 EasyTouch.On_TouchDown -= EasyTouchOnTouchDown;
                 EasyTouch.On_TouchUp -= EasyTouchOnTouchUp;
-                
+
                 EasyTouch.On_Pinch -= EasyTouchOnPinch;
                 EasyTouch.On_PinchEnd -= EasyTouchOnPinchEnd;
                 EasyTouch.On_DragStart -= EasyTouchOnDragStart;
@@ -182,7 +183,7 @@ namespace GameA.Game
             EasyTouch.On_TouchStart += EasyTouchOnTouchStart;
             EasyTouch.On_TouchDown += EasyTouchOnTouchDown;
             EasyTouch.On_TouchUp += EasyTouchOnTouchUp;
-            
+
             EasyTouch.On_Pinch += EasyTouchOnPinch;
             EasyTouch.On_PinchEnd += EasyTouchOnPinchEnd;
             EasyTouch.On_DragStart += EasyTouchOnDragStart;
@@ -283,7 +284,7 @@ namespace GameA.Game
             }
 //            LogHelper.Info("OnTouchStart: " + gesture);
         }
-        
+
         private void EasyTouchOnTouchDown(Gesture gesture)
         {
             IsTouchDown = true;
@@ -306,32 +307,14 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-            if (Application.isEditor)
-            {
-                if (RuntimeConfig.Instance.UseDebugMobileInput)
-                {
-                    SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
-                }
-                else
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
-                }
-                return;
-            }
-            if (Application.isMobilePlatform)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
         }
 
         public void HideGameInput()
         {
-            if (Application.isMobilePlatform || RuntimeConfig.Instance.UseDebugMobileInput)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
-            }
+            SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
         }
-        
+
         private enum EPhase
         {
             None,

@@ -63,7 +63,16 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
             }
             virtualButtons[name].NegativeKey = negativeKey;
         }
-        
+
+        public override KeyCode GetButtonPositiveKey(string name)
+        {
+            if (!virtualButtons.ContainsKey(name))
+            {
+                AddButton(name);
+            }
+           return virtualButtons[name].PositiveKey;
+        }
+
         public override bool GetButtonDown(string name)
         {
             //return Input.GetButtonDown(name);

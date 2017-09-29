@@ -129,6 +129,11 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
         {
         }
 
+        public override KeyCode GetButtonPositiveKey(string name)
+        {
+            return KeyCode.None;
+        }
+
         public override void Update ()
         {
         }

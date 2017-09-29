@@ -72,14 +72,16 @@ namespace GameA
             }
         }
 
-        public void Save()
+        public bool Save()
         {
             if (_needSave)
             {
                 PlayerPrefs.SetInt(_eInputKey.ToString(), (int) _keyCode);
                 CrossPlatformInputManager.ChangeInputControlKey(_eInputKey, _keyCode);
                 _needSave = false;
+                return true;
             }
+            return false;
         }
 
         public void RestoreDefault()

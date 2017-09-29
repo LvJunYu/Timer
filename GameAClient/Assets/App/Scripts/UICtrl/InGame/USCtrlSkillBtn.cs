@@ -20,6 +20,12 @@ namespace GameA
         public void SetData(Table_Equipment tableSkill)
         {
             if (null == _cachedView) return;
+            if (null == tableSkill)
+            {
+                _cachedView.gameObject.SetActive(false);
+                return;
+            }
+            _cachedView.gameObject.SetActive(true);
             _curTableEquipment = tableSkill;
             int bgIndex = tableSkill.InputType - 1;
             for (int i = 0; i < _cachedView.BtnColorBgs.Length; i++)
@@ -118,13 +124,12 @@ namespace GameA
             }
             else if (leftCount == totalCount)
             {
-                _cachedView.CurNumTxt.color =  _cachedView.TotalNumTxt.color;
+                _cachedView.CurNumTxt.color = _cachedView.TotalNumTxt.color;
             }
             else
             {
                 _cachedView.CurNumTxt.color = Color.white;
             }
-                
         }
 
         public void Dispose()

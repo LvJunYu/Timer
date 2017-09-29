@@ -1,7 +1,7 @@
 using GameA.Game;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
@@ -9,13 +9,6 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlWorkShopSetting : UICtrlInGameBase<UIViewWorkShopSetting>
     {
-        public enum EPlatform
-        {
-            Moblie,
-            Standalone
-        }
-
-        private EPlatform _ePlatform;
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
         private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
@@ -46,12 +39,12 @@ namespace GameA
             CurCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
             CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
-      
+
         private void Toggle02OnValueChanged(bool arg0)
         {
             if (arg0)
             {
-                if (_ePlatform == EPlatform.Moblie)
+                if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
                     _upCtrlWorkShopBasicSetting.Close();
                     _upCtrlWorkShopWinConditionSetting.Open();
@@ -61,7 +54,6 @@ namespace GameA
                     _upCtrlWorkShopCommonSetting.Close();
                     _upCtrlWorkShopLevelSetting.Open();
                 }
-               
             }
         }
 
@@ -69,7 +61,7 @@ namespace GameA
         {
             if (arg0)
             {
-                if (_ePlatform == EPlatform.Moblie)
+                if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
                     _upCtrlWorkShopBasicSetting.Open();
                     _upCtrlWorkShopWinConditionSetting.Close();
@@ -81,7 +73,7 @@ namespace GameA
                 }
             }
         }
-        
+
         private void OnButtonCancleClick()
         {
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
@@ -110,30 +102,8 @@ namespace GameA
             );
         }
 
-        private void UpdatePlatform()
-        {
-            if (RuntimeConfig.Instance.UseDebugMobileInput && Application.isEditor)
-            {
-                SetPlatform(EPlatform.Moblie);
-                return;
-            }
-            if (Application.isEditor)
-            {
-                SetPlatform(EPlatform.Standalone);
-            }
-            else
-            {
-#if MOBILE_INPUT
-                SetPlatform(EPlatform.Moblie);
-#else
-                SetPlatform(EPlatform.Standalone);
-#endif
-            }
-        }
-
         private void SetPlatform(EPlatform ePlatform)
         {
-            _ePlatform = ePlatform;
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
             _cachedView.PCPannel.SetActive(ePlatform == EPlatform.Standalone);
             if (ePlatform == EPlatform.Standalone)
@@ -141,7 +111,7 @@ namespace GameA
                 _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "关卡设置";
             }
         }
-        
+
         private void OnGetInputKeyCode(KeyCode keyCode)
         {
             if (_isOpen)
@@ -149,11 +119,11 @@ namespace GameA
                 _upCtrlWorkShopCommonSetting.ChangeInputKey(keyCode);
             }
         }
-        
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            Messenger<KeyCode>.AddListener(EMessengerType.OnGetInputKeyCode,OnGetInputKeyCode);
+            Messenger<KeyCode>.AddListener(EMessengerType.OnGetInputKeyCode, OnGetInputKeyCode);
         }
 
         protected override void InitGroupId()
@@ -169,18 +139,18 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
             _cachedView.BasicSettingToggle.onValueChanged.AddListener(Toggle01OnValueChanged);
             _cachedView.WinConditionToggle.onValueChanged.AddListener(Toggle02OnValueChanged);
-            
+
             _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
             _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
             _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
             _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
             _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
-           
+
             _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
-            _upCtrlWorkShopCommonSetting.Init(this,_cachedView);
+            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
             _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
-            _upCtrlWorkShopLevelSetting.Init(this,_cachedView);
+            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
             _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
             _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
@@ -207,7 +177,7 @@ namespace GameA
                 CurProject = _gameModeWorkshopEdit.Project;
             _originalTitle = CurProject.Name;
             _originalDesc = CurProject.Summary;
-            UpdatePlatform();
+            SetPlatform(CrossPlatformInputManager.Platform);
             UpdateFinishCondition();
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
@@ -239,7 +209,7 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
         }
-        
+
         public void OnClickMusicButton(bool isOn)
         {
             GameSettingData.Instance.PlayMusic = isOn;
@@ -249,7 +219,7 @@ namespace GameA
         {
             GameSettingData.Instance.PlaySoundsEffects = isOn;
         }
-        
+
         public void OnDescEndEdit(string arg0)
         {
             if (arg0 != _originalDesc && CurProject != null)
@@ -278,7 +248,7 @@ namespace GameA
         {
             if (null == CurProject) return;
             _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if(null == _gameModeWorkshopEdit) return;
+            if (null == _gameModeWorkshopEdit) return;
             if (_gameModeWorkshopEdit.NeedSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");

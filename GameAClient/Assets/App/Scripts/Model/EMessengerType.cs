@@ -134,6 +134,7 @@ namespace GameA
         
         //修改按键
         public static int OnGetInputKeyCode = SoyEngine.EMessengerType.NextId++;
+        public static int OnInputKeyCodeChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 

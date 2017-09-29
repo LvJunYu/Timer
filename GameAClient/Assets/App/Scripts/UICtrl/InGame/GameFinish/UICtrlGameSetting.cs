@@ -5,13 +5,12 @@
 ** Summary : UICtrlGameSetting  
 ***********************************************************************/
 
-
 using System;
 using System.Collections.Generic;
 using GameA.Game;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
@@ -19,12 +18,6 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlGameSetting : UICtrlGenericBase<UIViewGameSetting>
     {
-        public enum EPlatform
-        {
-            Moblie,
-            Standalone
-        }
-
         private UPCtrlGameSettingInputKeys _upCtrlGameSettingInputKeys;
         private USCtrlGameSettingItem _showShadow;
         private USCtrlGameSettingItem _showRoute;
@@ -35,7 +28,7 @@ namespace GameA
         private USCtrlGameSettingItem _playBGMusic_2;
         private USCtrlGameSettingItem _playSoundsEffects_2;
         private bool _openGamePlaying;
-        
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.AppGameUI;
@@ -44,7 +37,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            Messenger<KeyCode>.AddListener(EMessengerType.OnGetInputKeyCode,OnGetInputKeyCode);
+            RegisterEvent<KeyCode>(EMessengerType.OnGetInputKeyCode, OnGetInputKeyCode);
         }
 
         protected override void OnViewCreated()
@@ -86,7 +79,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            UpdatePlatform();
+            SetPlatform(CrossPlatformInputManager.Platform);
             UpdateSettingItem();
             _cachedView.NickName.text = string.Format("账号：{0}", LocalUser.Instance.User.UserInfoSimple.NickName);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
@@ -121,27 +114,6 @@ namespace GameA
             }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
-        }
-
-        private void UpdatePlatform()
-        {
-            if (RuntimeConfig.Instance.UseDebugMobileInput && Application.isEditor)
-            {
-                SetPlatform(EPlatform.Moblie);
-                return;
-            }
-            if (Application.isEditor)
-            {
-                SetPlatform(EPlatform.Standalone);
-            }
-            else
-            {
-#if MOBILE_INPUT
-                SetPlatform(EPlatform.Moblie);
-#else
-                SetPlatform(EPlatform.Standalone);
-#endif
-            }
         }
 
         private void SetPlatform(EPlatform ePlatform)

@@ -32,6 +32,7 @@ namespace GameA
             RegisterEvent<int, float, float>(EMessengerType.OnSkillCDTime, OnSkillCDTime);
             RegisterEvent<int, float, float>(EMessengerType.OnSkillChargeTime, OnSkillChargeTime);
             RegisterEvent<int, int, int>(EMessengerType.OnSkillBulletChanged, OnSkillBulletChanged);
+            RegisterEvent(EMessengerType.OnInputKeyCodeChanged, UpdateInputKeys);
         }
 
         protected override void OnViewCreated()
@@ -75,8 +76,11 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            SetPlatform(CrossPlatformInputManager.Platform);
             RefreshSkillBtns();
+            UpdateInputKeys();
             _cachedView.AssistBtn.gameObject.SetActive(false);
+            _cachedView.AssistBtn_PC.SetActive(false);
         }
 
         protected override void OnClose()
@@ -86,6 +90,34 @@ namespace GameA
             {
                 _equipments[i] = null;
             }
+        }
+
+        private void UpdateInputKeys()
+        {
+            if (_cachedView == null || CrossPlatformInputManager.Platform == EPlatform.Moblie) return;
+            _cachedView.AssistInputKeyTxt.text =
+                GetStringRaw(CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagAssist).ToString());
+            _cachedView.USViewSkillBtns_PC[0].KeyTxt.text =
+                GetStringRaw(CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill1).ToString());
+            _cachedView.USViewSkillBtns_PC[1].KeyTxt.text =
+                GetStringRaw(CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill2).ToString());
+            _cachedView.USViewSkillBtns_PC[2].KeyTxt.text =
+                GetStringRaw(CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill3).ToString());
+        }
+
+        private string GetStringRaw(string str)
+        {
+            if (str.Length > 2)
+            {
+                return str.Substring(0, 2);
+            }
+            return str;
+        }
+
+        public void SetPlatform(EPlatform ePlatform)
+        {
+            _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
+            _cachedView.PcPannel.SetActive(ePlatform == EPlatform.Standalone);
         }
 
         public void SetSkillBtnVisible(int slot, bool visible)
@@ -116,21 +148,14 @@ namespace GameA
         {
             if (null == _cachedView) return;
             _cachedView.AssistBtn.gameObject.SetActive(visible);
+            _cachedView.AssistBtn_PC.SetActive(visible);
         }
 
         private void RefreshSkillBtns()
         {
             for (int i = 0; i < _cachedView.USViewSkillBtns.Length; i++)
             {
-                if (_equipments[i] != null)
-                {
-                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(true);
-                    _usSkillBtns[i].SetData(_equipments[i]);
-                }
-                else
-                {
-                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(false);
-                }
+                _usSkillBtns[i].SetData(_equipments[i]);
             }
         }
 
@@ -175,12 +200,25 @@ namespace GameA
 
         private void CreateUMSkillBtns()
         {
-            int skillNum = _cachedView.USViewSkillBtns.Length;
-            _usSkillBtns = new USCtrlSkillBtn[skillNum];
-            for (int i = 0; i < skillNum; i++)
+            if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
             {
-                _usSkillBtns[i] = new USCtrlSkillBtn();
-                _usSkillBtns[i].Init(_cachedView.USViewSkillBtns[i]);
+                int skillNum = _cachedView.USViewSkillBtns.Length;
+                _usSkillBtns = new USCtrlSkillBtn[skillNum];
+                for (int i = 0; i < skillNum; i++)
+                {
+                    _usSkillBtns[i] = new USCtrlSkillBtn();
+                    _usSkillBtns[i].Init(_cachedView.USViewSkillBtns[i]);
+                }
+            }
+            else
+            {
+                int skillNum = _cachedView.USViewSkillBtns_PC.Length;
+                _usSkillBtns = new USCtrlSkillBtn[skillNum];
+                for (int i = 0; i < skillNum; i++)
+                {
+                    _usSkillBtns[i] = new USCtrlSkillBtn();
+                    _usSkillBtns[i].Init(_cachedView.USViewSkillBtns_PC[i]);
+                }
             }
         }
 

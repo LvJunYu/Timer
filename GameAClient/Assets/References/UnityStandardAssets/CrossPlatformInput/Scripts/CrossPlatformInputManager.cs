@@ -9,26 +9,37 @@ using PlayMode = GameA.Game.PlayMode;
 
 namespace UnityStandardAssets.CrossPlatformInput
 {
+    public enum EPlatform
+    {
+        Moblie,
+        Standalone
+    }
+
     public static class CrossPlatformInputManager
     {
+        public static EPlatform Platform;
         private static VirtualInput virtualInput;
 
         static CrossPlatformInputManager()
         {
             if (RuntimeConfig.Instance.UseDebugMobileInput && Application.isEditor)
             {
+                Platform = EPlatform.Moblie;
                 virtualInput = new MobileInput();
                 return;
             }
             if (Application.isEditor)
             {
+                Platform = EPlatform.Standalone;
                 virtualInput = new StandaloneInput();
             }
             else
             {
 #if MOBILE_INPUT
+                Platform = EPlatform.Moblie;
                 virtualInput = new MobileInput();
 #else
+                Platform = EPlatform.Standalone;
                 virtualInput = new StandaloneInput();
                 #endif
             }
@@ -246,6 +257,11 @@ namespace UnityStandardAssets.CrossPlatformInput
                 default:
                     return KeyCode.None;
             }
+        }
+
+        public static KeyCode GetButtonPositiveKey(string name)
+        {
+            return virtualInput.GetButtonPositiveKey(name);
         }
 
         public static void SetButtonPositiveKey(string name, KeyCode positiveKey)
