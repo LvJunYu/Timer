@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace NewResourceSolution
 {
@@ -38,6 +37,7 @@ namespace NewResourceSolution
         public string Version
         {
             get { return _version; }
+	        set { _version = value; }
         }
         /// <summary>
         /// 默认地区

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using GameA;
 using Newtonsoft.Json;
 using SoyEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace NewResourceSolution.EditorTool
@@ -50,7 +52,16 @@ namespace NewResourceSolution.EditorTool
             string str = JsonConvert.SerializeObject(config, Formatting.Indented, new VersionJsonConverter());
             string path = string.Format(StringFormat.TwoLevelPath, outputRootPath, "ServerVersionConfig");
             FileTools.WriteStringToFile(str, path);
-            
+            PlayerSettings.bundleVersion = buildConfig.AppVersion;
+            var scene = EditorSceneManager.OpenScene(EditorBuildSettings.scenes[0].path);
+            var ary = Resources.FindObjectsOfTypeAll<RuntimeConfig>();
+            if (ary != null && ary.Length > 0)
+            {
+                ary[0].Version = buildConfig.AppVersion;
+                EditorSceneManager.SaveScene(scene);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
             LogHelper.Info("MakeServerVersionConfig Success");
         }
 

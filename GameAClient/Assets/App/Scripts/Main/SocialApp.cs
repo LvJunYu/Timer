@@ -23,7 +23,6 @@ namespace GameA
     public class SocialApp : App
     {
 		public ELanguage Language = ELanguage.CN;
-        [SerializeField] private bool _isMaster;
         [SerializeField] private EEnvironment _env;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
@@ -37,11 +36,6 @@ namespace GameA
         {
             get { return _env; }
             set { _env = value; }
-        }
-
-        public bool IsMaster
-        {
-            get { return _isMaster; }
         }
 
         public string RoomServerAddress
