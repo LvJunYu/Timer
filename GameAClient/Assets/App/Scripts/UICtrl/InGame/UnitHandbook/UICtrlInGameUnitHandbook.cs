@@ -12,6 +12,7 @@ namespace GameA
         #region 常量与字段
 
         private int _unitId;
+        private float _startTime;
         #endregion
         
         #region 属性
@@ -28,7 +29,15 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(Close);
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            if (!Application.isMobilePlatform)
+            {
+                DictionaryTools.SetContentText(_cachedView.CloseTip, "按任意键继续游戏");
+            }
+            else
+            {
+                DictionaryTools.SetContentText(_cachedView.CloseTip, "点击屏幕继续游戏");
+            }
         }
 
         protected override void SetPartAnimations()
@@ -44,12 +53,25 @@ namespace GameA
             base.OnOpen(parameter);
             _unitId = (int) parameter;
             RefreshView();
+            _startTime = Time.realtimeSinceStartup;
         }
 
         protected override void OnClose()
         {
-            GM2DGame.Instance.Continue();
+            if (GM2DGame.Instance != null)
+            {
+                GM2DGame.Instance.Continue();
+            }
             base.OnClose();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (Input.anyKeyDown)
+            {
+                OnCloseBtnClick();
+            }
         }
 
         private void RefreshView()
@@ -73,6 +95,18 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.Desc, tableUnit.Summary);
         }
 
+        private void OnCloseBtnClick()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            if (Time.realtimeSinceStartup - _startTime < 0.5f)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.CloseUI<UICtrlInGameUnitHandbook>();
+        }
         #endregion
     }
 }
