@@ -37,7 +37,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _guiEvent = _cachedView.gameObject.AddComponent<GUIEvent>();
-            _settingColor = Color.cyan;
+            _settingColor = new Color(1, 200 / (float) 255, 0);
         }
 
         protected void OnRestoreDefaultBtn()

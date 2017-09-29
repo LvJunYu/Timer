@@ -17,12 +17,35 @@ namespace GameA
         
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
-        private UICtrlEdit.EMode _curMode;
         private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
         private UPCtrlWorkShopLevelSetting _upCtrlWorkShopLevelSetting;
-
+        private UICtrlEdit.EMode _curMode;
         private bool _openGamePlaying;
+        private GameModeEdit _gameModeWorkshopEdit;
+        private string _originalTitle;
+        private string _originalDesc;
+        public Project CurProject;
+        public FinishCondition CurCondition;
 
+        private void InitFinishCondition()
+        {
+            if (null == CurCondition)
+            {
+                CurCondition = new FinishCondition();
+                CurCondition.SettingValue = new bool[(int) EWinCondition.Max];
+            }
+        }
+
+        private void UpdateFinishCondition()
+        {
+            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            {
+                CurCondition.SettingValue[(int) i] = EditMode.Instance.MapStatistics.HasWinCondition(i);
+            }
+            CurCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
+            CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
+        }
+      
         private void Toggle02OnValueChanged(bool arg0)
         {
             if (arg0)
@@ -105,6 +128,10 @@ namespace GameA
         {
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
             _cachedView.PCPannel.SetActive(ePlatform == EPlatform.Standalone);
+            if (ePlatform == EPlatform.Standalone)
+            {
+                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "关卡设置";
+            }
         }
         
         private void OnGetInputKeyCode(KeyCode keyCode)
@@ -129,7 +156,9 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            InitFinishCondition();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
             _cachedView.BasicSettingToggle.onValueChanged.AddListener(Toggle01OnValueChanged);
             _cachedView.WinConditionToggle.onValueChanged.AddListener(Toggle02OnValueChanged);
             
@@ -160,14 +189,17 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            UpdatePlatform();
             _curMode = (UICtrlEdit.EMode) parameter;
+            if (GM2DGame.Instance != null) _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (_gameModeWorkshopEdit != null)
+                CurProject = _gameModeWorkshopEdit.Project;
+            _originalTitle = CurProject.Name;
+            _originalDesc = CurProject.Summary;
+            UpdatePlatform();
+            UpdateFinishCondition();
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
             Toggle01OnValueChanged(true);
-            //每次打开时更新胜利条件
-            _upCtrlWorkShopWinConditionSetting.UpdateData();
-            _upCtrlWorkShopLevelSetting.UpdateData();
             _openGamePlaying = false;
             if (GM2DGame.Instance != null)
             {
@@ -204,6 +236,69 @@ namespace GameA
         public void OnClickSoundsEffectsButton(bool isOn)
         {
             GameSettingData.Instance.PlaySoundsEffects = isOn;
+        }
+        
+        public void OnDescEndEdit(string arg0)
+        {
+            if (arg0 != _originalDesc && CurProject != null)
+            {
+                _originalDesc = CurProject.Summary = arg0;
+                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (_gameModeWorkshopEdit != null)
+                    _gameModeWorkshopEdit.NeedSave = true;
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+            }
+        }
+
+        public void OnTitleEndEdit(string arg0)
+        {
+            if (arg0 != _originalTitle && CurProject != null)
+            {
+                _originalTitle = CurProject.Name = arg0;
+                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (_gameModeWorkshopEdit != null)
+                    _gameModeWorkshopEdit.NeedSave = true;
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+            }
+        }
+
+        public void OnPublishBtn()
+        {
+            if (null == CurProject) return;
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if(null == _gameModeWorkshopEdit) return;
+            if (_gameModeWorkshopEdit.NeedSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
+                _gameModeWorkshopEdit.Save(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(CurProject);
+                }, result =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("关卡保存失败");
+                });
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(CurProject);
+            }
+        }
+
+        public void OnTestBtn()
+        {
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null != _gameModeWorkshopEdit)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
+                GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (null != gameModeEdit)
+                {
+                    gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+                }
+//                _gameModeWorkshopEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+            }
         }
     }
 }
