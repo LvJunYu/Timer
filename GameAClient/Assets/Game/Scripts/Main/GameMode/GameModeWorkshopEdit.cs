@@ -8,16 +8,18 @@ namespace GameA.Game
 {
     public class GameModeWorkshopEdit : GameModeEdit
     {
-#if WORKSHOPGUIDE
+        #region GuideTest
+
         private AdventureGuideBase _guideBase;
         private const string HandbookEventPrefix = "Book_";
         private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
         private int _section = 1;
         private EAdventureProjectType _projectType = EAdventureProjectType.APT_Normal;
         private int _level = 5;
-#endif
 
+        #endregion
 
+        
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -26,17 +28,19 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
-#if WORKSHOPGUIDE
-            Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
-#endif
+            if (Application.isEditor)
+            {
+                Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
+            }
             return true;
         }
 
         public override bool Stop()
         {
-#if WORKSHOPGUIDE
-            Messenger<string, bool>.RemoveListener(EMessengerType.OnTrigger, HandleHandbook);
-#endif
+            if (Application.isEditor)
+            {
+                Messenger<string, bool>.RemoveListener(EMessengerType.OnTrigger, HandleHandbook);
+            }
             return base.Stop();
         }
 
@@ -169,58 +173,62 @@ namespace GameA.Game
 
         public override void ChangeMode(EMode mode)
         {
-#if WORKSHOPGUIDE
-            if (_guideBase != null)
+            if (Application.isEditor)
             {
-                _guideBase.Dispose();
-                _guideBase = null;
+                if (_guideBase != null)
+                {
+                    _guideBase.Dispose();
+                    _guideBase = null;
+                }
+                _handbookShowSet.Clear();
             }
-            _handbookShowSet.Clear();
-#endif
             base.ChangeMode(mode);
         }
 
         protected override void EnterEditTest()
         {
             base.EnterEditTest();
-#if WORKSHOPGUIDE
-            SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
-            AdventureGuideManager.Instance.TryGetGuide(_section, _projectType, _level, out _guideBase);
-            if (_guideBase != null)
+            if (Application.isEditor)
             {
-                _guideBase.Init();
+                SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
+                AdventureGuideManager.Instance.TryGetGuide(_section, _projectType, _level, out _guideBase);
+                if (_guideBase != null)
+                {
+                    _guideBase.Init();
+                }
             }
-#endif
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
 
-#if WORKSHOPGUIDE
-            if (_mode == EMode.EditTest)
+            if (Application.isEditor)
             {
-                if (_guideBase != null)
+                if (_mode == EMode.EditTest)
                 {
-                    _guideBase.UpdateLogic();
+                    if (_guideBase != null)
+                    {
+                        _guideBase.UpdateLogic();
+                    }
                 }
             }
-#endif
         }
 
         public override void Update()
         {
             base.Update();
 
-#if WORKSHOPGUIDE
-            if (_mode == EMode.EditTest)
+            if (Application.isEditor)
             {
-                if (_guideBase != null)
+                if (_mode == EMode.EditTest)
                 {
-                    _guideBase.Update();
+                    if (_guideBase != null)
+                    {
+                        _guideBase.Update();
+                    }
                 }
             }
-#endif
         }
 
         private byte[] GetRecord()
@@ -243,7 +251,6 @@ namespace GameA.Game
         }
 
 
-#if WORKSHOPGUIDE
         public void HandleHandbook(string triggerName, bool active)
         {
             if (!active)
@@ -266,6 +273,5 @@ namespace GameA.Game
             _handbookShowSet.Add(id);
             SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(id);
         }
-#endif
     }
 }
