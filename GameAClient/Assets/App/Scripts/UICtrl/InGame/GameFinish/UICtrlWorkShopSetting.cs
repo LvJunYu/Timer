@@ -191,6 +191,10 @@ namespace GameA
         {
             _upCtrlWorkShopBasicSetting.OnDestroy();
             _upCtrlWorkShopWinConditionSetting.OnDestroy();
+            _upCtrlWorkShopCommonSetting.OnDestroy();
+            _upCtrlWorkShopLevelSetting.OnDestroy();
+            CurProject = null;
+            CurCondition = null;
             base.OnDestroy();
         }
 

@@ -7,7 +7,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlMobileInputControl : UICtrlInGameBase<UIViewMobileInputControl>
     {
-        private UMCtrlSkillBtn[] _umSkillBtns;
+        private USCtrlSkillBtn[] _usSkillBtns;
         private Table_Equipment[] _equipments = new Table_Equipment[3];
 
         public UIViewMobileInputControl CachedView
@@ -15,9 +15,9 @@ namespace GameA
             get { return _cachedView; }
         }
 
-        public UMCtrlSkillBtn[] UmSkillBtns
+        public USCtrlSkillBtn[] UsSkillBtns
         {
-            get { return _umSkillBtns; }
+            get { return _usSkillBtns; }
         }
 
         protected override void InitGroupId()
@@ -37,7 +37,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            if (null == _umSkillBtns)
+            if (null == _usSkillBtns)
             {
                 CreateUMSkillBtns();
             }
@@ -45,14 +45,14 @@ namespace GameA
             _cachedView.JumpBtn.OnPress += PlayClickParticle;
             _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
 
-            _umSkillBtns[0].CachedView.SkillBtn.OnPress += OnSkill1ButtonDown;
-            _umSkillBtns[0].CachedView.SkillBtn.OnRelease += OnSkill1ButtonUp;
+            _usSkillBtns[0].CachedView.SkillBtn.OnPress += OnSkill1ButtonDown;
+            _usSkillBtns[0].CachedView.SkillBtn.OnRelease += OnSkill1ButtonUp;
 
-            _umSkillBtns[1].CachedView.SkillBtn.OnPress += OnSkill2ButtonDown;
-            _umSkillBtns[1].CachedView.SkillBtn.OnRelease += OnSkill2ButtonUp;
+            _usSkillBtns[1].CachedView.SkillBtn.OnPress += OnSkill2ButtonDown;
+            _usSkillBtns[1].CachedView.SkillBtn.OnRelease += OnSkill2ButtonUp;
 
-            _umSkillBtns[2].CachedView.SkillBtn.OnPress += OnSkill3ButtonDown;
-            _umSkillBtns[2].CachedView.SkillBtn.OnRelease += OnSkill3ButtonUp;
+            _usSkillBtns[2].CachedView.SkillBtn.OnPress += OnSkill3ButtonDown;
+            _usSkillBtns[2].CachedView.SkillBtn.OnRelease += OnSkill3ButtonUp;
 
             _cachedView.AssistBtn.OnPress += OnAssistButtonDown;
             _cachedView.AssistBtn.OnRelease += OnAssistButtonUp;
@@ -60,15 +60,15 @@ namespace GameA
 
         protected override void OnDestroy()
         {
-            for (int i = 0; i < _umSkillBtns.Length; i++)
+            for (int i = 0; i < _usSkillBtns.Length; i++)
             {
-                _umSkillBtns[i].Dispose();
+                _usSkillBtns[i].Dispose();
             }
             for (int i = 0; i < _equipments.Length; i++)
             {
                 _equipments[i] = null;
             }
-            _umSkillBtns = null;
+            _usSkillBtns = null;
             base.OnDestroy();
         }
 
@@ -94,20 +94,20 @@ namespace GameA
             {
                 return;
             }
-            if (null == _umSkillBtns)
+            if (null == _usSkillBtns)
             {
                 CreateUMSkillBtns();
             }
             switch (slot)
             {
                 case 0:
-                    _umSkillBtns[0].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    _usSkillBtns[0].CachedView.SkillBtn.gameObject.SetActive(visible);
                     break;
                 case 1:
-                    _umSkillBtns[1].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    _usSkillBtns[1].CachedView.SkillBtn.gameObject.SetActive(visible);
                     break;
                 case 2:
-                    _umSkillBtns[2].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    _usSkillBtns[2].CachedView.SkillBtn.gameObject.SetActive(visible);
                     break;
             }
         }
@@ -120,17 +120,16 @@ namespace GameA
 
         private void RefreshSkillBtns()
         {
-            for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
+            for (int i = 0; i < _cachedView.USViewSkillBtns.Length; i++)
             {
                 if (_equipments[i] != null)
                 {
-                    _cachedView.SkillRTFs[i].gameObject.SetActive(true);
-                    _umSkillBtns[i].SetData(_equipments[i]);
+                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(true);
+                    _usSkillBtns[i].SetData(_equipments[i]);
                 }
                 else
                 {
-                    _cachedView.SkillRTFs[i].gameObject.SetActive(false);
-
+                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(false);
                 }
             }
         }
@@ -150,39 +149,38 @@ namespace GameA
             if (0 > slot || slot > _equipments.Length - 1) return;
             _equipments[slot] = tableSkill;
             if (null == _cachedView) return;
-            if (null == _umSkillBtns)
+            if (null == _usSkillBtns)
                 CreateUMSkillBtns();
-            _umSkillBtns[slot].SetData(tableSkill);
+            _usSkillBtns[slot].SetData(tableSkill);
             RefreshSkillBtns();
         }
 
         private void OnSkillChargeTime(int slot, float leftTime, float totalTime)
         {
             if (null == _cachedView) return;
-            _umSkillBtns[slot].OnSkillChargeTime(leftTime, totalTime);
+            _usSkillBtns[slot].OnSkillChargeTime(leftTime, totalTime);
         }
 
         private void OnSkillCDTime(int slot, float leftTime, float totalTime)
         {
             if (null == _cachedView) return;
-            _umSkillBtns[slot].OnSkillCDTime(leftTime, totalTime);
+            _usSkillBtns[slot].OnSkillCDTime(leftTime, totalTime);
         }
 
         private void OnSkillBulletChanged(int slot, int leftCount, int totalCount)
         {
             if (null == _cachedView) return;
-            _umSkillBtns[slot].OnSkillBulletChanged(leftCount, totalCount);
+            _usSkillBtns[slot].OnSkillBulletChanged(leftCount, totalCount);
         }
 
         private void CreateUMSkillBtns()
         {
-            int skillNum = _cachedView.SkillRTFs.Length;
-            _umSkillBtns = new UMCtrlSkillBtn[skillNum];
+            int skillNum = _cachedView.USViewSkillBtns.Length;
+            _usSkillBtns = new USCtrlSkillBtn[skillNum];
             for (int i = 0; i < skillNum; i++)
             {
-                UMCtrlSkillBtn umCtrlSkillBtn = new UMCtrlSkillBtn();
-                umCtrlSkillBtn.Init(_cachedView.SkillRTFs[i], ResScenary);
-                _umSkillBtns[i] = umCtrlSkillBtn;
+                _usSkillBtns[i] = new USCtrlSkillBtn();
+                _usSkillBtns[i].Init(_cachedView.USViewSkillBtns[i]);
             }
         }
 

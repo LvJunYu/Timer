@@ -326,7 +326,7 @@ namespace GameA.Game
 
         public void HideGameInput()
         {
-            if (Application.isMobilePlatform)
+            if (Application.isMobilePlatform || RuntimeConfig.Instance.UseDebugMobileInput)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
             }

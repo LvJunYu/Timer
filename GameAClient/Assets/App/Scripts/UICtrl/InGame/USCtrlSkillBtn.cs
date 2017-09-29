@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlSkillBtn : UMCtrlBase<UMViewSkillBtn>
+    public class USCtrlSkillBtn : USCtrlBase<USViewSkillBtn>
     {
         private int _curBulletCount;
         private UIParticleItem _fullParticleItem;
         private bool _press;
         private Table_Equipment _curTableEquipment;
 
-        public UMViewSkillBtn CachedView
+        public USViewSkillBtn CachedView
         {
             get { return _cachedView; }
         }

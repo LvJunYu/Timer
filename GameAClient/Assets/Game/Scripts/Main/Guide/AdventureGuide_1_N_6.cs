@@ -36,7 +36,7 @@ namespace GameA.Game
                 if (inputUI.IsViewCreated)
                 {
                     _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.UmSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
+                        inputUI.UsSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
                         "点击这里喷水");
                 }
             }
@@ -68,7 +68,7 @@ namespace GameA.Game
                 if (inputUI.IsViewCreated)
                 {
                     _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.UmSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
+                        inputUI.UsSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
                         "点击这里喷水");
                     _skillDirGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.CachedView.JoyStickEx.UpArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
