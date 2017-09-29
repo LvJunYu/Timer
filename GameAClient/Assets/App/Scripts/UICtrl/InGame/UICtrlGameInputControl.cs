@@ -1,293 +1,237 @@
-﻿//using UnityEngine;
-//using System.Collections;
-//using SoyEngine;
-//using SoyEngine.Proto;
-//using UnityStandardAssets.CrossPlatformInput;
-//using GameA.Game;
-//
-//namespace GameA
-//{
-//    [UIAutoSetup (EUIAutoSetupType.Add)]
-//    public class UICtrlGameInputControl : UICtrlInGameBase<UIViewGameInputControl> {
-//
-//        public const float MoveInputButtonRatio = 1;
-//
-//        private bool _pressLeft = false;
-//        private bool _pressRight = false;
-//
-//
-//        protected override void InitGroupId ()
-//        {
-//            _groupId = (int)EUIGroupType.InputCtrl;
-//        }
-//
-//        public void Hide () {
-//            _cachedView.gameObject.SetActive (false);
-//        }
-//        public void Show () {
-//            _cachedView.gameObject.SetActive (true);
-//        }
-//
-//        public void Reset ()
-//        {
-//            for (int i = 0; i < _cachedView._jumpBtns.Length; i++) {
-//                if (_cachedView._jumpBtns [i] != null) {
-//                    _cachedView._jumpBtns [i].ResetState ();
-//                }
-//            }
-//            for (int i = 0; i < _cachedView._fire1Btns.Length; i++) {
-//                if (_cachedView._fire1Btns [i] != null) {
-//                    _cachedView._fire1Btns [i].ResetState ();
-//                }
-//            }
-//            for (int i = 0; i < _cachedView._fire2Btns.Length; i++) {
-//                if (_cachedView._fire2Btns [i] != null) {
-//                    _cachedView._fire2Btns [i].ResetState ();
-//                }
-//            }
-//            for (int i = 0; i < _cachedView.LeftButtons.Length; i++) {
-//                if (_cachedView.LeftButtons [i] != null) {
-//                    _cachedView.LeftButtons [i].ResetState ();
-//                }
-//            }
-//            for (int i = 0; i < _cachedView.RightGButtons.Length; i++) {
-//                if (_cachedView.RightGButtons [i] != null) {
-//                    _cachedView.RightGButtons [i].ResetState ();
-//                }
-//            }
-//        }
-//
-//        public void ShowAttack1Btn ()
-//        {
-//            _cachedView._fire1Btns [0].SetActiveEx (true);
-//        }
-//
-//        private void OnGameRestart ()
-//        {
-//        }
-//
-//        private void OnMainPlayerRevive ()
-//        {
-//
-//        }
-//
-//
-//        /// <summary>
-//        /// M2中设置Fire2的技能图标
-//        /// </summary>
-//        /// <returns>The m2 fire2 button sprite set.</returns>
-//        /// <param name="idx">第几套.</param>
-//        /// <param name="number">左下角数字.</param>
-//        public void SetM2Fire2BtnSpriteSet (int idx, int number)
-//        {
-////            if (idx >= _cachedView.M2FireBtn2NormalSprites.Length ||
-////                idx >= _cachedView.M2FireBtn2PressedSprites.Length ||
-////                idx >= _cachedView.M2FireBtn2DisableSprites.Length) {
-////                return;
-////            }
-////            if (number < 0 || number >= _cachedView.M2FireBtn2NumberSprites.Length) {
-////                return;
-////            }
-////            if (number > 0) {
-////                GameResourceManager.Instance.TryGetSpriteByName( _cachedView.M2FireBtn2NormalSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
-////                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2PressedSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
-////                Sprite sprite1 = null;
-////                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NormalSprites [idx], out sprite1);
-////                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite1;
-////            } else {
-////                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
-////                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
-////                Sprite sprite2 = null;
-////                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out sprite2);
-////                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite2;
-////            }
-////            Sprite sprite = null;
-////            GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [number], out sprite);
-////            _cachedView.M2Fire2BtnNumber.sprite = sprite;
-//        }
-//
-//        protected override void OnViewCreated()
-//        {
-//            base.OnViewCreated();
-//#if MOBILE_INPUT
-//            //_joystick.onMove.AddListener(OnJoystickMove);
-//            //_joystick.onMoveEnd.AddListener(OnJoystickMoveEnd);
-////            for (int i = 0; i < _jumpBtns.Length; i++) {
-////                if (_jumpBtns [i] != null)
-////                    _jumpBtns[i].onDown.AddListener (OnJumpBtnDown);
-////            }
-////            for (int i = 0; i < _jumpBtns.Length; i++) {
-////                if (_jumpBtns [i] != null)
-////                _jumpBtns[i].onUp.AddListener (OnJumpBtnUp);
-////            }
-////            for (int i = 0; i < _fire1Btns.Length; i++) {
-////                if (_fire1Btns [i] != null)
-////                _fire1Btns[i].onDown.AddListener (OnFire1BtnDown);
-////            }
-////            for (int i = 0; i < _fire1Btns.Length; i++) {
-////                if (_fire1Btns [i] != null)
-////                _fire1Btns[i].onUp.AddListener (OnFire1BtnUp);
-////            }
-////            for (int i = 0; i < _fire2Btns.Length; i++) {
-////                if (_fire2Btns [i] != null)
-////                _fire2Btns [i].onDown.AddListener (OnFire2BtnDown);
-////            }
-////            for (int i = 0; i < _fire2Btns.Length; i++) {
-////                if (_fire2Btns [i] != null)
-////                _fire2Btns [i].onUp.AddListener (OnFire2BtnUp);
-////            }
-//#endif
-//
-//            for (int i = 0; i < _cachedView.LeftButtons.Length; i++) {
-//                if (_cachedView.LeftButtons [i] != null)
-//                _cachedView.LeftButtons[i].OnPress = OnLeftButtonDown;
-//            }
-//            for (int i = 0; i < _cachedView.LeftButtons.Length; i++) {
-//                if (_cachedView.LeftButtons [i] != null)
-//                _cachedView.LeftButtons[i].OnRelease = OnLeftButtonUp;
-//            }
-//            for (int i = 0; i < _cachedView.RightGButtons.Length; i++) {
-//                if (_cachedView.RightGButtons [i] != null)
-//                _cachedView.RightGButtons[i].OnPress = OnRightButtonDown;
-//            }
-//            for (int i = 0; i < _cachedView.RightGButtons.Length; i++) {
-//                if (_cachedView.RightGButtons [i] != null)
-//                _cachedView.RightGButtons[i].OnRelease = OnRightButtonUp;
-//            }
-////            switch (GM2DGame.Instance.EMatrixType)
-////            {
-////                case EMatrixType.MT_JumpPlatform:
-//                    _cachedView.M1Input.SetActiveEx(true);
-//                    _cachedView.M2Input.SetActiveEx(false);
-////                    break;
-////            }
-//            Messenger<int, int>.AddListener (EMessengerType.OnSkillChanged, OnSkillChanged);
-//            Messenger<int, int>.AddListener (EMessengerType.OnAmmoChanged, OnAmmoChanged);
-//            Messenger.AddListener (EMessengerType.OnPlay, OnGameRestart);
-//            Messenger.AddListener (EMessengerType.OnMainPlayerRevive, OnMainPlayerRevive);
-//		}
-//
-//
-//        private void OnFire1BtnUp()
-//        {
-//            CrossPlatformInputManager.SetButtonUp(InputManager.TagSkill[0]);
-//        }
-//
-//        private void OnFire2BtnUp ()
-//        {
-//            CrossPlatformInputManager.SetButtonUp (InputManager.TagSkill [1]);
-//        }
-//
-//        private void OnFire1BtnDown()
-//        {
-//            CrossPlatformInputManager.SetButtonDown(InputManager.TagSkill[0]);
-//        }
-//
-//        private void OnFire2BtnDown ()
-//        {
-//            CrossPlatformInputManager.SetButtonDown (InputManager.TagSkill [1]);
-//        }
-//
-//        protected override void OnDestroy()
-//        {
-//            base.OnDestroy();
-//#if MOBILE_INPUT
-//            //_joystick.onMove.RemoveAllListeners();
-////            for (int i = 0; i < _fire1Btns.Length; i++) {
-////                if (_fire1Btns [i] != null)
-////                _fire1Btns[i].onDown.RemoveAllListeners ();
-////            }
-////            for (int i = 0; i < _fire1Btns.Length; i++) {
-////                if (_fire1Btns [i] != null)
-////                _fire1Btns[i].onUp.RemoveAllListeners ();
-////            }
-////            for (int i = 0; i < _fire2Btns.Length; i++) {
-////                if (_fire2Btns [i] != null)
-////                _fire2Btns [i].onDown.RemoveAllListeners ();
-////            }
-////            for (int i = 0; i < _fire2Btns.Length; i++) {
-////                if (_fire2Btns [i] != null)
-////                _fire2Btns [i].onUp.RemoveAllListeners ();
-////            }
-////            for (int i = 0; i < _jumpBtns.Length; i++) {
-////                if (_jumpBtns [i] != null)
-////                _jumpBtns[i].onDown.RemoveAllListeners ();
-////            }
-////            for (int i = 0; i < _jumpBtns.Length; i++) {
-////                if (_jumpBtns [i] != null)
-////                _jumpBtns[i].onUp.RemoveAllListeners ();
-////            }
-//            Messenger<int, int>.RemoveListener (EMessengerType.OnSkillChanged, OnSkillChanged);
-//            Messenger<int, int>.RemoveListener (EMessengerType.OnAmmoChanged, OnAmmoChanged);
-//            Messenger.RemoveListener (EMessengerType.OnPlay, OnGameRestart);
-//            Messenger.RemoveListener (EMessengerType.OnMainPlayerRevive, OnMainPlayerRevive);
-//#endif
-//        }
-//
-//		private void OnJumpBtnDown()
-//        {
-//            CrossPlatformInputManager.SetButtonDown(InputManager.TagJump);
-//        }
-//
-//        private void OnJumpBtnUp()
-//        {
-//            CrossPlatformInputManager.SetButtonUp(InputManager.TagJump);
-//        }
-//
-//        private void OnJoystickMoveEnd()
-//        {
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, _cachedView._joysticks[0].axisX.axisValue);
-//            CrossPlatformInputManager.SetAxis(InputManager.TagVertical, _cachedView._joysticks[0].axisY.axisValue);
-//        }
-//
-//        private void OnJoystickMove(Vector2 arg0)
-//        {
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, _cachedView._joysticks [0].axisX.axisValue);
-//            CrossPlatformInputManager.SetAxis(InputManager.TagVertical, _cachedView._joysticks [0].axisY.axisValue);
-//        }
-//
-//	    private void OnLeftButtonDown()
-//	    {
-//	        _pressLeft = true;
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, GetHorizontalValue());
-//		}
-//
-//		private void OnLeftButtonUp()
-//	    {
-//            _pressLeft = false;
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, GetHorizontalValue());
-//        }
-//
-//        private void OnRightButtonDown()
-//        {
-//            _pressRight = true;
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, GetHorizontalValue());
-//        }
-//
-//        private void OnRightButtonUp()
-//	    {
-//            _pressRight = false;
-//            CrossPlatformInputManager.SetAxis(InputManager.TagHorizontal, GetHorizontalValue());
-//        }
-//
-//        private float GetHorizontalValue()
-//        {
-//            float l, r;
-//            l = _pressLeft ? -MoveInputButtonRatio : 0;
-//            r = _pressRight ? MoveInputButtonRatio : 0;
-//            return l + r;
-//        }
-//
-//        private void OnSkillChanged (int skillId, int ammoNumber)
-//        {
-//            SetM2Fire2BtnSpriteSet (skillId, ammoNumber);
-//        }
-//
-//        private void OnAmmoChanged (int skillId, int ammoNumber)
-//        {
-//            SetM2Fire2BtnSpriteSet (skillId, ammoNumber);
-//        }
-//    }
-//
-//
-//}
+﻿using GameA.Game;
+using SoyEngine;
+using UnityStandardAssets.CrossPlatformInput;
+
+namespace GameA
+{
+    [UIResAutoSetup(EResScenary.UIInGame)]
+    public class UICtrlGameInputControl : UICtrlInGameBase<UIViewGameInputControl>
+    {
+        private USCtrlSkillBtn[] _usSkillBtns;
+        private Table_Equipment[] _equipments = new Table_Equipment[3];
+
+        public UIViewGameInputControl CachedViewGame
+        {
+            get { return _cachedView; }
+        }
+
+        public USCtrlSkillBtn[] UsSkillBtns
+        {
+            get { return _usSkillBtns; }
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.InputCtrl;
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<Table_Equipment, int>(EMessengerType.OnSkillSlotChanged, OnSkillSlotChanged);
+            RegisterEvent<int, float, float>(EMessengerType.OnSkillCDTime, OnSkillCDTime);
+            RegisterEvent<int, float, float>(EMessengerType.OnSkillChargeTime, OnSkillChargeTime);
+            RegisterEvent<int, int, int>(EMessengerType.OnSkillBulletChanged, OnSkillBulletChanged);
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            if (null == _usSkillBtns)
+            {
+                CreateUMSkillBtns();
+            }
+            _cachedView.JumpBtn.OnPress += OnJumpButtonDown;
+            _cachedView.JumpBtn.OnPress += PlayClickParticle;
+            _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
+
+            _usSkillBtns[0].CachedView.SkillBtn.OnPress += OnSkill1ButtonDown;
+            _usSkillBtns[0].CachedView.SkillBtn.OnRelease += OnSkill1ButtonUp;
+
+            _usSkillBtns[1].CachedView.SkillBtn.OnPress += OnSkill2ButtonDown;
+            _usSkillBtns[1].CachedView.SkillBtn.OnRelease += OnSkill2ButtonUp;
+
+            _usSkillBtns[2].CachedView.SkillBtn.OnPress += OnSkill3ButtonDown;
+            _usSkillBtns[2].CachedView.SkillBtn.OnRelease += OnSkill3ButtonUp;
+
+            _cachedView.AssistBtn.OnPress += OnAssistButtonDown;
+            _cachedView.AssistBtn.OnRelease += OnAssistButtonUp;
+        }
+
+        protected override void OnDestroy()
+        {
+            for (int i = 0; i < _usSkillBtns.Length; i++)
+            {
+                _usSkillBtns[i].Dispose();
+            }
+            for (int i = 0; i < _equipments.Length; i++)
+            {
+                _equipments[i] = null;
+            }
+            _usSkillBtns = null;
+            base.OnDestroy();
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            RefreshSkillBtns();
+            _cachedView.AssistBtn.gameObject.SetActive(false);
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            for (int i = 0; i < _equipments.Length; i++)
+            {
+                _equipments[i] = null;
+            }
+        }
+
+        public void SetSkillBtnVisible(int slot, bool visible)
+        {
+            if (null == _cachedView)
+            {
+                return;
+            }
+            if (null == _usSkillBtns)
+            {
+                CreateUMSkillBtns();
+            }
+            switch (slot)
+            {
+                case 0:
+                    _usSkillBtns[0].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    break;
+                case 1:
+                    _usSkillBtns[1].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    break;
+                case 2:
+                    _usSkillBtns[2].CachedView.SkillBtn.gameObject.SetActive(visible);
+                    break;
+            }
+        }
+
+        public void SetAssistBtnVisible(bool visible)
+        {
+            if (null == _cachedView) return;
+            _cachedView.AssistBtn.gameObject.SetActive(visible);
+        }
+
+        private void RefreshSkillBtns()
+        {
+            for (int i = 0; i < _cachedView.USViewSkillBtns.Length; i++)
+            {
+                if (_equipments[i] != null)
+                {
+                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(true);
+                    _usSkillBtns[i].SetData(_equipments[i]);
+                }
+                else
+                {
+                    _cachedView.USViewSkillBtns[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void PlayClickParticle()
+        {
+            GameParticleManager.Instance.EmitUIParticle("UIEffectClickBig", _cachedView.JumpBtn.transform, _groupId);
+        }
+
+        private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            if (null == tableSkill) return;
+            if (0 > slot || slot > _equipments.Length - 1) return;
+            _equipments[slot] = tableSkill;
+            if (null == _cachedView) return;
+            if (null == _usSkillBtns)
+                CreateUMSkillBtns();
+            _usSkillBtns[slot].SetData(tableSkill);
+            RefreshSkillBtns();
+        }
+
+        private void OnSkillChargeTime(int slot, float leftTime, float totalTime)
+        {
+            if (null == _cachedView) return;
+            _usSkillBtns[slot].OnSkillChargeTime(leftTime, totalTime);
+        }
+
+        private void OnSkillCDTime(int slot, float leftTime, float totalTime)
+        {
+            if (null == _cachedView) return;
+            _usSkillBtns[slot].OnSkillCDTime(leftTime, totalTime);
+        }
+
+        private void OnSkillBulletChanged(int slot, int leftCount, int totalCount)
+        {
+            if (null == _cachedView) return;
+            _usSkillBtns[slot].OnSkillBulletChanged(leftCount, totalCount);
+        }
+
+        private void CreateUMSkillBtns()
+        {
+            int skillNum = _cachedView.USViewSkillBtns.Length;
+            _usSkillBtns = new USCtrlSkillBtn[skillNum];
+            for (int i = 0; i < skillNum; i++)
+            {
+                _usSkillBtns[i] = new USCtrlSkillBtn();
+                _usSkillBtns[i].Init(_cachedView.USViewSkillBtns[i]);
+            }
+        }
+
+        private void OnJumpButtonDown()
+        {
+            CrossPlatformInputManager.SetButtonDown(InputManager.TagJump);
+        }
+
+        private void OnJumpButtonUp()
+        {
+            CrossPlatformInputManager.SetButtonUp(InputManager.TagJump);
+        }
+
+        private void OnSkill1ButtonUp()
+        {
+            CrossPlatformInputManager.SetButtonUp(InputManager.TagSkill1);
+        }
+
+        private void OnSkill1ButtonDown()
+        {
+            CrossPlatformInputManager.SetButtonDown(InputManager.TagSkill1);
+        }
+
+        private void OnSkill2ButtonUp()
+        {
+            CrossPlatformInputManager.SetButtonUp(InputManager.TagSkill2);
+        }
+
+        private void OnSkill2ButtonDown()
+        {
+            CrossPlatformInputManager.SetButtonDown(InputManager.TagSkill2);
+        }
+
+        private void OnSkill3ButtonUp()
+        {
+            CrossPlatformInputManager.SetButtonUp(InputManager.TagSkill3);
+        }
+
+        private void OnSkill3ButtonDown()
+        {
+            CrossPlatformInputManager.SetButtonDown(InputManager.TagSkill3);
+        }
+
+        private void OnAssistButtonUp()
+        {
+            CrossPlatformInputManager.SetButtonUp(InputManager.TagAssist);
+        }
+
+        private void OnAssistButtonDown()
+        {
+            CrossPlatformInputManager.SetButtonDown(InputManager.TagAssist);
+        }
+    }
+}

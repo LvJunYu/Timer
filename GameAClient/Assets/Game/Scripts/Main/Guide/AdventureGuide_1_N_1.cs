@@ -31,11 +31,11 @@ namespace GameA.Game
             }
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
+                        inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
                         "长按这里移动");
                 }
             }
@@ -54,11 +54,11 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
+                        inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
                         "长按这里跳跃");
                 }
             }
@@ -76,14 +76,14 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
+                        inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
                         "长按这里跳跃");
                     _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
+                        inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
                         EDirectionType.Down,
                         "长按这里向前");
                 }
@@ -107,14 +107,14 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
+                        inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
                         "按两下跳跃");
                     _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
+                        inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
                         EDirectionType.Down,
                         "长按这里向前");
                 }

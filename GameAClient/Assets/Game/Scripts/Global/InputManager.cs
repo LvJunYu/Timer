@@ -26,7 +26,7 @@ namespace GameA.Game
         public const string TagHorizontal = "Horizontal";
         public const string TagVertical = "Vertical";
 
-        public UICtrlMobileInputControl MobileInputCtrl;
+        public UICtrlGameInputControl GameInputCtrlGame;
         private GameObject _easyTouchObject;
 
         private EPhase _mouseRightButtonDragPhase;
@@ -310,17 +310,17 @@ namespace GameA.Game
             {
                 if (RuntimeConfig.Instance.UseDebugMobileInput)
                 {
-                    SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+                    SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
                 }
                 else
                 {
-                    SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
                 }
                 return;
             }
             if (Application.isMobilePlatform)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+                SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
             }
         }
 
@@ -328,7 +328,7 @@ namespace GameA.Game
         {
             if (Application.isMobilePlatform || RuntimeConfig.Instance.UseDebugMobileInput)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+                SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
             }
         }
         

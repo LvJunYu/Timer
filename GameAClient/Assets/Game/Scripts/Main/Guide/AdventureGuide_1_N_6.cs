@@ -32,7 +32,7 @@ namespace GameA.Game
             }
             if (flag && _skillGuideBubble == null)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
@@ -64,14 +64,14 @@ namespace GameA.Game
             }
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
                 if (inputUI.IsViewCreated)
                 {
                     _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.UsSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
                         "点击这里喷水");
                     _skillDirGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JoyStickEx.UpArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
+                        inputUI.CachedViewGame.JoyStickEx.UpArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
                         "同时按下这里可以改变喷水方向");
                 }
             }
