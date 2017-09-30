@@ -190,7 +190,7 @@ namespace GameA.Game
             base.EnterEditTest();
             if (Application.isEditor)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
+                SocialGUIManager.Instance.OpenUI<UICtrlGameInput>();
                 AdventureGuideManager.Instance.TryGetGuide(_section, _projectType, _level, out _guideBase);
                 if (_guideBase != null)
                 {

@@ -25,7 +25,7 @@ namespace GameA.Game
         public const string TagHorizontal = "Horizontal";
         public const string TagVertical = "Vertical";
 
-        public UICtrlGameInputControl GameInputCtrlGame;
+        public UICtrlGameInput GameInputCtrlGame;
         private GameObject _easyTouchObject;
 
         private EPhase _mouseRightButtonDragPhase;
@@ -307,12 +307,12 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameInputControl>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGameInput>();
         }
 
         public void HideGameInput()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlGameInputControl>();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameInput>();
         }
 
         private enum EPhase

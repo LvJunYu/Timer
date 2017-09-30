@@ -31,7 +31,7 @@ namespace GameA.Game
             }
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputUI.IsViewCreated)
                 {
                     _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
@@ -54,7 +54,7 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
@@ -76,7 +76,7 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
@@ -107,7 +107,7 @@ namespace GameA.Game
         {
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
