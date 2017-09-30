@@ -25,7 +25,7 @@ namespace GameA
         {
             base.SetPartAnimations();
             _openSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f).From().SetEase(Ease.OutBack));
-            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(Vector3.zero, 0.3f).SetEase(Ease.Linear));
+            _closeSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f).SetEase(Ease.Linear));
         }
 
         public void ShowTip(string tip)
@@ -34,8 +34,8 @@ namespace GameA
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlGameBottomTip>();
             }
-            DictionaryTools.SetContentText(_cachedView.ContentText, tip);
             SocialGUIManager.Instance.OpenUI<UICtrlGameBottomTip>();
+            DictionaryTools.SetContentText(_cachedView.ContentText, tip);
         }
 
         public void CloseTip()

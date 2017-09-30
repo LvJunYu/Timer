@@ -137,7 +137,7 @@ namespace GameA.Game
             }
             if (Application.isMobilePlatform)
             {
-                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputControl != null)
                 {
                     inputControl.SetSkillBtnVisible(slot, true);
@@ -217,7 +217,7 @@ namespace GameA.Game
             }
             if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
             {
-                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (uiControl != null)
                 {
                     uiControl.SetAssistBtnVisible(true);
@@ -232,7 +232,7 @@ namespace GameA.Game
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
-                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (uiControl != null)
                 {
                     uiControl.SetAssistBtnVisible(true);

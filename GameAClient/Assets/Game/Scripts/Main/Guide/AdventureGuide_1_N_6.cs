@@ -37,7 +37,7 @@ namespace GameA.Game
             {
                 if (flag && _skillGuideBubble == null)
                 {
-                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                     if (inputUI.IsViewCreated)
                     {
                         _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
@@ -90,7 +90,7 @@ namespace GameA.Game
             {
                 if (Application.isMobilePlatform)
                 {
-                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
+                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                     if (inputUI.IsViewCreated)
                     {
                         _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
