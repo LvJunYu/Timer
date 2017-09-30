@@ -22,8 +22,8 @@ namespace GameA
     [Serializable]
     public class SocialApp : App
     {
-		public ELanguage Language = ELanguage.CN;
         [SerializeField] private EEnvironment _env;
+        [SerializeField] private LogHelper.ELogLevel _logLevel = LogHelper.ELogLevel.All;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
@@ -100,7 +100,7 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
-            LogHelper.LogLevel = LogHelper.ELogLevel.Info;
+            LogHelper.LogLevel = _logLevel;
             if (_clearCache)
             {
                 ClearCache();
