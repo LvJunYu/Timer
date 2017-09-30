@@ -38,6 +38,10 @@ namespace GameA
             upCtrlWorldRecommendProject.Set(ResScenary);
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
+            var upCtrlNewestProject = new UPCtrlWorldNewestProject();
+            upCtrlNewestProject.Set(ResScenary);
+            upCtrlNewestProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlNewestProject;
             var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
             upCtrlWorldUserPlayHistory.Set(ResScenary);
             upCtrlWorldUserPlayHistory.Init(this, _cachedView);
@@ -190,6 +194,7 @@ namespace GameA
         {
             None = -1,
             Recommend,
+            NewestProject,
             UserPlayHistory,
             UserFavorite,
             RankList,
