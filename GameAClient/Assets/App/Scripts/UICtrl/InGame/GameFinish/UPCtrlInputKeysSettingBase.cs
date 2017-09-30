@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using GameA.Game;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA
@@ -62,6 +63,7 @@ namespace GameA
             {
                 Messenger.Broadcast(EMessengerType.OnInputKeyCodeChanged);
             }
+            ScreenResolutionManager.Instance.Save();
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
 
@@ -78,6 +80,7 @@ namespace GameA
         public override void Close()
         {
             CompleteSettingInputKey();
+            ScreenResolutionManager.Instance.ClearChange();
             base.Close();
         }
 

@@ -1,7 +1,4 @@
-﻿using SoyEngine;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 
 namespace GameA
 {

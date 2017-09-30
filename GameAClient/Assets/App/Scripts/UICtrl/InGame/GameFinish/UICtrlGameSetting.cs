@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityStandardAssets.CrossPlatformInput;
 using PlayMode = GameA.Game.PlayMode;
 
@@ -28,6 +29,7 @@ namespace GameA
         private USCtrlGameSettingItem _playBGMusic_2;
         private USCtrlGameSettingItem _playSoundsEffects_2;
         private bool _openGamePlaying;
+        private List<Dropdown.OptionData> _optionDatas;
 
         protected override void InitGroupId()
         {
@@ -72,6 +74,9 @@ namespace GameA
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.RestartBtn_2.onClick.AddListener(OnRestartBtn);
 
+            _cachedView.FullScreenToggle.onValueChanged.AddListener(OnFullScreenToggleValueChanged);
+            _cachedView.ResolutionDropdown.onValueChanged.AddListener(OnResolutionDropdownValueChanged);
+
             _upCtrlGameSettingInputKeys = new UPCtrlGameSettingInputKeys();
             _upCtrlGameSettingInputKeys.Init(this, _cachedView);
         }
@@ -81,6 +86,7 @@ namespace GameA
             base.OnOpen(parameter);
             SetPlatform(CrossPlatformInputManager.Platform);
             UpdateSettingItem();
+            UpdateScreenSettingView();
             _cachedView.NickName.text = string.Format("账号：{0}", LocalUser.Instance.User.UserInfoSimple.NickName);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
@@ -247,6 +253,47 @@ namespace GameA
                         () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnRestartBtn)); }),
                     new KeyValuePair<string, Action>("取消", () => { }));
             });
+        }
+        
+        private void OnResolutionDropdownValueChanged(int arg0)
+        {
+            ScreenResolutionManager.Instance.SetResolution(arg0);
+        }
+
+        private void OnFullScreenToggleValueChanged(bool arg0)
+        {
+            SetFullScreen(arg0);
+        }
+
+        private void SetFullScreen(bool value)
+        {
+            ScreenResolutionManager.Instance.SetFullScreen(value);
+        }
+
+        private void UpdateScreenSettingView()
+        {
+            bool fullScreen = ScreenResolutionManager.Instance.FullScreen;
+            _cachedView.WindowScreenToggle.isOn = !fullScreen;
+            _cachedView.FullScreenToggle.isOn = fullScreen;
+            OnFullScreenToggleValueChanged(fullScreen);
+            InitOptions(ScreenResolutionManager.Instance.AllResolutions);
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
+        }
+
+        private void InitOptions(List<Resolution> resolutions)
+        {
+            if (_optionDatas != null) return;
+            _optionDatas = new List<Dropdown.OptionData>(resolutions.Count);
+            for (int i = 0; i < resolutions.Count; i++)
+            {
+                _optionDatas.Add(new Dropdown.OptionData(ResolutionToString(resolutions[i])));
+            }
+            _cachedView.ResolutionDropdown.options = _optionDatas;
+        }
+
+        private string ResolutionToString(Resolution resolution)
+        {
+            return string.Format("{0}×{1}", resolution.width, resolution.height);
         }
     }
 }

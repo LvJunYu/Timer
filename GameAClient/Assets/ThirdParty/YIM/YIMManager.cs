@@ -4,7 +4,7 @@ using GameA;
 using SoyEngine;
 using YIMEngine;
 
-public class YIMManager : MonoBehaviour,
+public class YIMManager :
     LoginListen,
     MessageListen,
     ChatRoomListen,
@@ -31,7 +31,7 @@ public class YIMManager : MonoBehaviour,
     }
 
     public readonly string WorldChatRoomId = "1001";
-    private Dictionary<ulong, MyMessage> messageCahceList = new Dictionary<ulong, MyMessage>();//记录消息状态
+    private Dictionary<ulong, MyMessage> messageCahceList = new Dictionary<ulong, MyMessage>(); //记录消息状态
     private MyMessage _myMessage = new MyMessage();
     private UICtrlChat _uiCtrlChat;
     private bool _manualLogout;
@@ -44,7 +44,7 @@ public class YIMManager : MonoBehaviour,
         {
             if (null == _instance)
             {
-                _instance = new GameObject("YIMManager").AddComponent<YIMManager>();
+                _instance = new YIMManager();
                 _instance.Init();
             }
             return _instance;
@@ -70,7 +70,7 @@ public class YIMManager : MonoBehaviour,
         _uiCtrlChat = uiCtrlChat;
     }
 
-   private void ShowStatus(string msg)
+    private void ShowStatus(string msg)
     {
         if (_uiCtrlChat == null) return;
         _uiCtrlChat.ShowStatus(msg);
