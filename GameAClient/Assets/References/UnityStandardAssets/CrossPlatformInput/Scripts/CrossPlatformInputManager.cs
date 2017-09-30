@@ -4,7 +4,6 @@ using GameA.Game;
 using NewResourceSolution;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput.PlatformSpecific;
-using PlayMode = GameA.Game.PlayMode;
 
 
 namespace UnityStandardAssets.CrossPlatformInput
@@ -32,6 +31,7 @@ namespace UnityStandardAssets.CrossPlatformInput
             {
                 Platform = EPlatform.Standalone;
                 virtualInput = new StandaloneInput();
+                UpdateInputControlKeys();
             }
             else
             {
@@ -41,6 +41,7 @@ namespace UnityStandardAssets.CrossPlatformInput
 #else
                 Platform = EPlatform.Standalone;
                 virtualInput = new StandaloneInput();
+                UpdateInputControlKeys();
                 #endif
             }
         }
@@ -107,7 +108,6 @@ namespace UnityStandardAssets.CrossPlatformInput
         {
             return virtualInput.GetButtonDown(name);
         }
-
 
         public static bool GetButtonUp(string name)
         {
