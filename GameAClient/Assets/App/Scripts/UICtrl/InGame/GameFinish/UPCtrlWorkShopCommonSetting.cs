@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using GameA.Game;
+﻿using GameA.Game;
 using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -10,7 +7,6 @@ namespace GameA
     {
         private USCtrlGameSettingItem _playBGMusic_2;
         private USCtrlGameSettingItem _playSoundsEffects_2;
-        private List<Dropdown.OptionData> _optionDatas;
   
         protected override void OnViewCreated()
         {
@@ -59,21 +55,6 @@ namespace GameA
             _playSoundsEffects_2.SetData(GameSettingData.Instance.PlaySoundsEffects, _mainCtrl.OnClickSoundsEffectsButton);
         }
         
-        private void OnResolutionDropdownValueChanged(int arg0)
-        {
-            ScreenResolutionManager.Instance.SetResolution(arg0);
-        }
-
-        private void OnFullScreenToggleValueChanged(bool arg0)
-        {
-            SetFullScreen(arg0);
-        }
-
-        private void SetFullScreen(bool value)
-        {
-            ScreenResolutionManager.Instance.SetFullScreen(value);
-        }
-
         private void UpdateScreenSettingView()
         {
             bool fullScreen = ScreenResolutionManager.Instance.FullScreen;
@@ -81,23 +62,8 @@ namespace GameA
             _cachedView.FullScreenToggle.isOn = fullScreen;
             OnFullScreenToggleValueChanged(fullScreen);
             InitOptions(ScreenResolutionManager.Instance.AllResolutions);
-            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
-        }
-
-        private void InitOptions(List<Resolution> resolutions)
-        {
-            if (_optionDatas != null) return;
-            _optionDatas = new List<Dropdown.OptionData>(resolutions.Count);
-            for (int i = 0; i < resolutions.Count; i++)
-            {
-                _optionDatas.Add(new Dropdown.OptionData(ResolutionToString(resolutions[i])));
-            }
             _cachedView.ResolutionDropdown.options = _optionDatas;
-        }
-
-        private string ResolutionToString(Resolution resolution)
-        {
-            return string.Format("{0}×{1}", resolution.width, resolution.height);
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
         }
     }
 }

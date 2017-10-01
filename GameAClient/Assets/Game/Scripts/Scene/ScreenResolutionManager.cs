@@ -105,7 +105,8 @@ namespace GameA.Game
                 }
             }
             //设置默认分辨率
-            _curResolution = Screen.currentResolution;
+            _curResolution.width = Screen.width;
+            _curResolution.height = Screen.height;
             _curResolutionIndex = IndexOfResolutions(_curResolution, _allResolutions);
             if (_curResolutionIndex >= 0)
             {

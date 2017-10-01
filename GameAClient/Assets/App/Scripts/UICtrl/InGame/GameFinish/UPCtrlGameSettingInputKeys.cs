@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using GameA.Game;
+using SoyEngine;
 
 namespace GameA
 {
@@ -24,7 +25,26 @@ namespace GameA
             _cachedView.RestoreDefaultBtn.onClick.AddListener(OnRestoreDefaultBtn);
             _cachedView.OKBtn_2.onClick.AddListener(OnOKBtn);
             _cachedView.RestoreDefaultBtn_2.onClick.AddListener(OnRestoreDefaultBtn);
+            
+            _cachedView.FullScreenToggle.onValueChanged.AddListener(OnFullScreenToggleValueChanged);
+            _cachedView.ResolutionDropdown.onValueChanged.AddListener(OnResolutionDropdownValueChanged);
+        }
+
+        public override void Open()
+        {
+            base.Open();
+            UpdateScreenSettingView();
         }
         
+        private void UpdateScreenSettingView()
+        {
+            bool fullScreen = ScreenResolutionManager.Instance.FullScreen;
+            _cachedView.WindowScreenToggle.isOn = !fullScreen;
+            _cachedView.FullScreenToggle.isOn = fullScreen;
+            OnFullScreenToggleValueChanged(fullScreen);
+            InitOptions(ScreenResolutionManager.Instance.AllResolutions);
+            _cachedView.ResolutionDropdown.options = _optionDatas;
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
+        }
     }
 }

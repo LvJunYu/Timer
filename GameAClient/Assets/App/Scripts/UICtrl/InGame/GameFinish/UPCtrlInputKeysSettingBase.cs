@@ -1,6 +1,8 @@
-﻿using GameA.Game;
+﻿using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -33,6 +35,7 @@ namespace GameA
         protected USCtrlInputKeySetting[] _usCtrls;
         protected GUIInputCaptor GuiInputCaptor;
         protected Color _settingColor;
+        protected List<Dropdown.OptionData> _optionDatas;
 
         protected override void OnViewCreated()
         {
@@ -121,6 +124,36 @@ namespace GameA
                 USCtrlInputKeySetting.CurSettingUSCtrl.ChangeKeyCode(keyCode);
             }
             CompleteSettingInputKey();
+        }
+        
+        protected void OnResolutionDropdownValueChanged(int arg0)
+        {
+            ScreenResolutionManager.Instance.SetResolution(arg0);
+        }
+
+        protected void OnFullScreenToggleValueChanged(bool arg0)
+        {
+            SetFullScreen(arg0);
+        }
+
+        private void SetFullScreen(bool value)
+        {
+            ScreenResolutionManager.Instance.SetFullScreen(value);
+        }
+
+        protected void InitOptions(List<Resolution> resolutions)
+        {
+            if (_optionDatas != null) return;
+            _optionDatas = new List<Dropdown.OptionData>(resolutions.Count);
+            for (int i = 0; i < resolutions.Count; i++)
+            {
+                _optionDatas.Add(new Dropdown.OptionData(ResolutionToString(resolutions[i])));
+            }
+        }
+
+        private string ResolutionToString(Resolution resolution)
+        {
+            return string.Format("{0}×{1}", resolution.width, resolution.height);
         }
     }
 }
