@@ -11,12 +11,12 @@ namespace GameA.Game
         private bool _hasTurnBack;
         private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int _patrolTime = 70;
-        
+
         public override bool CanDashBrick
         {
             get { return _eMonsterState == EMonsterState.Chase; }
         }
-        
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -24,7 +24,7 @@ namespace GameA.Game
                 return false;
             }
             _maxSpeedX = 50;
-            _intelligenc = 0;//智商为0，每次犯傻必回头，作为巡逻
+            _intelligenc = 0; //智商为0，每次犯傻必回头，作为巡逻
             return true;
         }
 
@@ -110,7 +110,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1&& !unit.CanCross)
+                    if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                     {
                         if (unit.IsMain)
                         {
@@ -149,6 +149,14 @@ namespace GameA.Game
                 return false;
             }
             if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
+            {
+                return false;
+            }
+            //若老虎背对玩家不会攻击
+            if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                _moveDirection == EMoveDirection.Right ||
+                CenterDownPos.x <= PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                _moveDirection == EMoveDirection.Left)
             {
                 return false;
             }
