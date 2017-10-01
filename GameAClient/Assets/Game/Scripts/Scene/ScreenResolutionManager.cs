@@ -56,10 +56,10 @@ namespace GameA.Game
             {
                 int width = resolutions[i].width;
                 int height = resolutions[i].height;
-                if (width > Screen.currentResolution.width || height > Screen.currentResolution.height)
-                {
-                    continue;
-                }
+//                if (width > Screen.currentResolution.width || height > Screen.currentResolution.height)
+//                {
+//                    continue;
+//                }
                 bool canAdd = false;
                 if (width / (float) 16 == height / (float) 9 || width / (float) 16 == height / (float) 10)
                 {
@@ -97,7 +97,7 @@ namespace GameA.Game
             {
                 _curResolution.width = PlayerPrefs.GetInt(ScreenWidthTag);
                 _curResolution.height = PlayerPrefs.GetInt(ScreenHeightTag);
-                _curResolutionIndex = CheckContaionResolution(_curResolution, _allResolutions);
+                _curResolutionIndex = IndexOfResolutions(_curResolution, _allResolutions);
                 if (_curResolutionIndex >= 0)
                 {
                     _curResolution = _allResolutions[_curResolutionIndex];
@@ -105,9 +105,8 @@ namespace GameA.Game
                 }
             }
             //设置默认分辨率
-            _curResolution.width = Screen.width;
-            _curResolution.height = Screen.height;
-            _curResolutionIndex = CheckContaionResolution(_curResolution, _allResolutions);
+            _curResolution = Screen.currentResolution;
+            _curResolutionIndex = IndexOfResolutions(_curResolution, _allResolutions);
             if (_curResolutionIndex >= 0)
             {
                 _curResolution = _allResolutions[_curResolutionIndex];
@@ -172,7 +171,7 @@ namespace GameA.Game
             return r1.width == r2.width && r1.height == r2.height;
         }
 
-        private int CheckContaionResolution(Resolution r, List<Resolution> resolutions)
+        private int IndexOfResolutions(Resolution r, List<Resolution> resolutions)
         {
             for (int i = 0; i < resolutions.Count; i++)
             {
