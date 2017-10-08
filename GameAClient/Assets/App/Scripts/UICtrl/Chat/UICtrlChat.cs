@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -8,6 +10,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlChat : UICtrlAnimationBase<UIViewChat>
     {
+        private bool _refreshScrollbar;
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlChat>();
@@ -20,6 +23,23 @@ namespace GameA
             YIMManager.Instance.SetCtrl(this);
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.SendTexBtn.onClick.AddListener(OnSendTexBtn);
+            _cachedView.ScrollRect.onValueChanged.AddListener(OnScrollRectValueChanged);
+        }
+
+        private void OnScrollRectValueChanged(Vector2 arg0)
+        {
+            //只在增加内容时滚到最下
+            if (_refreshScrollbar)
+            {
+                _cachedView.Scrollbar.value = 0;
+                _refreshScrollbar = false;
+            }
+        }
+
+        private void Refresh()
+        {
+            _cachedView.VerticalLayoutGroup.enabled = true;
+            _cachedView.ContentSizeFitter.enabled = true;
         }
 
         private void OnSendTexBtn()
@@ -27,7 +47,11 @@ namespace GameA
             if (string.IsNullOrEmpty(_cachedView.InptField.text)) return;
             YIMManager.Instance.SendTextToRoom(_cachedView.InptField.text, YIMManager.Instance.WorldChatRoomId);
             _cachedView.InptField.text = string.Empty;
-            _cachedView.Scrollbar.value = 0;
+            //刷新Layout，先关闭ContentSizeFitter，否则显示不正确
+            _cachedView.ContentSizeFitter.enabled = false;
+            _cachedView.VerticalLayoutGroup.enabled = false;
+            _refreshScrollbar = true;
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(Refresh));
         }
 
         protected override void OnOpen(object parameter)
@@ -49,11 +73,17 @@ namespace GameA
             _groupId = (int) EUIGroupType.PopUpUI;
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            YIMManager.Instance.Destroy();
+        }
+
         public void ShowStatus(string msg)
         {
             CreateUMCtrlChatTalkItem().ShowStatus(msg);
         }
-        
+
         public void ShowTalkText(string msg)
         {
             CreateUMCtrlChatTalkItem().ShowText(msg);
@@ -75,7 +105,7 @@ namespace GameA
             else
             {
                 umCtrlChatTalkItem = new UMCtrlChatTalkItem();
-                umCtrlChatTalkItem.Init(_cachedView.ContentSizeFitter.rectTransform(),ResScenary);
+                umCtrlChatTalkItem.Init(_cachedView.ContentSizeFitter.rectTransform(), ResScenary);
                 _umCtrlChatTalkItemCache.Add(umCtrlChatTalkItem);
             }
             return umCtrlChatTalkItem;

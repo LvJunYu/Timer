@@ -45,13 +45,12 @@ public class YIMManager :
             if (null == _instance)
             {
                 _instance = new YIMManager();
-                _instance.Init();
             }
             return _instance;
         }
     }
 
-    private void Init()
+    private YIMManager()
     {
         //注册回调
         IMAPI.Instance().SetLoginListen(this);
@@ -103,17 +102,17 @@ public class YIMManager :
         LogHelper.Debug("leavechatroom");
     }
 
+    public void SendTextMessageToUser(string content, string userId)
+    {
+        SendTextMessage(content, userId, ChatType.PrivateChat);
+    }
+    
     public void SendTextToRoom(string content, string roomId)
     {
         SendTextMessage(content, roomId, ChatType.RoomChat);
     }
 
-    public void SendTextMessageToUser(string content, string userId)
-    {
-        SendTextMessage(content, userId, ChatType.PrivateChat);
-    }
-
-    public void SendTextMessage(string content, string id, ChatType chatType)
+    private void SendTextMessage(string content, string id, ChatType chatType)
     {
         _myMessage.Clear();
         _myMessage.id = 0;
@@ -126,6 +125,28 @@ public class YIMManager :
         ShowMsg(_myMessage);
     }
 
+    public void StartAudioRecordToUser(string userId)
+    {
+        StartAudioRecord(userId, ChatType.PrivateChat);
+    }
+    
+    public void StartAudioRecordToRoom(string roomId)
+    {
+        StartAudioRecord(roomId, ChatType.RoomChat);
+    }
+
+    private void StartAudioRecord(string id, ChatType chatType)
+    {
+        ulong iRequestID = 0;
+        ErrorCode errorcode = IMAPI.Instance().SendAudioMessage(id, chatType, ref iRequestID);
+        LogHelper.Debug("sendmessage: RequestID:" + iRequestID + "errorcode: " + errorcode);
+    }
+
+    public void StopAudioMessage()
+    {
+        IMAPI.Instance().StopAudioMessage("");
+    }
+    
     public void Filter(string content)
     {
         ShowStatus(IMAPI.GetFilterText(content));
@@ -182,6 +203,7 @@ public class YIMManager :
         //如果自己发送的语音消息发送成功，就播放出来
         if (errorcode == ErrorCode.Success)
         {
+            ShowStatus("OnSendAudioMessageStatus 识别结果:" + strText);
             YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
         }
     }
@@ -213,6 +235,7 @@ public class YIMManager :
                             voiceMsg.RecvID + " 时长:" + voiceMsg.Duration);
             //下载收到的语音消息
             IMAPI.Instance().DownloadAudioFile(voiceMsg.RequestID, GetUniqAudioPath());
+            ShowStatus("OnRecvMessage voice 文本识别结果:" + voiceMsg.Text);
         }
     }
 
@@ -319,17 +342,7 @@ public class YIMManager :
                System.Guid.NewGuid().ToString().Replace("-", "") + ".wav";
     }
 
-    private void OnApplicationQuit()
-    {
-        Dispose();
-    }
-
-    private void OnDestroy()
-    {
-        Dispose();
-    }
-
-    private void Dispose()
+    public void Destroy()
     {
 #if UNITY_EDITOR
         _manualLogout = true;

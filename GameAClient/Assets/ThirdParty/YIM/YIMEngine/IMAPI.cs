@@ -835,7 +835,7 @@ namespace YIMEngine{
 				}
 			}
 			#endif
-			Debug.Log ("start init");
+//			Debug.Log ("start init");
 
 			ErrorCode code = (ErrorCode)IM_Init (strAppKey, strSecrect);
             if(code == ErrorCode.Success){
@@ -1457,7 +1457,7 @@ namespace YIMEngine{
 		//login
 		public ErrorCode Login(string strYouMeID,string strPasswd,string strToken="")
 		{
-            Debug.Log("start login");
+//            Debug.Log("start login");
             return (ErrorCode)IM_Login(strYouMeID,strPasswd,strToken);
 		}
 
