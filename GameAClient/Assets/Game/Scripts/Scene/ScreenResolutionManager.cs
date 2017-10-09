@@ -56,10 +56,10 @@ namespace GameA.Game
             {
                 int width = resolutions[i].width;
                 int height = resolutions[i].height;
-//                if (width > Screen.currentResolution.width || height > Screen.currentResolution.height)
-//                {
-//                    continue;
-//                }
+                if (width > Screen.currentResolution.width || height > Screen.currentResolution.height)
+                {
+                    continue;
+                }
                 bool canAdd = false;
                 if (width / (float) 16 == height / (float) 9 || width / (float) 16 == height / (float) 10)
                 {

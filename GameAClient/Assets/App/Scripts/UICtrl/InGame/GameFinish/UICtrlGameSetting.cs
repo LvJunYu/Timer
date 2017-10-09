@@ -82,7 +82,10 @@ namespace GameA
         protected override void OnClose()
         {
             GameSettingData.Instance.Save();
-            _upCtrlGameSettingInputKeys.Close();
+            if (_upCtrlGameSettingInputKeys != null)
+            {
+                _upCtrlGameSettingInputKeys.Close();
+            }
             if (PlayMode.Instance == null)
             {
                 return;

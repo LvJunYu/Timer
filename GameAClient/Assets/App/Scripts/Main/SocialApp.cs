@@ -157,7 +157,7 @@ namespace GameA
             AppData.Instance.Init();
 //            ShareUtil.Init();
 //            RoomManager.Instance.Init();
-
+            YIMManager.Instance.Init();
             GetUserData ();
         }
 
