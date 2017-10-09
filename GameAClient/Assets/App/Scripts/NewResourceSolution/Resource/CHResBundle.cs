@@ -176,6 +176,7 @@ namespace NewResourceSolution
                 }
 //                LogHelper.Info ("Decompress file done");
             }
+            CompressType = EAssetBundleCompressType.NoCompress;
             FileLocation = EFileLocation.Persistent;
             return true;
         }
@@ -314,7 +315,7 @@ namespace NewResourceSolution
 
     public class BundleDownloader
     {
-        private static long s_webRequestTimeoutInMilliSeconds = 3000;
+        private static long s_webRequestTimeoutInMilliSeconds = 20000;
         private static string s_webRequestTimeoutErrorInfo = "{0} www time out.";
         private static string s_sizeNotMatchErrorInfo = "{0} download size not match.";
         private static string s_webRequestMd5CheckFailedErrorInfo = "{0} www md5 check failed.";
