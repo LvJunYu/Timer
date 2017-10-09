@@ -65,12 +65,10 @@ namespace GameA.Game
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
         {
-            if (ELocalDataState.LDS_UnCreated == _project.LocalDataState)
+            if (string.IsNullOrEmpty(_project.Name))
             {
                 _project.Name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
-                _project.Summary = "这个家伙没写简介";
             }
-
             if (NeedSave || ELocalDataState.LDS_UnCreated == _project.LocalDataState)
             {
                 Save(
