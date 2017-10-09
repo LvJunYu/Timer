@@ -107,7 +107,10 @@ namespace GameA
 						LocalUser.Instance.UserGuid,
 						_currentChapter,
 						() => {
-							RefreshChapterInfo ();
+							if (_cachedView)
+							{
+								RefreshChapterInfo ();
+							}
 						}, null
 					);
 				}
@@ -498,7 +501,10 @@ namespace GameA
 						LocalUser.Instance.UserGuid,
 						_currentChapter,
 						() => {
-							RefreshChapterInfo ();
+							if (_cachedView)
+							{
+								RefreshChapterInfo ();
+							}
 						}, null
 					);
 				}

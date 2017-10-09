@@ -26,6 +26,10 @@ namespace GameA.Game
 			yield return null;
 		}
 
+	    public virtual bool HasNext()
+	    {
+		    return GameManager.Instance.HasNext();
+	    }
 
         public virtual bool PlayNext(Action successCb, Action failedCb)
         {

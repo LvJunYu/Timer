@@ -104,9 +104,15 @@ namespace GameA
 
         private IEnumerator DoFunc()
         {
-            _cachedView.AvatarImage.SetActiveEx(false);
+            if (_cachedView)
+            {
+                _cachedView.AvatarImage.SetActiveEx(false);
+            }
             yield return null;
-            _cachedView.AvatarImage.SetActiveEx(true);
+            if (_cachedView)
+            {
+                _cachedView.AvatarImage.SetActiveEx(true);
+            }
         }
 
         protected override void InitGroupId()

@@ -186,11 +186,7 @@ namespace GameA
 
         private EAdventureProjectType JudgeBonus()
         {
-            if (_isBonus)
-                return EAdventureProjectType.APT_Bonus;
-            if (_isBonus == false)
-                return EAdventureProjectType.APT_Normal;
-            return EAdventureProjectType.APT_None;
+            return _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
         }
 
         private void InitPanel()
@@ -280,10 +276,9 @@ namespace GameA
 
         private void OnPlayBtn()
         {
-            if (!_isBonus && !GameATools.CheckEnergy(_table.EnergyCost))
+            if (_isBonus && !GameATools.CheckEnergy(_table.EnergyCost))
                 return;
-            EAdventureProjectType eAPType =
-                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            EAdventureProjectType eAPType = EAdventureProjectType.APT_Normal;
 
 
             var param = new SituationAdventureParam();
@@ -305,7 +300,7 @@ namespace GameA
                     // set local energy data
                     GameATools.LocalUseEnergy(_table.EnergyCost);
                     SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                    GameManager.Instance.RequestPlayAdvBonus(project, param);
+                    GameManager.Instance.RequestPlayAdvNormal(project, param);
                     SocialApp.Instance.ChangeToGame();
                 },
                 error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }

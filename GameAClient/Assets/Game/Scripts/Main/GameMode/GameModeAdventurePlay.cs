@@ -1,9 +1,9 @@
-﻿using SoyEngine;
-using System;
-using SoyEngine.Proto;
-using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -83,7 +83,7 @@ namespace GameA.Game
         public override void OnGameFailed()
         {
             UICtrlGameFinish.EShowState showState
-                = _startType == GameManager.EStartType.AdventureNormalPlay
+                = _adventureLevelInfo.ProjectType == EAdventureProjectType.APT_Normal
                     ? UICtrlGameFinish.EShowState.AdvNormalLose
                     : UICtrlGameFinish.EShowState.AdvBonusLose;
 
@@ -103,7 +103,7 @@ namespace GameA.Game
         public override void OnGameSuccess()
         {
             UICtrlGameFinish.EShowState showState
-                = _startType == GameManager.EStartType.AdventureNormalPlay
+                = _adventureLevelInfo.ProjectType == EAdventureProjectType.APT_Normal
                     ? UICtrlGameFinish.EShowState.AdvNormalWin
                     : UICtrlGameFinish.EShowState.AdvBonusWin;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
@@ -172,6 +172,77 @@ namespace GameA.Game
             return true;
         }
 
+        public override bool HasNext()
+        {
+            return _adventureLevelInfo.ProjectType != EAdventureProjectType.APT_Bonus
+                   && _adventureLevelInfo.Level != ConstDefineGM2D.AdvNormallevelPerChapter;
+        }
+
+        public override bool PlayNext(Action successCb, Action failedCb)
+        {
+            if (!HasNext())
+            {
+                if (failedCb != null)
+                {
+                    failedCb.Invoke();
+                }
+                return false;
+            }
+            
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
+
+            var section = _adventureLevelInfo.Section;
+            var level = _adventureLevelInfo.Level + 1;
+            var projectType = EAdventureProjectType.APT_Normal;
+            AppData.Instance.AdventureData.PlayAdventureLevel(
+                section,
+                level,
+                projectType,
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    // set local energy data
+                    GameATools.LocalUseEnergy(_adventureLevelInfo.Table.EnergyCost);
+                    var p = AppData.Instance.AdventureData.GetAdvLevelProject(section, projectType, level);
+                    p.PrepareRes(() =>
+                    {
+                        if (successCb != null)
+                        {
+                            successCb.Invoke();
+                        }
+                        GameManager.Instance.RequestStopGame();
+                        SocialGUIManager.Instance.ChangeToAppMode();
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
+                            GC.Collect();
+                            SituationAdventureParam param = new SituationAdventureParam
+                            {
+                                Level = level,
+                                ProjectType = projectType,
+                                Section = section
+                            };
+                            GameManager.Instance.RequestPlayAdvNormal(p, param);
+                            SocialGUIManager.Instance.ChangeToGameMode();
+                        }));
+                    }, () =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        if (failedCb != null)
+                        {
+                            failedCb.Invoke();
+                        }
+                    });
+                },
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (failedCb != null)
+                    {
+                        failedCb.Invoke();
+                    }
+                }
+            );
+            return true;
+        }
 
         private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
         {
