@@ -93,7 +93,7 @@ namespace NewResourceSolution
             {
                 if (null == _filePathServer)
                 {
-                    _filePathServer = StringUtil.Format(StringFormat.FiveLevelPathWithExtention,
+                    _filePathServer = StringUtil.Format(StringFormat.FourLevelPathWithExtention,
                         SocialApp.GetAppServerAddress().GameResoureRoot, ResPath.GetPlatformFolder(), resVersion, AssetBundleName, md5Str);
                 }
                 return _filePathServer;
