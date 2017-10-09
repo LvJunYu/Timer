@@ -103,7 +103,7 @@ namespace GameA
 
         public void ShowReceiveTalk(string msg)
         {
-            CreateUMCtrlChatTalkItem().ShowStatus(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat,
+            CreateUMCtrlChatTalkItem().ShowText(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat,
                 LocalUser.Instance.User.UserInfoSimple.NickName, msg));
             RefreshContent();
         }
