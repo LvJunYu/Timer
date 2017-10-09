@@ -11,53 +11,23 @@ namespace GameA
     public class UICtrlChat : UICtrlAnimationBase<UIViewChat>
     {
         private bool _refreshScrollbar;
-        private void OnCloseBtn()
-        {
-            SocialGUIManager.Instance.CloseUI<UICtrlChat>();
-            YIMManager.Instance.LeaveChatRoom(YIMManager.Instance.WorldChatRoomId);
-        }
+        private List<UMCtrlChatTalkItem> _umCtrlChatTalkItemCache;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             YIMManager.Instance.SetCtrl(this);
+            YIMManager.Instance.JoinChatRoom(YIMManager.Instance.WorldChatRoomId);
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.SendTexBtn.onClick.AddListener(OnSendTexBtn);
+            _cachedView.StartRecordVoiceBtn.onClick.AddListener(OnStartRecordVoiceBtn);
+            _cachedView.SendVoiceBtn.onClick.AddListener(OnSendVoiceBtn);
             _cachedView.ScrollRect.onValueChanged.AddListener(OnScrollRectValueChanged);
-        }
-
-        private void OnScrollRectValueChanged(Vector2 arg0)
-        {
-            //只在增加内容时滚到最下
-            if (_refreshScrollbar)
-            {
-                _cachedView.Scrollbar.value = 0;
-                _refreshScrollbar = false;
-            }
-        }
-
-        private void Refresh()
-        {
-            _cachedView.VerticalLayoutGroup.enabled = true;
-            _cachedView.ContentSizeFitter.enabled = true;
-        }
-
-        private void OnSendTexBtn()
-        {
-            if (string.IsNullOrEmpty(_cachedView.InptField.text)) return;
-            YIMManager.Instance.SendTextToRoom(_cachedView.InptField.text, YIMManager.Instance.WorldChatRoomId);
-            _cachedView.InptField.text = string.Empty;
-            //刷新Layout，先关闭ContentSizeFitter，否则显示不正确
-            _cachedView.ContentSizeFitter.enabled = false;
-            _cachedView.VerticalLayoutGroup.enabled = false;
-            _refreshScrollbar = true;
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(Refresh));
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            YIMManager.Instance.JoinChatRoom(YIMManager.Instance.WorldChatRoomId);
             _cachedView.Scrollbar.value = 0;
         }
 
@@ -73,23 +43,76 @@ namespace GameA
             _groupId = (int) EUIGroupType.PopUpUI;
         }
 
-        protected override void OnDestroy()
+        private void OnCloseBtn()
         {
-            base.OnDestroy();
-            YIMManager.Instance.Destroy();
+            SocialGUIManager.Instance.CloseUI<UICtrlChat>();
+//            YIMManager.Instance.LeaveChatRoom(YIMManager.Instance.WorldChatRoomId);
+        }
+
+        private void OnScrollRectValueChanged(Vector2 arg0)
+        {
+            //只在增加内容时滚到最下
+            if (_refreshScrollbar)
+            {
+                _cachedView.Scrollbar.value = 0;
+                _refreshScrollbar = false;
+            }
+        }
+
+        private void RefreshContent(bool showLastContent = true)
+        {
+            //刷新Layout，先关闭ContentSizeFitter，否则显示不正确
+            _cachedView.ContentSizeFitter.enabled = false;
+            _cachedView.VerticalLayoutGroup.enabled = false;
+            _refreshScrollbar = showLastContent;
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+            {
+                _cachedView.VerticalLayoutGroup.enabled = true;
+                _cachedView.ContentSizeFitter.enabled = true;
+            }));
+        }
+
+        private void OnSendTexBtn()
+        {
+            if (string.IsNullOrEmpty(_cachedView.InptField.text)) return;
+            YIMManager.Instance.SendTextToRoom(_cachedView.InptField.text, YIMManager.Instance.WorldChatRoomId);
+            _cachedView.InptField.text = string.Empty;
+        }
+
+        private void OnStartRecordVoiceBtn()
+        {
+            YIMManager.Instance.StartAudioRecordToRoom(YIMManager.Instance.WorldChatRoomId);
+        }
+
+        private void OnSendVoiceBtn()
+        {
+            YIMManager.Instance.StopAudioMessage();
         }
 
         public void ShowStatus(string msg)
         {
             CreateUMCtrlChatTalkItem().ShowStatus(msg);
+            RefreshContent();
         }
 
         public void ShowTalkText(string msg)
         {
             CreateUMCtrlChatTalkItem().ShowText(msg);
+            RefreshContent();
         }
 
-        private List<UMCtrlChatTalkItem> _umCtrlChatTalkItemCache;
+        public void ShowReceiveTalk(string msg)
+        {
+            CreateUMCtrlChatTalkItem().ShowStatus(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat,
+                LocalUser.Instance.User.UserInfoSimple.NickName, msg));
+            RefreshContent();
+        }
+
+        public void ShowVoice(string msg)
+        {
+            CreateUMCtrlChatTalkItem().ShowText(string.Format("语音……\r\n{0}", msg));
+            RefreshContent();
+        }
 
         private UMCtrlChatTalkItem CreateUMCtrlChatTalkItem()
         {

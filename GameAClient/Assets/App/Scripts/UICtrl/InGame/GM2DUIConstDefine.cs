@@ -40,6 +40,7 @@ namespace GameA
 		public const string WinDataValueFormat = "{0}/{1}";
 	    public const string WinDataTimeShowFormat = "{0:D2}:{1:D2}";
 
+		public const string ChatReceiveTextFormat = "{0}:{1}";
 
 		public const string GameFinishTitleSuccess = "成功";
 		public const string GameFinishTitleFailed = "失败";
