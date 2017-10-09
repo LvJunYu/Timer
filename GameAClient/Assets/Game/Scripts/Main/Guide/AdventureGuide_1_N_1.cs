@@ -46,7 +46,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 移动’",
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 移动",
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal)));
                 }
             }
@@ -84,7 +84,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 跳跃’",
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 跳跃",
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
                 }
             }
@@ -125,7 +125,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("同时长按‘{0}’键移动和'{1}'键跳跃可以向前跳跃",
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("同时长按‘{0}’键移动和‘{1}’键跳跃可以向前跳跃",
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
                 }
@@ -172,7 +172,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按‘{0}’键移动同时按两次'{1}'键跳跃可以向前二连跳",
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按‘{0}’键移动同时按两次‘{1}’键跳跃可以向前二连跳",
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
                 }

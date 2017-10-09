@@ -218,7 +218,7 @@ namespace GameA
             helper.AddTask(LocalUser.Instance.LoadWorkshopUnitData);
         }
 
-        public void ReturnToApp(bool withScreenEffect = true)
+        public void ReturnToApp()
         {
             GameManager.Instance.RequestStopGame();
             //JoySceneManager.Instance.LoadEmptyScene();

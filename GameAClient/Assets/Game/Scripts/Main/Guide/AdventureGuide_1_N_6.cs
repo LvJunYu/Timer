@@ -50,7 +50,7 @@ namespace GameA.Game
             {
                 if (flag && !_uiCtrlGameBottomTip.IsOpen)
                 {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("按 ‘{0}’键 喷水’",
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("按 ‘{0}’键 喷水",
                         CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill1)));
                 }
             }

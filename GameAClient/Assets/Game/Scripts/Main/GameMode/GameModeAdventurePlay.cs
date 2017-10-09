@@ -210,8 +210,7 @@ namespace GameA.Game
                         {
                             successCb.Invoke();
                         }
-                        GameManager.Instance.RequestStopGame();
-                        SocialGUIManager.Instance.ChangeToAppMode();
+                        SocialApp.Instance.ReturnToApp();
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
                             GC.Collect();
                             SituationAdventureParam param = new SituationAdventureParam
@@ -221,7 +220,7 @@ namespace GameA.Game
                                 Section = section
                             };
                             GameManager.Instance.RequestPlayAdvNormal(p, param);
-                            SocialGUIManager.Instance.ChangeToGameMode();
+                            SocialApp.Instance.ChangeToGame();
                         }));
                     }, () =>
                     {
