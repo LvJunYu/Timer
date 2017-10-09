@@ -209,7 +209,7 @@ namespace GameA.Game
                 if (_animation != null && !_animation.IsPlaying("Brake3"))
                 {
                     _animation.PlayOnce("Brake3");
-//                    _justPlayBrakeAnim = true;
+                    _justPlayBrakeAnim = true;
                 }
             }
         }
@@ -224,7 +224,10 @@ namespace GameA.Game
             _timerRun = _patrolTime;
         }
 
-//        private bool _justPlayBrakeAnim;
+        private bool _justPlayBrakeAnim;
+
+        private int _timeOverturn;
+
         protected override void UpdateMonsterView(float deltaTime)
         {
             if (_animation != null)
@@ -243,24 +246,33 @@ namespace GameA.Game
                             _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
                 }
+                if (_animation.IsPlaying("Brake3"))
+                {
+                    if (_justPlayBrakeAnim)
+                    {
+                        _justPlayBrakeAnim = false; //第一帧不翻转
+                    }
+                    else
+                    {
+                        _timeOverturn = 3; //动作结束后延迟3帧转身
+                    }
+                }
+                else if (_timeOverturn > 0)
+                {
+                    _timeOverturn--;
+                }
+                if (_eMonsterState != EMonsterState.Brake)
+                {
+                    _timeOverturn = 0;
+                }
                 //刹车动画反转
-//                if (_animation.IsPlaying("Brake3"))
-//                {
-//                    if (_justPlayBrakeAnim)
-//                    {
-//                        _justPlayBrakeAnim = false;//第一帧不翻转
-//                    }
-//                    else
-//                    {
-//                        if (_trans != null)
-//                        {
-//                            Vector3 euler = _trans.eulerAngles;
-//                            _trans.eulerAngles = euler.y == 0
-//                                ? new Vector3(euler.x, 180, euler.z)
-//                                : new Vector3(euler.x, 0, euler.z);
-//                        }
-//                    }
-//                }
+                if (_timeOverturn > 0 && _trans != null)
+                {
+                    Vector3 euler = _trans.eulerAngles;
+                    _trans.eulerAngles = euler.y == 0
+                        ? new Vector3(euler.x, 180, euler.z)
+                        : new Vector3(euler.x, 0, euler.z);
+                }
             }
         }
     }
