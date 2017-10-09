@@ -258,7 +258,7 @@ namespace NewResourceSolution
                 CachedBundle.Unload(force);
                 CachedBundle = null;
             }
-            LogHelper.Info("UncacheAll {0}", AssetBundleName);
+            LogHelper.Debug("UncacheAll {0}", AssetBundleName);
         }
 
         
