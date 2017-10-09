@@ -46,13 +46,13 @@ namespace GameA
             {
                 if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
-                    _upCtrlWorkShopBasicSetting.Close();
-                    _upCtrlWorkShopWinConditionSetting.Open();
+                    _upCtrlWorkShopBasicSetting.Open();
+                    _upCtrlWorkShopWinConditionSetting.Close();
                 }
                 else
                 {
-                    _upCtrlWorkShopCommonSetting.Close();
-                    _upCtrlWorkShopLevelSetting.Open();
+                    _upCtrlWorkShopCommonSetting.Open();
+                    _upCtrlWorkShopLevelSetting.Close();
                 }
             }
         }
@@ -63,13 +63,13 @@ namespace GameA
             {
                 if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
-                    _upCtrlWorkShopBasicSetting.Open();
-                    _upCtrlWorkShopWinConditionSetting.Close();
+                    _upCtrlWorkShopBasicSetting.Close();
+                    _upCtrlWorkShopWinConditionSetting.Open();
                 }
                 else
                 {
-                    _upCtrlWorkShopCommonSetting.Open();
-                    _upCtrlWorkShopLevelSetting.Close();
+                    _upCtrlWorkShopCommonSetting.Close();
+                    _upCtrlWorkShopLevelSetting.Open();
                 }
             }
         }
@@ -137,8 +137,8 @@ namespace GameA
             InitFinishCondition();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
-            _cachedView.BasicSettingToggle.onValueChanged.AddListener(Toggle01OnValueChanged);
-            _cachedView.WinConditionToggle.onValueChanged.AddListener(Toggle02OnValueChanged);
+            _cachedView.WinConditionToggle.onValueChanged.AddListener(Toggle01OnValueChanged);
+            _cachedView.BasicSettingToggle.onValueChanged.AddListener(Toggle02OnValueChanged);
 
             _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
             _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
@@ -179,8 +179,8 @@ namespace GameA
             _originalDesc = CurProject.Summary;
             SetPlatform(CrossPlatformInputManager.Platform);
             UpdateFinishCondition();
-            //默认显示设置页面
-            _cachedView.BasicSettingToggle.isOn = true;
+            //默认显示关卡页面
+            _cachedView.WinConditionToggle.isOn = true;
             Toggle01OnValueChanged(true);
             _openGamePlaying = false;
             if (GM2DGame.Instance != null)
