@@ -34,7 +34,8 @@ public static class PostProcessBuildCopyStreamingAssets
         {
             CopyOSX(targetPath);
         }
-        else if (target == BuildTarget.StandaloneWindows64)
+        else if (target == BuildTarget.StandaloneWindows64
+                 || target == BuildTarget.StandaloneWindows)
         {
             CopyWin(targetPath);
         }

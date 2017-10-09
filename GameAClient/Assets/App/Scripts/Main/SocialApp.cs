@@ -157,7 +157,9 @@ namespace GameA
             AppData.Instance.Init();
 //            ShareUtil.Init();
 //            RoomManager.Instance.Init();
+#if !UNITY_EDITOR_OSX
             YIMManager.Instance.Init();
+#endif
             GetUserData ();
         }
 
