@@ -46,8 +46,8 @@ namespace GameA
             {
                 if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
-                    _upCtrlWorkShopBasicSetting.Open();
-                    _upCtrlWorkShopWinConditionSetting.Close();
+                    _upCtrlWorkShopWinConditionSetting.Open();
+                    _upCtrlWorkShopBasicSetting.Close();
                 }
                 else
                 {
@@ -63,13 +63,13 @@ namespace GameA
             {
                 if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
                 {
-                    _upCtrlWorkShopBasicSetting.Close();
-                    _upCtrlWorkShopWinConditionSetting.Open();
+                    _upCtrlWorkShopBasicSetting.Open();
+                    _upCtrlWorkShopWinConditionSetting.Close();
                 }
                 else
                 {
-                    _upCtrlWorkShopCommonSetting.Close();
                     _upCtrlWorkShopLevelSetting.Open();
+                    _upCtrlWorkShopCommonSetting.Close();
                 }
             }
         }
@@ -108,7 +108,13 @@ namespace GameA
             _cachedView.PCPannel.SetActive(ePlatform == EPlatform.Standalone);
             if (ePlatform == EPlatform.Standalone)
             {
-                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "关卡设置";
+                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "关卡设置";
+                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "常规设置";
+            }
+            else
+            {
+                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "常规设置";
+                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
             }
         }
 
@@ -137,8 +143,8 @@ namespace GameA
             InitFinishCondition();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
-            _cachedView.WinConditionToggle.onValueChanged.AddListener(Toggle01OnValueChanged);
-            _cachedView.BasicSettingToggle.onValueChanged.AddListener(Toggle02OnValueChanged);
+            _cachedView.Toggle01.onValueChanged.AddListener(Toggle01OnValueChanged);
+            _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
 
             _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
             _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
@@ -155,17 +161,7 @@ namespace GameA
             _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
-        }
-
-        protected override void OnDestroy()
-        {
-            _upCtrlWorkShopBasicSetting.OnDestroy();
-            _upCtrlWorkShopWinConditionSetting.OnDestroy();
-            _upCtrlWorkShopCommonSetting.OnDestroy();
-            _upCtrlWorkShopLevelSetting.OnDestroy();
-            CurProject = null;
-            CurCondition = null;
-            base.OnDestroy();
+            SetPlatform(CrossPlatformInputManager.Platform);
         }
 
         protected override void OnOpen(object parameter)
@@ -177,10 +173,9 @@ namespace GameA
                 CurProject = _gameModeWorkshopEdit.Project;
             _originalTitle = CurProject.Name;
             _originalDesc = CurProject.Summary;
-            SetPlatform(CrossPlatformInputManager.Platform);
             UpdateFinishCondition();
             //默认显示关卡页面
-            _cachedView.WinConditionToggle.isOn = true;
+            _cachedView.Toggle01.isOn = true;
             Toggle01OnValueChanged(true);
             _openGamePlaying = false;
             if (GM2DGame.Instance != null)
@@ -208,6 +203,17 @@ namespace GameA
             }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
+        }
+        
+        protected override void OnDestroy()
+        {
+            _upCtrlWorkShopBasicSetting.OnDestroy();
+            _upCtrlWorkShopWinConditionSetting.OnDestroy();
+            _upCtrlWorkShopCommonSetting.OnDestroy();
+            _upCtrlWorkShopLevelSetting.OnDestroy();
+            CurProject = null;
+            CurCondition = null;
+            base.OnDestroy();
         }
 
         public void OnClickMusicButton(bool isOn)
