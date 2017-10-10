@@ -144,6 +144,32 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureUserData obj)
+        {
+            if (null == obj) return false;
+            if(null != obj.UserEnergyData){
+                if (null == _userEnergyData){
+                    _userEnergyData = new UserEnergy();
+                }
+                _userEnergyData.DeepCopy(obj.UserEnergyData);
+            }
+            if(null != obj.AdventureUserProgress){
+                if (null == _adventureUserProgress){
+                    _adventureUserProgress = new AdventureUserProgress();
+                }
+                _adventureUserProgress.DeepCopy(obj.AdventureUserProgress);
+            }
+            if (null ==  obj.SectionList) return false;
+            if (null ==  _sectionList) {
+                _sectionList = new List<AdventureUserSection>();
+            }
+            _sectionList.Clear();
+            for (int i = 0; i < obj.SectionList.Count; i++){
+                _sectionList.Add(obj.SectionList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AdventureUserData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

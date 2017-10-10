@@ -81,6 +81,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (RewardItem obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_RewardItem msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

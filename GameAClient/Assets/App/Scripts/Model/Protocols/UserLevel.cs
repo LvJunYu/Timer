@@ -180,6 +180,19 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserLevel obj)
+        {
+            if (null == obj) return false;
+            _creatorLevel = obj.CreatorLevel;           
+            _creatorExp = obj.CreatorExp;           
+            _playerLevel = obj.PlayerLevel;           
+            _playerExp = obj.PlayerExp;           
+            _goldCoin = obj.GoldCoin;           
+            _diamond = obj.Diamond;           
+            _friendlinessCoin = obj.FriendlinessCoin;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserLevel msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

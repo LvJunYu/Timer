@@ -168,6 +168,22 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (WorldProjectRecentPlayedUserList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.DataList) return false;
+            if (null ==  _dataList) {
+                _dataList = new List<ProjectRecentPlayedUserData>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < obj.DataList.Count; i++){
+                _dataList.Add(obj.DataList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_WorldProjectRecentPlayedUserList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

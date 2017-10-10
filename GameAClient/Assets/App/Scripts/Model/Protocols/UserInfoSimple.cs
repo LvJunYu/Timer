@@ -179,6 +179,28 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserInfoSimple obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _nickName = obj.NickName;           
+            _headImgUrl = obj.HeadImgUrl;           
+            _sex = obj.Sex;           
+            if(null != obj.RelationWithMe){
+                if (null == _relationWithMe){
+                    _relationWithMe = new UserRelationWithMe();
+                }
+                _relationWithMe.DeepCopy(obj.RelationWithMe);
+            }
+            if(null != obj.LevelData){
+                if (null == _levelData){
+                    _levelData = new UserLevel();
+                }
+                _levelData.DeepCopy(obj.LevelData);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserInfoSimple msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

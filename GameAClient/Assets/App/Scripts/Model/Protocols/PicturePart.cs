@@ -66,6 +66,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (PicturePart obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_PicturePart msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

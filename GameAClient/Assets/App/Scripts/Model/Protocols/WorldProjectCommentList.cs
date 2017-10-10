@@ -221,6 +221,23 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (WorldProjectCommentList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.CommentList) return false;
+            if (null ==  _commentList) {
+                _commentList = new List<ProjectComment>();
+            }
+            _commentList.Clear();
+            for (int i = 0; i < obj.CommentList.Count; i++){
+                _commentList.Add(obj.CommentList[i]);
+            }
+            _totalCount = obj.TotalCount;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_WorldProjectCommentList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

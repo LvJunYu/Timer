@@ -40,6 +40,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (PushData obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_PushData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -165,6 +165,18 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AppData obj)
+        {
+            if (null == obj) return false;
+            _imageUrlRoot = obj.ImageUrlRoot;           
+            _fileUrlRoot = obj.FileUrlRoot;           
+            _gameResRoot = obj.GameResRoot;           
+            _newestAppVersion = obj.NewestAppVersion;           
+            _serverTime = obj.ServerTime;           
+            _aPISupport = obj.APISupport;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AppData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

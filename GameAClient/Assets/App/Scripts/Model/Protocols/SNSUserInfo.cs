@@ -186,6 +186,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (SNSUserInfo obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SNSUserInfo msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

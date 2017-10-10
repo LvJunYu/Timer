@@ -69,6 +69,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AvatarPartDiscountCouponGroup obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_AvatarPartDiscountCouponGroup msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

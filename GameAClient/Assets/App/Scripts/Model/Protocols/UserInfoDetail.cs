@@ -284,6 +284,35 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserInfoDetail obj)
+        {
+            if (null == obj) return false;
+            if(null != obj.UserInfoSimple){
+                if (null == _userInfoSimple){
+                    _userInfoSimple = new UserInfoSimple();
+                }
+                _userInfoSimple.DeepCopy(obj.UserInfoSimple);
+            }
+            _userName = obj.UserName;           
+            _phoneNum = obj.PhoneNum;           
+            _birthDay = obj.BirthDay;           
+            _country = obj.Country;           
+            _province = obj.Province;           
+            _city = obj.City;           
+            _profile = obj.Profile;           
+            _updateTime = obj.UpdateTime;           
+            _roleType = obj.RoleType;           
+            if(null != obj.RelationStatistic){
+                if (null == _relationStatistic){
+                    _relationStatistic = new UserRelationStatistic();
+                }
+                _relationStatistic.DeepCopy(obj.RelationStatistic);
+            }
+            _loginCount = obj.LoginCount;           
+            _lastLoginTime = obj.LastLoginTime;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserInfoDetail msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

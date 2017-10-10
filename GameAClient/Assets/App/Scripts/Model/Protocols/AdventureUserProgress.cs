@@ -165,6 +165,18 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureUserProgress obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _completeSection = obj.CompleteSection;           
+            _completeLevel = obj.CompleteLevel;           
+            _encouragePoint = obj.EncouragePoint;           
+            _sectionKeyCount = obj.SectionKeyCount;           
+            _sectionUnlockProgress = obj.SectionUnlockProgress;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AdventureUserProgress msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

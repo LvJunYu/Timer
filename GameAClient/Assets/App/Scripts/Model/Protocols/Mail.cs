@@ -194,6 +194,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (Mail obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_Mail msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

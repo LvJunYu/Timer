@@ -165,6 +165,18 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserRelationWithMe obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _followMe = obj.FollowMe;           
+            _followedByMe = obj.FollowedByMe;           
+            _isFriend = obj.IsFriend;           
+            _blockedByMe = obj.BlockedByMe;           
+            _friendliness = obj.Friendliness;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserRelationWithMe msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

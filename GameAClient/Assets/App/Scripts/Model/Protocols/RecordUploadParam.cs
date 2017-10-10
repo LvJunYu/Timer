@@ -186,6 +186,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (RecordUploadParam obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_RecordUploadParam msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

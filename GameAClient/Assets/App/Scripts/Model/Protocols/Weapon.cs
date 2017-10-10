@@ -51,6 +51,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (Weapon obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_Weapon msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

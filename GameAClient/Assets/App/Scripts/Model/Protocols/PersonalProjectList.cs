@@ -187,6 +187,22 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (PersonalProjectList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.ProjectList) return false;
+            if (null ==  _projectList) {
+                _projectList = new List<Project>();
+            }
+            _projectList.Clear();
+            for (int i = 0; i < obj.ProjectList.Count; i++){
+                _projectList.Add(obj.ProjectList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_PersonalProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -57,6 +57,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AchievementPushData obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_AchievementPushData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

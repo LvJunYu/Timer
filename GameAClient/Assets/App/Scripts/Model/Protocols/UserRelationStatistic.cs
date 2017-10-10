@@ -135,6 +135,16 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserRelationStatistic obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _followCount = obj.FollowCount;           
+            _followerCount = obj.FollowerCount;           
+            _friendCount = obj.FriendCount;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserRelationStatistic msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

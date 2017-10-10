@@ -149,6 +149,22 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureProjectList obj)
+        {
+            if (null == obj) return false;
+            _version = obj.Version;           
+            _totalSectionCount = obj.TotalSectionCount;           
+            if (null ==  obj.SectionList) return false;
+            if (null ==  _sectionList) {
+                _sectionList = new List<AdventureSection>();
+            }
+            _sectionList.Clear();
+            for (int i = 0; i < obj.SectionList.Count; i++){
+                _sectionList.Add(obj.SectionList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AdventureProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -54,6 +54,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserMatchUnitData obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_UserMatchUnitData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

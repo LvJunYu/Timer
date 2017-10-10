@@ -183,6 +183,23 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (DataExample obj)
+        {
+            if (null == obj) return false;
+            _id = obj.Id;           
+            _name = obj.Name;           
+            _score = obj.Score;           
+            if (null ==  obj.Struct) return false;
+            if (null ==  _struct) {
+                _struct = new List<Struct>();
+            }
+            _struct.Clear();
+            for (int i = 0; i < obj.Struct.Count; i++){
+                _struct.Add(obj.Struct[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_DataExample msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -115,6 +115,21 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (HomePartData obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.ItemDataList) return false;
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<HomePartItem>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < obj.ItemDataList.Count; i++){
+                _itemDataList.Add(obj.ItemDataList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_HomePartData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

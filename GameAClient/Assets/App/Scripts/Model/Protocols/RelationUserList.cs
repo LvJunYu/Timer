@@ -225,6 +225,22 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (RelationUserList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updataTime = obj.UpdataTime;           
+            if (null ==  obj.DataList) return false;
+            if (null ==  _dataList) {
+                _dataList = new List<UserInfoSimple>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < obj.DataList.Count; i++){
+                _dataList.Add(obj.DataList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_RelationUserList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

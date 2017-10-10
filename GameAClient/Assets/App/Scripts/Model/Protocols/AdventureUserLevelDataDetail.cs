@@ -289,6 +289,56 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureUserLevelDataDetail obj)
+        {
+            if (null == obj) return false;
+            if(null != obj.SimpleData){
+                if (null == _simpleData){
+                    _simpleData = new AdventureUserLevelData();
+                }
+                _simpleData.DeepCopy(obj.SimpleData);
+            }
+            if(null != obj.HighScoreRecord){
+                if (null == _highScoreRecord){
+                    _highScoreRecord = new Record();
+                }
+                _highScoreRecord.DeepCopy(obj.HighScoreRecord);
+            }
+            if(null != obj.Star1FlagRecord){
+                if (null == _star1FlagRecord){
+                    _star1FlagRecord = new Record();
+                }
+                _star1FlagRecord.DeepCopy(obj.Star1FlagRecord);
+            }
+            if(null != obj.Star2FlagRecord){
+                if (null == _star2FlagRecord){
+                    _star2FlagRecord = new Record();
+                }
+                _star2FlagRecord.DeepCopy(obj.Star2FlagRecord);
+            }
+            if(null != obj.Star3FlagRecord){
+                if (null == _star3FlagRecord){
+                    _star3FlagRecord = new Record();
+                }
+                _star3FlagRecord.DeepCopy(obj.Star3FlagRecord);
+            }
+            if(null != obj.HighScoreFriendInfo){
+                if (null == _highScoreFriendInfo){
+                    _highScoreFriendInfo = new UserInfoSimple();
+                }
+                _highScoreFriendInfo.DeepCopy(obj.HighScoreFriendInfo);
+            }
+            if (null ==  obj.RecentRecordList) return false;
+            if (null ==  _recentRecordList) {
+                _recentRecordList = new List<Record>();
+            }
+            _recentRecordList.Clear();
+            for (int i = 0; i < obj.RecentRecordList.Count; i++){
+                _recentRecordList.Add(obj.RecentRecordList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AdventureUserLevelDataDetail msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

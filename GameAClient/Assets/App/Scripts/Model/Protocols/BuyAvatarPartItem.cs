@@ -96,6 +96,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (BuyAvatarPartItem obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_BuyAvatarPartItem msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

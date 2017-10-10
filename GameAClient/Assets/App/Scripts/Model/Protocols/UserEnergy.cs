@@ -135,6 +135,16 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserEnergy obj)
+        {
+            if (null == obj) return false;
+            _energy = obj.Energy;           
+            _energyBoostingEndTime = obj.EnergyBoostingEndTime;           
+            _energyLastRefreshTime = obj.EnergyLastRefreshTime;           
+            _energyCapacity = obj.EnergyCapacity;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserEnergy msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

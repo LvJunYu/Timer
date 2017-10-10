@@ -531,6 +531,56 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (Project obj)
+        {
+            if (null == obj) return false;
+            _projectId = obj.ProjectId;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _name = obj.Name;           
+            _summary = obj.Summary;           
+            _iconPath = obj.IconPath;           
+            _resPath = obj.ResPath;           
+            _createTime = obj.CreateTime;           
+            _localDataState = obj.LocalDataState;           
+            _projectStatus = obj.ProjectStatus;           
+            _localUpdateTime = obj.LocalUpdateTime;           
+            _programVersion = obj.ProgramVersion;           
+            _resourcesVersion = obj.ResourcesVersion;           
+            _isValid = obj.IsValid;           
+            if(null != obj.ExtendData){
+                if (null == _extendData){
+                    _extendData = new ProjectExtend();
+                }
+                _extendData.DeepCopy(obj.ExtendData);
+            }
+            if(null != obj.ProjectUserData){
+                if (null == _projectUserData){
+                    _projectUserData = new ProjectUserData();
+                }
+                _projectUserData.DeepCopy(obj.ProjectUserData);
+            }
+            _passFlag = obj.PassFlag;           
+            _recordUsedTime = obj.RecordUsedTime;           
+            _targetSection = obj.TargetSection;           
+            _targetLevel = obj.TargetLevel;           
+            _mapWidth = obj.MapWidth;           
+            _mapHeight = obj.MapHeight;           
+            _totalUnitCount = obj.TotalUnitCount;           
+            _addCount = obj.AddCount;           
+            _deleteCount = obj.DeleteCount;           
+            _modifyCount = obj.ModifyCount;           
+            _timeLimit = obj.TimeLimit;           
+            _winCondition = obj.WinCondition;           
+            _updateTime = obj.UpdateTime;           
+            _publishTime = obj.PublishTime;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_Project msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

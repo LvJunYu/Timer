@@ -130,6 +130,22 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserUsingPictureFullData obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.ItemDataList) return false;
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<PictureFull>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < obj.ItemDataList.Count; i++){
+                _itemDataList.Add(obj.ItemDataList[i]);
+            }
+            _slotCount = obj.SlotCount;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserUsingPictureFullData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -72,6 +72,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureSection obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_AdventureSection msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

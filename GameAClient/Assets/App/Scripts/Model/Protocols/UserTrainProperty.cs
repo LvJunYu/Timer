@@ -145,6 +145,23 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserTrainProperty obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _trainPoint = obj.TrainPoint;           
+            if (null ==  obj.ItemDataList) return false;
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<TrainProperty>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < obj.ItemDataList.Count; i++){
+                _itemDataList.Add(obj.ItemDataList[i]);
+            }
+            _grade = obj.Grade;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserTrainProperty msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

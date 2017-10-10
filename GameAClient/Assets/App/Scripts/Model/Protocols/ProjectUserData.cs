@@ -141,6 +141,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (ProjectUserData obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_ProjectUserData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

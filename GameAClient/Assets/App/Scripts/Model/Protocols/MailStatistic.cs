@@ -105,6 +105,14 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (MailStatistic obj)
+        {
+            if (null == obj) return false;
+            _totalCount = obj.TotalCount;           
+            _unreadCount = obj.UnreadCount;           
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_MailStatistic msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

@@ -115,6 +115,21 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (UserAvatarPartDiscountCoupon obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.GroupList) return false;
+            if (null ==  _groupList) {
+                _groupList = new List<AvatarPartDiscountCouponGroup>();
+            }
+            _groupList.Clear();
+            for (int i = 0; i < obj.GroupList.Count; i++){
+                _groupList.Add(obj.GroupList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_UserAvatarPartDiscountCoupon msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

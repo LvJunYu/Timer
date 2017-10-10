@@ -174,6 +174,30 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (AdventureUserSection obj)
+        {
+            if (null == obj) return false;
+            _section = obj.Section;           
+            _treasureMapBuyCount = obj.TreasureMapBuyCount;           
+            if (null ==  obj.NormalLevelUserDataList) return false;
+            if (null ==  _normalLevelUserDataList) {
+                _normalLevelUserDataList = new List<AdventureUserLevelDataDetail>();
+            }
+            _normalLevelUserDataList.Clear();
+            for (int i = 0; i < obj.NormalLevelUserDataList.Count; i++){
+                _normalLevelUserDataList.Add(obj.NormalLevelUserDataList[i]);
+            }
+            if (null ==  obj.BonusLevelUserDataList) return false;
+            if (null ==  _bonusLevelUserDataList) {
+                _bonusLevelUserDataList = new List<AdventureUserLevelDataDetail>();
+            }
+            _bonusLevelUserDataList.Clear();
+            for (int i = 0; i < obj.BonusLevelUserDataList.Count; i++){
+                _bonusLevelUserDataList.Add(obj.BonusLevelUserDataList[i]);
+            }
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_SC_DAT_AdventureUserSection msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();

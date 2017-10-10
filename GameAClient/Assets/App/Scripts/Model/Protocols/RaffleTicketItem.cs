@@ -66,6 +66,12 @@ namespace GameA
             return true;
         }
 
+        public bool DeepCopy (RaffleTicketItem obj)
+        {
+            if (null == obj) return false;
+            return true;
+        }
+
         public void OnSyncFromParent (Msg_RaffleTicketItem msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
