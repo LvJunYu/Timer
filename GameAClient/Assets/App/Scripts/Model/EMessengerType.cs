@@ -135,6 +135,13 @@ namespace GameA
         //修改按键
         public static int OnGetInputKeyCode = SoyEngine.EMessengerType.NextId++;
         public static int OnInputKeyCodeChanged = SoyEngine.EMessengerType.NextId++;
+        
+        //聊天
+        public static int OnSendText = SoyEngine.EMessengerType.NextId++;
+        public static int OnSendVoice = SoyEngine.EMessengerType.NextId++;
+        public static int OnReceiveText = SoyEngine.EMessengerType.NextId++;
+        public static int OnReceiveVoice = SoyEngine.EMessengerType.NextId++;
+        public static int OnReceiveStatus = SoyEngine.EMessengerType.NextId++;
     }
 }
 

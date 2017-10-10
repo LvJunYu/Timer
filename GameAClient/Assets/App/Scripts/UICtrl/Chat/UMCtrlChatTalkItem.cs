@@ -36,5 +36,10 @@
             _cachedView.TalkTxt.text = msg;
             _cachedView.TalkImg.enabled = false;
         }
+
+        public void UpdateText(string msg)
+        {
+            _cachedView.TalkTxt.text = msg;
+        }
     }
 }

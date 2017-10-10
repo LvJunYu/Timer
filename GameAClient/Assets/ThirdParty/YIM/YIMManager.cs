@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GameA;
 using SoyEngine;
 using YIMEngine;
+using EMessengerType = GameA.EMessengerType;
 
 public class YIMManager :
     LoginListen,
@@ -30,10 +31,9 @@ public class YIMManager :
         }
     }
 
-    public readonly string WorldChatRoomId = "1001";
+    public readonly string WorldChatRoomId = "10001";
     private Dictionary<ulong, MyMessage> messageCahceList = new Dictionary<ulong, MyMessage>(); //记录消息状态
     private MyMessage _myMessage = new MyMessage();
-    private UICtrlChat _uiCtrlChat;
     private bool _manualLogout;
     private long _userid;
     private static YIMManager _instance;
@@ -65,23 +65,22 @@ public class YIMManager :
         Login();
         Messenger.RemoveListener(SoyEngine.EMessengerType.OnAccountLogout, Dispose);
         Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Dispose);
-    }
-
-    public void SetCtrl(UICtrlChat uiCtrlChat)
-    {
-        _uiCtrlChat = uiCtrlChat;
+        JoinChatRoom(WorldChatRoomId);
     }
 
     private void ShowStatus(string msg)
     {
-        if (_uiCtrlChat == null) return;
-        _uiCtrlChat.ShowStatus(msg);
+        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
     }
 
-    private void ShowReceiveTalk(string msg)
+    private void ReceiveText(string msg,string senderId)
     {
-        if (_uiCtrlChat == null) return;
-        _uiCtrlChat.ShowReceiveTalk(msg);
+        Messenger<string,string>.Broadcast(EMessengerType.OnReceiveText, msg,senderId);
+    }
+    
+    private void ReceiveVoice(string msg,string senderId)
+    {
+        Messenger<string,string>.Broadcast(EMessengerType.OnReceiveVoice, msg,senderId);
     }
 
     public void Login()
@@ -212,7 +211,7 @@ public class YIMManager :
         //如果自己发送的语音消息发送成功，就播放出来
         if (errorcode == ErrorCode.Success)
         {
-            ShowVoice("识别结果:" + strText);
+            ShowVoice(strText);
             YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
         }
     }
@@ -227,7 +226,7 @@ public class YIMManager :
         if (message.MessageType == MessageBodyType.TXT)
         {
             TextMessage textMsg = (TextMessage) message;
-            ShowReceiveTalk(textMsg.Content);
+            ReceiveText(textMsg.Content, textMsg.SenderID);
             LogHelper.Debug("OnRecvMessage text:" + textMsg.Content + " send:" + textMsg.SenderID + "recv:" +
                             textMsg.RecvID);
         }
@@ -244,7 +243,7 @@ public class YIMManager :
                             voiceMsg.RecvID + " 时长:" + voiceMsg.Duration);
             //下载收到的语音消息
             IMAPI.Instance().DownloadAudioFile(voiceMsg.RequestID, GetUniqAudioPath());
-            ShowStatus("OnRecvMessage voice 文本识别结果:" + voiceMsg.Text);
+            ReceiveVoice(voiceMsg.Text, voiceMsg.SenderID);
         }
     }
 
@@ -341,15 +340,13 @@ public class YIMManager :
     private void ShowTalk(string msg)
     {
         //这个函数是假设用来添加消息到UI上
-        if (_uiCtrlChat == null) return;
-        _uiCtrlChat.ShowTalkText(msg);
+        Messenger<string>.Broadcast(EMessengerType.OnSendText,msg);
     }
-    
+
     private void ShowVoice(string msg)
     {
         //这个函数是假设用来添加消息到UI上
-        if (_uiCtrlChat == null) return;
-        _uiCtrlChat.ShowVoice(msg);
+        Messenger<string>.Broadcast(EMessengerType.OnSendVoice,msg);
     }
 
     private string GetUniqAudioPath()
@@ -366,5 +363,6 @@ public class YIMManager :
 #else
         IMAPI.Instance().UnInit();
 #endif
+        LeaveChatRoom(WorldChatRoomId);
     }
 }

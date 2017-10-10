@@ -16,8 +16,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            YIMManager.Instance.SetCtrl(this);
-            YIMManager.Instance.JoinChatRoom(YIMManager.Instance.WorldChatRoomId);
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.SendTexBtn.onClick.AddListener(OnSendTexBtn);
             _cachedView.StartRecordVoiceBtn.onClick.AddListener(OnStartRecordVoiceBtn);
@@ -29,6 +27,16 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _cachedView.Scrollbar.value = 0;
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            Messenger<string>.AddListener(EMessengerType.OnReceiveStatus, ShowStatus);
+            Messenger<string>.AddListener(EMessengerType.OnSendText, SendText);
+            Messenger<string, string>.AddListener(EMessengerType.OnReceiveText, ReceiveText);
+            Messenger<string>.AddListener(EMessengerType.OnSendVoice, SendVoice);
+            Messenger<string, string>.AddListener(EMessengerType.OnReceiveVoice, ReceiveVoice);
         }
 
         protected override void SetPartAnimations()
@@ -89,28 +97,66 @@ namespace GameA
             YIMManager.Instance.StopAudioMessage();
         }
 
-        public void ShowStatus(string msg)
+        private void ShowStatus(string msg)
         {
+            if (_cachedView == null)
+            {
+                SocialGUIManager.Instance.CreateView<UICtrlChat>();
+            }
             CreateUMCtrlChatTalkItem().ShowStatus(msg);
             RefreshContent();
         }
 
-        public void ShowTalkText(string msg)
+        private void SendText(string msg)
         {
+            if (_cachedView == null)
+            {
+                SocialGUIManager.Instance.CreateView<UICtrlChat>();
+            }
             CreateUMCtrlChatTalkItem().ShowText(msg);
             RefreshContent();
         }
 
-        public void ShowReceiveTalk(string msg)
+        private void ReceiveText(string msg, string senderId)
         {
-            CreateUMCtrlChatTalkItem().ShowText(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat,
-                LocalUser.Instance.User.UserInfoSimple.NickName, msg));
+            if (_cachedView == null)
+            {
+                SocialGUIManager.Instance.CreateView<UICtrlChat>();
+            }
+//            CreateUMCtrlChatTalkItem().ShowText(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat, senderId, msg));
+            long userId = long.Parse(senderId);
+            UserManager.Instance.GetDataOnAsync(userId,
+                userInfoDetail =>
+                {
+                    CreateUMCtrlChatTalkItem().UpdateText(string.Format(GM2DUIConstDefine.ChatReceiveTextFormat,
+                        userInfoDetail.UserInfoSimple.NickName, msg));
+                });
             RefreshContent();
         }
 
-        public void ShowVoice(string msg)
+        private void SendVoice(string msg)
         {
-            CreateUMCtrlChatTalkItem().ShowText(string.Format("语音……\r\n{0}", msg));
+            if (_cachedView == null)
+            {
+                SocialGUIManager.Instance.CreateView<UICtrlChat>();
+            }
+            CreateUMCtrlChatTalkItem().ShowText(string.Format("(语音)……\r\n 识别结果：{0}", msg));
+            RefreshContent();
+        }
+
+        private void ReceiveVoice(string msg, string senderId)
+        {
+            if (_cachedView == null)
+            {
+                SocialGUIManager.Instance.CreateView<UICtrlChat>();
+            }
+            long userId = long.Parse(senderId);
+            UserManager.Instance.GetDataOnAsync(userId,
+                userInfoDetail =>
+                {
+                    CreateUMCtrlChatTalkItem().UpdateText(string.Format("{0}：(语音)……\r\n 识别结果：{1}",
+                        userInfoDetail.UserInfoSimple.NickName, msg));
+                });
             RefreshContent();
         }
 

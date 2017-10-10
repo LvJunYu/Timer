@@ -74,7 +74,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            Messenger<Table_Achievement>.AddListener(EMessengerType.OnAchieve, OnAchieve);
+            RegisterEvent<Table_Achievement>(EMessengerType.OnAchieve, OnAchieve);
         }
     }
 }
