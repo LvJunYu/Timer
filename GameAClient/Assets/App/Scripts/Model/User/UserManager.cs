@@ -7,61 +7,95 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using GameA.Game;
 using SoyEngine.Proto;
 using SoyEngine;
 
 namespace GameA
 {
-	public class UserManager : ICacheDataManager<UserInfoDetail>
+    public class UserManager : ICacheDataManager<UserInfoDetail>
     {
         public static readonly UserManager Instance = new UserManager();
-		private readonly LRUCache<long, UserInfoDetail> _caches = new LRUCache<long, UserInfoDetail>(ConstDefine.MaxLRUUserCount);
 
-	    //public List<UserInfoDetail> GetFollowList()
-	    //{
-	    //    List<UserInfoDetail> FollowList = new List<UserInfoDetail>();
+        private readonly LRUCache<long, UserInfoDetail> _caches =
+            new LRUCache<long, UserInfoDetail>(ConstDefine.MaxLRUUserCount);
 
-	    //    for (int i = 0; i < _caches.Size(); i++)
-	    //    {
-	    //        var item = _caches.ElementAt(i).Value;
-	    //    }
-	    //    return FollowList;
-
-
-	    //}
-
-	    public override bool TryGetData(long guid,out UserInfoDetail user)
+        public UserInfoDetail UpdateData(UserInfoDetail newData)
         {
-            ReactiveLocalUser ();
+            UserInfoDetail userInfoDetail;
+            if (_caches.TryGetItem(newData.UserInfoSimple.UserId, out userInfoDetail))
+            {
+                userInfoDetail.DeepCopy(newData);
+                return userInfoDetail;
+            }
+            _caches.Insert(newData.UserInfoSimple.UserId, newData);
+            return newData;
+        }
+
+        public UserInfoDetail UpdateData(UserInfoSimple newSimpleData)
+        {
+            UserInfoDetail userInfoDetail;
+            if (_caches.TryGetItem(newSimpleData.UserId, out userInfoDetail))
+            {
+                userInfoDetail.UserInfoSimple.DeepCopy(newSimpleData);
+                return userInfoDetail;
+            }
+            userInfoDetail = new UserInfoDetail();
+            userInfoDetail.UserInfoSimple = newSimpleData;
+            _caches.Insert(newSimpleData.UserId, userInfoDetail);
+            return userInfoDetail;
+        }
+
+        public void GetDataOnAsync(long userId, Action<UserInfoDetail> successCallback, Action failedCallback = null)
+        {
+            UserInfoDetail userInfoDetail;
+            if (TryGetData(userId, out userInfoDetail))
+            {
+                if (successCallback != null)
+                {
+                    successCallback(userInfoDetail);
+                }
+                return;
+            }
+            userInfoDetail = new UserInfoDetail();
+            userInfoDetail.Request(userId, () =>
+            {
+                _caches.Insert(userId, userInfoDetail);
+                if (successCallback != null)
+                {
+                    successCallback(userInfoDetail);
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback();
+                }
+            });
+        }
+
+        public override bool TryGetData(long guid, out UserInfoDetail user)
+        {
             if (_caches.TryGetItem(guid, out user))
             {
                 return true;
             }
-			var msg = LocalCacheManager.Instance.LoadObject<Msg_SC_DAT_UserInfoDetail>(ECacheDataType.CDT_UserData, guid);
-            if (msg == null)
-            {
-                return false;
-            }
-            user = OnSyncUserData(msg);
-            return true;
+            return false;
         }
 
-		public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoDetail msg, bool save = false)
+        public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoDetail msg, bool save = false)
         {
-            ReactiveLocalUser ();
-			UserInfoDetail user;
-			if (!_caches.TryGetItem(msg.UserInfoSimple.UserId, out user))
+            ReactiveLocalUser();
+            UserInfoDetail user;
+            if (!_caches.TryGetItem(msg.UserInfoSimple.UserId, out user))
             {
                 //user = PoolFactory<User>.Get();
-				user = new UserInfoDetail();
-				_caches.Insert(msg.UserInfoSimple.UserId, user);
+                user = new UserInfoDetail();
+                _caches.Insert(msg.UserInfoSimple.UserId, user);
             }
-			//user.OnSyncFromParent(msg);
+            //user.OnSyncFromParent(msg);
             if (save)
             {
-				LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_UserData, msg, msg.UserInfoSimple.UserId);
+                LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_UserData, msg, msg.UserInfoSimple.UserId);
             }
             return user;
         }
@@ -69,7 +103,7 @@ namespace GameA
         public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoSimple msg, bool save = false)
         {
             ReactiveLocalUser();
-            UserInfoSimple userSimple=new UserInfoSimple();
+            UserInfoSimple userSimple = new UserInfoSimple();
             UserInfoDetail user;
             if (!_caches.TryGetItem(msg.UserId, out user))
             {
@@ -84,6 +118,17 @@ namespace GameA
             }
             return user;
         }
+
+        //public List<UserInfoDetail> GetFollowList()
+        //{
+        //    List<UserInfoDetail> FollowList = new List<UserInfoDetail>();
+
+        //    for (int i = 0; i < _caches.Size(); i++)
+        //    {
+        //        var item = _caches.ElementAt(i).Value;
+        //    }
+        //    return FollowList;
+        //}
 
         //		public User OnSyncUserData(Msg_SC_DAT_UserInfoSimple msg)
         //        {
@@ -111,7 +156,6 @@ namespace GameA
         //			user.OnSync(userSimple);
         //			return user;
         //		}
-
 
         public void BatchRequestUserInfo(List<long> userGuidList, bool force, Action onSuccess, Action onError)
         {
@@ -156,7 +200,7 @@ namespace GameA
 //            }
         }
 
-        private void ReactiveLocalUser ()
+        private void ReactiveLocalUser()
         {
 //            if (LocalUser.Instance.UserLegacy != null)
 //            {

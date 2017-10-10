@@ -14,6 +14,13 @@ namespace GameA
 
 	public partial class Record
 	{
+	    private UserInfoDetail _userInfoDetail;
+
+	    public UserInfoDetail UserInfoDetail
+	    {
+	        get { return _userInfoDetail; }
+	    }
+	    
         public byte[] RecordData
         {
             get
@@ -26,7 +33,12 @@ namespace GameA
             }
         }
 
-
+	    protected override void OnSyncPartial ()
+	    {
+	        base.OnSyncPartial ();
+	        _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
+	    }
+	    
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
             PrepareRecord (() => {
@@ -77,7 +89,6 @@ namespace GameA
                     }
                 });
         }
-
 
         public void UpdateFavorite(bool favorite, Action<bool> callback = null)
         {

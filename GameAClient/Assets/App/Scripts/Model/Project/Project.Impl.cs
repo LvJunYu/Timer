@@ -29,9 +29,17 @@ namespace GameA
         private GameTimer _projectInfoRequestTimer;
 
         private AdventureLevelRankList _adventureLevelRankList;
+
+        private UserInfoDetail _userInfoDetail;
+        
         #endregion 变量
 
         #region 属性
+        
+        public UserInfoDetail UserInfoDetail
+        {
+            get { return _userInfoDetail; }
+        }
 
         public AdventureLevelRankList AdventureLevelRankList
         {
@@ -645,6 +653,7 @@ namespace GameA
 				OnSyncProjectExtendData(_extendData);
             }
             FireProjectDataChangeEvent();
+		    _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
 		}
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)

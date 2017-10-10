@@ -10,6 +10,12 @@ namespace GameA
     {
         private List<UserInfoDetail> _followRelationList = new List<UserInfoDetail>();
         private List<UserInfoDetail> _blockRelationList = new List<UserInfoDetail>();
+        private List<UserInfoDetail> _dataDetailList;
+
+        public List<UserInfoDetail> DataDetailList
+        {
+            get { return _dataDetailList; }
+        }
 
         public void RequestFollowList(
             long userId,
@@ -28,17 +34,17 @@ namespace GameA
                 maxCount,
                 orderBy,
                 orderType,
-                    () =>
+                () =>
+                {
+                    for (int i = 0; i < _dataList.Count(); i++)
                     {
-                        for (int i = 0; i < _dataList.Count(); i++)
-                        {
-                            UserInfoDetail _relationitem = new UserInfoDetail(_dataList[i]);
-                            _followRelationList.Add(_relationitem);
-                        }
-                        _dataList.Clear();
-                        successCallback.Invoke();
-
-                    }, failedCallback);
+                        UserInfoDetail _relationitem =
+                            UserManager.Instance.UpdateData(new UserInfoDetail(_dataList[i]));
+                        _followRelationList.Add(_relationitem);
+                    }
+                    _dataList.Clear();
+                    successCallback.Invoke();
+                }, failedCallback);
         }
 
         public void RequestBlockList(
@@ -51,23 +57,22 @@ namespace GameA
         {
             _blockRelationList.Clear();
             Request(
-            userId,
-            ERelationUserType.RUT_BlockByMe,
-            startInx,
-            maxCount,
-            orderBy,
-            orderType,
+                userId,
+                ERelationUserType.RUT_BlockByMe,
+                startInx,
+                maxCount,
+                orderBy,
+                orderType,
                 () =>
                 {
-                    
                     for (int i = 0; i < _dataList.Count(); i++)
                     {
-                        UserInfoDetail _relationitem = new UserInfoDetail(_dataList[i]);
+                        UserInfoDetail _relationitem =
+                            UserManager.Instance.UpdateData(new UserInfoDetail(_dataList[i]));
                         _blockRelationList.Add(_relationitem);
                     }
                     _dataList.Clear();
                     successCallback.Invoke();
-
                 }, failedCallback);
         }
 
@@ -96,9 +101,19 @@ namespace GameA
                 }
             }
         }
+
         protected override void OnSyncPartial()
         {
-            
+            if (_dataList == null) return;
+            if (_dataDetailList == null)
+            {
+                _dataDetailList = new List<UserInfoDetail>(_dataList.Count);
+            }
+            _dataDetailList.Clear();
+            for (int i = 0; i < _dataList.Count; i++)
+            {
+                _dataDetailList.Add(UserManager.Instance.UpdateData(_dataList[i]));
+            }
         }
     }
 }
