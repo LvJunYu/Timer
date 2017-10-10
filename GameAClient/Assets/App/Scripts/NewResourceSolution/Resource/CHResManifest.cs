@@ -139,6 +139,7 @@ namespace NewResourceSolution
             for (int i = 0; i < _bundles.Count; i++)
             {
                 _bundles [i].FileLocation = EFileLocation.Server;
+                _bundles [i].CompressType = EAssetBundleCompressType.LZMA;
             }
             _adamBundleNameList.Clear ();
 //            if (null != _manifestBundle)

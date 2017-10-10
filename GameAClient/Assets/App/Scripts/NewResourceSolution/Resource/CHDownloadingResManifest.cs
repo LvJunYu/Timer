@@ -101,12 +101,13 @@ namespace NewResourceSolution
 				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(bundle.AssetBundleName);
                 if (null != bundleInExistingManifest && EFileLocation.Server != bundleInExistingManifest.FileLocation)
                 {
-                    if (String.CompareOrdinal(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
+                    if (String.CompareOrdinal(_bundles[i].RawMd5, bundleInExistingManifest.RawMd5) == 0)
                     {
                         EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation);
                         if (EFileIntegrity.Integral == integrity)
                         {
                             _bundles[i].FileLocation = bundleInExistingManifest.FileLocation;
+                            _bundles[i].CompressType = bundleInExistingManifest.CompressType;
 							LogHelper.Info("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                         }
                         else
@@ -162,6 +163,7 @@ namespace NewResourceSolution
                     if (EFileIntegrity.Integral == integrity)
                     {
                         _bundles[i].FileLocation = EFileLocation.Persistent;
+                        _bundles[i].CompressType = bundleInExistingManifest.CompressType;
                         LogHelper.Debug("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                     }
                 }
@@ -341,6 +343,10 @@ namespace NewResourceSolution
                     {
                         currentSerializeDownloader = _waitDecompressQueue.Dequeue ();
                         currentSerializeDownloader.BeginDecompressAndSave ();
+                    }
+                    else
+                    {
+                        currentSerializeDownloader = null;
                     }
                 }
                 yield return null;
