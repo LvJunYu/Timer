@@ -25,9 +25,9 @@ namespace GameA.Game
         TigerEat //老虎吃掉
     }
 
-    public enum EHitClayDirection
+    public enum EClayOnWallDirection
     {
-        None, //大于None则黏在墙上
+        None,
         Down,
         Left,
         Right
@@ -42,7 +42,7 @@ namespace GameA.Game
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
-        protected EHitClayDirection _eHitClayDirection;
+        protected EClayOnWallDirection _eClayOnWallDirection;
         protected IntVec2 _hitPos;
         protected bool _isClayOnWall;
 
@@ -65,16 +65,16 @@ namespace GameA.Game
             {
                 if (!value)
                 {
-                    _eHitClayDirection = EHitClayDirection.None;
+                    _eClayOnWallDirection = EClayOnWallDirection.None;
                     _hitPos = IntVec2.zero;
                 }
                 _isClayOnWall = value;
             }
         }
 
-        public EHitClayDirection EHitClayDirection
+        public EClayOnWallDirection EClayOnWallDirection
         {
-            get { return _eHitClayDirection; }
+            get { return _eClayOnWallDirection; }
         }
 
         public override EDieType EDieType

@@ -230,15 +230,15 @@ namespace GameA.Game
             {
                 if (_target is MonsterBase && ((MonsterBase) _target).IsClayOnWall)
                 {
-                    switch (((MonsterBase) _target).EHitClayDirection)
+                    switch (((MonsterBase) _target).EClayOnWallDirection)
                     {
-                        case EHitClayDirection.Down:
+                        case EClayOnWallDirection.Down:
                             path += "Up";
                             break;
-                        case EHitClayDirection.Left:
+                        case EClayOnWallDirection.Left:
                             path += "Right";
                             break;
-                        case EHitClayDirection.Right:
+                        case EClayOnWallDirection.Right:
                             path += "Left";
                             break;
                         default:

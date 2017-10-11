@@ -51,7 +51,7 @@ namespace GameA.Game
                 case EDirectionType.Down:
                     if (other.IsMonster)
                     {
-                       ((MonsterBase)other).ClayOnWall(EHitClayDirection.Down);
+                       ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Down);
                     }
                     else
                     {
@@ -61,7 +61,7 @@ namespace GameA.Game
                 case EDirectionType.Left:
                     if (other.IsMonster)
                     {
-                        ((MonsterBase)other).ClayOnWall(EHitClayDirection.Left);
+                        ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Left);
                     }
                     else
                     {
@@ -71,7 +71,7 @@ namespace GameA.Game
                 case EDirectionType.Right:
                     if (other.IsMonster)
                     {
-                        ((MonsterBase)other).ClayOnWall(EHitClayDirection.Right);
+                        ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Right);
                     }
                     else
                     {
