@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -93,7 +94,6 @@ namespace GameA.Game
                     ChangeWay(_nextMoveDirection);
                 }
             }
-
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
@@ -123,7 +123,7 @@ namespace GameA.Game
                         break;
                     }
                 }
-                //若玩家位置与老虎追逐方向相反，则刹车
+                //检测刹车
                 if (_eMonsterState == EMonsterState.Chase && Mathf.Abs(SpeedX) > 0)
                 {
                     if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
@@ -206,7 +206,7 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
-                if (_animation != null && !_animation.IsPlaying("Brake3"))
+                if (_animation != null && !_animation.IsPlaying("Brake3") && Mathf.Abs(SpeedX) > 20)
                 {
                     _animation.PlayOnce("Brake3");
                     _justPlayBrakeAnim = true;
@@ -241,7 +241,10 @@ namespace GameA.Game
                     if (CanMove && !_animation.IsPlaying("Brake3") && _eMonsterState != EMonsterState.Attack)
                     {
                         if (_eMonsterState == EMonsterState.Brake)
-                            _animation.PlayLoop("Run", 100 * deltaTime);
+                        {
+                            int animSpeed = _onClay ? Mathf.Abs(SpeedX) : 100;
+                            _animation.PlayLoop("Run", animSpeed * deltaTime);
+                        }
                         else
                             _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
@@ -269,7 +272,7 @@ namespace GameA.Game
                 if (_timeOverturn > 0 && _trans != null)
                 {
                     Vector3 euler = _trans.eulerAngles;
-                    _trans.eulerAngles = euler.y == 0
+                    _trans.eulerAngles = Math.Abs(euler.y) < 0.1f
                         ? new Vector3(euler.x, 180, euler.z)
                         : new Vector3(euler.x, 0, euler.z);
                 }
