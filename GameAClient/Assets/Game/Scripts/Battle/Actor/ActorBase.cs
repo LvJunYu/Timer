@@ -22,7 +22,15 @@ namespace GameA.Game
         Water,
         Fire,
         Saw,
-        TigerEat//老虎吃掉
+        TigerEat //老虎吃掉
+    }
+
+    public enum EHitClayDirection
+    {
+        None, //大于None则黏在墙上
+        Down,
+        Left,
+        Right
     }
 
     public class ActorBase : DynamicRigidbody
@@ -34,6 +42,9 @@ namespace GameA.Game
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
+        protected EHitClayDirection _eHitClayDirection;
+        protected IntVec2 _hitPos;
+        protected bool _isClayOnWall;
 
         /// <summary>
         /// 每一帧只检查一个水块
@@ -44,8 +55,27 @@ namespace GameA.Game
 
         private int _damageFrame;
         private int _hpStayTimer;
-        
+
         protected StatusBar _statusBar;
+
+        public bool IsClayOnWall
+        {
+            get { return _isClayOnWall; }
+            set
+            {
+                if (!value)
+                {
+                    _eHitClayDirection = EHitClayDirection.None;
+                    _hitPos = IntVec2.zero;
+                }
+                _isClayOnWall = value;
+            }
+        }
+
+        public EHitClayDirection EHitClayDirection
+        {
+            get { return _eHitClayDirection; }
+        }
 
         public override EDieType EDieType
         {
@@ -687,7 +717,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public void CreateStatusBar()
         {
             if (null != _statusBar)

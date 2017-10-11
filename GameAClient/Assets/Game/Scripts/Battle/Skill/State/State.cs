@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SoyEngine;
 using UnityEngine;
 
@@ -119,6 +120,10 @@ namespace GameA.Game
                         break;
                     case EEffectId.Clay:
                         _target.RemoveEnvState(EEnvState.Clay);
+                        if (_target is MonsterBase)
+                        {
+                            ((MonsterBase)_target).IsClayOnWall = false;
+                        }
                         break;
                     case EEffectId.Stun:
                         _target.RemoveEnvState(EEnvState.Stun);
@@ -223,7 +228,28 @@ namespace GameA.Game
             string path = _tableState.Particle;
             if (_tableState.StateType == (int)EStateType.Clay)
             {
-                path += "Down";
+                if (_target is MonsterBase && ((MonsterBase) _target).IsClayOnWall)
+                {
+                    switch (((MonsterBase) _target).EHitClayDirection)
+                    {
+                        case EHitClayDirection.Down:
+                            path += "Up";
+                            break;
+                        case EHitClayDirection.Left:
+                            path += "Right";
+                            break;
+                        case EHitClayDirection.Right:
+                            path += "Left";
+                            break;
+                        default:
+                            path += "Down";
+                            break;
+                    }
+                }
+                else
+                {
+                    path += "Down";
+                }
             }
             if (!string.IsNullOrEmpty(path))
             {

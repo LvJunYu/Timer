@@ -70,7 +70,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-            if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CanMove)
             {
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,

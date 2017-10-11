@@ -102,7 +102,7 @@ namespace GameA.Game
                 }
             }
             //每5帧检测一次
-            else if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+            else if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CanMove)
             {
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
@@ -170,7 +170,7 @@ namespace GameA.Game
         protected override void CaculateSpeedX(bool air)
         {
             //刹车时减速
-            if (_eMonsterState == EMonsterState.Brake)
+            if (_eMonsterState == EMonsterState.Brake && !IsClayOnWall)
             {
                 //若在空中或冰上不减速
                 if (!_onIce && !air)

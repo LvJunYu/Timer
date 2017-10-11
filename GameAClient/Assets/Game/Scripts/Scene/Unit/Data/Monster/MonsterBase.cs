@@ -16,17 +16,21 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected int _fireTimer;
-        
+
         public override bool CanMove
         {
-            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice);
+            }
         }
 
         protected override bool IsCheckClimb()
         {
             return false;
         }
-        
+
         public override bool CanControlledBySwitch
         {
             get { return true; }
@@ -103,6 +107,43 @@ namespace GameA.Game
             }
         }
 
+        public void ClayOnWall(EHitClayDirection eHitClayDirection)
+        {
+            _eHitClayDirection = eHitClayDirection;
+            IsClayOnWall = true;
+            _hitPos = CenterPos;
+            AddStates(41);
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            //判断黏在墙上若发生位移，则解除黏在墙上
+            if (IsClayOnWall && (_hitPos - CenterPos).SqrMagnitude() >
+                GM2DTools.WorldToTile(0.5f) * GM2DTools.WorldToTile(0.5f))
+            {
+                RemoveStates(41);
+            }
+        }
+
+        protected override void UpdateSpeedY()
+        {
+            base.UpdateSpeedY();
+            if (IsInState(EEnvState.Clay) && _eHitClayDirection > EHitClayDirection.None)
+            {
+                SpeedY = 0;
+            }
+        }
+
+        protected override void CaculateSpeedX(bool air)
+        {
+            base.CaculateSpeedX(air);
+            if (IsInState(EEnvState.Clay) && _eHitClayDirection > EHitClayDirection.None)
+            {
+                SpeedX = 0;
+            }
+        }
+
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
@@ -138,7 +179,7 @@ namespace GameA.Game
             }
             else
             {
-                _dieTime ++;
+                _dieTime++;
                 if (_dieTime == 100)
                 {
                     PlayMode.Instance.DestroyUnit(this);
@@ -163,7 +204,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         protected virtual void OnRightStampedEmpty()
         {
         }
@@ -176,12 +217,12 @@ namespace GameA.Game
         {
             if (_hitUnits != null)
             {
-                if (_moveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
+                if (_moveDirection == EMoveDirection.Left && _hitUnits[(int) EDirectionType.Left] != null)
                 {
                     _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Right);
                 }
-                else if (_moveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
+                else if (_moveDirection == EMoveDirection.Right && _hitUnits[(int) EDirectionType.Right] != null)
                 {
                     _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Left);
@@ -201,15 +242,15 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void OnDead ()
+        protected override void OnDead()
         {
-            base.OnDead ();
-            Messenger<EDieType>.Broadcast (EMessengerType.OnMonsterDead, _eDieType);
+            base.OnDead();
+            Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
         }
 
         protected void SetInput(EInputType eInputType, bool value)
         {
-            _input.CurAppliedInputKeyAry[(int)eInputType] = value;
+            _input.CurAppliedInputKeyAry[(int) eInputType] = value;
         }
     }
 }

@@ -221,7 +221,7 @@ namespace GameA.Game
         protected virtual void OnRun()
         {
             SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
-            if (_timerRun == 0)
+            if (_timerRun == 0 && !_isClayOnWall)
             {
                 int value = Random.Range(0, 10);
                 if (_intelligenc <= value)
