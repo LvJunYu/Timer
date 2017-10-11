@@ -42,10 +42,7 @@ namespace GameA.Game
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
-        protected EClayOnWallDirection _eClayOnWallDirection;
-        protected IntVec2 _hitPos;
-        protected bool _isClayOnWall;
-
+       
         /// <summary>
         /// 每一帧只检查一个水块
         /// </summary>
@@ -57,25 +54,6 @@ namespace GameA.Game
         private int _hpStayTimer;
 
         protected StatusBar _statusBar;
-
-        public bool IsClayOnWall
-        {
-            get { return _isClayOnWall; }
-            set
-            {
-                if (!value)
-                {
-                    _eClayOnWallDirection = EClayOnWallDirection.None;
-                    _hitPos = IntVec2.zero;
-                }
-                _isClayOnWall = value;
-            }
-        }
-
-        public EClayOnWallDirection EClayOnWallDirection
-        {
-            get { return _eClayOnWallDirection; }
-        }
 
         public override EDieType EDieType
         {

@@ -16,6 +16,28 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected int _fireTimer;
+        protected EClayOnWallDirection _eClayOnWallDirection;
+        protected IntVec2 _hitPos;
+        protected bool _isClayOnWall;
+
+        public bool IsClayOnWall
+        {
+            get { return _isClayOnWall; }
+            set
+            {
+                if (!value)
+                {
+                    _eClayOnWallDirection = EClayOnWallDirection.None;
+                    _hitPos = IntVec2.zero;
+                }
+                _isClayOnWall = value;
+            }
+        }
+
+        public EClayOnWallDirection EClayOnWallDirection
+        {
+            get { return _eClayOnWallDirection; }
+        }
 
         public override bool CanMove
         {
