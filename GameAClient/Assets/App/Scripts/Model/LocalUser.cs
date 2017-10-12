@@ -22,8 +22,7 @@ namespace GameA
         private readonly UsingAvatarPart _usingAvatarData = new UsingAvatarPart();
         private readonly MailList _mailList = new MailList();
         private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
-        private readonly RelationUserList _followRelationUserList = new RelationUserList();
-        private readonly RelationUserList _blockRelationUserList = new RelationUserList();
+        private readonly RelationUserList _relationUserList = new RelationUserList();
         // 抽奖相关数据
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
@@ -74,19 +73,11 @@ namespace GameA
             get { return _mailList; }
         }
 
-        public RelationUserList FollowRelationUserList
+        public RelationUserList RelationUserList
         {
             get
             {
-                return _followRelationUserList;
-            }
-        }
-
-        public RelationUserList BlockRelationUserList
-        {
-            get
-            {
-                return _blockRelationUserList;
+                return _relationUserList;
             }
         }
 

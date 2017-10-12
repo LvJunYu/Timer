@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SoyEngine.Proto;
-using SoyEngine;
 
 namespace GameA
 {
-    public partial class RelationUserList : SyncronisticData
+    public partial class RelationUserList
     {
-        private List<UserInfoDetail> _followRelationList = new List<UserInfoDetail>();
-        private List<UserInfoDetail> _blockRelationList = new List<UserInfoDetail>();
+        private List<UserInfoDetail> _followRelationList;
+        private List<UserInfoDetail> _blockRelationList;
         private List<UserInfoDetail> _dataDetailList;
 
         public List<UserInfoDetail> DataDetailList
@@ -25,8 +23,6 @@ namespace GameA
             EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            //OnRequest(successCallback, failedCallback);
-            _followRelationList.Clear();
             Request(
                 userId,
                 ERelationUserType.RUT_FollowedByMe,
@@ -36,14 +32,11 @@ namespace GameA
                 orderType,
                 () =>
                 {
-                    for (int i = 0; i < _dataList.Count(); i++)
+                    _followRelationList = _dataDetailList;
+                    if (successCallback != null)
                     {
-                        UserInfoDetail _relationitem =
-                            UserManager.Instance.UpdateData(new UserInfoDetail(_dataList[i]));
-                        _followRelationList.Add(_relationitem);
+                        successCallback();
                     }
-                    _dataList.Clear();
-                    successCallback.Invoke();
                 }, failedCallback);
         }
 
@@ -55,7 +48,6 @@ namespace GameA
             EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            _blockRelationList.Clear();
             Request(
                 userId,
                 ERelationUserType.RUT_BlockByMe,
@@ -65,14 +57,11 @@ namespace GameA
                 orderType,
                 () =>
                 {
-                    for (int i = 0; i < _dataList.Count(); i++)
+                    _blockRelationList = _dataDetailList;
+                    if (successCallback != null)
                     {
-                        UserInfoDetail _relationitem =
-                            UserManager.Instance.UpdateData(new UserInfoDetail(_dataList[i]));
-                        _blockRelationList.Add(_relationitem);
+                        successCallback();
                     }
-                    _dataList.Clear();
-                    successCallback.Invoke();
                 }, failedCallback);
         }
 
@@ -105,11 +94,7 @@ namespace GameA
         protected override void OnSyncPartial()
         {
             if (_dataList == null) return;
-            if (_dataDetailList == null)
-            {
-                _dataDetailList = new List<UserInfoDetail>(_dataList.Count);
-            }
-            _dataDetailList.Clear();
+            _dataDetailList = new List<UserInfoDetail>(_dataList.Count);
             for (int i = 0; i < _dataList.Count; i++)
             {
                 _dataDetailList.Add(UserManager.Instance.UpdateData(_dataList[i]));

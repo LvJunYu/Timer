@@ -123,7 +123,6 @@ namespace GameA
         public static int OnWeaponDataChange = SoyEngine.EMessengerType.NextId++;
         //设置变化
         public static int OnGameSettingChanged = SoyEngine.EMessengerType.NextId++;
-        
         //训练
         public static int OnUpgradeTrainProperty = SoyEngine.EMessengerType.NextId++;
         public static int OnUpgradeTrainGrade = SoyEngine.EMessengerType.NextId++;
@@ -142,6 +141,9 @@ namespace GameA
         public static int OnReceiveText = SoyEngine.EMessengerType.NextId++;
         public static int OnReceiveVoice = SoyEngine.EMessengerType.NextId++;
         public static int OnReceiveStatus = SoyEngine.EMessengerType.NextId++;
+        
+        //好友
+        public static int OnRelationShipDataChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 
