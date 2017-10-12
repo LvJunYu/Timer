@@ -43,7 +43,7 @@ namespace GameA
                 string.Format("是否消耗{0}培养点和{1}金币进行冥想训练，所需时间{2}。", _trainProperty.CostTrainPoint, _trainProperty.CostGold,
                     _trainProperty.TimeDesc),
                 null,
-                new KeyValuePair<string, Action>("确定", () => { RequestUpgradeProperty(); }),
+                new KeyValuePair<string, Action>("确定", RequestUpgradeProperty),
                 new KeyValuePair<string, Action>("取消", () => { }));
         }
 
