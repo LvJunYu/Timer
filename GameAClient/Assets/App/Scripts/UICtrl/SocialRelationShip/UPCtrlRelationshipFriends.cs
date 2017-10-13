@@ -1,109 +1,30 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
-using SoyEngine.Proto;
+﻿using SoyEngine.Proto;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipFriends : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
-        IOnChangeHandler<long>
+    public class UPCtrlRelationshipFriends : UPCtrlRelationshipBase
     {
-        private List<UserInfoDetail> _followRelationList;
-        private List<UMCtrlRelationFriend> _umCtrlRelationFriends;
-        private RelationUserList _data;
-        private bool _isRequest;
-        private bool _hasInited;
-        private EResScenary _resScenary;
-
-        public void Set(EResScenary resScenary)
+        protected override void RequestData()
         {
-            _resScenary = resScenary;
-        }
-
-        public override void Open()
-        {
-            base.Open();
-            _cachedView.FollowPannel.SetActiveEx(true);
-            _data = LocalUser.Instance.RelationUserList;
-            if (!_hasInited)
-            {
-                RequestData();
-            }
-            RefreshView();
-        }
-
-        public override void Close()
-        {
-            _cachedView.FollowPannel.SetActiveEx(false);
-            base.Close();
-        }
-
-        private void RequestData()
-        {
-            if (_isRequest)
+            if (_isRequesting)
             {
                 return;
             }
-            _isRequest = true;
-            _data.RequestFollowList(LocalUser.Instance.UserGuid, 0, 100, ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+            _isRequesting = true;
+            _data = LocalUser.Instance.RelationUserList;
+            _data.Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, _maxFollows,
+                ERelationUserOrderBy.RUOB_Friendliness, EOrderType.OT_Asc, () =>
                 {
+                    _userInfoDetailList = _data.DataDetailList;
                     _hasInited = true;
-                    _isRequest = false;
+                    _isRequesting = false;
                     if (!_isOpen)
                     {
                         return;
                     }
+                    TempData();
                     RefreshView();
-                }, code => { _isRequest = false; });
-        }
-
-        private void RefreshView()
-        {
-            _followRelationList = _data.FollowRelationList;
-            if(_followRelationList == null) return;
-            for (int i = 0; i < _umCtrlRelationFriends.Count; i++)
-            {
-                if (i < _followRelationList.Count)
-                {
-                    var user = _followRelationList[i];
-                    _umCtrlRelationFriends[i].Set(user);
-                }
-                else
-                {
-                    _umCtrlRelationFriends[i].Set(null);
-                }
-            }
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _umCtrlRelationFriends = new List<UMCtrlRelationFriend>(10);
-            for (int i = 0; i < 10; i++)
-            {
-                var umCtrl = new UMCtrlRelationFriend();
-                umCtrl.Init(_cachedView.FollowUMRtf, _resScenary);
-                _umCtrlRelationFriends.Add(umCtrl);
-            }
-        }
-
-        public override void OnDestroy()
-        {
-            _umCtrlRelationFriends.Clear();
-            _umCtrlRelationFriends = null;
-            base.OnDestroy();
-        }
-
-        public void OnChangeHandler(long val)
-        {
-            if (_followRelationList != null)
-            {
-                int inx = _followRelationList.FindIndex(user => user.UserInfoSimple.UserId == val);
-                if (inx >= 0)
-                {
-                    _umCtrlRelationFriends[inx].RefreshView();
-                }
-            }
+                }, code => { _isRequesting = false; });
         }
     }
 }

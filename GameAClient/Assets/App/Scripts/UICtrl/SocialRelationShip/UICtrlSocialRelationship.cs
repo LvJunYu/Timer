@@ -8,7 +8,6 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship> _curMenuCtrl;
         private UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>[] _menuCtrlArray;
-        private bool _pushGoldEnergyStyle;
 
         protected override void OnViewCreated()
         {
@@ -16,27 +15,32 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnReturnBtnClick);
             _menuCtrlArray = new UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>[(int) EMenu.Max];
             var upCtrlRelationshipFollow = new UPCtrlRelationshipFollow();
-            upCtrlRelationshipFollow.Set(ResScenary);
+            upCtrlRelationshipFollow.SetResScenary(ResScenary);
+            upCtrlRelationshipFollow.SetMenu(EMenu.Follow);
             upCtrlRelationshipFollow.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Follow] = upCtrlRelationshipFollow;
 
             var upCtrlRelationshipFans = new UPCtrlRelationshipFans();
-            upCtrlRelationshipFans.Set(ResScenary);
+            upCtrlRelationshipFans.SetResScenary(ResScenary);
+            upCtrlRelationshipFans.SetMenu(EMenu.Fans);
             upCtrlRelationshipFans.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Fans] = upCtrlRelationshipFans;
 
             var upCtrlRelationshipFriends = new UPCtrlRelationshipFriends();
-            upCtrlRelationshipFriends.Set(ResScenary);
+            upCtrlRelationshipFriends.SetResScenary(ResScenary);
+            upCtrlRelationshipFriends.SetMenu(EMenu.Friends);
             upCtrlRelationshipFriends.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Friends] = upCtrlRelationshipFriends;
 
             var upCtrlRelationshipAddNew = new UPCtrlRelationshipAddNew();
-            upCtrlRelationshipAddNew.Set(ResScenary);
+            upCtrlRelationshipAddNew.SetResScenary(ResScenary);
+            upCtrlRelationshipAddNew.SetMenu(EMenu.AddNew);
             upCtrlRelationshipAddNew.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.AddNew] = upCtrlRelationshipAddNew;
 
             var upCtrlRelationshipBlock = new UPCtrlRelationshipBlock();
-            upCtrlRelationshipBlock.Set(ResScenary);
+            upCtrlRelationshipBlock.SetResScenary(ResScenary);
+            upCtrlRelationshipBlock.SetMenu(EMenu.Block);
             upCtrlRelationshipBlock.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Block] = upCtrlRelationshipBlock;
 
@@ -67,7 +71,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.PopUpUI;
         }
 
         protected override void InitEventListener()
@@ -87,20 +91,10 @@ namespace GameA
             {
                 _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
-            if (!_pushGoldEnergyStyle)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
-                _pushGoldEnergyStyle = true;
-            }
         }
 
         protected override void OnClose()
         {
-            if (_pushGoldEnergyStyle)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
-                _pushGoldEnergyStyle = false;
-            }
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();
@@ -142,7 +136,7 @@ namespace GameA
 
         private void OnReturnBtnClick()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
+            SocialGUIManager.Instance.CloseUI<UICtrlSocialRelationship>();
         }
 
         private void OnRelationShipDataChanged(long userId)
@@ -157,7 +151,7 @@ namespace GameA
             }
         }
 
-        private enum EMenu
+        public enum EMenu
         {
             None = -1,
             Follow,
