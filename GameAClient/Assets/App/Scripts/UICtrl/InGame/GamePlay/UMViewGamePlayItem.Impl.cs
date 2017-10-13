@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UMViewGamePlayItem: UMViewBase
+    public partial class UMViewGamePlayItem
     {
         protected FinishCondition _refData;
         protected Game.EWinCondition _condition;

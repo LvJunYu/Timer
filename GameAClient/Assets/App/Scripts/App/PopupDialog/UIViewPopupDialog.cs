@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UIViewPopupDialog : UIViewBase
+    public class UIViewPopupDialog : UIViewResManagedBase
     {
         public RectTransform ContentDock;
     }

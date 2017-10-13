@@ -108,13 +108,14 @@ namespace NewResourceSolution
 					StringUtil.Format(StringFormat.TwoLevelPath, bundle.LocaleName, bundle.AssetNames[i]) :
 					bundle.AssetNames[i];
 
-                if (_allAssetNameList.Contains(registAssetName))
+	            var assetUniqueName = "" + bundle.ResType + "#" + registAssetName;
+                if (_allAssetNameList.Contains(assetUniqueName))
                 {
 					LogHelper.Error("Asset <{0}> name dumplicated", registAssetName);
                 }
                 else
                 {
-                    _allAssetNameList.Add(registAssetName);
+                    _allAssetNameList.Add(assetUniqueName);
                 }
             }
             _bundles.Add(bundle);

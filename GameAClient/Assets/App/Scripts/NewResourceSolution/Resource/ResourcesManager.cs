@@ -15,7 +15,6 @@ namespace NewResourceSolution
 	public class ResourcesManager
 	{
 		#region fields
-//		private static readonly int s_maxScenary = 32;
 
         /// <summary>
         /// 自动执行unload操作最小时间间隔
@@ -28,8 +27,6 @@ namespace NewResourceSolution
         private CHRuntimeResManifest _manifest;
 
 	    private CHRuntimeResManifest _persistentManifest;
-
-//        private AssetCache _assetCache;
 
 	    /// <summary>
         /// 上次进行unload操作的时间
@@ -50,12 +47,12 @@ namespace NewResourceSolution
 
 		public Object GetPrefab(EResType resType, string name, int scenary)
 		{
-            return GetAsset<Object>(resType, name, scenary, true, true, LocalizationManager.Instance.CurrentLocale);
+            return GetAsset<Object>(resType, name, scenary, true, true, true, LocalizationManager.Instance.CurrentLocale);
 		}
 
         public bool TryGetTexture(string name, out Texture texture, int scenary)
         {
-            texture = GetAsset<Texture>(EResType.Texture, name, scenary, false);
+            texture = GetAsset<Texture>(EResType.Texture, name, scenary);
             if (null != texture)
             {
                 return true;
@@ -65,7 +62,7 @@ namespace NewResourceSolution
 
         public bool TryGetSprite(string name, out Sprite sprite, int scenary)
         {
-            sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary, false);
+            sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary);
             if (null != sprite)
             {
                 return true;
@@ -102,6 +99,7 @@ namespace NewResourceSolution
             EResType resType,
             string name,
             int scenary,
+            bool withTexDependency = true,
             bool logWhenError = true,
             bool isLocaleRes = false,
             ELocale locale = ELocale.WW
@@ -135,7 +133,7 @@ namespace NewResourceSolution
                 return obj;
             }
             #endif
-            return _manifest.GetAsset(name, scenary, logWhenError, isLocaleRes, locale) as T;
+            return _manifest.GetAsset(resType, name, scenary, withTexDependency, logWhenError, isLocaleRes, locale) as T;
         }
 
 		public void Init ()
@@ -351,19 +349,36 @@ namespace NewResourceSolution
 //            }
         }
 
-        /// <summary>
-        /// 卸载某一特定使用场景的asset
-        /// </summary>
-        /// <param name="scenary">Scenary.</param>
-        public void UnloadScenary (int scenary)
+	    /// <summary>
+	    /// 卸载某一特定使用场景的asset
+	    /// </summary>
+	    /// <param name="scenary">Scenary.</param>
+	    /// <param name="resTypeMask"></param>
+	    public void UnloadScenary (int scenary, long resTypeMask = -1L)
         {
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
             #endif
 
 			long maskToUnload = 1L << scenary;
-            _manifest.UnloadUnusedAssets (maskToUnload);
+            _manifest.UnloadUnusedAssets (maskToUnload, resTypeMask);
         }
+
+	    public void UnloadTexture(string assetName)
+	    {
+#if UNITY_EDITOR
+	        if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
+	        _manifest.ForceUnloadByAssetName(EResType.Texture, assetName);
+	    }
+
+	    public void SetupTexture(EResType resType, string assetName, string materialName, int scenary)
+	    {
+#if UNITY_EDITOR
+	        if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
+	        _manifest.SetupTexture(resType, assetName, materialName, scenary);
+	    }
 
 //		public void ForceUnloadScenary (int scenary)
 //		{

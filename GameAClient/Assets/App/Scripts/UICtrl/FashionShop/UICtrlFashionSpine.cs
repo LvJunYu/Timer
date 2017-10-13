@@ -76,7 +76,11 @@ namespace GameA
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
-                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", (int) EResScenary.Default);
+                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
+                    (int) EResScenary.Default);
+//            _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
+//                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
+//                    (int) EResScenary.Default, false);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
@@ -84,6 +88,12 @@ namespace GameA
                 RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
             _cachedView.AvatarImage.texture = AvatarRenderTexture;
             _cachedView.AvatarImage.SetActiveEx(false);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy0",
+//                (int) EResScenary.Default);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy04",
+//                (int) EResScenary.Default);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy05",
+//                (int) EResScenary.Default);
 
             LocalUser.Instance.UsingAvatarData.Request(
                 LocalUser.Instance.UserGuid,

@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class UMViewGameRatingBarItem: UMViewBase
+	public partial class UMViewGameRatingBarItem
 	{
 		/// <summary>
 		/// 从1开始

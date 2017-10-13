@@ -13,11 +13,8 @@ namespace NewResourceSolution.EditorTool
 		/// 是否是测试打包
 		/// </summary>
 		[SerializeField] bool _debug;
-		/// <summary>
-		/// asset bundle 输出目录
-		/// </summary>
-		[SerializeField] string _outputPath;
-		/// <summary>
+
+	    /// <summary>
 		/// 打包包含的语言
 		/// </summary>
 		[SerializeField] int _includeLocales;
@@ -159,12 +156,12 @@ namespace NewResourceSolution.EditorTool
             _allResLists.Add (new ResList (EResType.Material,       "t:Material",   false,  false));
             _allResLists.Add (new ResList (EResType.MeshData,       "t:Mesh",       false,  false));
             _allResLists.Add (new ResList (EResType.Shader,         "t:Shader",     false,  false));
-            _allResLists.Add (new ResList (EResType.SpineData,      null,           true,   false));
+            _allResLists.Add (new ResList (EResType.SpineData,      null,           true,   false,		true));
             _allResLists.Add (new ResList (EResType.Sprite,         "t:Texture",    true,   false));
             _allResLists.Add (new ResList (EResType.Table,          "",             false,  false));
             _allResLists.Add (new ResList (EResType.Texture,        "t:Texture",    false,  false));
             _allResLists.Add (new ResList (EResType.ParticlePrefab, "t:Prefab",     false,  true));
-            _allResLists.Add (new ResList (EResType.ModelPrefab, 			"t:Prefab",     false,  true));
+            _allResLists.Add (new ResList (EResType.ModelPrefab, 	"t:Prefab",     false,  true));
             _allResLists.Add (new ResList (EResType.UIPrefab,       "t:Prefab",     false,  true));
         }
 
@@ -198,7 +195,7 @@ namespace NewResourceSolution.EditorTool
 			}
             for (int i = 0; i < _allResLists.Count; i++)
             {
-                if (_allResLists [i].InPacakgeContains (guid)) return true;
+                if (_allResLists [i].InPackageContains (guid)) return true;
             }
             return false;
 		}
@@ -227,7 +224,7 @@ namespace NewResourceSolution.EditorTool
 			}
             for (int i = 0; i < _allResLists.Count; i++)
             {
-                if (_allResLists[i].ResType == type && _allResLists [i].InPacakgeContains (guid)) return true;
+                if (_allResLists[i].ResType == type && _allResLists [i].InPackageContains (guid)) return true;
             }
             return false;
 		}
@@ -319,17 +316,19 @@ namespace NewResourceSolution.EditorTool
         public bool IsFolderRes;
         public bool IsLocaleRes;
         public string SearchFilter;
+	    public bool SeparateTexture;
 
         public bool FoldoutInEditorUI;
 
-        private AssetSortHelper _sortHelper;
+        private readonly AssetSortHelper _sortHelper;
         
-        public ResList (EResType resType, string searchFilter, bool isFolderList, bool isLocaleRes)
+        public ResList (EResType resType, string searchFilter, bool isFolderList, bool isLocaleRes, bool separateTexture = false)
         {
             ResType = resType;
             IsFolderRes = isFolderList;
             IsLocaleRes = isLocaleRes;
             SearchFilter = searchFilter;
+	        SeparateTexture = separateTexture;
             FoldoutInEditorUI = true;
 
             _sortHelper = new AssetSortHelper ();
@@ -361,7 +360,7 @@ namespace NewResourceSolution.EditorTool
             return false;
         }
         
-        public bool InPacakgeContains (string guid)
+        public bool InPackageContains (string guid)
         {
             if (InPackageGuidList.Contains (guid)) return true;
             else return false;

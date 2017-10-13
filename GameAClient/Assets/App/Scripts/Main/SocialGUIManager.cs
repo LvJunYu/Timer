@@ -138,11 +138,11 @@ namespace GameA
                     UIRoot.SetGroupActive(i, true);
                 }
             }
-            LoadUI(EResScenary.Game);
-            LoadUI(EResScenary.UIInGame);
-            UnloadUI(EResScenary.UIHome);
-            UnloadUI(EResScenary.UISingleMode);
-            UnloadUI(EResScenary.Home);
+            LoadAtlas(EResScenary.Game);
+            LoadAtlas(EResScenary.UIInGame);
+            UnloadAtlas(EResScenary.UIHome);
+            UnloadAtlas(EResScenary.UISingleMode);
+            UnloadAtlas(EResScenary.Home);
             //UIRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
         }
@@ -179,11 +179,11 @@ namespace GameA
                 }
             }
             
-            LoadUI(EResScenary.Home);
-            LoadUI(EResScenary.UIHome);
-            LoadUI(EResScenary.UISingleMode);
-            UnloadUI(EResScenary.UIInGame);
-            UnloadUI(EResScenary.Game);
+            LoadAtlas(EResScenary.Home);
+            LoadAtlas(EResScenary.UIHome);
+            LoadAtlas(EResScenary.UISingleMode);
+            UnloadAtlas(EResScenary.UIInGame);
+            UnloadAtlas(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
         }
 

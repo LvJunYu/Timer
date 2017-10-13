@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using GameA;
 using Newtonsoft.Json;
 using SoyEngine;
 using UnityEditor;
@@ -21,11 +20,13 @@ namespace NewResourceSolution.EditorTool
         {
             WriteServerVersionConfig(BuildTarget.StandaloneWindows64);
         }
+
         [MenuItem("JoyTools/MakeServerVersionConfig/OSX64")]
         private static void MakeServerVersionConfigOSX64()
         {
             WriteServerVersionConfig(BuildTarget.StandaloneOSXIntel64);
         }
+
         [MenuItem("JoyTools/MakeServerVersionConfig/iOS")]
         private static void MakeServerVersionConfigiOS()
         {
@@ -172,10 +173,10 @@ namespace NewResourceSolution.EditorTool
             LogHelper.Info("Make manifest...");
             MakeManifest(buildConfig, manifest, buildTarget);
             LogHelper.Info("Make manifest done.");
-            
+
             AssetDatabase.SaveAssets();
 //            AssetDatabase.Refresh();
-			EditorUtility.DisplayDialog ("Done", "Build asset bundles complete", "OK");
+            EditorUtility.DisplayDialog("Done", "Build asset bundles complete", "OK");
             LogHelper.Info("Build asset bundles complete");
         }
 
@@ -188,7 +189,8 @@ namespace NewResourceSolution.EditorTool
             var allResList = buildConfig.AllResLists;
             for (int i = 0; i < allResList.Count; i++)
             {
-                if (allResList[i].IsLocaleRes)
+                var resList = allResList[i];
+                if (resList.IsLocaleRes)
                 {
                     foreach (int j in Enum.GetValues(typeof(ELocale)))
                     {
@@ -197,11 +199,11 @@ namespace NewResourceSolution.EditorTool
                             ELocale targetLocale = (ELocale) j;
 
                             string rootPath =
-                                ResPathUtility.GetEditorDebugResFolderPath(allResList[i].ResType, true, targetLocale);
+                                ResPathUtility.GetEditorDebugResFolderPath(resList.ResType, true, targetLocale);
                             if (AssetDatabase.IsValidFolder(rootPath))
                             {
-                                LogHelper.Info("{0} rootPath: {1}", allResList[i].ResType, rootPath);
-                                if (allResList[i].IsFolderRes)
+                                LogHelper.Info("{0} rootPath: {1}", resList.ResType, rootPath);
+                                if (resList.IsFolderRes)
                                 {
                                     DirectoryInfo rootDirectoryInfo = new DirectoryInfo(rootPath);
                                     var childDirectorys = rootDirectoryInfo.GetDirectories();
@@ -215,22 +217,24 @@ namespace NewResourceSolution.EditorTool
                                                 ResPath.Assets,
                                                 parts[parts.Length - 1]
                                             );
-                                        EditorUtility.DisplayProgressBar("SetAssetBundleNames " + allResList[i].ResType,
-                                            "" + ((ELocale) j).ToString() + "@" + childDirRelatedToUnityProject, 1f*k/childDirectorys.Length);
-                                        var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter,
+                                        EditorUtility.DisplayProgressBar("SetAssetBundleNames " + resList.ResType,
+                                            "" + ((ELocale) j).ToString() + "@" + childDirRelatedToUnityProject,
+                                            1f * k / childDirectorys.Length);
+                                        var assets = AssetDatabase.FindAssets(resList.SearchFilter,
                                             new[] {childDirRelatedToUnityProject});
-                                        SetBundleNameToFolderAssets(buildConfig, manifest, rootPath,
-                                            childDirRelatedToUnityProject, assets);
+                                        SetBundleNameToFolderAssets(buildConfig, manifest, resList.ResType,
+                                            resList.SeparateTexture, rootPath, childDirRelatedToUnityProject, assets);
                                     }
                                 }
                                 else
                                 {
-                                    var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter, new[] {rootPath});
+                                    var assets = AssetDatabase.FindAssets(resList.SearchFilter, new[] {rootPath});
                                     for (int k = 0; k < assets.Length; k++)
                                     {
-                                        EditorUtility.DisplayProgressBar("SetAssetBundleNames " + allResList[i].ResType,
-                                            assets[k], 1f*k/assets.Length);
-                                        SetBundleNameToSingleAsset(buildConfig, manifest, rootPath, assets[k]);
+                                        EditorUtility.DisplayProgressBar("SetAssetBundleNames " + resList.ResType,
+                                            assets[k], 1f * k / assets.Length);
+                                        SetBundleNameToSingleAsset(buildConfig, manifest, resList.ResType, rootPath,
+                                            assets[k]);
                                     }
                                 }
                             }
@@ -239,11 +243,11 @@ namespace NewResourceSolution.EditorTool
                 }
                 else
                 {
-                    string rootPath = ResPathUtility.GetEditorDebugResFolderPath(allResList[i].ResType);
+                    string rootPath = ResPathUtility.GetEditorDebugResFolderPath(resList.ResType);
                     if (AssetDatabase.IsValidFolder(rootPath))
                     {
-                        LogHelper.Info("{0} rootPath: {1}", allResList[i].ResType, rootPath);
-                        if (allResList[i].IsFolderRes)
+                        LogHelper.Info("{0} rootPath: {1}", resList.ResType, rootPath);
+                        if (resList.IsFolderRes)
                         {
                             DirectoryInfo rootDirectoryInfo = new DirectoryInfo(rootPath);
                             var childDirectorys = rootDirectoryInfo.GetDirectories();
@@ -258,14 +262,15 @@ namespace NewResourceSolution.EditorTool
                                         ResPath.Assets,
                                         parts[parts.Length - 1]
                                     );
-                                EditorUtility.DisplayProgressBar("SetAssetBundleNames " + allResList[i].ResType,
-                                    childDirRelatedToUnityProject, 1f*k/childDirectorys.Length);
-                                var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter,
+                                EditorUtility.DisplayProgressBar("SetAssetBundleNames " + resList.ResType,
+                                    childDirRelatedToUnityProject, 1f * k / childDirectorys.Length);
+                                var assets = AssetDatabase.FindAssets(resList.SearchFilter,
                                     new[] {childDirRelatedToUnityProject});
-                                SetBundleNameToFolderAssets(buildConfig, manifest, rootPath,
-                                    childDirRelatedToUnityProject, assets);
+                                SetBundleNameToFolderAssets(buildConfig, manifest, resList.ResType,
+                                    resList.SeparateTexture,
+                                    rootPath, childDirRelatedToUnityProject, assets);
                                 // 这段代码会造成增两打包时会重打全部图集，所以注掉，流程改为需要自动设置图片属性时手动调用菜单快捷方式
-                                if (EResType.Sprite == allResList[i].ResType)
+                                if (EResType.Sprite == resList.ResType)
                                 {
                                     SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
                                 }
@@ -273,18 +278,18 @@ namespace NewResourceSolution.EditorTool
                         }
                         else
                         {
-                            var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter, new[] {rootPath});
+                            var assets = AssetDatabase.FindAssets(resList.SearchFilter, new[] {rootPath});
                             for (int k = 0; k < assets.Length; k++)
                             {
-                                EditorUtility.DisplayProgressBar("SetAssetBundleNames " + allResList[i].ResType,
-                                    assets[k], 1f*k/assets.Length);
-                                SetBundleNameToSingleAsset(buildConfig, manifest, rootPath, assets[k]);
+                                EditorUtility.DisplayProgressBar("SetAssetBundleNames " + resList.ResType,
+                                    assets[k], 1f * k / assets.Length);
+                                SetBundleNameToSingleAsset(buildConfig, manifest, resList.ResType, rootPath, assets[k]);
                             }
                         }
                     }
                     else
                     {
-                        LogHelper.Error("{0} asset rootPath invalid, path: {1}", allResList[i].ResType, rootPath);
+                        LogHelper.Error("{0} asset rootPath invalid, path: {1}", resList.ResType, rootPath);
                         _errorCnt++;
                     }
                 }
@@ -296,6 +301,7 @@ namespace NewResourceSolution.EditorTool
         private static void SetBundleNameToSingleAsset(
             BuildConfig buildConfig,
             CHBuildingResManifest manifest,
+            EResType resType,
             string rootPath,
             string assetGuid)
         {
@@ -307,6 +313,7 @@ namespace NewResourceSolution.EditorTool
                 string bundleName;
                 bundle.AssetNames = new[] {ABUtility.PathToAssetBundleName(rootPath, path, out bundleName)};
                 bundle.AssetBundleName = bundleName;
+                bundle.ResType = resType;
                 // todo 这里只区分是否随包发布的资源
                 if (buildConfig.FullResPackage || buildConfig.IsGuidInPackageAsset(assetGuid))
                 {
@@ -340,6 +347,8 @@ namespace NewResourceSolution.EditorTool
         private static void SetBundleNameToFolderAssets(
             BuildConfig buildConfig,
             CHBuildingResManifest manifest,
+            EResType resType,
+            bool separateTexture,
             string rootPath,
             string childFolderPath,
             string[] assetsGuid)
@@ -348,6 +357,7 @@ namespace NewResourceSolution.EditorTool
             ABUtility.PathToAssetBundleName(rootPath, childFolderPath, out bundleName);
             CHResBundle bundle = new CHResBundle();
             bundle.AssetBundleName = bundleName;
+            bundle.ResType = resType;
             string folderGuid = AssetDatabase.AssetPathToGUID(childFolderPath);
             // todo 这里只区分是否随包发布的资源
             if (buildConfig.FullResPackage || buildConfig.IsGuidInPackageAsset(folderGuid))
@@ -358,12 +368,104 @@ namespace NewResourceSolution.EditorTool
             {
                 bundle.GroupId = ResDefine.ResGroupNecessary;
             }
+            HashSet<string> usedTexturePathSet = null;
+            if (separateTexture)
+            {//把文件夹中材质中使用的同一文件夹中的纹理分离打包
+                var textureGuidAry = AssetDatabase.FindAssets("t:Texture", new [] {childFolderPath});
+                var texturePathSet = new HashSet<string>();
+                for (int i = 0; i < textureGuidAry.Length; i++)
+                {
+                    texturePathSet.Add(AssetDatabase.GUIDToAssetPath(textureGuidAry[i]));
+                }
+                usedTexturePathSet = new HashSet<string>();
+                var dict = new Dictionary<string, List<CHResBundle.MaterialTextureProperty>>();
+                var matGuidAry = AssetDatabase.FindAssets("t:Material", new[] {childFolderPath});
+                for (int i = 0; i < matGuidAry.Length; i++)
+                {
+                    var matPath = AssetDatabase.GUIDToAssetPath(matGuidAry[i]);
+                    string tempBundleName;
+                    string matAssetName = ABUtility.PathToAssetBundleName(rootPath, matPath, out tempBundleName);
+                    var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+                    Shader shader = mat.shader;
+                    for (int j = 0; j < ShaderUtil.GetPropertyCount(shader); ++j)  
+                    {  
+                        if (ShaderUtil.GetPropertyType(shader, j) == ShaderUtil.ShaderPropertyType.TexEnv)  
+                        {  
+                            string propertyName = ShaderUtil.GetPropertyName(shader, j);
+                            Texture tex = mat.GetTexture(propertyName);  
+                            string texPath = AssetDatabase.GetAssetPath(tex.GetInstanceID());
+                            if (texturePathSet.Contains(texPath))
+                            {
+                                string texAssetBundleName;
+                                var texAssetName = ABUtility.PathToAssetBundleName(rootPath, texPath, out texAssetBundleName);
+                                if (!usedTexturePathSet.Contains(texPath))
+                                {
+                                    AssetImporter assetImporter = AssetImporter.GetAtPath(texPath);
+                                    assetImporter.assetBundleName = texAssetBundleName;
+                                    usedTexturePathSet.Add(texPath);
+                                    
+                                    CHResBundle texBundle = new CHResBundle();
+                                    texBundle.AssetBundleName = texAssetBundleName;
+                                    texBundle.ResType = EResType.Texture;
+                                    var texGuid = AssetDatabase.AssetPathToGUID(texPath);
+                                    // todo 这里只区分是否随包发布的资源
+                                    if (buildConfig.FullResPackage || buildConfig.IsGuidInPackageAsset(texGuid))
+                                    {
+                                        texBundle.GroupId = ResDefine.ResGroupInPackage;
+                                    }
+                                    else
+                                    {
+                                        texBundle.GroupId = ResDefine.ResGroupNecessary;
+                                    }
+                                    texBundle.AssetNames = new [] {texAssetName};
+                                    if (buildConfig.SingleAdamResList.Contains(texGuid))
+                                    {
+                                        manifest.AdamBundleNameList.Add(texAssetBundleName);
+                                    }
+                                    if (!manifest.AddBundle(texBundle))
+                                    {
+                                        _errorCnt++;
+                                    }
+                                }
+                                List<CHResBundle.MaterialTextureProperty> materialTextureProperties;
+                                if (!dict.TryGetValue(matAssetName, out materialTextureProperties))
+                                {
+                                    materialTextureProperties = new List<CHResBundle.MaterialTextureProperty>();
+                                    dict.Add(matAssetName, materialTextureProperties);
+                                }
+                                materialTextureProperties.Add(new CHResBundle.MaterialTextureProperty()
+                                {
+                                    PropertyName = propertyName,
+                                    TextureName = texAssetName
+                                });
+                            }
+                        }
+                    }
+                }
+                var mdAry = new CHResBundle.MaterialDependency[dict.Count];
+                int inx = 0;
+                foreach (var entry in dict)
+                {
+                    mdAry[inx++] = new CHResBundle.MaterialDependency()
+                    {
+                        MaterialName = entry.Key,
+                        TextureProperties = entry.Value.ToArray()
+                    };
+                }
+                bundle.MaterialDependencies = mdAry;
+                EditorUtility.UnloadUnusedAssetsImmediate();
+            }
+            
 
             HashSet<string> assetNameSet = new HashSet<string>();
 
             for (int i = 0; i < assetsGuid.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(assetsGuid[i]);
+                if (usedTexturePathSet != null && usedTexturePathSet.Contains(path))
+                {
+                    continue;
+                }
                 AssetImporter ai = AssetImporter.GetAtPath(path);
                 if (null != ai)
                 {
@@ -399,9 +501,12 @@ namespace NewResourceSolution.EditorTool
             BuildTarget buildTarget)
         {
             string outputPathUnCompressed = ABUtility.GetUnCompressedOutputPath(buildTarget);
-            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
-            string baseResPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.BaseResVersion);
-            string lastBuildManifestPath = string.Format(StringFormat.TwoLevelPath, baseResPathCompressed, ResDefine.CHResManifestFileName);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget),
+                buildConfig.ResVersion);
+            string baseResPathCompressed = string.Format(StringFormat.TwoLevelPath,
+                ABUtility.GetOutputPath(buildTarget), buildConfig.BaseResVersion);
+            string lastBuildManifestPath = string.Format(StringFormat.TwoLevelPath, baseResPathCompressed,
+                ResDefine.CHResManifestFileName);
             FileTools.CheckAndCreateFolder(outputPathCompressed);
             string baseBuildManifestStr;
             CHRuntimeResManifest baseBuildManifest = null;
@@ -429,7 +534,7 @@ namespace NewResourceSolution.EditorTool
                 Interlocked.Increment(ref currentThreadNum[0]);
                 ThreadPool.QueueUserWorkItem(obj =>
                 {
-                    while(true)
+                    while (true)
                     {
                         string unCompressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath,
                             outputPathUnCompressed,
@@ -445,7 +550,7 @@ namespace NewResourceSolution.EditorTool
                                 unCompressedAssetBundlePath, e);
                         }
                         bundle.RawMd5 = rawMd5;
-    
+
                         // 判断是否可以用以前的压缩文件
                         if (null != baseBuildManifest)
                         {
@@ -486,7 +591,8 @@ namespace NewResourceSolution.EditorTool
                             }
                         }
 
-                        string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathCompressed, bundle.AssetBundleName);
+                        string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath,
+                            outputPathCompressed, bundle.AssetBundleName);
                         try
                         {
                             CompressTools.CompressFileLZMA(unCompressedAssetBundlePath, compressedAssetBundlePath);
@@ -563,7 +669,8 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             FileTools.CheckAndCreateFolder(buildStreamingAssets);
-            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget),
+                buildConfig.ResVersion);
             string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath(buildTarget);
             var allBundles = manifest.Bundles;
             for (int i = 0; i < allBundles.Count; i++)
@@ -605,10 +712,13 @@ namespace NewResourceSolution.EditorTool
         private static void MakeManifest(BuildConfig buildConfig, CHBuildingResManifest manifest,
             BuildTarget buildTarget)
         {
-            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget), buildConfig.ResVersion);
+            string outputPathCompressed = string.Format(StringFormat.TwoLevelPath, ABUtility.GetOutputPath(buildTarget),
+                buildConfig.ResVersion);
             string manifestInStreamingAssetsFolder =
-                string.Format(StringFormat.TwoLevelPath, ABUtility.GetBuildOutputStreamingAssetsPath(buildTarget), ResDefine.CHResManifestFileName);
-            string manifestInCompressedAbFolder = string.Format(StringFormat.TwoLevelPath, outputPathCompressed, ResDefine.CHResManifestFileName);
+                string.Format(StringFormat.TwoLevelPath, ABUtility.GetBuildOutputStreamingAssetsPath(buildTarget),
+                    ResDefine.CHResManifestFileName);
+            string manifestInCompressedAbFolder = string.Format(StringFormat.TwoLevelPath, outputPathCompressed,
+                ResDefine.CHResManifestFileName);
             string str = JsonTools.SerializeObject(manifest, buildConfig.Debug);
             FileTools.WriteStringToFile(str, manifestInStreamingAssetsFolder);
             string manifestInStreamingAssetsFolderCopy = string.Format("{0}_buildin", manifestInCompressedAbFolder);
@@ -617,8 +727,9 @@ namespace NewResourceSolution.EditorTool
             str = JsonTools.SerializeOnjectWithExcludedProperties(manifest, buildConfig.Debug, new[] {"FL"});
             FileTools.WriteStringToFile(str, manifestInCompressedAbFolder);
         }
-        
-        private static bool NeedStreamingAssetsCompress(bool isAdam, bool isUnityManifestBundle, BuildTarget buildTarget)
+
+        private static bool NeedStreamingAssetsCompress(bool isAdam, bool isUnityManifestBundle,
+            BuildTarget buildTarget)
         {
             if (buildTarget != BuildTarget.Android)
             {
@@ -634,6 +745,5 @@ namespace NewResourceSolution.EditorTool
             }
             return true;
         }
-
     }
 }

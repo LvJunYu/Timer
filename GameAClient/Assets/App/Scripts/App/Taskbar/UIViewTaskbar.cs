@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace GameA
 {
-    public class UIViewTaskbar : UIViewBase
+    public class UIViewTaskbar : UIViewResManagedBase
     {
 //        public UITaskButton Soy;
 //        public UITaskButton News;

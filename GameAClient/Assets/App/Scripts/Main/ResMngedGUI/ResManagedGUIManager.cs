@@ -41,6 +41,9 @@ namespace GameA
 
         public void UnloadUI(EResScenary resScenary)
         {
+#if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
             List<UICtrlBase> list;
             if (ResUICtrlDict.TryGetValue(resScenary, out list))
             {
@@ -57,6 +60,9 @@ namespace GameA
 
         public void LoadUI(EResScenary resScenary)
         {
+#if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
             List<UICtrlBase> list;
             if (!ResUICtrlDict.TryGetValue(resScenary, out list))
             {
@@ -83,6 +89,22 @@ namespace GameA
                     }
                 }
             }
+        }
+
+        public void UnloadAtlas(EResScenary resScenary)
+        {
+#if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
+            JoyResManager.Instance.UnloadScenary(resScenary, 1<<(int) EResType.Sprite);
+        }
+
+        public void LoadAtlas(EResScenary resScenary)
+        {
+#if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+#endif
+            ((ResManagedUIRoot) UIRoot).RelinkSpriteReference(resScenary);
         }
     }
 }

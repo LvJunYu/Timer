@@ -27,7 +27,7 @@ namespace GameA
                 LogHelper.Error("parent == null");
                 return false;
             }
-            _view = uiRoot.InstanceItemView(_prefabName, resScenary);
+            _view = uiRoot.InstanceItemView(GetType(), _prefabName, resScenary);
             if (_view == null)
                 return false;
             if (!_view.gameObject.activeSelf)

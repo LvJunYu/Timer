@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using GameA;
 using Newtonsoft.Json;
@@ -11,6 +10,20 @@ namespace NewResourceSolution
 {
     public class CHResBundle : IEquatable<CHResBundle>
     {
+        #region Struct
+        public class MaterialDependency
+        {
+            [JsonProperty(PropertyName = "M")] public string MaterialName;
+            [JsonProperty(PropertyName = "TL")] public MaterialTextureProperty[] TextureProperties;
+        }
+        
+        public class MaterialTextureProperty
+        {
+            [JsonProperty(PropertyName = "P")] public string PropertyName;
+            [JsonProperty(PropertyName = "T")] public string TextureName;
+        }
+        #endregion
+        
         [JsonProperty(PropertyName = "GI")] public int GroupId;
         [JsonProperty(PropertyName = "AN")] public string[] AssetNames;
         [JsonProperty(PropertyName = "BN")] public string AssetBundleName;
@@ -30,9 +43,10 @@ namespace NewResourceSolution
         /// 以怎样的压缩格式进行打包发布的
         /// </summary>
         [JsonProperty(PropertyName = "CT")] public EAssetBundleCompressType CompressType;
-
         [JsonProperty(PropertyName = "FL")] public EFileLocation FileLocation;
-
+        [JsonProperty(PropertyName = "RT")] public EResType ResType;
+        [JsonProperty(PropertyName = "MD")] public MaterialDependency[] MaterialDependencies;
+        
         private string _filePathPersistent;
         private string _filePathStreamingAsset;
         private string _filePathTemporaryCache;
@@ -41,7 +55,6 @@ namespace NewResourceSolution
         #region used by runtime manifest
 
         [JsonIgnore] public AssetBundle CachedBundle;
-        [JsonIgnore] public Dictionary<string, Object> AssetDic = new Dictionary<string, Object>();
         [JsonIgnore] public long ScenaryMask;
         [JsonIgnore] public bool IsLocaleRes;
         [JsonIgnore] public string LocaleName;
@@ -181,6 +194,27 @@ namespace NewResourceSolution
             return true;
         }
 
+        public bool TryGetAsset(string name, out Object obj, int scenary, bool logWhenError = false)
+        {
+            obj = null;
+            if (!Cache(scenary, logWhenError))
+            {
+                return false;
+            }
+            obj = CachedBundle.LoadAsset(name);
+            if (null == obj)
+            {
+                if (logWhenError)
+                {
+                    LogHelper.Error("Load asset {0} from asset bundle {1} failed.",
+                        name,
+                        AssetBundleName);
+                }
+                return false;
+            }
+            return true;
+        }
+
         public bool Cache(int scenary, bool logWhenError)
         {
             if (null == CachedBundle)
@@ -194,32 +228,6 @@ namespace NewResourceSolution
                         LogHelper.Error("Load assetbundle {0} failed.", AssetBundleName);
                     }
                     return false;
-                }
-                AssetDic.Clear();
-
-//                UnityEngine.Object[] allAssets = CachedBundle.LoadAllAssets();
-//                for (int j = 0; j < allAssets.Length; j++)
-//                {
-//                    if (AssetNames.Contains(allAssets[j].name))
-//                    {
-//                        AssetDic [allAssets[j].name] =  allAssets[j];
-//                    }
-//                }
-
-                for (int j = 0; j < AssetNames.Length; j++)
-                {
-                    Object asset = CachedBundle.LoadAsset(AssetNames[j]);
-                    if (null == asset)
-                    {
-                        if (logWhenError)
-                        {
-                            LogHelper.Error("Load asset {0} from asset bundle {1} failed.",
-                                AssetNames[j],
-                                AssetBundleName);
-                        }
-                        return false;
-                    }
-                    AssetDic.Add(AssetNames[j], asset);
                 }
             }
             ScenaryMask |= 1L << scenary;
@@ -253,7 +261,6 @@ namespace NewResourceSolution
         public void UncacheAll(bool force = true)
         {
             ScenaryMask = 0;
-            AssetDic.Clear();
             if (null != CachedBundle)
             {
                 CachedBundle.Unload(force);
@@ -307,6 +314,10 @@ namespace NewResourceSolution
 
         public override int GetHashCode()
         {
+            if (RawMd5 == null)
+            {
+                return 0;
+            }
             return RawMd5.GetHashCode();
         }
 

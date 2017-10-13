@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 
 namespace GameA
 {
-	public partial class UMViewItemScreenButton : UMViewBase
+	public partial class UMViewItemScreenButton : UMViewResManagedBase
 	{
         protected override void Awake()
 		{

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
+    [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook> 
     {
         public enum ExplantionIndex

@@ -5,13 +5,12 @@
 ** Summary : ChangePartsSpineView
 ***********************************************************************/
 
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using NewResourceSolution;
 using SoyEngine;
 using Spine;
 using Spine.Unity;
-using NewResourceSolution;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -34,7 +33,8 @@ namespace GameA.Game
             SkeletonDataAsset data = JoyResManager.Instance.GetAsset<SkeletonDataAsset>(
                 EResType.SpineData,
                 skeletonDataAssetName,
-                0
+                (int) EResScenary.Default,
+                false
             );
             if (null == data)
             {
@@ -192,14 +192,13 @@ namespace GameA.Game
                     {
                         continue;
                     }
-                    Attachment attachment;
                     var slotTable = TableManager.Instance.GetAvatarSlotName(slotsNameIdxList[i]);
                     if (slotTable == null)
                     {
                         continue;
                     }
                     string attachmentName = string.Format("{0}/{1}", _skeletonName, slotTable.Name);
-                    attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
+                    var attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
                     _dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
                     if (attachment == null)
                     {

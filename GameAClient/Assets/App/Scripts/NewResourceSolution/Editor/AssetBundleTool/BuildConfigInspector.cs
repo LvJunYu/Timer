@@ -219,7 +219,7 @@ namespace NewResourceSolution.EditorTool
     						path = Directory.GetParent(path).ToString();
     					}
     					string guid = AssetDatabase.AssetPathToGUID(path);
-    					if (!allResList[i].InPacakgeContains(guid))
+    					if (!allResList[i].InPackageContains(guid))
     					{
     						return allResList[i].AddInPackageAsset(guid);
     					}

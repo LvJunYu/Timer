@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UIViewGMTool : UIViewBase
+    public class UIViewGMTool : UIViewResManagedBase
     {
         public Button SwitchBtn;
         public Button EnterBtn;

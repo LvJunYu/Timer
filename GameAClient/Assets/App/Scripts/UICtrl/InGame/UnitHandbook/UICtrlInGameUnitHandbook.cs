@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIInGame)]
+    [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlInGameUnitHandbook : UICtrlInGameAnimationBase<UIViewInGameUnitHandbook>
     {
         #region 常量与字段

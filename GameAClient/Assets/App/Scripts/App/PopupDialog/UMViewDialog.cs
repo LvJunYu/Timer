@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMViewDialog : UMViewBase
+    public class UMViewDialog : UMViewResManagedBase
     {
         public Button CloseBtn;
         public Text Title;
