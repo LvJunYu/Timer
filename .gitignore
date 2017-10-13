@@ -41,3 +41,5 @@ GameAClient/iOSProject
 *.apk
 *.app
 ProjectVersion.txt
+*.pdb
+*.pdb.meta
