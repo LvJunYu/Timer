@@ -47,7 +47,7 @@ namespace GameA
             base.OnDestroy();
         }
 
-        protected void TempData()
+        protected virtual void TempData()
         {
             _userInfoDetailList = new List<UserInfoDetail>(10);
             for (int i = 0; i < 10; i++)

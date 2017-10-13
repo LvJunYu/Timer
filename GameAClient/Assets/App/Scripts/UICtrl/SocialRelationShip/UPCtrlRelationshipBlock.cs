@@ -27,5 +27,16 @@ namespace GameA
                     RefreshView();
                 }, code => { _isRequesting = false; });
         }
+
+        protected override void TempData()
+        {
+            base.TempData();
+            for (int i = 0; i < _userInfoDetailList.Count; i++)
+            {
+                _userInfoDetailList[i].UserInfoSimple.NickName =
+                    "屏蔽" + _userInfoDetailList[i].UserInfoSimple.NickName;
+                _userInfoDetailList[i].UserInfoSimple.RelationWithMe.BlockedByMe = true;
+            }
+        }
     }
 }

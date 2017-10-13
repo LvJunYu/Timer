@@ -44,6 +44,7 @@ namespace GameA
                 GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.CreatorLevel);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
+            RefreshBtn();
         }
 
         public RectTransform Transform
@@ -82,6 +83,15 @@ namespace GameA
             LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
         }
 
+        private void RefreshBtn()
+        {
+            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew && _userInfoDetail != null)
+            {
+                _cachedView.Btn.SetActiveEx(!_userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+                _cachedView.Btn_Disable.SetActiveEx(_userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+            }
+        }
+
         private void OnRemoveBlockBtn()
         {
             if (_userInfoDetail == null)
@@ -90,7 +100,6 @@ namespace GameA
                 return;
             }
             LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
-            
         }
     }
 }

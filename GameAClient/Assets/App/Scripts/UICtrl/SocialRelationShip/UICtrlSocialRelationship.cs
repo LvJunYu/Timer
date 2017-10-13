@@ -97,6 +97,10 @@ namespace GameA
             {
                 ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
             }
+            else if (_curMenu == EMenu.AddNew)
+            {
+                ((UPCtrlRelationshipAddNew) _curMenuCtrl).RefreshView();
+            }
         }
 
         private void OnRemoveBlockUser()

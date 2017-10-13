@@ -82,10 +82,6 @@ namespace GameA
         private void FollowUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = true;
-            if (FollowList != null && !FollowList.Contains(userInfoDetail))
-            {
-                FollowList.Add(userInfoDetail);
-            }
             //如果它关注我，则从粉丝列表移除，添加到好友列表
             if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
             {
@@ -96,6 +92,13 @@ namespace GameA
                 if (FanList != null && FanList.Contains(userInfoDetail))
                 {
                     FanList.Remove(userInfoDetail);
+                }
+            }
+            else
+            {
+                if (FollowList != null && !FollowList.Contains(userInfoDetail))
+                {
+                    FollowList.Add(userInfoDetail);
                 }
             }
             Messenger.Broadcast(EMessengerType.OnFollowUser);
