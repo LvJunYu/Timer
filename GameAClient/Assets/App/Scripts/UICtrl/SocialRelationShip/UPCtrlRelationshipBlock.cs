@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    public class UPCtrlRelationshipBlock : UPCtrlRelationshipBase
+    public class UPCtrlRelationshipBlock : UPCtrlRelationshipBase<UMCtrlRelationShortItem>
     {
         protected override void RequestData()
         {
@@ -11,11 +11,10 @@ namespace GameA
                 return;
             }
             _isRequesting = true;
-            _data = LocalUser.Instance.RelationUserList;
-            _data.Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, _maxFollows,
-                ERelationUserOrderBy.RUOB_Friendliness, EOrderType.OT_Asc, () =>
+            LocalUser.Instance.RelationUserList.Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0,
+                _maxFollows, ERelationUserOrderBy.RUOB_Friendliness, EOrderType.OT_Asc, () =>
                 {
-                    _userInfoDetailList = _data.DataDetailList;
+                    _userInfoDetailList = LocalUser.Instance.RelationUserList.DataDetailList;
                     _hasInited = true;
                     _isRequesting = false;
                     if (!_isOpen)
@@ -23,6 +22,8 @@ namespace GameA
                         return;
                     }
                     TempData();
+                    //同步数据
+                    LocalUser.Instance.RelationUserList.BlockList = _userInfoDetailList;
                     RefreshView();
                 }, code => { _isRequesting = false; });
         }

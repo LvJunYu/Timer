@@ -1,41 +1,31 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipBase : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
-        IOnChangeHandler<long>
+    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
+        IOnChangeHandler<long> where T : IDataItemRenderer, IRelationShipItem, new()
     {
         protected List<UserInfoDetail> _userInfoDetailList;
-        protected List<UMCtrlRelationLongItem> _umCtrlRelationItems;
-        protected RelationUserList _data;
+        protected List<T> _umCtrlRelationItems;
         protected bool _isRequesting;
         protected bool _hasInited;
         protected EResScenary _resScenary;
-        protected const int _maxFollows = 100;
+        protected int _maxFollows = 100;
         protected UICtrlSocialRelationship.EMenu _menu;
-
-        public void SetResScenary(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
-        }
-
-        public void SetMenu(UICtrlSocialRelationship.EMenu menu)
-        {
-            _menu = menu;
-        }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.GridDataScrollers[(int)_menu].Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void Open()
         {
             base.Open();
-            _cachedView.Pannels[(int)_menu].SetActiveEx(true);
+            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
             if (!_hasInited)
             {
                 RequestData();
@@ -45,7 +35,7 @@ namespace GameA
 
         public override void Close()
         {
-            _cachedView.Pannels[(int)_menu].SetActiveEx(false);
+            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
 
@@ -53,7 +43,6 @@ namespace GameA
         {
             _userInfoDetailList = null;
             _umCtrlRelationItems = null;
-            _data = null;
             _hasInited = false;
             base.OnDestroy();
         }
@@ -65,6 +54,7 @@ namespace GameA
             {
                 var user = new UserInfoDetail();
                 user.UserInfoSimple.NickName = "测试数据" + i;
+                user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
                 _userInfoDetailList.Add(user);
             }
         }
@@ -73,14 +63,15 @@ namespace GameA
         {
         }
 
-        protected void RefreshView()
+        public void RefreshView()
         {
+            if (!_isOpen) return;
             if (_userInfoDetailList == null)
             {
-                _cachedView.GridDataScrollers[(int)_menu].SetEmpty();
+                _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
-            _cachedView.GridDataScrollers[(int)_menu].SetItemCount(_userInfoDetailList.Count);
+            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_userInfoDetailList.Count);
         }
 
         protected void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -95,12 +86,12 @@ namespace GameA
 
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlRelationLongItem();
+            var item = new T();
             item.SetMenu(_menu);
             item.Init(parent, _resScenary);
             if (null == _umCtrlRelationItems)
             {
-                _umCtrlRelationItems = new List<UMCtrlRelationLongItem>(6);
+                _umCtrlRelationItems = new List<T>(6);
             }
             _umCtrlRelationItems.Add(item);
             return item;
@@ -121,5 +112,22 @@ namespace GameA
                 }
             }
         }
+
+        public void SetResScenary(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
+        }
+
+        public void SetMenu(UICtrlSocialRelationship.EMenu menu)
+        {
+            _menu = menu;
+        }
+    }
+
+    public interface IRelationShipItem
+    {
+        void SetMenu(UICtrlSocialRelationship.EMenu eMenu);
+        void RefreshView();
+        bool Init(RectTransform parent, EResScenary resScenary, Vector3 localpos = new Vector3());
     }
 }

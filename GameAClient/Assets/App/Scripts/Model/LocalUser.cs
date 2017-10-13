@@ -23,6 +23,7 @@ namespace GameA
         private readonly MailList _mailList = new MailList();
         private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
         private readonly RelationUserList _relationUserList = new RelationUserList();
+        private readonly AddUserList _addUserList = new AddUserList();
         // 抽奖相关数据
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
@@ -78,6 +79,14 @@ namespace GameA
             get
             {
                 return _relationUserList;
+            }
+        }
+        
+        public AddUserList AddUserList
+        {
+            get
+            {
+                return _addUserList;
             }
         }
 

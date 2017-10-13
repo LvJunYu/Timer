@@ -52,6 +52,10 @@ namespace SoyEngine
         public const string UpdateBlockState = "/relation/updateBlockState";
         // 获取社交用户列表
         public const string RelationUserList = "/relation/getUserList";
+        // 添加好友列表
+        public const string AddUserList = "/relation/getAddUserList";
+        // 搜索好友
+        public const string SearchUser = "/relation/getSearchedUser";
         // 获取关卡数据
         public const string Project = "/project/get";
         // 关卡扩展信息

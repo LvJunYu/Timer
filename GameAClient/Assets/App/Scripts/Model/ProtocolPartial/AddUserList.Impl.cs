@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace GameA
 {
-    public partial class RelationUserList
+    public partial class AddUserList
     {
         private List<UserInfoDetail> _dataDetailList;
 
@@ -10,7 +10,7 @@ namespace GameA
         {
             get { return _dataDetailList; }
         }
-        
+
         protected override void OnSyncPartial()
         {
             if (_dataList == null) return;

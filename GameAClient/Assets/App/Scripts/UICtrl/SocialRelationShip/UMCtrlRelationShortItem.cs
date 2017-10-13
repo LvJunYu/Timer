@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlRelationLongItem : UMCtrlBase<UMViewRelationLongItem>, IDataItemRenderer, IRelationShipItem
+    public class UMCtrlRelationShortItem : UMCtrlBase<UMViewRelationShortItem>, IDataItemRenderer, IRelationShipItem
     {
         private UserInfoDetail _userInfoDetail;
         private UICtrlSocialRelationship.EMenu _belongMenu;
@@ -12,9 +12,16 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.TalkBtn.onClick.AddListener(OnTalkBtn);
-            _cachedView.GiftBtn.onClick.AddListener(OnGiftBtn);
-            _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
+            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew)
+            {
+                _cachedView.BtnTxt.text = "关注";
+                _cachedView.Btn.onClick.AddListener(OnFollowBtn);
+            }
+            else if (_belongMenu == UICtrlSocialRelationship.EMenu.Block)
+            {
+                _cachedView.BtnTxt.text = "移除";
+                _cachedView.Btn.onClick.AddListener(OnRemoveBlockBtn);
+            }
         }
 
         public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
@@ -28,7 +35,6 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.FollowBtn.SetActiveEx(_belongMenu == UICtrlSocialRelationship.EMenu.Fans);
             _cachedView.UserNickNameTxt.text = _userInfoDetail.UserInfoSimple.NickName;
             _cachedView.Male.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Male);
             _cachedView.Famale.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
@@ -36,8 +42,8 @@ namespace GameA
                 GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.PlayerLevel);
             _cachedView.CreateLvTxt.text =
                 GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.CreatorLevel);
-            _cachedView.FriendlinessTxt.text = _userInfoDetail.UserInfoSimple.RelationWithMe.Friendliness.ToString();
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg, _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
+                _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
         }
 
         public RectTransform Transform
@@ -65,7 +71,7 @@ namespace GameA
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.DefaultTexture);
         }
-        
+
         private void OnFollowBtn()
         {
             if (_userInfoDetail == null)
@@ -76,12 +82,15 @@ namespace GameA
             LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
         }
 
-        private void OnGiftBtn()
+        private void OnRemoveBlockBtn()
         {
-        }
-
-        private void OnTalkBtn()
-        {
+            if (_userInfoDetail == null)
+            {
+                LogHelper.Error("remove follow user, but _userInfoDetail == null");
+                return;
+            }
+            LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
+            
         }
     }
 }
