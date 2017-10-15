@@ -64,19 +64,5 @@ namespace GameA.Game
             base.OnFire();
             SetInput(EInputType.Skill1, false);
         }
-
-        protected override void OnRun()
-        {
-            base.OnRun();
-//            if (_timerAttack > 0)
-//            {
-//                SetInput(EInputType.Right, false);
-//                SetInput(EInputType.Left, false);
-//            }
-//            else
-//            {
-//                SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
-//            }
-        }
     }
 }

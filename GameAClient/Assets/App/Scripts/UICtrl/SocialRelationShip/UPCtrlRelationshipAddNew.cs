@@ -19,8 +19,9 @@ namespace GameA
             {
                 return;
             }
-            _isRequesting = true;
             _addDataAddUserList = LocalUser.Instance.AddUserList;
+            _isRequesting = true;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             _addDataAddUserList.Request(LocalUser.Instance.UserGuid, () =>
             {
                 _userInfoDetailList = _addDataAddUserList.DataDetailList;
@@ -31,11 +32,13 @@ namespace GameA
                 }
                 TempData();
                 RefreshView();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 _isRequesting = false;
                 TempData();
                 RefreshView();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 

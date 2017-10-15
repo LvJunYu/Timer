@@ -11,6 +11,7 @@ namespace GameA
                 return;
             }
             _isRequesting = true;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             LocalUser.Instance.RelationUserList.Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0,
                 _maxFollows, ERelationUserOrderBy.RUOB_Friendliness, EOrderType.OT_Asc, () =>
                 {
@@ -24,7 +25,12 @@ namespace GameA
                     TempData();
                     LocalUser.Instance.RelationUserList.FanList = _userInfoDetailList;
                     RefreshView();
-                }, code => { _isRequesting = false; });
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }, code =>
+                {
+                    _isRequesting = false;
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                });
         }
 
         protected override void TempData()

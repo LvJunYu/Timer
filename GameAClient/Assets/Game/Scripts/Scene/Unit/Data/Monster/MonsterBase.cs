@@ -131,9 +131,14 @@ namespace GameA.Game
 
         public void ClayOnWall(EClayOnWallDirection eClayOnWallDirection)
         {
+            if (IsInState(EEnvState.Clay))
+            {
+                RemoveStates(41);
+            }
             _eClayOnWallDirection = eClayOnWallDirection;
             IsClayOnWall = true;
             _hitPos = CenterPos;
+            Speed = IntVec2.zero;
             AddStates(41);
         }
 
@@ -148,21 +153,27 @@ namespace GameA.Game
             }
         }
 
-        protected override void UpdateSpeedY()
+        protected override void CaculateGravity()
         {
-            base.UpdateSpeedY();
             if (IsInState(EEnvState.Clay) && _isClayOnWall)
             {
-                SpeedY = 0;
+//                SpeedY = 0;
+            }
+            else
+            {
+                base.CaculateGravity();
             }
         }
 
         protected override void CaculateSpeedX(bool air)
         {
-            base.CaculateSpeedX(air);
             if (IsInState(EEnvState.Clay) && _isClayOnWall)
             {
-                SpeedX = 0;
+//                SpeedX = 0;
+            }
+            else
+            {
+                base.CaculateSpeedX(air);
             }
         }
 
