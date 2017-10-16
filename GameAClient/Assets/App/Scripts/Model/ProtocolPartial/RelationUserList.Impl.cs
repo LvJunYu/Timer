@@ -30,6 +30,7 @@ namespace GameA
 
         public void RequestRemoveBlockUser(UserInfoDetail userInfoDetail)
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, false, res =>
             {
                 if (res.ResultCode == (int) EUpdateBlockStateCode.UBSS_Success)
@@ -40,16 +41,19 @@ namespace GameA
                 {
                     RemoveBlockUser(userInfoDetail);
                 }
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 LogHelper.Debug("服务器请求失败，客服端模拟测试");
                 RemoveBlockUser(userInfoDetail);
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
             
         }
 
         public void RequestFollowUser(UserInfoDetail userInfoDetail)
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, true, res =>
             {
                 if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
@@ -60,10 +64,12 @@ namespace GameA
                 {
                     FollowUser(userInfoDetail);
                 }
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 LogHelper.Debug("服务器请求失败，客服端模拟测试");
                 FollowUser(userInfoDetail);
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
             
         }
