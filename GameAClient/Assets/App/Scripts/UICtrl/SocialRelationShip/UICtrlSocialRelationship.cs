@@ -140,6 +140,13 @@ namespace GameA
             _firstDelayFrames = 0;
         }
 
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
         private void ChangeMenu(EMenu menu)
         {
             if (_curMenuCtrl != null)
