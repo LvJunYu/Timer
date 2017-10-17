@@ -99,7 +99,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            RefreshFriendProgress();
+//            RefreshFriendProgress();
             _dragging = true;
             if (_currentChapter <= 0)
             {
