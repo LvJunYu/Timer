@@ -182,6 +182,10 @@ namespace SoyEngine
         public const string UnlockAdventureSection = "/adventure/unlockSection";
         // 提交冒险模式数据
         public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
+        // 好友通关录像
+        public const string FriendRecordData = "/adventure/getFriendRecordData";
+        // 冒险模式好友最高关数据
+        public const string FriendMaxLevelData = "/adventure/getFriendMaxLevelData";
         // 用户匹配改造数据
         public const string MatchUserData = "/match/getUserData";
         // 改造
