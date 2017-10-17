@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,7 @@ namespace GameA
         ///     主体ui架子
         /// </summary>
         MainFrame,
+
         /// <summary>
         ///     主体ui
         /// </summary>
@@ -178,13 +180,14 @@ namespace GameA
                     UIRoot.SetGroupActive(i, false);
                 }
             }
-            
+
             LoadAtlas(EResScenary.Home);
             LoadAtlas(EResScenary.UIHome);
             LoadAtlas(EResScenary.UISingleMode);
             UnloadAtlas(EResScenary.UIInGame);
             UnloadAtlas(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
+            GM2DGame.OnExit();
         }
 
         private void OnEscapeClick()
