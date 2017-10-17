@@ -185,7 +185,7 @@ namespace SoyEngine
         // 好友通关录像
         public const string FriendRecordData = "/adventure/getFriendRecordData";
         // 冒险模式好友最高关数据
-        public const string FriendMaxLevelData = "/adventure/getFriendMaxLevelData";
+        public const string AllFriendsAdvProgressData = "/adventure/getAllFriendsAdvProgressData";
         // 用户匹配改造数据
         public const string MatchUserData = "/match/getUserData";
         // 改造

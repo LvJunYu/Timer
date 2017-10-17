@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -18,8 +19,6 @@ namespace GameA
 {
     public class USCtrlChapter : USCtrlBase<USViewChapter>
     {
-        #region 常量与字段
-
         private USCtrlLevelPoint[] _normalLevels;
         private USCtrlLevelPoint[] _bonusLevels;
         private UIParticleItem _travelEffect;
@@ -31,18 +30,10 @@ namespace GameA
         private bool _isDoingAnimation;
         private Table_StandaloneChapter _tableStandaloneChapter;
 
-        #endregion
-
-        #region 属性
-
         public RectTransform UITran
         {
             get { return _cachedView.Trans; }
         }
-
-        #endregion
-
-        #region 方法
 
         public void RefreshInfo(Table_StandaloneChapter table, int chapterIndex, bool doPassAnimate = false)
         {
@@ -209,11 +200,9 @@ namespace GameA
             }
         }
 
-
-        #region 接口
-
-        #endregion 接口
-
-        #endregion
+        public void RefreshFriendProgress(int level, List<UserInfoDetail> friendsDataList)
+        {
+            _normalLevels[level - 1].RefreshFriendProgress(friendsDataList);
+        }
     }
 }

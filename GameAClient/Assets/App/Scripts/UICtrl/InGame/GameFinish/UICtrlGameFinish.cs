@@ -494,7 +494,7 @@ namespace GameA
                 () =>
                 {
                     ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImg,
-                        _friendRecordData.UserList[0].HeadImgUrl, _cachedView.DefaultHeadImg);
+                        _friendRecordData.UserDetailList[0].UserInfoSimple.HeadImgUrl, _cachedView.DefaultHeadImg);
                     _friendRecord = _friendRecordData.RecordList[0];
                 },
                 code =>

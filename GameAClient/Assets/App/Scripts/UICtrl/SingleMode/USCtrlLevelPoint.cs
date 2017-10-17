@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
@@ -16,8 +17,6 @@ namespace GameA
 {
     public class USCtrlLevelPoint : USCtrlBase<USViewLevelPoint>
     {
-        #region 常量与字段
-
         /// <summary>
         /// 章节id
         /// </summary>
@@ -35,14 +34,6 @@ namespace GameA
         private Vector2 _startPos;
         private Vector2 _moVector2 = new Vector2(0.0f, 15.0f);
         private Tweener _tweener;
-
-        #endregion
-
-        #region 属性
-
-        #endregion
-
-        #region 方法
 
         protected override void OnViewCreated()
         {
@@ -298,12 +289,20 @@ namespace GameA
             _tweener.OnComplete(SetOnComplete);
         }
 
-
-        #region 接口
-
-        #endregion 接口
-
-        #endregion
+        public void RefreshFriendProgress(List<UserInfoDetail> friendsDataList)
+        {
+            for (int i = 0; i < _cachedView.FriendHeadImgs.Length; i++)
+            {
+                _cachedView.FriendHeadImgs[i].SetActiveEx(false);
+            }
+            if (friendsDataList == null)  return;
+            for (int i = 0; i < friendsDataList.Count; i++)
+            {
+                ImageResourceManager.Instance.SetDynamicImage( _cachedView.FriendHeadImgs[i],
+                        friendsDataList[i].UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
+                _cachedView.FriendHeadImgs[i].SetActiveEx(true);
+            }
+        }
 
         private enum EState
         {

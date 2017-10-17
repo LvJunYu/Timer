@@ -6,13 +6,13 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class FriendMaxLevelData : SyncronisticData {
+    public partial class AllFriendsAdvProgressData : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
         /// 最好关卡好友数据列表
         /// </summary>
-        private List<MaxLevelFriendsData> _maxLevelFriendsDataList;
+        private List<AdvProgressData> _advProgressDataList;
 
         // cs fields----------------------------------
         /// <summary>
@@ -26,10 +26,10 @@ namespace GameA
         /// <summary>
         /// 最好关卡好友数据列表
         /// </summary>
-        public List<MaxLevelFriendsData> MaxLevelFriendsDataList { 
-            get { return _maxLevelFriendsDataList; }
-            set { if (_maxLevelFriendsDataList != value) {
-                _maxLevelFriendsDataList = value;
+        public List<AdvProgressData> AdvProgressDataList { 
+            get { return _advProgressDataList; }
+            set { if (_advProgressDataList != value) {
+                _advProgressDataList = value;
                 SetDirty();
             }}
         }
@@ -45,9 +45,9 @@ namespace GameA
 
         public override bool IsDirty {
             get {
-                if (null != _maxLevelFriendsDataList) {
-                    for (int i = 0; i < _maxLevelFriendsDataList.Count; i++) {
-                        if (null != _maxLevelFriendsDataList[i] && _maxLevelFriendsDataList[i].IsDirty) {
+                if (null != _advProgressDataList) {
+                    for (int i = 0; i < _advProgressDataList.Count; i++) {
+                        if (null != _advProgressDataList[i] && _advProgressDataList[i].IsDirty) {
                             return true;
                         }
                     }
@@ -76,10 +76,10 @@ namespace GameA
                 _cs_userId = userId;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_FriendMaxLevelData msg = new Msg_CS_DAT_FriendMaxLevelData();
+                Msg_CS_DAT_AllFriendsAdvProgressData msg = new Msg_CS_DAT_AllFriendsAdvProgressData();
                 msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_FriendMaxLevelData>(
-                    SoyHttpApiPath.FriendMaxLevelData, msg, ret => {
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AllFriendsAdvProgressData>(
+                    SoyHttpApiPath.AllFriendsAdvProgressData, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -89,45 +89,45 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_FriendMaxLevelData msg)
+        public bool OnSync (Msg_SC_DAT_AllFriendsAdvProgressData msg)
         {
             if (null == msg) return false;
-            _maxLevelFriendsDataList = new List<MaxLevelFriendsData>();
-            for (int i = 0; i < msg.MaxLevelFriendsDataList.Count; i++) {
-                _maxLevelFriendsDataList.Add(new MaxLevelFriendsData(msg.MaxLevelFriendsDataList[i]));
+            _advProgressDataList = new List<AdvProgressData>();
+            for (int i = 0; i < msg.AdvProgressDataList.Count; i++) {
+                _advProgressDataList.Add(new AdvProgressData(msg.AdvProgressDataList[i]));
             }
             OnSyncPartial();
             return true;
         }
 
-        public bool DeepCopy (FriendMaxLevelData obj)
+        public bool DeepCopy (AllFriendsAdvProgressData obj)
         {
             if (null == obj) return false;
-            if (null ==  obj.MaxLevelFriendsDataList) return false;
-            if (null ==  _maxLevelFriendsDataList) {
-                _maxLevelFriendsDataList = new List<MaxLevelFriendsData>();
+            if (null ==  obj.AdvProgressDataList) return false;
+            if (null ==  _advProgressDataList) {
+                _advProgressDataList = new List<AdvProgressData>();
             }
-            _maxLevelFriendsDataList.Clear();
-            for (int i = 0; i < obj.MaxLevelFriendsDataList.Count; i++){
-                _maxLevelFriendsDataList.Add(obj.MaxLevelFriendsDataList[i]);
+            _advProgressDataList.Clear();
+            for (int i = 0; i < obj.AdvProgressDataList.Count; i++){
+                _advProgressDataList.Add(obj.AdvProgressDataList[i]);
             }
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_FriendMaxLevelData msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_AllFriendsAdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public FriendMaxLevelData (Msg_SC_DAT_FriendMaxLevelData msg) {
+        public AllFriendsAdvProgressData (Msg_SC_DAT_AllFriendsAdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public FriendMaxLevelData () { 
-            _maxLevelFriendsDataList = new List<MaxLevelFriendsData>();
+        public AllFriendsAdvProgressData () { 
+            _advProgressDataList = new List<AdvProgressData>();
             OnCreate();
         }
         #endregion

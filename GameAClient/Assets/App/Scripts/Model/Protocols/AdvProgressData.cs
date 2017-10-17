@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MaxLevelFriendsData : SyncronisticData {
+    public partial class AdvProgressData : SyncronisticData {
         #region 字段
         /// <summary>
         /// 章节
@@ -56,7 +56,7 @@ namespace GameA
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_MaxLevelFriendsData msg)
+        public bool OnSync (Msg_AdvProgressData msg)
         {
             if (null == msg) return false;
             _section = msg.Section;     
@@ -69,25 +69,25 @@ namespace GameA
             return true;
         }
 
-        public bool DeepCopy (MaxLevelFriendsData obj)
+        public bool DeepCopy (AdvProgressData obj)
         {
             if (null == obj) return false;
             return true;
         }
 
-        public void OnSyncFromParent (Msg_MaxLevelFriendsData msg) {
+        public void OnSyncFromParent (Msg_AdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public MaxLevelFriendsData (Msg_MaxLevelFriendsData msg) {
+        public AdvProgressData (Msg_AdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public MaxLevelFriendsData () { 
+        public AdvProgressData () { 
             _friendsDataList = new List<UserInfoSimple>();
         }
         #endregion
