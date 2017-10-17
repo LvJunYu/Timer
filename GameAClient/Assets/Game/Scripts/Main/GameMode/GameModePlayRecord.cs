@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -10,11 +9,25 @@ namespace GameA.Game
     {
         protected Record _record;
         protected GM2DRecordData _gm2drecordData;
-        protected int _inputDataReadInx = 0;
+        protected int _inputDataReadInx;
 
         public virtual Record Record
         {
             get { return _record; }
+        }
+
+        public int CurrentFrameCount
+        {
+            get { return GameRun.Instance.LogicFrameCnt; }
+        }
+
+        public float SpeedMultiple
+        {
+            get { return GM2DGame.Instance.GamePlaySpeed; }
+            set
+            {
+                GM2DGame.Instance.SetGamePlaySpeed(value);
+            }
         }
 
         public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
@@ -38,6 +51,10 @@ namespace GameA.Game
 
         public override void Update()
         {
+            if (!_run)
+            {
+                return;
+            }
             GameRun.Instance.Update();
             while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
@@ -99,11 +116,9 @@ namespace GameA.Game
 
         protected virtual void InitUI()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayRecordMode();
-//            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
-//            SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
             SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
+            SocialGUIManager.Instance.OpenUI<UICtrlRecordPlayControl>();
             InputManager.Instance.HideGameInput();
         }
 
