@@ -400,6 +400,10 @@ namespace GameA.Game
 
 		public bool CheckCanPublish(bool showPrompt = false)
 		{
+			if (LocalUser.Instance.User.RoleType == (int) EAccountRoleType.AcRT_Admin)
+			{
+				return true;
+			}
 			if (RecordBytes == null && (NeedSave || !_project.PassFlag))
 			{
 				if (showPrompt)
