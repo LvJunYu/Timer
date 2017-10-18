@@ -21,6 +21,15 @@ namespace GameA
 
         public void RequestFriends(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
+            if (FriendList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                }
+                _dataDetailList = FriendList;
+                return;
+            }
             Request(instanceUserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>

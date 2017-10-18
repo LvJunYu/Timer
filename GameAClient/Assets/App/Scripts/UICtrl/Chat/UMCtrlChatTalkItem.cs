@@ -7,7 +7,6 @@ namespace GameA
     public class UMCtrlChatTalkItem : UMCtrlBase<UMViewChatTalkItem>, IDataItemRenderer
     {
         private static string _systemName = "系统消息";
-        private UICtrlChat.EMenu _menu;
         private ChatInfo _chatInfo;
 
         public RectTransform Transform
@@ -64,40 +63,17 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg[0],
                 _cachedView.HeadDeflautTexture);
         }
-
-        public void SetMenu(UICtrlChat.EMenu menu)
-        {
-            _menu = menu;
-        }
     }
 
     public class ChatInfo
     {
         public UserInfoDetail SenderInfoDetail; //系统消息为null
-        public UserInfoDetail ReceiverInfoDetail;
+        public UserInfoDetail ReceiverInfoDetail; //测试数据可能为null
+        public string ReceiverId;
         public string Content;
         public EChatSender EChatSender;
         public EChatType EChatType;
-
-        public ChatInfo()
-        {
-        }
-
-        public ChatInfo(string content, EChatSender eChatSender, EChatType eChatType = EChatType.Text)
-        {
-            Content = content;
-            EChatSender = eChatSender;
-            EChatType = eChatType;
-        }
-
-        public ChatInfo(string content, UserInfoDetail senderInfoDetail, EChatSender eChatSender,
-            EChatType eChatType = EChatType.Text)
-        {
-            Content = content;
-            SenderInfoDetail = senderInfoDetail;
-            EChatSender = eChatSender;
-            EChatType = eChatType;
-        }
+        public string SavePath;
     }
 
     public enum EChatSender

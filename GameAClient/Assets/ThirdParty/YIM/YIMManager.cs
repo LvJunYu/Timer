@@ -17,24 +17,56 @@ public class YIMManager :
     public class MyMessage
     {
         public ulong id;
-        public string textContent;
+        public string TextContent;
         public string filePath;
-        public string reciver;
+        public string ReciverId;
         public int status; //假设0发送中，1发送成功，2发送失败
-        public ChatType chatType;
+        public ChatType ChatType;
 
         public void Clear()
         {
             id = 0;
-            textContent = filePath = reciver = null;
+            TextContent = filePath = ReciverId = null;
             status = 0;
-            chatType = ChatType.Unknow;
+            ChatType = ChatType.Unknow;
+        }
+    }
+
+    public class MyVoice : VoiceMessage
+    {
+        public string SavePath;
+
+        public MyVoice()
+        {
+            MessageType = MessageBodyType.Voice;
+        }
+
+        public void Clear()
+        {
+            RequestID = 0;
+            Duration = 0;
+            SenderID = RecvID = SavePath = null;
+            ChatType = ChatType.Unknow;
+        }
+    }
+
+    public struct AudioInfoRaw
+    {
+        public string ReceiveId;
+        public ChatType ChatType;
+
+        public AudioInfoRaw(string receiveId, ChatType chatType)
+        {
+            ReceiveId = receiveId;
+            ChatType = chatType;
         }
     }
 
     public readonly string WorldChatRoomId = "10001";
-    private Dictionary<ulong, MyMessage> messageCahceList = new Dictionary<ulong, MyMessage>(); //记录消息状态
+    private LRUCache<ulong, AudioInfoRaw> _iRequestCache = new LRUCache<ulong, AudioInfoRaw>(64);
+    private Dictionary<ulong, MyMessage> _messageCahceList = new Dictionary<ulong, MyMessage>(); //记录消息状态
     private MyMessage _myMessage = new MyMessage();
+    private MyVoice _myVoice = new MyVoice();
     private bool _manualLogout;
     private long _userid;
     private static YIMManager _instance;
@@ -123,12 +155,12 @@ public class YIMManager :
     {
         _myMessage.Clear();
         _myMessage.id = 0;
-        _myMessage.textContent = content;
-        _myMessage.reciver = id;
-        _myMessage.chatType = chatType;
-        IMAPI.Instance().SendTextMessage(_myMessage.reciver, _myMessage.chatType, _myMessage.textContent,
+        _myMessage.TextContent = content;
+        _myMessage.ReciverId = id;
+        _myMessage.ChatType = chatType;
+        IMAPI.Instance().SendTextMessage(_myMessage.ReciverId, _myMessage.ChatType, _myMessage.TextContent,
             ref _myMessage.id);
-        messageCahceList.Add(_myMessage.id, _myMessage);
+        _messageCahceList.Add(_myMessage.id, _myMessage);
         ShowTalk(_myMessage);
     }
 
@@ -142,13 +174,11 @@ public class YIMManager :
         StartAudioRecord(roomId, ChatType.RoomChat);
     }
 
-    LRUCache<ulong, string> iRequestCache = new LRUCache<ulong, string>(64);
-
     private void StartAudioRecord(string id, ChatType chatType)
     {
         ulong iRequestID = 0;
         ErrorCode errorcode = IMAPI.Instance().SendAudioMessage(id, chatType, ref iRequestID);
-        iRequestCache.Insert(iRequestID, id);
+        _iRequestCache.Insert(iRequestID, new AudioInfoRaw(id, chatType));
         LogHelper.Debug("sendmessage: RequestID:" + iRequestID + "errorcode: " + errorcode);
     }
 
@@ -156,10 +186,6 @@ public class YIMManager :
     {
         IMAPI.Instance().StopAudioMessage("");
     }
-
-    #region LoginListen implementation
-
-    bool _gameOnline = true; //假设游戏是在线状态
 
     public void OnLogin(ErrorCode errorcode, string strYouMeID)
     {
@@ -170,21 +196,18 @@ public class YIMManager :
     public void OnLogout()
     {
         ShowStatus("OnLogout");
+        bool _gameOnline = true; //假设游戏是在线状态
         if (!_manualLogout && _gameOnline)
         {
             IMAPI.Instance().Login(_userid.ToString(), "123456");
         }
     }
 
-    #endregion
-
-    #region MessageListen implementation
-
     public void OnSendMessageStatus(ulong iRequestID, ErrorCode errorcode, bool isForbidRoom, int reasonType,
         ulong forbidEndTime)
     {
         MyMessage msg;
-        if (messageCahceList.TryGetValue(iRequestID, out msg))
+        if (_messageCahceList.TryGetValue(iRequestID, out msg))
         {
             if (errorcode == ErrorCode.Success)
             {
@@ -195,7 +218,7 @@ public class YIMManager :
                 msg.status = 2;
             }
             UpdateMsg(msg);
-            messageCahceList.Remove(iRequestID);
+            _messageCahceList.Remove(iRequestID);
         }
         LogHelper.Debug("OnSendMessageStatus request:" + iRequestID + "errorcode:" + errorcode);
     }
@@ -214,16 +237,20 @@ public class YIMManager :
         //如果自己发送的语音消息发送成功，就播放出来
         if (errorcode == ErrorCode.Success)
         {
-            string receiveId;
-            if (iRequestCache.TryGetItem(iRequestID, out receiveId))
+            AudioInfoRaw audioInfoRaw;
+            if (_iRequestCache.TryGetItem(iRequestID, out audioInfoRaw))
             {
-                ShowVoice(strText, receiveId);
+                _myVoice.Clear();
+                _myVoice.RequestID = iRequestID;
+                _myVoice.Text = strText;
+                _myVoice.SavePath = strAudioPath;
+                _myVoice.Duration = iDuration;
+                _myVoice.SenderID = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
+                _myVoice.RecvID = audioInfoRaw.ReceiveId;
+                _myVoice.ChatType = audioInfoRaw.ChatType;
+                ShowVoice(_myVoice);
+                YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
             }
-            else
-            {
-                ShowVoice(strText, null);
-            }
-            YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
         }
     }
 
@@ -254,6 +281,7 @@ public class YIMManager :
                             voiceMsg.RecvID + " 时长:" + voiceMsg.Duration);
             //下载收到的语音消息
             IMAPI.Instance().DownloadAudioFile(voiceMsg.RequestID, GetUniqAudioPath());
+            Debug.Log(GetUniqAudioPath());
             ReceiveVoice(voiceMsg);
         }
     }
@@ -282,10 +310,6 @@ public class YIMManager :
     {
     }
 
-    #endregion
-
-    #region ChatRoomListen implementation
-
     public void OnJoinRoom(ErrorCode errorcode, string strChatRoomID)
     {
         ShowStatus("OnJoinRoom: errorcode" + errorcode + " roomID:" + strChatRoomID);
@@ -303,8 +327,6 @@ public class YIMManager :
     public void OnUserLeaveChatRoom(string strRoomID, string strUserID)
     {
     }
-
-    #endregion
 
     public void OnGetContact(List<string> contactLists)
     {
@@ -329,14 +351,13 @@ public class YIMManager :
         if (errorcode == ErrorCode.Success)
         {
             YIMAudioPlayer.Instance.PlayAudioFile(strSavePath);
+            Debug.Log(strSavePath);
         }
     }
 
     public void OnDownloadByUrl(ErrorCode errorcode, string strFromUrl, string strSavePath)
     {
     }
-
-    #region YIMEngine.NoticeListen implementation
 
     public void OnRecvNotice(Notice notice)
     {
@@ -345,8 +366,6 @@ public class YIMManager :
     public void OnCancelNotice(ulong noticeID, string channelID)
     {
     }
-
-    #endregion
 
     private void UpdateMsg(MyMessage msg)
     {
@@ -359,10 +378,10 @@ public class YIMManager :
         Messenger<MyMessage>.Broadcast(EMessengerType.OnSendText, message);
     }
 
-    private void ShowVoice(string msg, string id)
+    private void ShowVoice(MyVoice voiceMessage)
     {
         //这个函数是假设用来添加消息到UI上
-        Messenger<string, string>.Broadcast(EMessengerType.OnSendVoice, msg, id);
+        Messenger<MyVoice>.Broadcast(EMessengerType.OnSendVoice, voiceMessage);
     }
 
     private string GetUniqAudioPath()

@@ -21,7 +21,10 @@ namespace GameA
                 {
                     return;
                 }
-                TempData();
+                if (_userInfoDetailList == null || _userInfoDetailList.Count == 0)
+                {
+                    TempData();
+                }
                 RefreshView();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
@@ -36,6 +39,7 @@ namespace GameA
             base.TempData();
             for (int i = 0; i < _userInfoDetailList.Count; i++)
             {
+                _userInfoDetailList[i].UserInfoSimple.UserId += 3000;
                 _userInfoDetailList[i].UserInfoSimple.NickName =
                     "好友" + _userInfoDetailList[i].UserInfoSimple.NickName;
                 _userInfoDetailList[i].UserInfoSimple.RelationWithMe.IsFriend = true;

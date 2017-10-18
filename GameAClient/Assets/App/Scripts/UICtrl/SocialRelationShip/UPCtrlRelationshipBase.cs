@@ -53,8 +53,10 @@ namespace GameA
             for (int i = 0; i < 10; i++)
             {
                 var user = new UserInfoDetail();
+                user.UserInfoSimple.UserId = 10000 + i; 
                 user.UserInfoSimple.NickName = "测试数据" + i;
                 user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
+                user = UserManager.Instance.UpdateData(user);
                 _userInfoDetailList.Add(user);
             }
         }

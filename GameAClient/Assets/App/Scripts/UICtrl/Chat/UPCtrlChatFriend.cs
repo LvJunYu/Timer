@@ -15,6 +15,7 @@ namespace GameA
         private bool _isRequesting;
         private bool _hasInited;
         private List<UMCtrlChatFriendItem> _umCtrlChatFriendItemCache;
+        public long CurFriendId;
 
         protected override void OnViewCreated()
         {
@@ -31,6 +32,28 @@ namespace GameA
                 RequestFriendsData();
             }
             RefreshFriendsView();
+        }
+
+        public override void AddChatItem(ChatInfo chatInfo)
+        {
+            long userId = long.Parse(chatInfo.ReceiverId);
+            if (CurFriendId == userId)
+            {
+                _dataList.Add(chatInfo);
+                RefreshView();
+            }
+            else
+            {
+                if (chatInfo.ReceiverInfoDetail != null)
+                {
+                    chatInfo.ReceiverInfoDetail.ChatHistory.Add(chatInfo);
+                }
+                else
+                {
+                    UserManager.Instance.GetDataOnAsync(userId,
+                        userInfoDetail => { userInfoDetail.ChatHistory.Add(chatInfo); });
+                }
+            }
         }
 
         private void RequestFriendsData()
@@ -50,7 +73,10 @@ namespace GameA
                 {
                     return;
                 }
-                TempData();
+                if (_friendData == null || _friendData.Count == 0)
+                {
+                    TempData();
+                }
                 UpdateSort();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
@@ -71,6 +97,7 @@ namespace GameA
                 user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
                 user.UserInfoSimple.RelationWithMe.IsFriend = true;
                 user.IsOnline = i % 3 == 1;
+                user = UserManager.Instance.UpdateData(user);
                 _friendData.Add(user);
             }
         }
@@ -171,7 +198,6 @@ namespace GameA
         protected override IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlChatTalkSmallItem();
-            item.SetMenu(_menu);
             item.Init(parent, _resScenary);
             if (null == _umCtrlChatTalkItemCache)
             {

@@ -10,7 +10,6 @@ namespace GameA
         protected UICtrlChat.EMenu _menu;
         protected List<UMCtrlChatTalkItem> _umCtrlChatTalkItemCache;
         protected List<ChatInfo> _dataList = new List<ChatInfo>();
-        public long CurFriendId;
 
         protected override void OnViewCreated()
         {
@@ -68,7 +67,6 @@ namespace GameA
         protected virtual IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlChatTalkItem();
-            item.SetMenu(_menu);
             item.Init(parent, _resScenary);
             if (null == _umCtrlChatTalkItemCache)
             {
@@ -78,7 +76,7 @@ namespace GameA
             return item;
         }
 
-        public void AddChatItem(ChatInfo chatInfo)
+        public virtual void AddChatItem(ChatInfo chatInfo)
         {
             _dataList.Add(chatInfo);
             RefreshView();

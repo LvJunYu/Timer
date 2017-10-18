@@ -88,7 +88,7 @@ namespace GameA
             RegisterEvent<string>(EMessengerType.OnReceiveStatus, ShowStatus);
             RegisterEvent<YIMManager.MyMessage>(EMessengerType.OnSendText, SendText);
             RegisterEvent<TextMessage>(EMessengerType.OnReceiveText, ReceiveText);
-            RegisterEvent<string, string>(EMessengerType.OnSendVoice, SendVoice);
+            RegisterEvent<YIMManager.MyVoice>(EMessengerType.OnSendVoice, SendVoice);
             RegisterEvent<VoiceMessage>(EMessengerType.OnReceiveVoice, ReceiveVoice);
         }
 
@@ -114,7 +114,8 @@ namespace GameA
             }
             else if (_curMenu == EMenu.Friend)
             {
-                YIMManager.Instance.SendTextToUser(_cachedView.InptField.text, _curMenuCtrl.CurFriendId.ToString());
+                YIMManager.Instance.SendTextToUser(_cachedView.InptField.text,
+                    ((UPCtrlChatFriend) _curMenuCtrl).CurFriendId.ToString());
                 _cachedView.InptField.text = string.Empty;
             }
         }
@@ -131,7 +132,7 @@ namespace GameA
             }
             else if (_curMenu == EMenu.Friend)
             {
-                YIMManager.Instance.StartAudioRecordToUser(_curMenuCtrl.CurFriendId.ToString());
+                YIMManager.Instance.StartAudioRecordToUser(((UPCtrlChatFriend) _curMenuCtrl).CurFriendId.ToString());
             }
         }
 
@@ -161,15 +162,22 @@ namespace GameA
             }
             //当前页面显示
             var chatInfo = new ChatInfo();
-            chatInfo.Content = message.textContent;
+            chatInfo.Content = message.TextContent;
             chatInfo.EChatSender = EChatSender.Myself;
             chatInfo.EChatType = EChatType.Text;
             chatInfo.SenderInfoDetail = LocalUser.Instance.User;
-            _curMenuCtrl.AddChatItem(chatInfo);
-//            UserManager.Instance.GetDataOnAsync(long.Parse(message.reciver), userInfoDetail =>
-//            {
-//                chatInfo.ReceiverInfoDetail = userInfoDetail;
-//            });
+            chatInfo.ReceiverId = message.ReciverId;
+            if (message.ChatType == ChatType.RoomChat &&
+                message.ReciverId == YIMManager.Instance.WorldChatRoomId)
+            {
+                _menuCtrlArray[(int) EMenu.World].AddChatItem(chatInfo);
+            }
+            else if (message.ChatType == ChatType.PrivateChat)
+            {
+                _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
+                UserManager.Instance.GetDataOnAsync(long.Parse(message.ReciverId),
+                    userInfoDetail => chatInfo.ReceiverInfoDetail = userInfoDetail);
+            }
         }
 
         private void ReceiveText(TextMessage message)
@@ -201,30 +209,36 @@ namespace GameA
                     chatInfo.EChatType = EChatType.Text;
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
+                    chatInfo.ReceiverId = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
                     _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
                 });
             }
         }
 
-        private void SendVoice(string msg, string id)
+        private void SendVoice(YIMManager.MyVoice voiceMessage)
         {
             if (_cachedView == null)
             {
                 SocialGUIManager.Instance.CreateView<UICtrlChat>();
             }
             var chatInfo = new ChatInfo();
-            chatInfo.Content = string.Format("(语音)……\r\n 识别结果：{0}", msg);
+            chatInfo.Content = string.Format("(语音)……\r\n 识别结果：{0}", voiceMessage.Text);
             chatInfo.EChatSender = EChatSender.Myself;
             chatInfo.EChatType = EChatType.Voice;
             chatInfo.SenderInfoDetail = LocalUser.Instance.User;
-            _curMenuCtrl.AddChatItem(chatInfo);
-//            if (!string.IsNullOrEmpty(id))
-//            {
-//                UserManager.Instance.GetDataOnAsync(long.Parse(id), userInfoDetail =>
-//                {
-//                    chatInfo.ReceiverInfoDetail = userInfoDetail;
-//                });
-//            }
+            chatInfo.SavePath = voiceMessage.SavePath;
+            chatInfo.ReceiverId = voiceMessage.RecvID;
+            if (voiceMessage.ChatType == ChatType.RoomChat &&
+                voiceMessage.RecvID == YIMManager.Instance.WorldChatRoomId)
+            {
+                _menuCtrlArray[(int) EMenu.World].AddChatItem(chatInfo);
+            }
+            else if (voiceMessage.ChatType == ChatType.PrivateChat)
+            {
+                _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
+                UserManager.Instance.GetDataOnAsync(long.Parse(voiceMessage.RecvID),
+                    userInfoDetail => chatInfo.ReceiverInfoDetail = userInfoDetail);
+            }
         }
 
         private void ReceiveVoice(VoiceMessage message)
@@ -243,6 +257,7 @@ namespace GameA
                     chatInfo.EChatType = EChatType.Voice;
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
+                    chatInfo.ReceiverId = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
                     _menuCtrlArray[(int) EMenu.World].AddChatItem(chatInfo);
                 });
             }
