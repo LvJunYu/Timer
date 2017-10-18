@@ -75,6 +75,7 @@ namespace GameA.Game
             {
                 if (Speed != IntVec2.zero)
                 {
+                    int z = 0;
                     GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
                     var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_moveDirection - 1), _velocity);
                     var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
@@ -83,6 +84,39 @@ namespace GameA.Game
                         var unit = units[i];
                         if (unit.IsAlive)
                         {
+                            unit.OnIntersect(this);
+                            switch (_moveDirection)
+                            {
+                                case EMoveDirection.Up:
+                                    if (unit.OnDownHit(this, ref z, true))
+                                    {
+                                        Hit(unit, EDirectionType.Up);
+                                    }
+                                    break;
+                                case EMoveDirection.Down:
+                                    if (unit.OnUpHit(this, ref z, true))
+                                    {
+                                        Hit(unit, EDirectionType.Down);
+                                    }
+                                    break;
+                                case EMoveDirection.Left:
+                                    if (unit.OnRightHit(this, ref z, true))
+                                    {
+                                        Hit(unit, EDirectionType.Left);
+                                    }
+                                    break;
+                                case EMoveDirection.Right:
+                                    if (unit.OnLeftHit(this, ref z, true))
+                                    {
+                                        Hit(unit, EDirectionType.Right);
+                                    }
+                                    break;
+                            }
+                            //如果碰死了 继续
+                            if (!unit.IsAlive)
+                            {
+                                continue;
+                            }
                             //朝上运动时，如果是角色或者箱子。
                             if (_moveDirection == EMoveDirection.Up)
                             {
@@ -96,10 +130,6 @@ namespace GameA.Game
                                     }
                                     continue;
                                 }
-                            }
-                            if (UnitDefine.IsSwitchTrigger(unit.Id))
-                            {
-                                unit.OnIntersect(this);
                             }
                             if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
                             {
@@ -160,6 +190,10 @@ namespace GameA.Game
                     }
                 }
             }
+        }
+        
+        protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
         }
 
         private void ChangeMoveDirection()
