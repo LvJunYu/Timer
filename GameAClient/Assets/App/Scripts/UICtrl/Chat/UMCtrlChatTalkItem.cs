@@ -1,45 +1,115 @@
-﻿namespace GameA
+﻿using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
+
+namespace GameA
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class UMCtrlChatTalkItem : UMCtrlBase<UMViewChatTalkItem>
+    public class UMCtrlChatTalkItem : UMCtrlBase<UMViewChatTalkItem>, IDataItemRenderer
     {
-        public bool IsShow;
+        private static string _systemName = "系统消息";
+        private UICtrlChat.EMenu _menu;
+        private ChatInfo _chatInfo;
 
-        protected override void OnViewCreated()
+        public RectTransform Transform
         {
-            base.OnViewCreated();
-            IsShow = true;
+            get { return _cachedView.Trans; }
         }
 
-        public void Show()
+        public int Index { get; set; }
+
+        public object Data
         {
-            _cachedView.gameObject.SetActive(true);
-            IsShow = true;
+            get { return _chatInfo; }
         }
 
-        public void Hide()
+        public void Set(object data)
         {
-            _cachedView.gameObject.SetActive(false);
-            IsShow = false;
+            _chatInfo = data as ChatInfo;
+            RefreshView();
         }
 
-        public void ShowText(string msg)
+        private void RefreshView()
         {
-            _cachedView.TalkTxt.text = msg;
-            _cachedView.TalkImg.enabled = true;
+            if (_chatInfo == null) return;
+            int index = _chatInfo.EChatSender == EChatSender.Myself ? 1 : 0;
+            _cachedView.Pannels[0].SetActiveEx(_chatInfo.EChatSender != EChatSender.Myself);
+            _cachedView.Pannels[1].SetActiveEx(_chatInfo.EChatSender == EChatSender.Myself);
+            if (_chatInfo.EChatSender == EChatSender.System)
+            {
+                _cachedView.MaleObj[index].SetActiveEx(false);
+                _cachedView.FamaleObj[index].SetActiveEx(false);
+                _cachedView.NickText[index].text = _systemName;
+                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg[index],
+                    _cachedView.HeadDeflautTexture);
+            }
+            else
+            {
+                _cachedView.MaleObj[index].SetActiveEx(_chatInfo.SenderInfoDetail.UserInfoSimple.Sex == ESex.S_Male);
+                _cachedView.FamaleObj[index].SetActiveEx(_chatInfo.SenderInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
+                _cachedView.NickText[index].text = _chatInfo.SenderInfoDetail.UserInfoSimple.NickName;
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg[index],
+                    _chatInfo.SenderInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDeflautTexture);
+            }
+            _cachedView.LayoutElements[index].enabled = false;
+            _cachedView.TalkTxt[index].text = _chatInfo.Content;
+            Canvas.ForceUpdateCanvases();
+            _cachedView.LayoutElements[index].enabled = _cachedView.TalkTxt[index].rectTransform().rect.width >=
+                                                        _cachedView.LayoutElements[index].preferredWidth;
         }
 
-        public void ShowStatus(string msg)
+        public void Unload()
         {
-            _cachedView.TalkTxt.text = msg;
-            _cachedView.TalkImg.enabled = false;
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg[0],
+                _cachedView.HeadDeflautTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg[0],
+                _cachedView.HeadDeflautTexture);
         }
 
-        public void UpdateText(string msg)
+        public void SetMenu(UICtrlChat.EMenu menu)
         {
-            _cachedView.TalkTxt.text = msg;
+            _menu = menu;
         }
+    }
+
+    public class ChatInfo
+    {
+        public UserInfoDetail SenderInfoDetail; //系统消息为null
+        public UserInfoDetail ReceiverInfoDetail;
+        public string Content;
+        public EChatSender EChatSender;
+        public EChatType EChatType;
+
+        public ChatInfo()
+        {
+        }
+
+        public ChatInfo(string content, EChatSender eChatSender, EChatType eChatType = EChatType.Text)
+        {
+            Content = content;
+            EChatSender = eChatSender;
+            EChatType = eChatType;
+        }
+
+        public ChatInfo(string content, UserInfoDetail senderInfoDetail, EChatSender eChatSender,
+            EChatType eChatType = EChatType.Text)
+        {
+            Content = content;
+            SenderInfoDetail = senderInfoDetail;
+            EChatSender = eChatSender;
+            EChatType = eChatType;
+        }
+    }
+
+    public enum EChatSender
+    {
+        System,
+        Myself,
+        Other
+    }
+
+    public enum EChatType
+    {
+        Text,
+        Voice
     }
 }

@@ -14,16 +14,28 @@ namespace GameA
         private GameTimer _followedListRequestTimer;
         private GameTimer _userInfoRequestTimer;
         private Msg_SC_DAT_UserInfoDetail _msg_SC_DAT_UserInfoDetail;
+        private bool _isOnline;
+        private List<ChatInfo> _chatHistory = new List<ChatInfo>(); //与某人私聊记录
 
         #endregion
 
         #region 属性
+
+        public List<ChatInfo> ChatHistory
+        {
+            get { return _chatHistory; }
+            set { _chatHistory = value; }
+        }
+
+        public bool IsOnline
+        {
+            get { return _isOnline; }
+            set { _isOnline = value; }
+        }
+
         public Msg_SC_DAT_UserInfoDetail GetUserInfoDetail
         {
-            get
-            {
-                return _msg_SC_DAT_UserInfoDetail;
-            }
+            get { return _msg_SC_DAT_UserInfoDetail; }
         }
 
         public GameTimer FollowedListRequestTimer
@@ -36,7 +48,6 @@ namespace GameA
                     _followedListRequestTimer.Zero();
                 }
                 return _followedListRequestTimer;
-
             }
         }
 
@@ -56,7 +67,6 @@ namespace GameA
         #endregion
 
         #region 方法
-
 
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
@@ -90,10 +100,7 @@ namespace GameA
                         {
                             OnSyncSucceed();
                         }
-                    }, (failedCode, failedMsg) =>
-                    {
-                        OnSyncFailed(failedCode, failedMsg);
-                    });
+                    }, (failedCode, failedMsg) => { OnSyncFailed(failedCode, failedMsg); });
             }
         }
 
@@ -235,10 +242,7 @@ namespace GameA
 
                 return true;
             });
-            list.Sort((p1, p2) =>
-            {
-                return -p1.UpdateTime.CompareTo(p2.UpdateTime);
-            });
+            list.Sort((p1, p2) => { return -p1.UpdateTime.CompareTo(p2.UpdateTime); });
             return list;
         }
 
@@ -266,10 +270,7 @@ namespace GameA
 
             if (msg.ResultCode == (int) ECachedDataState.CDS_Recreate)
             {
-                localSavedProjectList.ForEach(p =>
-                {
-                    p.Delete();
-                });
+                localSavedProjectList.ForEach(p => { p.Delete(); });
                 localSavedProjectList.Clear();
             }
             Dictionary<long, Project> localProjectDict = new Dictionary<long, Project>();
@@ -286,12 +287,10 @@ namespace GameA
                 }
                 else
                 {
-
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
                     project = ProjectManager.Instance.OnSyncProject(msgProject, true);
                     localSavedProjectList.Add(project);
                 }
-
             }
             ST_CacheList newLocalSavedProjectList = new ST_CacheList();
             foreach (var entry in localSavedProjectList)
@@ -376,7 +375,6 @@ namespace GameA
         {
             UserManager.Instance.OnSyncUserData(msg);
             {
-
             }
 
             #endregion

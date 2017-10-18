@@ -158,7 +158,7 @@ namespace GameA
 //            ShareUtil.Init();
 //            RoomManager.Instance.Init();
 #if !UNITY_EDITOR_OSX
-            YIMManager.Instance.Init();
+            YIMManager.Instance.Login();
 #endif
             GetUserData ();
         }
@@ -253,6 +253,11 @@ namespace GameA
             GameManager.Instance.Init(typeof(GM2DGame));
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Messenger.Broadcast(EMessengerType.OnApplicationQuit);
+        }
 
         protected override void Update()
         {

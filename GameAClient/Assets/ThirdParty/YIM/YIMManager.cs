@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 using GameA;
 using SoyEngine;
@@ -45,13 +46,12 @@ public class YIMManager :
             if (null == _instance)
             {
                 _instance = new YIMManager();
-//                _instance = new GameObject("YIMManager").AddComponent<YIMManager>();
             }
             return _instance;
         }
     }
 
-    public void Init()
+    public YIMManager()
     {
         //注册回调
         IMAPI.Instance().SetLoginListen(this);
@@ -61,11 +61,8 @@ public class YIMManager :
         //初始化
         IMAPI.Instance().Init("YOUMEE9036C7A45B37ED5F7AC6F0C6479BB48EC2CA10E",
             "y7/AAtmf6Ry6awljGzwbs0x6VFPQcckKlpHQCno1KiA3YEu1g5UwLPbVxBEnSLGfbPDfE8Qj/qYp1shwQVptV3uvmVsueIaHKrzZ+uOY715kpAnNGIYEQsp7Pi0QV07/Ii3z9oRShJKdj/I7qWM9UYF0+pJxkCnAgkR8SD15tuUBAAE=");
-        _userid = LocalUser.Instance.UserGuid;
-        Login();
-        Messenger.RemoveListener(SoyEngine.EMessengerType.OnAccountLogout, Dispose);
-        Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Dispose);
-        JoinChatRoom(WorldChatRoomId);
+        Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Logout);
+        Messenger.AddListener(EMessengerType.OnApplicationQuit, Destroy);
     }
 
     private void ShowStatus(string msg)
@@ -73,20 +70,22 @@ public class YIMManager :
         Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
     }
 
-    private void ReceiveText(string msg,string senderId)
+    private void ReceiveText(TextMessage message)
     {
-        Messenger<string,string>.Broadcast(EMessengerType.OnReceiveText, msg,senderId);
+        Messenger<TextMessage>.Broadcast(EMessengerType.OnReceiveText, message);
     }
-    
-    private void ReceiveVoice(string msg,string senderId)
+
+    private void ReceiveVoice(VoiceMessage message)
     {
-        Messenger<string,string>.Broadcast(EMessengerType.OnReceiveVoice, msg,senderId);
+        Messenger<VoiceMessage>.Broadcast(EMessengerType.OnReceiveVoice, message);
     }
 
     public void Login()
     {
+        _userid = LocalUser.Instance.UserGuid;
         ErrorCode errorcode = IMAPI.Instance().Login(_userid.ToString(), "123456");
         LogHelper.Debug("sendmessage: " + "errorcode: " + errorcode);
+        JoinChatRoom(WorldChatRoomId);
     }
 
     public void Logout()
@@ -94,6 +93,7 @@ public class YIMManager :
         _manualLogout = true;
         IMAPI.Instance().Logout();
         LogHelper.Debug("logout");
+        LeaveChatRoom(WorldChatRoomId);
     }
 
     public void JoinChatRoom(string roomId)
@@ -110,7 +110,7 @@ public class YIMManager :
         LogHelper.Debug("leavechatroom");
     }
 
-    public void SendTextMessageToUser(string content, string userId)
+    public void SendTextToUser(string content, string userId)
     {
         SendTextMessage(content, userId, ChatType.PrivateChat);
     }
@@ -130,7 +130,7 @@ public class YIMManager :
         IMAPI.Instance().SendTextMessage(_myMessage.reciver, _myMessage.chatType, _myMessage.textContent,
             ref _myMessage.id);
         messageCahceList.Add(_myMessage.id, _myMessage);
-        ShowTalk(_myMessage.textContent);
+        ShowTalk(_myMessage);
     }
 
     public void StartAudioRecordToUser(string userId)
@@ -143,21 +143,19 @@ public class YIMManager :
         StartAudioRecord(roomId, ChatType.RoomChat);
     }
 
+    LRUCache<ulong, string> iRequestCache = new LRUCache<ulong, string>(64);
+
     private void StartAudioRecord(string id, ChatType chatType)
     {
         ulong iRequestID = 0;
         ErrorCode errorcode = IMAPI.Instance().SendAudioMessage(id, chatType, ref iRequestID);
+        iRequestCache.Insert(iRequestID, id);
         LogHelper.Debug("sendmessage: RequestID:" + iRequestID + "errorcode: " + errorcode);
     }
 
     public void StopAudioMessage()
     {
         IMAPI.Instance().StopAudioMessage("");
-    }
-
-    public void Filter(string content)
-    {
-        ShowStatus(IMAPI.GetFilterText(content));
     }
 
     #region LoginListen implementation
@@ -202,6 +200,11 @@ public class YIMManager :
         LogHelper.Debug("OnSendMessageStatus request:" + iRequestID + "errorcode:" + errorcode);
     }
 
+    private bool CheckRequestId(ref ulong iRequestID, ulong id)
+    {
+        return iRequestID == id;
+    }
+
     public void OnSendAudioMessageStatus(ulong iRequestID, ErrorCode errorcode, string strText,
         string strAudioPath, int iDuration, bool isForbidRoom, int reasonType, ulong forbidEndTime)
     {
@@ -211,7 +214,15 @@ public class YIMManager :
         //如果自己发送的语音消息发送成功，就播放出来
         if (errorcode == ErrorCode.Success)
         {
-            ShowVoice(strText);
+            string receiveId;
+            if (iRequestCache.TryGetItem(iRequestID, out receiveId))
+            {
+                ShowVoice(strText, receiveId);
+            }
+            else
+            {
+                ShowVoice(strText, null);
+            }
             YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
         }
     }
@@ -226,7 +237,7 @@ public class YIMManager :
         if (message.MessageType == MessageBodyType.TXT)
         {
             TextMessage textMsg = (TextMessage) message;
-            ReceiveText(textMsg.Content, textMsg.SenderID);
+            ReceiveText(textMsg);
             LogHelper.Debug("OnRecvMessage text:" + textMsg.Content + " send:" + textMsg.SenderID + "recv:" +
                             textMsg.RecvID);
         }
@@ -243,7 +254,7 @@ public class YIMManager :
                             voiceMsg.RecvID + " 时长:" + voiceMsg.Duration);
             //下载收到的语音消息
             IMAPI.Instance().DownloadAudioFile(voiceMsg.RequestID, GetUniqAudioPath());
-            ReceiveVoice(voiceMsg.Text, voiceMsg.SenderID);
+            ReceiveVoice(voiceMsg);
         }
     }
 
@@ -305,6 +316,11 @@ public class YIMManager :
 
     public void OnQueryUserStatus(ErrorCode code, string userID, UserStatus status)
     {
+        if (_userStatusCallBackDic.ContainsKey(userID))
+        {
+            _userStatusCallBackDic[userID].Invoke(status);
+            _userStatusCallBackDic.Remove(userID);
+        }
     }
 
     public void OnDownload(ErrorCode errorcode, MessageInfoBase message, string strSavePath)
@@ -337,16 +353,16 @@ public class YIMManager :
         //这个函数是假设用来更新消息的发送是否成功的状态
     }
 
-    private void ShowTalk(string msg)
+    private void ShowTalk(MyMessage message)
     {
         //这个函数是假设用来添加消息到UI上
-        Messenger<string>.Broadcast(EMessengerType.OnSendText,msg);
+        Messenger<MyMessage>.Broadcast(EMessengerType.OnSendText, message);
     }
 
-    private void ShowVoice(string msg)
+    private void ShowVoice(string msg, string id)
     {
         //这个函数是假设用来添加消息到UI上
-        Messenger<string>.Broadcast(EMessengerType.OnSendVoice,msg);
+        Messenger<string, string>.Broadcast(EMessengerType.OnSendVoice, msg, id);
     }
 
     private string GetUniqAudioPath()
@@ -355,14 +371,33 @@ public class YIMManager :
                System.Guid.NewGuid().ToString().Replace("-", "") + ".wav";
     }
 
-    public void Dispose()
+    private Dictionary<string, Action<UserStatus>> _userStatusCallBackDic =
+        new Dictionary<string, Action<UserStatus>>(5);
+
+    public void CheckUserOnLine(string userId, Action<UserStatus> userStatusCallBack)
     {
+        IMAPI.Instance().QueryUserStatus(userId);
+        if (userStatusCallBack != null)
+        {
+            if (_userStatusCallBackDic.ContainsKey(userId))
+            {
+                _userStatusCallBackDic[userId] = userStatusCallBack;
+            }
+            else
+            {
+                _userStatusCallBackDic.Add(userId, userStatusCallBack);
+            }
+        }
+    }
+
+    public void Destroy()
+    {
+        LeaveChatRoom(WorldChatRoomId);
 #if UNITY_EDITOR
         _manualLogout = true;
         IMAPI.Instance().Logout();
 #else
         IMAPI.Instance().UnInit();
 #endif
-        LeaveChatRoom(WorldChatRoomId);
     }
 }

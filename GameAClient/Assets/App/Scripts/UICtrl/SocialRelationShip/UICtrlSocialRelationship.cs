@@ -82,36 +82,6 @@ namespace GameA
             RegisterEvent(EMessengerType.OnFollowUser, OnFollowUser);
         }
 
-        private void OnFollowUser()
-        {
-            if (_cachedView == null) return;
-            if (_curMenu == EMenu.Follow)
-            {
-                ((UPCtrlRelationshipFollow) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Fans)
-            {
-                ((UPCtrlRelationshipFans) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Friends)
-            {
-                ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.AddNew)
-            {
-                ((UPCtrlRelationshipAddNew) _curMenuCtrl).RefreshView();
-            }
-        }
-
-        private void OnRemoveBlockUser()
-        {
-            if (_cachedView == null) return;
-            if (_curMenu == EMenu.Block)
-            {
-                ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
-            }
-        }
-
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -176,6 +146,36 @@ namespace GameA
         private void OnReturnBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlSocialRelationship>();
+        }
+
+        private void OnFollowUser()
+        {
+            if (_cachedView == null) return;
+            if (_curMenu == EMenu.Follow)
+            {
+                ((UPCtrlRelationshipFollow) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.Fans)
+            {
+                ((UPCtrlRelationshipFans) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.Friends)
+            {
+                ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.AddNew)
+            {
+                ((UPCtrlRelationshipAddNew) _curMenuCtrl).RefreshView();
+            }
+        }
+
+        private void OnRemoveBlockUser()
+        {
+            if (_cachedView == null) return;
+            if (_curMenu == EMenu.Block)
+            {
+                ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
+            }
         }
 
         private void OnRelationShipDataChanged(long userId)

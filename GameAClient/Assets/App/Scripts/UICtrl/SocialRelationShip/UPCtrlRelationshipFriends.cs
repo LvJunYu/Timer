@@ -12,26 +12,23 @@ namespace GameA
             }
             _isRequesting = true;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            LocalUser.Instance.RelationUserList.Request(LocalUser.Instance.UserGuid,
-                ERelationUserType.RUT_FollowEachOther, 0, _maxFollows, ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+            LocalUser.Instance.RelationUserList.RequestFriends(LocalUser.Instance.UserGuid, () =>
+            {
+                _userInfoDetailList = LocalUser.Instance.RelationUserList.FriendList;
+                _hasInited = true;
+                _isRequesting = false;
+                if (!_isOpen)
                 {
-                    _userInfoDetailList = LocalUser.Instance.RelationUserList.DataDetailList;
-                    _hasInited = true;
-                    _isRequesting = false;
-                    if (!_isOpen)
-                    {
-                        return;
-                    }
-                    TempData();
-                    LocalUser.Instance.RelationUserList.FriendList = _userInfoDetailList;
-                    RefreshView();
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }, code =>
-                {
-                    _isRequesting = false;
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                });
+                    return;
+                }
+                TempData();
+                RefreshView();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                _isRequesting = false;
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
         }
 
         protected override void TempData()

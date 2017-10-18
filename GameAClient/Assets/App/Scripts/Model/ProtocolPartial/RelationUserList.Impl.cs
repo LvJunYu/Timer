@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -16,6 +17,20 @@ namespace GameA
         public List<UserInfoDetail> DataDetailList
         {
             get { return _dataDetailList; }
+        }
+
+        public void RequestFriends(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        {
+            Request(instanceUserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
+                ERelationUserOrderBy.RUOB_Friendliness,
+                EOrderType.OT_Asc, () =>
+                {
+                    FriendList = _dataDetailList;
+                    if (successCallBack != null)
+                    {
+                        successCallBack.Invoke();
+                    }
+                }, failCallBack);
         }
 
         protected override void OnSyncPartial()
@@ -48,7 +63,6 @@ namespace GameA
                 RemoveBlockUser(userInfoDetail);
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
-            
         }
 
         public void RequestFollowUser(UserInfoDetail userInfoDetail)
@@ -71,7 +85,6 @@ namespace GameA
                 FollowUser(userInfoDetail);
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
-            
         }
 
         private void RemoveBlockUser(UserInfoDetail userInfoDetail)
