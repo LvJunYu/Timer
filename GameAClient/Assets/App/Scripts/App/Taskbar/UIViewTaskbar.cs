@@ -77,6 +77,8 @@ namespace GameA
 	    public Button AchievementBtn;
 	    public GameObject Achievement;
 //	    public GameObject AchievementDisable;
+
+	    public Button ChatBtn;
         /// <summary>
         /// 人物动画
         /// </summary>

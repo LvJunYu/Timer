@@ -79,6 +79,10 @@ namespace GameA
         {
             CurFriendId = userInfoDetail.UserInfoSimple.UserId;
             _dataList = userInfoDetail.ChatHistory;
+            for (int i = 0; i < _umCtrlChatFriendItemCache.Count; i++)
+            {
+                _umCtrlChatFriendItemCache[i].RefreshSelectStatus();
+            }
             RefreshView();
         }
 

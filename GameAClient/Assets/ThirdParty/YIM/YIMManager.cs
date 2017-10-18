@@ -67,7 +67,7 @@ public class YIMManager :
 
     private void ShowStatus(string msg)
     {
-        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
+//        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
     }
 
     private void ReceiveText(TextMessage message)
@@ -85,15 +85,14 @@ public class YIMManager :
         _userid = LocalUser.Instance.UserGuid;
         ErrorCode errorcode = IMAPI.Instance().Login(_userid.ToString(), "123456");
         LogHelper.Debug("sendmessage: " + "errorcode: " + errorcode);
-        JoinChatRoom(WorldChatRoomId);
     }
 
     public void Logout()
     {
+        LeaveChatRoom(WorldChatRoomId);
         _manualLogout = true;
         IMAPI.Instance().Logout();
         LogHelper.Debug("logout");
-        LeaveChatRoom(WorldChatRoomId);
     }
 
     public void JoinChatRoom(string roomId)
@@ -165,6 +164,7 @@ public class YIMManager :
     public void OnLogin(ErrorCode errorcode, string strYouMeID)
     {
         ShowStatus("OnLogin: errorcode" + errorcode + " userID:" + strYouMeID);
+        JoinChatRoom(WorldChatRoomId);
     }
 
     public void OnLogout()

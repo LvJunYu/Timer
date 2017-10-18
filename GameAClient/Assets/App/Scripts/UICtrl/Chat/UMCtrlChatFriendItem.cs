@@ -1,5 +1,6 @@
 ﻿using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -27,7 +28,7 @@ namespace GameA
             _userInfoDetail = data as UserInfoDetail;
             RefreshView();
         }
-        
+
         private void RefreshView()
         {
             if (_userInfoDetail == null) return;
@@ -35,6 +36,13 @@ namespace GameA
             _cachedView.OnlineInfoTxt.text = _userInfoDetail.IsOnline ? _onlineStr : _outlineStr;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
+            RefreshSelectStatus();
+        }
+
+        public void RefreshSelectStatus()
+        {
+            _cachedView.SelectedObj.SetActive(_userInfoDetail != null &&
+                                              _upCtrlChatFriend.CurFriendId == _userInfoDetail.UserInfoSimple.UserId);
         }
 
         public void Unload()

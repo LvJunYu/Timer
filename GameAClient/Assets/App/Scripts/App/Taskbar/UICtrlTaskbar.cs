@@ -24,6 +24,7 @@ namespace GameA
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
+        private bool _chatAvailable = true;
         private bool _fashionShopAvailable = true;
         private bool _puzzleAvailable;
         private bool _trainAvailable = false;
@@ -87,6 +88,7 @@ namespace GameA
             _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
+            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
@@ -99,6 +101,7 @@ namespace GameA
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
             SetLock(UIFunction.UI_Weapon, _weaponAvailable);
+            SetLock(UIFunction.UI_Chat, _chatAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
@@ -218,6 +221,12 @@ namespace GameA
                     }
                 }
                     break;
+                case UIFunction.UI_Chat:
+                {
+                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
+                    _chatAvailable = ifunlock;
+                }
+                    break;
             }
         }
 
@@ -233,7 +242,8 @@ namespace GameA
             UI_Friends = 7,
             UI_Train = 8,
             UI_Achievement = 9,
-            UI_Weapon
+            UI_Weapon,
+            UI_Chat
         }
 
         public void OnCreateBtn()
@@ -368,6 +378,11 @@ namespace GameA
             }
         }
 
+        private void OnChatBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+        }
+
         private void RefreshUserInfo()
         {
             _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
@@ -392,7 +407,6 @@ namespace GameA
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
         }
-
 
         private void OnUnlockAll()
         {

@@ -17,6 +17,7 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.SendTexBtn.onClick.AddListener(OnSendTexBtn);
+            _cachedView.FaceBtn.onClick.AddListener(OnFaceBtn);
             _cachedView.VoiceBtn.OnPress += OnStartRecordVoiceBtn;
             _cachedView.VoiceBtn.OnRelease += OnSendVoiceBtn;
             _menuCtrlArray = new UPCtrlChatBase[(int) EMenu.Max];
@@ -118,6 +119,10 @@ namespace GameA
             }
         }
 
+        private void OnFaceBtn()
+        {
+        }
+
         protected void OnStartRecordVoiceBtn()
         {
             if (_curMenu == EMenu.World)
@@ -164,7 +169,6 @@ namespace GameA
 //            UserManager.Instance.GetDataOnAsync(long.Parse(message.reciver), userInfoDetail =>
 //            {
 //                chatInfo.ReceiverInfoDetail = userInfoDetail;
-//                userInfoDetail.ChatHistory.Add(chatInfo);
 //            });
         }
 
@@ -174,7 +178,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.CreateView<UICtrlChat>();
             }
-            if (message.ChatType == ChatType.RoomChat && message.SenderID == YIMManager.Instance.WorldChatRoomId)
+            if (message.ChatType == ChatType.RoomChat && message.RecvID == YIMManager.Instance.WorldChatRoomId)
             {
                 UserManager.Instance.GetDataOnAsync(long.Parse(message.SenderID), userInfoDetail =>
                 {
@@ -198,7 +202,6 @@ namespace GameA
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
                     _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
-                    userInfoDetail.ChatHistory.Add(chatInfo);
                 });
             }
         }
@@ -220,7 +223,6 @@ namespace GameA
 //                UserManager.Instance.GetDataOnAsync(long.Parse(id), userInfoDetail =>
 //                {
 //                    chatInfo.ReceiverInfoDetail = userInfoDetail;
-//                    userInfoDetail.ChatHistory.Add(chatInfo);
 //                });
 //            }
         }
@@ -231,7 +233,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.CreateView<UICtrlChat>();
             }
-            if (message.ChatType == ChatType.RoomChat && message.SenderID == YIMManager.Instance.WorldChatRoomId)
+            if (message.ChatType == ChatType.RoomChat && message.RecvID == YIMManager.Instance.WorldChatRoomId)
             {
                 UserManager.Instance.GetDataOnAsync(long.Parse(message.SenderID), userInfoDetail =>
                 {
@@ -255,7 +257,6 @@ namespace GameA
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
                     _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
-                    userInfoDetail.ChatHistory.Add(chatInfo);
                 });
             }
         }
