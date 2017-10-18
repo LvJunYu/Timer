@@ -566,5 +566,13 @@ namespace GameA
             tstrRet = System.Text.RegularExpressions.Regex.Replace(tstrRet, "零零*零*", "零");
             return tstrRet;
         } //end
+
+        public static string GetTimeStringByFrameCount(int count)
+        {
+            var time = count * ConstDefineGM2D.FixedDeltaTime;
+            int min = (int) time / 60;
+            int sec = (int) (time % 60);
+            return string.Format("{0:D2}:{1:D2}", min, sec);
+        }
     }
 }
