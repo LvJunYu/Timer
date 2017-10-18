@@ -1680,6 +1680,10 @@ namespace GameA.Game
         protected void SetCross(bool value)
         {
             _canCross = value;
+            if (_tableUnit.IsGround == 1)
+            {
+                ColliderScene2D.Instance.SetGround(_guid, !value);
+            }
         }
 
         public virtual void SetLifeTime(int lifeTime)
