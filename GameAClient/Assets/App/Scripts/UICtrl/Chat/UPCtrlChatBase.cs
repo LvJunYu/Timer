@@ -8,7 +8,6 @@ namespace GameA
     {
         protected EResScenary _resScenary;
         protected UICtrlChat.EMenu _menu;
-        protected List<UMCtrlChatTalkItem> _umCtrlChatTalkItemCache;
         protected List<ChatInfo> _dataList = new List<ChatInfo>();
 
         protected override void OnViewCreated()
@@ -33,7 +32,7 @@ namespace GameA
         public override void OnDestroy()
         {
             base.OnDestroy();
-            _umCtrlChatTalkItemCache = null;
+            _dataList = null;
         }
 
         public void RefreshView(bool showLastContent = true)
@@ -68,11 +67,6 @@ namespace GameA
         {
             var item = new UMCtrlChatTalkItem();
             item.Init(parent, _resScenary);
-            if (null == _umCtrlChatTalkItemCache)
-            {
-                _umCtrlChatTalkItemCache = new List<UMCtrlChatTalkItem>(10);
-            }
-            _umCtrlChatTalkItemCache.Add(item);
             return item;
         }
 

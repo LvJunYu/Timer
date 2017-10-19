@@ -14,7 +14,6 @@ namespace GameA
         private List<UserInfoDetail> _friendData;
         private bool _isRequesting;
         private bool _hasInited;
-        private List<UMCtrlChatFriendItem> _umCtrlChatFriendItemCache;
         public long CurFriendId;
 
         protected override void OnViewCreated()
@@ -106,10 +105,7 @@ namespace GameA
         {
             CurFriendId = userInfoDetail.UserInfoSimple.UserId;
             _dataList = userInfoDetail.ChatHistory;
-            for (int i = 0; i < _umCtrlChatFriendItemCache.Count; i++)
-            {
-                _umCtrlChatFriendItemCache[i].RefreshSelectStatus();
-            }
+            _cachedView.FriendGridDataScroller.RefreshCurrent();
             RefreshView();
         }
 
@@ -187,11 +183,6 @@ namespace GameA
             var item = new UMCtrlChatFriendItem();
             item.SetMenu(this);
             item.Init(parent, _resScenary);
-            if (null == _umCtrlChatFriendItemCache)
-            {
-                _umCtrlChatFriendItemCache = new List<UMCtrlChatFriendItem>(10);
-            }
-            _umCtrlChatFriendItemCache.Add(item);
             return item;
         }
 
@@ -199,11 +190,6 @@ namespace GameA
         {
             var item = new UMCtrlChatTalkSmallItem();
             item.Init(parent, _resScenary);
-            if (null == _umCtrlChatTalkItemCache)
-            {
-                _umCtrlChatTalkItemCache = new List<UMCtrlChatTalkItem>(10);
-            }
-            _umCtrlChatTalkItemCache.Add(item);
             return item;
         }
     }

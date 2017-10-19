@@ -77,7 +77,6 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<long>(EMessengerType.OnRelationShipDataChanged, OnRelationShipDataChanged);
             RegisterEvent(EMessengerType.OnRemoveBlockUser, OnRemoveBlockUser);
             RegisterEvent(EMessengerType.OnFollowUser, OnFollowUser);
         }
@@ -169,18 +168,6 @@ namespace GameA
             if (_curMenu == EMenu.Block)
             {
                 ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
-            }
-        }
-
-        private void OnRelationShipDataChanged(long userId)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-            if (_curMenuCtrl != null)
-            {
-                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(userId);
             }
         }
 

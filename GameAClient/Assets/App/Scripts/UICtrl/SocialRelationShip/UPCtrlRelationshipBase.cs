@@ -5,11 +5,10 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
-        IOnChangeHandler<long> where T : IDataItemRenderer, IRelationShipItem, new()
+    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>
+        where T : IDataItemRenderer, IRelationShipItem, new()
     {
         protected List<UserInfoDetail> _userInfoDetailList;
-        protected List<T> _umCtrlRelationItems;
         protected bool _isRequesting;
         protected bool _hasInited;
         protected EResScenary _resScenary;
@@ -41,7 +40,6 @@ namespace GameA
         public override void OnDestroy()
         {
             _userInfoDetailList = null;
-            _umCtrlRelationItems = null;
             _hasInited = false;
             base.OnDestroy();
         }
@@ -52,7 +50,7 @@ namespace GameA
             for (int i = 0; i < 10; i++)
             {
                 var user = new UserInfoDetail();
-                user.UserInfoSimple.UserId = 10000 + i; 
+                user.UserInfoSimple.UserId = 10000 + i;
                 user.UserInfoSimple.NickName = "测试数据" + i;
                 user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
                 _userInfoDetailList.Add(user);
@@ -89,28 +87,7 @@ namespace GameA
             var item = new T();
             item.SetMenu(_menu);
             item.Init(parent, _resScenary);
-            if (null == _umCtrlRelationItems)
-            {
-                _umCtrlRelationItems = new List<T>(6);
-            }
-            _umCtrlRelationItems.Add(item);
             return item;
-        }
-
-        public void OnChangeHandler(long val)
-        {
-            if (_userInfoDetailList != null && _umCtrlRelationItems != null)
-            {
-                int inx = _userInfoDetailList.FindIndex(user => user.UserInfoSimple.UserId == val);
-                if (inx >= 0)
-                {
-                    var um = _umCtrlRelationItems.Find(p => p.Index == inx);
-                    if (um != null)
-                    {
-                        um.RefreshView();
-                    }
-                }
-            }
         }
 
         public void SetResScenary(EResScenary resScenary)

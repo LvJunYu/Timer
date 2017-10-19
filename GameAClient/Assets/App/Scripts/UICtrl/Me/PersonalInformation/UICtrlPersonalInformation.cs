@@ -5,19 +5,21 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlPersonalInformation : UICtrlAnimationBase<UIViewPersonalInformation>
     {
+        private long _userId;
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlPersonalInformationBase _curMenuCtrl;
-        private UPCtrlPersonalInformationBase[] _menuCtrlArray;
+        private UPCtrlPersonalInforBase _curMenuCtrl;
+        private UPCtrlPersonalInforBase[] _menuCtrlArray;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _menuCtrlArray = new UPCtrlPersonalInformationBase[(int) EMenu.Max];
-            var up01 = new UPCtrlPersonalInformationBase();
-            up01.SetResScenary(ResScenary);
-            up01.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.BasicInfo] = up01;
+            _menuCtrlArray = new UPCtrlPersonalInforBase[(int) EMenu.Max];
+            var upCtrlPersonalInforRecords = new UPCtrlPersonalInforRecords();
+            upCtrlPersonalInforRecords.SetResScenary(ResScenary);
+            upCtrlPersonalInforRecords.SetMenu(EMenu.Records);
+            upCtrlPersonalInforRecords.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Records] = upCtrlPersonalInforRecords;
 
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
@@ -47,12 +49,6 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.FrontUI;
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent<long>(EMessengerType.OnRelationShipDataChanged, OnDataChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -113,18 +109,6 @@ namespace GameA
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
-        }
-
-        private void OnDataChanged(long userId)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-            if (_curMenuCtrl != null)
-            {
-                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(userId);
-            }
         }
 
         public enum EMenu
