@@ -42,6 +42,9 @@ namespace SoyEngine
             None, Success, TooLong, IllegalCharacter
         }
         public static ECheckProfileResult CheckProfile(String profile) {
+            if(string.IsNullOrEmpty(profile)) {
+                return ECheckProfileResult.Success;
+            }
             if(profile.Length > SoyConstDefine.MaxProfileLength) {
                 return ECheckProfileResult.TooLong;
             }

@@ -14,7 +14,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.GridDataScrollers[(int) _menu - 1].Set(OnItemRefresh, GetTalkItemRenderer);
+            _cachedView.GridDataScrollers[(int) _menu - 1].Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void OnDestroy()
@@ -83,7 +83,7 @@ namespace GameA
             }
         }
 
-        protected virtual IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
+        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlPersonalInfoRecord();
             item.Init(parent, _resScenary);

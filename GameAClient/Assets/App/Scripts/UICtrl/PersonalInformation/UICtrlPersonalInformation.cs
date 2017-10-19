@@ -1,4 +1,5 @@
-﻿
+﻿using SoyEngine;
+
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
@@ -17,14 +18,26 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
-            
+
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
             upCtrlPersonalInfoBasicInfo.SetResScenary(ResScenary);
             upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.BasicInfo);
             upCtrlPersonalInfoBasicInfo.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.BasicInfo] = upCtrlPersonalInfoBasicInfo;
-            
+
+            var upCtrlPersonalInfoDetailPublish = new UPCtrlPersonalInfoDetailPublish();
+            upCtrlPersonalInfoDetailPublish.SetResScenary(ResScenary);
+            upCtrlPersonalInfoDetailPublish.SetMenu(EMenu.Publish);
+            upCtrlPersonalInfoDetailPublish.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Publish] = upCtrlPersonalInfoDetailPublish;
+
+            var upCtrlPersonalInfoDetailCollect = new UPCtrlPersonalInfoDetailCollect();
+            upCtrlPersonalInfoDetailCollect.SetResScenary(ResScenary);
+            upCtrlPersonalInfoDetailCollect.SetMenu(EMenu.Collects);
+            upCtrlPersonalInfoDetailCollect.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Collects] = upCtrlPersonalInfoDetailCollect;
+
             var upCtrlPersonalInforRecords = new UPCtrlPersonalInfoRecords();
             upCtrlPersonalInforRecords.SetResScenary(ResScenary);
             upCtrlPersonalInforRecords.SetMenu(EMenu.Records);
@@ -70,14 +83,10 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
             }
             IsMyself = UserInfoDetail == LocalUser.Instance.User;
-            if (_curMenu == EMenu.None)
-            {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
-            }
-            else
-            {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
-            }
+            _cachedView.FollowBtn.SetActiveEx(!IsMyself);
+            _cachedView.ChatBtn.SetActiveEx(!IsMyself);
+            _cachedView.BlockBtn.SetActiveEx(!IsMyself);
+            _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
         }
 
         protected override void OnClose()
@@ -120,7 +129,7 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
         }
-        
+
         private void OnBlockBtn()
         {
             LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);

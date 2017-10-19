@@ -8,6 +8,7 @@ namespace GameA
     {
         private static string _expFormat = "{0}/{1}";
         private static string _lvFormat = "Lv{0}";
+        private static string _emptyStr = " ";
         private UserWorldProjectPlayHistoryList _data;
         private UserInfoDetail _userInfoDetail;
         private bool _isEditing;
@@ -72,7 +73,6 @@ namespace GameA
 
         private void OnSaveEditBtn()
         {
-            ChangeEditStatus(false);
             bool needUpdateInfo = false;
             Msg_SC_DAT_UserInfoDetail userDataChanged = new Msg_SC_DAT_UserInfoDetail();
             userDataChanged.UserInfoSimple = new Msg_SC_DAT_UserInfoSimple();
@@ -100,6 +100,7 @@ namespace GameA
                 }
                 else
                 {
+                    ChangeEditStatus(false);
                     SocialGUIManager.ShowPopupDialog("昵称格式错误");
                     return;
                 }
@@ -108,11 +109,19 @@ namespace GameA
             {
                 if (CheckTools.CheckProfile(_cachedView.DescInputField.text) == CheckTools.ECheckProfileResult.Success)
                 {
-                    userDataChanged.Profile = _cachedView.DescInputField.text;
+                    if (string.IsNullOrEmpty(_cachedView.DescInputField.text))
+                    {
+                        userDataChanged.Profile = _emptyStr;
+                    }
+                    else
+                    {
+                        userDataChanged.Profile = _cachedView.DescInputField.text;
+                    }
                     needUpdateInfo = true;
                 }
                 else
                 {
+                    ChangeEditStatus(false);
                     SocialGUIManager.ShowPopupDialog("签名格式错误");
                     return;
                 }
@@ -133,14 +142,20 @@ namespace GameA
                     }
                     else
                     {
+                        ChangeEditStatus(false);
                         SocialGUIManager.ShowPopupDialog("更新信息失败");
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                 }, code =>
                 {
+                    ChangeEditStatus(false);
                     SocialGUIManager.ShowPopupDialog("更新信息失败");
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 });
+            }
+            else
+            {
+                ChangeEditStatus(false);
             }
         }
 
