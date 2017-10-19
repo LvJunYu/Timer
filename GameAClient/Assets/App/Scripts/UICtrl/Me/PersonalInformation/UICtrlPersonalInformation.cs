@@ -1,21 +1,29 @@
-﻿using SoyEngine;
-
+﻿
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlPersonalInformation : UICtrlAnimationBase<UIViewPersonalInformation>
+    public class UICtrlPersonalInformation : UICtrlResManagedBase<UIViewPersonalInformation>
     {
-        private long _userId;
+        public UserInfoDetail UserInfoDetail;
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlPersonalInforBase _curMenuCtrl;
-        private UPCtrlPersonalInforBase[] _menuCtrlArray;
+        private UPCtrlPersonalInfoBase _curMenuCtrl;
+        private UPCtrlPersonalInfoBase[] _menuCtrlArray;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _menuCtrlArray = new UPCtrlPersonalInforBase[(int) EMenu.Max];
-            var upCtrlPersonalInforRecords = new UPCtrlPersonalInforRecords();
+            _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
+            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
+            _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
+            _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
+            var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
+            upCtrlPersonalInfoBasicInfo.SetResScenary(ResScenary);
+            upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.Records);
+            upCtrlPersonalInfoBasicInfo.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.BasicInfo] = upCtrlPersonalInfoBasicInfo;
+ 
+            var upCtrlPersonalInforRecords = new UPCtrlPersonalInfoRecords();
             upCtrlPersonalInforRecords.SetResScenary(ResScenary);
             upCtrlPersonalInforRecords.SetMenu(EMenu.Records);
             upCtrlPersonalInforRecords.Init(this, _cachedView);
@@ -54,6 +62,11 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            UserInfoDetail = parameter as UserInfoDetail;
+            if (null == UserInfoDetail)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+            }
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
@@ -70,14 +83,8 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+            UserInfoDetail = null;
             base.OnClose();
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
 
         private void ChangeMenu(EMenu menu)
@@ -109,6 +116,20 @@ namespace GameA
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+        }
+        
+        private void OnBlockBtn()
+        {
+            LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);
+        }
+
+        private void OnChatBtn()
+        {
+        }
+
+        private void OnFollowBtn()
+        {
+            LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
         }
 
         public enum EMenu

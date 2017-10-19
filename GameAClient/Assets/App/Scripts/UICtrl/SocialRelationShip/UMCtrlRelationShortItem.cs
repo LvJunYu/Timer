@@ -12,6 +12,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.InfoBtn.onClick.AddListener(OnInfoBtn);
             if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew)
             {
                 _cachedView.BtnTxt.text = "关注";
@@ -22,11 +23,6 @@ namespace GameA
                 _cachedView.BtnTxt.text = "移除";
                 _cachedView.Btn.onClick.AddListener(OnRemoveBlockBtn);
             }
-        }
-
-        public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
-        {
-            _belongMenu = eMenu;
         }
 
         public void RefreshView()
@@ -100,6 +96,17 @@ namespace GameA
                 return;
             }
             LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
+        }
+        
+        private void OnInfoBtn()
+        {
+            if(null==_userInfoDetail) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_userInfoDetail);
+        }
+
+        public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
+        {
+            _belongMenu = eMenu;
         }
     }
 }

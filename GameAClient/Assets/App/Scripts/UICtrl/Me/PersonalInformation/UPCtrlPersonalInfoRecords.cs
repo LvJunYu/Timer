@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlPersonalInforRecords : UPCtrlPersonalInforBase
+    public class UPCtrlPersonalInfoRecords : UPCtrlPersonalInfoBase
     {
         private const int PageSize = 10;
         protected List<Record> _dataList;
+        protected bool _isRequesting;
         private UserWorldProjectPlayHistoryList _data;
 
         protected override void OnViewCreated()
@@ -18,37 +19,40 @@ namespace GameA
 
         public override void OnDestroy()
         {
+            _dataList = null;
             base.OnDestroy();
         }
 
         public override void Open()
         {
             base.Open();
-            RefreshView();
+            _data = AppData.Instance.WorldData.UserPlayHistoryList;
             RequestData();
-        }
-
-        public override void Close()
-        {
-            
-            base.Close();
+            RefreshView();
         }
 
         private void RequestData(bool append = false)
         {
+            if (_isRequesting || _mainCtrl.UserInfoDetail == null) return;
+            _isRequesting = true;
             int startInx = 0;
             if (append)
             {
                 startInx = _dataList.Count;
             }
-            _data.Request(LocalUser.Instance.Account.UserGuid, startInx, PageSize, () =>
+            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, () =>
             {
+                _isRequesting = false;
                 if (!_isOpen)
                 {
                     return;
                 }
                 RefreshView();
-            }, code => { });
+            }, code =>
+            {
+                _isRequesting = false;
+                SocialGUIManager.ShowPopupDialog("请求数据失败");
+            });
         }
 
         public void RefreshView()
@@ -57,6 +61,7 @@ namespace GameA
             if (_dataList == null)
             {
                 _cachedView.GridDataScrollers[(int) _menu - 1].SetEmpty();
+                return;
             }
             _cachedView.GridDataScrollers[(int) _menu - 1].SetItemCount(_dataList.Count);
         }

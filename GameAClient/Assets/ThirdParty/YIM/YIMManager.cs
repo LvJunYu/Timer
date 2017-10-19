@@ -281,7 +281,7 @@ public class YIMManager :
                             voiceMsg.RecvID + " 时长:" + voiceMsg.Duration);
             //下载收到的语音消息
             IMAPI.Instance().DownloadAudioFile(voiceMsg.RequestID, GetUniqAudioPath());
-            Debug.Log(GetUniqAudioPath());
+//            Debug.Log(GetUniqAudioPath());
             ReceiveVoice(voiceMsg);
         }
     }
@@ -351,7 +351,7 @@ public class YIMManager :
         if (errorcode == ErrorCode.Success)
         {
             YIMAudioPlayer.Instance.PlayAudioFile(strSavePath);
-            Debug.Log(strSavePath);
+//            Debug.Log(strSavePath);
         }
     }
 

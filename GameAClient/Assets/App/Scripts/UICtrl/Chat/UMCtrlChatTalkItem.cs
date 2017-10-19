@@ -9,6 +9,21 @@ namespace GameA
         private static string _systemName = "系统消息";
         private ChatInfo _chatInfo;
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            for (int i = 0; i < _cachedView.HeadBtn.Length; i++)
+            {
+                _cachedView.HeadBtn[0].onClick.AddListener(OnHeadBtn);
+            }
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_chatInfo == null || _chatInfo.SenderInfoDetail == null) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_chatInfo.SenderInfoDetail);
+        }
+
         public RectTransform Transform
         {
             get { return _cachedView.Trans; }
@@ -44,7 +59,8 @@ namespace GameA
             else
             {
                 _cachedView.MaleObj[index].SetActiveEx(_chatInfo.SenderInfoDetail.UserInfoSimple.Sex == ESex.S_Male);
-                _cachedView.FamaleObj[index].SetActiveEx(_chatInfo.SenderInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
+                _cachedView.FamaleObj[index]
+                    .SetActiveEx(_chatInfo.SenderInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
                 _cachedView.NickText[index].text = _chatInfo.SenderInfoDetail.UserInfoSimple.NickName;
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg[index],
                     _chatInfo.SenderInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDeflautTexture);

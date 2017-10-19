@@ -144,8 +144,8 @@ namespace GameA
         public static int OnReceiveStatus = SoyEngine.EMessengerType.NextId++;
         
         //好友
-        public static int OnRelationShipDataChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnFollowUser = SoyEngine.EMessengerType.NextId++;
+        public static int OnBlockUser = SoyEngine.EMessengerType.NextId++;
         public static int OnRemoveBlockUser = SoyEngine.EMessengerType.NextId++;
     }
 }

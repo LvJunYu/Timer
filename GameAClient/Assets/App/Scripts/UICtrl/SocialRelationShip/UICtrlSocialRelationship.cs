@@ -79,6 +79,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnRemoveBlockUser, OnRemoveBlockUser);
             RegisterEvent(EMessengerType.OnFollowUser, OnFollowUser);
+            RegisterEvent(EMessengerType.OnBlockUser, OnBlockUser);
         }
 
         protected override void OnOpen(object parameter)
@@ -159,6 +160,26 @@ namespace GameA
             else if (_curMenu == EMenu.AddNew)
             {
                 ((UPCtrlRelationshipAddNew) _curMenuCtrl).RefreshView();
+            }
+        }
+
+        private void OnBlockUser()
+        {
+            if (_curMenu == EMenu.Follow)
+            {
+                ((UPCtrlRelationshipFollow) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.Fans)
+            {
+                ((UPCtrlRelationshipFans) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.Friends)
+            {
+                ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
+            }
+            else if (_curMenu == EMenu.Block)
+            {
+                ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
             }
         }
 

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlPersonalInforBase : UPCtrlBase<UICtrlPersonalInformation, UIViewPersonalInformation>
+    public class UPCtrlPersonalInfoBase : UPCtrlBase<UICtrlPersonalInformation, UIViewPersonalInformation>
     {
 //        private string _name;
 //

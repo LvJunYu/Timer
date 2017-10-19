@@ -15,11 +15,7 @@ namespace GameA
             _cachedView.TalkBtn.onClick.AddListener(OnTalkBtn);
             _cachedView.GiftBtn.onClick.AddListener(OnGiftBtn);
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
-        }
-
-        public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
-        {
-            _belongMenu = eMenu;
+            _cachedView.InfoBtn.onClick.AddListener(OnInfoBtn);
         }
 
         public void RefreshView()
@@ -82,6 +78,17 @@ namespace GameA
 
         private void OnTalkBtn()
         {
+        }
+        
+        private void OnInfoBtn()
+        {
+            if(null == _userInfoDetail) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_userInfoDetail);
+        }
+
+        public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
+        {
+            _belongMenu = eMenu;
         }
     }
 }
