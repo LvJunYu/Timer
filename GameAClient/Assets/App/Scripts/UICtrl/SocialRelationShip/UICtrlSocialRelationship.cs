@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
+    [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
     {
         private EMenu _curMenu = EMenu.None;

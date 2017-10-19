@@ -5,6 +5,7 @@ namespace GameA
     public class UICtrlPersonalInformation : UICtrlResManagedBase<UIViewPersonalInformation>
     {
         public UserInfoDetail UserInfoDetail;
+        public bool IsMyself;
         private EMenu _curMenu = EMenu.None;
         private UPCtrlPersonalInfoBase _curMenuCtrl;
         private UPCtrlPersonalInfoBase[] _menuCtrlArray;
@@ -16,13 +17,14 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
+            
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
             upCtrlPersonalInfoBasicInfo.SetResScenary(ResScenary);
-            upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.Records);
+            upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.BasicInfo);
             upCtrlPersonalInfoBasicInfo.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.BasicInfo] = upCtrlPersonalInfoBasicInfo;
- 
+            
             var upCtrlPersonalInforRecords = new UPCtrlPersonalInfoRecords();
             upCtrlPersonalInforRecords.SetResScenary(ResScenary);
             upCtrlPersonalInforRecords.SetMenu(EMenu.Records);
@@ -67,6 +69,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
             }
+            IsMyself = UserInfoDetail == LocalUser.Instance.User;
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);

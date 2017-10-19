@@ -30,11 +30,14 @@ namespace GameA
         private bool _trainAvailable = false;
         private bool _achievementAvailable;
         private bool _mailBoxAvailable = true;
+
         private bool _friendsAvailable = true;
+
 //        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
         private bool _pushGoldEnergyStyle;
+
         #endregion
 
         #region 属性
@@ -119,7 +122,8 @@ namespace GameA
             base.OnOpen(parameter);
             if (!_pushGoldEnergyStyle)
             {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>()
+                    .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
                 _pushGoldEnergyStyle = true;
             }
             RefreshUserInfo();
@@ -260,10 +264,7 @@ namespace GameA
 
         public void UIPersonalInformation()
         {
-            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.WorkShop))
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>();
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User);
         }
 
         public void OnSignUpBtn()
