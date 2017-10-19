@@ -27,7 +27,6 @@ namespace GameA
                 {
                     successCallBack.Invoke();
                 }
-                _dataDetailList = FriendList;
                 return;
             }
             Request(instanceUserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
@@ -35,6 +34,72 @@ namespace GameA
                 EOrderType.OT_Asc, () =>
                 {
                     FriendList = _dataDetailList;
+                    if (successCallBack != null)
+                    {
+                        successCallBack.Invoke();
+                    }
+                }, failCallBack);
+        }
+
+        public void RequestFans(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        {
+            if (FanList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                }
+                return;
+            }
+            Request(instanceUserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
+                ERelationUserOrderBy.RUOB_Friendliness,
+                EOrderType.OT_Asc, () =>
+                {
+                    FanList = _dataDetailList;
+                    if (successCallBack != null)
+                    {
+                        successCallBack.Invoke();
+                    }
+                }, failCallBack);
+        }
+        
+        public void RequestFollows(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        {
+            if (FollowList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                }
+                return;
+            }
+            Request(instanceUserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
+                ERelationUserOrderBy.RUOB_Friendliness,
+                EOrderType.OT_Asc, () =>
+                {
+                    FollowList = _dataDetailList;
+                    if (successCallBack != null)
+                    {
+                        successCallBack.Invoke();
+                    }
+                }, failCallBack);
+        }
+  
+        public void RequestBlocks(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        {
+            if (BlockList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                }
+                return;
+            }
+            Request(instanceUserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
+                ERelationUserOrderBy.RUOB_Friendliness,
+                EOrderType.OT_Asc, () =>
+                {
+                    BlockList = _dataDetailList;
                     if (successCallBack != null)
                     {
                         successCallBack.Invoke();

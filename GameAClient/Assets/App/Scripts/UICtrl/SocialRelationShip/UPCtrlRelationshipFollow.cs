@@ -12,26 +12,26 @@ namespace GameA
             }
             _isRequesting = true;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            LocalUser.Instance.RelationUserList.Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe,
-                0, _maxFollows,
-                ERelationUserOrderBy.RUOB_Friendliness, EOrderType.OT_Asc, () =>
+            LocalUser.Instance.RelationUserList.RequestFollows(LocalUser.Instance.UserGuid, () =>
+            {
+                _userInfoDetailList = LocalUser.Instance.RelationUserList.FollowList;
+                _hasInited = true;
+                _isRequesting = false;
+                if (!_isOpen)
                 {
-                    _userInfoDetailList = LocalUser.Instance.RelationUserList.DataDetailList;
-                    _hasInited = true;
-                    _isRequesting = false;
-                    if (!_isOpen)
-                    {
-                        return;
-                    }
+                    return;
+                }
+                if (_userInfoDetailList == null || _userInfoDetailList.Count == 0)
+                {
                     TempData();
-                    LocalUser.Instance.RelationUserList.FollowList = _userInfoDetailList;
-                    RefreshView();
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }, code =>
-                {
-                    _isRequesting = false;
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                });
+                }
+                RefreshView();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                _isRequesting = false;
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
         }
 
         protected override void TempData()
@@ -43,7 +43,9 @@ namespace GameA
                 _userInfoDetailList[i].UserInfoSimple.NickName =
                     "关注" + _userInfoDetailList[i].UserInfoSimple.NickName;
                 _userInfoDetailList[i].UserInfoSimple.RelationWithMe.FollowedByMe = true;
+                _userInfoDetailList[i] = UserManager.Instance.UpdateData(_userInfoDetailList[i]);
             }
+            LocalUser.Instance.RelationUserList.FollowList = _userInfoDetailList;
         }
     }
 }

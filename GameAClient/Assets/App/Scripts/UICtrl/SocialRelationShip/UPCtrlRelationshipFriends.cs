@@ -1,6 +1,4 @@
-﻿using SoyEngine.Proto;
-
-namespace GameA
+﻿namespace GameA
 {
     public class UPCtrlRelationshipFriends : UPCtrlRelationshipBase<UMCtrlRelationLongItem>
     {
@@ -43,7 +41,9 @@ namespace GameA
                 _userInfoDetailList[i].UserInfoSimple.NickName =
                     "好友" + _userInfoDetailList[i].UserInfoSimple.NickName;
                 _userInfoDetailList[i].UserInfoSimple.RelationWithMe.IsFriend = true;
+                _userInfoDetailList[i] = UserManager.Instance.UpdateData(_userInfoDetailList[i]);
             }
+            LocalUser.Instance.RelationUserList.FriendList = _userInfoDetailList;
         }
     }
 }

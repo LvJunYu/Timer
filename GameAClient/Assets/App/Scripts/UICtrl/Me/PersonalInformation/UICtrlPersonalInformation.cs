@@ -1,12 +1,4 @@
-﻿ /********************************************************************
- ** Filename : UICtrlSetting.cs
- ** Author : quan
- ** Date : 16/4/30 下午6:42
- ** Summary : UICtrlSetting.cs
- ***********************************************************************/
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameA.Game;
 using NewResourceSolution;

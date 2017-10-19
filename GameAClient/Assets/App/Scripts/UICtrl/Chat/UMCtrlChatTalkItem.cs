@@ -68,7 +68,7 @@ namespace GameA
     public class ChatInfo
     {
         public UserInfoDetail SenderInfoDetail; //系统消息为null
-        public UserInfoDetail ReceiverInfoDetail; //测试数据可能为null
+        public UserInfoDetail ReceiverInfoDetail; //可能为null
         public string ReceiverId;
         public string Content;
         public EChatSender EChatSender;

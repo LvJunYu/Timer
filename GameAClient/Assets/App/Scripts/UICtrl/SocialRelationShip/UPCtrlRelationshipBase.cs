@@ -13,7 +13,6 @@ namespace GameA
         protected bool _isRequesting;
         protected bool _hasInited;
         protected EResScenary _resScenary;
-        protected int _maxFollows = 100;
         protected UICtrlSocialRelationship.EMenu _menu;
 
         protected override void OnViewCreated()
@@ -56,7 +55,6 @@ namespace GameA
                 user.UserInfoSimple.UserId = 10000 + i; 
                 user.UserInfoSimple.NickName = "测试数据" + i;
                 user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
-                user = UserManager.Instance.UpdateData(user);
                 _userInfoDetailList.Add(user);
             }
         }
