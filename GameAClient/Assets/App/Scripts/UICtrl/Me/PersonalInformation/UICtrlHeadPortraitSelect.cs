@@ -46,7 +46,7 @@ namespace GameA
 
         private void OnOKBtn()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().SetHead(_seletctedHeadImage);
+//            SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().SetHead(_seletctedHeadImage);
             SocialGUIManager.Instance.CloseUI<UICtrlHeadPortraitSelect>();
         }
 

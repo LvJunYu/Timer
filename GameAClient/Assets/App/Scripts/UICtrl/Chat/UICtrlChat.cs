@@ -74,6 +74,19 @@ namespace GameA
             base.OnClose();
         }
 
+        protected override void OnDestroy()
+        {
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                if (_menuCtrlArray[i] != null)
+                {
+                    _menuCtrlArray[i].OnDestroy();
+                }
+            }
+            _curMenuCtrl = null;
+            base.OnDestroy();
+        }
+        
         public override void OnUpdate()
         {
             if (_menuCtrlArray != null && _menuCtrlArray[(int) EMenu.Friend] != null)
@@ -81,7 +94,7 @@ namespace GameA
                 ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).OnUpdate();
             }
         }
-
+        
         protected override void InitEventListener()
         {
             base.InitEventListener();

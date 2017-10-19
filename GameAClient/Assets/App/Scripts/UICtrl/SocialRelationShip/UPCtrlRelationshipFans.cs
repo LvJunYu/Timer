@@ -1,6 +1,4 @@
-﻿using SoyEngine.Proto;
-
-namespace GameA
+﻿namespace GameA
 {
     public class UPCtrlRelationshipFans : UPCtrlRelationshipBase<UMCtrlRelationLongItem>
     {

@@ -192,12 +192,6 @@ namespace GameA
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _firstDelayFrames = 3;
-        }
-
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();

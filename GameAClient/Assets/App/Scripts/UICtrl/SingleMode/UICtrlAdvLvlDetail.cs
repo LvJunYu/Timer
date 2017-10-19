@@ -122,12 +122,6 @@ namespace GameA
             _cachedView.RankBtn1.onClick.AddListener(OnRankBtn1);
         }
 
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _firstDelayFrames = 4;
-        }
-
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();

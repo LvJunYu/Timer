@@ -15,12 +15,8 @@ namespace GameA
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
-        protected int _firstDelayFrames;
-        protected int _openDelayFrames;
-        protected int _closeDelayFrames;
         private float _screenHeight;
         private float _screenWidth;
-        private bool _firstOpen;
         private bool _openAnimation;
 
         protected virtual void CreateSequences()
@@ -109,35 +105,9 @@ namespace GameA
                 _openSequence.Complete(true);
                 return;
             }
-            if (_firstOpen)
-            {
-                if (_firstDelayFrames > 0)
-                {
-                    _cachedView.gameObject.SetActive(false);
-                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,
-                        () => _openSequence.Restart()));
-                }
-                else
-                {
-                    _openSequence.Restart();
-                }
-                _firstOpen = false;
-            }
-            else
-            {
-                if (_openDelayFrames > 0)
-                {
-                    _cachedView.gameObject.SetActive(false);
-                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_openDelayFrames,
-                        () => _openSequence.Restart()));
-                }
-                else
-                {
-                    _openSequence.Restart();
-                }
-            }
+            _openSequence.Restart();
         }
-        
+
         private void CloseAnimation(bool immediateFinish = false)
         {
             _cachedView.gameObject.SetActive(true);
@@ -147,15 +117,7 @@ namespace GameA
                 _closeSequence.Complete(true);
                 return;
             }
-            if (_closeDelayFrames > 0)
-            {
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_closeDelayFrames,
-                    () => _closeSequence.PlayForward()));
-            }
-            else
-            {
-                _closeSequence.PlayForward();
-            }
+            _closeSequence.PlayForward();
         }
 
         private Vector3 GetStartPos(EAnimationType animationType)
@@ -185,7 +147,6 @@ namespace GameA
         protected virtual void SetAnimationType()
         {
             _animationType = EAnimationType.None;
-            _firstDelayFrames = 1;
         }
 
         /// <summary>
@@ -248,7 +209,6 @@ namespace GameA
             if (null == _openSequence)
             {
                 CreateSequences();
-                _firstOpen = true;
             }
             if (!_openAnimation)
             {
