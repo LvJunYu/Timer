@@ -10,17 +10,26 @@ namespace GameA
         private static string _lvFormat = "Lv{0}";
         private UserWorldProjectPlayHistoryList _data;
         private UserInfoDetail _userInfoDetail;
+        private bool _isEditing;
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.SaveEditBtn.onClick.AddListener(OnSaveEditBtn);
+        }
 
         public override void Open()
         {
             base.Open();
+            _userInfoDetail = _mainCtrl.UserInfoDetail;
+            _isEditing = false;
             RefreshView();
         }
 
         public void RefreshView()
         {
             if (!_isOpen) return;
-            _userInfoDetail = _mainCtrl.UserInfoDetail;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
             _cachedView.Name.text = _userInfoDetail.UserInfoSimple.NickName;
@@ -45,6 +54,101 @@ namespace GameA
             _cachedView.CreateExp.text = string.Format(_expFormat, curCreateExp, needCreateExp);
             _cachedView.AdvExpBar.fillAmount = curAdvExp / (float) needAdvExp;
             _cachedView.CreateExpBar.fillAmount = curCreateExp / (float) needCreateExp;
+            _cachedView.EditBtn.SetActiveEx(_mainCtrl.IsMyself);
+            ChangeEditStatus(_isEditing);
+            _cachedView.EditObj.SetActiveEx(_isEditing);
+        }
+
+        private void OnEditBtn()
+        {
+            ChangeEditStatus(true);
+            _cachedView.NormalObj.SetActiveEx(!_isEditing);
+            _cachedView.EditObj.SetActiveEx(_isEditing);
+            _cachedView.NameInputField.text = _userInfoDetail.UserInfoSimple.NickName;
+            _cachedView.DescInputField.text = _userInfoDetail.Profile;
+            _cachedView.MaleToggle.isOn = _userInfoDetail.UserInfoSimple.Sex == ESex.S_Male;
+            _cachedView.FamaleToggle.isOn = _userInfoDetail.UserInfoSimple.Sex == ESex.S_Female;
+        }
+
+        private void OnSaveEditBtn()
+        {
+            ChangeEditStatus(false);
+            bool needUpdateInfo = false;
+            Msg_SC_DAT_UserInfoDetail userDataChanged = new Msg_SC_DAT_UserInfoDetail();
+            userDataChanged.UserInfoSimple = new Msg_SC_DAT_UserInfoSimple();
+            ESex sex = ESex.S_None;
+            if (_cachedView.MaleToggle.isOn)
+            {
+                sex = ESex.S_Male;
+            }
+            if (_cachedView.FamaleToggle.isOn)
+            {
+                sex = ESex.S_Female;
+            }
+            if (sex != _userInfoDetail.UserInfoSimple.Sex)
+            {
+                userDataChanged.UserInfoSimple.Sex = sex;
+                needUpdateInfo = true;
+            }
+            if (_cachedView.NameInputField.text != _userInfoDetail.UserInfoSimple.NickName)
+            {
+                if (CheckTools.CheckNickName(_cachedView.NameInputField.text) ==
+                    CheckTools.ECheckNickNameResult.Success)
+                {
+                    userDataChanged.UserInfoSimple.NickName = _cachedView.NameInputField.text;
+                    needUpdateInfo = true;
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("昵称格式错误");
+                    return;
+                }
+            }
+            if (_cachedView.DescInputField.text != _userInfoDetail.Profile)
+            {
+                if (CheckTools.CheckProfile(_cachedView.DescInputField.text) == CheckTools.ECheckProfileResult.Success)
+                {
+                    userDataChanged.Profile = _cachedView.DescInputField.text;
+                    needUpdateInfo = true;
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("签名格式错误");
+                    return;
+                }
+            }
+            _isEditing = false;
+            if (needUpdateInfo)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存信息");
+                RemoteCommands.UpdateUserInfo(userDataChanged, ret =>
+                {
+                    if (ret.ResultCode == (int) EUpdateUserInfoCode.UUC_Success)
+                    {
+                        LocalUser.Instance.User.OnSync(ret.UserInfo);
+                        _isEditing = false;
+                        RefreshView();
+                        Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                    else
+                    {
+                        SocialGUIManager.ShowPopupDialog("更新信息失败");
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                }, code =>
+                {
+                    SocialGUIManager.ShowPopupDialog("更新信息失败");
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                });
+            }
+        }
+
+        private void ChangeEditStatus(bool isEditing)
+        {
+            _isEditing = isEditing;
+            _cachedView.NormalObj.SetActiveEx(!isEditing);
+            _cachedView.EditObj.SetActiveEx(isEditing);
         }
     }
 }
