@@ -421,6 +421,10 @@ namespace GameA.Game
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
+                if (GM2DGame.Instance.GameMode is GameModeWorldPlay && IsMain)
+                {
+                    ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordPos(_curPos);
+                }
                 UpdateTransPos();
             }
             UpdateDynamicView(deltaTime);

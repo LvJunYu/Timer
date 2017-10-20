@@ -390,6 +390,11 @@ namespace GameA.Game
         {
             _animation.ClearTrack(0);
             _animation.ClearTrack(1);
+            if (GM2DGame.Instance.GameMode is GameModeWorldPlay && IsMain)
+            {
+                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordClearAnimTrack(0);
+                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordClearAnimTrack(1);
+            }
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);

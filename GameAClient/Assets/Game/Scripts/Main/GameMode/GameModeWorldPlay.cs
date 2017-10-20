@@ -25,7 +25,7 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
-            ShadowData.Reset();
+            ShadowData.RecordStart();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
         }

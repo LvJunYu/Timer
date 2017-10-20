@@ -8,10 +8,16 @@ using Object = UnityEngine.Object;
 namespace GameA.Game
 {
     [Serializable]
-    [Unit (Id = 65535, Type = typeof (ShadowUnit))]
+    [Unit(Id = 65535, Type = typeof(ShadowUnit))]
     public class ShadowUnit : UnitBase
     {
         protected static ShadowUnit _instance;
+
+        public static ShadowUnit Instance
+        {
+            get { return _instance; }
+        }
+
         protected string _lastAnimName;
 
         protected Color _color = Color.white;
@@ -22,100 +28,108 @@ namespace GameA.Game
         protected int _deadFrameIdx;
         protected int _normalDeadFrameIdx;
 
-        public AnimationState AnimationState {
+        public AnimationState AnimationState
+        {
             get { return _skeletonAnimation.state; }
         }
 
-        public static ShadowUnit Instance {
-            get { return _instance; }
-        }
-
-
-        public Color Color {
-            set {
+        public Color Color
+        {
+            set
+            {
                 _color = value;
-                _view.SetRendererColor (_color);
+                _view.SetRendererColor(_color);
             }
         }
 
-        protected override bool OnInit ()
+        protected override bool OnInit()
         {
-            if (!base.OnInit ()) {
+            if (!base.OnInit())
+            {
                 return false;
             }
-            //if (_instance != null) return false;
-            //_instance = this;
-            //_animation = _trans.GetComponent<SkeletonAnimation> ();
-            //_view.SetRendererColor (_color);
+//            if (_instance != null) return false;
+//            _instance = this;
+//            _view.SetRendererColor (_color);
             return true;
         }
 
-
-        internal override void Reset ()
+        internal override void Reset()
         {
-            base.Reset ();
-            _skeletonAnimation.Reset ();
+            base.Reset();
+            _skeletonAnimation.Reset();
             _deadFrameIdx = -1;
             Speed = IntVec2.zero;
         }
 
-        internal override void OnPlay ()
+        internal override void OnPlay()
         {
-            base.OnPlay ();
+            base.OnPlay();
             _deadFrameIdx = -1;
             Speed = IntVec2.zero;
         }
 
-        public void UpdatePos (IntVec2 pos)
+        public void UpdatePos(IntVec2 pos)
         {
-            if (_curPos != pos) {
+            if (_curPos != pos)
+            {
                 _curPos = pos;
-                if (_normalDeadFrameIdx > 0) {
+                if (_normalDeadFrameIdx > 0)
+                {
                     _normalDeadFrameIdx = -1;
                 }
-            }           
+            }
         }
 
-        public void UpdateAnim (string animName, bool loop, float timeScale, int trackIdx, int frame)
+        public void UpdateAnim(string animName, bool loop, float timeScale, int trackIdx, int frame)
         {
             if (_skeletonAnimation == null) return;
-            if (string.IsNullOrEmpty (animName)) {
-                _skeletonAnimation.state.ClearTrack (trackIdx);
-            } else {
+            if (string.IsNullOrEmpty(animName))
+            {
+                _skeletonAnimation.state.ClearTrack(trackIdx);
+            }
+            else
+            {
                 _skeletonAnimation.state.TimeScale = timeScale;
-                _skeletonAnimation.state.SetAnimation (trackIdx, animName, loop);
+                _skeletonAnimation.state.SetAnimation(trackIdx, animName, loop);
                 _lastAnimName = animName;
-                if (animName == "Death") {
+                if (animName == "Death")
+                {
                     _deadFrameIdx = frame;
                 }
             }
         }
 
         // 编辑模式下试玩残影更新动画组件
-        public void EditPlayRecordUpdateAnim (float deltaTime) {
-            if (_skeletonAnimation != null) {
+        public void EditPlayRecordUpdateAnim(float deltaTime)
+        {
+            if (_skeletonAnimation != null)
+            {
                 _skeletonAnimation.Update(deltaTime);
             }
         }
 
-        public void ShadowFinish ()
+        public void ShadowFinish()
         {
-            if (_lastAnimName != "Death") {
-                _skeletonAnimation.state.ClearTracks ();
+            if (_lastAnimName != "Death")
+            {
+                _skeletonAnimation.state.ClearTracks();
             }
         }
 
-        //internal override void OnObjectDestroy ()
-        //{
-        //    base.OnObjectDestroy ();
-        //    if (_instance == this) _instance = null;
-        //}
+//        internal override void OnObjectDestroy ()
+//        {
+//            base.OnObjectDestroy ();
+//            if (_instance == this) _instance = null;
+//        }
 
-        public void UpdateDataView ()
+        public override void UpdateView(float deltaTime)
         {
-            if (_trans != null) {
+            if (_trans != null)
+            {
                 UpdateTransPos();
-                if (_deadFrameIdx > 0) {
+                if (_deadFrameIdx > 0)
+                {
                     if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx == 20)
                     {
                         SpeedY = 150;
@@ -123,7 +137,8 @@ namespace GameA.Game
                     if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx > 20)
                     {
                         SpeedY -= 15;
-                        if (SpeedY < -160) {
+                        if (SpeedY < -160)
+                        {
                             SpeedY = -160;
                         }
                         _curPos += Speed;
@@ -146,37 +161,40 @@ namespace GameA.Game
             }
         }
 
-        //public override void SetFacingDir(EDirectionType EDirectionType)
-        //{
-        //    if (DirectionType == EDirectionType)
-        //    {
-        //        return;
-        //    }
-        //    if (_trans == null) return;
-        //    DirectionType = EDirectionType;
-        //    Vector3 euler = Trans.eulerAngles;
-        //    _trans.eulerAngles = DirectionType == EDirectionType.Right
-        //        ? new Vector3(euler.x, 0, euler.z)
-        //        : new Vector3(euler.x, 180, euler.z);
-        //}
+        public void SetFacingDir(EDirectionType EDirectionType)
+        {
+            if (DirectionType == EDirectionType)
+            {
+                return;
+            }
+            if (_trans == null) return;
+            DirectionType = EDirectionType;
+            Vector3 euler = Trans.eulerAngles;
+            _trans.eulerAngles = DirectionType == EDirectionType.Right
+                ? new Vector3(euler.x, 0, euler.z)
+                : new Vector3(euler.x, 180, euler.z);
+        }
 
-        public void NornalDeath (int frame)
+        public void NornalDeath(int frame)
         {
             _normalDeadFrameIdx = frame;
         }
 
-        public SkeletonAnimation CreateSnapShot () {
-            GameObject snap = Object.Instantiate(_trans.gameObject) as GameObject;
-            if (snap != null) {
-                SkeletonAnimation anim = snap.GetComponent<SkeletonAnimation> ();
-                if (anim != null) {
+        public SkeletonAnimation CreateSnapShot()
+        {
+            GameObject snap = Object.Instantiate(_trans.gameObject);
+            if (snap != null)
+            {
+                SkeletonAnimation anim = snap.GetComponent<SkeletonAnimation>();
+                if (anim != null)
+                {
                     return anim;
                 }
             }
             return null;
         }
 
-        protected void UpdateRot (float rad)
+        protected void UpdateRot(float rad)
         {
             float y = DirectionType == EDirectionType.Right
                 ? 0
@@ -184,7 +202,7 @@ namespace GameA.Game
             _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);
             IntVec2 size = GetDataSize();
             var up = new Vector2(0, 0.5f * size.y / ConstDefineGM2D.ServerTileScale);
-            Vector2 newTransPos = (Vector2)_trans.position + up - (Vector2)_trans.up.normalized * up.y;
+            Vector2 newTransPos = (Vector2) _trans.position + up - (Vector2) _trans.up.normalized * up.y;
             _trans.position = newTransPos;
         }
     }
