@@ -66,7 +66,7 @@ namespace GameA
             _cachedView.GridDataScrollers[(int) _menu - 1].SetItemCount(_dataList.Count);
         }
 
-        protected void OnItemRefresh(IDataItemRenderer item, int inx)
+        private void OnItemRefresh(IDataItemRenderer item, int inx)
         {
             if (inx >= _dataList.Count)
             {
@@ -83,7 +83,7 @@ namespace GameA
             }
         }
 
-        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlPersonalInfoRecord();
             item.Init(parent, _resScenary);
