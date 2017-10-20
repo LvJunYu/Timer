@@ -6,7 +6,7 @@ namespace GameA
 {
     public partial class Achievement
     {
-        private const int _maxAchievementNum = 40;
+        private const int _maxAchievementNum = 100;
         private Dictionary<int, AchievementStatisticItem> _allAchievements;
         private bool _hasInited;
 

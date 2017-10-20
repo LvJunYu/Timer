@@ -26,7 +26,13 @@ namespace GameA
             upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.BasicInfo);
             upCtrlPersonalInfoBasicInfo.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.BasicInfo] = upCtrlPersonalInfoBasicInfo;
-
+            
+            var upCtrlPersonalInfoAchieve = new UPCtrlPersonalInfoAchieve();
+            upCtrlPersonalInfoAchieve.SetResScenary(ResScenary);
+            upCtrlPersonalInfoAchieve.SetMenu(EMenu.AchivementInfo);
+            upCtrlPersonalInfoAchieve.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.AchivementInfo] = upCtrlPersonalInfoAchieve;
+            
             var upCtrlPersonalInfoDetailPublish = new UPCtrlPersonalInfoDetailPublish();
             upCtrlPersonalInfoDetailPublish.SetResScenary(ResScenary);
             upCtrlPersonalInfoDetailPublish.SetMenu(EMenu.Publish);

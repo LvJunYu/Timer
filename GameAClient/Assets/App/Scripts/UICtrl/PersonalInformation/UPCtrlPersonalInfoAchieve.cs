@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlPersonalInfoRecords : UPCtrlPersonalInfoBase
+    public class UPCtrlPersonalInfoAchieve : UPCtrlPersonalInfoBase
     {
-        private const int PageSize = 10;
-        private List<Record> _dataList;
-        private UserRecentRecordList _data;
+        private List<AchievementItem> _dataList;
 
         protected override void OnViewCreated()
         {
@@ -25,22 +23,16 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _data = AppData.Instance.WorldData.UserRecentRecordList;
             RequestData();
             RefreshView();
         }
 
-        private void RequestData(bool append = false)
+        private void RequestData()
         {
             if (_mainCtrl.UserInfoDetail == null) return;
-            int startInx = 0;
-            if (append)
+            LocalUser.Instance.Achievement.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, () =>
             {
-                startInx = _dataList.Count;
-            }
-            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, () =>
-            {
-                _dataList = _data.AllList;
+                _dataList = LocalUser.Instance.Achievement.AchievementList;
                 if (_isOpen)
                 {
                     RefreshView();
@@ -70,18 +62,11 @@ namespace GameA
                 return;
             }
             item.Set(_dataList[inx]);
-            if (!_data.IsEnd)
-            {
-                if (inx > _dataList.Count - 2)
-                {
-                    RequestData(true);
-                }
-            }
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlPersonalInfoRecord();
+            var item = new UMCtrlPersonalInfoAchievement();
             item.Init(parent, _resScenary);
             return item;
         }
