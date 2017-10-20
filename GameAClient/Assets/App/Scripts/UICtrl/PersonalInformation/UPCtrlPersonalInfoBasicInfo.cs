@@ -9,7 +9,6 @@ namespace GameA
         private static string _expFormat = "{0}/{1}";
         private static string _lvFormat = "Lv{0}";
         private static string _emptyStr = " ";
-        private UserWorldProjectPlayHistoryList _data;
         private UserInfoDetail _userInfoDetail;
         private bool _isEditing;
 

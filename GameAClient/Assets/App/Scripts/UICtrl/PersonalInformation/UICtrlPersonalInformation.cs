@@ -18,6 +18,7 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
+            _cachedView.RemoveBlockBtn.onClick.AddListener(OnRemoveBlockBtn);
 
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
@@ -74,6 +75,12 @@ namespace GameA
             _groupId = (int) EUIGroupType.FrontUI;
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -83,9 +90,8 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
             }
             IsMyself = UserInfoDetail == LocalUser.Instance.User;
-            _cachedView.FollowBtn.SetActiveEx(!IsMyself);
-            _cachedView.ChatBtn.SetActiveEx(!IsMyself);
-            _cachedView.BlockBtn.SetActiveEx(!IsMyself);
+            _cachedView.BtnsObj.SetActiveEx(!IsMyself);
+            RefreshBtns();
             _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
         }
 
@@ -125,9 +131,27 @@ namespace GameA
             }
         }
 
+        private void RefreshBtns()
+        {
+            if (IsMyself) return;
+            bool block = UserInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
+            bool follow = UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            _cachedView.FollowBtn.SetActiveEx(!block && !follow);
+            _cachedView.FollowDisableObj.SetActiveEx(!block && follow);
+            _cachedView.ChatBtn.SetActiveEx(!block);
+            _cachedView.BlockDisableObj.SetActiveEx(block);
+            _cachedView.RemoveBlockBtn.SetActiveEx(block);
+            _cachedView.BlockBtn.SetActiveEx(!block);
+        }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+        }
+
+        private void OnFollowBtn()
+        {
+            LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
         }
 
         private void OnBlockBtn()
@@ -135,13 +159,21 @@ namespace GameA
             LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);
         }
 
+        private void OnRemoveBlockBtn()
+        {
+            LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(UserInfoDetail);
+        }
+
         private void OnChatBtn()
         {
         }
 
-        private void OnFollowBtn()
+        private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
         {
-            LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
+            if (userInfoDetail == UserInfoDetail)
+            {
+                RefreshBtns();
+            }
         }
 
         public enum EMenu

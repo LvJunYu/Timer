@@ -104,6 +104,8 @@ namespace SoyEngine
         public const string WorldRecommendProjectList = "/world/getRecommendProjectList";
         // 下载关卡
         public const string DownloadProject = "/world/downloadProject";
+        // 最近录像
+        public const string UserRecentRecordList = "/world/getUserRecentRecordList";
         // 录像
         public const string Record = "/record/get";
         // 用户道具数据

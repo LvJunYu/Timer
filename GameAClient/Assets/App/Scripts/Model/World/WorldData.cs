@@ -13,6 +13,7 @@ namespace GameA
         private readonly WorldRecommendProjectList _recommendProjectList = new WorldRecommendProjectList();
         private readonly UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
         private readonly UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
+        private readonly UserRecentRecordList _userRecentRecordList = new UserRecentRecordList();
 
         public WorldNewestProjectList NewestProjectList
         {
@@ -32,6 +33,11 @@ namespace GameA
         public UserWorldProjectPlayHistoryList UserPlayHistoryList
         {
             get { return _userPlayHistoryList; }
+        }
+        
+        public UserRecentRecordList UserRecentRecordList
+        {
+            get { return _userRecentRecordList; }
         }
     }
 }

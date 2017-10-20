@@ -62,7 +62,7 @@ namespace GameA
                     }
                 }, failCallBack);
         }
-        
+
         public void RequestFollows(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             if (FollowList != null)
@@ -84,7 +84,7 @@ namespace GameA
                     }
                 }, failCallBack);
         }
-  
+
         public void RequestBlocks(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             if (BlockList != null)
@@ -185,7 +185,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
-        
+
         private void RemoveBlockUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = false;
@@ -194,6 +194,7 @@ namespace GameA
                 BlockList.Remove(userInfoDetail);
             }
             Messenger.Broadcast(EMessengerType.OnRemoveBlockUser);
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
 
         private void FollowUser(UserInfoDetail userInfoDetail)
@@ -219,12 +220,13 @@ namespace GameA
                 }
             }
             Messenger.Broadcast(EMessengerType.OnFollowUser);
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
-        
+
         private void BlockUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = true;
-            if (BlockList != null &&!BlockList.Contains(userInfoDetail))
+            if (BlockList != null && !BlockList.Contains(userInfoDetail))
             {
                 BlockList.Add(userInfoDetail);
             }
@@ -241,7 +243,7 @@ namespace GameA
                 FriendList.Remove(userInfoDetail);
             }
             Messenger.Broadcast(EMessengerType.OnBlockUser);
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
-
     }
 }

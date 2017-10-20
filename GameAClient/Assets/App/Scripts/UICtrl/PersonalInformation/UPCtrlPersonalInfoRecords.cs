@@ -9,7 +9,7 @@ namespace GameA
         private const int PageSize = 10;
         protected List<Record> _dataList;
         protected bool _isRequesting;
-        private UserWorldProjectPlayHistoryList _data;
+        private UserRecentRecordList _data;
 
         protected override void OnViewCreated()
         {
@@ -26,7 +26,7 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _data = AppData.Instance.WorldData.UserPlayHistoryList;
+            _data = AppData.Instance.WorldData.UserRecentRecordList;
             RequestData();
             RefreshView();
         }
@@ -43,11 +43,11 @@ namespace GameA
             _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, () =>
             {
                 _isRequesting = false;
-                if (!_isOpen)
+                _dataList = _data.AllList;
+                if (_isOpen)
                 {
-                    return;
+                    RefreshView();
                 }
-                RefreshView();
             }, code =>
             {
                 _isRequesting = false;
