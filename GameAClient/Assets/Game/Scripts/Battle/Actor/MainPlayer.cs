@@ -17,5 +17,14 @@ namespace GameA.Game
         {
             get { return true; }
         }
+
+        public override void UpdateView(float deltaTime)
+        {
+            base.UpdateView(deltaTime);
+            if (GM2DGame.Instance.GameMode is GameModeWorldPlay)
+            {
+                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordPos(_curPos);
+            }
+        }
     }
 }

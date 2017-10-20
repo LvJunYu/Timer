@@ -9,6 +9,8 @@ namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
+        public ShadowData ShadowData = new  ShadowData();
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -23,8 +25,15 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
+            ShadowData.Reset();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
+        }
+
+        public override bool Stop()
+        {
+            ShadowData.RecordDone();
+            return base.Stop();
         }
 
         public override void OnGameFailed()
@@ -61,12 +70,14 @@ namespace GameA.Game
                                 new KeyValuePair<string, Action>("重试",
                                     () =>
                                     {
-                                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFailed));
+                                        CoroutineProxy.Instance.StartCoroutine(
+                                            CoroutineProxy.RunNextFrame(OnGameFailed));
                                     }),
                                 new KeyValuePair<string, Action>("跳过", () =>
                                 {
                                     //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState
+                                        .Lose);
                                 }));
                         });
                 });
@@ -134,12 +145,12 @@ namespace GameA.Game
             return true;
         }
 
-
         private byte[] GetRecord()
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            recordData.ShadowData = ShadowData.GetRecShadowData();
             recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;

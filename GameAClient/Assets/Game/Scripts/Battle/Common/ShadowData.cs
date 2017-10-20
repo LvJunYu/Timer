@@ -6,9 +6,9 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -18,13 +18,14 @@ namespace GameA.Game
     public class ShadowData
     {
         [Serializable]
-        private struct AnimRec
+        public struct AnimRec
         {
             public int FrameIdx;
             public byte NameIdx;
             public byte TimeScale;
             public byte TrackIdx;
             public bool Loop;
+
             public AnimRec(int frameIdx, byte nameIdx, bool loop, byte timeScale, byte trackIdx)
             {
                 FrameIdx = frameIdx;
@@ -34,12 +35,10 @@ namespace GameA.Game
                 Loop = loop;
             }
         }
-        [SerializeField]
-        private bool _recording = true;
-        [SerializeField]
-        private List<IntVec2> _posRec = new List<IntVec2>();
-        [SerializeField]
-        private List<AnimRec> _animRec = new List<AnimRec>();
+
+        [SerializeField] private bool _recording = true;
+        [SerializeField] private List<IntVec2> _posRec = new List<IntVec2>();
+        [SerializeField] private List<AnimRec> _animRec = new List<AnimRec>();
         private Dictionary<string, byte> _animName2Idx = new Dictionary<string, byte>();
         private Dictionary<byte, string> _idx2AnimName = new Dictionary<byte, string>();
 
@@ -51,6 +50,28 @@ namespace GameA.Game
         public bool HasContent
         {
             get { return _posRec.Count > 0; }
+        }
+
+        public ShadowData()
+        {
+        }
+
+        public ShadowData(RecShadowData recShadowData)
+        {
+            for (int i = 0; i < recShadowData.PosData.Count; i++)
+            {
+                _posRec.Add(GM2DTools.ToEngine(recShadowData.PosData[i]));
+            }
+            for (int i = 0; i < recShadowData.AnimData.Count; i++)
+            {
+                _animRec.Add(GM2DTools.ToEngine(recShadowData.AnimData[i]));
+            }
+            for (int i = 0; i < recShadowData.AnimNames.Count; i++)
+            {
+                byte inx = (byte) i;
+                _idx2AnimName.Add(inx, recShadowData.AnimNames[i]);
+                _animName2Idx.Add(recShadowData.AnimNames[i], inx);
+            }
         }
 
         public void Reset()
@@ -105,7 +126,8 @@ namespace GameA.Game
                             string animName;
                             if (_idx2AnimName.TryGetValue(_animRec[0].NameIdx, out animName))
                             {
-                                ShadowUnit.Instance.UpdateAnim(animName, _animRec[0].Loop, _animRec[0].TimeScale * 0.01f, _animRec[0].TrackIdx, frame);
+                                ShadowUnit.Instance.UpdateAnim(animName, _animRec[0].Loop,
+                                    _animRec[0].TimeScale * 0.01f, _animRec[0].TrackIdx, frame);
                             }
                         }
                         _animRec.RemoveAt(0);
@@ -133,16 +155,16 @@ namespace GameA.Game
             byte idx;
             if (!_animName2Idx.TryGetValue(animName, out idx))
             {
-                _animName2Idx.Add(animName, (byte)_animName2Idx.Count);
-                _idx2AnimName.Add((byte)_idx2AnimName.Count, animName);
-                idx = (byte)(_idx2AnimName.Count - 1);
+                _animName2Idx.Add(animName, (byte) _animName2Idx.Count);
+                _idx2AnimName.Add((byte) _idx2AnimName.Count, animName);
+                idx = (byte) (_idx2AnimName.Count - 1);
             }
-            RecordAnim(idx, loop, (byte)(timeScale * 100), (byte)trackIdx);
+            RecordAnim(idx, loop, (byte) (timeScale * 100), (byte) trackIdx);
         }
 
         public void RecordClearAnimTrack(int trackIdx)
         {
-            RecordAnim(99, false, 0, (byte)trackIdx);
+            RecordAnim(99, false, 0, (byte) trackIdx);
         }
 
         public void RecordNormalDeath()
@@ -152,12 +174,30 @@ namespace GameA.Game
 
         public void RecordDirChange(EMoveDirection facingDir)
         {
-            RecordAnim((byte)(facingDir == EMoveDirection.Left ? 100 : 101), false, 0, 0);
+            RecordAnim((byte) (facingDir == EMoveDirection.Left ? 100 : 101), false, 0, 0);
         }
 
         private void RecordAnim(byte nameIdx, bool loop, byte timeScale, byte trackIdx)
         {
             _animRec.Add(new AnimRec(GameRun.Instance.LogicFrameCnt, nameIdx, loop, timeScale, trackIdx));
+        }
+
+        public RecShadowData GetRecShadowData()
+        {
+            RecShadowData recShadowData = new RecShadowData();
+            for (int i = 0; i < _posRec.Count; i++)
+            {
+                recShadowData.PosData.Add(GM2DTools.ToProto(_posRec[i]));
+            }
+            for (int i = 0; i < _animRec.Count; i++)
+            {
+                recShadowData.AnimData.Add(GM2DTools.ToProto(_animRec[i]));
+            }
+            for (int i = 0; i < _idx2AnimName.Count; i++)
+            {
+                recShadowData.AnimNames.Add(_idx2AnimName[(byte) i]);
+            }
+            return recShadowData;
         }
     }
 }

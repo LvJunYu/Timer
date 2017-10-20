@@ -14,10 +14,6 @@ namespace GameA
         /// </summary>
         private int _resultCode;
         /// <summary>
-        /// 更新时间
-        /// </summary>
-        private long _updataTime;
-        /// <summary>
         /// 用户
         /// </summary>
         private UserInfoSimple _data;
@@ -38,16 +34,6 @@ namespace GameA
             get { return _resultCode; }
             set { if (_resultCode != value) {
                 _resultCode = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        public long UpdataTime { 
-            get { return _updataTime; }
-            set { if (_updataTime != value) {
-                _updataTime = value;
                 SetDirty();
             }}
         }
@@ -117,7 +103,6 @@ namespace GameA
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
-            _updataTime = msg.UpdataTime;           
             if (null == _data) {
                 _data = new UserInfoSimple(msg.Data);
             } else {
@@ -131,7 +116,6 @@ namespace GameA
         {
             if (null == obj) return false;
             _resultCode = obj.ResultCode;           
-            _updataTime = obj.UpdataTime;           
             if(null != obj.Data){
                 if (null == _data){
                     _data = new UserInfoSimple();
