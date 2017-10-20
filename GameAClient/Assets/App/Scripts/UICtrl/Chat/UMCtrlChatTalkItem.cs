@@ -14,7 +14,7 @@ namespace GameA
             base.OnViewCreated();
             for (int i = 0; i < _cachedView.HeadBtn.Length; i++)
             {
-                _cachedView.HeadBtn[0].onClick.AddListener(OnHeadBtn);
+                _cachedView.HeadBtn[i].onClick.AddListener(OnHeadBtn);
             }
         }
 

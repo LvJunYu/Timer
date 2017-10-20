@@ -23,6 +23,7 @@ namespace GameA
         //public Button SignUpBtn;
         public Button Account;
         public Button PersonalInformation;
+	    
         /// <summary>
         /// 选择游戏按钮
         /// </summary>
@@ -113,7 +114,7 @@ namespace GameA
         /// 男性别的小图标
         /// </summary>
 		public Image MaleIcon;
-
+	    
         public Image AdventureExperience;
 
         public Image CreatorExperience;

@@ -97,6 +97,7 @@ namespace GameA
             }
             IsMyself = UserInfoDetail == LocalUser.Instance.User;
             _cachedView.BtnsObj.SetActiveEx(!IsMyself);
+            _cachedView.AvatarRawImage.texture = SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();
             _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
         }

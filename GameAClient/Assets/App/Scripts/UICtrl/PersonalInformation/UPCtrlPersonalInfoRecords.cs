@@ -47,7 +47,7 @@ namespace GameA
                 }
             }, code =>
             {
-                SocialGUIManager.ShowPopupDialog("请求数据失败");
+                SocialGUIManager.ShowPopupDialog("请求录像数据失败。");
             });
         }
 
