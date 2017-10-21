@@ -1429,10 +1429,10 @@ namespace GameA.Game
                 _trans.eulerAngles = _moveDirection != EMoveDirection.Right
                     ? new Vector3(euler.x, 180, euler.z)
                     : new Vector3(euler.x, 0, euler.z);
-            }
-            if (GM2DGame.Instance.GameMode is GameModeWorldPlay && IsMain)
-            {
-                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordDirChange(eMoveDirection);
+                if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                {
+                    GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
+                }
             }
         }
 

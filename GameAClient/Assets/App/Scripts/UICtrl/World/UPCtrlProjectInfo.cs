@@ -12,10 +12,12 @@ namespace GameA
     public class UPCtrlProjectInfo : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>, IOnChangeHandler<long>
     {
         #region 常量与字段
+
         private Project _content;
         private bool _isRequestFavorite;
         private bool _isRequestDownload;
         private UserInfoDetail _userInfoDetail;
+
         #endregion
 
         #region 属性
@@ -23,6 +25,7 @@ namespace GameA
         #endregion
 
         #region 方法
+
         public void SetData(Project project)
         {
             _content = project;
@@ -37,8 +40,11 @@ namespace GameA
                 RequestData();
             }
         }
+
         #region private
+
         #endregion private
+
         private void SetViewEmpty()
         {
             DictionaryTools.SetContentText(_cachedView.TitleText, "-");
@@ -63,14 +69,18 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.TitleText, p.Name);
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, u.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevelText, GameATools.GetLevelString(u.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.UserLevelText,
+                GameATools.GetLevelString(u.LevelData.PlayerLevel));
             DictionaryTools.SetContentText(_cachedView.CreateTimeText, GameATools.FormatServerDateString(p.CreateTime));
             DictionaryTools.SetContentText(_cachedView.PlayCountText, p.ExtendReady ? p.PlayCount.ToString() : "-");
             DictionaryTools.SetContentText(_cachedView.LikeCountText, p.ExtendReady ? p.LikeCount.ToString() : "-");
-            DictionaryTools.SetContentText(_cachedView.CompleteRateText, p.ExtendReady ? GameATools.GetCompleteRateString(p.CompleteRate) : "-");
+            DictionaryTools.SetContentText(_cachedView.CompleteRateText,
+                p.ExtendReady ? GameATools.GetCompleteRateString(p.CompleteRate) : "-");
             DictionaryTools.SetContentText(_cachedView.Desc, p.Summary);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl, _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl,
+                _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
+                _cachedView.DefaultCoverTexture);
             RefreshFavoriteBtnView();
             RefreshDownloadBtnView();
         }
@@ -118,13 +128,17 @@ namespace GameA
             }
             _isRequestFavorite = true;
             Project requestP = _content;
-            requestP.UpdateFavorite(favorite, () => {
-                if (_content != null && _content.ProjectId == requestP.ProjectId) {
+            requestP.UpdateFavorite(favorite, () =>
+            {
+                if (_content != null && _content.ProjectId == requestP.ProjectId)
+                {
                     _isRequestFavorite = false;
                     RefreshFavoriteBtnView();
                 }
-            }, code=>{
-                if (_content != null && _content.ProjectId == requestP.ProjectId) {
+            }, code =>
+            {
+                if (_content != null && _content.ProjectId == requestP.ProjectId)
+                {
                     _isRequestFavorite = false;
                     RefreshFavoriteBtnView();
                 }
@@ -167,20 +181,30 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "请求进入关卡");
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
 
-            _content.RequestPlay (() => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-
-                GameManager.Instance.RequestPlay (_content);
+            _content.RequestPlay(() =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                if (_content.ProjectRecordRankList.AllList.Count > 0)
+                {
+                    GameManager.Instance.PlayShadow = true;
+                    GameManager.Instance.RequestPlay(_content, _content.ProjectRecordRankList.AllList[0].Record);
+                }
+                else
+                {
+                    GameManager.Instance.RequestPlay(_content);
+                }
                 SocialApp.Instance.ChangeToGame();
-            }, (error) => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+            }, (error) =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("进入关卡失败");
             });
         }
 
         #region 接口
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -218,12 +242,12 @@ namespace GameA
         {
             if (_content != null && _content.ProjectId == val)
             {
-              RefreshView();
+                RefreshView();
             }
         }
+
         #endregion 接口
 
         #endregion
-
     }
 }

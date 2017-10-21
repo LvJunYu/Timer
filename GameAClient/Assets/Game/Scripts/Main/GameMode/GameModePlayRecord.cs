@@ -7,8 +7,6 @@ namespace GameA.Game
 {
     public abstract class GameModePlayRecord : GameModeBase
     {
-        protected Record _record;
-        protected GM2DRecordData _gm2drecordData;
         protected int _inputDataReadInx;
 
         public virtual Record Record
@@ -24,13 +22,11 @@ namespace GameA.Game
         public float SpeedMultiple
         {
             get { return GM2DGame.Instance.GamePlaySpeed; }
-            set
-            {
-                GM2DGame.Instance.SetGamePlaySpeed(value);
-            }
+            set { GM2DGame.Instance.SetGamePlaySpeed(value); }
         }
 
-        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
+        public override bool Init(Project project, object param, GameManager.EStartType startType,
+            MonoBehaviour corountineProxy)
         {
             if (!base.Init(project, param, startType, corountineProxy))
             {
@@ -38,7 +34,7 @@ namespace GameA.Game
             }
             _gameRunMode = EGameRunMode.PlayRecord;
             return true;
-		}
+        }
 
         public override IEnumerator InitByStep()
         {
@@ -64,7 +60,7 @@ namespace GameA.Game
                     if (localPlayerInput != null)
                     {
                         localPlayerInput.PrepareForApplyInput();
-                        while (_inputDataReadInx < _inputDatas.Count-1
+                        while (_inputDataReadInx < _inputDatas.Count - 1
                                && _inputDatas[_inputDataReadInx] == GameRun.Instance.LogicFrameCnt)
                         {
                             _inputDataReadInx++;
@@ -79,39 +75,31 @@ namespace GameA.Game
 
         public override void OnGameFailed()
         {
-			CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
-                if(GameManager.Instance.CurrentGame != null)
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f, () =>
+            {
+                if (GameManager.Instance.CurrentGame != null)
                 {
                     SocialApp.Instance.ReturnToApp();
                 }
             }));
-		}
+        }
 
         public override void OnGameSuccess()
-		{
-			CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
-		        if(GameManager.Instance.CurrentGame != null)
-		        {
-		            SocialApp.Instance.ReturnToApp();
-		        }
-            }));
-		}
-
-        protected virtual void InitRecord()
         {
-			byte[] recordBytes = MatrixProjectTools.DecompressLZMA(_record.RecordData);
-			if (recordBytes == null)
-			{
-                GM2DGame.Instance.OnGameLoadError("录像解析失败");
-                return;
-			}
-			_gm2drecordData = GameMapDataSerializer.Instance.Deserialize<GM2DRecordData>(recordBytes);
-			if (_gm2drecordData == null)
-			{
-				GM2DGame.Instance.OnGameLoadError("录像解析失败");
-                return;
-			}
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f, () =>
+            {
+                if (GameManager.Instance.CurrentGame != null)
+                {
+                    SocialApp.Instance.ReturnToApp();
+                }
+            }));
+        }
+
+        protected override bool InitRecord()
+        {
+            if (!base.InitRecord()) return false;
             _inputDatas.AddRange(_gm2drecordData.Data);
+            return true;
         }
 
         protected virtual void InitUI()

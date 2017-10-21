@@ -16,13 +16,12 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         #region Data
-        
+
         protected Gun _gun;
 
         protected long _playerId;
 
-        [SerializeField]
-        protected IntVec2 _revivePos;
+        [SerializeField] protected IntVec2 _revivePos;
 
         protected Box _box;
 
@@ -59,10 +58,7 @@ namespace GameA.Game
 
         public override bool IsInvincible
         {
-            get
-            {
-                return HasStateType(EStateType.Invincible);
-            }
+            get { return HasStateType(EStateType.Invincible); }
         }
 
         public IntVec2 CameraFollowPos
@@ -84,7 +80,7 @@ namespace GameA.Game
         {
             _playerId = roomUser.Guid;
         }
-        
+
         protected override void Clear()
         {
             base.Clear();
@@ -103,7 +99,7 @@ namespace GameA.Game
             _maxSpeedX = BattleDefine.MaxSpeedX;
             _lastSlot = -1;
         }
-        
+
         public override bool SetWeapon(int weaponId)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
@@ -131,13 +127,13 @@ namespace GameA.Game
                     _lastSlot = -1;
                 }
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType)tableEquipment.InputType, slot))
+            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot))
             {
                 return false;
             }
             if (Application.isMobilePlatform)
             {
-                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                var inputControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputControl != null)
                 {
                     inputControl.SetSkillBtnVisible(slot, true);
@@ -145,7 +141,7 @@ namespace GameA.Game
             }
             _tableEquipments[slot] = tableEquipment;
             //发送事件
-            Messenger<Table_Equipment,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
+            Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
             CalculateMaxHp();
             OnHpChanged(_maxHp);
             ChangeGunView(slot);
@@ -173,7 +169,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         internal override void OnPlay()
         {
             base.OnPlay();
@@ -190,7 +186,8 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                GameParticleManager.Instance.Emit("M1EffectSpawn",new Vector3(_trans.position.x, _trans.position.y - 0.5f, -100));
+                GameParticleManager.Instance.Emit("M1EffectSpawn",
+                    new Vector3(_trans.position.x, _trans.position.y - 0.5f, -100));
             }
         }
 
@@ -215,7 +212,7 @@ namespace GameA.Game
                     _box = null;
                 }
             }
-            if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
+            if (IsValidBox(_hitUnits[(int) EDirectionType.Right]))
             {
                 var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (uiControl != null)
@@ -224,13 +221,13 @@ namespace GameA.Game
                 }
                 //弹出UI给提示
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
-                _box = _hitUnits[(int)EDirectionType.Right] as Box;
+                _box = _hitUnits[(int) EDirectionType.Right] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
             }
-            else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
+            else if (IsValidBox(_hitUnits[(int) EDirectionType.Left]))
             {
                 var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (uiControl != null)
@@ -239,7 +236,7 @@ namespace GameA.Game
                 }
                 //弹出UI给提示
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
-                _box = _hitUnits[(int)EDirectionType.Left] as Box;
+                _box = _hitUnits[(int) EDirectionType.Left] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
@@ -256,7 +253,7 @@ namespace GameA.Game
             _box.IsHoldingByMain = !_box.IsHoldingByMain;
             if (_box.IsHoldingByMain)
             {
-                SetFacingDir((EMoveDirection)(_box.DirectionRelativeMain + 1));
+                SetFacingDir((EMoveDirection) (_box.DirectionRelativeMain + 1));
             }
             LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByMain);
         }
@@ -311,6 +308,10 @@ namespace GameA.Game
             {
                 LogHelper.Debug("GameOver!");
             }
+            if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+            {
+                GM2DGame.Instance.GameMode.ShadowData.RecordNormalDeath();
+            }
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
 
@@ -324,32 +325,33 @@ namespace GameA.Game
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
-                                GM2DTools.TileToWorld(_revivePos), 8, () =>
-                                {
-                                    _eDieType = EDieType.None;
-                                    _eUnitState = EUnitState.Normal;
-                                    _input.Clear();
-                                    ClearRunTime();
-                                    _isAlive = true;
-                                    OnHpChanged(_maxHp);
-                                    _dieTime = 0;
-                                    _box = null;
-                                    _trans.eulerAngles = new Vector3(0, 0, 0);
-                                    SetPos(_revivePos);
-                                    PlayMode.Instance.UpdateWorldRegion(_curPos);
-                                    if (_gun != null)
-                                    {
-                                        _gun.Play();
-                                    }
-                                    _animation.Reset();
-                                    _animation.PlayLoop(IdleAnimName());
-                                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
-                                    Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
-                                    if (_statusBar != null)
-                                    {
-                                        _statusBar.SetHPActive(true);
-                                    }
-                                });
+                GM2DTools.TileToWorld(_revivePos), 8, () =>
+                {
+                    _eDieType = EDieType.None;
+                    _eUnitState = EUnitState.Normal;
+                    _input.Clear();
+                    ClearRunTime();
+                    _isAlive = true;
+                    OnHpChanged(_maxHp);
+                    _dieTime = 0;
+                    _box = null;
+                    _trans.eulerAngles = new Vector3(0, 0, 0);
+                    SetPos(_revivePos);
+                    PlayMode.Instance.UpdateWorldRegion(_curPos);
+                    if (_gun != null)
+                    {
+                        _gun.Play();
+                    }
+                    _animation.Reset();
+                    _animation.PlayLoop(IdleAnimName());
+                    GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
+                    Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
+                    if (_statusBar != null)
+                    {
+                        _statusBar.SetHPActive(true);
+                    }
+                });
         }
 
         public override void OnPortal(IntVec2 targetPos, IntVec2 speed)
@@ -378,6 +380,7 @@ namespace GameA.Game
                     PlayMode.Instance.UpdateWorldRegion(_curPos);
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
+                    GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                     if (_statusBar != null)
                     {
@@ -390,23 +393,24 @@ namespace GameA.Game
         {
             _animation.ClearTrack(0);
             _animation.ClearTrack(1);
-            if (GM2DGame.Instance.GameMode is GameModeWorldPlay && IsMain)
+            if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
             {
-                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordClearAnimTrack(0);
-                ((GameModeWorldPlay)GM2DGame.Instance.GameMode).ShadowData.RecordClearAnimTrack(1);
+                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(0);
+                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(1);
             }
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);
             }
             _animation.PlayLoop(VictoryAnimName(), 1, 1);
+            GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
         }
 
         public override void OnRevivePos(IntVec2 pos)
         {
             _revivePos = pos;
         }
-        
+
         public void Step(int stepY = 0)
         {
             _stepY = stepY;
@@ -436,8 +440,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
-            _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
+            _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul,
+                null, ESortingOrder.LazerEffect));
+            _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect,
+                null, ESortingOrder.LazerEffect));
             CreateStatusBar();
             _statusBar.SetHPActive(true);
             return true;
@@ -497,23 +503,27 @@ namespace GameA.Game
             {
                 if (!_grounded && _eClimbState == EClimbState.None)
                 {
-                        if (_climbJump)
-                        {
-                            Vector3 effectPos = _trans.position;
-                            effectPos += _moveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
-                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
-                        }
-                        if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
-                        {
-                            Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_jumpLevel));
-                        }
-                        else if (_jumpState == EJumpState.Fall &&
-                                 (!_animation.IsPlaying("JumpStart") && !_animation.IsPlaying("Jump2") &&
-                                  !_animation.IsPlaying("Fly") && !_animation.IsPlaying("StunStart")))
-                        {
-                            _animation.PlayLoop(FallAnimName());
-                        }
+                    if (_climbJump)
+                    {
+                        Vector3 effectPos = _trans.position;
+                        effectPos += _moveDirection == EMoveDirection.Left
+                            ? Vector3.right * 0.25f + Vector3.forward * 0.6f
+                            : Vector3.left * 0.25f + Vector3.forward * 0.6f;
+                        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
+                    }
+                    if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
+                    {
+                        Messenger.Broadcast(EMessengerType.OnPlayerJump);
+                        _animation.PlayOnce(JumpAnimName(_jumpLevel));
+                        GM2DGame.Instance.GameMode.RecordAnimation(JumpAnimName(_jumpLevel), false);
+                    }
+                    else if (_jumpState == EJumpState.Fall &&
+                             (!_animation.IsPlaying("JumpStart") && !_animation.IsPlaying("Jump2") &&
+                              !_animation.IsPlaying("Fly") && !_animation.IsPlaying("StunStart")))
+                    {
+                        _animation.PlayLoop(FallAnimName());
+                        GM2DGame.Instance.GameMode.RecordAnimation(FallAnimName(), true);
+                    }
                 }
                 else
                 {
@@ -533,10 +543,12 @@ namespace GameA.Game
                             speed = 50;
                         }
                         _animation.PlayLoop(RunAnimName(speed), speed * deltaTime);
+                        GM2DGame.Instance.GameMode.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
                     }
                     else
                     {
                         _animation.PlayLoop(IdleAnimName());
+                        GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
                 }
             }
@@ -561,7 +573,7 @@ namespace GameA.Game
             return (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
-        
+
         protected override void OnJump()
         {
             if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.Sping))
@@ -603,7 +615,8 @@ namespace GameA.Game
             Vector3 scale = _moveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
             if (_downUnit.Id == UnitDefine.ClayId)
             {
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud,
+                    _trans.position + Vector3.up * 0.2f, scale);
             }
             int randomValue = Random.Range(0, 3);
             switch (randomValue)
@@ -736,7 +749,7 @@ namespace GameA.Game
         {
             return "Victory";
         }
- 
+
         #endregion
     }
 }

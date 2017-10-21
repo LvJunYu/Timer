@@ -19,12 +19,9 @@ namespace GameA.Game
         }
 
         protected string _lastAnimName;
-
         protected Color _color = Color.white;
-
         protected SkeletonAnimation _skeletonAnimation;
         protected EDirectionType DirectionType;
-
         protected int _deadFrameIdx;
         protected int _normalDeadFrameIdx;
 
@@ -48,9 +45,9 @@ namespace GameA.Game
             {
                 return false;
             }
-//            if (_instance != null) return false;
-//            _instance = this;
-//            _view.SetRendererColor (_color);
+            if (_instance != null) return false;
+            _instance = this;
+//            _view.SetRendererColor(_color);
             return true;
         }
 
@@ -111,19 +108,36 @@ namespace GameA.Game
 
         public void ShadowFinish()
         {
-            if (_lastAnimName != "Death")
+            if (_lastAnimName != "Death" && _skeletonAnimation != null)
             {
                 _skeletonAnimation.state.ClearTracks();
             }
         }
 
-//        internal override void OnObjectDestroy ()
-//        {
-//            base.OnObjectDestroy ();
-//            if (_instance == this) _instance = null;
-//        }
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_instance == this) _instance = null;
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
+            {
+                GM2DGame.Instance.GameMode.ShadowDataPlayed.Play(GameRun.Instance.LogicFrameCnt);
+            }
+        }
 
         public override void UpdateView(float deltaTime)
+        {
+            if (_isAlive)
+            {
+                UpdateShadowView();
+            }
+        }
+
+        public void UpdateShadowView()
         {
             if (_trans != null)
             {
@@ -183,11 +197,13 @@ namespace GameA.Game
         public SkeletonAnimation CreateSnapShot()
         {
             GameObject snap = Object.Instantiate(_trans.gameObject);
+            _view.SetRendererColor(_color);
             if (snap != null)
             {
                 SkeletonAnimation anim = snap.GetComponent<SkeletonAnimation>();
                 if (anim != null)
                 {
+                    _skeletonAnimation = anim;
                     return anim;
                 }
             }

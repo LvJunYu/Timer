@@ -234,6 +234,10 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            if (SaveShadowData)
+            {
+                recordData.ShadowData = ShadowData.GetRecShadowData();
+            }
             recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;

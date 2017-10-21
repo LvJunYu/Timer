@@ -150,6 +150,10 @@ namespace GameA.Game
 	    {
 		    base.OnGameStart();
 		    _inputDatas.Clear();
+		    if (SaveShadowData)
+		    {
+			    ShadowData.RecordStart();
+		    }
 		    InitUI();
 	    }
     }

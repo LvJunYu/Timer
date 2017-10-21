@@ -36,7 +36,7 @@ namespace GameA.Game
             }
         }
 
-        [SerializeField] private bool _recording = true;
+        [SerializeField] private bool _recording;
         [SerializeField] private List<IntVec2> _posRec = new List<IntVec2>();
         [SerializeField] private List<AnimRec> _animRec = new List<AnimRec>();
         private Dictionary<string, byte> _animName2Idx = new Dictionary<string, byte>();
@@ -99,7 +99,7 @@ namespace GameA.Game
 
                 if (_curAnimInx < _animRec.Count)
                 {
-                    if (frame == _animRec[_curAnimInx].FrameIdx)
+                    if (frame >= _animRec[_curAnimInx].FrameIdx)
                     {
                         if (_animRec[_curAnimInx].NameIdx == 98)
                         {

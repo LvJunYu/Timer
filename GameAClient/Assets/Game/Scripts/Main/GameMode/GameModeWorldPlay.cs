@@ -9,7 +9,10 @@ namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
-        public ShadowData ShadowData = new  ShadowData();
+        public override bool SaveShadowData
+        {
+            get { return true; }
+        }
 
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
@@ -25,15 +28,8 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
-            ShadowData.RecordStart();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
-        }
-
-        public override bool Stop()
-        {
-            ShadowData.RecordDone();
-            return base.Stop();
         }
 
         public override void OnGameFailed()
@@ -150,7 +146,10 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.ShadowData = ShadowData.GetRecShadowData();
+            if (SaveShadowData)
+            {
+                recordData.ShadowData = ShadowData.GetRecShadowData();
+            }
             recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
