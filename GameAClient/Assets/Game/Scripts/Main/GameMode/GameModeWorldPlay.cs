@@ -38,7 +38,7 @@ namespace GameA.Game
             byte[] record;
             Loom.RunAsync(() =>
             {
-                record = GetRecord();
+                record = GetRecord(false);
                 Loom.QueueOnMainThread(() =>
                 {
                     _project.CommitPlayResult(
@@ -86,7 +86,7 @@ namespace GameA.Game
             byte[] record;
             Loom.RunAsync(() =>
             {
-                record = GetRecord();
+                record = GetRecord(true);
                 Loom.QueueOnMainThread(() =>
                 {
                     _project.CommitPlayResult(
@@ -141,12 +141,12 @@ namespace GameA.Game
             return true;
         }
 
-        private byte[] GetRecord()
+        private byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            if (SaveShadowData)
+            if (SaveShadowData && win)
             {
                 recordData.ShadowData = ShadowData.GetRecShadowData();
             }

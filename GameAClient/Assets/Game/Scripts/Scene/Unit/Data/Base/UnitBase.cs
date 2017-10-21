@@ -478,6 +478,11 @@ namespace GameA.Game
             get { return false; }
         }
         
+        public virtual bool IsShadow
+        {
+            get { return false; }
+        }
+        
         public virtual bool IsPlayer
         {
             get { return false; }
@@ -855,7 +860,7 @@ namespace GameA.Game
             {
                 _eActiveState = EActiveState.Active;
             }
-            if (IsMain)
+            if (IsMain || IsShadow)
             {
                 _moveDirection = EMoveDirection.Right;
             }
@@ -1418,12 +1423,12 @@ namespace GameA.Game
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection)
+            if ((_dynamicCollider == null || _moveDirection == eMoveDirection) && !initView)
             {
                 return;
             }
             _moveDirection = eMoveDirection;
-            if (_trans != null && _moveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
+            if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor||IsShadow) && Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _moveDirection != EMoveDirection.Right
@@ -1431,7 +1436,7 @@ namespace GameA.Game
                     : new Vector3(euler.x, 0, euler.z);
                 if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                 {
-                    GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
+                     GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
                 }
             }
         }

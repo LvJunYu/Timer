@@ -310,7 +310,7 @@ namespace GameA.Game
             }
             if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
             {
-                GM2DGame.Instance.GameMode.ShadowData.RecordNormalDeath();
+                GM2DGame.Instance.GameMode.ShadowData.RecordDeath();
             }
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
@@ -332,6 +332,10 @@ namespace GameA.Game
                     _input.Clear();
                     ClearRunTime();
                     _isAlive = true;
+                    if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                    {
+                        GM2DGame.Instance.GameMode.ShadowData.RecordRevive();
+                    }
                     OnHpChanged(_maxHp);
                     _dieTime = 0;
                     _box = null;

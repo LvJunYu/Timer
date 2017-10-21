@@ -174,7 +174,7 @@ namespace GameA
                 }
             });
         }
-
+        
         private void PlayProject()
         {
             if (_content == null)
@@ -182,10 +182,10 @@ namespace GameA
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
-
             _content.RequestPlay(() =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //TODO 测试，请求排行榜第一的录像作为影子数据(若请求不到，先加载一次录像，仅用于测试）
                 if (_content.ProjectRecordRankList.AllList.Count > 0)
                 {
                     GameManager.Instance.PlayShadow = true;
@@ -196,7 +196,7 @@ namespace GameA
                     GameManager.Instance.RequestPlay(_content);
                 }
                 SocialApp.Instance.ChangeToGame();
-            }, (error) =>
+            }, error =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("进入关卡失败");

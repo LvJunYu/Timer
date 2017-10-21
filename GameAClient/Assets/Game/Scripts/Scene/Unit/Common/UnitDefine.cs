@@ -110,7 +110,12 @@ namespace GameA.Game
         {
             return id >= 10001 && id <= 10010;
         }
-        
+
+        public static bool IsShadow(int id)
+        {
+            return id == 65535 || id == 65534;
+        }
+
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
             return node.Id == SwitchTriggerPressId &&
@@ -119,12 +124,14 @@ namespace GameA.Game
 
         public static bool IsLaserDamage(int layer)
         {
-            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) != 0;
+            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=
+                   0;
         }
 
         public static bool IsFanEffect(int layer, int id)
         {
-            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=0) || IsBullet(id);
+            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=
+                    0) || IsBullet(id);
         }
 
         public static bool IsPaintBlock(Table_Unit tableUnit)
@@ -135,7 +142,7 @@ namespace GameA.Game
             }
             return tableUnit.IsBulletBlock == 1;
         }
-        
+
         public static bool IsDownY(Table_Unit tableUnit)
         {
             if (tableUnit == null)
@@ -143,7 +150,8 @@ namespace GameA.Game
                 return false;
             }
             return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) &&
-                    !IsBullet(tableUnit.Id)) || tableUnit.Id == 8001 || tableUnit.Id == FinalDoorId;
+                    !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == 8001 ||
+                   tableUnit.Id == FinalDoorId;
         }
 
         public static bool UseRayBullet(int id)

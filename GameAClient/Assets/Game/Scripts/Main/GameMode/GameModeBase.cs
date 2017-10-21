@@ -58,7 +58,7 @@ namespace GameA.Game
             {
                 ShadowDataPlayed = null;
                 _record = param as Record;
-                if (InitRecord())
+                if (InitRecord() && _gm2drecordData.ShadowData != null)
                 {
                     ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
                 }
@@ -80,13 +80,13 @@ namespace GameA.Game
             byte[] recordBytes = MatrixProjectTools.DecompressLZMA(_record.RecordData);
             if (recordBytes == null)
             {
-                GM2DGame.Instance.OnGameLoadError("录像解析失败");
+                GM2DGame.OnGameLoadError("录像解析失败");
                 return false;
             }
             _gm2drecordData = GameMapDataSerializer.Instance.Deserialize<GM2DRecordData>(recordBytes);
             if (_gm2drecordData == null)
             {
-                GM2DGame.Instance.OnGameLoadError("录像解析失败");
+                GM2DGame.OnGameLoadError("录像解析失败");
                 return false;
             }
             return true;
@@ -94,11 +94,6 @@ namespace GameA.Game
 
         public virtual void OnGameStart()
         {
-            if (PlayShadowData && ShadowDataPlayed != null)
-            {
-                PlayMode.Instance.CreateRuntimeUnit(65535, IntVec2.zero);
-                ShadowUnit.Instance.CreateSnapShot();
-            }
         }
 
         public void RecordAnimation(string animName, bool loop, float timeScale = 1f, int trackIdx = 0)
@@ -163,10 +158,6 @@ namespace GameA.Game
         public virtual bool Stop()
         {
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GameRun.Instance.Stop));
-            if (SaveShadowData)
-            {
-                ShadowData.RecordDone();
-            }
             return true;
         }
 

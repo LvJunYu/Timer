@@ -35,6 +35,12 @@ namespace GameA.Game
 
     public class ActorBase : DynamicRigidbody
     {
+        protected static string Death = "Death";
+        protected static string DeathLazer = "DeathLazer";
+        protected static string DeathWater = "DeathWater";
+        protected static string DeathFire = "DeathFire";
+        protected static string OnSawStart = "OnSawStart";
+
         private static EInputType[] _skillInputs = new EInputType[3]
             {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
@@ -42,7 +48,7 @@ namespace GameA.Game
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
-       
+
         /// <summary>
         /// 每一帧只检查一个水块
         /// </summary>
@@ -605,28 +611,30 @@ namespace GameA.Game
             {
                 RemoveAllStates(true);
                 _animation.Reset();
-                switch (_eDieType)
+                _animation.PlayOnce(DeathName(_eDieType));
+                if (IsMain)
                 {
-                    case EDieType.None:
-                        _animation.PlayOnce("Death");
-                        break;
-                    case EDieType.Lazer:
-                        _animation.PlayOnce(_animation.HasAnimation("DeathLazer") ? "DeathLazer" : "Death");
-                        break;
-                    case EDieType.Water:
-                        _animation.PlayOnce(_animation.HasAnimation("DeathWater") ? "DeathWater" : "Death");
-                        break;
-                    case EDieType.Fire:
-                        _animation.PlayOnce(_animation.HasAnimation("DeathFire") ? "DeathFire" : "Death");
-                        break;
-                    case EDieType.Saw:
-                        _animation.PlayOnce(_animation.HasAnimation("OnSawStart") ? "OnSawStart" : "Death");
-                        break;
-                    case EDieType.TigerEat:
-                        _view.SetRendererColor(Color.clear);
-                        break;
+                    GM2DGame.Instance.GameMode.RecordAnimation(DeathName(_eDieType), false);
                 }
             }
+        }
+
+        protected virtual string DeathName(EDieType dieType)
+        {
+            switch (_eDieType)
+            {
+                case EDieType.Lazer:
+                    return _animation.HasAnimation(DeathLazer) ? DeathLazer : Death;
+                case EDieType.Water:
+                    return _animation.HasAnimation(DeathWater) ? DeathWater : Death;
+                case EDieType.Fire:
+                    return _animation.HasAnimation(DeathFire) ? DeathFire : Death;
+                case EDieType.Saw:
+                    return _animation.HasAnimation(OnSawStart) ? OnSawStart : Death;
+                default:
+                    return Death;
+            }
+
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)

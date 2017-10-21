@@ -152,7 +152,7 @@ namespace GameA.Game
 		    _inputDatas.Clear();
 		    if (SaveShadowData)
 		    {
-			    ShadowData.RecordStart();
+			    ShadowData.RecordClear();
 		    }
 		    InitUI();
 	    }

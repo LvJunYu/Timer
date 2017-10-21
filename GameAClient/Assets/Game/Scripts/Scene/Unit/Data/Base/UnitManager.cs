@@ -48,10 +48,10 @@ namespace GameA.Game
 
         public void Init()
         {
-            _unitParents = new Transform[(int)EUnitType.Max];
-            for (int i = 0; i < (int)EUnitType.Max; i++)
+            _unitParents = new Transform[(int) EUnitType.Max];
+            for (int i = 0; i < (int) EUnitType.Max; i++)
             {
-                _unitParents[i] = new GameObject(((EUnitType)i).ToString()).transform;
+                _unitParents[i] = new GameObject(((EUnitType) i).ToString()).transform;
                 _unitParents[i].parent = App.GamePoolTrans;
             }
             Type curType = GetType();
@@ -66,14 +66,15 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < atts.Length; i++)
                         {
-                            var att = (UnitAttribute)atts[i];
+                            var att = (UnitAttribute) atts[i];
                             if (type != att.Type)
                             {
                                 continue;
                             }
                             if (_unitTypes.ContainsKey(att.Id))
                             {
-                                LogHelper.Error("_unitTypes.ContainsKey {0}，class type is {1}", att.Id, type.ToString());
+                                LogHelper.Error("_unitTypes.ContainsKey {0}，class type is {1}", att.Id,
+                                    type.ToString());
                                 break;
                             }
                             _unitTypes.Add(att.Id, att.Type);
@@ -89,7 +90,8 @@ namespace GameA.Game
                 Table_Unit tableUnit = pair.Value;
                 tableUnit.Init();
                 _units.Add(pair.Key, tableUnit);
-                if (tableUnit.Use == 1 || (LocalUser.Instance.User.RoleType == (int)EAccountRoleType.AcRT_Admin && tableUnit.Use == 2))
+                if (tableUnit.Use == 1 || (LocalUser.Instance.User.RoleType == (int) EAccountRoleType.AcRT_Admin &&
+                                           tableUnit.Use == 2))
                 {
                     var unitType = (EUIType) tableUnit.UIType;
                     if (!_typeUnits.ContainsKey(unitType))
@@ -113,6 +115,7 @@ namespace GameA.Game
         }
 
         private Table_Unit _lastTableUnit;
+
         /// <summary>
         /// 缓存最后一次查询的table 加速查询
         /// </summary>
@@ -157,8 +160,8 @@ namespace GameA.Game
             {
                 case (int) ELayerType.MainPlayer:
                     return (int) ESceneLayer.MainPlayer;
-                case (int)ELayerType.RemotePlayer:
-                    return (int)ESceneLayer.RemotePlayer;
+                case (int) ELayerType.RemotePlayer:
+                    return (int) ESceneLayer.RemotePlayer;
                 case (int) ELayerType.Monster:
                     return (int) ESceneLayer.Monster;
                 case (int) ELayerType.Item:
@@ -171,8 +174,8 @@ namespace GameA.Game
                     return (int) ESceneLayer.RigidbodyItem;
                 case (int) ELayerType.Bullet:
                     return (int) ESceneLayer.Bullet;
-                case (int)ELayerType.Gun:
-                    return (int)ESceneLayer.Gun;
+                case (int) ELayerType.Gun:
+                    return (int) ESceneLayer.Gun;
             }
             LogHelper.Error("GetLayer Failed,LayerType:{0}", tableUnit.Layer);
             return (int) ESceneLayer.Item;
@@ -199,12 +202,12 @@ namespace GameA.Game
             }
             var unitDesc = new UnitDesc();
             unitDesc.Id = tableUnit.Id;
-            unitDesc.Rotation = (byte)dir;
+            unitDesc.Rotation = (byte) dir;
             unitDesc.Scale = Vector2.one;
             unit.Init(unitDesc, tableUnit);
             return unit;
         }
-        
+
         public UnitBase GetUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             UnitBase unit = GetUnit(unitDesc.Id);
@@ -252,7 +255,7 @@ namespace GameA.Game
             switch (unit.TableUnit.EGeneratedType)
             {
                 case EGeneratedType.Spine:
-                    if (unit.Id == 1001 || unit.Id == 1002)
+                    if (unit.Id == 1001 || unit.Id == 1002 || unit.Id == 65535)
                     {
                         PoolFactory<ChangePartsSpineView>.Free((ChangePartsSpineView) unit.View);
                     }
@@ -324,7 +327,7 @@ namespace GameA.Game
             switch (unit.TableUnit.EGeneratedType)
             {
                 case EGeneratedType.Spine:
-                    if (unit.Id == 1001 || unit.Id == 1002)
+                    if (unit.Id == 1001 || unit.Id == 1002 || unit.Id == 65535)
                     {
                         unitView = PoolFactory<ChangePartsSpineView>.Get();
                     }

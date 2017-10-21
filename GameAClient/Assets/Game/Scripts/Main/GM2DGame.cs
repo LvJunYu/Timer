@@ -271,7 +271,7 @@ namespace GameA.Game
             OnGameLoadError("游戏资源加载出错，正在返回");
         }
 
-        public void OnGameLoadError(string msg)
+        public static void OnGameLoadError(string msg)
         {
             CommonTools.ShowPopupDialog(msg);
             Messenger.Broadcast(EMessengerType.OnLoadingErrorCloseUI);

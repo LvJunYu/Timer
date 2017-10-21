@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -17,7 +16,6 @@ namespace GameA.Game
     // 影子数据，记录并回放上次游戏表现
     public class ShadowData
     {
-        [Serializable]
         public struct AnimRec
         {
             public int FrameIdx;
@@ -36,17 +34,13 @@ namespace GameA.Game
             }
         }
 
-        [SerializeField] private bool _recording;
-        [SerializeField] private List<IntVec2> _posRec = new List<IntVec2>();
-        [SerializeField] private List<AnimRec> _animRec = new List<AnimRec>();
+        private List<IntVec2> _posRec = new List<IntVec2>();
+        private List<AnimRec> _animRec = new List<AnimRec>();
         private Dictionary<string, byte> _animName2Idx = new Dictionary<string, byte>();
         private Dictionary<byte, string> _idx2AnimName = new Dictionary<byte, string>();
         private int _curAnimInx;
-
-        public bool IsRecording
-        {
-            get { return _recording; }
-        }
+        private int _curPosInx;
+        private bool _isLiving;
 
         public ShadowData()
         {
@@ -70,64 +64,69 @@ namespace GameA.Game
             }
         }
 
-        public void RecordStart()
+        public void RecordClear()
         {
             _posRec.Clear();
             _animRec.Clear();
             _animName2Idx.Clear();
             _idx2AnimName.Clear();
-            _curAnimInx = 0;
-            _recording = true;
         }
 
-        public void RecordDone()
+        public void PlayClear()
         {
-            _recording = false;
+            _curAnimInx = 0;
+            _curPosInx = 0;
+            _isLiving = true;
         }
 
         public int Play(int frame)
         {
-            if (_recording) return -1;
-            if (_posRec.Count <= frame && ShadowUnit.Instance != null)
+            if (_curPosInx >= _posRec.Count && ShadowUnit.Instance != null)
             {
                 ShadowUnit.Instance.ShadowFinish();
                 return 0;
             }
             if (ShadowUnit.Instance != null)
             {
-                ShadowUnit.Instance.UpdatePos(_posRec[frame]);
-
-                if (_curAnimInx < _animRec.Count)
+                while (_curAnimInx < _animRec.Count && frame >= _animRec[_curAnimInx].FrameIdx)
                 {
-                    if (frame >= _animRec[_curAnimInx].FrameIdx)
+                    if (_animRec[_curAnimInx].NameIdx == 97)
                     {
-                        if (_animRec[_curAnimInx].NameIdx == 98)
-                        {
-                            ShadowUnit.Instance.NornalDeath(frame);
-                        }
-                        else if (_animRec[_curAnimInx].NameIdx == 99)
-                        {
-                            ShadowUnit.Instance.UpdateAnim(null, false, 1, _animRec[_curAnimInx].TrackIdx, frame);
-                        }
-                        else if (_animRec[_curAnimInx].NameIdx == 100)
-                        {
-                            ShadowUnit.Instance.SetFacingDir(EMoveDirection.Left);
-                        }
-                        else if (_animRec[_curAnimInx].NameIdx == 101)
-                        {
-                            ShadowUnit.Instance.SetFacingDir(EMoveDirection.Right);
-                        }
-                        else
-                        {
-                            string animName;
-                            if (_idx2AnimName.TryGetValue(_animRec[_curAnimInx].NameIdx, out animName))
-                            {
-                                ShadowUnit.Instance.UpdateAnim(animName, _animRec[_curAnimInx].Loop,
-                                    _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx, frame);
-                            }
-                        }
-                        _curAnimInx++;
+                        ShadowUnit.Instance.Revive();
+                        _isLiving = true;
                     }
+                    else if (_animRec[_curAnimInx].NameIdx == 98)
+                    {
+                        ShadowUnit.Instance.Dead(frame);
+                        _isLiving = false;
+                    }
+                    else if (_animRec[_curAnimInx].NameIdx == 99)
+                    {
+                        ShadowUnit.Instance.ClearTrack(frame);
+                    }
+                    else if (_animRec[_curAnimInx].NameIdx == 100)
+                    {
+                        ShadowUnit.Instance.SetFacingDir(EMoveDirection.Left);
+                    }
+                    else if (_animRec[_curAnimInx].NameIdx == 101)
+                    {
+                        ShadowUnit.Instance.SetFacingDir(EMoveDirection.Right);
+                    }
+                    else
+                    {
+                        string animName;
+                        if (_idx2AnimName.TryGetValue(_animRec[_curAnimInx].NameIdx, out animName))
+                        {
+                            ShadowUnit.Instance.UpdateAnim(animName, _animRec[_curAnimInx].Loop,
+                                _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx, frame);
+                        }
+                    }
+                    _curAnimInx++;
+                }
+                if (_isLiving)
+                {
+                    ShadowUnit.Instance.UpdatePos(_posRec[_curPosInx]);
+                    _curPosInx++;
                 }
             }
             return 1;
@@ -163,9 +162,14 @@ namespace GameA.Game
             RecordAnim(99, false, 0, (byte) trackIdx);
         }
 
-        public void RecordNormalDeath()
+        public void RecordDeath()
         {
             RecordAnim(98, false, 0, 0);
+        }
+
+        public void RecordRevive()
+        {
+            RecordAnim(97, false, 0, 0);
         }
 
         public void RecordDirChange(EMoveDirection facingDir)

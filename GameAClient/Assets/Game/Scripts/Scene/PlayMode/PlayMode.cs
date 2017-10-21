@@ -53,7 +53,7 @@ namespace GameA.Game
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
-            set { _mainPlayer = value;}
+            set { _mainPlayer = value; }
         }
 
         public int GameSuccessFrameCnt
@@ -135,7 +135,7 @@ namespace GameA.Game
                 DeleteTrap(_traps[i].Guid);
             }
             _traps.Clear();
-            
+
             for (int i = 0; i < _bullets.Count; i++)
             {
                 var bullet = _bullets[i];
@@ -224,7 +224,7 @@ namespace GameA.Game
         {
             _nextActions.Add(action);
         }
-        
+
 //        public UnitBase CreateUnitView(UnitDesc unitDesc)
 //        {
 //            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
@@ -413,7 +413,7 @@ namespace GameA.Game
             return false;
         }
 
-        private void OnMonsterDead (EDieType dieType)
+        private void OnMonsterDead(EDieType dieType)
         {
 //            Debug.Log ("OnMonsterDead, dieType: " + dieType);
             _sceneState.MonsterKilled++;
@@ -450,6 +450,13 @@ namespace GameA.Game
                             {
                                 PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
                             }
+                        }
+                        //创建影子
+                        if (GM2DGame.Instance.GameMode.PlayShadowData &&
+                            GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
+                        {
+                            var shadowUnit = CreateRuntimeUnit(65535, spawnData.GetUpPos()) as ShadowUnit;
+                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
                         }
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
@@ -589,7 +596,7 @@ namespace GameA.Game
         }
 
         #endregion
-        
+
         public bool AddTrap(int trapId, IntVec2 centerPos)
         {
             var trap = PoolFactory<Trap>.Get();
@@ -601,7 +608,7 @@ namespace GameA.Game
             PoolFactory<Trap>.Free(trap);
             return false;
         }
-        
+
         public bool DeleteTrap(int guid)
         {
             for (int i = _traps.Count - 1; i >= 0; i--)
@@ -616,7 +623,7 @@ namespace GameA.Game
             }
             return true;
         }
-        
+
         public void AddBullet(Bullet bullet)
         {
             _bullets.Add(bullet);

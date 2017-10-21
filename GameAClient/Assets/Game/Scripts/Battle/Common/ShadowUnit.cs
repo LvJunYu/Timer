@@ -2,8 +2,6 @@
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
-using AnimationState = Spine.AnimationState;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -11,6 +9,7 @@ namespace GameA.Game
     [Unit(Id = 65535, Type = typeof(ShadowUnit))]
     public class ShadowUnit : UnitBase
     {
+        private static string Victory = "Victory";
         protected static ShadowUnit _instance;
 
         public static ShadowUnit Instance
@@ -18,24 +17,28 @@ namespace GameA.Game
             get { return _instance; }
         }
 
-        protected string _lastAnimName;
         protected Color _color = Color.white;
-        protected SkeletonAnimation _skeletonAnimation;
-        protected EDirectionType DirectionType;
-        protected int _deadFrameIdx;
-        protected int _normalDeadFrameIdx;
 
-        public AnimationState AnimationState
+        protected SkeletonAnimation _skeletonAnimation;
+        protected int _deadFrameIdx;
+        protected ShadowData _shadowData;
+        protected bool _playFinish;
+
+        public override bool IsShadow
         {
-            get { return _skeletonAnimation.state; }
+            get { return true; }
         }
 
-        public Color Color
+        public SkeletonAnimation SkeletonAnimation
         {
-            set
+            get
             {
-                _color = value;
-                _view.SetRendererColor(_color);
+                if (_view == null) return null;
+                if (_skeletonAnimation == null)
+                {
+                    _skeletonAnimation = _trans.GetComponent<SkeletonAnimation>();
+                }
+                return _skeletonAnimation;
             }
         }
 
@@ -47,71 +50,46 @@ namespace GameA.Game
             }
             if (_instance != null) return false;
             _instance = this;
-//            _view.SetRendererColor(_color);
             return true;
         }
 
         internal override void Reset()
         {
             base.Reset();
-            _skeletonAnimation.Reset();
-            _deadFrameIdx = -1;
-            Speed = IntVec2.zero;
+            SkeletonAnimation.Reset();
+            ClearData();
         }
 
         internal override void OnPlay()
         {
             base.OnPlay();
-            _deadFrameIdx = -1;
-            Speed = IntVec2.zero;
+            ClearData();
         }
 
         public void UpdatePos(IntVec2 pos)
         {
-            if (_curPos != pos)
-            {
-                _curPos = pos;
-                if (_normalDeadFrameIdx > 0)
-                {
-                    _normalDeadFrameIdx = -1;
-                }
-            }
+            _curPos = pos;
         }
 
         public void UpdateAnim(string animName, bool loop, float timeScale, int trackIdx, int frame)
         {
-            if (_skeletonAnimation == null) return;
-            if (string.IsNullOrEmpty(animName))
+            if (_view == null) return;
+            if (string.IsNullOrEmpty(animName)) return;
+            if (loop)
             {
-                _skeletonAnimation.state.ClearTrack(trackIdx);
+                _animation.PlayLoop(animName, timeScale, trackIdx);
             }
             else
             {
-                _skeletonAnimation.state.TimeScale = timeScale;
-                _skeletonAnimation.state.SetAnimation(trackIdx, animName, loop);
-                _lastAnimName = animName;
-                if (animName == "Death")
-                {
-                    _deadFrameIdx = frame;
-                }
-            }
-        }
-
-        // 编辑模式下试玩残影更新动画组件
-        public void EditPlayRecordUpdateAnim(float deltaTime)
-        {
-            if (_skeletonAnimation != null)
-            {
-                _skeletonAnimation.Update(deltaTime);
+                _animation.PlayOnce(animName, timeScale, trackIdx);
             }
         }
 
         public void ShadowFinish()
         {
-            if (_lastAnimName != "Death" && _skeletonAnimation != null)
-            {
-                _skeletonAnimation.state.ClearTracks();
-            }
+            Speed = IntVec2.zero;
+            _playFinish = true;
+            _animation.PlayOnce(Victory);
         }
 
         internal override void OnObjectDestroy()
@@ -123,103 +101,62 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
-            {
-                GM2DGame.Instance.GameMode.ShadowDataPlayed.Play(GameRun.Instance.LogicFrameCnt);
-            }
+            _shadowData.Play(GameRun.Instance.LogicFrameCnt);
         }
 
         public override void UpdateView(float deltaTime)
         {
-            if (_isAlive)
+            if (_view == null || _playFinish) return;
+            //死亡后效果
+            if (_deadFrameIdx > 0)
             {
-                UpdateShadowView();
+                //渐隐消失
+                float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - _deadFrameIdx) * 0.01f);
+                if (a < 0) a = 0;
+                _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
+            }
+            else
+            {
+                _view.SetRendererColor(_color);
+            }
+            UpdateTransPos();
+        }
+
+        public void Revive()
+        {
+            _deadFrameIdx = 0;
+        }
+
+        public void Dead(int frame)
+        {
+            _deadFrameIdx = frame;
+        }
+
+        private void ClearData()
+        {
+            _deadFrameIdx = 0;
+            Speed = IntVec2.zero;
+            _shadowData.PlayClear();
+            _playFinish = false;
+        }
+
+        public void SetShadowData(ShadowData shadowData)
+        {
+            _shadowData = shadowData;
+        }
+
+        // 编辑模式下试玩残影更新动画组件
+        public void EditPlayRecordUpdateAnim(float deltaTime)
+        {
+            if (SkeletonAnimation != null)
+            {
+                SkeletonAnimation.Update(deltaTime);
             }
         }
 
-        public void UpdateShadowView()
+        public void ClearTrack(int trackIdx)
         {
-            if (_trans != null)
-            {
-                UpdateTransPos();
-                if (_deadFrameIdx > 0)
-                {
-                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx == 20)
-                    {
-                        SpeedY = 150;
-                    }
-                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx > 20)
-                    {
-                        SpeedY -= 15;
-                        if (SpeedY < -160)
-                        {
-                            SpeedY = -160;
-                        }
-                        _curPos += Speed;
-                        UpdateRot((GameRun.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
-                    }
-                }
-                if (_view != null)
-                {
-                    if (_normalDeadFrameIdx > 0)
-                    {
-                        float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - _normalDeadFrameIdx) * 0.02f);
-                        if (a < 0) a = 0;
-                        _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
-                    }
-                    if (_normalDeadFrameIdx == -1 && _view != null)
-                    {
-                        _view.SetRendererColor(_color);
-                    }
-                }
-            }
-        }
-
-        public void SetFacingDir(EDirectionType EDirectionType)
-        {
-            if (DirectionType == EDirectionType)
-            {
-                return;
-            }
-            if (_trans == null) return;
-            DirectionType = EDirectionType;
-            Vector3 euler = Trans.eulerAngles;
-            _trans.eulerAngles = DirectionType == EDirectionType.Right
-                ? new Vector3(euler.x, 0, euler.z)
-                : new Vector3(euler.x, 180, euler.z);
-        }
-
-        public void NornalDeath(int frame)
-        {
-            _normalDeadFrameIdx = frame;
-        }
-
-        public SkeletonAnimation CreateSnapShot()
-        {
-            GameObject snap = Object.Instantiate(_trans.gameObject);
-            _view.SetRendererColor(_color);
-            if (snap != null)
-            {
-                SkeletonAnimation anim = snap.GetComponent<SkeletonAnimation>();
-                if (anim != null)
-                {
-                    _skeletonAnimation = anim;
-                    return anim;
-                }
-            }
-            return null;
-        }
-
-        protected void UpdateRot(float rad)
-        {
-            float y = DirectionType == EDirectionType.Right
-                ? 0
-                : 180;
-            _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);
-            IntVec2 size = GetDataSize();
-            var up = new Vector2(0, 0.5f * size.y / ConstDefineGM2D.ServerTileScale);
-            Vector2 newTransPos = (Vector2) _trans.position + up - (Vector2) _trans.up.normalized * up.y;
-            _trans.position = newTransPos;
+            _animation.ClearTrack(trackIdx);
         }
     }
 }
