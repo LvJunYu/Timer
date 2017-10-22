@@ -671,9 +671,9 @@ namespace GameA.Game
             }
             if (speed <= 60)
             {
-                return "Run";
+                return Run;
             }
-            return "Run";
+            return Run;
         }
 
         protected virtual string JumpAnimName(int jumpLevel)

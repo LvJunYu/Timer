@@ -1,5 +1,4 @@
-﻿using System;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -7,6 +6,7 @@ namespace GameA.Game
     [Unit(Id = 2005, Type = typeof(MonsterTiger))]
     public class MonsterTiger : MonsterAI_2
     {
+        private static string Brake3 = "Brake3";
         private const int _brakeDec = 2; //刹车减速度
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private bool _hasTurnBack;
@@ -56,9 +56,9 @@ namespace GameA.Game
 
         public override void StartSkill()
         {
-            if (_animation != null && !_animation.IsPlaying("Attack", 1))
+            if (_animation != null && !_animation.IsPlaying(Attack, 1))
             {
-                _animation.PlayOnce("Attack", 1, 1);
+                _animation.PlayOnce(Attack, 1, 1);
                 SpeedX = 0;
                 _timerAttack = 70; //用于判断攻击动作持续时间，必须比技能CD短
             }
@@ -191,9 +191,13 @@ namespace GameA.Game
                 return;
             }
             base.ChangeState(eMonsterState);
-            if (_lastEMonsterState == EMonsterState.Brake && _animation != null)
+            if (_lastEMonsterState == EMonsterState.Brake)
             {
-                _animation.Reset();
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                }
+                _timeOverturn = 0;
             }
             if (eMonsterState == EMonsterState.Brake)
             {
@@ -206,10 +210,10 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
-                if (_animation != null && !_animation.IsPlaying("Brake3") && Mathf.Abs(SpeedX) > 20)
+                if (_animation != null && !_animation.IsPlaying(Brake3) && Mathf.Abs(SpeedX) > 20)
                 {
-                    _animation.PlayOnce("Brake3");
-                    _justPlayBrakeAnim = true;
+                    _animation.PlayOnce(Brake3);
+                    _justEnterBrake = true;
                 }
             }
         }
@@ -224,7 +228,7 @@ namespace GameA.Game
             _timerRun = _patrolTime;
         }
 
-        private bool _justPlayBrakeAnim;
+        private bool _justEnterBrake;
 
         private int _timeOverturn;
 
@@ -234,49 +238,56 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    _animation.PlayLoop("Idle");
+                    _animation.PlayLoop(Idle);
                 }
                 else
                 {
-                    if (CanMove && !_animation.IsPlaying("Brake3") && _eMonsterState != EMonsterState.Attack)
+                    if (CanMove && _eMonsterState != EMonsterState.Attack)
                     {
                         if (_eMonsterState == EMonsterState.Brake)
                         {
-                            int animSpeed = _onClay ? Mathf.Abs(SpeedX) : 100;
-                            _animation.PlayLoop("Run", animSpeed * deltaTime);
+                            //刹车时快速捣腾腿
+                            if (!_animation.IsPlaying(Brake3))
+                            {
+                                int animSpeed = _onClay ? Mathf.Abs(SpeedX) : 100;
+                                _animation.PlayLoop(Run, animSpeed * deltaTime);
+                            }
                         }
                         else
-                            _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
+                            _animation.PlayLoop(Run, Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
                 }
-                if (_animation.IsPlaying("Brake3"))
+                if (_animation.IsPlaying(Brake3))
                 {
-                    if (_justPlayBrakeAnim)
+                    //第一帧不翻转
+                    if (_justEnterBrake)
                     {
-                        _justPlayBrakeAnim = false; //第一帧不翻转
+                        _justEnterBrake = false; 
                     }
                     else
                     {
-                        _timeOverturn = 3; //动作结束后延迟3帧转身
+                        _timeOverturn = 4; //动作结束后延迟3帧转身
                     }
                 }
                 else if (_timeOverturn > 0)
                 {
                     _timeOverturn--;
                 }
-                if (_eMonsterState != EMonsterState.Brake)
-                {
-                    _timeOverturn = 0;
-                }
                 //刹车动画反转
-                if (_timeOverturn > 0 && _trans != null)
+                if (_timeOverturn > 0)
                 {
-                    Vector3 euler = _trans.eulerAngles;
-                    _trans.eulerAngles = Math.Abs(euler.y) < 0.1f
-                        ? new Vector3(euler.x, 180, euler.z)
-                        : new Vector3(euler.x, 0, euler.z);
+                    Turnover();
                 }
             }
+        }
+
+        private void Turnover()
+        {
+            if (_view == null) return;
+            Vector3 euler = _trans.eulerAngles;
+            _trans.eulerAngles = _moveDirection == EMoveDirection.Left
+                ? new Vector3(euler.x, 0, euler.z)
+                : new Vector3(euler.x, 180, euler.z);
         }
     }
 }

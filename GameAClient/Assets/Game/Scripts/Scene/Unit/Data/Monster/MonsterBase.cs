@@ -228,12 +228,12 @@ namespace GameA.Game
                 {
                     if (CanMove)
                     {
-                        _animation.PlayLoop("Idle");
+                        _animation.PlayLoop(Idle);
                     }
                 }
                 else
                 {
-                    _animation.PlayLoop("Run", Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
+                    _animation.PlayLoop(Run, Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }
         }

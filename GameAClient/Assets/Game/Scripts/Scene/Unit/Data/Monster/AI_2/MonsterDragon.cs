@@ -29,9 +29,9 @@ namespace GameA.Game
         {
             _timerAttack = 40;
 //            SpeedX = 0;
-            if (_animation != null && !_animation.IsPlaying("Attack", 1))
+            if (_animation != null && !_animation.IsPlaying(Attack, 1))
             {
-                _animation.PlayOnce("Attack", 1, 1);
+                _animation.PlayOnce(Attack, 1, 1);
             }
         }
 

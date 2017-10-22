@@ -29,9 +29,9 @@ namespace GameA.Game
 
         public override void StartSkill()
         {
-            if (_animation != null && !_animation.IsPlaying("Attack", 1))
+            if (_animation != null && !_animation.IsPlaying(Attack, 1))
             {
-                _animation.PlayOnce("Attack", 1, 1);
+                _animation.PlayOnce(Attack, 1, 1);
             }
         }
 

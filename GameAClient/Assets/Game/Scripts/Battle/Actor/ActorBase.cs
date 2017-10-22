@@ -40,7 +40,10 @@ namespace GameA.Game
         protected static string DeathWater = "DeathWater";
         protected static string DeathFire = "DeathFire";
         protected static string OnSawStart = "OnSawStart";
-
+        protected static string Idle = "Idle";
+        protected static string Run = "Run";
+        protected static string Attack = "Attack";
+        
         private static EInputType[] _skillInputs = new EInputType[3]
             {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 

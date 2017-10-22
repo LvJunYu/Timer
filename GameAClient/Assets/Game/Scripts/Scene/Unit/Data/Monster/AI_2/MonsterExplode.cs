@@ -109,12 +109,12 @@ namespace GameA.Game
                 {
                     if (CanMove)
                     {
-                        _animation.PlayLoop("Idle");
+                        _animation.PlayLoop(Idle);
                     }
                 }
                 else
                 {
-                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? "Attack" : "Run",
+                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? Attack : Run,
                         Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }

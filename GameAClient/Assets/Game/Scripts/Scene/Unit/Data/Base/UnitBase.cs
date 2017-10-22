@@ -1423,10 +1423,11 @@ namespace GameA.Game
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if ((_dynamicCollider == null || _moveDirection == eMoveDirection) && !initView)
+            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection )
             {
                 return;
             }
+            EMoveDirection lastMoveDirection = _moveDirection;
             _moveDirection = eMoveDirection;
             if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor||IsShadow) && Id != UnitDefine.MonsterJellyId)
             {
@@ -1434,7 +1435,7 @@ namespace GameA.Game
                 _trans.eulerAngles = _moveDirection != EMoveDirection.Right
                     ? new Vector3(euler.x, 180, euler.z)
                     : new Vector3(euler.x, 0, euler.z);
-                if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                if (lastMoveDirection != _moveDirection && GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                 {
                      GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
                 }
