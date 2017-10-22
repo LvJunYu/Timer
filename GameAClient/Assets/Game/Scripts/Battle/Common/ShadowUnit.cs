@@ -17,6 +17,12 @@ namespace GameA.Game
         protected int _deadFrame;
         protected int _onPortalFrame;
         protected bool _playFinish;
+        protected int _aheadFrame;
+
+        protected int _logicFrame
+        {
+            get { return GameRun.Instance.LogicFrameCnt + _aheadFrame; }
+        }
 
         public static ShadowUnit Instance
         {
@@ -50,6 +56,12 @@ namespace GameA.Game
             if (_instance != null) return false;
             _instance = this;
             return true;
+        }
+
+        public void SetShadowData(ShadowData shadowData, int aHeadFrame = 0)
+        {
+            _shadowData = shadowData;
+            _aheadFrame = aHeadFrame;
         }
 
         internal override void Reset()
@@ -101,7 +113,7 @@ namespace GameA.Game
         {
             if (_playFinish) return;
             base.UpdateLogic();
-            _shadowData.Play(GameRun.Instance.LogicFrameCnt);
+            _shadowData.Play(_logicFrame);
         }
 
         public override void UpdateView(float deltaTime)
@@ -121,7 +133,7 @@ namespace GameA.Game
 
         private void Fade(int startFram, float speed)
         {
-            float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - startFram) * speed);
+            float a = _color.a * (1f - (_logicFrame - startFram) * speed);
             if (a < 0) a = 0;
             _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
         }
@@ -148,7 +160,6 @@ namespace GameA.Game
         {
             if (_view == null) return;
             _onPortalFrame = 0;
-            _trans.eulerAngles = new Vector3(0, 0, 0);
             _animation.Reset();
             _view.SetRendererColor(_color);
         }
@@ -159,11 +170,6 @@ namespace GameA.Game
             Speed = IntVec2.zero;
             _shadowData.PlayClear();
             _playFinish = false;
-        }
-
-        public void SetShadowData(ShadowData shadowData)
-        {
-            _shadowData = shadowData;
         }
 
         public void ClearTrack(int trackIdx)

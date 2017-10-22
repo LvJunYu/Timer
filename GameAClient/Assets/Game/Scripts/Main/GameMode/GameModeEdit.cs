@@ -325,6 +325,10 @@ namespace GameA.Game
 			    return;
 		    }
 		    _inputDatas.Clear();
+		    if (SaveShadowData)
+		    {
+			    ShadowData.RecordClear();
+		    }
 		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 		    SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();

@@ -12,6 +12,8 @@ namespace GameA.Game
         private bool _hasTurnBack;
         private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int _patrolTime = 70;
+        private bool _justEnterBrake;
+        private int _timeOverturn;
 
         public override bool CanDashBrick
         {
@@ -228,10 +230,6 @@ namespace GameA.Game
             _timerRun = _patrolTime;
         }
 
-        private bool _justEnterBrake;
-
-        private int _timeOverturn;
-
         protected override void UpdateMonsterView(float deltaTime)
         {
             if (_animation != null)
@@ -262,7 +260,7 @@ namespace GameA.Game
                     //第一帧不翻转
                     if (_justEnterBrake)
                     {
-                        _justEnterBrake = false; 
+                        _justEnterBrake = false;
                     }
                     else
                     {

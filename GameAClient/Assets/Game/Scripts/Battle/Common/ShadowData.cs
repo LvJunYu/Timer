@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -39,7 +40,9 @@ namespace GameA.Game
         private Dictionary<string, byte> _animName2Idx = new Dictionary<string, byte>();
         private Dictionary<byte, string> _idx2AnimName = new Dictionary<byte, string>();
         private int _curAnimInx;
-        private int _curPosInx;
+        private int _posFrameOffset;
+        private int _deadFrame;
+        private int _reviveFrame;
         private bool _isLiving;
 
         public ShadowData()
@@ -74,20 +77,23 @@ namespace GameA.Game
 
         public void PlayClear()
         {
+            _reviveFrame = -1;
+            _deadFrame = 0;
             _curAnimInx = 0;
-            _curPosInx = 0;
+            _posFrameOffset = 0;
             _isLiving = true;
         }
 
         public int Play(int frame)
         {
-            if (_curPosInx >= _posRec.Count && ShadowUnit.Instance != null)
+            if (frame + _posFrameOffset >= _posRec.Count && ShadowUnit.Instance != null)
             {
                 ShadowUnit.Instance.ShadowFinish();
                 return 0;
             }
             if (ShadowUnit.Instance != null)
             {
+                //更新动画
                 while (_curAnimInx < _animRec.Count && frame >= _animRec[_curAnimInx].FrameIdx)
                 {
                     switch (_animRec[_curAnimInx].NameIdx)
@@ -100,10 +106,15 @@ namespace GameA.Game
                             break;
                         case 97:
                             ShadowUnit.Instance.Revive();
+                            _reviveFrame = _animRec[_curAnimInx].FrameIdx;
+                            //由于复活的那一帧没有记录位置，所以偏移再-1
+                            _posFrameOffset += _deadFrame - _reviveFrame - 1;
+                            _deadFrame = 0;
                             _isLiving = true;
                             break;
                         case 98:
                             ShadowUnit.Instance.Dead(frame);
+                            _deadFrame = _animRec[_curAnimInx].FrameIdx;
                             _isLiving = false;
                             break;
                         case 99:
@@ -126,10 +137,18 @@ namespace GameA.Game
                     }
                     _curAnimInx++;
                 }
+                //更新位置
                 if (_isLiving)
                 {
-                    ShadowUnit.Instance.UpdatePos(_posRec[_curPosInx]);
-                    _curPosInx++;
+                    //由于复活那一帧没有记录位置，需要使用下一帧的位置
+                    if (_reviveFrame == frame)
+                    {
+                        ShadowUnit.Instance.UpdatePos(_posRec[frame + _posFrameOffset + 1]);
+                    }
+                    else
+                    {
+                        ShadowUnit.Instance.UpdatePos(_posRec[frame + _posFrameOffset]);
+                    }
                 }
             }
             return 1;
