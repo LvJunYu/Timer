@@ -90,36 +90,39 @@ namespace GameA.Game
             {
                 while (_curAnimInx < _animRec.Count && frame >= _animRec[_curAnimInx].FrameIdx)
                 {
-                    if (_animRec[_curAnimInx].NameIdx == 97)
+                    switch (_animRec[_curAnimInx].NameIdx)
                     {
-                        ShadowUnit.Instance.Revive();
-                        _isLiving = true;
-                    }
-                    else if (_animRec[_curAnimInx].NameIdx == 98)
-                    {
-                        ShadowUnit.Instance.Dead(frame);
-                        _isLiving = false;
-                    }
-                    else if (_animRec[_curAnimInx].NameIdx == 99)
-                    {
-                        ShadowUnit.Instance.ClearTrack(frame);
-                    }
-                    else if (_animRec[_curAnimInx].NameIdx == 100)
-                    {
-                        ShadowUnit.Instance.SetFacingDir(EMoveDirection.Left);
-                    }
-                    else if (_animRec[_curAnimInx].NameIdx == 101)
-                    {
-                        ShadowUnit.Instance.SetFacingDir(EMoveDirection.Right);
-                    }
-                    else
-                    {
-                        string animName;
-                        if (_idx2AnimName.TryGetValue(_animRec[_curAnimInx].NameIdx, out animName))
-                        {
-                            ShadowUnit.Instance.UpdateAnim(animName, _animRec[_curAnimInx].Loop,
-                                _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx);
-                        }
+                        case 95:
+                            ShadowUnit.Instance.OutPortal();
+                            break;
+                        case 96:
+                            ShadowUnit.Instance.EnterPortal(frame);
+                            break;
+                        case 97:
+                            ShadowUnit.Instance.Revive();
+                            _isLiving = true;
+                            break;
+                        case 98:
+                            ShadowUnit.Instance.Dead(frame);
+                            _isLiving = false;
+                            break;
+                        case 99:
+                            ShadowUnit.Instance.ClearTrack(frame);
+                            break;
+                        case 100:
+                            ShadowUnit.Instance.SetFacingDir(EMoveDirection.Left);
+                            break;
+                        case 101:
+                            ShadowUnit.Instance.SetFacingDir(EMoveDirection.Right);
+                            break;
+                        default:
+                            string animName;
+                            if (_idx2AnimName.TryGetValue(_animRec[_curAnimInx].NameIdx, out animName))
+                            {
+                                ShadowUnit.Instance.UpdateAnim(animName, _animRec[_curAnimInx].Loop,
+                                    _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx);
+                            }
+                            break;
                     }
                     _curAnimInx++;
                 }
@@ -137,8 +140,12 @@ namespace GameA.Game
             _posRec.Add(pos);
         }
 
+        private string _lastAnimName;
+
         public void RecordAnimation(string animName, bool loop, float timeScale = 1f, int trackIdx = 0)
         {
+            if (animName == _lastAnimName) return;
+            _lastAnimName = animName;
             if (timeScale > 1.28f)
             {
                 timeScale = 1.28f;
@@ -170,6 +177,16 @@ namespace GameA.Game
         public void RecordRevive()
         {
             RecordAnim(97, false, 0, 0);
+        }
+
+        public void RecordEnterPortal()
+        {
+            RecordAnim(96, false, 0, 0);
+        }
+
+        public void RecordOutPortal()
+        {
+            RecordAnim(95, false, 0, 0);
         }
 
         public void RecordDirChange(EMoveDirection facingDir)

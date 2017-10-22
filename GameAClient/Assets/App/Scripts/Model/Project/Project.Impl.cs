@@ -255,6 +255,20 @@ namespace GameA
                 }
             });
         }
+        
+        public void RequestPlayShadowBattle(Record record, Action successCallback, Action failedCallback)
+        {
+            record.PrepareRecord(() =>
+            {
+                RequestPlay(successCallback, code =>
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke();
+                    }
+                });
+            }, failedCallback);
+        }
 
         public byte[] GetData()
         {

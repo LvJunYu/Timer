@@ -8,6 +8,11 @@ namespace GameA.Game
 {
     public class GameModeWorkshopEdit : GameModeEdit
     {
+        public override bool SaveShadowData
+        {
+            get { return true; }
+        }
+
         #region GuideTest
 
         private AdventureGuideBase _guideBase;
@@ -18,7 +23,6 @@ namespace GameA.Game
         private int _level = 5;
 
         #endregion
-
 
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)

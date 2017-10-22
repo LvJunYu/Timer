@@ -14,7 +14,8 @@ namespace GameA.Game
         protected ShadowData _shadowData;
         protected Color _color = Color.white;
         protected SkeletonAnimation _skeletonAnimation;
-        protected int _deadFrameIdx;
+        protected int _deadFrame;
+        protected int _onPortalFrame;
         protected bool _playFinish;
 
         public static ShadowUnit Instance
@@ -87,7 +88,7 @@ namespace GameA.Game
         {
             Speed = IntVec2.zero;
             _playFinish = true;
-            _animation.PlayOnce(Victory);
+            _animation.PlayLoop(Victory);
         }
 
         internal override void OnObjectDestroy()
@@ -98,41 +99,63 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            if (_playFinish) return;
             base.UpdateLogic();
-            if (!_playFinish)
-            {
-                _shadowData.Play(GameRun.Instance.LogicFrameCnt);
-            }
+            _shadowData.Play(GameRun.Instance.LogicFrameCnt);
         }
 
         public override void UpdateView(float deltaTime)
         {
             if (_view == null || _playFinish) return;
             //死亡后效果
-            if (_deadFrameIdx > 0)
+            if (_deadFrame > 0)
             {
-                //渐隐消失
-                float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - _deadFrameIdx) * 0.01f);
-                if (a < 0) a = 0;
-                _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
+                Fade(_deadFrame, 0.01f);
+            }
+            if (_onPortalFrame > 0)
+            {
+                Fade(_onPortalFrame, 0.04f);
             }
             UpdateTransPos();
         }
 
-        public void Revive()
+        private void Fade(int startFram, float speed)
         {
-            _deadFrameIdx = 0;
-            _view.SetRendererColor(_color);
+            float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - startFram) * speed);
+            if (a < 0) a = 0;
+            _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
         }
 
         public void Dead(int frame)
         {
-            _deadFrameIdx = frame;
+            _deadFrame = frame;
+        }
+
+        public void Revive()
+        {
+            if (_view == null) return;
+            _deadFrame = 0;
+            _animation.Reset();
+            _view.SetRendererColor(_color);
+        }
+
+        public void EnterPortal(int frame)
+        {
+            _onPortalFrame = frame;
+        }
+
+        public void OutPortal()
+        {
+            if (_view == null) return;
+            _onPortalFrame = 0;
+            _trans.eulerAngles = new Vector3(0, 0, 0);
+            _animation.Reset();
+            _view.SetRendererColor(_color);
         }
 
         private void ClearData()
         {
-            _deadFrameIdx = 0;
+            _deadFrame = _onPortalFrame = 0;
             Speed = IntVec2.zero;
             _shadowData.PlayClear();
             _playFinish = false;
@@ -147,7 +170,7 @@ namespace GameA.Game
         {
             _animation.ClearTrack(trackIdx);
         }
-        
+
         // 编辑模式下试玩残影更新动画组件
         public void EditPlayRecordUpdateAnim(float deltaTime)
         {
@@ -156,6 +179,5 @@ namespace GameA.Game
                 SkeletonAnimation.Update(deltaTime);
             }
         }
-
     }
 }

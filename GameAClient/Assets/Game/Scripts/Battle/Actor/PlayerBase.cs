@@ -372,6 +372,10 @@ namespace GameA.Game
             PlayMode.Instance.Freeze(this);
             _input.Clear();
             ClearRunTime();
+            if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+            {
+                GM2DGame.Instance.GameMode.ShadowData.RecordEnterPortal();
+            }
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
                 GM2DTools.TileToWorld(targetPos), 8, () => PlayMode.Instance.RunNextLogic(() =>
@@ -384,7 +388,11 @@ namespace GameA.Game
                     PlayMode.Instance.UpdateWorldRegion(_curPos);
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
-                    GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                    if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                    {
+                        GM2DGame.Instance.GameMode.ShadowData.RecordOutPortal();
+                        GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                    }
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                     if (_statusBar != null)
                     {
