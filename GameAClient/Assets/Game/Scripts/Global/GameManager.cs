@@ -25,7 +25,6 @@ namespace GameA
 
         private List<Project> _projectList = new List<Project>();
         private int _curProjectInx = 0;
-        public bool PlayShadow;
 
         #endregion
 
@@ -103,12 +102,20 @@ namespace GameA
             return RequestStartGame(project, EStartType.ModifyEdit);
         }
 
-        public bool RequestPlay(Project project, object param = null)
+        public bool RequestPlay(Project project)
         {
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorldPlay, param);
+            return RequestStartGame(project, EStartType.WorldPlay);
+        }
+        
+        public bool RequestPlayShadowBattle(Project project, Record record)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.ShadowBattlePlay, record);
         }
 
         public bool RequestPlayAdvNormal(Project project, SituationAdventureParam param)
@@ -230,6 +237,7 @@ namespace GameA
             AdventureBonusPlay,
             MultiCooperationPlay,
             MultiBattlePlay,
+            ShadowBattlePlay,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)

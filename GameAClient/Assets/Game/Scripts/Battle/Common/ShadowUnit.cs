@@ -9,20 +9,18 @@ namespace GameA.Game
     [Unit(Id = 65535, Type = typeof(ShadowUnit))]
     public class ShadowUnit : UnitBase
     {
-        private static string Victory = "Victory";
         protected static ShadowUnit _instance;
+        private static string Victory = "Victory";
+        protected ShadowData _shadowData;
+        protected Color _color = Color.white;
+        protected SkeletonAnimation _skeletonAnimation;
+        protected int _deadFrameIdx;
+        protected bool _playFinish;
 
         public static ShadowUnit Instance
         {
             get { return _instance; }
         }
-
-        protected Color _color = Color.white;
-
-        protected SkeletonAnimation _skeletonAnimation;
-        protected int _deadFrameIdx;
-        protected ShadowData _shadowData;
-        protected bool _playFinish;
 
         public override bool IsShadow
         {
@@ -71,7 +69,7 @@ namespace GameA.Game
             _curPos = pos;
         }
 
-        public void UpdateAnim(string animName, bool loop, float timeScale, int trackIdx, int frame)
+        public void UpdateAnim(string animName, bool loop, float timeScale, int trackIdx)
         {
             if (_view == null) return;
             if (string.IsNullOrEmpty(animName)) return;
@@ -101,7 +99,10 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            _shadowData.Play(GameRun.Instance.LogicFrameCnt);
+            if (!_playFinish)
+            {
+                _shadowData.Play(GameRun.Instance.LogicFrameCnt);
+            }
         }
 
         public override void UpdateView(float deltaTime)
@@ -115,16 +116,13 @@ namespace GameA.Game
                 if (a < 0) a = 0;
                 _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
             }
-            else
-            {
-                _view.SetRendererColor(_color);
-            }
             UpdateTransPos();
         }
 
         public void Revive()
         {
             _deadFrameIdx = 0;
+            _view.SetRendererColor(_color);
         }
 
         public void Dead(int frame)
@@ -145,6 +143,11 @@ namespace GameA.Game
             _shadowData = shadowData;
         }
 
+        public void ClearTrack(int trackIdx)
+        {
+            _animation.ClearTrack(trackIdx);
+        }
+        
         // 编辑模式下试玩残影更新动画组件
         public void EditPlayRecordUpdateAnim(float deltaTime)
         {
@@ -154,9 +157,5 @@ namespace GameA.Game
             }
         }
 
-        public void ClearTrack(int trackIdx)
-        {
-            _animation.ClearTrack(trackIdx);
-        }
     }
 }

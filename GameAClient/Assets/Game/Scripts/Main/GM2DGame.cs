@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 游戏所属情景 世界 冒险 匹配
+    /// 游戏所属情景 世界 冒险 匹配 对战
     /// </summary>
     public enum EGameSituation
     {
@@ -23,6 +23,7 @@ namespace GameA.Game
         Adventure,
         Match,
         Battle,
+        ShadowBattle,
     }
 
     /// <summary>
@@ -108,6 +109,9 @@ namespace GameA.Game
             {
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
+                    break;
+                case GameManager.EStartType.ShadowBattlePlay:
+                    _gameMode = new GameModeShadowBattlePlay();
                     break;
                 case GameManager.EStartType.WorkshopCreate:
                     _gameMode = new GameModeWorkshopEdit();

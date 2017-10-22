@@ -184,7 +184,10 @@ namespace GameA.Game
             {
                 _skeletonAnimation.state.ClearTrack(idx);
             }
-            _currentAnimation[idx] = null;
+            if (idx < _currentAnimation.Length)
+            {
+                _currentAnimation[idx] = null;
+            }
         }
 
 		/// <summary>

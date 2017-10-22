@@ -118,7 +118,7 @@ namespace GameA.Game
                         if (_idx2AnimName.TryGetValue(_animRec[_curAnimInx].NameIdx, out animName))
                         {
                             ShadowUnit.Instance.UpdateAnim(animName, _animRec[_curAnimInx].Loop,
-                                _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx, frame);
+                                _animRec[_curAnimInx].TimeScale * 0.01f, _animRec[_curAnimInx].TrackIdx);
                         }
                     }
                     _curAnimInx++;

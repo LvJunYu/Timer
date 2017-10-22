@@ -19,7 +19,7 @@ namespace GameA.Game
 
         #endregion
 
-        
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -57,7 +57,7 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
-            byte[] record = GetRecord();
+            byte[] record = GetRecord(true);
             RecordBytes = record;
 
             SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Win);
@@ -229,12 +229,12 @@ namespace GameA.Game
             }
         }
 
-        private byte[] GetRecord()
+        private byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            if (SaveShadowData)
+            if (SaveShadowData && win)
             {
                 recordData.ShadowData = ShadowData.GetRecShadowData();
             }

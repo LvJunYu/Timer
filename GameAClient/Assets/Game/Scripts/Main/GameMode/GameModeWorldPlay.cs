@@ -141,7 +141,7 @@ namespace GameA.Game
             return true;
         }
 
-        private byte[] GetRecord(bool win)
+        protected byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
@@ -164,7 +164,7 @@ namespace GameA.Game
             return record;
         }
 
-        private IEnumerator GameFlow()
+        protected IEnumerator GameFlow()
         {
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);

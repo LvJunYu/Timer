@@ -21,7 +21,11 @@ namespace GameA.Game
         protected GM2DRecordData _gm2drecordData;
         public ShadowData ShadowData = new ShadowData();
         public ShadowData ShadowDataPlayed;
-        public bool PlayShadowData;
+
+        public virtual bool PlayShadowData
+        {
+            get { return false; }
+        }
 
         public virtual bool SaveShadowData
         {
@@ -52,17 +56,6 @@ namespace GameA.Game
             MonoBehaviour coroutineProxy)
         {
             _project = project;
-            PlayShadowData = GameManager.Instance.PlayShadow;
-            GameManager.Instance.PlayShadow = false;
-            if (PlayShadowData)
-            {
-                ShadowDataPlayed = null;
-                _record = param as Record;
-                if (InitRecord() && _gm2drecordData.ShadowData != null)
-                {
-                    ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
-                }
-            }
             _startType = startType;
             _coroutineProxy = coroutineProxy;
             _run = true;
@@ -74,7 +67,7 @@ namespace GameA.Game
         public abstract void OnGameSuccess();
 
         public abstract void OnGameFailed();
-
+        
         protected virtual bool InitRecord()
         {
             byte[] recordBytes = MatrixProjectTools.DecompressLZMA(_record.RecordData);

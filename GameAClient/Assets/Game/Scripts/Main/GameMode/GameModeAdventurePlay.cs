@@ -39,7 +39,7 @@ namespace GameA.Game
             {
                 _guideBase.Init();
             }
-            
+
             Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
             return true;
         }
@@ -52,7 +52,7 @@ namespace GameA.Game
                 _guideBase.UpdateLogic();
             }
         }
-        
+
         public override void Update()
         {
             base.Update();
@@ -188,7 +188,7 @@ namespace GameA.Game
                 }
                 return false;
             }
-            
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
 
             var section = _adventureLevelInfo.Section;
@@ -211,7 +211,8 @@ namespace GameA.Game
                             successCb.Invoke();
                         }
                         SocialApp.Instance.ReturnToApp();
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                        {
                             GC.Collect();
                             SituationAdventureParam param = new SituationAdventureParam
                             {
@@ -248,7 +249,7 @@ namespace GameA.Game
             byte[] record;
             Loom.RunAsync(() =>
             {
-                record = GetRecord();
+                record = GetRecord(PlayMode.Instance.SceneState.GameSucceed);
                 Loom.QueueOnMainThread(() =>
                 {
                     AppData.Instance.AdventureData.CommitLevelResult(
@@ -279,12 +280,12 @@ namespace GameA.Game
             });
         }
 
-        private byte[] GetRecord()
+        private byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            if (SaveShadowData)
+            if (SaveShadowData && win)
             {
                 recordData.ShadowData = ShadowData.GetRecShadowData();
             }
@@ -374,8 +375,8 @@ namespace GameA.Game
 
             GameRun.Instance.Playing();
         }
-        
-        
+
+
         public void HandleHandbook(string triggerName, bool active)
         {
             if (!active)

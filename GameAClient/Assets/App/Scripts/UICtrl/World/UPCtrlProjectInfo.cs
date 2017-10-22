@@ -188,8 +188,7 @@ namespace GameA
                 //TODO 测试，请求排行榜第一的录像作为影子数据(若请求不到，先加载一次录像，仅用于测试）
                 if (_content.ProjectRecordRankList.AllList.Count > 0)
                 {
-                    GameManager.Instance.PlayShadow = true;
-                    GameManager.Instance.RequestPlay(_content, _content.ProjectRecordRankList.AllList[0].Record);
+                    GameManager.Instance.RequestPlayShadowBattle(_content, _content.ProjectRecordRankList.AllList[0].Record);
                 }
                 else
                 {

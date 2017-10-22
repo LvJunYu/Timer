@@ -451,7 +451,7 @@ namespace GameA.Game
                                 PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
                             }
                         }
-                        //创建影子
+                        //创建影子Unit
                         if (GM2DGame.Instance.GameMode.PlayShadowData &&
                             GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                         {
