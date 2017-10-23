@@ -8,7 +8,7 @@ namespace GameA
     /// <summary>
     /// 拼图页面
     /// </summary>
-    [UIResAutoSetup(EResScenary.UIInGame)]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlPuzzle : UICtrlAnimationBase<UIViewPuzzle>
     {
         private Dictionary<int, Table_PuzzleSlot> _slots; //装备栏数据

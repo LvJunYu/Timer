@@ -456,7 +456,7 @@ namespace GameA.Game
                             GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                         {
                             var shadowUnit = CreateRuntimeUnit(65535, spawnData.GetUpPos()) as ShadowUnit;
-                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
+                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
                         }
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }

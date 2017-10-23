@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityStandardAssets.ImageEffects;
 
 namespace GameA.Game
 {

@@ -17,6 +17,8 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.ShadowBattle;
+            _successType = UICtrlGameFinish.EShowState.ShadowBattleWin;
+            _failType = UICtrlGameFinish.EShowState.ShadowBattleLose;
             //读取影子数据
             ShadowDataPlayed = null;
             _record = param as Record;
@@ -26,5 +28,6 @@ namespace GameA.Game
             }
             return true;
         }
+
     }
 }

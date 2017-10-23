@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -40,8 +39,6 @@ namespace GameA.Game
         private Dictionary<string, byte> _animName2Idx = new Dictionary<string, byte>();
         private Dictionary<byte, string> _idx2AnimName = new Dictionary<byte, string>();
         private int _curAnimInx;
-        private int _posFrameOffset;
-        private int _deadFrame;
         private int _reviveFrame;
         private bool _isLiving;
 
@@ -78,15 +75,13 @@ namespace GameA.Game
         public void PlayClear()
         {
             _reviveFrame = -1;
-            _deadFrame = 0;
             _curAnimInx = 0;
-            _posFrameOffset = 0;
             _isLiving = true;
         }
 
         public int Play(int frame)
         {
-            if (frame + _posFrameOffset >= _posRec.Count && ShadowUnit.Instance != null)
+            if (frame >= _posRec.Count && ShadowUnit.Instance != null)
             {
                 ShadowUnit.Instance.ShadowFinish();
                 return 0;
@@ -108,13 +103,10 @@ namespace GameA.Game
                             ShadowUnit.Instance.Revive();
                             _reviveFrame = _animRec[_curAnimInx].FrameIdx;
                             //由于复活的那一帧没有记录位置，所以偏移再-1
-                            _posFrameOffset += _deadFrame - _reviveFrame - 1;
-                            _deadFrame = 0;
                             _isLiving = true;
                             break;
                         case 98:
                             ShadowUnit.Instance.Dead(frame);
-                            _deadFrame = _animRec[_curAnimInx].FrameIdx;
                             _isLiving = false;
                             break;
                         case 99:
@@ -143,11 +135,11 @@ namespace GameA.Game
                     //由于复活那一帧没有记录位置，需要使用下一帧的位置
                     if (_reviveFrame == frame)
                     {
-                        ShadowUnit.Instance.UpdatePos(_posRec[frame + _posFrameOffset + 1]);
+                        ShadowUnit.Instance.UpdatePos(_posRec[frame + 1]);
                     }
                     else
                     {
-                        ShadowUnit.Instance.UpdatePos(_posRec[frame + _posFrameOffset]);
+                        ShadowUnit.Instance.UpdatePos(_posRec[frame]);
                     }
                 }
             }

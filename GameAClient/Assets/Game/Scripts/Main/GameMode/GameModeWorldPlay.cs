@@ -9,6 +9,8 @@ namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
+        protected UICtrlGameFinish.EShowState _successType;
+        protected UICtrlGameFinish.EShowState _failType;
         public override bool SaveShadowData
         {
             get { return true; }
@@ -22,6 +24,8 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
+            _successType = UICtrlGameFinish.EShowState.Win;
+            _failType = UICtrlGameFinish.EShowState.Lose;
             return true;
         }
 
@@ -56,7 +60,7 @@ namespace GameA.Game
                             LogHelper.Info("游戏成绩提交成功");
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             if (!PlayMode.Instance.SceneState.GameFailed) return;
-                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
                         }, (errCode) =>
                         {
                             LogHelper.Info("游戏成绩提交失败");
@@ -72,8 +76,7 @@ namespace GameA.Game
                                 new KeyValuePair<string, Action>("跳过", () =>
                                 {
                                     //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState
-                                        .Lose);
+                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
                                 }));
                         });
                 });
@@ -104,7 +107,7 @@ namespace GameA.Game
                             LogHelper.Info("游戏成绩提交成功");
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             if (!PlayMode.Instance.SceneState.GameSucceed) return;
-                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
                         }, (errCode) =>
                         {
                             LogHelper.Info("游戏成绩提交失败");
@@ -120,7 +123,7 @@ namespace GameA.Game
                                 new KeyValuePair<string, Action>("跳过", () =>
                                 {
                                     //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
                                 }));
                         });
                 });

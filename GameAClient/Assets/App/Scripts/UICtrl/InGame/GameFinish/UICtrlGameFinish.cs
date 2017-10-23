@@ -33,7 +33,9 @@ namespace GameA
             AdvBonusWin,
             AdvBonusLose,
             ChallengeWin,
-            ChallengeLose
+            ChallengeLose,
+            ShadowBattleWin,
+            ShadowBattleLose
         }
 
         private EShowState _showState;
@@ -52,7 +54,21 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitUI();
+            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
+            _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
+            _cachedView.ContinueEditBtn.onClick.AddListener(OnContinueEditBtn);
+            _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
+            _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
+            _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
+
+            _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
+            for (int i = 0; i < _cachedView.Rewards.Length; i++)
+            {
+                _rewardCtrl[i] = new USCtrlGameFinishReward();
+                _rewardCtrl[i].Init(_cachedView.Rewards[i]);
+            }
+            _cachedView.UpGrade.SetActiveEx(false);
         }
 
         protected override void OnOpen(object parameter)
@@ -81,23 +97,6 @@ namespace GameA
         {
             base.OnUpdate();
             _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
-        }
-
-        private void InitUI()
-        {
-            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
-            _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
-            _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
-            _cachedView.ContinueEditBtn.onClick.AddListener(OnContinueEditBtn);
-            _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
-
-            _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
-            for (int i = 0; i < _cachedView.Rewards.Length; i++)
-            {
-                _rewardCtrl[i] = new USCtrlGameFinishReward();
-                _rewardCtrl[i].Init(_cachedView.Rewards[i]);
-            }
-            _cachedView.UpGrade.SetActiveEx(false);
         }
 
         private void OnPlayRecordBtn()
@@ -278,6 +277,9 @@ namespace GameA
 
         private void UpdateView()
         {
+            _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
+            _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
+            _cachedView.FriendHelpObj.SetActive(_showState == EShowState.ShadowBattleLose);
             switch (_showState)
             {
                 case EShowState.Win:
@@ -294,10 +296,10 @@ namespace GameA
                     // 奖励
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
-                    _cachedView.PlayRecordObj.SetActive(false);
                     //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                    _cachedView.PlayRecordObj.SetActive(false);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.Lose:
@@ -312,7 +314,42 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
+                    PlayLoseEffect();
+                    break;
+                case EShowState.ShadowBattleWin:
+                    _cachedView.Win.SetActive(true);
+                    _cachedView.Lose.SetActive(false);
+                    _cachedView.RetryBtn.gameObject.SetActive(false);
+                    _cachedView.ReturnBtn.gameObject.SetActive(true);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive(false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
+                    _cachedView.Score.gameObject.SetActive(true);
+                    _cachedView.ScoreOutLine.gameObject.SetActive(true);
+                    _cachedView.ScoreOutLine.text =
+                        _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
+                    _cachedView.RewardObj.SetActive(true);
+                    _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    //Todo 更新奖励
+                    //UpdateReward ();
+                    
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
+                    PlayWinEffect();
+                    break;
+                case EShowState.ShadowBattleLose:
+                    _cachedView.Win.SetActive(false);
+                    _cachedView.Lose.SetActive(true);
+                    _cachedView.ReturnBtn.gameObject.SetActive(false);
+                    _cachedView.RetryBtn.gameObject.SetActive(false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive(false);
+                    _cachedView.Score.gameObject.SetActive(false);
+                    _cachedView.ScoreOutLine.gameObject.SetActive(false);
+                    _cachedView.RewardObj.SetActive(false);
+                    _cachedView.ExpBarObj.SetActive(false);
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.AdvBonusWin:
@@ -333,7 +370,7 @@ namespace GameA
                     JudgeExpAndLvl();
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.AdvNormalWin:
@@ -391,7 +428,7 @@ namespace GameA
                     _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.AdvNormalLose:
@@ -410,7 +447,7 @@ namespace GameA
                     JudgeExpAndLvl();
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.ChallengeWin:
@@ -432,7 +469,7 @@ namespace GameA
                     _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
                     UpdateReward(LocalUser.Instance.MatchUserData.LastChallengeReward);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.ChallengeLose:
@@ -449,7 +486,7 @@ namespace GameA
                     _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
                     UpdateReward(LocalUser.Instance.MatchUserData.LastChallengeReward);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.EditorLose:
@@ -464,7 +501,7 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     break;
                 case EShowState.EditorWin:
                     _cachedView.Win.SetActive(true);
@@ -480,7 +517,8 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                   
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     break;
             }
         }
