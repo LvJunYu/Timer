@@ -54,6 +54,8 @@ namespace GameA
         public bool DeepCopy (AchievementItem obj)
         {
             if (null == obj) return false;
+            _achievementId = obj.AchievementId;           
+            _createTime = obj.CreateTime;           
             return true;
         }
 

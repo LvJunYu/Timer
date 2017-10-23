@@ -99,6 +99,11 @@ namespace GameA
         public bool DeepCopy (BuyAvatarPartItem obj)
         {
             if (null == obj) return false;
+            _partType = obj.PartType;           
+            _partId = obj.PartId;           
+            _durationType = obj.DurationType;           
+            _currencyType = obj.CurrencyType;           
+            _discountCouponId = obj.DiscountCouponId;           
             return true;
         }
 

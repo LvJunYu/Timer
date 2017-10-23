@@ -42,6 +42,14 @@ namespace GameA
         public bool DeepCopy (Reward obj)
         {
             if (null == obj) return false;
+            if (null ==  obj.ItemList) return false;
+            if (null ==  _itemList) {
+                _itemList = new List<RewardItem>();
+            }
+            _itemList.Clear();
+            for (int i = 0; i < obj.ItemList.Count; i++){
+                _itemList.Add(obj.ItemList[i]);
+            }
             return true;
         }
 

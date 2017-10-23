@@ -72,6 +72,16 @@ namespace GameA
         public bool DeepCopy (AdvProgressData obj)
         {
             if (null == obj) return false;
+            _section = obj.Section;           
+            _level = obj.Level;           
+            if (null ==  obj.FriendsDataList) return false;
+            if (null ==  _friendsDataList) {
+                _friendsDataList = new List<UserInfoSimple>();
+            }
+            _friendsDataList.Clear();
+            for (int i = 0; i < obj.FriendsDataList.Count; i++){
+                _friendsDataList.Add(obj.FriendsDataList[i]);
+            }
             return true;
         }
 

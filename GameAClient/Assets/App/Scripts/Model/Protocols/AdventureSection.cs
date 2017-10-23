@@ -75,6 +75,23 @@ namespace GameA
         public bool DeepCopy (AdventureSection obj)
         {
             if (null == obj) return false;
+            _section = obj.Section;           
+            if (null ==  obj.NormalProjectList) return false;
+            if (null ==  _normalProjectList) {
+                _normalProjectList = new List<Project>();
+            }
+            _normalProjectList.Clear();
+            for (int i = 0; i < obj.NormalProjectList.Count; i++){
+                _normalProjectList.Add(obj.NormalProjectList[i]);
+            }
+            if (null ==  obj.BonusProjectList) return false;
+            if (null ==  _bonusProjectList) {
+                _bonusProjectList = new List<Project>();
+            }
+            _bonusProjectList.Clear();
+            for (int i = 0; i < obj.BonusProjectList.Count; i++){
+                _bonusProjectList.Add(obj.BonusProjectList[i]);
+            }
             return true;
         }
 

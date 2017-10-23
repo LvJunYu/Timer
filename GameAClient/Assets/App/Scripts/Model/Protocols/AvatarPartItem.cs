@@ -84,6 +84,10 @@ namespace GameA
         public bool DeepCopy (AvatarPartItem obj)
         {
             if (null == obj) return false;
+            _type = obj.Type;           
+            _id = obj.Id;           
+            _using = obj.Using;           
+            _expirationTime = obj.ExpirationTime;           
             return true;
         }
 

@@ -84,6 +84,10 @@ namespace GameA
         public bool DeepCopy (TrainProperty obj)
         {
             if (null == obj) return false;
+            _property = obj.Property;           
+            _level = obj.Level;           
+            _isTraining = obj.IsTraining;           
+            _trainStartTime = obj.TrainStartTime;           
             return true;
         }
 

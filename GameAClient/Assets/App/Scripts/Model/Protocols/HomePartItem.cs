@@ -84,6 +84,10 @@ namespace GameA
         public bool DeepCopy (HomePartItem obj)
         {
             if (null == obj) return false;
+            _type = obj.Type;           
+            _id = obj.Id;           
+            _state = obj.State;           
+            _level = obj.Level;           
             return true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA
@@ -49,14 +50,29 @@ namespace GameA
                 RequestData();
                 return;
             }
-            SearchUser searchUser = new SearchUser();
-            searchUser.Request(_cachedView.SeachInputField.text, () => ShowSearchUser(searchUser.DataDetail), code =>
+            if (CheckTools.CheckNickName(_cachedView.SeachInputField.text) != CheckTools.ECheckNickNameResult.Success)
             {
-                //临时数据
-                UserInfoSimple user = new UserInfoSimple();
-                user.NickName = _cachedView.SeachInputField.text;
-                user.Sex = ESex.S_Female;
-                ShowSearchUser(UserManager.Instance.UpdateData(user));
+                SocialGUIManager.ShowPopupDialog("您输入的昵称格式错误");
+                return;
+            }
+            RemoteCommands.SearchUser(_cachedView.SeachInputField.text, ret =>
+            {
+                if (ret.ResultCode == (int) ESearchUserCode.SUC_Success)
+                {
+                    ShowSearchUser(UserManager.Instance.UpdateData(ret.Data));
+                }
+                else if (ret.ResultCode == (int) ESearchUserCode.SUC_NotExsit)
+                {
+                    SocialGUIManager.ShowPopupDialog(string.Format("没有找到昵称为{0}的玩家。",
+                        _cachedView.SeachInputField.text));
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("查找失败。");
+                }
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("查找失败。");
             });
         }
 

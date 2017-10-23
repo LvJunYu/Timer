@@ -11,26 +11,23 @@
             _isRequesting = true;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             LocalUser.Instance.RelationUserList.RequestBlocks(LocalUser.Instance.UserGuid, () =>
+            {
+                _userInfoDetailList = LocalUser.Instance.RelationUserList.BlockList;
+                _hasInited = true;
+                _isRequesting = false;
+                if (!_isOpen)
                 {
-                    _userInfoDetailList = LocalUser.Instance.RelationUserList.BlockList;
-                    _hasInited = true;
-                    _isRequesting = false;
-                    if (!_isOpen)
-                    {
-                        return;
-                    }
-                    if (_userInfoDetailList == null || _userInfoDetailList.Count == 0)
-                    {
-                        TempData();
-                    }
-                    //同步数据
-                    RefreshView();
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }, code =>
-                {
-                    _isRequesting = false;
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                });
+                    return;
+                }
+                TempData();
+                //同步数据
+                RefreshView();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                _isRequesting = false;
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
         }
 
         protected override void TempData()

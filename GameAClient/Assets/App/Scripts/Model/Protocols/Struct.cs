@@ -54,6 +54,8 @@ namespace GameA
         public bool DeepCopy (Struct obj)
         {
             if (null == obj) return false;
+            _id = obj.Id;           
+            _name = obj.Name;           
             return true;
         }
 

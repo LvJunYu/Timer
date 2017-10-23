@@ -57,6 +57,15 @@ namespace GameA
         public bool DeepCopy (UserMatchUnitData obj)
         {
             if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.ItemList) return false;
+            if (null ==  _itemList) {
+                _itemList = new List<MatchUnitItem>();
+            }
+            _itemList.Clear();
+            for (int i = 0; i < obj.ItemList.Count; i++){
+                _itemList.Add(obj.ItemList[i]);
+            }
             return true;
         }
 

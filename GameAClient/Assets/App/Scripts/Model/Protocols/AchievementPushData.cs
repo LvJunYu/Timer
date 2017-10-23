@@ -60,6 +60,22 @@ namespace GameA
         public bool DeepCopy (AchievementPushData obj)
         {
             if (null == obj) return false;
+            if (null ==  obj.StatisticList) return false;
+            if (null ==  _statisticList) {
+                _statisticList = new List<AchievementStatisticItem>();
+            }
+            _statisticList.Clear();
+            for (int i = 0; i < obj.StatisticList.Count; i++){
+                _statisticList.Add(obj.StatisticList[i]);
+            }
+            if (null ==  obj.AchievementList) return false;
+            if (null ==  _achievementList) {
+                _achievementList = new List<AchievementItem>();
+            }
+            _achievementList.Clear();
+            for (int i = 0; i < obj.AchievementList.Count; i++){
+                _achievementList.Add(obj.AchievementList[i]);
+            }
             return true;
         }
 

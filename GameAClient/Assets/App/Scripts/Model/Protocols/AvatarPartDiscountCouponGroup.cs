@@ -72,6 +72,16 @@ namespace GameA
         public bool DeepCopy (AvatarPartDiscountCouponGroup obj)
         {
             if (null == obj) return false;
+            _partType = obj.PartType;           
+            _partId = obj.PartId;           
+            if (null ==  obj.ItemDataList) return false;
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<AvatarPartDiscountCouponItem>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < obj.ItemDataList.Count; i++){
+                _itemDataList.Add(obj.ItemDataList[i]);
+            }
             return true;
         }
 

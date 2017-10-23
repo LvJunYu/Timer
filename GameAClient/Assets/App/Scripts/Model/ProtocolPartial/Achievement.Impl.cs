@@ -6,77 +6,98 @@ namespace GameA
 {
     public partial class Achievement
     {
-        private const int _maxAchievementNum = 100;
-        private Dictionary<int, AchievementStatisticItem> _allAchievements;
-        private bool _hasInited;
+        private Dictionary<int, AchievementStatisticItem> _achieveDic =
+            new Dictionary<int, AchievementStatisticItem>(100);
 
-        public Dictionary<int, AchievementStatisticItem> AllAchievements
+        private List<AchievementStatisticItem> _unFinishedAchieve = new List<AchievementStatisticItem>();
+        private List<AchievementStatisticItem> _finishedAchive = new List<AchievementStatisticItem>();
+        private List<AchiveItemData> _allAchiveData = new List<AchiveItemData>();
+        private bool _hasBuild;
+
+        public List<AchiveItemData> AllAchiveData
         {
-            get
-            {
-                if (!_hasInited)
-                {
-                    RequestData();
-                }
-                return _allAchievements;
-            }
+            get { return _allAchiveData; }
         }
 
-        private void RequestData()
+        protected override void OnSyncPartial()
         {
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            Request(LocalUser.Instance.UserGuid,
-                () =>
-                {
-                    InitData();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                },
-                code =>
-                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Error("Network error when get Achievement, {0}", code);
-                });
-            InitData();
+            base.OnSyncPartial();
+            BuildData();
         }
 
-        private void InitData()
+        public void BuildData()
         {
-            if (null == _allAchievements)
-                _allAchievements = new Dictionary<int, AchievementStatisticItem>(_maxAchievementNum);
             var achievements = TableManager.Instance.Table_AchievementDic;
+            //建立type字典
             foreach (Table_Achievement value in achievements.Values)
             {
-                AchievementStatisticItem achievementItem;
-                if (!_allAchievements.ContainsKey(value.Type))
+                AchievementStatisticItem achievementItem = StatisticList.Find(p => p.Type == value.Type);
+                if (null == achievementItem)
                 {
-                    achievementItem = StatisticList.Find(p => p.Type == value.Type);
-                    if (null == achievementItem)
+                    if (!_achieveDic.ContainsKey(value.Type))
                     {
-                        //测试数据
-//                        long count = Random.Range(1, 10);
-                        achievementItem = new AchievementStatisticItem(value.Type, 1);
+                        _achieveDic.Add(value.Type, new AchievementStatisticItem(value.Type, 0));
                     }
-                    _allAchievements.Add(value.Type, achievementItem);
                 }
                 else
-                    achievementItem = _allAchievements[value.Type];
-                achievementItem.BuildLvDic(value.Level, value);
+                {
+                    if (!_achieveDic.ContainsKey(value.Type))
+                    {
+                   
+                        _achieveDic.Add(value.Type, achievementItem);
+                    }
+                    else
+                    {
+                        _achieveDic[value.Type].DeepCopy(achievementItem);
+                    }
+                }
+                
+                _achieveDic[value.Type].SetValue(value.Level, value);
             }
-            _hasInited = true;
+            //建立未完成和已完成成就列表
+            _unFinishedAchieve.Clear();
+            _finishedAchive.Clear();
+            foreach (var achieve in _achieveDic.Values)
+            {
+                if (achieve.CurLv <= achieve.MaxLevel)
+                {
+                    _unFinishedAchieve.Add(achieve);
+                }
+                if (achieve.CurLv > 1)
+                {
+                    _finishedAchive.Add(achieve);
+                }
+            }
+            RefreshAchieveData();
+            _hasBuild = true;
+        }
+
+        private void RefreshAchieveData()
+        {
+            _allAchiveData.Clear();
+            for (int i = 0; i < _unFinishedAchieve.Count; i++)
+            {
+                _allAchiveData.Add(new AchiveItemData(_unFinishedAchieve[i], false));
+            }
+            for (int i = 0; i < _finishedAchive.Count; i++)
+            {
+                _allAchiveData.Add(new AchiveItemData(_finishedAchive[i], true));
+            }
         }
 
         public void AddAchievementCount(int type, int addCount)
         {
-            if (!_hasInited)
-                InitData();
-            if (!_allAchievements.ContainsKey(type))
+            if (!_hasBuild)
             {
-                LogHelper.Error("Add achievement count but _allAchievements.ContainsKey(type) is false!");
-                return;
+                BuildData();
             }
-            if (_allAchievements.ContainsKey(type))
+            if (!_achieveDic.ContainsKey(type))
             {
-                _allAchievements[type].AddAchievementCount(addCount);
+                LogHelper.Error("don't have achievement type == {0}", type);
+            }
+            else
+            {
+                _achieveDic[type].AddAchievementCount(addCount);
             }
         }
     }

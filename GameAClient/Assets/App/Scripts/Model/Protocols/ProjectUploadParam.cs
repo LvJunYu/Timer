@@ -207,6 +207,25 @@ namespace GameA
         public bool DeepCopy (ProjectUploadParam obj)
         {
             if (null == obj) return false;
+            if (null ==  obj.UsedUnitDataList) return false;
+            if (null ==  _usedUnitDataList) {
+                _usedUnitDataList = new List<UnitDataItem>();
+            }
+            _usedUnitDataList.Clear();
+            for (int i = 0; i < obj.UsedUnitDataList.Count; i++){
+                _usedUnitDataList.Add(obj.UsedUnitDataList[i]);
+            }
+            _mapWidth = obj.MapWidth;           
+            _mapHeight = obj.MapHeight;           
+            _totalUnitCount = obj.TotalUnitCount;           
+            _addCount = obj.AddCount;           
+            _deleteCount = obj.DeleteCount;           
+            _modifyCount = obj.ModifyCount;           
+            _reformRate = obj.ReformRate;           
+            _recordRestartCount = obj.RecordRestartCount;           
+            _recordUsedLifeCount = obj.RecordUsedLifeCount;           
+            _operateCount = obj.OperateCount;           
+            _totalOperateTime = obj.TotalOperateTime;           
             return true;
         }
 

@@ -58,6 +58,13 @@ namespace GameA
         public bool DeepCopy (WorldRankItem obj)
         {
             if (null == obj) return false;
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _count = obj.Count;           
             return true;
         }
 

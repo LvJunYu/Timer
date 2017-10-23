@@ -13,6 +13,8 @@ namespace GameA
     public class UICtrlAchieve : UICtrlAnimationBase<UIViewAchieve>
     {
         private Queue<Table_Achievement> _queue = new Queue<Table_Achievement>(5);
+        private WaitForSeconds _showTime = new WaitForSeconds(3);
+        private bool _isShowing;
 
         private void OnAchieve(Table_Achievement table_Achievement)
         {
@@ -21,12 +23,9 @@ namespace GameA
                 CoroutineProxy.Instance.StartCoroutine(Show());
         }
 
-        private WaitForSeconds _showTime = new WaitForSeconds(3);
-        private bool _isShowing;
-
         private IEnumerator Show()
         {
-            while (_queue.Count > 0 )
+            while (_queue.Count > 0)
             {
                 while (_isShowing)
                 {
@@ -43,11 +42,6 @@ namespace GameA
             }
         }
 
-        private void OnCloseBtn()
-        {
-            SocialGUIManager.Instance.CloseUI<UICtrlAchieve>();
-        }
-
         protected override void OnCloseAnimationComplete()
         {
             base.OnCloseAnimationComplete();
@@ -58,12 +52,6 @@ namespace GameA
         {
             base.SetAnimationType();
             _animationType = EAnimationType.MoveFromUp;
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
         }
 
         protected override void InitGroupId()

@@ -6,6 +6,7 @@ namespace GameA
 {
     public class UPCtrlPersonalInfoAchieve : UPCtrlPersonalInfoBase
     {
+        private Achievement _data = new Achievement();
         private List<AchievementItem> _dataList;
 
         protected override void OnViewCreated()
@@ -30,7 +31,7 @@ namespace GameA
         private void RequestData()
         {
             if (_mainCtrl.UserInfoDetail == null) return;
-            LocalUser.Instance.Achievement.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, () =>
+            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, () =>
             {
                 _dataList = LocalUser.Instance.Achievement.AchievementList;
                 if (_isOpen)

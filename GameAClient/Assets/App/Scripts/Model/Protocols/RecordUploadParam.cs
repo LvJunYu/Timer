@@ -189,6 +189,17 @@ namespace GameA
         public bool DeepCopy (RecordUploadParam obj)
         {
             if (null == obj) return false;
+            _success = obj.Success;           
+            _deadPos = obj.DeadPos;           
+            _usedTime = obj.UsedTime;           
+            _score = obj.Score;           
+            _scoreItemCount = obj.ScoreItemCount;           
+            _killMonsterCount = obj.KillMonsterCount;           
+            _leftTime = obj.LeftTime;           
+            _leftLife = obj.LeftLife;           
+            _star1Flag = obj.Star1Flag;           
+            _star2Flag = obj.Star2Flag;           
+            _star3Flag = obj.Star3Flag;           
             return true;
         }
 

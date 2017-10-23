@@ -144,6 +144,14 @@ namespace GameA
         public bool DeepCopy (AdventureUserLevelData obj)
         {
             if (null == obj) return false;
+            _highScore = obj.HighScore;           
+            _star1Flag = obj.Star1Flag;           
+            _star2Flag = obj.Star2Flag;           
+            _star3Flag = obj.Star3Flag;           
+            _challengeCount = obj.ChallengeCount;           
+            _successCount = obj.SuccessCount;           
+            _failureCount = obj.FailureCount;           
+            _lastPlayTime = obj.LastPlayTime;           
             return true;
         }
 

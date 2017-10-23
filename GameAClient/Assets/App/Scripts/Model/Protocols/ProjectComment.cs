@@ -122,6 +122,22 @@ namespace GameA
         public bool DeepCopy (ProjectComment obj)
         {
             if (null == obj) return false;
+            _id = obj.Id;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            if(null != obj.TargetUserInfo){
+                if (null == _targetUserInfo){
+                    _targetUserInfo = new UserInfoSimple();
+                }
+                _targetUserInfo.DeepCopy(obj.TargetUserInfo);
+            }
+            _comment = obj.Comment;           
+            _projectId = obj.ProjectId;           
+            _createTime = obj.CreateTime;           
             return true;
         }
 

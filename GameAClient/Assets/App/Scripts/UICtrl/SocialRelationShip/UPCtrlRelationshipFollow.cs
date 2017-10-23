@@ -19,10 +19,7 @@
                 {
                     return;
                 }
-                if (_userInfoDetailList == null || _userInfoDetailList.Count == 0)
-                {
-                    TempData();
-                }
+                TempData();
                 RefreshView();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>

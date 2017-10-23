@@ -5,12 +5,21 @@ using SoyEngine;
 
 namespace GameA
 {
-    /// <summary>
-    /// 成就条目
-    /// </summary>
+    public class AchiveItemData
+    {
+        public AchievementStatisticItem AchievementStatisticItem;
+        public bool Finish;
+
+        public AchiveItemData(AchievementStatisticItem achievementStatisticItem, bool finish)
+        {
+            AchievementStatisticItem = achievementStatisticItem;
+            Finish = finish;
+        }
+    }
+    
     public partial class AchievementStatisticItem
     {
-        private Dictionary<int, Table_Achievement> _lvDic;
+        private Dictionary<int, Table_Achievement> _lvDic = new Dictionary<int, Table_Achievement>(5);
         private int _curLv;
 
         public Dictionary<int, Table_Achievement> LvDic
@@ -37,7 +46,6 @@ namespace GameA
                 }
                 return _curLv;
             }
-            set { _curLv = value; }
         }
 
         public int MaxLevel
@@ -61,20 +69,18 @@ namespace GameA
             Count = count;
         }
 
-        public void BuildLvDic(int lv, Table_Achievement achievement)
+        public void SetValue(int lv, Table_Achievement achievement)
         {
-            if (null == _lvDic)
-                _lvDic = new Dictionary<int, Table_Achievement>(10);
-            if (_lvDic.ContainsKey(lv))
-                return;
-            _lvDic.Add(lv, achievement);
+            if (!_lvDic.ContainsKey(lv))
+            {
+                _lvDic.Add(lv, achievement);
+            }
         }
 
         public void AddAchievementCount(int addCount)
         {
             int level = CurLv;
             Count += addCount;
-            if (null == _lvDic) return;
             while (_lvDic.ContainsKey(level) && Count >= _lvDic[level].Condition)
             {
                 Messenger<Table_Achievement>.Broadcast(EMessengerType.OnAchieve, _lvDic[level]);

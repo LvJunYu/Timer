@@ -54,6 +54,8 @@ namespace GameA
         public bool DeepCopy (WorkshopUnitItem obj)
         {
             if (null == obj) return false;
+            _unitId = obj.UnitId;           
+            _unitCount = obj.UnitCount;           
             return true;
         }
 

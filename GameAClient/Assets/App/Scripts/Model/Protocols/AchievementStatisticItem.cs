@@ -69,6 +69,9 @@ namespace GameA
         public bool DeepCopy (AchievementStatisticItem obj)
         {
             if (null == obj) return false;
+            _type = obj.Type;           
+            _count = obj.Count;           
+            _lastActionTime = obj.LastActionTime;           
             return true;
         }
 

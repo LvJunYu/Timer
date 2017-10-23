@@ -43,6 +43,12 @@ namespace GameA
         public bool DeepCopy (PushData obj)
         {
             if (null == obj) return false;
+            if(null != obj.Achievement){
+                if (null == _achievement){
+                    _achievement = new AchievementPushData();
+                }
+                _achievement.DeepCopy(obj.Achievement);
+            }
             return true;
         }
 

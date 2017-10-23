@@ -197,6 +197,27 @@ namespace GameA
         public bool DeepCopy (Mail obj)
         {
             if (null == obj) return false;
+            _id = obj.Id;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _type = obj.Type;           
+            _title = obj.Title;           
+            _content = obj.Content;           
+            if(null != obj.AttachItemList){
+                if (null == _attachItemList){
+                    _attachItemList = new Reward();
+                }
+                _attachItemList.DeepCopy(obj.AttachItemList);
+            }
+            _readFlag = obj.ReadFlag;           
+            _readTime = obj.ReadTime;           
+            _receiptedFlag = obj.ReceiptedFlag;           
+            _receiptedTime = obj.ReceiptedTime;           
+            _createTime = obj.CreateTime;           
             return true;
         }
 

@@ -189,6 +189,17 @@ namespace GameA
         public bool DeepCopy (SNSUserInfo obj)
         {
             if (null == obj) return false;
+            _pid = obj.Pid;           
+            _userNickName = obj.UserNickName;           
+            _headImgUrl = obj.HeadImgUrl;           
+            _sex = obj.Sex;           
+            _birthDay = obj.BirthDay;           
+            _province = obj.Province;           
+            _city = obj.City;           
+            _country = obj.Country;           
+            _accessToken = obj.AccessToken;           
+            _refreshToken = obj.RefreshToken;           
+            _additionalId = obj.AdditionalId;           
             return true;
         }
 

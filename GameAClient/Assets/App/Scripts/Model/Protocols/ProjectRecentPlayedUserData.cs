@@ -58,6 +58,13 @@ namespace GameA
         public bool DeepCopy (ProjectRecentPlayedUserData obj)
         {
             if (null == obj) return false;
+            if(null != obj.UserData){
+                if (null == _userData){
+                    _userData = new UserInfoSimple();
+                }
+                _userData.DeepCopy(obj.UserData);
+            }
+            _lastPlayTime = obj.LastPlayTime;           
             return true;
         }
 

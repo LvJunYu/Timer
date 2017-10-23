@@ -46,6 +46,7 @@ namespace GameA
 
         protected virtual void TempData()
         {
+            if (_userInfoDetailList != null && _userInfoDetailList.Count != 0) return;
             _userInfoDetailList = new List<UserInfoDetail>(10);
             for (int i = 0; i < 10; i++)
             {

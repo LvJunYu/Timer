@@ -84,6 +84,10 @@ namespace GameA
         public bool DeepCopy (RewardItem obj)
         {
             if (null == obj) return false;
+            _type = obj.Type;           
+            _subType = obj.SubType;           
+            _id = obj.Id;           
+            _count = obj.Count;           
             return true;
         }
 

@@ -54,6 +54,8 @@ namespace GameA
         public bool DeepCopy (WeaponPart obj)
         {
             if (null == obj) return false;
+            _id = obj.Id;           
+            _totalCount = obj.TotalCount;           
             return true;
         }
 

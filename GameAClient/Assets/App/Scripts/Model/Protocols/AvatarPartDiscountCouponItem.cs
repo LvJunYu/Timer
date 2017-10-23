@@ -174,6 +174,16 @@ namespace GameA
         public bool DeepCopy (AvatarPartDiscountCouponItem obj)
         {
             if (null == obj) return false;
+            _id = obj.Id;           
+            _configTableId = obj.ConfigTableId;           
+            _partType = obj.PartType;           
+            _partId = obj.PartId;           
+            _durationType = obj.DurationType;           
+            _expirationTime = obj.ExpirationTime;           
+            _discount = obj.Discount;           
+            _used = obj.Used;           
+            _useTime = obj.UseTime;           
+            _isValid = obj.IsValid;           
             return true;
         }
 

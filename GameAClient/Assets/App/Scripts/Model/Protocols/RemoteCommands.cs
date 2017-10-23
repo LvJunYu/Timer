@@ -545,6 +545,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSearchUser {
+            get { return _isRequstingSearchUser; }
+        }
+        private static bool _isRequstingSearchUser = false;
+        /// <summary>
+		/// 搜索好友
+		/// </summary>
+		/// <param name="userNickName">用户名</param>
+        public static void SearchUser (
+            string userNickName,
+            Action<Msg_SC_CMD_SearchUser> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSearchUser) {
+                return;
+            }
+            _isRequstingSearchUser = true;
+            Msg_CS_CMD_SearchUser msg = new Msg_CS_CMD_SearchUser();
+            // 搜索好友
+            msg.UserNickName = userNickName;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUser>(
+                SoyHttpApiPath.SearchUser, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSearchUser = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUser", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSearchUser = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCreateProject {
             get { return _isRequstingCreateProject; }
         }

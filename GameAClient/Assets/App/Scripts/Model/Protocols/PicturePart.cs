@@ -69,6 +69,9 @@ namespace GameA
         public bool DeepCopy (PicturePart obj)
         {
             if (null == obj) return false;
+            _pictureId = obj.PictureId;           
+            _pictureInx = obj.PictureInx;           
+            _totalCount = obj.TotalCount;           
             return true;
         }
 

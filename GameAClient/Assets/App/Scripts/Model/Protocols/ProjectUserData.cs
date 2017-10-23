@@ -144,6 +144,14 @@ namespace GameA
         public bool DeepCopy (ProjectUserData obj)
         {
             if (null == obj) return false;
+            _projectId = obj.ProjectId;           
+            _userId = obj.UserId;           
+            _likeState = obj.LikeState;           
+            _lastLikeTime = obj.LastLikeTime;           
+            _favorite = obj.Favorite;           
+            _lastFavoriteTime = obj.LastFavoriteTime;           
+            _completeCount = obj.CompleteCount;           
+            _lastPlayTime = obj.LastPlayTime;           
             return true;
         }
 

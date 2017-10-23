@@ -69,6 +69,9 @@ namespace GameA
         public bool DeepCopy (PropItem obj)
         {
             if (null == obj) return false;
+            _type = obj.Type;           
+            _id = obj.Id;           
+            _count = obj.Count;           
             return true;
         }
 

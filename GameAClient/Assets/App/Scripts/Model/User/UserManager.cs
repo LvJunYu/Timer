@@ -31,6 +31,11 @@ namespace GameA
             return newData;
         }
 
+        public UserInfoDetail UpdateData(Msg_SC_DAT_UserInfoSimple msgData)
+        {
+            return UpdateData(new UserInfoSimple(msgData));
+        }
+
         public UserInfoDetail UpdateData(UserInfoSimple newSimpleData)
         {
             UserInfoDetail userInfoDetail;
