@@ -6,6 +6,7 @@ namespace GameA
     public class UICtrlShadowBattle : UICtrlInGameBase<UIViewShadowBattle>
     {
         private USCtrlGameFinishReward[] _rewardCtrl;
+        private MatchShadowBattleData _data;
 
         protected override void InitGroupId()
         {
@@ -16,6 +17,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -36,14 +38,20 @@ namespace GameA
             base.OnClose();
         }
 
+        private void RefreshView()
+        {
+            if (_data == null) return;
+            UpdateReward(_data.Reward);
+        }
+
         private void OnCancelBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
         }
 
-        private void RefreshView()
+        private void OnPlayBtn()
         {
-//            UpdateReward();
+            throw new System.NotImplementedException();
         }
 
         private void UpdateReward(Reward reward)

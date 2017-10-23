@@ -106,6 +106,10 @@ namespace SoyEngine
         public const string DownloadProject = "/world/downloadProject";
         // 最近录像
         public const string UserRecentRecordList = "/world/getUserRecentRecordList";
+        // 排行榜
+        public const string WorldRankList = "/world/getRankList";
+        // 匹配乱入对决
+        public const string MatchShadowBattleData = "/world/matchShadowBattleData";
         // 录像
         public const string Record = "/record/get";
         // 用户道具数据
