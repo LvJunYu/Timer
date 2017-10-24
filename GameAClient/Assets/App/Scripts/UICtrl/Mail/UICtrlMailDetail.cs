@@ -12,40 +12,39 @@ namespace GameA
         private Reward _reward = new Reward();
         private USCtrlGameFinishReward[] _rewardCtrl;
 
-        public void Set(Mail mail)
+        protected override void OnViewCreated()
         {
-            _mail = mail;
-            _idList.Clear();
-            _idList.Add(mail.Id);
-            _reward = _mail.AttachItemList;
-            //_cachedView.MailSource.text = JudgeSource(mail);
-            _cachedView.Title.text = mail.Title;
-            _cachedView.MainBody.text = mail.Content;
-            if (mail.ReceiptedFlag)
-            {
-                _cachedView.RewardObj.SetActiveEx(false);
-            }
-            else
-                _cachedView.RewardObj.SetActiveEx(true);
-
-            //_cachedView.Date.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(mail.CreateTime, 1);
-            mail.ReadFlag = true;
-            RemoteCommands.MarkMailRead(
-                EMarkMailReadTargetType.EMMRC_List,
-                _idList,
-                null, null
-                );
-            _cachedView.Fetch.onClick.AddListener(Fentch);
-            //_cachedView.Delete.onClick.AddListener(Delete);
-            _cachedView.Close.onClick.AddListener(CloseUI);
-
+            base.OnViewCreated();
+            _cachedView.FetchBtn.onClick.AddListener(OnFentchBtn);
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _rewardCtrl = new USCtrlGameFinishReward[_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
                 _rewardCtrl[i] = new USCtrlGameFinishReward();
                 _rewardCtrl[i].Init(_cachedView.Rewards[i]);
             }
+        }
 
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _mail = parameter as Mail;
+            RefreshView();
+        }
+
+        public void RefreshView()
+        {
+            if (!_isOpen || _mail == null) return;
+            _cachedView.FetchBtn.SetActiveEx(_mail.ReceiptedFlag);
+            _reward = _mail.AttachItemList;
+            _cachedView.Title.text = _mail.Title;
+            _cachedView.Content.text = _mail.Content;
+            _mail.ReadFlag = true;
+            _idList.Clear();
+            _idList.Add(_mail.Id);
+            RemoteCommands.MarkMailRead(EMarkMailReadTargetType.EMMRC_List, _idList,
+                null, null
+            );
             UpdateReward(_reward);
         }
 
@@ -57,7 +56,7 @@ namespace GameA
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
                     _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), RewardInfo(reward.ItemList[i])
-                        );
+                    );
                 }
                 for (; i < _rewardCtrl.Length; i++)
                 {
@@ -100,45 +99,22 @@ namespace GameA
             }
         }
 
-        private void CloseUI()
+        private void OnCloseBtn()
         {
-//            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
             SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
         }
 
-        private void Fentch()
+        private void OnFentchBtn()
         {
-            RemoteCommands.ReceiptMailAttach(
-                EReceiptMailAttachTargetType.ERMATT_List,
-                _idList,
-                (ret) => { _cachedView.RewardObj.SetActiveEx(false); }
-                , null
-                );
+            RemoteCommands.ReceiptMailAttach(EReceiptMailAttachTargetType.ERMATT_List, _idList,
+                ret =>
+                {
+                    _mail.ReceiptedFlag = false;
+                    SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                }
+                , code => { SocialGUIManager.ShowPopupDialog("领取奖励失败。"); }
+            );
         }
-
-        //private void Delete()
-        //{
-        //   RemoteCommands.DeleteMail(
-        //   EDeleteMailTargetType.EDMTT_List,
-        //   _idList,
-        //        (ret) =>
-        //        {
-        //            Close();
-        //            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
-        //        }, null
-        //   );
-        //}
-
-        //private String JudgeSource(Mail mail)
-        //{
-        //    if (mail.Type ==EMailType.EMailT_System)
-        //    {
-
-        //        return "系统邮件";
-        //    }
-        //    else
-        //        return mail.UserInfo.NickName;
-        //}
 
         protected override void InitGroupId()
         {

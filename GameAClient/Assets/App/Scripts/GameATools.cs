@@ -15,6 +15,9 @@ namespace GameA
         /// </summary>
         private static long _updateLocalDirtyValueInterval = 30000;
 
+        private static string _todayStr = "今天";
+        private static string _dateFormat = "{0}天前";
+
         #region check gde
 
         /// <summary>
@@ -422,22 +425,22 @@ namespace GameA
         public static string DateCount(long dateTime)
         {
             long difftime = DateTimeUtil.GetServerTimeNowTimestampMillis() - dateTime;
-            float days = difftime * 1.0f / 1000 / 60 / 60 / 24;
-            if (days <= 1.0f)
+            float days = difftime / 1000 / 60 / 60 / 24;
+            if (days < 1.0f)
             {
-                return "今天";
+                return _todayStr;
             }
-            else if (days <= 2.0f)
-            {
-                return "昨天";
-            }
-            else if (days <= 3.0f)
-            {
-                return "前天";
-            }
+//            else if (days < 2.0f)
+//            {
+//                return "昨天";
+//            }
+//            else if (days < 3.0f)
+//            {
+//                return "前天";
+//            }
             else
             {
-                return string.Format("{0}天前", (int) days);
+                return string.Format(_dateFormat, (int) days);
             }
         }
 

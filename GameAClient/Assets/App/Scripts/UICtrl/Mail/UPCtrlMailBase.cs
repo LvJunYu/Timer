@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -8,7 +9,7 @@ namespace GameA
     {
         protected EResScenary _resScenary;
         protected UICtrlMail.EMenu _menu;
-        protected List<Mail> _dataList = new List<Mail>();
+        protected List<Mail> _dataList;
         protected int _startIndex = 0;
         protected int _maxCount = 50;
 
@@ -45,13 +46,45 @@ namespace GameA
                     _dataList = LocalUser.Instance.Mail.DataList;
                     RefreshView();
                 },
-                code=>{SocialGUIManager.ShowPopupDialog("请求邮箱数据失败。");});
+                code =>
+                {
+                    TempData();
+//                    SocialGUIManager.ShowPopupDialog("请求邮箱数据失败。");
+                });
+        }
+
+        private void TempData()
+        {
+            if (_dataList != null && _dataList.Count != 0) return;
+            _dataList = new List<Mail>(10);
+            for (int i = 0; i < 10; i++)
+            {
+                Msg_Mail mail = new Msg_Mail();
+                mail.Type = i % 2 == 0 ? EMailType.EMailT_Gift : EMailType.EMailT_ShadowBattleHelp;
+                mail.UserInfo = new Msg_SC_DAT_UserInfoSimple();
+                mail.UserInfo.UserId = 3400 + i;
+                mail.UserInfo.NickName = "赵四" + i;
+                mail.CreateTime = 9000000000000 + i * 10000000;
+                mail.Title = "请赐予我力量！";
+                mail.Content = "你好，这是一封测试邮件！";
+                mail.AttachItemList = new Msg_Reward();
+                
+                _dataList.Add(new Mail(mail));
+            }
+            RefreshView();
         }
 
         public void RefreshView()
         {
             if (!_isOpen) return;
-            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
+            if (_dataList == null)
+            {
+                _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+            }
+            else
+            {
+                _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
+            }
         }
 
         protected void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -64,7 +97,7 @@ namespace GameA
             item.Set(_dataList[inx]);
         }
 
-        protected virtual IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
+        protected IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlMail();
             item.Init(parent, _resScenary);

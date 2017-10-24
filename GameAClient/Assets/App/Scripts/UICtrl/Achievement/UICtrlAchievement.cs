@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace GameA
 {
-    /// <summary>
-    /// 成就页面
-    /// </summary>
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlAchievement : UICtrlAnimationBase<UIViewAchievement>
     {

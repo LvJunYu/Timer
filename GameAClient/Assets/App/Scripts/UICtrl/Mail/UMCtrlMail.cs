@@ -1,15 +1,12 @@
 ﻿using SoyEngine;
 using UnityEngine;
-using NewResourceSolution;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     public class UMCtrlMail : UMCtrlBase<UMViewMail>, IDataItemRenderer
     {
-        private string _mailfetched = "icon_enclosure_d";
-        private string _mailUnfetched = "icon_enclosure";
-        private string _mailRead = "icon_mail_open";
-        private string _mailUnRead = "icon_mail";
+
         private Mail _mail;
         public int Index { get; set; }
 
@@ -34,54 +31,60 @@ namespace GameA
 
         private void RefreshView()
         {
+            if (_mail.Type == EMailType.EMailT_Gift)
+            {
+                _cachedView.TextRff.anchoredPosition = Vector3.down * 20;
+            }
+            else if (_mail.Type == EMailType.EMailT_ShadowBattleHelp)
+            {
+                _cachedView.TextRff.anchoredPosition = Vector3.zero;
+            }
+            _cachedView.MainDetailBtn.enabled = _mail.Type != EMailType.EMailT_ShadowBattleHelp;
+            _cachedView.BtnsObj.SetActive(_mail.Type == EMailType.EMailT_ShadowBattleHelp);
+            _cachedView.RewardImg.SetActiveEx(_mail.Type == EMailType.EMailT_Gift);
+            _cachedView.NameTxt.text = _mail.UserInfoDetail.UserInfoSimple.NickName;
             _cachedView.ContentTxt.text = _mail.Title;
             _cachedView.DateTxt.text = GameATools.DateCount(_mail.CreateTime);
-            Sprite Flag;
-            if (_mail.ReadFlag == false)
-            {
-                //未读
-                if (JoyResManager.Instance.TryGetSprite(_mailUnRead, out Flag))
-                {
-//                    _cachedView.ReadFlag.sprite = Flag;
-                }
-            }
-            else
-            {
-                if (JoyResManager.Instance.TryGetSprite(_mailRead, out Flag))
-                {
-//                    _cachedView.ReadFlag.sprite = Flag;
-                }
-            }
-            if (_mail.ReceiptedFlag == false)
-            {
-                //未接收
-                if (JoyResManager.Instance.TryGetSprite(_mailUnfetched, out Flag))
-                {
-                    _cachedView.RewardImg.sprite = Flag;
-                }
-            }
-            else
-            {
-                if (JoyResManager.Instance.TryGetSprite(_mailfetched, out Flag))
-                {
-                    _cachedView.RewardImg.sprite = Flag;
-                }
-            }
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
+                _mail.UserInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.MainDetailBtn.onClick.AddListener(OnButton);
+            _cachedView.MainDetailBtn.onClick.AddListener(OnMainDetailBtn);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+            _cachedView.ReceiveBtn.onClick.AddListener(OnReceiveBtn);
+            _cachedView.GiveupBtn.onClick.AddListener(OnGiveupBtn);
         }
 
-        private void OnButton()
+        private void OnGiveupBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlMailDetail>().Set(_mail);
+            
+        }
+
+        private void OnReceiveBtn()
+        {
+            
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_mail.UserInfoDetail != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_mail.UserInfoDetail);
+            }
+        }
+
+        private void OnMainDetailBtn()
+        {
+            if (_mail == null) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlMailDetail>(_mail);
         }
 
         public void Unload()
         {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.HeadDefaltTexture);
         }
     }
 }

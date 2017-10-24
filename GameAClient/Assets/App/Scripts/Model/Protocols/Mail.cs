@@ -52,6 +52,10 @@ namespace GameA
         /// 
         /// </summary>
         private long _createTime;
+        /// <summary>
+        /// 乱入战斗数据
+        /// </summary>
+        private MatchShadowBattleData _shadowBattleData;
         #endregion
 
         #region 属性
@@ -165,6 +169,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 乱入战斗数据
+        /// </summary>
+        public MatchShadowBattleData ShadowBattleData { 
+            get { return _shadowBattleData; }
+            set { if (_shadowBattleData != value) {
+                _shadowBattleData = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -190,6 +204,11 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;     
             _receiptedTime = msg.ReceiptedTime;     
             _createTime = msg.CreateTime;     
+            if (null == _shadowBattleData) {
+                _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
+            } else {
+                _shadowBattleData.OnSyncFromParent(msg.ShadowBattleData);
+            }
             OnSyncPartial();
             return true;
         }
@@ -218,6 +237,12 @@ namespace GameA
             _receiptedFlag = obj.ReceiptedFlag;           
             _receiptedTime = obj.ReceiptedTime;           
             _createTime = obj.CreateTime;           
+            if(null != obj.ShadowBattleData){
+                if (null == _shadowBattleData){
+                    _shadowBattleData = new MatchShadowBattleData();
+                }
+                _shadowBattleData.DeepCopy(obj.ShadowBattleData);
+            }
             return true;
         }
 
@@ -236,6 +261,7 @@ namespace GameA
         public Mail () { 
             _userInfo = new UserInfoSimple();
             _attachItemList = new Reward();
+            _shadowBattleData = new MatchShadowBattleData();
         }
         #endregion
     }
