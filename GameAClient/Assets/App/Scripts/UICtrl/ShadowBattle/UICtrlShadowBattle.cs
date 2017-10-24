@@ -29,6 +29,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _data = parameter as MatchShadowBattleData;
             RefreshView();
         }
 

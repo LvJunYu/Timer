@@ -6,14 +6,16 @@ namespace GameA.Game
     [Unit(Id = 2005, Type = typeof(MonsterTiger))]
     public class MonsterTiger : MonsterAI_2
     {
-        private static string Brake3 = "Brake3";
+        private static string Brake = "Brake";
+        private static string Brake2 = "Brake2";
         private const int _brakeDec = 2; //刹车减速度
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private bool _hasTurnBack;
         private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int _patrolTime = 70;
         private bool _justEnterBrake;
-        private int _timeOverturn;
+
+        private EBrakeStage _eBrakeStage;
 
         public override bool CanDashBrick
         {
@@ -199,7 +201,7 @@ namespace GameA.Game
                 {
                     _animation.Reset();
                 }
-                _timeOverturn = 0;
+                _eBrakeStage = EBrakeStage.None;
             }
             if (eMonsterState == EMonsterState.Brake)
             {
@@ -212,9 +214,10 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
-                if (_animation != null && !_animation.IsPlaying(Brake3) && Mathf.Abs(SpeedX) > 20)
+                if (_animation != null && Mathf.Abs(SpeedX) > 20)
                 {
-                    _animation.PlayOnce(Brake3);
+                    _animation.PlayOnce(Brake);
+                    _eBrakeStage = EBrakeStage.Brake1;
                     _justEnterBrake = true;
                 }
             }
@@ -244,37 +247,42 @@ namespace GameA.Game
                     {
                         if (_eMonsterState == EMonsterState.Brake)
                         {
-                            //刹车时快速捣腾腿
-                            if (!_animation.IsPlaying(Brake3))
+                            if (_eBrakeStage == EBrakeStage.Brake1 && !_animation.IsPlaying(Brake))
+                            {
+                                _animation.PlayOnce(Brake2);
+                                _eBrakeStage = EBrakeStage.Brake2;
+                            }
+                            if (_eBrakeStage == EBrakeStage.Brake2 && !_animation.IsPlaying(Brake2))
+                            {
+                                _eBrakeStage = EBrakeStage.Brake3;
+                            }
+                            if (_eBrakeStage == EBrakeStage.Brake3)
                             {
                                 int animSpeed = _onClay ? Mathf.Abs(SpeedX) : 100;
                                 _animation.PlayLoop(Run, animSpeed * deltaTime);
                             }
+                            if (_justEnterBrake)
+                            {
+                                _justEnterBrake = false;
+                            }
+                            else if (_eBrakeStage != EBrakeStage.Brake3)
+                            {
+                                //Brake和Brake2动作翻转，第一帧不翻转
+                                Turnover();
+                            }
                         }
                         else
-                            _animation.PlayLoop(Run, Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
+                        {
+                            if (_eMonsterState == EMonsterState.Chase)
+                            {
+                                _animation.PlayLoop(Run, Mathf.Clamp(Mathf.Abs(SpeedX), 100, 200) * deltaTime);
+                            }
+                            else
+                            {
+                                _animation.PlayLoop(Run, Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
+                            }
+                        }
                     }
-                }
-                if (_animation.IsPlaying(Brake3))
-                {
-                    //第一帧不翻转
-                    if (_justEnterBrake)
-                    {
-                        _justEnterBrake = false;
-                    }
-                    else
-                    {
-                        _timeOverturn = 4; //动作结束后延迟3帧转身
-                    }
-                }
-                else if (_timeOverturn > 0)
-                {
-                    _timeOverturn--;
-                }
-                //刹车动画反转
-                if (_timeOverturn > 0)
-                {
-                    Turnover();
                 }
             }
         }
@@ -286,6 +294,14 @@ namespace GameA.Game
             _trans.eulerAngles = _moveDirection == EMoveDirection.Left
                 ? new Vector3(euler.x, 0, euler.z)
                 : new Vector3(euler.x, 180, euler.z);
+        }
+        
+        private enum EBrakeStage
+        {
+            None,
+            Brake1,
+            Brake2,
+            Brake3
         }
     }
 }
