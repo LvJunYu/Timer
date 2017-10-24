@@ -214,11 +214,18 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
-                if (_animation != null && Mathf.Abs(SpeedX) > 20)
+                if (_animation != null)
                 {
-                    _animation.PlayOnce(Brake);
-                    _eBrakeStage = EBrakeStage.Brake1;
-                    _justEnterBrake = true;
+                    if (Mathf.Abs(SpeedX) > 30)
+                    {
+                        _animation.PlayOnce(Brake);
+                        _eBrakeStage = EBrakeStage.Brake1;
+                        _justEnterBrake = true;
+                    }
+                    else
+                    {
+                        _eBrakeStage = EBrakeStage.Brake3;
+                    }
                 }
             }
         }
@@ -295,7 +302,7 @@ namespace GameA.Game
                 ? new Vector3(euler.x, 0, euler.z)
                 : new Vector3(euler.x, 180, euler.z);
         }
-        
+
         private enum EBrakeStage
         {
             None,
