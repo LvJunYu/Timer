@@ -684,6 +684,10 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
+            int killByTrapCount,
+            int killByMonsterCount,
+            int breakBrickCount,
+            int trampCloud,
             byte [] recordBytes,
             byte [] deadPos, 
             Action successCallback, Action<ENetResultCode> failedCallback)
@@ -711,6 +715,10 @@ namespace GameA
                     KillMonsterCount = killMonsterCount,
                     LeftTime = leftTime,
                     LeftLife = leftLife,
+                    KillByTrapCount = killByTrapCount,
+                    KillByMonsterCount = killByMonsterCount,
+                    BreakBrickCount = breakBrickCount,
+                    TrampCloudCount = trampCloud,
                     DeadPos = deadPos
                 };
                 RemoteCommands.CommitWorldProjectResult(

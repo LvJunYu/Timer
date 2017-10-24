@@ -70,7 +70,11 @@ namespace GameA
         // 开关被触发
         public static int OnSwitchTriggered = SoyEngine.EMessengerType.NextId++;
         // 玩家使用了传送门
-        public static int OnPlayerEnterPortal = SoyEngine.EMessengerType.NextId++;
+	    public static int OnPlayerEnterPortal = SoyEngine.EMessengerType.NextId++;
+	    //破坏砖块
+	    public static int OnBreakBrick = SoyEngine.EMessengerType.NextId++;
+	    //破坏砖块
+	    public static int OnTrampCloud = SoyEngine.EMessengerType.NextId++;
 		public static int OnCloseGameSetting = SoyEngine.EMessengerType.NextId++;
 
         public static int CaptureGameCover = SoyEngine.EMessengerType.NextId++;

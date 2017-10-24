@@ -65,7 +65,7 @@ namespace GameA.Game
         {
             get { return _gameFailedTime; }
         }
-
+        
         public SceneState SceneState
         {
             get { return _sceneState; }

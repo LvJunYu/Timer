@@ -71,6 +71,7 @@ namespace GameA.Game
             }
             PlayMode.Instance.DestroyUnit(this);
             OnDead();
+            Messenger.Broadcast(EMessengerType.OnBreakBrick);
         }
     }
 }

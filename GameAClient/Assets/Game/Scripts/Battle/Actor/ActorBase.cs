@@ -25,6 +25,14 @@ namespace GameA.Game
         TigerEat //老虎吃掉
     }
 
+    public enum EKillerType
+    {
+        None,
+        Trap,
+        Monster,
+        Drowned//淹死
+    }
+
     public enum EClayOnWallDirection
     {
         None,
@@ -558,6 +566,10 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Lazer;
             OnDead();
+            if (IsMain)
+            {
+                Messenger<EKillerType>.Broadcast(EMessengerType.OnMainPlayerDead, EKillerType.Trap);
+            }
         }
 
         internal override void InSaw()
@@ -568,6 +580,10 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Saw;
             OnDead();
+            if (IsMain)
+            {
+                Messenger<EKillerType>.Broadcast(EMessengerType.OnMainPlayerDead, EKillerType.Trap);
+            }
         }
 
         internal override void InWater()
@@ -592,6 +608,10 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Water;
             OnDead();
+            if (IsMain)
+            {
+                Messenger<EKillerType>.Broadcast(EMessengerType.OnMainPlayerDead, EKillerType.Drowned);
+            }
         }
 
         protected override void OnDead()

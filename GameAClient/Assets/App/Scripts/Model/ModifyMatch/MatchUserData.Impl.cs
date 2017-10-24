@@ -275,6 +275,10 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
+            int killByTrapCount,
+            int killByMonsterCount,
+            int breakBrickCount,
+            int trampCloud,
             byte [] recordBytes,
             Action successCb,
             Action<ENetResultCode> failureCb) {
@@ -293,6 +297,10 @@ namespace GameA
                 KillMonsterCount = killMonsterCount,
                 LeftTime = leftTime,
                 LeftLife = leftLife,
+                KillByTrapCount = killByTrapCount,
+                KillByMonsterCount = killByMonsterCount,
+                BreakBrickCount = breakBrickCount,
+                TrampCloudCount = trampCloud,
                 DeadPos = null
             };
             RemoteCommands.CommitMatchChallengeLevelResult (

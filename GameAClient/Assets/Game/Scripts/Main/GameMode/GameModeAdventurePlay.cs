@@ -260,6 +260,10 @@ namespace GameA.Game
                         PlayMode.Instance.SceneState.MonsterKilled,
                         PlayMode.Instance.SceneState.SecondLeft,
                         PlayMode.Instance.MainPlayer.Life,
+                        PlayMode.Instance.Statistic.KillByTrapCnt,
+                        PlayMode.Instance.Statistic.KillByMonsterCnt,
+                        PlayMode.Instance.Statistic.BreakBrickCnt,
+                        PlayMode.Instance.Statistic.TrampCloudCnt,
                         record,
                         () =>
                         {

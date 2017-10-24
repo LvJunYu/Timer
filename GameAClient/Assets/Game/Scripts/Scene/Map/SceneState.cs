@@ -31,7 +31,7 @@ namespace GameA.Game
         [SerializeField] private int _gemGain;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
-
+        
         private MapStatistics _mapStatistics = new MapStatistics();
 
         public bool IsMainPlayerCreated

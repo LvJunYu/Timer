@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
+using UnityEditor.VersionControl;
 
 namespace GameA.Game
 {
@@ -91,6 +93,7 @@ namespace GameA.Game
                     SetCross(true);
                     //消失
                     PlayMode.Instance.Freeze(this);
+                    Messenger.Broadcast(EMessengerType.OnTrampCloud);
                 }
                 else if (_timer == 200)
                 {
