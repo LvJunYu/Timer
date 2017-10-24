@@ -1,106 +1,120 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlMail : UICtrlAnimationBase<UIViewMail>
     {
-        public List<UMCtrlMail> _cardList = new List<UMCtrlMail>();
-        private int _startIndex = 0;
-        private int _maxCount = 50;
-
-
-        public void OnCloseBtnClick()
-        {
-            //CardList.Clear();
-            SocialGUIManager.Instance.CloseUI<UICtrlMail>();
-        }
+        private EMenu _curMenu = EMenu.None;
+        private UPCtrlMailBase _curMenuCtrl;
+        private UPCtrlMailBase[] _menuCtrlArray;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitGroupId();
-            //_cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
-            //_cachedView.FollowCount.text = LocalUser.Instance.User.RelationStatistic.FollowCount.ToString();
-            //_cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
-            //InitTagGroup();
-            
-            //_cachedView.DeleteAll.onClick.AddListener(Delete);
-            _cachedView.Close.onClick.AddListener(OnCloseBtnClick);
-        }
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _menuCtrlArray = new UPCtrlMailBase[(int) EMenu.Max];
 
+            var upCtrlMailFriend = new UPCtrlMailFriend();
+            upCtrlMailFriend.SetResScenary(ResScenary);
+            upCtrlMailFriend.SetMenu(EMenu.FriendMail);
+            upCtrlMailFriend.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.FriendMail] = upCtrlMailFriend;
+
+            for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
+            {
+                var index = i;
+                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
+                    b => ClickMenu(index, b));
+                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
+                {
+                    _menuCtrlArray[i].Close();
+                }
+            }
+        }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            LoadMyMailList();
-
-        }
-
-        //private void Delete()
-        //{
-        // List<long> idList = new List<long>();
-        // RemoteCommands.DeleteMail(
-        // EDeleteMailTargetType.EDMTT_All,
-        // idList,
-        //     (ret) =>
-        //     {
-        //         SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
-        //     }
-        //     , null
-        // );
-
-        //}
-
-        public void LoadMyMailList()
-        {
-            LocalUser.Instance.Mail.Request(_startIndex, _maxCount,
-            ()=>
+            if (_curMenu == EMenu.None)
             {
-                Set(LocalUser.Instance.Mail.DataList);
+                _cachedView.TabGroup.SelectIndex((int) EMenu.FriendMail, true);
             }
-        ,
-         null);
-
+            else
+            {
+                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+            }
         }
 
-        public void Set(List<Mail> fittingList)
+        protected override void OnClose()
         {
-            if (_cardList.Count > 0)
+            if (_curMenuCtrl != null)
             {
-                for (int i = 0; i < _cardList.Count; i++)
+                _curMenuCtrl.Close();
+            }
+            base.OnClose();
+        }
+
+        protected override void OnDestroy()
+        {
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                if (_menuCtrlArray[i] != null)
                 {
-                    _cardList[i].Destroy();
+                    _menuCtrlArray[i].OnDestroy();
                 }
             }
-            _cardList.Clear();
-            for (int i = 0; i < fittingList.Count; i++)
+            _curMenuCtrl = null;
+            base.OnDestroy();
+        }
+        
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.MainUI;
+        }
+
+        private void OnCloseBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlMail>();
+        }
+
+        private void ChangeMenu(EMenu menu)
+        {
+            if (_curMenuCtrl != null)
             {
-                SetEachCard(fittingList[i]);
+                _curMenuCtrl.Close();
             }
-            //RefreshPage();
-        }
-
-        private void SetEachCard(Mail fitting)
-        {
-            if (_cachedView != null)
+            _curMenu = menu;
+            var inx = (int) _curMenu;
+            if (inx < _menuCtrlArray.Length)
             {
-                var UM = new UMCtrlMail();
-                UM.Init(_cachedView.Dock, ResScenary);
-                UM.Set(fitting);
-                _cardList.Add(UM);
+                _curMenuCtrl = _menuCtrlArray[inx];
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Open();
             }
         }
 
-         protected override void InitGroupId()
+        private void ClickMenu(int selectInx, bool open)
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            if (open)
+            {
+                ChangeMenu((EMenu) selectInx);
+            }
         }
 
-        protected override void SetAnimationType()
+        public enum EMenu
         {
-            base.SetAnimationType();
-            _animationType = EAnimationType.PopupFromUp;
+            None = -1,
+            FriendMail,
+            SystemMail,
+            InfoCenter,
+            Max
         }
     }
 }

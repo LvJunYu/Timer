@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -103,7 +102,7 @@ namespace GameA
 
         private void CloseUI()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+//            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
             SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
         }
 
