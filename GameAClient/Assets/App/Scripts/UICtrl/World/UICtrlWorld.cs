@@ -1,11 +1,4 @@
-﻿/********************************************************************
-** Filename : UICtrlWorld.cs
-** Author : quan
-** Date : 6/7/2017 3:30 PM
-** Summary : UICtrlWorld.cs
-***********************************************************************/
-
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA
@@ -13,43 +6,40 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlWorld : UICtrlAnimationBase<UIViewWorld>
     {
-        #region 常量与字段
-
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlBase<UICtrlWorld, UIViewWorld> _curMenuCtrl;
-        private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _menuCtrlArray;
+        private UPCtrlWorldProjectBase _curMenuCtrl;
+        private UPCtrlWorldProjectBase[] _menuCtrlArray;
         private bool _pushGoldEnergyStyle;
-        #endregion
 
-        #region 属性
-
-        #endregion
-
-        #region 方法
-
-        #region private
-
-        private void InitUI()
+        protected override void OnViewCreated()
         {
+            base.OnViewCreated();
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
-
-            _menuCtrlArray = new UPCtrlBase<UICtrlWorld, UIViewWorld>[(int) EMenu.Max];
+            _menuCtrlArray = new UPCtrlWorldProjectBase[(int) EMenu.Max];
             var upCtrlWorldRecommendProject = new UPCtrlWorldRecommendProject();
             upCtrlWorldRecommendProject.Set(ResScenary);
+            upCtrlWorldRecommendProject.SetMenu(EMenu.Recommend);
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
+            
             var upCtrlNewestProject = new UPCtrlWorldNewestProject();
             upCtrlNewestProject.Set(ResScenary);
+            upCtrlNewestProject.SetMenu(EMenu.NewestProject);
             upCtrlNewestProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlNewestProject;
-            var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
-            upCtrlWorldUserPlayHistory.Set(ResScenary);
-            upCtrlWorldUserPlayHistory.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
+            
             var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
             upCtrlWorldUserFavorite.Set(ResScenary);
+            upCtrlWorldUserFavorite.SetMenu(EMenu.UserFavorite);
             upCtrlWorldUserFavorite.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserFavorite] = upCtrlWorldUserFavorite;
+            
+            var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
+            upCtrlWorldUserPlayHistory.Set(ResScenary);
+            upCtrlWorldUserPlayHistory.SetMenu(EMenu.UserPlayHistory);
+            upCtrlWorldUserPlayHistory.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
+            
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -60,34 +50,6 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
-        }
-
-        private void ChangeMenu(EMenu menu)
-        {
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Close();
-            }
-            _curMenu = menu;
-            var inx = (int) _curMenu;
-            if (inx < _menuCtrlArray.Length)
-            {
-                _curMenuCtrl = _menuCtrlArray[inx];
-            }
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Open();
-            }
-        }
-
-        #endregion private
-
-        #region 接口
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            InitUI();
         }
 
         protected override void OnDestroy()
@@ -151,8 +113,26 @@ namespace GameA
             base.SetPartAnimations();
             SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.1f);
             SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft,new Vector3(-200,0,0));
-            SetPart(_cachedView.ContentPanelDockRtf, EAnimationType.MoveFromRight);
+            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
             SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+        }
+
+        private void ChangeMenu(EMenu menu)
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            _curMenu = menu;
+            var inx = (int) _curMenu;
+            if (inx < _menuCtrlArray.Length)
+            {
+                _curMenuCtrl = _menuCtrlArray[inx];
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Open();
+            }
         }
 
         private void ClickMenu(int selectInx, bool open)
@@ -168,8 +148,6 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
         }
 
-        #endregion 接口
-
         private void OnProjectDataChanged(long projectId)
         {
             if (!_isOpen)
@@ -182,15 +160,15 @@ namespace GameA
             }
         }
 
-        #endregion
-
-        private enum EMenu
+        public enum EMenu
         {
             None = -1,
             Recommend,
+            MaxScore,
             NewestProject,
-            UserPlayHistory,
+            Follows,
             UserFavorite,
+            UserPlayHistory,
             RankList,
             Max
         }

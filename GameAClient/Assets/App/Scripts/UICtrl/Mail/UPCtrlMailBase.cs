@@ -66,7 +66,7 @@ namespace GameA
                 mail.UserInfo.NickName = "赵四" + i;
                 mail.CreateTime = 9000000000000 + i * 10000000;
                 mail.Title = "请赐予我力量！";
-                mail.Content = "你好，这是一封测试邮件！";
+                mail.Content = "你被神秘力量看中，快，拯救世界的使命就交给你了！";
                 mail.AttachItemList = new Msg_Reward();
                 
                 _dataList.Add(new Mail(mail));

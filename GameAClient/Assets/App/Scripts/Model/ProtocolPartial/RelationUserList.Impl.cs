@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -128,14 +127,12 @@ namespace GameA
                 }
                 else
                 {
-                    //测试
-                    RemoveBlockUser(userInfoDetail);
+                    SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
-                LogHelper.Debug("服务器请求失败，客服端模拟测试");
-                RemoveBlockUser(userInfoDetail);
+                SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
@@ -151,14 +148,12 @@ namespace GameA
                 }
                 else
                 {
-                    //测试
-                    FollowUser(userInfoDetail);
+                    SocialGUIManager.ShowPopupDialog("关注失败。");
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
-                LogHelper.Debug("服务器请求失败，客服端模拟测试");
-                FollowUser(userInfoDetail);
+                SocialGUIManager.ShowPopupDialog("关注失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
@@ -174,14 +169,12 @@ namespace GameA
                 }
                 else
                 {
-                    //测试
-                    BlockUser(userInfoDetail);
+                    SocialGUIManager.ShowPopupDialog("屏蔽失败。");
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
-                LogHelper.Debug("服务器请求失败，客服端模拟测试");
-                BlockUser(userInfoDetail);
+                SocialGUIManager.ShowPopupDialog("屏蔽失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }

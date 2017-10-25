@@ -1,4 +1,4 @@
-﻿  /********************************************************************
+﻿/********************************************************************
   ** Filename : UMCtrlWorldRecentRecord.cs
   ** Author : quan
   ** Date : 11/11/2016 1:47 PM
@@ -15,18 +15,7 @@ namespace GameA
     public class UMCtrlWorldRecentRecord : UMCtrlBase<UMViewWorldRecentRecord>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Record> _wrapper;
-        private int _index;
-        public int Index
-        {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
-        }
+        public int Index { get; set; }
 
         public RectTransform Transform
         {
@@ -41,12 +30,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Button.onClick.AddListener(OnCardClick);
+            _cachedView.PlayBtn.onClick.AddListener(OnCardClick);
         }
 
         protected override void OnDestroy()
         {
-            _cachedView.Button.onClick.RemoveAllListeners();
+            _cachedView.PlayBtn.onClick.RemoveAllListeners();
             base.OnDestroy();
         }
 
@@ -57,12 +46,12 @@ namespace GameA
 
         public void Set(object obj)
         {
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
             _wrapper = obj as CardDataRendererWrapper<Record>;
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
             }
@@ -71,7 +60,7 @@ namespace GameA
 
         public void RefreshView()
         {
-            if(_wrapper == null)
+            if (_wrapper == null)
             {
                 Unload();
                 return;
@@ -79,16 +68,16 @@ namespace GameA
             Record record = _wrapper.Content;
             UserInfoSimple user = record.UserInfo;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.LevelData.PlayerLevel));
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
-            DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
-            DictionaryTools.SetContentText(_cachedView.UsedTime, GameATools.SecondToHour(record.UsedTime));
-            DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
+                _cachedView.DefaultUserIconTexture);
+            DictionaryTools.SetContentText(_cachedView.DateTxt,
+                DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
         }
 
         public void Unload()
         {
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultUserIconTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon,
+                _cachedView.DefaultUserIconTexture);
         }
     }
 }

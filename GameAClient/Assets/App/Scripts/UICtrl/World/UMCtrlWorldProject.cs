@@ -5,7 +5,6 @@
   ** Summary : UMCtrlWorldProject.cs
   ***********************************************************************/
 
-using System;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace GameA
     public class UMCtrlWorldProject : UMCtrlBase<UMViewWorldProject>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Project> _wrapper;
-        private Func<Project, string> _getTimeFunc;
         private int _index;
         public int Index
         {
@@ -26,11 +24,6 @@ namespace GameA
             {
                 _index = value;
             }
-        }
-
-        public Func<Project, string> GetTimeFunc
-        {
-            set { _getTimeFunc = value; }
         }
 
         public RectTransform Transform
@@ -86,17 +79,10 @@ namespace GameA
                 return;
             }
             Project p = _wrapper.Content;
+//            DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime);
+            DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
             DictionaryTools.SetContentText(_cachedView.Title, p.Name);
-            string time;
-            if (_getTimeFunc != null)
-            {
-                time = _getTimeFunc(p);
-            }
-            else
-            {
-                time = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime);
-            }
-            DictionaryTools.SetContentText(_cachedView.Time, time);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
         }
 
