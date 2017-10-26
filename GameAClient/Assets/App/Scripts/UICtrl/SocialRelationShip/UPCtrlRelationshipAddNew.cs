@@ -31,14 +31,13 @@ namespace GameA
                 {
                     return;
                 }
-                TempData();
+//                TempData();
                 RefreshView();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 _isRequesting = false;
-                TempData();
-                RefreshView();
+                SocialGUIManager.ShowPopupDialog("请求数据失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }

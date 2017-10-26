@@ -19,13 +19,13 @@
                 {
                     return;
                 }
-                TempData();
-                //同步数据
+//                TempData();
                 RefreshView();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 _isRequesting = false;
+                SocialGUIManager.ShowPopupDialog("请求数据失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }

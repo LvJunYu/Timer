@@ -5,9 +5,8 @@
   ** Summary : UMCtrlWorldRecentRecord.cs
   ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -15,6 +14,8 @@ namespace GameA
     public class UMCtrlWorldRecentRecord : UMCtrlBase<UMViewWorldRecentRecord>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Record> _wrapper;
+        private static string _successStr = "成功";
+        private static string _failStr = "失败";
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -41,7 +42,10 @@ namespace GameA
 
         private void OnCardClick()
         {
-            _wrapper.FireOnClick();
+            if (_wrapper != null)
+            {
+                _wrapper.FireOnClick();
+            }
         }
 
         public void Set(object obj)
@@ -68,6 +72,8 @@ namespace GameA
             Record record = _wrapper.Content;
             UserInfoSimple user = record.UserInfo;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
+            DictionaryTools.SetContentText(_cachedView.SuceessTxt,
+                record.Result == (int) EGameResult.GR_Success ? _successStr : _failStr);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultUserIconTexture);
             DictionaryTools.SetContentText(_cachedView.DateTxt,

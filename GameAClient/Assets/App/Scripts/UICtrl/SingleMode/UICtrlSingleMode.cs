@@ -151,7 +151,7 @@ namespace GameA
 
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
             {
-                _cachedView.MatchBtn.gameObject.SetActive(false); //todo
+                _cachedView.MatchBtn.gameObject.SetActive(true); //todo
             }
             else
             {
@@ -628,7 +628,7 @@ namespace GameA
 
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
             {
-//                _cachedView.MatchBtn.gameObject.SetActive (true);
+                _cachedView.MatchBtn.gameObject.SetActive (true);
             }
             else
             {
