@@ -39,7 +39,7 @@ namespace GameA
         {
             if (_mainCtrl.Project == null)
             {
-                _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+                _cachedView.CommentTableScroller.SetEmpty();
                 return;
             }
             if (_contentList == null)
@@ -103,6 +103,11 @@ namespace GameA
                     RefreshView();
                 }
             });
+        }
+
+        public override void Clear()
+        {
+            _contentList = null;
         }
     }
 }

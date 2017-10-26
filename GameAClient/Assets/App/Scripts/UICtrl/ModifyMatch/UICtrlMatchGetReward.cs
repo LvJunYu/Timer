@@ -130,7 +130,7 @@ namespace GameA
         #region 接口
         protected override void InitGroupId()
         {
-			_groupId = (int)EUIGroupType.PopUpUI;
+			_groupId = (int)EUIGroupType.MainPopUpUI;
         }
 		private void OnCloseBtn () {
 			SocialGUIManager.Instance.CloseUI<UICtrlMatchGetReward>();

@@ -3,13 +3,13 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-    public class UPCtrlPersonalInfoDetailPublish : UPCtrlPersonalInfoDetailBase
+    public class UpCtrlPersonalInfoProjectCollect : UPCtrlPersonalInfoProjectBase
     {
-        private UserPublishedWorldProjectList _data;
+        private UserFavoriteWorldProjectList _data;
 
         protected override void RequestData(bool append = false)
         {
-            _data = LocalUser.Instance.UserPublishedWorldProjectList;
+            _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             _pojectList = _data.AllList;
             if (_mainCtrl.UserInfoDetail == null) return;
             int startInx = 0;
@@ -18,7 +18,7 @@ namespace GameA
                 startInx = _contentList.Count;
             }
             _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize,
-                EPublishedProjectOrderBy.PPOB_PublishTime, EOrderType.OT_Desc, () =>
+                EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
                     if (_isOpen)
                     {

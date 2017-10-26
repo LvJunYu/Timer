@@ -5,14 +5,13 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
     {
+        public static string EmptyStr = "-";
         public Project Project;
         private EMenu _curMenu = EMenu.None;
         private UPCtrlProjectDetailBase _curMenuCtrl;
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private bool _isRequestDownload;
-        protected bool _isRequestFavorite;
-        public static string EmptyStr = "-";
-        public static string Zero = "0";
+        private bool _isRequestFavorite;
 
         protected override void OnViewCreated()
         {
@@ -24,6 +23,9 @@ namespace GameA
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtn);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+            _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
+            _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
 
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
             var upCtrlProjectInfo = new UPCtrlProjectRecentRecord();
@@ -56,16 +58,32 @@ namespace GameA
             }
         }
 
-        private void OnFollowBtn()
+        private void OnBadTogValueChanged(bool arg0)
         {
-            if (Project == null) return;
-            LocalUser.Instance.RelationUserList.RequestFollowUser(Project.UserInfoDetail);
+        }
+
+        private void OnGoodTogValueChanged(bool arg0)
+        {
+        }
+
+        private void OnHeadBtn()
+        {
+            if (Project != null)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
+            }
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            Clear();
             Project = parameter as Project;
+            if (Project != null)
+            {
+                Project.Request(Project.ProjectId, null, null);
+            }
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Recent, true);
@@ -83,6 +101,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             base.OnClose();
         }
 
@@ -116,6 +135,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToApp);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
         private void SetNull()
@@ -140,7 +160,6 @@ namespace GameA
                 SetNull();
                 return;
             }
-            
             DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, Project.UserInfo.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,
@@ -160,12 +179,20 @@ namespace GameA
 
         private void RefreshBtns()
         {
-            _cachedView.FollowBtn.SetActiveEx(!Project.UserInfo.RelationWithMe.FollowedByMe);
-            _cachedView.FollowedObj.SetActiveEx(Project.UserInfo.RelationWithMe.FollowedByMe);
+            bool myself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
+            bool hasFollowed = Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            _cachedView.FollowBtn.SetActiveEx(!myself && !hasFollowed);
+            _cachedView.FollowedObj.SetActiveEx(!myself && hasFollowed);
             _cachedView.FavoriteTog.isOn = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
             DictionaryTools.SetContentText(_cachedView.FavoriteCount, Project.FavoriteCount.ToString());
             DictionaryTools.SetContentText(_cachedView.DownloadCount, Project.ExtendData.DownloadCount.ToString());
             DictionaryTools.SetContentText(_cachedView.ShareCount, Project.ExtendData.ShareCount.ToString());
+        }
+
+        private void OnFollowBtn()
+        {
+            if (Project == null) return;
+            LocalUser.Instance.RelationUserList.RequestFollowUser(Project.UserInfoDetail);
         }
 
         private void OnFavoriteTogValueChanged(bool value)
@@ -274,6 +301,7 @@ namespace GameA
             {
                 return;
             }
+            RefreshView();
             if (_curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
@@ -301,6 +329,22 @@ namespace GameA
                 {
                     _menuCtrlArray[i].OnChangeToApp();
                 }
+            }
+        }
+
+        private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
+        {
+            if (userInfoDetail == Project.UserInfoDetail)
+            {
+                RefreshBtns();
+            }
+        }
+
+        private void Clear()
+        {
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                _menuCtrlArray[i].Clear();
             }
         }
 

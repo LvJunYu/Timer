@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlPersonalInfoDetailBase : UPCtrlPersonalInfoBase, IOnChangeHandler<long>
+    public class UPCtrlPersonalInfoProjectBase : UPCtrlPersonalInfoBase, IOnChangeHandler<long>
     {
         protected const int PageSize = 10;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();

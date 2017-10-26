@@ -71,14 +71,14 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnRemoveBlockUser, OnRemoveBlockUser);
-            RegisterEvent(EMessengerType.OnFollowUser, OnFollowUser);
+            RegisterEvent(EMessengerType.OnFollowUserScucess, OnFollowUser);
             RegisterEvent(EMessengerType.OnBlockUser, OnBlockUser);
         }
 

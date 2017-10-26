@@ -102,5 +102,11 @@ namespace GameA
                 }
             }
         }
+
+        public override void Clear()
+        {
+            _dataList = null;
+            _contentList.Clear();
+        }
     }
 }

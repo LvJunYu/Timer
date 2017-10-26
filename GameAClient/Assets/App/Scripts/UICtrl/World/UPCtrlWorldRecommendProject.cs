@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace GameA
 {
     public class UPCtrlWorldRecommendProject : UPCtrlWorldProjectBase
     {
-        private List<UMCtrlWorldRecommendProject> _umCtrlWorldRecommendProjects;
         private WorldRecommendProjectList _data;
 
         protected override void RequestData(bool append = false)

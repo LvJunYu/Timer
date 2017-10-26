@@ -11,6 +11,7 @@ namespace GameA
 
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
             new Dictionary<long, CardDataRendererWrapper<Project>>();
+
         protected List<Project> _projectList;
         protected EResScenary _resScenary;
         protected bool _isRequesting;
@@ -34,7 +35,6 @@ namespace GameA
 
         public override void Close()
         {
-            _unload = true;
             _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
             _cachedView.Pannels[(int) _menu].SetActiveEx(false);
             base.Close();
@@ -42,6 +42,7 @@ namespace GameA
 
         protected void RefreshView()
         {
+            _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             if (_projectList == null)
             {
                 _contentList.Clear();
@@ -85,7 +86,7 @@ namespace GameA
             }
             else
             {
-                if(inx >= _contentList.Count)
+                if (inx >= _contentList.Count)
                 {
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
@@ -105,6 +106,7 @@ namespace GameA
             {
                 w.BroadcastDataChanged();
             }
+//            RequestData();
         }
 
         public void Set(EResScenary resScenary)
@@ -115,6 +117,14 @@ namespace GameA
         public void SetMenu(UICtrlWorld.EMenu menu)
         {
             _menu = menu;
+        }
+
+        public void Clear()
+        {
+            _unload = true;
+            _contentList.Clear();
+            _dict.Clear();
+            _projectList = null;
         }
     }
 }

@@ -97,7 +97,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         protected override void OnOpenAnimationUpdate()

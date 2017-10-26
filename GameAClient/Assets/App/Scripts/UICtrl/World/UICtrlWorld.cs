@@ -79,6 +79,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            Clear();
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Recommend, true);
@@ -91,6 +92,17 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
+            }
+        }
+
+        private void Clear()
+        {
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                if (_menuCtrlArray[i] != null)
+                {
+                    _menuCtrlArray[i].Clear();
+                }
             }
         }
 

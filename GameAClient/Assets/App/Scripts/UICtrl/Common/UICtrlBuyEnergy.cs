@@ -28,7 +28,7 @@ namespace GameA
         #region 方法
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.FrontUI2;
         }
 
         protected override void InitEventListener()

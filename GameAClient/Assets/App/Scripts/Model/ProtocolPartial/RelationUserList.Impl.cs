@@ -212,7 +212,7 @@ namespace GameA
                     FollowList.Add(userInfoDetail);
                 }
             }
-            Messenger.Broadcast(EMessengerType.OnFollowUser);
+            Messenger.Broadcast(EMessengerType.OnFollowUserScucess);
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
 

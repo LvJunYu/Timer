@@ -666,8 +666,8 @@ namespace GameA
             {
 				OnSyncProjectExtendData(_extendData);
             }
-            FireProjectDataChangeEvent();
 		    _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
+            FireProjectDataChangeEvent();
 		}
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)

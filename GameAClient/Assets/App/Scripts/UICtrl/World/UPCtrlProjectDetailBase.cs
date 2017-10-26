@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace GameA
 {
-    public abstract class UPCtrlProjectDetailBase : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>, IOnChangeHandler<long>
+    public abstract class UPCtrlProjectDetailBase : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>,
+        IOnChangeHandler<long>
     {
         protected const int _pageSize = 10;
         protected EResScenary _resScenary;
@@ -18,7 +19,7 @@ namespace GameA
             }
             _cachedView.CommentTableScroller.Set(OnItemRefresh, GetItemRenderer);
         }
-        
+
         public override void Open()
         {
             base.Open();
@@ -53,7 +54,7 @@ namespace GameA
                 RefreshView();
             }
         }
-        
+
         public void Set(EResScenary resScenary)
         {
             _resScenary = resScenary;
@@ -63,5 +64,7 @@ namespace GameA
         {
             _menu = menu;
         }
+
+        public abstract void Clear();
     }
 }

@@ -33,17 +33,17 @@ namespace GameA
             upCtrlPersonalInfoAchieve.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.AchivementInfo] = upCtrlPersonalInfoAchieve;
             
-            var upCtrlPersonalInfoDetailPublish = new UPCtrlPersonalInfoDetailPublish();
-            upCtrlPersonalInfoDetailPublish.SetResScenary(ResScenary);
-            upCtrlPersonalInfoDetailPublish.SetMenu(EMenu.Publish);
-            upCtrlPersonalInfoDetailPublish.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Publish] = upCtrlPersonalInfoDetailPublish;
+            var upCtrlPersonalInfoProjectPublish = new UpCtrlPersonalInfoProjectPublish();
+            upCtrlPersonalInfoProjectPublish.SetResScenary(ResScenary);
+            upCtrlPersonalInfoProjectPublish.SetMenu(EMenu.Publish);
+            upCtrlPersonalInfoProjectPublish.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Publish] = upCtrlPersonalInfoProjectPublish;
 
-            var upCtrlPersonalInfoDetailCollect = new UPCtrlPersonalInfoDetailCollect();
-            upCtrlPersonalInfoDetailCollect.SetResScenary(ResScenary);
-            upCtrlPersonalInfoDetailCollect.SetMenu(EMenu.Collects);
-            upCtrlPersonalInfoDetailCollect.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Collects] = upCtrlPersonalInfoDetailCollect;
+            var upCtrlPersonalInfoProjectCollect = new UpCtrlPersonalInfoProjectCollect();
+            upCtrlPersonalInfoProjectCollect.SetResScenary(ResScenary);
+            upCtrlPersonalInfoProjectCollect.SetMenu(EMenu.Collects);
+            upCtrlPersonalInfoProjectCollect.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Collects] = upCtrlPersonalInfoProjectCollect;
 
             var upCtrlPersonalInforRecords = new UPCtrlPersonalInfoRecords();
             upCtrlPersonalInforRecords.SetResScenary(ResScenary);
@@ -95,7 +95,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
             }
-            IsMyself = UserInfoDetail == LocalUser.Instance.User;
+            IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _cachedView.BtnsObj.SetActiveEx(!IsMyself);
             _cachedView.AvatarRawImage.texture = SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();

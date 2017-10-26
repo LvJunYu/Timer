@@ -29,20 +29,19 @@ namespace GameA
         /// </summary>
         MainUI,
 
-
         /// <summary>
         ///     主体Ui打开后弹出的二级三级界面 持续向上叠加
         /// </summary>
-        PopUpUI,
-        PopUpUI2,
+        MainPopUpUI,
+        MainPopUpUI2,
 
         /// <summary>
-        /// 在所有主界面和一般弹出界面之上的界面
+        /// 在所有主界面和一般弹出界面之上的界面 关卡详情
         /// </summary>
         FrontUI,
 
         /// <summary>
-        /// 录像 排名 关卡详情
+        /// 
         /// </summary>
         FrontUI2,
 
