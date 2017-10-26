@@ -34,10 +34,13 @@ namespace GameA
             if (_mainCtrl.Project == null)
             {
                 DictionaryTools.SetContentText(_cachedView.Desc, UICtrlProjectDetail.EmptyStr);
+                _cachedView.GridDataScrollers[(int) _menu].OnViewportSizeChanged();
                 _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
             DictionaryTools.SetContentText(_cachedView.Desc, _mainCtrl.Project.Summary);
+//            _cachedView.DescTitle.SetActiveEx(!string.IsNullOrEmpty(_mainCtrl.Project.Summary));
+            _cachedView.GridDataScrollers[(int) _menu].OnViewportSizeChanged();
             if (_dataList == null)
             {
                 _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
@@ -54,7 +57,7 @@ namespace GameA
                 _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
             }
         }
-        
+
         private void OnItemClick(CardDataRendererWrapper<Record> item)
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求播放录像");
@@ -107,7 +110,7 @@ namespace GameA
                 }
             }
         }
-        
+
         public override void Clear()
         {
             _dataList = null;

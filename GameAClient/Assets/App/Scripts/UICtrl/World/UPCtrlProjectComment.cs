@@ -13,7 +13,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-//            _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
+            _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
         }
 
         protected override void RequestData(bool append = false)
@@ -108,6 +108,7 @@ namespace GameA
         public override void Clear()
         {
             _contentList = null;
+            _cachedView.CommentInput.text = string.Empty;
         }
     }
 }
