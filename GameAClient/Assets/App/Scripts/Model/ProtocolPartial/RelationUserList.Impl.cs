@@ -20,14 +20,6 @@ namespace GameA
 
         public void RequestFriends(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FriendList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                }
-                return;
-            }
             Request(instanceUserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -42,14 +34,6 @@ namespace GameA
 
         public void RequestFans(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FanList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                }
-                return;
-            }
             Request(instanceUserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -64,14 +48,6 @@ namespace GameA
 
         public void RequestFollows(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FollowList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                }
-                return;
-            }
             Request(instanceUserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -86,14 +62,6 @@ namespace GameA
 
         public void RequestBlocks(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (BlockList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                }
-                return;
-            }
             Request(instanceUserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -114,6 +82,79 @@ namespace GameA
             {
                 _dataDetailList.Add(UserManager.Instance.UpdateData(_dataList[i]));
             }
+        }
+
+        public void RequestFollowUser(UserInfoDetail userInfoDetail)
+        {
+            if (userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid)
+            {
+                SocialGUIManager.ShowPopupDialog("不能关注自己！");
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+            RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, true, res =>
+            {
+                if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
+                {
+                    FollowUser(userInfoDetail);
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("关注失败。");
+                }
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("关注失败。");
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
+        }
+
+        public void RequestRemoveFollowUser(UserInfoDetail userInfoDetail)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+            RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, false, res =>
+            {
+                if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
+                {
+                    RemoveFollowUser(userInfoDetail);
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("取消关注失败。");
+                }
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("取消关注失败。");
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
+        }
+
+        public void RequestBlockUser(UserInfoDetail userInfoDetail)
+        {
+            if (userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid)
+            {
+                SocialGUIManager.ShowPopupDialog("不能屏蔽自己！");
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+            RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, true, res =>
+            {
+                if (res.ResultCode == (int) EUpdateBlockStateCode.UBSS_Success)
+                {
+                    BlockUser(userInfoDetail);
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("屏蔽失败。");
+                }
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("屏蔽失败。");
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
         }
 
         public void RequestRemoveBlockUser(UserInfoDetail userInfoDetail)
@@ -137,88 +178,45 @@ namespace GameA
             });
         }
 
-        public void RequestFollowUser(UserInfoDetail userInfoDetail)
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, true, res =>
-            {
-                if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
-                {
-                    FollowUser(userInfoDetail);
-                }
-                else
-                {
-                    SocialGUIManager.ShowPopupDialog("关注失败。");
-                }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            }, code =>
-            {
-                SocialGUIManager.ShowPopupDialog("关注失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            });
-        }
-
-        public void RequestBlockUser(UserInfoDetail userInfoDetail)
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, true, res =>
-            {
-                if (res.ResultCode == (int) EUpdateBlockStateCode.UBSS_Success)
-                {
-                    BlockUser(userInfoDetail);
-                }
-                else
-                {
-                    SocialGUIManager.ShowPopupDialog("屏蔽失败。");
-                }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            }, code =>
-            {
-                SocialGUIManager.ShowPopupDialog("屏蔽失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            });
-        }
-
-        private void RemoveBlockUser(UserInfoDetail userInfoDetail)
-        {
-            userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = false;
-            if (BlockList != null && BlockList.Contains(userInfoDetail))
-            {
-                BlockList.Remove(userInfoDetail);
-            }
-            Messenger.Broadcast(EMessengerType.OnRemoveBlockUser);
-            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
-        }
-
         private void FollowUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = true;
-            //如果它关注我，则从粉丝列表移除，添加到好友列表
+            if (FollowList != null && !FollowList.Contains(userInfoDetail))
+            {
+                FollowList.Add(userInfoDetail);
+            }
             if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
             {
                 if (FriendList != null && !FriendList.Contains(userInfoDetail))
                 {
                     FriendList.Add(userInfoDetail);
                 }
-                if (FanList != null && FanList.Contains(userInfoDetail))
-                {
-                    FanList.Remove(userInfoDetail);
-                }
             }
-            else
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+        }
+
+        private void RemoveFollowUser(UserInfoDetail userInfoDetail)
+        {
+            userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = false;
+            if (FollowList != null && FollowList.Contains(userInfoDetail))
             {
-                if (FollowList != null && !FollowList.Contains(userInfoDetail))
+                FollowList.Remove(userInfoDetail);
+            }
+            if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
+            {
+                if (FriendList != null && FriendList.Contains(userInfoDetail))
                 {
-                    FollowList.Add(userInfoDetail);
+                    FriendList.Remove(userInfoDetail);
                 }
             }
-            Messenger.Broadcast(EMessengerType.OnFollowUserScucess);
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
 
         private void BlockUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = true;
+            userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = false;
+            userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe = false;
             if (BlockList != null && !BlockList.Contains(userInfoDetail))
             {
                 BlockList.Add(userInfoDetail);
@@ -235,7 +233,16 @@ namespace GameA
             {
                 FriendList.Remove(userInfoDetail);
             }
-            Messenger.Broadcast(EMessengerType.OnBlockUser);
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+        }
+
+        private void RemoveBlockUser(UserInfoDetail userInfoDetail)
+        {
+            userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = false;
+            if (BlockList != null && BlockList.Contains(userInfoDetail))
+            {
+                BlockList.Remove(userInfoDetail);
+            }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
     }

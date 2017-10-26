@@ -18,7 +18,6 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
-            _cachedView.RemoveBlockBtn.onClick.AddListener(OnRemoveBlockBtn);
 
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
@@ -143,12 +142,11 @@ namespace GameA
             if (IsMyself) return;
             bool block = UserInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
             bool follow = UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            _cachedView.FollowBtn.SetActiveEx(!block && !follow);
-            _cachedView.FollowDisableObj.SetActiveEx(!block && follow);
+
+            _cachedView.FollowBtnTxt.text = follow ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr;
+            _cachedView.BlockBtnTxt.text = block ? RelationCommonString.BlockedStr : RelationCommonString.BlockStr;
+            _cachedView.FollowBtn.SetActiveEx(!block);
             _cachedView.ChatBtn.SetActiveEx(!block);
-            _cachedView.BlockDisableObj.SetActiveEx(block);
-            _cachedView.RemoveBlockBtn.SetActiveEx(block);
-            _cachedView.BlockBtn.SetActiveEx(!block);
         }
 
         private void OnCloseBtn()
@@ -158,12 +156,26 @@ namespace GameA
 
         private void OnFollowBtn()
         {
-            LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
+            if (UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
+            {
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(UserInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
+            }
         }
 
         private void OnBlockBtn()
         {
-            LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);
+            if (UserInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe)
+            {
+                LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(UserInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);
+            }
         }
 
         private void OnRemoveBlockBtn()

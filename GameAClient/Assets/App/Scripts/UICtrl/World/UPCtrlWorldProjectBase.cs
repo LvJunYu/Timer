@@ -6,7 +6,7 @@ namespace GameA
 {
     public class UPCtrlWorldProjectBase : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
     {
-        protected const int _pageSize = 12;
+        protected const int _pageSize = 20;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
 
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =

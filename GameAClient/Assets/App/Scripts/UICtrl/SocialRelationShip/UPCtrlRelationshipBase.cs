@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>
+    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
+        IOnChangeHandler<UserInfoDetail>
         where T : IDataItemRenderer, IRelationShipItem, new()
     {
         protected List<UserInfoDetail> _userInfoDetailList;
@@ -40,7 +41,6 @@ namespace GameA
         public override void OnDestroy()
         {
             _userInfoDetailList = null;
-            _hasInited = false;
             base.OnDestroy();
         }
 
@@ -71,6 +71,7 @@ namespace GameA
                 return;
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_userInfoDetailList.Count);
+            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
         }
 
         protected void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -99,6 +100,11 @@ namespace GameA
         public void SetMenu(UICtrlSocialRelationship.EMenu menu)
         {
             _menu = menu;
+        }
+
+        public void OnChangeHandler(UserInfoDetail val)
+        {
+            RefreshView();
         }
     }
 

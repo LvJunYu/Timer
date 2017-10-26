@@ -58,23 +58,6 @@ namespace GameA
             }
         }
 
-        private void OnBadTogValueChanged(bool arg0)
-        {
-        }
-
-        private void OnGoodTogValueChanged(bool arg0)
-        {
-        }
-
-        private void OnHeadBtn()
-        {
-            if (Project != null)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
-                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
-            }
-        }
-
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -101,7 +84,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
-
+            Project = null;
             base.OnClose();
         }
 
@@ -181,18 +164,43 @@ namespace GameA
         {
             bool myself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             bool hasFollowed = Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            _cachedView.FollowBtn.SetActiveEx(!myself && !hasFollowed);
-            _cachedView.FollowedObj.SetActiveEx(!myself && hasFollowed);
+            _cachedView.FollowBtn.SetActiveEx(!myself);
+            DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
+                hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _cachedView.FavoriteTog.isOn = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
             DictionaryTools.SetContentText(_cachedView.FavoriteCount, Project.FavoriteCount.ToString());
             DictionaryTools.SetContentText(_cachedView.DownloadCount, Project.ExtendData.DownloadCount.ToString());
             DictionaryTools.SetContentText(_cachedView.ShareCount, Project.ExtendData.ShareCount.ToString());
         }
 
+        private void OnBadTogValueChanged(bool arg0)
+        {
+        }
+
+        private void OnGoodTogValueChanged(bool arg0)
+        {
+        }
+
+        private void OnHeadBtn()
+        {
+            if (Project != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+            }
+        }
+
         private void OnFollowBtn()
         {
             if (Project == null) return;
-            LocalUser.Instance.RelationUserList.RequestFollowUser(Project.UserInfoDetail);
+            if (Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
+            {
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(Project.UserInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestFollowUser(Project.UserInfoDetail);
+            }
         }
 
         private void OnFavoriteTogValueChanged(bool value)
@@ -334,6 +342,7 @@ namespace GameA
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
         {
+            if (Project == null) return;
             if (userInfoDetail == Project.UserInfoDetail)
             {
                 RefreshBtns();

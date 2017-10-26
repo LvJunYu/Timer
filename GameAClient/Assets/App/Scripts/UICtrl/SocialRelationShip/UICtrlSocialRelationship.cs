@@ -2,6 +2,15 @@
 
 namespace GameA
 {
+    public static class RelationCommonString
+    {
+        public static string FollowedStr = "已关注";
+        public static string FollowStr = "关注";
+        public static string BlockedStr = "已屏蔽";
+        public static string BlockStr = "屏蔽";
+        public static string FriendStr = "相互关注";
+    }
+
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
     {
@@ -77,9 +86,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnRemoveBlockUser, OnRemoveBlockUser);
-            RegisterEvent(EMessengerType.OnFollowUserScucess, OnFollowUser);
-            RegisterEvent(EMessengerType.OnBlockUser, OnBlockUser);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -142,53 +149,11 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlSocialRelationship>();
         }
 
-        private void OnFollowUser()
+        private void OnRelationShipChanged(UserInfoDetail arg1)
         {
-            if (_cachedView == null) return;
-            if (_curMenu == EMenu.Follow)
+            if (_curMenuCtrl != null)
             {
-                ((UPCtrlRelationshipFollow) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Fans)
-            {
-                ((UPCtrlRelationshipFans) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Friends)
-            {
-                ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.AddNew)
-            {
-                ((UPCtrlRelationshipAddNew) _curMenuCtrl).RefreshView();
-            }
-        }
-
-        private void OnBlockUser()
-        {
-            if (_curMenu == EMenu.Follow)
-            {
-                ((UPCtrlRelationshipFollow) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Fans)
-            {
-                ((UPCtrlRelationshipFans) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Friends)
-            {
-                ((UPCtrlRelationshipFriends) _curMenuCtrl).RefreshView();
-            }
-            else if (_curMenu == EMenu.Block)
-            {
-                ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
-            }
-        }
-
-        private void OnRemoveBlockUser()
-        {
-            if (_cachedView == null) return;
-            if (_curMenu == EMenu.Block)
-            {
-                ((UPCtrlRelationshipBlock) _curMenuCtrl).RefreshView();
+                ((IOnChangeHandler<UserInfoDetail>) _curMenuCtrl).OnChangeHandler(arg1);
             }
         }
 
