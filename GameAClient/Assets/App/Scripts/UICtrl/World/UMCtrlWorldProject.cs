@@ -1,4 +1,4 @@
-﻿  /********************************************************************
+﻿/********************************************************************
   ** Filename : UMCtrlWorldProject.cs
   ** Author : quan
   ** Date : 11/11/2016 1:47 PM
@@ -14,17 +14,7 @@ namespace GameA
     {
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
-        public int Index
-        {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
-        }
+        public int Index { get; set; }
 
         public RectTransform Transform
         {
@@ -45,7 +35,7 @@ namespace GameA
         protected override void OnDestroy()
         {
             _cachedView.Button.onClick.RemoveAllListeners();
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
@@ -59,12 +49,12 @@ namespace GameA
 
         public void Set(object obj)
         {
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
             _wrapper = obj as CardDataRendererWrapper<Project>;
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
             }
@@ -73,7 +63,7 @@ namespace GameA
 
         public void RefreshView()
         {
-            if(_wrapper == null)
+            if (_wrapper == null)
             {
                 Unload();
                 return;
@@ -83,7 +73,13 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
             DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
             DictionaryTools.SetContentText(_cachedView.Title, p.Name);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
+                _cachedView.DefaultCoverTexture);
+        }
+
+        public void SetEditMode()
+        {
+            
         }
 
         public void Unload()

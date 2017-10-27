@@ -140,7 +140,9 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
             if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
+            {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
+            }
             if (null == _project)
             {
                 return;

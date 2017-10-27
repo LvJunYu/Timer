@@ -133,5 +133,45 @@ namespace SoyEngine
             }
             return true;
         }
+        
+        public enum ECheckProjectNameResult {
+            None, Success, TooShort, TooLong, IllegalCharacter, Duplication
+        }
+        public static ECheckProjectNameResult CheckProjectName(String projectName) {
+            if(string.IsNullOrEmpty(projectName)) {
+                return ECheckProjectNameResult.TooShort;
+            }
+            if(projectName.Length < 1) {
+                return ECheckProjectNameResult.TooShort;
+            }
+            if(projectName.Length > SoyConstDefine.MaxProjectNameLength) {
+                return ECheckProjectNameResult.TooLong;
+            }
+            //中文英文字母下划线减号
+            if(!Regex.IsMatch(projectName, "^[\\w\\d\u4E00-\u9FFF_-]+$")) {
+                return ECheckProjectNameResult.IllegalCharacter;
+            }
+            if(projectName.StartsWith(SoyConstDefine.NickNamePrefix)) {
+                return ECheckProjectNameResult.Duplication;
+            }
+            return ECheckProjectNameResult.Success;
+        }
+        
+        public enum ECheckProjectSumaryResult {
+            None, Success, TooLong, IllegalCharacter
+        }
+        public static ECheckProjectSumaryResult CheckProjectDesc(String projectSumary) {
+            if(string.IsNullOrEmpty(projectSumary)) {
+                return ECheckProjectSumaryResult.Success;
+            }
+            if(projectSumary.Length > SoyConstDefine.MaxProjectSumaryLength) {
+                return ECheckProjectSumaryResult.TooLong;
+            }
+            //中文英文字母下划线减号
+            if(!Regex.IsMatch(projectSumary, "^[\\w\\d\u4E00-\u9FFF_-]+$")) {
+                return ECheckProjectSumaryResult.IllegalCharacter;
+            }
+            return ECheckProjectSumaryResult.Success;
+        }
     }
 }

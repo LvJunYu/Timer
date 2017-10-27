@@ -4,19 +4,17 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectBase : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
+    public class UPCtrlWorkShopProjectBase : UPCtrlBase<UICtrlWorkShop02, UIViewWorkShop02>
     {
         protected const int _pageSize = 21;
+        protected List<Project> _projectList;
+        protected EResScenary _resScenary;
+        protected bool _unload;
+        protected UICtrlWorkShop02.EMenu _menu;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
 
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
             new Dictionary<long, CardDataRendererWrapper<Project>>();
-
-        protected List<Project> _projectList;
-        protected EResScenary _resScenary;
-        protected bool _isRequesting;
-        protected bool _unload;
-        protected UICtrlWorld.EMenu _menu;
 
         protected override void OnViewCreated()
         {
@@ -40,7 +38,7 @@ namespace GameA
             base.Close();
         }
 
-        protected void RefreshView()
+        public void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             if (_projectList == null)
@@ -71,7 +69,7 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
         }
 
-        protected IDataItemRenderer GetItemRenderer(RectTransform parent)
+        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldProject();
             item.Init(parent, _resScenary);
@@ -99,26 +97,16 @@ namespace GameA
         {
         }
 
-        public void OnChangeHandler(long val)
-        {
-            CardDataRendererWrapper<Project> w;
-            if (_dict.TryGetValue(val, out w))
-            {
-                w.BroadcastDataChanged();
-            }
-//            RequestData();
-        }
-
         public void Set(EResScenary resScenary)
         {
             _resScenary = resScenary;
         }
 
-        public void SetMenu(UICtrlWorld.EMenu menu)
+        public void SetMenu(UICtrlWorkShop02.EMenu menu)
         {
             _menu = menu;
         }
-
+        
         public void Clear()
         {
             _unload = true;
