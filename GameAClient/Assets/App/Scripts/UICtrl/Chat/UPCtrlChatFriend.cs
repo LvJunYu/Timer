@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 using YIMEngine;
 
@@ -12,8 +12,8 @@ namespace GameA
         private float _curTimer;
         private bool _needUpdateSort = true;
         private List<UserInfoDetail> _friendData;
-        private bool _isRequesting;
         private bool _hasInited;
+        private bool _isRequesting;
         public long CurFriendId;
 
         protected override void OnViewCreated()
@@ -26,10 +26,7 @@ namespace GameA
         {
             base.Open();
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            if (!_hasInited)
-            {
-                RequestFriendsData();
-            }
+            RequestFriendsData();
             RefreshFriendsView();
         }
 
@@ -55,58 +52,79 @@ namespace GameA
             }
         }
 
-        private void RequestFriendsData()
+        private event Action _successCallBack;
+        private event Action _failCallBack;
+
+        private void RequestFriendsData(Action successAction = null, Action failAction = null)
         {
             if (_isRequesting)
             {
+                _successCallBack += successAction;
+                _failCallBack += failAction;
                 return;
             }
             _isRequesting = true;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            LocalUser.Instance.RelationUserList.RequestFriends(LocalUser.Instance.UserGuid, () =>
+            LocalUser.Instance.RelationUserList.RequestMyFriends(() =>
             {
                 _friendData = LocalUser.Instance.RelationUserList.FriendList;
                 _hasInited = true;
                 _isRequesting = false;
+                _successCallBack += successAction;
+                if (_successCallBack != null)
+                {
+                    _successCallBack.Invoke();
+                    _successCallBack = null;
+                }
                 if (!_isOpen)
                 {
                     return;
                 }
-                if (_friendData == null || _friendData.Count == 0)
-                {
-                    TempData();
-                }
-                UpdateSort();
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                UpdateSortAndRefreshFriendsView();
             }, code =>
             {
                 _isRequesting = false;
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                _failCallBack += failAction;
+                if (_failCallBack != null)
+                {
+                    _failCallBack.Invoke();
+                    _failCallBack = null;
+                }
             });
         }
 
-        private void TempData()
-        {
-            _friendData = new List<UserInfoDetail>(10);
-            for (int i = 0; i < 10; i++)
-            {
-                var user = new UserInfoDetail();
-                user.UserInfoSimple.UserId = 1000 + i;
-                user.UserInfoSimple.NickName = "好友测试数据" + i;
-                user.UserInfoSimple.Sex = i % 2 == 0 ? ESex.S_Male : ESex.S_Female;
-                user.UserInfoSimple.RelationWithMe.IsFriend = true;
-                user.IsOnline = i % 3 == 1;
-                user = UserManager.Instance.UpdateData(user);
-                _friendData.Add(user);
-            }
-        }
-
-        public void RefreshData(UserInfoDetail userInfoDetail)
+        public void RefreshFriendChatData(UserInfoDetail userInfoDetail)
         {
             CurFriendId = userInfoDetail.UserInfoSimple.UserId;
             _dataList = userInfoDetail.ChatHistory;
             _cachedView.FriendGridDataScroller.RefreshCurrent();
             RefreshView();
+        }
+
+        public void RequestSetToFriend(UserInfoDetail userInfoDetail)
+        {
+            if (!_hasInited)
+            {
+                RequestFriendsData(() => SetToFriend(userInfoDetail),
+                    () => { SocialGUIManager.ShowPopupDialog("请求好友数据失败。"); });
+            }
+            else
+            {
+                SetToFriend(userInfoDetail);
+            }
+        }
+
+        private void SetToFriend(UserInfoDetail userInfoDetail)
+        {
+            int inx = _friendData.IndexOf(userInfoDetail);
+            if (inx >= 0)
+            {
+                _cachedView.FriendGridDataScroller.SetContentPosY(inx, 1);
+                RefreshFriendChatData(userInfoDetail);
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("没有该好友。");
+            }
         }
 
         private void RefreshFriendsView()
@@ -119,7 +137,7 @@ namespace GameA
             _cachedView.FriendGridDataScroller.SetItemCount(_friendData.Count);
             if (CurFriendId == 0 && _friendData.Count > 0)
             {
-                RefreshData(_friendData[0]);
+                RefreshFriendChatData(_friendData[0]);
             }
         }
 
@@ -129,7 +147,8 @@ namespace GameA
             if (_curTimer > _checkOnlineInterval)
             {
                 CheckOnLine();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(3, UpdateSort));
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(3,
+                    UpdateSortAndRefreshFriendsView));
             }
             else
             {
@@ -156,16 +175,19 @@ namespace GameA
             }
         }
 
-        private void UpdateSort()
+        private void UpdateSortAndRefreshFriendsView()
         {
-            if (!_needUpdateSort || _friendData == null) return;
+            if (!_needUpdateSort || _friendData == null)
+            {
+                return;
+            }
             _friendData.Sort((p, q) =>
             {
                 return (q.IsOnline ? 10000 : 0) + q.UserInfoSimple.RelationWithMe.Friendliness -
                        ((p.IsOnline ? 10000 : 0) + p.UserInfoSimple.RelationWithMe.Friendliness);
             });
-            RefreshFriendsView();
             _needUpdateSort = false;
+            RefreshFriendsView();
         }
 
         private void OnFriendItemRefresh(IDataItemRenderer item, int inx)

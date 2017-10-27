@@ -99,7 +99,6 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-//            RefreshFriendProgress();
             _dragging = true;
             if (_currentChapter <= 0)
             {
@@ -148,7 +147,7 @@ namespace GameA
 //			);
 //			RefreshEnergyInfo ();
             RefreshChapterInfo();
-
+            RefreshFriendProgress();
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
             {
                 _cachedView.MatchBtn.gameObject.SetActive(true); //todo
@@ -394,9 +393,13 @@ namespace GameA
 
         private void RefreshFriendProgress()
         {
-            AppData.Instance.AdventureData.AllFriendsAdvProgressList.Request(LocalUser.Instance.UserGuid, () =>
+            for (int i = 0; i < _chapterAry.Length; i++)
             {
-                _advProgressList = AppData.Instance.AdventureData.AllFriendsAdvProgressList.AdvProgressDataList;
+                _chapterAry[i].ClearFriendProgress();
+            }
+            AppData.Instance.AdventureData.FriendsAdvProgressList.Request(1, 1, ChapterCnt, 9, () =>
+            {
+                _advProgressList = AppData.Instance.AdventureData.FriendsAdvProgressList.AdvProgressDataList;
                 if (_advProgressList == null)
                 {
                     LogHelper.Error("_advProgressList == null");
@@ -405,34 +408,10 @@ namespace GameA
                 for (int i = 0; i < _advProgressList.Count; i++)
                 {
                     int chapter = _advProgressList[i].Section;
-                    _chapterAry[chapter - 1]
-                        .RefreshFriendProgress(_advProgressList[i].Level, _advProgressList[i].FriendsDetailDataList);
+                    _chapterAry[chapter - 1].RefreshFriendProgress(_advProgressList[i].Level,
+                        _advProgressList[i].FriendsDetailDataList);
                 }
-            }, code =>
-            {
-//                TempData();
-//                _advProgressList = AppData.Instance.AdventureData.AllFriendsAdvProgressList.AdvProgressDataList;
-//                for (int i = 0; i < _advProgressList.Count; i++)
-//                {
-//                    int chapter = _advProgressList[i].Section;
-//                    _chapterAry[chapter - 1]
-//                        .RefreshFriendProgress(_advProgressList[i].Level, _advProgressList[i].FriendsDetailDataList);
-//                }
-            });
-        }
-
-        private void TempData()
-        {
-            AppData.Instance.AdventureData.AllFriendsAdvProgressList.AdvProgressDataList = new List<AdvProgressData>();
-            AdvProgressData advProgressData = new AdvProgressData();
-            advProgressData.Section = 1;
-            advProgressData.Level = 1;
-            advProgressData.FriendsDataList = new List<UserInfoSimple>(3);
-            for (int i = 0; i < 3; i++)
-            {
-                advProgressData.FriendsDataList.Add(new UserInfoSimple());
-            }
-            AppData.Instance.AdventureData.AllFriendsAdvProgressList.AdvProgressDataList.Add(advProgressData);
+            }, code => { });
         }
 
         #region 接口
@@ -628,7 +607,7 @@ namespace GameA
 
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
             {
-                _cachedView.MatchBtn.gameObject.SetActive (true);
+                _cachedView.MatchBtn.gameObject.SetActive(true);
             }
             else
             {

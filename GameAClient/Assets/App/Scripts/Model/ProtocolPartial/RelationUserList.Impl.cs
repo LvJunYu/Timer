@@ -18,9 +18,17 @@ namespace GameA
             get { return _dataDetailList; }
         }
 
-        public void RequestFriends(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        public void RequestMyFriends(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(instanceUserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
+            if (FriendList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                    return;
+                }
+            }
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -29,12 +37,21 @@ namespace GameA
                     {
                         successCallBack.Invoke();
                     }
-                }, failCallBack);
+                }, failCallBack
+            );
         }
 
-        public void RequestFans(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        public void RequestMyFans(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(instanceUserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
+            if (FanList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                    return;
+                }
+            }
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -46,9 +63,17 @@ namespace GameA
                 }, failCallBack);
         }
 
-        public void RequestFollows(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        public void RequestMyFollows(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(instanceUserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
+            if (FollowList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                    return;
+                }
+            }
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -60,9 +85,17 @@ namespace GameA
                 }, failCallBack);
         }
 
-        public void RequestBlocks(long instanceUserGuid, Action successCallBack, Action<ENetResultCode> failCallBack)
+        public void RequestMyBlocks(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(instanceUserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
+            if (BlockList != null)
+            {
+                if (successCallBack != null)
+                {
+                    successCallBack.Invoke();
+                    return;
+                }
+            }
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -84,6 +117,29 @@ namespace GameA
             }
         }
 
+        public void RequestChat(UserInfoDetail userInfoDetail)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+            LocalUser.Instance.RelationUserList.RequestMyFriends(() =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                if (LocalUser.Instance.RelationUserList.FriendList.Contains(userInfoDetail))
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+                    SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(userInfoDetail);
+                    SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("该玩家不是相互关注好友。");
+                }
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("请求好友数据失败。");
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            });
+        }
+        
         public void RequestFollowUser(UserInfoDetail userInfoDetail)
         {
             if (userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid)
@@ -215,24 +271,24 @@ namespace GameA
         private void BlockUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe = true;
-            userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = false;
-            userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe = false;
+//            userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = false;
+//            userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe = false;
             if (BlockList != null && !BlockList.Contains(userInfoDetail))
             {
                 BlockList.Add(userInfoDetail);
             }
-            if (FollowList != null && FollowList.Contains(userInfoDetail))
-            {
-                FollowList.Remove(userInfoDetail);
-            }
-            if (FanList != null && FanList.Contains(userInfoDetail))
-            {
-                FanList.Remove(userInfoDetail);
-            }
-            if (FriendList != null && FriendList.Contains(userInfoDetail))
-            {
-                FriendList.Remove(userInfoDetail);
-            }
+//            if (FollowList != null && FollowList.Contains(userInfoDetail))
+//            {
+//                FollowList.Remove(userInfoDetail);
+//            }
+//            if (FanList != null && FanList.Contains(userInfoDetail))
+//            {
+//                FanList.Remove(userInfoDetail);
+//            }
+//            if (FriendList != null && FriendList.Contains(userInfoDetail))
+//            {
+//                FriendList.Remove(userInfoDetail);
+//            }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
 
@@ -245,5 +301,6 @@ namespace GameA
             }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
+
     }
 }

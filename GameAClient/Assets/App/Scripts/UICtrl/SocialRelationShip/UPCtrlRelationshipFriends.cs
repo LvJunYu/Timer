@@ -1,6 +1,9 @@
-﻿namespace GameA
+﻿using SoyEngine;
+using UnityEngine;
+
+namespace GameA
 {
-    public class UPCtrlRelationshipFriends : UPCtrlRelationshipBase<UMCtrlRelationLongItem>
+    public class UPCtrlRelationshipFriends : UPCtrlRelationshipBase
     {
         protected override void RequestData()
         {
@@ -10,16 +13,15 @@
             }
             _isRequesting = true;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            LocalUser.Instance.RelationUserList.RequestFriends(LocalUser.Instance.UserGuid, () =>
+            LocalUser.Instance.RelationUserList.RequestMyFriends(() =>
             {
                 _userInfoDetailList = LocalUser.Instance.RelationUserList.FriendList;
-                _hasInited = true;
+                HasInited = true;
                 _isRequesting = false;
                 if (!_isOpen)
                 {
                     return;
                 }
-//                TempData();
                 RefreshView();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
@@ -28,6 +30,14 @@
                 SocialGUIManager.ShowPopupDialog("请求数据失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
+        }
+
+        protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlRelationLongItem();
+            item.SetMenu(_menu);
+            item.Init(parent, _resScenary);
+            return item;
         }
 
         protected override void TempData()

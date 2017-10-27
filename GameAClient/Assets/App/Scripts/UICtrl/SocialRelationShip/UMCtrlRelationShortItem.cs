@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlRelationShortItem : UMCtrlBase<UMViewRelationShortItem>, IDataItemRenderer, IRelationShipItem
+    public class UMCtrlRelationShortItem : UMCtrlBase<UMViewRelationShortItem>, IDataItemRenderer
     {
         private UserInfoDetail _userInfoDetail;
         private UICtrlSocialRelationship.EMenu _belongMenu;

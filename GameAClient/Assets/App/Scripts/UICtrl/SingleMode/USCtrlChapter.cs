@@ -204,5 +204,14 @@ namespace GameA
         {
             _normalLevels[level - 1].RefreshFriendProgress(friendsDataList);
         }
+
+        public void ClearFriendProgress()
+        {
+            if (_normalLevels == null) return;
+            for (int i = 0; i < _normalLevels.Length; i++)
+            {
+                _normalLevels[i].ClearFriendProgress();
+            }
+        }
     }
 }

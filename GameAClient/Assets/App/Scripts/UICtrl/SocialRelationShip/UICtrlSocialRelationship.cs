@@ -15,14 +15,14 @@ namespace GameA
     public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
     {
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship> _curMenuCtrl;
-        private UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>[] _menuCtrlArray;
+        private UPCtrlRelationshipBase _curMenuCtrl;
+        private UPCtrlRelationshipBase[] _menuCtrlArray;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnReturnBtnClick);
-            _menuCtrlArray = new UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>[(int) EMenu.Max];
+            _menuCtrlArray = new UPCtrlRelationshipBase[(int) EMenu.Max];
             var upCtrlRelationshipFollow = new UPCtrlRelationshipFollow();
             upCtrlRelationshipFollow.SetResScenary(ResScenary);
             upCtrlRelationshipFollow.SetMenu(EMenu.Follow);
@@ -109,6 +109,10 @@ namespace GameA
                 _curMenuCtrl.Close();
             }
             base.OnClose();
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                _menuCtrlArray[i].HasInited = false;
+            }
         }
 
         protected override void SetPartAnimations()

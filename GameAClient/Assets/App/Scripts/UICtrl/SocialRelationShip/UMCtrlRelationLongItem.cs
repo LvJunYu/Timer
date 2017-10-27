@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlRelationLongItem : UMCtrlBase<UMViewRelationLongItem>, IDataItemRenderer, IRelationShipItem
+    public class UMCtrlRelationLongItem : UMCtrlBase<UMViewRelationLongItem>, IDataItemRenderer
     {
         private UserInfoDetail _userInfoDetail;
-        private UICtrlSocialRelationship.EMenu _belongMenu;
+//        private UICtrlSocialRelationship.EMenu _belongMenu;
 
         protected override void OnViewCreated()
         {
@@ -102,6 +102,8 @@ namespace GameA
 
         private void OnTalkBtn()
         {
+            if (null == _userInfoDetail) return;
+            LocalUser.Instance.RelationUserList.RequestChat(_userInfoDetail);
         }
 
         private void OnInfoBtn()
@@ -112,7 +114,7 @@ namespace GameA
 
         public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
         {
-            _belongMenu = eMenu;
+//            _belongMenu = eMenu;
         }
     }
 }

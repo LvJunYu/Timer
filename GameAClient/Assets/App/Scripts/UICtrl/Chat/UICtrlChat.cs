@@ -86,15 +86,7 @@ namespace GameA
             _curMenuCtrl = null;
             base.OnDestroy();
         }
-        
-        public override void OnUpdate()
-        {
-            if (_menuCtrlArray != null && _menuCtrlArray[(int) EMenu.Friend] != null)
-            {
-                ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).OnUpdate();
-            }
-        }
-        
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -115,6 +107,21 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
+        public override void OnUpdate()
+        {
+            //刷洗好友在线信息
+            if (_menuCtrlArray != null && _menuCtrlArray[(int) EMenu.Friend] != null)
+            {
+                ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).OnUpdate();
+            }
+        }
+
+        public void SetToFriend(UserInfoDetail userInfoDetail)
+        {
+            _cachedView.TabGroup.SelectIndex((int) EMenu.Friend, true);
+            ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).RequestSetToFriend(userInfoDetail);
         }
 
         protected void OnSendTexBtn()

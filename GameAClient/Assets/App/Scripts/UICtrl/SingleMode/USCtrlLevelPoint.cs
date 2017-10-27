@@ -34,6 +34,7 @@ namespace GameA
         private Vector2 _startPos;
         private Vector2 _moVector2 = new Vector2(0.0f, 15.0f);
         private Tweener _tweener;
+        private UserInfoDetail[] _friends;
 
         protected override void OnViewCreated()
         {
@@ -41,6 +42,18 @@ namespace GameA
             if (null != _cachedView.Current)
             {
                 _cachedView.Current.onClick.AddListener(OnClick);
+            }
+            _friends = new UserInfoDetail[_cachedView.FriendHeadButtonBtns.Length];
+            for (int i = 0; i < _cachedView.FriendHeadButtonBtns.Length; i++)
+            {
+                var inx = i;
+                _cachedView.FriendHeadButtonBtns[i].onClick.AddListener(() =>
+                {
+                    if (_friends[inx] != null)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_friends[inx]);
+                    }
+                });
             }
         }
 
@@ -289,18 +302,34 @@ namespace GameA
             _tweener.OnComplete(SetOnComplete);
         }
 
-        public void RefreshFriendProgress(List<UserInfoDetail> friendsDataList)
+        public void ClearFriendProgress()
         {
             for (int i = 0; i < _cachedView.FriendHeadImgs.Length; i++)
             {
                 _cachedView.FriendHeadImgs[i].SetActiveEx(false);
             }
-            if (friendsDataList == null)  return;
+            for (int i = 0; i < _friends.Length; i++)
+                         {
+                             _friends[i] = null;
+                         }
+        }
+
+        public void RefreshFriendProgress(List<UserInfoDetail> friendsDataList)
+        {
+            if (friendsDataList == null) return;
+            friendsDataList.Sort((p, q) =>
+            {
+                return q.UserInfoSimple.RelationWithMe.Friendliness - p.UserInfoSimple.RelationWithMe.Friendliness;
+            });
             for (int i = 0; i < friendsDataList.Count; i++)
             {
-                ImageResourceManager.Instance.SetDynamicImage( _cachedView.FriendHeadImgs[i],
+                if (i < _cachedView.FriendHeadImgs.Length)
+                {
+                    _friends[i] = friendsDataList[i];
+                    ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImgs[i],
                         friendsDataList[i].UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
-                _cachedView.FriendHeadImgs[i].SetActiveEx(true);
+                    _cachedView.FriendHeadImgs[i].SetActiveEx(true);
+                }
             }
         }
 

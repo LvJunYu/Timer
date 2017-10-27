@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AllFriendsAdvProgressData : SyncronisticData {
+    public partial class FriendsAdvProgressData : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -16,9 +16,21 @@ namespace GameA
 
         // cs fields----------------------------------
         /// <summary>
-        /// 用户
+        /// 起始章节
         /// </summary>
-        private long _cs_userId;
+        private int _cs_startSection;
+        /// <summary>
+        /// 起始关卡
+        /// </summary>
+        private int _cs_startLevel;
+        /// <summary>
+        /// 结束章节
+        /// </summary>
+        private int _cs_endSection;
+        /// <summary>
+        /// 结束关卡
+        /// </summary>
+        private int _cs_endLevel;
         #endregion
 
         #region 属性
@@ -36,11 +48,32 @@ namespace GameA
         
         // cs properties----------------------------------
         /// <summary>
-        /// 用户
+        /// 起始章节
         /// </summary>
-        public long CS_UserId { 
-            get { return _cs_userId; }
-            set { _cs_userId = value; }
+        public int CS_StartSection { 
+            get { return _cs_startSection; }
+            set { _cs_startSection = value; }
+        }
+        /// <summary>
+        /// 起始关卡
+        /// </summary>
+        public int CS_StartLevel { 
+            get { return _cs_startLevel; }
+            set { _cs_startLevel = value; }
+        }
+        /// <summary>
+        /// 结束章节
+        /// </summary>
+        public int CS_EndSection { 
+            get { return _cs_endSection; }
+            set { _cs_endSection = value; }
+        }
+        /// <summary>
+        /// 结束关卡
+        /// </summary>
+        public int CS_EndLevel { 
+            get { return _cs_endLevel; }
+            set { _cs_endLevel = value; }
         }
 
         public override bool IsDirty {
@@ -61,25 +94,49 @@ namespace GameA
         /// <summary>
 		/// 冒险模式好友最高关数据
 		/// </summary>
-		/// <param name="userId">用户.</param>
+		/// <param name="startSection">起始章节.</param>
+		/// <param name="startLevel">起始关卡.</param>
+		/// <param name="endSection">结束章节.</param>
+		/// <param name="endLevel">结束关卡.</param>
         public void Request (
-            long userId,
+            int startSection,
+            int startLevel,
+            int endSection,
+            int endLevel,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_userId != userId) {
+                if (_cs_startSection != startSection) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_startLevel != startLevel) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_endSection != endSection) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_endLevel != endLevel) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_userId = userId;
+                _cs_startSection = startSection;
+                _cs_startLevel = startLevel;
+                _cs_endSection = endSection;
+                _cs_endLevel = endLevel;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_AllFriendsAdvProgressData msg = new Msg_CS_DAT_AllFriendsAdvProgressData();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AllFriendsAdvProgressData>(
-                    SoyHttpApiPath.AllFriendsAdvProgressData, msg, ret => {
+                Msg_CS_DAT_FriendsAdvProgressData msg = new Msg_CS_DAT_FriendsAdvProgressData();
+                msg.StartSection = startSection;
+                msg.StartLevel = startLevel;
+                msg.EndSection = endSection;
+                msg.EndLevel = endLevel;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_FriendsAdvProgressData>(
+                    SoyHttpApiPath.FriendsAdvProgressData, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -89,7 +146,7 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_AllFriendsAdvProgressData msg)
+        public bool OnSync (Msg_SC_DAT_FriendsAdvProgressData msg)
         {
             if (null == msg) return false;
             _advProgressDataList = new List<AdvProgressData>();
@@ -100,7 +157,7 @@ namespace GameA
             return true;
         }
 
-        public bool DeepCopy (AllFriendsAdvProgressData obj)
+        public bool DeepCopy (FriendsAdvProgressData obj)
         {
             if (null == obj) return false;
             if (null ==  obj.AdvProgressDataList) return false;
@@ -114,19 +171,19 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_AllFriendsAdvProgressData msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_FriendsAdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public AllFriendsAdvProgressData (Msg_SC_DAT_AllFriendsAdvProgressData msg) {
+        public FriendsAdvProgressData (Msg_SC_DAT_FriendsAdvProgressData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public AllFriendsAdvProgressData () { 
+        public FriendsAdvProgressData () { 
             _advProgressDataList = new List<AdvProgressData>();
             OnCreate();
         }

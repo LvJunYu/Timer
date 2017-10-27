@@ -21,7 +21,7 @@ namespace GameA
 
         private AdventureProjectList _projectList = new AdventureProjectList();
         private AdventureUserData _userData = new AdventureUserData();
-        private AllFriendsAdvProgressData _allFriendsAdvProgressList = new AllFriendsAdvProgressData();
+        private FriendsAdvProgressData _friendsAdvProgressList = new FriendsAdvProgressData();
 
         private long _lastRequiredLevelToken;
 
@@ -58,9 +58,9 @@ namespace GameA
             get { return _userData; }
         }
 
-        public AllFriendsAdvProgressData AllFriendsAdvProgressList
+        public FriendsAdvProgressData FriendsAdvProgressList
         {
-            get { return _allFriendsAdvProgressList; }
+            get { return _friendsAdvProgressList; }
         }
 
         public Reward LastAdvReward

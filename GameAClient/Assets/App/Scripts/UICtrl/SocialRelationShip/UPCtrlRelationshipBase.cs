@@ -5,13 +5,12 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipBase<T> : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
+    public abstract class UPCtrlRelationshipBase : UPCtrlBase<UICtrlSocialRelationship, UIViewSocialRelationship>,
         IOnChangeHandler<UserInfoDetail>
-        where T : IDataItemRenderer, IRelationShipItem, new()
     {
+        public bool HasInited;
         protected List<UserInfoDetail> _userInfoDetailList;
         protected bool _isRequesting;
-        protected bool _hasInited;
         protected EResScenary _resScenary;
         protected UICtrlSocialRelationship.EMenu _menu;
 
@@ -25,7 +24,7 @@ namespace GameA
         {
             base.Open();
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            if (!_hasInited)
+            if (!HasInited)
             {
                 RequestData();
             }
@@ -58,9 +57,7 @@ namespace GameA
             }
         }
 
-        protected virtual void RequestData()
-        {
-        }
+        protected abstract void RequestData();
 
         public void RefreshView()
         {
@@ -84,13 +81,7 @@ namespace GameA
             item.Set(_userInfoDetailList[inx]);
         }
 
-        protected IDataItemRenderer GetItemRenderer(RectTransform parent)
-        {
-            var item = new T();
-            item.SetMenu(_menu);
-            item.Init(parent, _resScenary);
-            return item;
-        }
+        protected abstract IDataItemRenderer GetItemRenderer(RectTransform parent);
 
         public void SetResScenary(EResScenary resScenary)
         {
@@ -106,12 +97,5 @@ namespace GameA
         {
             RefreshView();
         }
-    }
-
-    public interface IRelationShipItem
-    {
-        void SetMenu(UICtrlSocialRelationship.EMenu eMenu);
-        void RefreshView();
-        bool Init(RectTransform parent, EResScenary resScenary, Vector3 localpos = new Vector3());
     }
 }

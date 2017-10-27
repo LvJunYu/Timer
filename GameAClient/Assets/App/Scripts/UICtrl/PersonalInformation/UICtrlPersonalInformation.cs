@@ -25,13 +25,13 @@ namespace GameA
             upCtrlPersonalInfoBasicInfo.SetMenu(EMenu.BasicInfo);
             upCtrlPersonalInfoBasicInfo.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.BasicInfo] = upCtrlPersonalInfoBasicInfo;
-            
+
             var upCtrlPersonalInfoAchieve = new UPCtrlPersonalInfoAchieve();
             upCtrlPersonalInfoAchieve.SetResScenary(ResScenary);
             upCtrlPersonalInfoAchieve.SetMenu(EMenu.AchivementInfo);
             upCtrlPersonalInfoAchieve.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.AchivementInfo] = upCtrlPersonalInfoAchieve;
-            
+
             var upCtrlPersonalInfoProjectPublish = new UpCtrlPersonalInfoProjectPublish();
             upCtrlPersonalInfoProjectPublish.SetResScenary(ResScenary);
             upCtrlPersonalInfoProjectPublish.SetMenu(EMenu.Publish);
@@ -96,7 +96,8 @@ namespace GameA
             }
             IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _cachedView.BtnsObj.SetActiveEx(!IsMyself);
-            _cachedView.AvatarRawImage.texture = SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
+            _cachedView.AvatarRawImage.texture =
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();
             _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
         }
@@ -178,13 +179,9 @@ namespace GameA
             }
         }
 
-        private void OnRemoveBlockBtn()
-        {
-            LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(UserInfoDetail);
-        }
-
         private void OnChatBtn()
         {
+            LocalUser.Instance.RelationUserList.RequestChat(UserInfoDetail);
         }
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)

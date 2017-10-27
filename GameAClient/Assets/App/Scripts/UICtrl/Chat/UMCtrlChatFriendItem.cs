@@ -22,6 +22,12 @@ namespace GameA
             get { return _userInfoDetail; }
         }
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.SelectBtn.onClick.AddListener(OnSelectBtn);
+        }
+
         public void Set(object data)
         {
             _userInfoDetail = data as UserInfoDetail;
@@ -49,16 +55,10 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImage, _cachedView.HeadDefaltTexture);
         }
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.SelectBtn.onClick.AddListener(OnSelectBtn);
-        }
-
         private void OnSelectBtn()
         {
             if (_userInfoDetail == null) return;
-            _upCtrlChatFriend.RefreshData(_userInfoDetail);
+            _upCtrlChatFriend.RefreshFriendChatData(_userInfoDetail);
         }
 
         public void SetMenu(UPCtrlChatFriend upCtrlChatFriend)

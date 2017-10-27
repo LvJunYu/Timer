@@ -10,10 +10,6 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// 好友列表
-        /// </summary>
-        private List<UserInfoSimple> _userList;
-        /// <summary>
         /// 录像数据
         /// </summary>
         private List<Record> _recordList;
@@ -39,16 +35,6 @@ namespace GameA
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 好友列表
-        /// </summary>
-        public List<UserInfoSimple> UserList { 
-            get { return _userList; }
-            set { if (_userList != value) {
-                _userList = value;
-                SetDirty();
-            }}
-        }
         /// <summary>
         /// 录像数据
         /// </summary>
@@ -92,13 +78,6 @@ namespace GameA
 
         public override bool IsDirty {
             get {
-                if (null != _userList) {
-                    for (int i = 0; i < _userList.Count; i++) {
-                        if (null != _userList[i] && _userList[i].IsDirty) {
-                            return true;
-                        }
-                    }
-                }
                 if (null != _recordList) {
                     for (int i = 0; i < _recordList.Count; i++) {
                         if (null != _recordList[i] && _recordList[i].IsDirty) {
@@ -170,10 +149,6 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_FriendRecordData msg)
         {
             if (null == msg) return false;
-            _userList = new List<UserInfoSimple>();
-            for (int i = 0; i < msg.UserList.Count; i++) {
-                _userList.Add(new UserInfoSimple(msg.UserList[i]));
-            }
             _recordList = new List<Record>();
             for (int i = 0; i < msg.RecordList.Count; i++) {
                 _recordList.Add(new Record(msg.RecordList[i]));
@@ -185,14 +160,6 @@ namespace GameA
         public bool DeepCopy (FriendRecordData obj)
         {
             if (null == obj) return false;
-            if (null ==  obj.UserList) return false;
-            if (null ==  _userList) {
-                _userList = new List<UserInfoSimple>();
-            }
-            _userList.Clear();
-            for (int i = 0; i < obj.UserList.Count; i++){
-                _userList.Add(obj.UserList[i]);
-            }
             if (null ==  obj.RecordList) return false;
             if (null ==  _recordList) {
                 _recordList = new List<Record>();
@@ -217,7 +184,6 @@ namespace GameA
         }
 
         public FriendRecordData () { 
-            _userList = new List<UserInfoSimple>();
             _recordList = new List<Record>();
             OnCreate();
         }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlRelationshipAddNew : UPCtrlRelationshipBase<UMCtrlRelationShortItem>
+    public class UPCtrlRelationshipAddNew : UPCtrlRelationshipBase
     {
         private AddUserList _addDataAddUserList;
 
@@ -40,6 +41,14 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("请求数据失败。");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
+        }
+
+        protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlRelationShortItem();
+            item.SetMenu(_menu);
+            item.Init(parent, _resScenary);
+            return item;
         }
 
         private void OnSearchBtn()

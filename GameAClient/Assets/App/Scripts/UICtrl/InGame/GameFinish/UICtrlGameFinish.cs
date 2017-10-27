@@ -333,7 +333,7 @@ namespace GameA
                     _cachedView.PlayRecordObj.SetActive(false);
                     //Todo 更新奖励
                     //UpdateReward ();
-                    
+
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
@@ -517,7 +517,7 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
-                   
+
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     break;
             }
@@ -532,18 +532,19 @@ namespace GameA
                 () =>
                 {
                     ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImg,
-                        _friendRecordData.UserDetailList[0].UserInfoSimple.HeadImgUrl, _cachedView.DefaultHeadImg);
+                        _friendRecordData.RecordList[0].UserInfoDetail.UserInfoSimple.HeadImgUrl,
+                        _cachedView.DefaultHeadImg);
                     _friendRecord = _friendRecordData.RecordList[0];
                 },
                 code =>
                 {
                     //测试数据
-                    ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg,
-                        _cachedView.DefaultHeadImg);
-                    if (gameMode.Project.AdventureLevelRankList.RecordList.Count > 0)
-                    {
-                        _friendRecord = gameMode.Project.AdventureLevelRankList.RecordList[0];
-                    }
+//                    ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg,
+//                        _cachedView.DefaultHeadImg);
+//                    if (gameMode.Project.AdventureLevelRankList.RecordList.Count > 0)
+//                    {
+//                        _friendRecord = gameMode.Project.AdventureLevelRankList.RecordList[0];
+//                    }
                 });
         }
 
