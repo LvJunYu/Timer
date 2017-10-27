@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 using YIMEngine;
 
 namespace GameA
@@ -12,6 +14,7 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlChatBase _curMenuCtrl;
         private UPCtrlChatBase[] _menuCtrlArray;
+        private bool _isEditingText;
 
         protected override void OnViewCreated()
         {
@@ -21,6 +24,8 @@ namespace GameA
             _cachedView.FaceBtn.onClick.AddListener(OnFaceBtn);
             _cachedView.VoiceBtn.OnPress += OnStartRecordVoiceBtn;
             _cachedView.VoiceBtn.OnRelease += OnSendVoiceBtn;
+            _cachedView.InptField.onValueChanged.AddListener(OnInptFieldValueChanged);
+            _cachedView.InptField.onEndEdit.AddListener(OnInptFieldEndEdit);
             _menuCtrlArray = new UPCtrlChatBase[(int) EMenu.Max];
 
             var upCtrlChatWorld = new UPCtrlChatWorld();
@@ -58,7 +63,7 @@ namespace GameA
             base.OnOpen(parameter);
             if (parameter != null)
             {
-                _curMenu = (EMenu)parameter;
+                _curMenu = (EMenu) parameter;
             }
             if (_curMenu == EMenu.None)
             {
@@ -116,6 +121,13 @@ namespace GameA
 
         public override void OnUpdate()
         {
+            if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+            {
+                if (_isEditingText)
+                {
+                    OnSendTexBtn();
+                }
+            }
             //刷洗好友在线信息
             if (_menuCtrlArray != null && _menuCtrlArray[(int) EMenu.Friend] != null)
             {
@@ -298,6 +310,16 @@ namespace GameA
                     _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
                 });
             }
+        }
+
+        private void OnInptFieldEndEdit(string arg0)
+        {
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => _isEditingText = false));
+        }
+
+        private void OnInptFieldValueChanged(string arg0)
+        {
+            _isEditingText = true;
         }
 
         private void OnCloseBtn()
