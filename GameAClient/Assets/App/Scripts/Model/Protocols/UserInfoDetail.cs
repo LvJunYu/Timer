@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoDetail : SyncronisticData {
+    public partial class UserInfoDetail : SyncronisticData<Msg_SC_DAT_UserInfoDetail> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -280,9 +280,38 @@ namespace GameA
             }
             _loginCount = msg.LoginCount;           
             _lastLoginTime = msg.LastLoginTime;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserInfoDetail msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.UserInfoSimple){
+                if (null == _userInfoSimple){
+                    _userInfoSimple = new UserInfoSimple(msg.UserInfoSimple);
+                }
+                _userInfoSimple.CopyMsgData(msg.UserInfoSimple);
+            }
+            _userName = msg.UserName;           
+            _phoneNum = msg.PhoneNum;           
+            _birthDay = msg.BirthDay;           
+            _country = msg.Country;           
+            _province = msg.Province;           
+            _city = msg.City;           
+            _profile = msg.Profile;           
+            _updateTime = msg.UpdateTime;           
+            _roleType = msg.RoleType;           
+            if(null != msg.RelationStatistic){
+                if (null == _relationStatistic){
+                    _relationStatistic = new UserRelationStatistic(msg.RelationStatistic);
+                }
+                _relationStatistic.CopyMsgData(msg.RelationStatistic);
+            }
+            _loginCount = msg.LoginCount;           
+            _lastLoginTime = msg.LastLoginTime;           
+            return true;
+        } 
 
         public bool DeepCopy (UserInfoDetail obj)
         {

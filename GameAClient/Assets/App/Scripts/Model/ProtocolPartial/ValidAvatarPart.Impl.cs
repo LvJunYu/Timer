@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ValidAvatarPart : SyncronisticData
+    public partial class ValidAvatarPart
     {
         #region 字段
 

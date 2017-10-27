@@ -9,10 +9,11 @@ using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    public class UserManager : ICacheDataManager<UserInfoDetail>
+    public class UserManager
     {
         public static readonly UserManager Instance = new UserManager();
 
@@ -33,7 +34,20 @@ namespace GameA
 
         public UserInfoDetail UpdateData(Msg_SC_DAT_UserInfoSimple msgData)
         {
-            return UpdateData(new UserInfoSimple(msgData));
+            if (msgData == null)
+            {
+                return null;
+            }
+            UserInfoDetail userInfoDetail;
+            if (_caches.TryGetItem(msgData.UserId, out userInfoDetail))
+            {
+                userInfoDetail.UserInfoSimple.CopyMsgData(msgData);
+                return userInfoDetail;
+            }
+            userInfoDetail = new UserInfoDetail();
+            userInfoDetail.UserInfoSimple = new UserInfoSimple(msgData);
+            _caches.Insert(msgData.UserId, userInfoDetail);
+            return userInfoDetail;
         }
 
         public UserInfoDetail UpdateData(UserInfoSimple newSimpleData)
@@ -78,7 +92,7 @@ namespace GameA
             });
         }
 
-        public override bool TryGetData(long guid, out UserInfoDetail user)
+        public bool TryGetData(long guid, out UserInfoDetail user)
         {
             if (_caches.TryGetItem(guid, out user))
             {

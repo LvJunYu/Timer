@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectRecentPlayedUserData : SyncronisticData {
+    public partial class ProjectRecentPlayedUserData : SyncronisticData<Msg_ProjectRecentPlayedUserData> {
         #region 字段
         /// <summary>
         /// 
@@ -51,9 +51,22 @@ namespace GameA
                 _userData.OnSyncFromParent(msg.UserData);
             }
             _lastPlayTime = msg.LastPlayTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_ProjectRecentPlayedUserData msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.UserData){
+                if (null == _userData){
+                    _userData = new UserInfoSimple(msg.UserData);
+                }
+                _userData.CopyMsgData(msg.UserData);
+            }
+            _lastPlayTime = msg.LastPlayTime;           
+            return true;
+        } 
 
         public bool DeepCopy (ProjectRecentPlayedUserData obj)
         {

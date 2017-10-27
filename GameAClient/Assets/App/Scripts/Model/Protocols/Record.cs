@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Record : SyncronisticData {
+    public partial class Record : SyncronisticData<Msg_SC_DAT_Record> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -400,9 +400,46 @@ namespace GameA
             _userBuy = msg.UserBuy;           
             _userLike = msg.UserLike;           
             _userFavorite = msg.UserFavorite;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_Record msg)
+        {
+            if (null == msg) return false;
+            _recordId = msg.RecordId;           
+            _projectId = msg.ProjectId;           
+            _section = msg.Section;           
+            _level = msg.Level;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _score = msg.Score;           
+            _usedTime = msg.UsedTime;           
+            _createTime = msg.CreateTime;           
+            _recordPath = msg.RecordPath;           
+            _result = msg.Result;           
+            _playCount = msg.PlayCount;           
+            _lastPlayTime = msg.LastPlayTime;           
+            _playUserCount = msg.PlayUserCount;           
+            _favoriteCount = msg.FavoriteCount;           
+            _likeCount = msg.LikeCount;           
+            _commentCount = msg.CommentCount;           
+            _shareCount = msg.ShareCount;           
+            if(null != msg.ProjectData){
+                if (null == _projectData){
+                    _projectData = new Project(msg.ProjectData);
+                }
+                _projectData.CopyMsgData(msg.ProjectData);
+            }
+            _userBuy = msg.UserBuy;           
+            _userLike = msg.UserLike;           
+            _userFavorite = msg.UserFavorite;           
+            return true;
+        } 
 
         public bool DeepCopy (Record obj)
         {

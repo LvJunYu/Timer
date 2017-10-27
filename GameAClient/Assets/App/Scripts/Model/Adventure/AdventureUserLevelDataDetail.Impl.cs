@@ -1,4 +1,6 @@
-﻿namespace GameA
+﻿using SoyEngine.Proto;
+
+namespace GameA
 {
     public partial class AdventureUserLevelDataDetail
     {
@@ -9,10 +11,10 @@
             get { return _highScoreFriendInfoDetail; }
         }
 
-        protected override void OnSyncPartial ()
+        protected override void OnSyncPartial (Msg_SC_DAT_AdventureUserLevelDataDetail obj)
         {
             base.OnSyncPartial ();
-            _highScoreFriendInfoDetail = UserManager.Instance.UpdateData(_highScoreFriendInfo);
+            _highScoreFriendInfoDetail = UserManager.Instance.UpdateData(obj.HighScoreFriendInfo);
         }
     }
 }

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserSection : SyncronisticData {
+    public partial class AdventureUserSection : SyncronisticData<Msg_SC_DAT_AdventureUserSection> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -170,9 +170,31 @@ namespace GameA
             for (int i = 0; i < msg.BonusLevelUserDataList.Count; i++) {
                 _bonusLevelUserDataList.Add(new AdventureUserLevelDataDetail(msg.BonusLevelUserDataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AdventureUserSection msg)
+        {
+            if (null == msg) return false;
+            _section = msg.Section;           
+            _treasureMapBuyCount = msg.TreasureMapBuyCount;           
+            if (null ==  _normalLevelUserDataList) {
+                _normalLevelUserDataList = new List<AdventureUserLevelDataDetail>();
+            }
+            _normalLevelUserDataList.Clear();
+            for (int i = 0; i < msg.NormalLevelUserDataList.Count; i++) {
+                _normalLevelUserDataList.Add(new AdventureUserLevelDataDetail(msg.NormalLevelUserDataList[i]));
+            }
+            if (null ==  _bonusLevelUserDataList) {
+                _bonusLevelUserDataList = new List<AdventureUserLevelDataDetail>();
+            }
+            _bonusLevelUserDataList.Clear();
+            for (int i = 0; i < msg.BonusLevelUserDataList.Count; i++) {
+                _bonusLevelUserDataList.Add(new AdventureUserLevelDataDetail(msg.BonusLevelUserDataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AdventureUserSection obj)
         {

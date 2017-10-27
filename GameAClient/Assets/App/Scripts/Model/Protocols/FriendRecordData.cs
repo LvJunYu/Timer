@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class FriendRecordData : SyncronisticData {
+    public partial class FriendRecordData : SyncronisticData<Msg_SC_DAT_FriendRecordData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -153,9 +153,22 @@ namespace GameA
             for (int i = 0; i < msg.RecordList.Count; i++) {
                 _recordList.Add(new Record(msg.RecordList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_FriendRecordData msg)
+        {
+            if (null == msg) return false;
+            if (null ==  _recordList) {
+                _recordList = new List<Record>();
+            }
+            _recordList.Clear();
+            for (int i = 0; i < msg.RecordList.Count; i++) {
+                _recordList.Add(new Record(msg.RecordList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (FriendRecordData obj)
         {

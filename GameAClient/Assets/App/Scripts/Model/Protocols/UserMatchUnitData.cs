@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserMatchUnitData : SyncronisticData {
+    public partial class UserMatchUnitData : SyncronisticData<Msg_UserMatchUnitData> {
         #region 字段
         /// <summary>
         /// 用户Id
@@ -50,9 +50,23 @@ namespace GameA
             for (int i = 0; i < msg.ItemList.Count; i++) {
                 _itemList.Add(new MatchUnitItem(msg.ItemList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_UserMatchUnitData msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if (null ==  _itemList) {
+                _itemList = new List<MatchUnitItem>();
+            }
+            _itemList.Clear();
+            for (int i = 0; i < msg.ItemList.Count; i++) {
+                _itemList.Add(new MatchUnitItem(msg.ItemList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (UserMatchUnitData obj)
         {

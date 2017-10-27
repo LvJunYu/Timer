@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData {
+    public partial class PersonalProjectList : SyncronisticData<Msg_SC_DAT_PersonalProjectList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -183,9 +183,24 @@ namespace GameA
             for (int i = 0; i < msg.ProjectList.Count; i++) {
                 _projectList.Add(new Project(msg.ProjectList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_PersonalProjectList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _projectList) {
+                _projectList = new List<Project>();
+            }
+            _projectList.Clear();
+            for (int i = 0; i < msg.ProjectList.Count; i++) {
+                _projectList.Add(new Project(msg.ProjectList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (PersonalProjectList obj)
         {

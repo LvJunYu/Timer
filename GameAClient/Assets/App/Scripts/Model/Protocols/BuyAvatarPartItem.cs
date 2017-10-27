@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class BuyAvatarPartItem : SyncronisticData {
+    public partial class BuyAvatarPartItem : SyncronisticData<Msg_BuyAvatarPartItem> {
         #region 字段
         /// <summary>
         /// 类型
@@ -92,9 +92,20 @@ namespace GameA
             _durationType = msg.DurationType;     
             _currencyType = msg.CurrencyType;     
             _discountCouponId = msg.DiscountCouponId;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_BuyAvatarPartItem msg)
+        {
+            if (null == msg) return false;
+            _partType = msg.PartType;           
+            _partId = msg.PartId;           
+            _durationType = msg.DurationType;           
+            _currencyType = msg.CurrencyType;           
+            _discountCouponId = msg.DiscountCouponId;           
+            return true;
+        } 
 
         public bool DeepCopy (BuyAvatarPartItem obj)
         {

@@ -10,13 +10,13 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class RecordManager : ICacheDataManager<Record>
+    public class RecordManager
     {
         public readonly static RecordManager Instance = new RecordManager();
 
         private readonly LRUCache<long, Record> _caches = new LRUCache<long, Record>(ConstDefine.MaxLRUProjectCount);
 
-        public override bool TryGetData(long guid, out Record t)
+        public bool TryGetData(long guid, out Record t)
         {
             if (_caches.TryGetItem(guid, out t))
             {

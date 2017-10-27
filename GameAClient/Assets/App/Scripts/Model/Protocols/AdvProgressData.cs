@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdvProgressData : SyncronisticData {
+    public partial class AdvProgressData : SyncronisticData<Msg_AdvProgressData> {
         #region 字段
         /// <summary>
         /// 章节
@@ -65,9 +65,24 @@ namespace GameA
             for (int i = 0; i < msg.FriendsDataList.Count; i++) {
                 _friendsDataList.Add(new UserInfoSimple(msg.FriendsDataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_AdvProgressData msg)
+        {
+            if (null == msg) return false;
+            _section = msg.Section;           
+            _level = msg.Level;           
+            if (null ==  _friendsDataList) {
+                _friendsDataList = new List<UserInfoSimple>();
+            }
+            _friendsDataList.Clear();
+            for (int i = 0; i < msg.FriendsDataList.Count; i++) {
+                _friendsDataList.Add(new UserInfoSimple(msg.FriendsDataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AdvProgressData obj)
         {

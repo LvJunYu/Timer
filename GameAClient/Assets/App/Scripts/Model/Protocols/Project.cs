@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Project : SyncronisticData {
+    public partial class Project : SyncronisticData<Msg_SC_DAT_Project> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -527,9 +527,59 @@ namespace GameA
             _winCondition = msg.WinCondition;           
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_Project msg)
+        {
+            if (null == msg) return false;
+            _projectId = msg.ProjectId;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _name = msg.Name;           
+            _summary = msg.Summary;           
+            _iconPath = msg.IconPath;           
+            _resPath = msg.ResPath;           
+            _createTime = msg.CreateTime;           
+            _localDataState = msg.LocalDataState;           
+            _projectStatus = msg.ProjectStatus;           
+            _localUpdateTime = msg.LocalUpdateTime;           
+            _programVersion = msg.ProgramVersion;           
+            _resourcesVersion = msg.ResourcesVersion;           
+            _isValid = msg.IsValid;           
+            if(null != msg.ExtendData){
+                if (null == _extendData){
+                    _extendData = new ProjectExtend(msg.ExtendData);
+                }
+                _extendData.CopyMsgData(msg.ExtendData);
+            }
+            if(null != msg.ProjectUserData){
+                if (null == _projectUserData){
+                    _projectUserData = new ProjectUserData(msg.ProjectUserData);
+                }
+                _projectUserData.CopyMsgData(msg.ProjectUserData);
+            }
+            _passFlag = msg.PassFlag;           
+            _recordUsedTime = msg.RecordUsedTime;           
+            _targetSection = msg.TargetSection;           
+            _targetLevel = msg.TargetLevel;           
+            _mapWidth = msg.MapWidth;           
+            _mapHeight = msg.MapHeight;           
+            _totalUnitCount = msg.TotalUnitCount;           
+            _addCount = msg.AddCount;           
+            _deleteCount = msg.DeleteCount;           
+            _modifyCount = msg.ModifyCount;           
+            _timeLimit = msg.TimeLimit;           
+            _winCondition = msg.WinCondition;           
+            _updateTime = msg.UpdateTime;           
+            _publishTime = msg.PublishTime;           
+            return true;
+        } 
 
         public bool DeepCopy (Project obj)
         {

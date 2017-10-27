@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorkshopUnitItem : SyncronisticData {
+    public partial class WorkshopUnitItem : SyncronisticData<Msg_WorkshopUnitItem> {
         #region 字段
         /// <summary>
         /// 地块Id
@@ -47,9 +47,17 @@ namespace GameA
             if (null == msg) return false;
             _unitId = msg.UnitId;     
             _unitCount = msg.UnitCount;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_WorkshopUnitItem msg)
+        {
+            if (null == msg) return false;
+            _unitId = msg.UnitId;           
+            _unitCount = msg.UnitCount;           
+            return true;
+        } 
 
         public bool DeepCopy (WorkshopUnitItem obj)
         {

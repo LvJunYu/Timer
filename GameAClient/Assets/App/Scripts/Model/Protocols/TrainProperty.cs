@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class TrainProperty : SyncronisticData {
+    public partial class TrainProperty : SyncronisticData<Msg_TrainProperty> {
         #region 字段
         /// <summary>
         /// 属性ID
@@ -77,9 +77,19 @@ namespace GameA
             _level = msg.Level;     
             _isTraining = msg.IsTraining;     
             _trainStartTime = msg.TrainStartTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_TrainProperty msg)
+        {
+            if (null == msg) return false;
+            _property = msg.Property;           
+            _level = msg.Level;           
+            _isTraining = msg.IsTraining;           
+            _trainStartTime = msg.TrainStartTime;           
+            return true;
+        } 
 
         public bool DeepCopy (TrainProperty obj)
         {

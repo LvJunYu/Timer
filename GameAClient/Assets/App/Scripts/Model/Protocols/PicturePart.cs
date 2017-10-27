@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PicturePart : SyncronisticData {
+    public partial class PicturePart : SyncronisticData<Msg_PicturePart> {
         #region 字段
         /// <summary>
         /// 拼图Id
@@ -62,9 +62,18 @@ namespace GameA
             _pictureId = msg.PictureId;     
             _pictureInx = msg.PictureInx;     
             _totalCount = msg.TotalCount;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_PicturePart msg)
+        {
+            if (null == msg) return false;
+            _pictureId = msg.PictureId;           
+            _pictureInx = msg.PictureInx;           
+            _totalCount = msg.TotalCount;           
+            return true;
+        } 
 
         public bool DeepCopy (PicturePart obj)
         {

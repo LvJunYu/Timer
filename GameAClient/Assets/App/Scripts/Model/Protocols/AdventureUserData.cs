@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserData : SyncronisticData {
+    public partial class AdventureUserData : SyncronisticData<Msg_SC_DAT_AdventureUserData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -140,9 +140,34 @@ namespace GameA
             for (int i = 0; i < msg.SectionList.Count; i++) {
                 _sectionList.Add(new AdventureUserSection(msg.SectionList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AdventureUserData msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.UserEnergyData){
+                if (null == _userEnergyData){
+                    _userEnergyData = new UserEnergy(msg.UserEnergyData);
+                }
+                _userEnergyData.CopyMsgData(msg.UserEnergyData);
+            }
+            if(null != msg.AdventureUserProgress){
+                if (null == _adventureUserProgress){
+                    _adventureUserProgress = new AdventureUserProgress(msg.AdventureUserProgress);
+                }
+                _adventureUserProgress.CopyMsgData(msg.AdventureUserProgress);
+            }
+            if (null ==  _sectionList) {
+                _sectionList = new List<AdventureUserSection>();
+            }
+            _sectionList.Clear();
+            for (int i = 0; i < msg.SectionList.Count; i++) {
+                _sectionList.Add(new AdventureUserSection(msg.SectionList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AdventureUserData obj)
         {

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AppData : SyncronisticData {
+    public partial class AppData : SyncronisticData<Msg_SC_DAT_AppData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -161,9 +161,21 @@ namespace GameA
             _newestAppVersion = msg.NewestAppVersion;           
             _serverTime = msg.ServerTime;           
             _aPISupport = msg.APISupport;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AppData msg)
+        {
+            if (null == msg) return false;
+            _imageUrlRoot = msg.ImageUrlRoot;           
+            _fileUrlRoot = msg.FileUrlRoot;           
+            _gameResRoot = msg.GameResRoot;           
+            _newestAppVersion = msg.NewestAppVersion;           
+            _serverTime = msg.ServerTime;           
+            _aPISupport = msg.APISupport;           
+            return true;
+        } 
 
         public bool DeepCopy (AppData obj)
         {

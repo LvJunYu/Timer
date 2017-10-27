@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRelationWithMe : SyncronisticData {
+    public partial class UserRelationWithMe : SyncronisticData<Msg_SC_DAT_UserRelationWithMe> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -161,9 +161,21 @@ namespace GameA
             _isFriend = msg.IsFriend;           
             _blockedByMe = msg.BlockedByMe;           
             _friendliness = msg.Friendliness;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserRelationWithMe msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            _followMe = msg.FollowMe;           
+            _followedByMe = msg.FollowedByMe;           
+            _isFriend = msg.IsFriend;           
+            _blockedByMe = msg.BlockedByMe;           
+            _friendliness = msg.Friendliness;           
+            return true;
+        } 
 
         public bool DeepCopy (UserRelationWithMe obj)
         {

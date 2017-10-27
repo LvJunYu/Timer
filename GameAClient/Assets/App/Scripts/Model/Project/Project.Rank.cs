@@ -14,7 +14,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class Project : SyncronisticData {
+	public partial class Project{
         #region 变量
 //        private List<PlayedProjectUser> _recentPlayedUserList;
 

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class UserEnergy : SyncronisticData {
+	public partial class UserEnergy{
 		// 默认最大体力点
 		private const int DefaultEnergyCapacity = 30;
 		// 默认体力增长时间／每点

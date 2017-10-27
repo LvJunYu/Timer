@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class RaffleTicketItem : SyncronisticData {
+    public partial class RaffleTicketItem : SyncronisticData<Msg_RaffleTicketItem> {
         #region 字段
         /// <summary>
         /// 类型
@@ -62,9 +62,18 @@ namespace GameA
             _type = msg.Type;     
             _id = msg.Id;     
             _count = msg.Count;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_RaffleTicketItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _id = msg.Id;           
+            _count = msg.Count;           
+            return true;
+        } 
 
         public bool DeepCopy (RaffleTicketItem obj)
         {

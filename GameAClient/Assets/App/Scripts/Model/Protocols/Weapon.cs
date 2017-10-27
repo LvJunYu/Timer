@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Weapon : SyncronisticData {
+    public partial class Weapon : SyncronisticData<Msg_Weapon> {
         #region 字段
         /// <summary>
         /// 武器Id
@@ -47,9 +47,17 @@ namespace GameA
             if (null == msg) return false;
             _id = msg.Id;     
             _level = msg.Level;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_Weapon msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            _level = msg.Level;           
+            return true;
+        } 
 
         public bool DeepCopy (Weapon obj)
         {

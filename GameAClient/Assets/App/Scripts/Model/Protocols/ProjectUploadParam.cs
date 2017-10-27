@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectUploadParam : SyncronisticData {
+    public partial class ProjectUploadParam : SyncronisticData<Msg_ProjectUploadParam> {
         #region 字段
         /// <summary>
         /// 添加的地块信息
@@ -200,9 +200,33 @@ namespace GameA
             _recordUsedLifeCount = msg.RecordUsedLifeCount;     
             _operateCount = msg.OperateCount;     
             _totalOperateTime = msg.TotalOperateTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_ProjectUploadParam msg)
+        {
+            if (null == msg) return false;
+            if (null ==  _usedUnitDataList) {
+                _usedUnitDataList = new List<UnitDataItem>();
+            }
+            _usedUnitDataList.Clear();
+            for (int i = 0; i < msg.UsedUnitDataList.Count; i++) {
+                _usedUnitDataList.Add(new UnitDataItem(msg.UsedUnitDataList[i]));
+            }
+            _mapWidth = msg.MapWidth;           
+            _mapHeight = msg.MapHeight;           
+            _totalUnitCount = msg.TotalUnitCount;           
+            _addCount = msg.AddCount;           
+            _deleteCount = msg.DeleteCount;           
+            _modifyCount = msg.ModifyCount;           
+            _reformRate = msg.ReformRate;           
+            _recordRestartCount = msg.RecordRestartCount;           
+            _recordUsedLifeCount = msg.RecordUsedLifeCount;           
+            _operateCount = msg.OperateCount;           
+            _totalOperateTime = msg.TotalOperateTime;           
+            return true;
+        } 
 
         public bool DeepCopy (ProjectUploadParam obj)
         {

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserLevel : SyncronisticData {
+    public partial class UserLevel{
         protected override void OnSyncPartial ()
         {
             base.OnSyncPartial ();

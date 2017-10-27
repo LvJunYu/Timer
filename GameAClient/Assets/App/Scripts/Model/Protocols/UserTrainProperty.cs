@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserTrainProperty : SyncronisticData {
+    public partial class UserTrainProperty : SyncronisticData<Msg_SC_DAT_UserTrainProperty> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -141,9 +141,25 @@ namespace GameA
                 _itemDataList.Add(new TrainProperty(msg.ItemDataList[i]));
             }
             _grade = msg.Grade;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserTrainProperty msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            _trainPoint = msg.TrainPoint;           
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<TrainProperty>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < msg.ItemDataList.Count; i++) {
+                _itemDataList.Add(new TrainProperty(msg.ItemDataList[i]));
+            }
+            _grade = msg.Grade;           
+            return true;
+        } 
 
         public bool DeepCopy (UserTrainProperty obj)
         {

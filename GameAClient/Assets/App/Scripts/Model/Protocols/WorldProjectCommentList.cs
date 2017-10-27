@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorldProjectCommentList : SyncronisticData {
+    public partial class WorldProjectCommentList : SyncronisticData<Msg_SC_DAT_WorldProjectCommentList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -217,9 +217,25 @@ namespace GameA
                 _commentList.Add(new ProjectComment(msg.CommentList[i]));
             }
             _totalCount = msg.TotalCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_WorldProjectCommentList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _commentList) {
+                _commentList = new List<ProjectComment>();
+            }
+            _commentList.Clear();
+            for (int i = 0; i < msg.CommentList.Count; i++) {
+                _commentList.Add(new ProjectComment(msg.CommentList[i]));
+            }
+            _totalCount = msg.TotalCount;           
+            return true;
+        } 
 
         public bool DeepCopy (WorldProjectCommentList obj)
         {

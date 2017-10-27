@@ -11,13 +11,13 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class ProjectManager : ICacheDataManager<Project>
+    public class ProjectManager
     {
         public readonly static ProjectManager Instance = new ProjectManager();
 
         private readonly LRUCache<long, Project> _caches = new LRUCache<long, Project>(ConstDefine.MaxLRUProjectCount);
         
-        public override bool TryGetData(long guid, out Project project)
+        public bool TryGetData(long guid, out Project project)
         {
             if (_caches.TryGetItem(guid, out project))
             {
@@ -48,7 +48,7 @@ namespace GameA
             return isAll;
         }
 
-        public override List<Project> GetDatas(List<long> guids)
+        public List<Project> GetDatas(List<long> guids)
         {
             var projects = new List<Project>(guids.Count);
             for (int i = 0; i < guids.Count; i++)

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectUserData : SyncronisticData {
+    public partial class ProjectUserData : SyncronisticData<Msg_ProjectUserData> {
         #region 字段
         /// <summary>
         /// 胜利条件枚举
@@ -137,9 +137,23 @@ namespace GameA
             _lastFavoriteTime = msg.LastFavoriteTime;     
             _completeCount = msg.CompleteCount;     
             _lastPlayTime = msg.LastPlayTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_ProjectUserData msg)
+        {
+            if (null == msg) return false;
+            _projectId = msg.ProjectId;           
+            _userId = msg.UserId;           
+            _likeState = msg.LikeState;           
+            _lastLikeTime = msg.LastLikeTime;           
+            _favorite = msg.Favorite;           
+            _lastFavoriteTime = msg.LastFavoriteTime;           
+            _completeCount = msg.CompleteCount;           
+            _lastPlayTime = msg.LastPlayTime;           
+            return true;
+        } 
 
         public bool DeepCopy (ProjectUserData obj)
         {

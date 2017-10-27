@@ -1,4 +1,6 @@
-﻿namespace GameA
+﻿using SoyEngine.Proto;
+
+namespace GameA
 {
     public partial class Mail
     {
@@ -9,10 +11,10 @@
             get { return _userInfoDetail; }
         }
 
-        protected override void OnSyncPartial ()
+        protected override void OnSyncPartial(Msg_Mail msg)
         {
             base.OnSyncPartial ();
-            _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
+            _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
         }
 //        private string _mailfetched = "icon_enclosure_d";
 //        private string _mailUnfetched = "icon_enclosure";

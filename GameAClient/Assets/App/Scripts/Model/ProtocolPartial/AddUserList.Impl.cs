@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -11,13 +12,13 @@ namespace GameA
             get { return _dataDetailList; }
         }
 
-        protected override void OnSyncPartial()
+        protected override void OnSyncPartial(Msg_SC_DAT_AddUserList msg)
         {
             if (_dataList == null) return;
             _dataDetailList = new List<UserInfoDetail>(_dataList.Count);
             for (int i = 0; i < _dataList.Count; i++)
             {
-                _dataDetailList.Add(UserManager.Instance.UpdateData(_dataList[i]));
+                _dataDetailList.Add(UserManager.Instance.UpdateData(msg.DataList[i]));
             }
         }
     }

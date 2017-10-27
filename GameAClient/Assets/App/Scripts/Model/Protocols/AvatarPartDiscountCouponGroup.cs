@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AvatarPartDiscountCouponGroup : SyncronisticData {
+    public partial class AvatarPartDiscountCouponGroup : SyncronisticData<Msg_AvatarPartDiscountCouponGroup> {
         #region 字段
         /// <summary>
         /// 部件
@@ -65,9 +65,24 @@ namespace GameA
             for (int i = 0; i < msg.ItemDataList.Count; i++) {
                 _itemDataList.Add(new AvatarPartDiscountCouponItem(msg.ItemDataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_AvatarPartDiscountCouponGroup msg)
+        {
+            if (null == msg) return false;
+            _partType = msg.PartType;           
+            _partId = msg.PartId;           
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<AvatarPartDiscountCouponItem>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < msg.ItemDataList.Count; i++) {
+                _itemDataList.Add(new AvatarPartDiscountCouponItem(msg.ItemDataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AvatarPartDiscountCouponGroup obj)
         {

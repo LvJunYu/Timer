@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorldRankItem : SyncronisticData {
+    public partial class WorldRankItem : SyncronisticData<Msg_WorldRankItem> {
         #region 字段
         /// <summary>
         /// 用户数据
@@ -51,9 +51,22 @@ namespace GameA
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
             _count = msg.Count;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_WorldRankItem msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _count = msg.Count;           
+            return true;
+        } 
 
         public bool DeepCopy (WorldRankItem obj)
         {

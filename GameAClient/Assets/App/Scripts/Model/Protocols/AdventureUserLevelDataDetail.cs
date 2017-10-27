@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserLevelDataDetail : SyncronisticData {
+    public partial class AdventureUserLevelDataDetail : SyncronisticData<Msg_SC_DAT_AdventureUserLevelDataDetail> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -285,9 +285,58 @@ namespace GameA
             for (int i = 0; i < msg.RecentRecordList.Count; i++) {
                 _recentRecordList.Add(new Record(msg.RecentRecordList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AdventureUserLevelDataDetail msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.SimpleData){
+                if (null == _simpleData){
+                    _simpleData = new AdventureUserLevelData(msg.SimpleData);
+                }
+                _simpleData.CopyMsgData(msg.SimpleData);
+            }
+            if(null != msg.HighScoreRecord){
+                if (null == _highScoreRecord){
+                    _highScoreRecord = new Record(msg.HighScoreRecord);
+                }
+                _highScoreRecord.CopyMsgData(msg.HighScoreRecord);
+            }
+            if(null != msg.Star1FlagRecord){
+                if (null == _star1FlagRecord){
+                    _star1FlagRecord = new Record(msg.Star1FlagRecord);
+                }
+                _star1FlagRecord.CopyMsgData(msg.Star1FlagRecord);
+            }
+            if(null != msg.Star2FlagRecord){
+                if (null == _star2FlagRecord){
+                    _star2FlagRecord = new Record(msg.Star2FlagRecord);
+                }
+                _star2FlagRecord.CopyMsgData(msg.Star2FlagRecord);
+            }
+            if(null != msg.Star3FlagRecord){
+                if (null == _star3FlagRecord){
+                    _star3FlagRecord = new Record(msg.Star3FlagRecord);
+                }
+                _star3FlagRecord.CopyMsgData(msg.Star3FlagRecord);
+            }
+            if(null != msg.HighScoreFriendInfo){
+                if (null == _highScoreFriendInfo){
+                    _highScoreFriendInfo = new UserInfoSimple(msg.HighScoreFriendInfo);
+                }
+                _highScoreFriendInfo.CopyMsgData(msg.HighScoreFriendInfo);
+            }
+            if (null ==  _recentRecordList) {
+                _recentRecordList = new List<Record>();
+            }
+            _recentRecordList.Clear();
+            for (int i = 0; i < msg.RecentRecordList.Count; i++) {
+                _recentRecordList.Add(new Record(msg.RecentRecordList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AdventureUserLevelDataDetail obj)
         {

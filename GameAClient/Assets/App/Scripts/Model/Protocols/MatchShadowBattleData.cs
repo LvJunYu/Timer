@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MatchShadowBattleData : SyncronisticData {
+    public partial class MatchShadowBattleData : SyncronisticData<Msg_SC_DAT_MatchShadowBattleData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -174,9 +174,40 @@ namespace GameA
             } else {
                 _reward.OnSyncFromParent(msg.Reward);
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_MatchShadowBattleData msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            if(null != msg.UserData){
+                if (null == _userData){
+                    _userData = new UserInfoSimple(msg.UserData);
+                }
+                _userData.CopyMsgData(msg.UserData);
+            }
+            if(null != msg.Project){
+                if (null == _project){
+                    _project = new Project(msg.Project);
+                }
+                _project.CopyMsgData(msg.Project);
+            }
+            if(null != msg.Record){
+                if (null == _record){
+                    _record = new Record(msg.Record);
+                }
+                _record.CopyMsgData(msg.Record);
+            }
+            if(null != msg.Reward){
+                if (null == _reward){
+                    _reward = new Reward(msg.Reward);
+                }
+                _reward.CopyMsgData(msg.Reward);
+            }
+            return true;
+        } 
 
         public bool DeepCopy (MatchShadowBattleData obj)
         {

@@ -33,10 +33,10 @@ namespace GameA
             }
         }
 
-	    protected override void OnSyncPartial ()
+	    protected override void OnSyncPartial (Msg_SC_DAT_Record msg)
 	    {
 	        base.OnSyncPartial ();
-	        _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
+	        _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
 	    }
 	    
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)

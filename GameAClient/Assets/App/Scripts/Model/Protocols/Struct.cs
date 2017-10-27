@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Struct : SyncronisticData {
+    public partial class Struct : SyncronisticData<Msg_Struct> {
         #region 字段
         /// <summary>
         /// Id
@@ -47,9 +47,17 @@ namespace GameA
             if (null == msg) return false;
             _id = msg.Id;     
             _name = msg.Name;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_Struct msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            _name = msg.Name;           
+            return true;
+        } 
 
         public bool DeepCopy (Struct obj)
         {

@@ -1,4 +1,6 @@
-﻿namespace GameA
+﻿using SoyEngine.Proto;
+
+namespace GameA
 {
     public partial class ProjectRecentPlayedUserData
     {
@@ -9,10 +11,10 @@
             get { return _userDataDetail; }
         }
         
-        protected override void OnSyncPartial ()
+        protected override void OnSyncPartial (Msg_ProjectRecentPlayedUserData msg)
         {
             base.OnSyncPartial ();
-            _userDataDetail = UserManager.Instance.UpdateData(_userData);
+            _userDataDetail = UserManager.Instance.UpdateData(msg.UserData);
         }
     }
 }

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Mail : SyncronisticData {
+    public partial class Mail : SyncronisticData<Msg_Mail> {
         #region 字段
         /// <summary>
         /// Id
@@ -209,9 +209,42 @@ namespace GameA
             } else {
                 _shadowBattleData.OnSyncFromParent(msg.ShadowBattleData);
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_Mail msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _type = msg.Type;           
+            _title = msg.Title;           
+            _content = msg.Content;           
+            if(null != msg.AttachItemList){
+                if (null == _attachItemList){
+                    _attachItemList = new Reward(msg.AttachItemList);
+                }
+                _attachItemList.CopyMsgData(msg.AttachItemList);
+            }
+            _readFlag = msg.ReadFlag;           
+            _readTime = msg.ReadTime;           
+            _receiptedFlag = msg.ReceiptedFlag;           
+            _receiptedTime = msg.ReceiptedTime;           
+            _createTime = msg.CreateTime;           
+            if(null != msg.ShadowBattleData){
+                if (null == _shadowBattleData){
+                    _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
+                }
+                _shadowBattleData.CopyMsgData(msg.ShadowBattleData);
+            }
+            return true;
+        } 
 
         public bool DeepCopy (Mail obj)
         {

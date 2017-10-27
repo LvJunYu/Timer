@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class RecordUploadParam : SyncronisticData {
+    public partial class RecordUploadParam : SyncronisticData<Msg_RecordUploadParam> {
         #region 字段
         /// <summary>
         /// 
@@ -242,9 +242,30 @@ namespace GameA
             _killByMonsterCount = msg.KillByMonsterCount;     
             _breakBrickCount = msg.BreakBrickCount;     
             _trampCloudCount = msg.TrampCloudCount;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_RecordUploadParam msg)
+        {
+            if (null == msg) return false;
+            _success = msg.Success;           
+            _deadPos = msg.DeadPos;           
+            _usedTime = msg.UsedTime;           
+            _score = msg.Score;           
+            _scoreItemCount = msg.ScoreItemCount;           
+            _killMonsterCount = msg.KillMonsterCount;           
+            _leftTime = msg.LeftTime;           
+            _leftLife = msg.LeftLife;           
+            _star1Flag = msg.Star1Flag;           
+            _star2Flag = msg.Star2Flag;           
+            _star3Flag = msg.Star3Flag;           
+            _killByTrapCount = msg.KillByTrapCount;           
+            _killByMonsterCount = msg.KillByMonsterCount;           
+            _breakBrickCount = msg.BreakBrickCount;           
+            _trampCloudCount = msg.TrampCloudCount;           
+            return true;
+        } 
 
         public bool DeepCopy (RecordUploadParam obj)
         {

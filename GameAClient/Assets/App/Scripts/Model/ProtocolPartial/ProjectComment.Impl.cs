@@ -1,4 +1,6 @@
-﻿namespace GameA
+﻿using SoyEngine.Proto;
+
+namespace GameA
 {
     public partial class ProjectComment
     {
@@ -16,11 +18,11 @@
             get { return _targetUserInfoDetail; }
         }
 
-        protected override void OnSyncPartial ()
+        protected override void OnSyncPartial (Msg_ProjectComment msg)
         {
             base.OnSyncPartial ();
-            _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
-            _targetUserInfoDetail = UserManager.Instance.UpdateData(_targetUserInfo);
+            _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
+            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
         }
     }
 }

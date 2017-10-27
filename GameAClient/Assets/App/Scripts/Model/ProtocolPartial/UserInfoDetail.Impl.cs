@@ -5,7 +5,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoDetail : SyncronisticData
+    public partial class UserInfoDetail
     {
         #region 常量与字段
 

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserWeaponPartData : SyncronisticData {
+    public partial class UserWeaponPartData : SyncronisticData<Msg_SC_DAT_UserWeaponPartData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -111,9 +111,23 @@ namespace GameA
             for (int i = 0; i < msg.ItemDataList.Count; i++) {
                 _itemDataList.Add(new WeaponPart(msg.ItemDataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserWeaponPartData msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<WeaponPart>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < msg.ItemDataList.Count; i++) {
+                _itemDataList.Add(new WeaponPart(msg.ItemDataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (UserWeaponPartData obj)
         {

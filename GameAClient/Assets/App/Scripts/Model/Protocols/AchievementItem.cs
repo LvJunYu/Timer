@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AchievementItem : SyncronisticData {
+    public partial class AchievementItem : SyncronisticData<Msg_AchievementItem> {
         #region 字段
         /// <summary>
         /// 成就Id
@@ -47,9 +47,17 @@ namespace GameA
             if (null == msg) return false;
             _achievementId = msg.AchievementId;     
             _createTime = msg.CreateTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_AchievementItem msg)
+        {
+            if (null == msg) return false;
+            _achievementId = msg.AchievementId;           
+            _createTime = msg.CreateTime;           
+            return true;
+        } 
 
         public bool DeepCopy (AchievementItem obj)
         {

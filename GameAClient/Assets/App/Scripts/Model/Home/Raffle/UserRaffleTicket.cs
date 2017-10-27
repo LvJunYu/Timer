@@ -7,7 +7,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    public partial class UserRaffleTicket : SyncronisticData
+    public partial class UserRaffleTicket
     {
         //private Dictionary<ERaffleTicketType, RaffleItem> _RaffleTicketDict = new Dictionary<ERaffleTicketType, RaffleItem>();
         private Dictionary<long, int> _RaffleTicketDict = new Dictionary<long, int>();

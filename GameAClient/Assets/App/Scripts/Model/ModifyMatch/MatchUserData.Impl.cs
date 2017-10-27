@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MatchUserData : SyncronisticData {
+    public partial class MatchUserData{
         public enum EChallengeState {
             None,
             WaitForChance,

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserPictureFull : SyncronisticData {
+    public partial class UserPictureFull : SyncronisticData<Msg_SC_DAT_UserPictureFull> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -111,9 +111,23 @@ namespace GameA
             for (int i = 0; i < msg.ItemDataList.Count; i++) {
                 _itemDataList.Add(new PictureFull(msg.ItemDataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserPictureFull msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<PictureFull>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < msg.ItemDataList.Count; i++) {
+                _itemDataList.Add(new PictureFull(msg.ItemDataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (UserPictureFull obj)
         {

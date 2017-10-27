@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Reward : SyncronisticData {
+    public partial class Reward : SyncronisticData<Msg_Reward> {
         #region 字段
         /// <summary>
         /// 奖励列表
@@ -35,9 +35,22 @@ namespace GameA
             for (int i = 0; i < msg.ItemList.Count; i++) {
                 _itemList.Add(new RewardItem(msg.ItemList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_Reward msg)
+        {
+            if (null == msg) return false;
+            if (null ==  _itemList) {
+                _itemList = new List<RewardItem>();
+            }
+            _itemList.Clear();
+            for (int i = 0; i < msg.ItemList.Count; i++) {
+                _itemList.Add(new RewardItem(msg.ItemList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (Reward obj)
         {

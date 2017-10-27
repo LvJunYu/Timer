@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserLevel : SyncronisticData {
+    public partial class UserLevel : SyncronisticData<Msg_SC_DAT_UserLevel> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -176,9 +176,22 @@ namespace GameA
             _goldCoin = msg.GoldCoin;           
             _diamond = msg.Diamond;           
             _friendlinessCoin = msg.FriendlinessCoin;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserLevel msg)
+        {
+            if (null == msg) return false;
+            _creatorLevel = msg.CreatorLevel;           
+            _creatorExp = msg.CreatorExp;           
+            _playerLevel = msg.PlayerLevel;           
+            _playerExp = msg.PlayerExp;           
+            _goldCoin = msg.GoldCoin;           
+            _diamond = msg.Diamond;           
+            _friendlinessCoin = msg.FriendlinessCoin;           
+            return true;
+        } 
 
         public bool DeepCopy (UserLevel obj)
         {

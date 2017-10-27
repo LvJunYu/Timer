@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class HomePartItem : SyncronisticData {
+    public partial class HomePartItem : SyncronisticData<Msg_HomePartItem> {
         #region 字段
         /// <summary>
         /// 下边的枚举
@@ -77,9 +77,19 @@ namespace GameA
             _id = msg.Id;     
             _state = msg.State;     
             _level = msg.Level;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_HomePartItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _id = msg.Id;           
+            _state = msg.State;           
+            _level = msg.Level;           
+            return true;
+        } 
 
         public bool DeepCopy (HomePartItem obj)
         {

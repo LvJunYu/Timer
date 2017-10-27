@@ -14,7 +14,7 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-	public class SyncronisticData  {
+	public class SyncronisticData<TMsg> {
 		#region Fields
 		protected long _lastSyncTime;
 		protected long _lastDirtyTime;
@@ -90,7 +90,8 @@ namespace GameA
             _isRequesting = true;
 		}
 
-		protected virtual void OnSyncPartial () { }
+		protected virtual void OnSyncPartial (TMsg obj) { OnSyncPartial(); } 
+		protected virtual void OnSyncPartial () { } 
 
         protected virtual void OnCreate () { }
 		#endregion

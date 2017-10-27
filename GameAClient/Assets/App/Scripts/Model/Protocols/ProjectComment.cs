@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectComment : SyncronisticData {
+    public partial class ProjectComment : SyncronisticData<Msg_ProjectComment> {
         #region 字段
         /// <summary>
         /// 
@@ -115,9 +115,31 @@ namespace GameA
             _comment = msg.Comment;     
             _projectId = msg.ProjectId;     
             _createTime = msg.CreateTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+
+        public bool CopyMsgData (Msg_ProjectComment msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            if(null != msg.TargetUserInfo){
+                if (null == _targetUserInfo){
+                    _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
+                }
+                _targetUserInfo.CopyMsgData(msg.TargetUserInfo);
+            }
+            _comment = msg.Comment;           
+            _projectId = msg.ProjectId;           
+            _createTime = msg.CreateTime;           
+            return true;
+        } 
 
         public bool DeepCopy (ProjectComment obj)
         {

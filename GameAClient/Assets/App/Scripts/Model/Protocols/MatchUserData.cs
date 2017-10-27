@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MatchUserData : SyncronisticData {
+    public partial class MatchUserData : SyncronisticData<Msg_SC_DAT_MatchUserData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -480,9 +480,74 @@ namespace GameA
             }
             _playCountForReward = msg.PlayCountForReward;           
             _playCountForRewardCapacity = msg.PlayCountForRewardCapacity;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_MatchUserData msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if(null != msg.UnitData){
+                if (null == _unitData){
+                    _unitData = new UserMatchUnitData(msg.UnitData);
+                }
+                _unitData.CopyMsgData(msg.UnitData);
+            }
+            _curPublishTime = msg.CurPublishTime;           
+            if(null != msg.CurPublishProject){
+                if (null == _curPublishProject){
+                    _curPublishProject = new Project(msg.CurPublishProject);
+                }
+                _curPublishProject.CopyMsgData(msg.CurPublishProject);
+            }
+            _curReformSection = msg.CurReformSection;           
+            _curReformLevel = msg.CurReformLevel;           
+            _curReformState = msg.CurReformState;           
+            _reformIntervalSeconds = msg.ReformIntervalSeconds;           
+            if(null != msg.CurReformProject){
+                if (null == _curReformProject){
+                    _curReformProject = new Project(msg.CurReformProject);
+                }
+                _curReformProject.CopyMsgData(msg.CurReformProject);
+            }
+            _reformModifyUnitCapacity = msg.ReformModifyUnitCapacity;           
+            _reformAddUnitCapacity = msg.ReformAddUnitCapacity;           
+            _reformDeleteUnitCapacity = msg.ReformDeleteUnitCapacity;           
+            _leftChallengeCount = msg.LeftChallengeCount;           
+            _leftChallengeCountRefreshTime = msg.LeftChallengeCountRefreshTime;           
+            _challengeIntervalSecond = msg.ChallengeIntervalSecond;           
+            _challengeCapacity = msg.ChallengeCapacity;           
+            _curMatchChallengeCount = msg.CurMatchChallengeCount;           
+            _curSelectedChallengeType = msg.CurSelectedChallengeType;           
+            if(null != msg.EasyChallengeProjectData){
+                if (null == _easyChallengeProjectData){
+                    _easyChallengeProjectData = new Project(msg.EasyChallengeProjectData);
+                }
+                _easyChallengeProjectData.CopyMsgData(msg.EasyChallengeProjectData);
+            }
+            if(null != msg.MediumChallengeProjectData){
+                if (null == _mediumChallengeProjectData){
+                    _mediumChallengeProjectData = new Project(msg.MediumChallengeProjectData);
+                }
+                _mediumChallengeProjectData.CopyMsgData(msg.MediumChallengeProjectData);
+            }
+            if(null != msg.DifficultChallengeProjectData){
+                if (null == _difficultChallengeProjectData){
+                    _difficultChallengeProjectData = new Project(msg.DifficultChallengeProjectData);
+                }
+                _difficultChallengeProjectData.CopyMsgData(msg.DifficultChallengeProjectData);
+            }
+            if(null != msg.RandomChallengeProjectData){
+                if (null == _randomChallengeProjectData){
+                    _randomChallengeProjectData = new Project(msg.RandomChallengeProjectData);
+                }
+                _randomChallengeProjectData.CopyMsgData(msg.RandomChallengeProjectData);
+            }
+            _playCountForReward = msg.PlayCountForReward;           
+            _playCountForRewardCapacity = msg.PlayCountForRewardCapacity;           
+            return true;
+        } 
 
         public bool DeepCopy (MatchUserData obj)
         {

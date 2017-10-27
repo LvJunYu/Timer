@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AddUserList : SyncronisticData {
+    public partial class AddUserList : SyncronisticData<Msg_SC_DAT_AddUserList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -126,9 +126,24 @@ namespace GameA
             for (int i = 0; i < msg.DataList.Count; i++) {
                 _dataList.Add(new UserInfoSimple(msg.DataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
             return true;
         }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AddUserList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updataTime = msg.UpdataTime;           
+            if (null ==  _dataList) {
+                _dataList = new List<UserInfoSimple>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < msg.DataList.Count; i++) {
+                _dataList.Add(new UserInfoSimple(msg.DataList[i]));
+            }
+            return true;
+        } 
 
         public bool DeepCopy (AddUserList obj)
         {

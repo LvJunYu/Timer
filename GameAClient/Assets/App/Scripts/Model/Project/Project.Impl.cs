@@ -659,14 +659,14 @@ namespace GameA
             });
         }
 
-		protected override void OnSyncPartial ()
+		protected override void OnSyncPartial (Msg_SC_DAT_Project msg)
 		{
 			base.OnSyncPartial ();
 			if (_extendData != null)
             {
 				OnSyncProjectExtendData(_extendData);
             }
-		    _userInfoDetail = UserManager.Instance.UpdateData(_userInfo);
+		    _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
             FireProjectDataChangeEvent();
 		}
 

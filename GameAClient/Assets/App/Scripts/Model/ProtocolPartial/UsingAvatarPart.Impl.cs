@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class UsingAvatarPart : SyncronisticData {
+	public partial class UsingAvatarPart{
 		#region 字段
 		/// <summary>
 		/// 正在使用的头部
