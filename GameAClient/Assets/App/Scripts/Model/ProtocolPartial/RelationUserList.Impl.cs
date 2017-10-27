@@ -20,14 +20,6 @@ namespace GameA
 
         public void RequestMyFriends(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FriendList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                    return;
-                }
-            }
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -43,14 +35,6 @@ namespace GameA
 
         public void RequestMyFans(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FanList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                    return;
-                }
-            }
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -65,14 +49,6 @@ namespace GameA
 
         public void RequestMyFollows(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (FollowList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                    return;
-                }
-            }
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -87,14 +63,6 @@ namespace GameA
 
         public void RequestMyBlocks(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            if (BlockList != null)
-            {
-                if (successCallBack != null)
-                {
-                    successCallBack.Invoke();
-                    return;
-                }
-            }
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
@@ -119,15 +87,17 @@ namespace GameA
 
         public void RequestChat(UserInfoDetail userInfoDetail)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
-            LocalUser.Instance.RelationUserList.RequestMyFriends(() =>
+            RequestMyFriends(() =>
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                if (LocalUser.Instance.RelationUserList.FriendList.Contains(userInfoDetail))
+                int inx = FriendList.IndexOf(userInfoDetail);
+                if (inx >= 0)
                 {
-                    SocialGUIManager.Instance.OpenUI<UICtrlChat>();
-                    SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(userInfoDetail);
-                    SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlChat>(UICtrlChat.EMenu.Friend);
+                        SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(inx, FriendList);
+                        SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+                    }));
                 }
                 else
                 {
@@ -135,11 +105,9 @@ namespace GameA
                 }
             }, code =>
             {
-                SocialGUIManager.ShowPopupDialog("请求好友数据失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
-        
+
         public void RequestFollowUser(UserInfoDetail userInfoDetail)
         {
             if (userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid)
@@ -301,6 +269,5 @@ namespace GameA
             }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using YIMEngine;
+﻿using System.Collections.Generic;
+using YIMEngine;
 
 namespace GameA
 {
@@ -55,6 +56,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            if (parameter != null)
+            {
+                _curMenu = (EMenu)parameter;
+            }
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.World, true);
@@ -118,10 +123,9 @@ namespace GameA
             }
         }
 
-        public void SetToFriend(UserInfoDetail userInfoDetail)
+        public void SetToFriend(int inx, List<UserInfoDetail> _friends)
         {
-            _cachedView.TabGroup.SelectIndex((int) EMenu.Friend, true);
-            ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).RequestSetToFriend(userInfoDetail);
+            ((UPCtrlChatFriend) _menuCtrlArray[(int) EMenu.Friend]).ChatToFriend(inx, _friends);
         }
 
         protected void OnSendTexBtn()

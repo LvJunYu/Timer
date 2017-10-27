@@ -93,13 +93,20 @@ namespace GameA
             if (null == UserInfoDetail)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+                return;
             }
+            UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
+            RefreshView();
+            _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
+        }
+
+        private void RefreshView()
+        {
             IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _cachedView.BtnsObj.SetActiveEx(!IsMyself);
             _cachedView.AvatarRawImage.texture =
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();
-            _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
         }
 
         protected override void OnClose()

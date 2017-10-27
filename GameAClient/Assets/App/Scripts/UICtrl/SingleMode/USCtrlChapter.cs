@@ -48,7 +48,8 @@ namespace GameA
                 _normalLevels = new USCtrlLevelPoint[9];
                 for (int i = 0; i < 9; i++)
                 {
-                    GameObject levelObj = Object.Instantiate(_cachedView.NormalLevelPrefab, _cachedView.NormalLevelPos[i]);
+                    GameObject levelObj =
+                        Object.Instantiate(_cachedView.NormalLevelPrefab, _cachedView.NormalLevelPos[i]);
                     _normalLevels[i] = new USCtrlLevelPoint();
                     _normalLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
                     var rectTransform = levelObj.GetComponent<RectTransform>();
@@ -74,7 +75,8 @@ namespace GameA
                 _bonusLevels = new USCtrlLevelPoint[3];
                 for (int i = 0; i < 3; i++)
                 {
-                    GameObject levelObj = Object.Instantiate(_cachedView.BonusLevelPrefab, _cachedView.BonusLevelPos[i]);
+                    GameObject levelObj =
+                        Object.Instantiate(_cachedView.BonusLevelPrefab, _cachedView.BonusLevelPos[i]);
                     _bonusLevels[i] = new USCtrlLevelPoint();
                     _bonusLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
                     var rectTransform = levelObj.GetComponent<RectTransform>();
@@ -202,7 +204,10 @@ namespace GameA
 
         public void RefreshFriendProgress(int level, List<UserInfoDetail> friendsDataList)
         {
-            _normalLevels[level - 1].RefreshFriendProgress(friendsDataList);
+            if (_normalLevels != null && _normalLevels[level - 1] != null)
+            {
+                _normalLevels[level - 1].RefreshFriendProgress(friendsDataList);
+            }
         }
 
         public void ClearFriendProgress()

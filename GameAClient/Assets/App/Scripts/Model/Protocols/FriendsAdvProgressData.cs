@@ -10,7 +10,15 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// 最好关卡好友数据列表
+        /// 
+        /// </summary>
+        private int _resultCode;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _updateTime;
+        /// <summary>
+        /// 进度数据列表
         /// </summary>
         private List<AdvProgressData> _advProgressDataList;
 
@@ -36,7 +44,27 @@ namespace GameA
         #region 属性
         // sc properties----------------------------------
         /// <summary>
-        /// 最好关卡好友数据列表
+        /// 
+        /// </summary>
+        public int ResultCode { 
+            get { return _resultCode; }
+            set { if (_resultCode != value) {
+                _resultCode = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long UpdateTime { 
+            get { return _updateTime; }
+            set { if (_updateTime != value) {
+                _updateTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 进度数据列表
         /// </summary>
         public List<AdvProgressData> AdvProgressDataList { 
             get { return _advProgressDataList; }
@@ -149,6 +177,8 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_FriendsAdvProgressData msg)
         {
             if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
             _advProgressDataList = new List<AdvProgressData>();
             for (int i = 0; i < msg.AdvProgressDataList.Count; i++) {
                 _advProgressDataList.Add(new AdvProgressData(msg.AdvProgressDataList[i]));
@@ -160,6 +190,8 @@ namespace GameA
         public bool DeepCopy (FriendsAdvProgressData obj)
         {
             if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
             if (null ==  obj.AdvProgressDataList) return false;
             if (null ==  _advProgressDataList) {
                 _advProgressDataList = new List<AdvProgressData>();

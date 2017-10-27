@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using YIMEngine;
@@ -11,9 +10,7 @@ namespace GameA
         private const float _checkOnlineInterval = 10; //检查好友是否在线的时间间隔
         private float _curTimer;
         private bool _needUpdateSort = true;
-        private List<UserInfoDetail> _friendData;
-        private bool _hasInited;
-        private bool _isRequesting;
+        private List<UserInfoDetail> _friendList;
         public long CurFriendId;
 
         protected override void OnViewCreated()
@@ -52,44 +49,19 @@ namespace GameA
             }
         }
 
-        private event Action _successCallBack;
-        private event Action _failCallBack;
-
-        private void RequestFriendsData(Action successAction = null, Action failAction = null)
+        private void RequestFriendsData()
         {
-            if (_isRequesting)
-            {
-                _successCallBack += successAction;
-                _failCallBack += failAction;
-                return;
-            }
-            _isRequesting = true;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             LocalUser.Instance.RelationUserList.RequestMyFriends(() =>
             {
-                _friendData = LocalUser.Instance.RelationUserList.FriendList;
-                _hasInited = true;
-                _isRequesting = false;
-                _successCallBack += successAction;
-                if (_successCallBack != null)
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                _friendList = LocalUser.Instance.RelationUserList.FriendList;
+                if (_isOpen)
                 {
-                    _successCallBack.Invoke();
-                    _successCallBack = null;
+                    SortFriendList();
+                    RefreshFriendsView();
                 }
-                if (!_isOpen)
-                {
-                    return;
-                }
-                UpdateSortAndRefreshFriendsView();
-            }, code =>
-            {
-                _isRequesting = false;
-                _failCallBack += failAction;
-                if (_failCallBack != null)
-                {
-                    _failCallBack.Invoke();
-                    _failCallBack = null;
-                }
-            });
+            }, code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); });
         }
 
         public void RefreshFriendChatData(UserInfoDetail userInfoDetail)
@@ -100,44 +72,35 @@ namespace GameA
             RefreshView();
         }
 
-        public void RequestSetToFriend(UserInfoDetail userInfoDetail)
+        public void ChatToFriend(int index, List<UserInfoDetail> _friends)
         {
-            if (!_hasInited)
+            _friendList = _friends;
+            var friend = _friends[index];
+            SortFriendList(true);
+            RefreshFriendsView();
+            int newIndex = _friendList.IndexOf(friend);
+            if (newIndex >= 0)
             {
-                RequestFriendsData(() => SetToFriend(userInfoDetail),
-                    () => { SocialGUIManager.ShowPopupDialog("请求好友数据失败。"); });
+                _cachedView.FriendGridDataScroller.SetContentPosY(newIndex, 1);
+                RefreshFriendChatData(friend);
             }
             else
             {
-                SetToFriend(userInfoDetail);
-            }
-        }
-
-        private void SetToFriend(UserInfoDetail userInfoDetail)
-        {
-            int inx = _friendData.IndexOf(userInfoDetail);
-            if (inx >= 0)
-            {
-                _cachedView.FriendGridDataScroller.SetContentPosY(inx, 1);
-                RefreshFriendChatData(userInfoDetail);
-            }
-            else
-            {
-                SocialGUIManager.ShowPopupDialog("没有该好友。");
+                LogHelper.Error("_friendData.IndexOf(userInfoDetail) < 0 when ChatToFriend");
             }
         }
 
         private void RefreshFriendsView()
         {
-            if (_friendData == null)
+            if (_friendList == null)
             {
                 _cachedView.FriendGridDataScroller.SetEmpty();
                 return;
             }
-            _cachedView.FriendGridDataScroller.SetItemCount(_friendData.Count);
-            if (CurFriendId == 0 && _friendData.Count > 0)
+            _cachedView.FriendGridDataScroller.SetItemCount(_friendList.Count);
+            if (CurFriendId == 0 && _friendList.Count > 0)
             {
-                RefreshFriendChatData(_friendData[0]);
+                RefreshFriendChatData(_friendList[0]);
             }
         }
 
@@ -147,8 +110,11 @@ namespace GameA
             if (_curTimer > _checkOnlineInterval)
             {
                 CheckOnLine();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(3,
-                    UpdateSortAndRefreshFriendsView));
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(3, () =>
+                {
+                    SortFriendList();
+                    RefreshFriendsView();
+                }));
             }
             else
             {
@@ -158,46 +124,45 @@ namespace GameA
 
         private void CheckOnLine()
         {
-            if (_friendData == null) return;
-            for (int i = 0; i < _friendData.Count; i++)
+            if (_friendList == null) return;
+            for (int i = 0; i < _friendList.Count; i++)
             {
                 var i1 = i;
-                YIMManager.Instance.CheckUserOnLine(_friendData[i].UserInfoSimple.UserId.ToString(),
+                YIMManager.Instance.CheckUserOnLine(_friendList[i].UserInfoSimple.UserId.ToString(),
                     userStatus =>
                     {
                         bool isOnline = userStatus == UserStatus.STATUS_ONLINE;
-                        if (isOnline != _friendData[i1].IsOnline)
+                        if (isOnline != _friendList[i1].IsOnline)
                         {
                             _needUpdateSort = true;
-                            _friendData[i1].IsOnline = isOnline;
+                            _friendList[i1].IsOnline = isOnline;
                         }
                     });
             }
         }
 
-        private void UpdateSortAndRefreshFriendsView()
+        private void SortFriendList(bool forceUpdate = false)
         {
-            if (!_needUpdateSort || _friendData == null)
+            if (!forceUpdate && !_needUpdateSort || _friendList == null)
             {
                 return;
             }
-            _friendData.Sort((p, q) =>
+            _friendList.Sort((p, q) =>
             {
                 return (q.IsOnline ? 10000 : 0) + q.UserInfoSimple.RelationWithMe.Friendliness -
                        ((p.IsOnline ? 10000 : 0) + p.UserInfoSimple.RelationWithMe.Friendliness);
             });
             _needUpdateSort = false;
-            RefreshFriendsView();
         }
 
         private void OnFriendItemRefresh(IDataItemRenderer item, int inx)
         {
-            if (inx >= _friendData.Count)
+            if (inx >= _friendList.Count)
             {
                 LogHelper.Error("OnFriendItemRefresh Error Inx > count");
                 return;
             }
-            item.Set(_friendData[inx]);
+            item.Set(_friendList[inx]);
         }
 
         private IDataItemRenderer GetFriendItemRenderer(RectTransform parent)
