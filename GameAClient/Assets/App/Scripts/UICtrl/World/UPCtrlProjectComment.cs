@@ -14,6 +14,15 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
+            _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
+        }
+
+        private void OnCommentInputEndEdit(string arg0)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OnPostCommentBtn();
+            }
         }
 
         protected override void RequestData(bool append = false)

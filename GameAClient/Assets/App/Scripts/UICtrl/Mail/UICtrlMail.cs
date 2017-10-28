@@ -19,6 +19,18 @@ namespace GameA
             upCtrlMailFriend.SetMenu(EMenu.FriendMail);
             upCtrlMailFriend.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.FriendMail] = upCtrlMailFriend;
+            
+            var upCtrlMailSystem = new UPCtrlMailSystem();
+            upCtrlMailSystem.SetResScenary(ResScenary);
+            upCtrlMailSystem.SetMenu(EMenu.SystemMail);
+            upCtrlMailSystem.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.SystemMail] = upCtrlMailSystem;
+            
+            var upCtrlMailInfoCenter = new UPCtrlMailInfoCenter();
+            upCtrlMailInfoCenter.SetResScenary(ResScenary);
+            upCtrlMailInfoCenter.SetMenu(EMenu.InfoCenter);
+            upCtrlMailInfoCenter.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.InfoCenter] = upCtrlMailInfoCenter;
 
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {

@@ -10,7 +10,6 @@ namespace GameA
         protected EResScenary _resScenary;
         protected UICtrlMail.EMenu _menu;
         protected List<Mail> _dataList;
-        protected int _startIndex = 0;
         protected int _maxCount = 50;
 
         protected override void OnViewCreated()
@@ -39,21 +38,11 @@ namespace GameA
             _dataList = null;
         }
 
-        public void RefreshData()
+        protected virtual void RefreshData()
         {
-            LocalUser.Instance.Mail.Request(_startIndex, _maxCount, () =>
-                {
-                    _dataList = LocalUser.Instance.Mail.DataList;
-                    RefreshView();
-                },
-                code =>
-                {
-                    TempData();
-//                    SocialGUIManager.ShowPopupDialog("请求邮箱数据失败。");
-                });
         }
 
-        private void TempData()
+        protected void TempData()
         {
             if (_dataList != null && _dataList.Count != 0) return;
             _dataList = new List<Mail>(10);
@@ -71,7 +60,6 @@ namespace GameA
                 
                 _dataList.Add(new Mail(mail));
             }
-            RefreshView();
         }
 
         public void RefreshView()

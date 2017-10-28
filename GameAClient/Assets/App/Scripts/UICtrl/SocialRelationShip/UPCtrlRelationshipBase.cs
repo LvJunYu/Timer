@@ -68,7 +68,6 @@ namespace GameA
                 return;
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_userInfoDetailList.Count);
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
         }
 
         protected void OnItemRefresh(IDataItemRenderer item, int inx)
