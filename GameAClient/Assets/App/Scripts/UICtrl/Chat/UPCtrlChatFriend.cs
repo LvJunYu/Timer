@@ -81,6 +81,7 @@ namespace GameA
             int newIndex = _friendList.IndexOf(friend);
             if (newIndex >= 0)
             {
+                //设置Content位置到当前选中好友位置
                 _cachedView.FriendGridDataScroller.SetContentPosY(newIndex, 1);
                 RefreshFriendChatData(friend);
             }

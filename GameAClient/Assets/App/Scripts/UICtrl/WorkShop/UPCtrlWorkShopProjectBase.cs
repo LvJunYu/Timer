@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorkShopProjectBase : UPCtrlBase<UICtrlWorkShop02, UIViewWorkShop02>
+    public abstract class UPCtrlWorkShopProjectBase : UPCtrlBase<UICtrlWorkShop, UIViewWorkShop>,
+        IOnChangeHandler<long>
     {
         protected const int _pageSize = 21;
         protected List<Project> _projectList;
         protected EResScenary _resScenary;
-        protected bool _unload;
-        protected UICtrlWorkShop02.EMenu _menu;
+        protected UICtrlWorkShop.EMenu _menu;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
 
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
@@ -25,7 +25,6 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _unload = false;
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
             RequestData();
             RefreshView();
@@ -38,7 +37,11 @@ namespace GameA
             base.Close();
         }
 
-        public void RefreshView()
+        public virtual void RequestData(bool append = false)
+        {
+        }
+
+        public virtual void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             if (_projectList == null)
@@ -60,25 +63,24 @@ namespace GameA
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
-        protected void OnItemClick(CardDataRendererWrapper<Project> item)
+        protected virtual void OnItemClick(CardDataRendererWrapper<Project> item)
         {
-            if (item == null || item.Content == null)
+            if (item != null && item.Content != null)
             {
-                return;
+                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
         }
 
         protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlWorldProject();
+            var item = new UMCtrlProject();
             item.Init(parent, _resScenary);
             return item;
         }
 
         protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if (_unload)
+            if (!_isOpen)
             {
                 item.Set(null);
             }
@@ -93,8 +95,13 @@ namespace GameA
             }
         }
 
-        protected virtual void RequestData(bool append = false)
+        public void OnChangeHandler(long val)
         {
+            CardDataRendererWrapper<Project> w;
+            if (_dict.TryGetValue(val, out w))
+            {
+                w.BroadcastDataChanged();
+            }
         }
 
         public void Set(EResScenary resScenary)
@@ -102,14 +109,13 @@ namespace GameA
             _resScenary = resScenary;
         }
 
-        public void SetMenu(UICtrlWorkShop02.EMenu menu)
+        public void SetMenu(UICtrlWorkShop.EMenu menu)
         {
             _menu = menu;
         }
-        
+
         public void Clear()
         {
-            _unload = true;
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;

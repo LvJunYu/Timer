@@ -6,7 +6,7 @@ namespace GameA
     {
         private UserPublishedWorldProjectList _data;
 
-        protected override void RequestData(bool append = false)
+        public override void RequestData(bool append = false)
         {
             int startInx = 0;
             if (append)
@@ -26,7 +26,7 @@ namespace GameA
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if (_unload)
+            if (!_isOpen)
             {
                 item.Set(null);
             }

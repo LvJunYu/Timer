@@ -73,7 +73,7 @@ namespace GameA
 
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlWorldProject();
+            var item = new UMCtrlProject();
             item.Init(parent, _resScenary);
             return item;
         }

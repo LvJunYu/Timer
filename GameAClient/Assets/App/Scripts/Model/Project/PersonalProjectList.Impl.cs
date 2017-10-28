@@ -30,7 +30,6 @@ namespace GameA
         {
             base.OnSyncPartial();
             Sort();
-            MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
         }
 
         public void LocalAdd(Project project)
@@ -43,6 +42,7 @@ namespace GameA
         public void Sort()
         {
             _projectList.Sort((p1, p2) => -p1.UpdateTime.CompareTo(p2.UpdateTime));
+            MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
         }
 
         private void OnWorkShopProjectDataChange(Project p)

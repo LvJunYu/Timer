@@ -1,20 +1,15 @@
-﻿/********************************************************************
-  ** Filename : UMCtrlWorldProject.cs
-  ** Author : quan
-  ** Date : 11/11/2016 1:47 PM
-  ** Summary : UMCtrlWorldProject.cs
-  ***********************************************************************/
-
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlWorldProject : UMCtrlBase<UMViewWorldProject>, IDataItemRenderer
+    public class UMCtrlProject : UMCtrlBase<UMViewProject>, IDataItemRenderer
     {
+        private EFunc _efunc;
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
         public int Index { get; set; }
+        private bool _newEdit;
 
         public RectTransform Transform
         {
@@ -57,6 +52,10 @@ namespace GameA
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
+                if (_wrapper.Content != null && _efunc == EFunc.Editing)
+                {
+                    _newEdit = _wrapper.Content == Project.NewEditProject;
+                }
             }
             RefreshView();
         }
@@ -68,23 +67,38 @@ namespace GameA
                 Unload();
                 return;
             }
-            Project p = _wrapper.Content;
-//            DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime);
-            DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.Title, p.Name);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
-                _cachedView.DefaultCoverTexture);
+            _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
+            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing && !_newEdit);
+            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Editing && _newEdit);
+            if (!_newEdit)
+            {
+                Project p = _wrapper.Content;
+                DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
+                DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
+                DictionaryTools.SetContentText(_cachedView.Title, p.Name);
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
+                    _cachedView.DefaultCoverTexture);
+            }
+            else
+            {
+                DictionaryTools.SetContentText(_cachedView.Title, string.Empty);
+            }
         }
 
-        public void SetEditMode()
+        public void SetMode(EFunc eFunc)
         {
-            
+            _efunc = eFunc;
         }
 
         public void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+        }
+
+        public enum EFunc
+        {
+            Published,
+            Editing,
         }
     }
 }

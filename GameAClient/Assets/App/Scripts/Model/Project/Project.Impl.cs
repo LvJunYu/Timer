@@ -35,6 +35,8 @@ namespace GameA
         #endregion 变量
 
         #region 属性
+
+        public static Project NewEditProject = new Project();
         
         public UserInfoDetail UserInfoDetail
         {

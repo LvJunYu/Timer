@@ -9,13 +9,25 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>
     {
-        private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
+        private Project _project;
+        private bool _isEditTitle;
+        private bool _isEditDesc;
+        private bool _needSave;
 
-        private readonly List<CardDataRendererWrapper<Project>> _privateContents =
-            new List<CardDataRendererWrapper<Project>>();
-
-        private readonly Dictionary<long, CardDataRendererWrapper<Project>> _privateDict =
-            new Dictionary<long, CardDataRendererWrapper<Project>>();
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
+            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
+            _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
+            _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
+            _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);
+            _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
+            _cachedView.TitleInput.onEndEdit.AddListener(msg => OnConfirmTitleBtn());
+            _cachedView.DescInput.onEndEdit.AddListener(msg => OnConfirmDescBtn());
+        }
 
         protected override void InitEventListener()
         {
@@ -23,146 +35,150 @@ namespace GameA
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnPersonalProjectDataChanged);
         }
 
-        protected override void OnViewCreated()
+        protected override void OnOpen(object parameter)
         {
-            base.OnViewCreated();
-            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
-
-            _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
-            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
-
-            _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
-            _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
-            _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
-            _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);
-            _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
+            base.OnOpen(parameter);
+            _project = parameter as Project;
+            RefreshView();
         }
 
-        private void RefreshWorkShopProjectList()
+        protected override void OnClose()
         {
-            long preSelectPRojectId = 0;
-            if (null != _curSelectedPrivateProject)
-            {
-                preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
-                _curSelectedPrivateProject = null;
-            }
-            if (LocalUser.Instance.PersonalProjectList.IsInited)
-            {
-                List<Project> list = LocalUser.Instance.PersonalProjectList.ProjectList;
-                _privateContents.Clear();
-                _privateContents.Capacity = Mathf.Max(_privateContents.Capacity, list.Count);
-                _privateDict.Clear();
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPrivateProjectCardClick);
-                    if (list[i].ProjectId == preSelectPRojectId)
-                    {
-                        wrapper.IsSelected = true;
-                        _curSelectedPrivateProject = wrapper;
-                    }
-                    else
-                    {
-                        wrapper.IsSelected = false;
-                    }
-                    _privateContents.Add(wrapper);
-                    _privateDict.Add(wrapper.Content.ProjectId, wrapper);
-                }
-                if (null == _curSelectedPrivateProject)
-                {
-                    if (_privateContents.Count > 0)
-                    {
-                        _privateContents[0].IsSelected = true;
-                        _curSelectedPrivateProject = _privateContents[0];
-                    }
-                }
-                _cachedView.PrivateProjectsGridScroller.SetItemCount(_privateContents.Count);
-                for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++)
-                {
-                    _cachedView.ObjectsShowWhenEmpty[i].SetActive(list.Count == 0);
-                }
-            }
-            RefreshPersonalProjectDetailPanel();
+            _project = null;
+            _needSave = _isEditTitle = _isEditDesc = false;
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover,
+                _cachedView.DefaultCoverTexture);
+            _cachedView.Title.text = _cachedView.Desc.text = String.Empty;
+            base.OnClose();
         }
 
-        private void RefreshPersonalProjectDetailPanel()
+        protected override void SetPartAnimations()
         {
-            _cachedView.Title.gameObject.SetActive(true);
-            _cachedView.TitleInput.gameObject.SetActive(false);
-            _cachedView.EditTitleBtn.gameObject.SetActive(true);
-            _cachedView.ConfirmTitleBtn.gameObject.SetActive(false);
-            _cachedView.Desc.gameObject.SetActive(true);
-            _cachedView.DescInput.gameObject.SetActive(false);
-            _cachedView.EditDescBtn.gameObject.SetActive(true);
-            _cachedView.ConfirmDescBtn.gameObject.SetActive(false);
-            _cachedView.Data.gameObject.SetActive(false);
-            _cachedView.HummerIcon.gameObject.SetActive(true);
-            _cachedView.PlayIcon.gameObject.SetActive(false);
-
-
-            if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content)
-            {
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover,
-                    _curSelectedPrivateProject.Content.IconPath, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, _curSelectedPrivateProject.Content.Name);
-                DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPrivateProject.Content.Summary);
-            }
-            else
-            {
-                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover,
-                    _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, "");
-                DictionaryTools.SetContentText(_cachedView.Desc, "");
-            }
+            base.SetPartAnimations();
+            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.transform, EAnimationType.Fade);
         }
 
-        private void OnPrivateProjectCardClick(CardDataRendererWrapper<Project> item)
+        protected override void InitGroupId()
         {
-            if (null != _curSelectedPrivateProject)
+            _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
+        private void RefreshView()
+        {
+            if (_project == null)
             {
-                _curSelectedPrivateProject.IsSelected = false;
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+                return;
             }
-            item.IsSelected = true;
-            _curSelectedPrivateProject = item;
-            _cachedView.PrivateProjectsGridScroller.RefreshCurrent();
-            RefreshPersonalProjectDetailPanel();
+            RefreshTitleDock();
+            RefreshDescDock();
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                _cachedView.DefaultCoverTexture);
+        }
+
+        private void RefreshTitleDock()
+        {
+            DictionaryTools.SetContentText(_cachedView.Title, _project.Name);
+            _cachedView.Title.SetActiveEx(!_isEditTitle);
+            _cachedView.EditTitleBtn.SetActiveEx(!_isEditTitle);
+            _cachedView.TitleInput.SetActiveEx(_isEditTitle);
+            _cachedView.ConfirmTitleBtn.SetActiveEx(_isEditTitle);
+        }
+
+        private void RefreshDescDock()
+        {
+            DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
+            _cachedView.Desc.SetActiveEx(!_isEditDesc);
+            _cachedView.EditDescBtn.SetActiveEx(!_isEditDesc);
+            _cachedView.DescInput.SetActiveEx(_isEditDesc);
+            _cachedView.ConfirmDescBtn.SetActiveEx(_isEditDesc);
+        }
+
+        private void SaveProject(Action successAction = null, Action failAction = null)
+        {
+            if (!_needSave) return;
+            _project.Save(
+                _project.Name,
+                _project.Summary,
+                null,
+                null,
+                _project.PassFlag,
+                _project.PassFlag,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                _project.TimeLimit,
+                _project.WinCondition,
+                () =>
+                {
+                    _needSave = false;
+                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
+                    if (successAction != null)
+                    {
+                        successAction.Invoke();
+                    }
+                },
+                code =>
+                {
+                    if (failAction != null)
+                    {
+                        failAction.Invoke();
+                    }
+                }
+            );
         }
 
         private void OnPublishBtn()
         {
-            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
-                return;
-            if (_curSelectedPrivateProject.Content.PassFlag == false)
+            if (null == _project) return;
+            if (_project.PassFlag == false)
             {
                 SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关");
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_curSelectedPrivateProject.Content);
+            if (_needSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
+                SaveProject(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_project);
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                });
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_project);
+            }
         }
 
         private void OnDeleteBtn()
         {
-            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
-                return;
+            if (null == _project) return;
             CommonTools.ShowPopupDialog(
-                string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), "删除提示",
-                new KeyValuePair<string, Action>("取消", () => { LogHelper.Info("Cancel Delete"); }),
+                string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _project.Name), "删除提示",
+                new KeyValuePair<string, Action>("取消", () => { }),
                 new KeyValuePair<string, Action>("确定", () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();
-                    projList.Add(_curSelectedPrivateProject.Content.ProjectId);
+                    projList.Add(_project.ProjectId);
                     RemoteCommands.DeleteProject(projList, msg =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(
-                                _curSelectedPrivateProject.Content);
-                            _curSelectedPrivateProject.Content.Delete();
-                            _curSelectedPrivateProject = null;
-                            if (_isOpen)
-                            {
-                                RefreshWorkShopProjectList();
-                            }
+                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_project);
+                            _project.Delete();
+                            _project = null;
                             LocalUser.Instance.PersonalProjectList.Request();
+                            SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
                         },
                         code =>
                         {
@@ -174,96 +190,115 @@ namespace GameA
 
         private void OnEditBtn()
         {
-            if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content)
+            if (_project != null)
             {
-                AppLogicUtil.EditPersonalProject(_curSelectedPrivateProject.Content);
+                AppLogicUtil.EditPersonalProject(_project);
             }
         }
 
         private void OnReturnBtn()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.MainPopUpUI;
+            if (_needSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
+                SaveProject(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                });
+            }
+            else
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+            }
         }
 
         private void OnEditTitleBtn()
         {
-            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
-                return;
-            _cachedView.Title.gameObject.SetActive(false);
-            _cachedView.TitleInput.text = _curSelectedPrivateProject.Content.Name;
-            _cachedView.TitleInput.gameObject.SetActive(true);
-            _cachedView.EditTitleBtn.gameObject.SetActive(false);
-            _cachedView.ConfirmTitleBtn.gameObject.SetActive(true);
+            if (null == _project) return;
+            _isEditTitle = true;
+            RefreshTitleDock();
+            _cachedView.TitleInput.text = _project.Name;
             EventSystem.current.SetSelectedGameObject(_cachedView.TitleInput.gameObject);
         }
 
         private void OnConfirmTitleBtn()
         {
             string newTitle = _cachedView.TitleInput.text;
-            if (string.IsNullOrEmpty(newTitle) || newTitle != _curSelectedPrivateProject.Content.Name) return;
-            if (CheckTools.CheckProjectName(_cachedView.TitleInput.text) == CheckTools.ECheckProjectNameResult.Success)
+            if (string.IsNullOrEmpty(newTitle) || newTitle == _project.Name)
             {
-                _curSelectedPrivateProject.Content.Name = newTitle;
-                _cachedView.Title.text = newTitle;
-                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged,
-                    _curSelectedPrivateProject.Content);
+                _isEditTitle = false;
+                RefreshTitleDock();
+                return;
             }
-            _cachedView.Title.gameObject.SetActive(true);
-            _cachedView.TitleInput.gameObject.SetActive(false);
-            _cachedView.EditTitleBtn.gameObject.SetActive(true);
-            _cachedView.ConfirmTitleBtn.gameObject.SetActive(false);
+            var testRes = CheckTools.CheckProjectName(_cachedView.TitleInput.text);
+            if (testRes == CheckTools.ECheckProjectNameResult.Success)
+            {
+                _project.Name = newTitle;
+                _needSave = true;
+                _isEditTitle = false;
+                RefreshTitleDock();
+            }
+            else if (testRes == CheckTools.ECheckProjectNameResult.TooShort)
+            {
+                SocialGUIManager.ShowPopupDialog("标题名称太短。");
+            }
+            else if (testRes == CheckTools.ECheckProjectNameResult.TooLong)
+            {
+                SocialGUIManager.ShowPopupDialog("标题名称太长。");
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("标题格式错误。");
+            }
         }
 
         private void OnEditDescBtn()
         {
-            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
-                return;
-            _cachedView.Desc.gameObject.SetActive(false);
-            _cachedView.DescInput.text = _curSelectedPrivateProject.Content.Summary;
-            _cachedView.DescInput.gameObject.SetActive(true);
-            _cachedView.EditDescBtn.gameObject.SetActive(false);
-            _cachedView.ConfirmDescBtn.gameObject.SetActive(true);
+            if (null == _project) return;
+            _isEditDesc = true;
+            RefreshDescDock();
+            _cachedView.DescInput.text = _project.Summary;
             EventSystem.current.SetSelectedGameObject(_cachedView.DescInput.gameObject);
         }
 
         private void OnConfirmDescBtn()
         {
             string newDesc = _cachedView.DescInput.text;
-//            newDesc = CheckProjectDescValid(newDesc);
-            if (!string.IsNullOrEmpty(newDesc) &&
-                newDesc != _cachedView.Desc.text)
+            if (string.IsNullOrEmpty(newDesc) || newDesc == _project.Summary)
             {
-                _curSelectedPrivateProject.Content.Summary = newDesc;
-                _cachedView.Desc.text = newDesc;
-//                AddWaitUpdateProject(_curSelectedPrivateProject.Content);
-                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged,
-                    _curSelectedPrivateProject.Content);
+                _isEditDesc = false;
+                RefreshDescDock();
+                return;
             }
-            _cachedView.Desc.gameObject.SetActive(true);
-            _cachedView.DescInput.gameObject.SetActive(false);
-            _cachedView.EditDescBtn.gameObject.SetActive(true);
-            _cachedView.ConfirmDescBtn.gameObject.SetActive(false);
+            var testRes = CheckTools.CheckProjectDesc(_cachedView.TitleInput.text);
+            if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
+            {
+                _project.Summary = newDesc;
+                _needSave = true;
+                _isEditDesc = false;
+                RefreshDescDock();
+            }
+            else if (testRes == CheckTools.ECheckProjectSumaryResult.TooLong)
+            {
+                SocialGUIManager.ShowPopupDialog("简介内容太长。");
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("简介格式错误。");
+            }
         }
 
         private void OnPersonalProjectDataChanged(Project p)
         {
-            if (!_isViewCreated)
+            if (_isOpen && _project != null && p.ProjectId == _project.ProjectId)
             {
-                return;
-            }
-            CardDataRendererWrapper<Project> personalProject;
-            if (_privateDict.TryGetValue(p.ProjectId, out personalProject))
-            {
-                personalProject.BroadcastDataChanged();
-            }
-            if (_curSelectedPrivateProject != null && _curSelectedPrivateProject.Content.ProjectId == p.ProjectId)
-            {
-                RefreshPersonalProjectDetailPanel();
+                RefreshView();
             }
         }
     }
