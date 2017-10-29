@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectBase : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
+    public class UPCtrlWorldProjectBase : UPCtrlWorldPanelBase
     {
         protected const int _pageSize = 21;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
@@ -40,7 +40,7 @@ namespace GameA
             base.Close();
         }
 
-        protected void RefreshView()
+        protected override void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             if (_projectList == null)
@@ -78,7 +78,7 @@ namespace GameA
             return item;
         }
 
-        protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
+        protected override void OnItemRefresh(IDataItemRenderer item, int inx)
         {
             if (_unload)
             {
@@ -95,11 +95,11 @@ namespace GameA
             }
         }
 
-        protected virtual void RequestData(bool append = false)
+        protected override void RequestData(bool append = false)
         {
         }
 
-        public void OnChangeHandler(long val)
+        public override void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;
             if (_dict.TryGetValue(val, out w))
@@ -109,17 +109,17 @@ namespace GameA
 //            RequestData();
         }
 
-        public void Set(EResScenary resScenary)
+        public override void Set(EResScenary resScenary)
         {
             _resScenary = resScenary;
         }
 
-        public void SetMenu(UICtrlWorld.EMenu menu)
+        public override void SetMenu(UICtrlWorld.EMenu menu)
         {
             _menu = menu;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             _unload = true;
             _contentList.Clear();

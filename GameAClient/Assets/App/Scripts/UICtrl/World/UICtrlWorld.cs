@@ -7,15 +7,16 @@ namespace GameA
     public class UICtrlWorld : UICtrlAnimationBase<UIViewWorld>
     {
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlWorldProjectBase _curMenuCtrl;
-        private UPCtrlWorldProjectBase[] _menuCtrlArray;
+        private UPCtrlWorldPanelBase _curMenuCtrl;
+        private UPCtrlWorldPanelBase[] _menuCtrlArray;
         private bool _pushGoldEnergyStyle;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
-            _menuCtrlArray = new UPCtrlWorldProjectBase[(int) EMenu.Max];
+            _menuCtrlArray = new UPCtrlWorldPanelBase[(int) EMenu.Max];
+            
             var upCtrlWorldRecommendProject = new UPCtrlWorldRecommendProject();
             upCtrlWorldRecommendProject.Set(ResScenary);
             upCtrlWorldRecommendProject.SetMenu(EMenu.Recommend);
@@ -39,6 +40,13 @@ namespace GameA
             upCtrlWorldUserPlayHistory.SetMenu(EMenu.UserPlayHistory);
             upCtrlWorldUserPlayHistory.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
+            
+            var uPCtrlWorldRanklistPanel = new UPCtrlWorldRanklistPanel();
+            uPCtrlWorldRanklistPanel.Set(ResScenary);
+            uPCtrlWorldRanklistPanel.SetMenu(EMenu.RankList);
+            uPCtrlWorldRanklistPanel.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.RankList] = uPCtrlWorldRanklistPanel;
+            
             
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
