@@ -84,6 +84,15 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
+            RegisterEvent(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
+        }
+
+        private void OnUserInfoChanged()
+        {
+            if (_isOpen && _curMenu == EMenu.BasicInfo && IsMyself)
+            {
+                _curMenuCtrl.RefreshView();
+            }
         }
 
         protected override void OnOpen(object parameter)

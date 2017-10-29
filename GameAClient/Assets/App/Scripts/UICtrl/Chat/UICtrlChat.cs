@@ -63,7 +63,6 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _isEditing = false;
             if (parameter != null)
             {
                 _curMenu = (EMenu) parameter;
@@ -84,6 +83,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+            _isEditing = false;
             base.OnClose();
         }
 

@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    public class UPCtrlPersonalInfoBase : UPCtrlBase<UICtrlPersonalInformation, UIViewPersonalInformation>
+    public abstract class UPCtrlPersonalInfoBase : UPCtrlBase<UICtrlPersonalInformation, UIViewPersonalInformation>
     {
         protected EResScenary _resScenary;
         protected UICtrlPersonalInformation.EMenu _menu;
@@ -18,6 +18,8 @@ namespace GameA
             _cachedView.Pannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
+
+        public abstract void RefreshView();
         
         public void SetResScenary(EResScenary resScenary)
         {

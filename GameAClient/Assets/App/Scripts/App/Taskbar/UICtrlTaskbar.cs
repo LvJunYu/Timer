@@ -29,7 +29,7 @@ namespace GameA
         private bool _puzzleAvailable;
         private bool _trainAvailable = false;
         private bool _achievementAvailable;
-        private bool _mailBoxAvailable;
+        private bool _mailBoxAvailable = true;
 
         private bool _friendsAvailable = true;
 
@@ -123,7 +123,7 @@ namespace GameA
             if (!_pushGoldEnergyStyle)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>()
-                    .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSettingMail);
+                    .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
                 _pushGoldEnergyStyle = true;
             }
             RefreshUserInfo();

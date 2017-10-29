@@ -8,7 +8,6 @@ namespace GameA
     {
         private static string _expFormat = "{0}/{1}";
         private static string _lvFormat = "Lv{0}";
-        private static string _emptyStr = " ";
         private UserInfoDetail _userInfoDetail;
         private bool _isEditing;
 
@@ -17,6 +16,7 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.SaveEditBtn.onClick.AddListener(OnSaveEditBtn);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
         }
 
         public override void Open()
@@ -27,7 +27,7 @@ namespace GameA
             RefreshView();
         }
 
-        public void RefreshView()
+        public override void RefreshView()
         {
             if (!_isOpen) return;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
@@ -57,6 +57,14 @@ namespace GameA
             _cachedView.EditBtn.SetActiveEx(_mainCtrl.IsMyself);
             ChangeEditStatus(_isEditing);
             _cachedView.EditObj.SetActiveEx(_isEditing);
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_mainCtrl.IsMyself)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlHeadPhotoChoose>(_userInfoDetail.UserInfoSimple.HeadImgUrl);
+            }
         }
 
         private void OnEditBtn()
@@ -110,7 +118,7 @@ namespace GameA
                 {
                     if (string.IsNullOrEmpty(_cachedView.DescInputField.text))
                     {
-                        userDataChanged.Profile = _emptyStr;
+                        userDataChanged.Profile = string.Empty;
                     }
                     else
                     {
@@ -135,7 +143,6 @@ namespace GameA
                     {
                         LocalUser.Instance.User.OnSync(ret.UserInfo);
                         _isEditing = false;
-                        RefreshView();
                         Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }

@@ -1,71 +1,65 @@
-﻿
-using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
-using System.Collections.Generic;
-using GameA;
-using NewResourceSolution;
-using SoyEngine.Proto;
-using UnityEngine.UI;
 
 namespace GameA
 {
-    public class UMCtrlHead : UMCtrlBase<UMViewHead>
+    public class UMCtrlHead : UMCtrlBase<UMViewHead>, IDataItemRenderer
     {
-        private int _index;
-
-        public int Index
-        {
-            get { return _index; }
-            set { _index = value; }
-        }
+        private string _url;
+        private UICtrlHeadPhotoChoose _uiCtrlHeadPhotoChoose;
+        public int Index { get; set; }
 
         public RectTransform Transform
         {
             get { return _cachedView.Trans; }
         }
 
+        public object Data
+        {
+            get { return _url; }
+        }
+
+        public void Set(object data)
+        {
+            if (data == null)
+            {
+                Unload();
+                return;
+            }
+            _url = data.ToString();
+            _cachedView.HeadTog.isOn = _url == _uiCtrlHeadPhotoChoose.CurHeadUrl;
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg, _url, _cachedView.DefaultHeadTexture);
+        }
+
+        public void Unload()
+        {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.DefaultHeadTexture);
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
-            //_cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
+            _cachedView.HeadTog.onValueChanged.AddListener(OnHeadTogValueChanged);
+            _cachedView.HeadTog.group = _uiCtrlHeadPhotoChoose.TogGroup;
         }
 
         protected override void OnDestroy()
         {
-            //_cachedView.PlayBtn.onClick.RemoveAllListeners();
+            Unload();
             base.OnDestroy();
         }
 
-        public void Set(int i)
+        private void OnHeadTogValueChanged(bool arg0)
         {
-            _index = i;
-            if (i == 0)
+            if (arg0)
             {
-                _cachedView.SeletctedHeadImage.SetActiveEx(true);
+                _uiCtrlHeadPhotoChoose.CurHeadUrl = _url;
             }
-            var head = SpriteNameDefine.GetHeadImage(i);
-            SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>()
-                .InitTagGroup(_cachedView.SeletctedHeadBtn, OnHeadSeleted);
-            //if (LocalUser.Instance.User.UserInfoSimple.HeadImgUrl == head)
-            //{
-            //    OnHeadSeleted(true);
-            //}
-            Texture fashion=null;
-            if (JoyResManager.Instance.TryGetTexture(head, out fashion))
-            {
-                _cachedView.HeadImg.texture = fashion;
-            }
-
         }
 
-        public void OnHeadSeleted(bool open)
+        public void SetUICtrl(UICtrlHeadPhotoChoose uiCtrlHeadPhotoChoose)
         {
-            _cachedView.SeletctedHeadImage.SetActiveEx(open);
-            SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>().SeletctedHeadImage = _index;
+            _uiCtrlHeadPhotoChoose = uiCtrlHeadPhotoChoose;
         }
     }
 }
-   

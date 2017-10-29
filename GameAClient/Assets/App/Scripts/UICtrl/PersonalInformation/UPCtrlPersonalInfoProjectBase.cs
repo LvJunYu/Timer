@@ -62,7 +62,7 @@ namespace GameA
         {
         }
 
-        protected void RefreshView()
+        public override void RefreshView()
         {
             _contentList.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _pojectList.Count);

@@ -110,7 +110,7 @@ namespace GameA
             _cachedView.Gold.SetActiveEx((styleVal & 1 << (int) ESlot.Gold) > 0);
             _cachedView.Energy.SetActiveEx((styleVal & 1 << (int) ESlot.Energy) > 0);
             _cachedView.SettingBtn.gameObject.SetActiveEx((styleVal & 1 << (int) ESlot.Setting) > 0);
-            _cachedView.MailBtn.gameObject.SetActiveEx((styleVal & 1 << (int) ESlot.Mail) > 0);
+//            _cachedView.MailBtn.gameObject.SetActiveEx((styleVal & 1 << (int) ESlot.Mail) > 0);
         }
 
         public override void OnUpdate()
@@ -214,7 +214,7 @@ namespace GameA
             None = 0,
             EnergyGoldDiamond = 1 << ESlot.Diamond | 1 << ESlot.Gold | 1 << ESlot.Energy,
             GoldDiamond = 1 << ESlot.Diamond | 1 << ESlot.Gold,
-            GoldDiamondSettingMail = 1 << ESlot.Diamond | 1 << ESlot.Gold | 1 << ESlot.Setting | 1 << ESlot.Mail
+            GoldDiamondSetting = 1 << ESlot.Diamond | 1 << ESlot.Gold | 1 << ESlot.Setting
         }
     }
 }

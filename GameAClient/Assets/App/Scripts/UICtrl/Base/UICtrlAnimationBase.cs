@@ -15,9 +15,9 @@ namespace GameA
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
+        protected bool _openAnimation;
         private float _screenHeight;
         private float _screenWidth;
-        private bool _openAnimation;
 
         protected virtual void CreateSequences()
         {

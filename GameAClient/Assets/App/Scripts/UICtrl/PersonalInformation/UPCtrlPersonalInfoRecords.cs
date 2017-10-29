@@ -51,7 +51,7 @@ namespace GameA
             });
         }
 
-        public void RefreshView()
+        public override void RefreshView()
         {
             if (!_isOpen) return;
             if (_dataList == null)
