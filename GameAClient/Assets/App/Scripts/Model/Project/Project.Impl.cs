@@ -14,9 +14,10 @@ namespace GameA
 {
     [Poolable(MinPoolSize = ConstDefine.MaxLRUProjectCount / 10, PreferedPoolSize = ConstDefine.MaxLRUProjectCount / 5,
         MaxPoolSize = ConstDefine.MaxLRUProjectCount)]
-	public partial class Project
+    public partial class Project
     {
         #region 变量
+
         private long _guid;
         private int _downloadPrice;
 
@@ -31,13 +32,13 @@ namespace GameA
         private AdventureLevelRankList _adventureLevelRankList;
 
         private UserInfoDetail _userInfoDetail;
-        
+
         #endregion 变量
 
         #region 属性
 
-        public static Project NewEditProject = new Project();
-        
+        public static Project EmptyProject = new Project();
+
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
@@ -46,6 +47,18 @@ namespace GameA
         public AdventureLevelRankList AdventureLevelRankList
         {
             get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
+        }
+
+        public float Score
+        {
+            get
+            {
+                if (_extendReady)
+                {
+                    return _extendData.Score;
+                }
+                return 0;
+            }
         }
 
         public int LikeCount
@@ -221,8 +234,9 @@ namespace GameA
 
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            RemoteCommands.PlayWorldProject(_projectId, ret => {
-                if (ret.ResultCode == (int)EPlayWorldProjectCode.PWPC_Success)
+            RemoteCommands.PlayWorldProject(_projectId, ret =>
+            {
+                if (ret.ResultCode == (int) EPlayWorldProjectCode.PWPC_Success)
                 {
                     _commitToken = ret.Token;
                     _deadPos = ret.DeadPos;
@@ -231,12 +245,14 @@ namespace GameA
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
 
-                    PrepareRes (() => {
+                    PrepareRes(() =>
+                    {
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
                         }
-                    }, () => {
+                    }, () =>
+                    {
                         if (failedCallback != null)
                         {
                             failedCallback.Invoke(ENetResultCode.NR_None);
@@ -250,14 +266,15 @@ namespace GameA
                         failedCallback.Invoke(ENetResultCode.NR_None);
                     }
                 }
-            }, code => {
+            }, code =>
+            {
                 if (failedCallback != null)
                 {
                     failedCallback.Invoke(code);
                 }
             });
         }
-        
+
         public void RequestPlayShadowBattle(Record record, Action successCallback, Action failedCallback)
         {
             record.PrepareRecord(() =>
@@ -276,17 +293,20 @@ namespace GameA
         {
             string targetRes = ResPath;
             // 这个方法应该在prepare之后执行，所以这里不做异常检查了
-            if (_projectStatus == EProjectStatus.PS_Reform && string.IsNullOrEmpty (ResPath)) {
-                targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
+            if (_projectStatus == EProjectStatus.PS_Reform && string.IsNullOrEmpty(ResPath))
+            {
+                targetRes = AppData.Instance.AdventureData.ProjectList.SectionList[TargetSection - 1]
+                    .NormalProjectList[TargetLevel - 1].ResPath;
             }
-            if (_projectStatus == EProjectStatus.PS_Reform && null != _bytesData) {
+            if (_projectStatus == EProjectStatus.PS_Reform && null != _bytesData)
+            {
                 return _bytesData;
             }
             return LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, targetRes);
         }
 
         public void Save(
-            string name, 
+            string name,
             string summary,
             byte[] dataBytes,
             byte[] iconBytes,
@@ -347,8 +367,9 @@ namespace GameA
                 LeftLife = leftLife,
                 DeadPos = null
             };
-            if (LocalDataState == ELocalDataState.LDS_UnCreated) {
-                RemoteCommands.CreateProject (
+            if (LocalDataState == ELocalDataState.LDS_UnCreated)
+            {
+                RemoteCommands.CreateProject(
                     Name,
                     Summary,
                     ProgramVersion,
@@ -358,8 +379,10 @@ namespace GameA
                     timeLimit,
                     winCondition,
                     GetMsgProjectUploadParam(),
-                    msg => {
-                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                    msg =>
+                    {
+                        if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                        {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
                             OnSyncFromParent(msg.ProjectData);
                             ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
@@ -368,7 +391,9 @@ namespace GameA
                             {
                                 successCallback.Invoke();
                             }
-                        } else {
+                        }
+                        else
+                        {
                             LogHelper.Error("level create error, code: {0}", msg.ResultCode);
                             if (failedCallback != null)
                             {
@@ -376,7 +401,8 @@ namespace GameA
                             }
                         }
                     },
-                    code => {
+                    code =>
+                    {
                         LogHelper.Error("level create error, code: {0}", code);
                         if (failedCallback != null)
                         {
@@ -385,8 +411,10 @@ namespace GameA
                     },
                     form
                 );
-            } else {
-                RemoteCommands.UpdateProject (
+            }
+            else
+            {
+                RemoteCommands.UpdateProject(
                     ProjectId,
                     Name,
                     Summary,
@@ -398,13 +426,16 @@ namespace GameA
                     winCondition,
                     // 如果是在工坊界面修改关卡的信息，就不必传附加参数
                     null == dataBytes ? null : GetMsgProjectUploadParam(),
-                    msg => {
-                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success)
+                    msg =>
+                    {
+                        if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                         {
                             OnSyncFromParent(msg.ProjectData);
-                            if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
+                            if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath)
+                            {
                                 ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
-                                ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
+                                ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath,
+                                    iconBytes);
                             }
                             Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
                             if (successCallback != null)
@@ -421,7 +452,8 @@ namespace GameA
                             }
                         }
                     },
-                    code => {
+                    code =>
+                    {
                         LogHelper.Error("level upload error, code: {0}", code);
                         if (failedCallback != null)
                         {
@@ -445,7 +477,6 @@ namespace GameA
             ImageResourceManager.Instance.DeleteImageCache(IconPath);
         }
 
-
         public void Publish(Action onSuccess, Action<EProjectOperateResult> onError)
         {
             var user = LocalUser.Instance.User;
@@ -461,7 +492,7 @@ namespace GameA
                 null,
                 ret =>
                 {
-                    if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+                    if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
@@ -471,14 +502,14 @@ namespace GameA
                             onSuccess.Invoke();
                         }
                     }
-                else
-                {
-                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
-                    if (onError != null)
+                    else
                     {
-                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
+                        LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+                        if (onError != null)
+                        {
+                            onError.Invoke((EProjectOperateResult) ret.ResultCode);
+                        }
                     }
-                }
                 },
                 code =>
                 {
@@ -490,38 +521,52 @@ namespace GameA
                 });
         }
 
-
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
             string targetRes = ResPath;
             // 改造关卡特殊处理
-            if (_projectStatus == EProjectStatus.PS_Reform) {
-                if (_bytesData != null) {
+            if (_projectStatus == EProjectStatus.PS_Reform)
+            {
+                if (_bytesData != null)
+                {
                     if (successCallback != null)
                     {
                         successCallback.Invoke();
                     }
                     return;
                 }
-                if (string.IsNullOrEmpty (ResPath)) {
+                if (string.IsNullOrEmpty(ResPath))
+                {
                     if ((TargetSection - 1) < AppData.Instance.AdventureData.ProjectList.SectionList.Count &&
-                        (TargetLevel - 1) < AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList.Count &&
-                        !string.IsNullOrEmpty (AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath)) {
-                        targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
-                    } else {
-                        if (string.IsNullOrEmpty (ResPath)) {
-                            if (null != failedCallback) {
-                                failedCallback.Invoke ();
+                        (TargetLevel - 1) < AppData.Instance.AdventureData.ProjectList.SectionList[TargetSection - 1]
+                            .NormalProjectList.Count &&
+                        !string.IsNullOrEmpty(AppData.Instance.AdventureData.ProjectList.SectionList[TargetSection - 1]
+                            .NormalProjectList[TargetLevel - 1].ResPath))
+                    {
+                        targetRes = AppData.Instance.AdventureData.ProjectList.SectionList[TargetSection - 1]
+                            .NormalProjectList[TargetLevel - 1].ResPath;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(ResPath))
+                        {
+                            if (null != failedCallback)
+                            {
+                                failedCallback.Invoke();
                             }
                             return;
                         }
                     }
                 }
                 // else 正常往后执行，检查自己的respath
-            } else {
-                if (string.IsNullOrEmpty (ResPath)) {
-                    if (null != failedCallback) {
-                        failedCallback.Invoke ();
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(ResPath))
+                {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke();
                     }
                     return;
                 }
@@ -538,23 +583,24 @@ namespace GameA
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
             //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
+            {
+                LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
+                //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
+                if (successCallback != null)
                 {
-                    LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
-                    //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
-                    if (successCallback != null)
-                    {
-                        successCallback.Invoke();
-                    }
-                }, sFile =>
+                    successCallback.Invoke();
+                }
+            }, sFile =>
+            {
+                if (failedCallback != null)
                 {
-                    if (failedCallback != null)
-                    {
-                        failedCallback.Invoke();
-                    }
-                });
+                    failedCallback.Invoke();
+                }
+            });
         }
 
-        public void UpdateLike(EProjectLikeState likeState, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        public void UpdateLike(EProjectLikeState likeState, Action successCallback = null,
+            Action<ENetResultCode> failedCallback = null)
         {
             if (_projectUserData.LikeState == likeState)
             {
@@ -565,29 +611,30 @@ namespace GameA
                 return;
             }
             RemoteCommands.UpdateWorldProjectLike(_projectId, likeState, ret =>
-                {
-                    if (ret.ResultCode != (int)EUpdateWorldProjectLikeCode.UWPLC_Success)
-                    {
-                        if (failedCallback != null)
-                        {
-                            failedCallback.Invoke(ENetResultCode.NR_None);
-                        }
-                        return;
-                    }
-                    if (_projectUserData != null) {
-                        _projectUserData.LikeState = likeState;
-                    }
-                    if (successCallback != null)
-                    {
-                        successCallback.Invoke();
-                    }
-                }, code =>
+            {
+                if (ret.ResultCode != (int) EUpdateWorldProjectLikeCode.UWPLC_Success)
                 {
                     if (failedCallback != null)
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
                     }
-                });
+                    return;
+                }
+                if (_projectUserData != null)
+                {
+                    _projectUserData.LikeState = likeState;
+                }
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(ENetResultCode.NR_None);
+                }
+            });
         }
 
         public void AddShareCount(Action<bool> callback = null)
@@ -622,7 +669,8 @@ namespace GameA
 //            });
         }
 
-        public void UpdateFavorite(bool favorite, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        public void UpdateFavorite(bool favorite, Action successCallback = null,
+            Action<ENetResultCode> failedCallback = null)
         {
             if (UserFavorite == favorite)
             {
@@ -632,8 +680,9 @@ namespace GameA
                 }
                 return;
             }
-            RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret => {
-                if (ret.ResultCode != (int)EUpdateWorldProjectFavoriteCode.UWPFC_Success)
+            RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret =>
+            {
+                if (ret.ResultCode != (int) EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                 {
                     if (failedCallback != null)
                     {
@@ -641,7 +690,8 @@ namespace GameA
                     }
                     return;
                 }
-                if (_projectUserData != null) {
+                if (_projectUserData != null)
+                {
                     _projectUserData.Favorite = favorite;
                 }
                 if (_extendData != null)
@@ -661,18 +711,18 @@ namespace GameA
             });
         }
 
-		protected override void OnSyncPartial (Msg_SC_DAT_Project msg)
-		{
-			base.OnSyncPartial ();
-			if (_extendData != null)
+        protected override void OnSyncPartial(Msg_SC_DAT_Project msg)
+        {
+            base.OnSyncPartial();
+            if (_extendData != null)
             {
-				OnSyncProjectExtendData(_extendData);
+                OnSyncProjectExtendData(_extendData);
             }
-		    _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
-            FireProjectDataChangeEvent();
-		}
+            _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
+            Messenger<long>.Broadcast(EMessengerType.OnProjectDataChanged, _projectId);
+        }
 
-		public void OnSyncProjectExtendData(ProjectExtend msg)
+        public void OnSyncProjectExtendData(ProjectExtend msg)
         {
             _extendReady = true;
             _isValid = msg.IsValid;
@@ -690,11 +740,12 @@ namespace GameA
             int killByMonsterCount,
             int breakBrickCount,
             int trampCloud,
-            byte [] recordBytes,
-            byte [] deadPos, 
+            byte[] recordBytes,
+            byte[] deadPos,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+            {
                 if (_commitToken == 0)
                 {
                     if (null != failedCallback)
@@ -726,27 +777,29 @@ namespace GameA
                 RemoteCommands.CommitWorldProjectResult(
                     _commitToken,
                     recordUploadParam,
-                    ret => {
-                    if (ret.ResultCode == (int)ECommitWorldProjectResultCode.CWPRC_Success)
+                    ret =>
                     {
-                        if (successCallback != null)
+                        if (ret.ResultCode == (int) ECommitWorldProjectResultCode.CWPRC_Success)
                         {
-                            successCallback.Invoke();
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
                         }
-                    }
-                    else
+                        else
+                        {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(ENetResultCode.NR_None);
+                            }
+                        }
+                    }, code =>
                     {
                         if (failedCallback != null)
                         {
                             failedCallback.Invoke(ENetResultCode.NR_None);
                         }
-                    }
-                }, code => {
-                    if (failedCallback != null)
-                    {
-                        failedCallback.Invoke(ENetResultCode.NR_None);
-                    }
-                }, wwwForm);
+                    }, wwwForm);
             }));
         }
 
@@ -755,9 +808,9 @@ namespace GameA
         {
             RemoteCommands.DownloadProject(_projectId, (ret) =>
             {
-                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+                if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                 {
-                    _extendData.DownloadCount ++;
+                    _extendData.DownloadCount++;
                     Project p = new Project();
                     p._projectStatus = EProjectStatus.PS_Private;
                     p.OnSync(ret.ProjectData);
@@ -771,7 +824,7 @@ namespace GameA
                 {
                     if (failedCallback != null)
                     {
-                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
+                        failedCallback.Invoke((EProjectOperateResult) ret.ResultCode);
                     }
                 }
             }, errCode =>
@@ -800,10 +853,6 @@ namespace GameA
             return p;
         }
 
-        public void FireProjectDataChangeEvent()
-        {
-            Messenger<long>.Broadcast(EMessengerType.OnProjectDataChanged, _projectId);
-        }
         #endregion 方法
 
         #region 枚举
@@ -824,9 +873,11 @@ namespace GameA
             NotExsit,
             Error,
         }
+
         #endregion 枚举
 
         #region 内部类
+
         #endregion
     }
 }

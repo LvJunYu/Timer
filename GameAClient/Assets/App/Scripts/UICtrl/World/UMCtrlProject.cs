@@ -9,7 +9,7 @@ namespace GameA
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
         public int Index { get; set; }
-        private bool _newEdit;
+        private bool _emptyProject;
 
         public RectTransform Transform
         {
@@ -54,7 +54,7 @@ namespace GameA
                 _wrapper.OnDataChanged += RefreshView;
                 if (_wrapper.Content != null && _efunc == EFunc.Editing)
                 {
-                    _newEdit = _wrapper.Content == Project.NewEditProject;
+                    _emptyProject = _wrapper.Content == Project.EmptyProject;
                 }
             }
             RefreshView();
@@ -68,9 +68,9 @@ namespace GameA
                 return;
             }
             _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
-            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing && !_newEdit);
-            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Editing && _newEdit);
-            if (!_newEdit)
+            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing && !_emptyProject);
+            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Editing && _emptyProject);
+            if (!_emptyProject)
             {
                 Project p = _wrapper.Content;
                 DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
@@ -78,6 +78,10 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Title, p.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
+                for (int i = 0; i < _cachedView.ScoreToggles.Length; i++)
+                {
+                    _cachedView.ScoreToggles[i].isOn = _wrapper.Content.Score >= 2 * i + 1;
+                }
             }
             else
             {

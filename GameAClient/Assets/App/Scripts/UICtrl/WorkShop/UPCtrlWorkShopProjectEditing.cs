@@ -27,7 +27,7 @@ namespace GameA
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
             _dict.Clear();
-            _contentList.Add(new CardDataRendererWrapper<Project>(Project.NewEditProject, OnNewItemClick));
+            _contentList.Add(new CardDataRendererWrapper<Project>(Project.EmptyProject, OnNewItemClick));
             if (_projectList != null)
             {
                 _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count + 1);
