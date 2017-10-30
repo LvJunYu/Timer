@@ -56,18 +56,6 @@ namespace SoyEngine
         public const string AddUserList = "/relation/getAddUserList";
         // 搜索好友
         public const string SearchUser = "/relation/getSearchedUser";
-        // 获取关卡数据
-        public const string Project = "/project/get";
-        // 关卡扩展信息
-        public const string ProjectExtend = "/project/getExtend";
-        // 创建关卡
-        public const string CreateProject = "/project/create";
-        // 更新关卡
-        public const string UpdateProject = "/project/update";
-        // 删除关卡
-        public const string DeleteProject = "/project/delete";
-        // 工坊关卡
-        public const string PersonalProjectList = "/project/getPersonalList";
         // 发布关卡
         public const string PublishWorldProject = "/world/publishProject";
         // 取消发布
@@ -112,6 +100,18 @@ namespace SoyEngine
         public const string MatchShadowBattleData = "/world/matchShadowBattleData";
         // 录像
         public const string Record = "/record/get";
+        // 获取关卡数据
+        public const string Project = "/project/get";
+        // 关卡扩展信息
+        public const string ProjectExtend = "/project/getExtend";
+        // 创建关卡
+        public const string CreateProject = "/project/create";
+        // 更新关卡
+        public const string UpdateProject = "/project/update";
+        // 删除关卡
+        public const string DeleteProject = "/project/delete";
+        // 工坊关卡
+        public const string PersonalProjectList = "/project/getPersonalList";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具

@@ -39,6 +39,14 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private long _lastCompleteTime;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _playCount;
+        /// <summary>
+        /// 
+        /// </summary>
         private long _lastPlayTime;
         #endregion
 
@@ -116,6 +124,26 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public long LastCompleteTime { 
+            get { return _lastCompleteTime; }
+            set { if (_lastCompleteTime != value) {
+                _lastCompleteTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int PlayCount { 
+            get { return _playCount; }
+            set { if (_playCount != value) {
+                _playCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -136,6 +164,8 @@ namespace GameA
             _favorite = msg.Favorite;     
             _lastFavoriteTime = msg.LastFavoriteTime;     
             _completeCount = msg.CompleteCount;     
+            _lastCompleteTime = msg.LastCompleteTime;     
+            _playCount = msg.PlayCount;     
             _lastPlayTime = msg.LastPlayTime;     
             OnSyncPartial(msg);
             return true;
@@ -151,6 +181,8 @@ namespace GameA
             _favorite = msg.Favorite;           
             _lastFavoriteTime = msg.LastFavoriteTime;           
             _completeCount = msg.CompleteCount;           
+            _lastCompleteTime = msg.LastCompleteTime;           
+            _playCount = msg.PlayCount;           
             _lastPlayTime = msg.LastPlayTime;           
             return true;
         } 
@@ -165,6 +197,8 @@ namespace GameA
             _favorite = obj.Favorite;           
             _lastFavoriteTime = obj.LastFavoriteTime;           
             _completeCount = obj.CompleteCount;           
+            _lastCompleteTime = obj.LastCompleteTime;           
+            _playCount = obj.PlayCount;           
             _lastPlayTime = obj.LastPlayTime;           
             return true;
         }

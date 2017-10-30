@@ -13,6 +13,7 @@ namespace GameA
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
+        private USCtrlProjectLabel[] _usCtrlProjectLabels;
 
         protected override void OnViewCreated()
         {
@@ -27,6 +28,13 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
+
+            _usCtrlProjectLabels = new USCtrlProjectLabel[_cachedView.Labels.Length];
+            for (int i = 0; i < _cachedView.Labels.Length; i++)
+            {
+                _usCtrlProjectLabels[i] = new USCtrlProjectLabel();
+                _usCtrlProjectLabels[i].Init(_cachedView.Labels[i]);
+            }
 
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
             var upCtrlProjectInfo = new UPCtrlProjectRecentRecord();
@@ -177,7 +185,7 @@ namespace GameA
                                        Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
             _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
-            DictionaryTools.SetContentText(_cachedView.ScoreTxt, string.Format("{0:F1}",Project.Score));
+            DictionaryTools.SetContentText(_cachedView.ScoreTxt, string.Format("{0:F1}", Project.Score));
             for (int i = 0; i < _cachedView.ScoreTogs.Length; i++)
             {
                 _cachedView.ScoreTogs[i].isOn = Project.Score >= i * 2 + 1;
@@ -190,6 +198,11 @@ namespace GameA
             if (Project.ProjectUserData == null)
             {
                 Project.Request(Project.ProjectId, null, null);
+                return;
+            }
+            if (Project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
@@ -211,6 +224,11 @@ namespace GameA
             if (Project.ProjectUserData == null)
             {
                 Project.Request(Project.ProjectId, null, null);
+                return;
+            }
+            if (Project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
