@@ -98,6 +98,7 @@ namespace GameA
 
         private void OnGiftBtn()
         {
+            SocialGUIManager.ShowPopupDialog("暂未开放送礼功能。");
         }
 
         private void OnTalkBtn()

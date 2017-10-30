@@ -158,7 +158,6 @@ namespace GameA
             return PlayNext();
         }
 
-
         public bool RequestPlayMultiCooperation(Project project)
         {
             _projectList.Clear();

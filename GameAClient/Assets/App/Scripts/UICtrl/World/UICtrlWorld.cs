@@ -47,7 +47,6 @@ namespace GameA
             uPCtrlWorldRanklistPanel.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.RankList] = uPCtrlWorldRanklistPanel;
             
-            
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;

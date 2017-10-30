@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRecentRecordList : SyncronisticData<Msg_SC_DAT_UserRecentRecordList> {
+    public partial class WorldUserRecentRecordList : SyncronisticData<Msg_SC_DAT_WorldUserRecentRecordList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -140,12 +140,12 @@ namespace GameA
                 _cs_maxCount = maxCount;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserRecentRecordList msg = new Msg_CS_DAT_UserRecentRecordList();
+                Msg_CS_DAT_WorldUserRecentRecordList msg = new Msg_CS_DAT_WorldUserRecentRecordList();
                 msg.UserId = userId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserRecentRecordList>(
-                    SoyHttpApiPath.UserRecentRecordList, msg, ret => {
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_WorldUserRecentRecordList>(
+                    SoyHttpApiPath.WorldUserRecentRecordList, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -155,7 +155,7 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_UserRecentRecordList msg)
+        public bool OnSync (Msg_SC_DAT_WorldUserRecentRecordList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
@@ -168,7 +168,7 @@ namespace GameA
             return true;
         }
         
-        public bool CopyMsgData (Msg_SC_DAT_UserRecentRecordList msg)
+        public bool CopyMsgData (Msg_SC_DAT_WorldUserRecentRecordList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
@@ -183,7 +183,7 @@ namespace GameA
             return true;
         } 
 
-        public bool DeepCopy (UserRecentRecordList obj)
+        public bool DeepCopy (WorldUserRecentRecordList obj)
         {
             if (null == obj) return false;
             _resultCode = obj.ResultCode;           
@@ -199,19 +199,19 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_UserRecentRecordList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_WorldUserRecentRecordList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserRecentRecordList (Msg_SC_DAT_UserRecentRecordList msg) {
+        public WorldUserRecentRecordList (Msg_SC_DAT_WorldUserRecentRecordList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserRecentRecordList () { 
+        public WorldUserRecentRecordList () { 
             _recordList = new List<Record>();
             OnCreate();
         }

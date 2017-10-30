@@ -8,11 +8,6 @@ namespace GameA
         private USCtrlGameFinishReward[] _rewardCtrl;
         private MatchShadowBattleData _data;
 
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.FrontUI;
-        }
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -39,6 +34,11 @@ namespace GameA
             base.OnClose();
         }
 
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
         private void RefreshView()
         {
             if (_data == null) return;
@@ -52,7 +52,6 @@ namespace GameA
 
         private void OnPlayBtn()
         {
-            throw new System.NotImplementedException();
         }
 
         private void UpdateReward(Reward reward)
@@ -62,8 +61,7 @@ namespace GameA
                 int i = 0;
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
-                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString()
-                    );
+                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString());
                 }
                 for (; i < _rewardCtrl.Length; i++)
                 {

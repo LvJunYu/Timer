@@ -3,7 +3,7 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-    public partial class UserRecentRecordList
+    public partial class WorldUserRecentRecordList
     {
         private List<Record> _allList = new List<Record>();
         public bool IsEnd { get; private set; }

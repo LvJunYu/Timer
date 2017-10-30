@@ -14,7 +14,7 @@ namespace GameA
         protected override void OnSyncPartial (Msg_SC_DAT_MatchShadowBattleData msg)
         {
             base.OnSyncPartial ();
-            _userDataDetail = UserManager.Instance.UpdateData(msg.UserData);
+            _userDataDetail = UserManager.Instance.UpdateData(msg.Record.UserInfo);
         }
         
     }
