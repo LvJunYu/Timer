@@ -11,16 +11,7 @@ namespace GameA
         protected const int _pageSize = 20;
         protected List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>> _contentList = 
             new List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>>();
-  
-
         protected List<WorldRankItem.WorldRankHolder> _projectList;
-        protected EResScenary _resScenary;
-        protected bool _isRequesting;
-        protected bool _unload;
-        
-        
-        
-        protected UICtrlWorld.EMenu _menu;
         private EWorldRankType _type;
         private ERankTimeBucket _bucket;
         protected override void OnViewCreated()
