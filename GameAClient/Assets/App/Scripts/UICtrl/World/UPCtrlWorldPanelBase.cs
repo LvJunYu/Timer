@@ -1,62 +1,49 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
-using UnityEngine;
+﻿using SoyEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldPanelBase: UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
+    public abstract class UPCtrlWorldPanelBase : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
     {
-     
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
- 
-        }
+        protected EResScenary _resScenary;
+        protected UICtrlWorld.EMenu _menu;
+        protected bool _unload;
 
         public override void Open()
         {
             base.Open();
-
+            _unload = false;
+            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
+            RequestData();
+            RefreshView();
         }
 
         public override void Close()
         {
-        
+            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
 
-        protected virtual void RefreshView()
+        protected abstract void RequestData(bool append = false);
+
+        protected abstract void RefreshView();
+
+        protected abstract void OnItemRefresh(IDataItemRenderer item, int inx);
+
+        public abstract void OnChangeHandler(long val);
+
+        public void Set(EResScenary resScenary)
         {
-           
+            _resScenary = resScenary;
         }
 
-        protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
+        public void SetMenu(UICtrlWorld.EMenu menu)
         {
-          
-        }
-
-        protected virtual void RequestData(bool append = false)
-        {
-        }
-
-        public  virtual void OnChangeHandler(long val)
-        {
-        }
-
-        public virtual void Set(EResScenary resScenary)
-        {
-          
-        }
-
-        public virtual  void SetMenu(UICtrlWorld.EMenu menu)
-        {
-          
+            _menu = menu;
         }
 
         public virtual void Clear()
         {
-          
         }
     }
 }

@@ -9,42 +9,22 @@ namespace GameA
     {
         private WorldRankList _data;
         protected const int _pageSize = 20;
-        protected List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>> _contentList = 
+
+        protected List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>> _contentList =
             new List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>>();
-  
+
 
         protected List<WorldRankItem.WorldRankHolder> _projectList;
-        protected EResScenary _resScenary;
         protected bool _isRequesting;
-        protected bool _unload;
-        
-        
-        
-        protected UICtrlWorld.EMenu _menu;
+
         private EWorldRankType _type;
         private ERankTimeBucket _bucket;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
             InitBtn();
-
-        }
-     
-        public override void Open()
-        {
-            base.Open();
-            _unload = false;
-            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            RequestData();
-            RefreshView();
-        }
-
-        public override void Close()
-        {
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
-            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
-            base.Close();
         }
 
         protected override void RefreshView()
@@ -60,13 +40,13 @@ namespace GameA
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
             for (int i = 0; i < _projectList.Count; i++)
             {
-                CardDataRendererWrapper<WorldRankItem.WorldRankHolder> w = new CardDataRendererWrapper<WorldRankItem.WorldRankHolder>(_projectList[i], null);
+                CardDataRendererWrapper<WorldRankItem.WorldRankHolder> w =
+                    new CardDataRendererWrapper<WorldRankItem.WorldRankHolder>(_projectList[i], null);
                 _contentList.Add(w);
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
-        
-        
+
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldRank();
@@ -106,8 +86,8 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(_type,_bucket ,startInx, _pageSize,
-               () =>
+            _data.Request(_type, _bucket, startInx, _pageSize,
+                () =>
                 {
                     Debug.Log("rquestsucess");
                     _projectList = _data.CurList;
@@ -124,16 +104,6 @@ namespace GameA
 //            RequestData();
         }
 
-        public override void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
-        }
-
-        public override void SetMenu(UICtrlWorld.EMenu menu)
-        {
-            _menu = menu;
-        }
-
         public override void Clear()
         {
             _unload = true;
@@ -143,13 +113,13 @@ namespace GameA
 
         private void InitBtn()
         {
-            for (int i = 0; i <  _cachedView.RankListBtnAry.Length; i++)
+            for (int i = 0; i < _cachedView.RankListBtnAry.Length; i++)
             {
                 _cachedView.RankListBtnAry[i].SetActiveEx(true);
             }
             for (int i = 0; i < _cachedView.RankListBtnSelectAry.Length; i++)
             {
-                _cachedView.RankListBtnSelectAry[i].SetActiveEx(false);  
+                _cachedView.RankListBtnSelectAry[i].SetActiveEx(false);
             }
             for (int i = 0; i < _cachedView.RankListBtnAry.Length; i++)
             {
@@ -157,10 +127,12 @@ namespace GameA
                 _cachedView.RankListBtnAry[i].onClick.AddListener(() =>
                 {
                     _cachedView.RankListBtnAry[i1].gameObject.SetActive(false);
-                    _cachedView.RankListBtnAry[_cachedView.RankListBtnAry.Length -1-(int)_bucket].gameObject.SetActive(true);
-                    _cachedView.RankListBtnSelectAry[_cachedView.RankListBtnAry.Length -1-(int)_bucket].gameObject.SetActive(false);
+                    _cachedView.RankListBtnAry[_cachedView.RankListBtnAry.Length - 1 - (int) _bucket].gameObject
+                        .SetActive(true);
+                    _cachedView.RankListBtnSelectAry[_cachedView.RankListBtnAry.Length - 1 - (int) _bucket].gameObject
+                        .SetActive(false);
                     _cachedView.RankListBtnSelectAry[i1].gameObject.SetActive(true);
-                    _bucket = (ERankTimeBucket) (_cachedView.RankListBtnAry.Length-1-i1);
+                    _bucket = (ERankTimeBucket) (_cachedView.RankListBtnAry.Length - 1 - i1);
                     RefreshView();
                 });
             }
