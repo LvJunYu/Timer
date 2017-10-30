@@ -40,7 +40,7 @@ namespace GameA
                 }
             }, code =>
             {
-                SocialGUIManager.ShowPopupDialog("请求成就数据失败。");
+                SocialGUIManager.ShowPopupDialog("成就功能暂未开放。");
             });
         }
 

@@ -13,31 +13,12 @@ namespace GameA
             new Dictionary<long, CardDataRendererWrapper<Project>>();
 
         protected List<Project> _projectList;
-        protected EResScenary _resScenary;
         protected bool _isRequesting;
-        protected bool _unload;
-        protected UICtrlWorld.EMenu _menu;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
-        }
-
-        public override void Open()
-        {
-            base.Open();
-            _unload = false;
-            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            RequestData();
-            RefreshView();
-        }
-
-        public override void Close()
-        {
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
-            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
-            base.Close();
         }
 
         protected override void RefreshView()
@@ -107,16 +88,6 @@ namespace GameA
                 w.BroadcastDataChanged();
             }
 //            RequestData();
-        }
-
-        public override void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
-        }
-
-        public override void SetMenu(UICtrlWorld.EMenu menu)
-        {
-            _menu = menu;
         }
 
         public override void Clear()

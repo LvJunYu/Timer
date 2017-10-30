@@ -23,6 +23,7 @@ namespace GameA
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
             _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
+            _cachedView.EditLabelBtn.onClick.AddListener(OnEditLabelBtn);
             _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
             _cachedView.TitleInput.onEndEdit.AddListener(msg => OnConfirmTitleBtn());
@@ -256,6 +257,11 @@ namespace GameA
             {
                 SocialGUIManager.ShowPopupDialog("标题格式错误。");
             }
+        }
+
+        private void OnEditLabelBtn()
+        {
+            SocialGUIManager.ShowPopupDialog("暂未开启标签功能。");
         }
 
         private void OnEditDescBtn()

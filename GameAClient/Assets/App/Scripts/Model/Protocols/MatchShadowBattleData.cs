@@ -16,10 +16,6 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private UserInfoSimple _userData;
-        /// <summary>
-        /// 
-        /// </summary>
         private Project _project;
         /// <summary>
         /// 
@@ -46,16 +42,6 @@ namespace GameA
             get { return _resultCode; }
             set { if (_resultCode != value) {
                 _resultCode = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public UserInfoSimple UserData { 
-            get { return _userData; }
-            set { if (_userData != value) {
-                _userData = value;
                 SetDirty();
             }}
         }
@@ -101,9 +87,6 @@ namespace GameA
 
         public override bool IsDirty {
             get {
-                if (null != _userData && _userData.IsDirty) {
-                    return true;
-                }
                 if (null != _project && _project.IsDirty) {
                     return true;
                 }
@@ -154,11 +137,6 @@ namespace GameA
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
-            if (null == _userData) {
-                _userData = new UserInfoSimple(msg.UserData);
-            } else {
-                _userData.OnSyncFromParent(msg.UserData);
-            }
             if (null == _project) {
                 _project = new Project(msg.Project);
             } else {
@@ -182,12 +160,6 @@ namespace GameA
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
-            if(null != msg.UserData){
-                if (null == _userData){
-                    _userData = new UserInfoSimple(msg.UserData);
-                }
-                _userData.CopyMsgData(msg.UserData);
-            }
             if(null != msg.Project){
                 if (null == _project){
                     _project = new Project(msg.Project);
@@ -213,12 +185,6 @@ namespace GameA
         {
             if (null == obj) return false;
             _resultCode = obj.ResultCode;           
-            if(null != obj.UserData){
-                if (null == _userData){
-                    _userData = new UserInfoSimple();
-                }
-                _userData.DeepCopy(obj.UserData);
-            }
             if(null != obj.Project){
                 if (null == _project){
                     _project = new Project();
@@ -253,7 +219,6 @@ namespace GameA
         }
 
         public MatchShadowBattleData () { 
-            _userData = new UserInfoSimple();
             _project = new Project();
             _record = new Record();
             _reward = new Reward();

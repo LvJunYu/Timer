@@ -46,6 +46,11 @@ namespace GameA.Game
             get { return _gameRunMode; }
         }
 
+        public Record Record
+        {
+            get { return _record; }
+        }
+
         public List<int> InputDatas
         {
             get { return _inputDatas; }
@@ -66,7 +71,7 @@ namespace GameA.Game
         public abstract void OnGameSuccess();
 
         public abstract void OnGameFailed();
-        
+
         protected virtual bool InitRecord()
         {
             byte[] recordBytes = MatrixProjectTools.DecompressLZMA(_record.RecordData);

@@ -9,11 +9,6 @@ namespace GameA.Game
     {
         protected int _inputDataReadInx;
 
-        public virtual Record Record
-        {
-            get { return _record; }
-        }
-
         public int CurrentFrameCount
         {
             get { return GameRun.Instance.LogicFrameCnt; }

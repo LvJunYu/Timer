@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -12,6 +13,7 @@ namespace GameA
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
+        private USCtrlProjectLabel[] _usCtrlProjectLabels;
 
         protected override void OnViewCreated()
         {
@@ -26,6 +28,13 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
+
+            _usCtrlProjectLabels = new USCtrlProjectLabel[_cachedView.Labels.Length];
+            for (int i = 0; i < _cachedView.Labels.Length; i++)
+            {
+                _usCtrlProjectLabels[i] = new USCtrlProjectLabel();
+                _usCtrlProjectLabels[i].Init(_cachedView.Labels[i]);
+            }
 
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
             var upCtrlProjectInfo = new UPCtrlProjectRecentRecord();
@@ -162,6 +171,7 @@ namespace GameA
 
         private void RefreshBtns()
         {
+            if (Project == null) return;
             bool myself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             bool hasFollowed = Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
             _cachedView.FollowBtn.SetActiveEx(!myself);
@@ -171,14 +181,67 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.FavoriteCount, Project.FavoriteCount.ToString());
             DictionaryTools.SetContentText(_cachedView.DownloadCount, Project.ExtendData.DownloadCount.ToString());
             DictionaryTools.SetContentText(_cachedView.ShareCount, Project.ExtendData.ShareCount.ToString());
+            _cachedView.GoodTog.isOn = Project.ProjectUserData != null &&
+                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
+            _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
+                                      Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
+            DictionaryTools.SetContentText(_cachedView.ScoreTxt, string.Format("{0:F1}", Project.Score));
+            for (int i = 0; i < _cachedView.ScoreTogs.Length; i++)
+            {
+                _cachedView.ScoreTogs[i].isOn = Project.Score >= i * 2 + 1;
+            }
         }
 
-        private void OnBadTogValueChanged(bool arg0)
+        private void OnBadTogValueChanged(bool value)
         {
+            if (Project == null) return;
+            if (Project.ProjectUserData == null)
+            {
+                Project.Request(Project.ProjectId, null, null);
+                return;
+            }
+            if (Project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
+                return;
+            }
+            if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
+            {
+                Project.UpdateLike(EProjectLikeState.PLS_Unlike,
+                    () => { Project.Request(Project.ProjectId, null, null); });
+            }
+            else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike &&
+                     !_cachedView.GoodTog.isOn)
+            {
+                Project.UpdateLike(EProjectLikeState.PLS_AllRight,
+                    () => { Project.Request(Project.ProjectId, null, null); });
+            }
         }
 
-        private void OnGoodTogValueChanged(bool arg0)
+        private void OnGoodTogValueChanged(bool value)
         {
+            if (Project == null) return;
+            if (Project.ProjectUserData == null)
+            {
+                Project.Request(Project.ProjectId, null, null);
+                return;
+            }
+            if (Project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
+                return;
+            }
+            if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
+            {
+                Project.UpdateLike(EProjectLikeState.PLS_Like,
+                    () => { Project.Request(Project.ProjectId, null, null); });
+            }
+            else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like &&
+                     !_cachedView.BadTog.isOn)
+            {
+                Project.UpdateLike(EProjectLikeState.PLS_AllRight,
+                    () => { Project.Request(Project.ProjectId, null, null); });
+            }
         }
 
         private void OnHeadBtn()
@@ -305,14 +368,13 @@ namespace GameA
 
         private void OnProjectDataChanged(long projectId)
         {
-            if (!_isOpen || Project == null || Project.ProjectId != projectId)
+            if (_isOpen && Project != null && Project.ProjectId == projectId)
             {
-                return;
-            }
-            RefreshView();
-            if (_curMenuCtrl != null)
-            {
-                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
+                RefreshView();
+                if (_curMenuCtrl != null)
+                {
+                    ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
+                }
             }
         }
 

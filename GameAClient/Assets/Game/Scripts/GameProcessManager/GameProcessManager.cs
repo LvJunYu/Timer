@@ -420,6 +420,7 @@ namespace GameA.Game
         Puzzle,
         Weapon,
         Train,
-        Achievement
+        Achievement,
+        Battle
     }
 }

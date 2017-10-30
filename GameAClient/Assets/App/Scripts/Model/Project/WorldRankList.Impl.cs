@@ -78,9 +78,8 @@ namespace GameA
         protected override void OnSyncPartial(Msg_SC_DAT_WorldRankList msg)
         {
             base.OnSyncPartial();
-            Debug.Log("OnSyncPartial");
+            Debug.Log(_cs_type);
             Debug.Log(msg.ResultCode);
-            Debug.Log(msg.RankList.Count);
             switch (CS_Type)
             {
                 case EWorldRankType.WRT_Player:
@@ -124,7 +123,7 @@ namespace GameA
                 if (!_inited)
                 {
                     IsEnd = true;
-                    MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
+//                    MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
                 }
                 return;
             }
@@ -134,14 +133,10 @@ namespace GameA
                 _curList.Clear();
             }
             int i = _curList.Count;
-            Debug.Log(i);
             _rankList.ForEach(r => _curList.Add(new WorldRankItem.WorldRankHolder(r, i++)));
-            foreach (var VARIABLE in _curList)
-            {
-                Debug.Log(VARIABLE.Rank + "00000000000");
-            }
+           
             IsEnd = _curList.Count < _cs_maxCount;
-            MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
+//            MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
         }
     }
 }

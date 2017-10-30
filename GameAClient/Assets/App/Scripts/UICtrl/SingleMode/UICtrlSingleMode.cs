@@ -148,11 +148,11 @@ namespace GameA
 //			RefreshEnergyInfo ();
             RefreshChapterInfo();
             RefreshFriendProgress();
-            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
-            {
-                _cachedView.MatchBtn.gameObject.SetActive(true); //todo
-            }
-            else
+//            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
+//            {
+//                _cachedView.MatchBtn.gameObject.SetActive(true); //todo
+//            }
+//            else
             {
                 _cachedView.MatchBtn.gameObject.SetActive(false);
             }

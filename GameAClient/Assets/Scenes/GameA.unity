@@ -163,7 +163,7 @@ MonoBehaviour:
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
     GameResoureRoot: http://127.0.0.1:7888
   - Enable: 1
-    AppServerApiRoot: http://192.168.1.91:8080/GameAServer/gameaapi
+    AppServerApiRoot: http://192.168.0.98:8080/GameAServer/gameaapi
     GameResoureRoot: http://192.168.0.73:7888/Joyyou
 --- !u!114 &574366973
 MonoBehaviour:

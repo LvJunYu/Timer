@@ -582,168 +582,6 @@ namespace GameA
             );
         }
 
-        public static bool IsRequstingCreateProject {
-            get { return _isRequstingCreateProject; }
-        }
-        private static bool _isRequstingCreateProject = false;
-        /// <summary>
-		/// 创建关卡
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="summary"></param>
-		/// <param name="programVersion"></param>
-		/// <param name="resourceVersion"></param>
-		/// <param name="passFlag"></param>
-		/// <param name="recordUploadParam"></param>
-		/// <param name="timeLimit">时间限制</param>
-		/// <param name="winCondition">胜利条件</param>
-		/// <param name="uploadParam">上传参数</param>
-        public static void CreateProject (
-            string name,
-            string summary,
-            int programVersion,
-            int resourceVersion,
-            bool passFlag,
-            Msg_RecordUploadParam recordUploadParam,
-            int timeLimit,
-            int winCondition,
-            Msg_ProjectUploadParam uploadParam,
-            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingCreateProject) {
-                return;
-            }
-            _isRequstingCreateProject = true;
-            Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
-            // 创建关卡
-            msg.Name = name;
-            msg.Summary = summary;
-            msg.ProgramVersion = programVersion;
-            msg.ResourceVersion = resourceVersion;
-            msg.PassFlag = passFlag;
-            msg.RecordUploadParam = recordUploadParam;
-            msg.TimeLimit = timeLimit;
-            msg.WinCondition = winCondition;
-            msg.UploadParam = uploadParam;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
-                SoyHttpApiPath.CreateProject, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingCreateProject = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateProject", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingCreateProject = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingUpdateProject {
-            get { return _isRequstingUpdateProject; }
-        }
-        private static bool _isRequstingUpdateProject = false;
-        /// <summary>
-		/// 更新关卡
-		/// </summary>
-		/// <param name="projectId">关卡Id</param>
-		/// <param name="name"></param>
-		/// <param name="summary"></param>
-		/// <param name="programVersion"></param>
-		/// <param name="resourceVersion"></param>
-		/// <param name="passFlag"></param>
-		/// <param name="recordUploadParam"></param>
-		/// <param name="timeLimit">时间限制</param>
-		/// <param name="winCondition">胜利条件</param>
-		/// <param name="uploadParam">上传参数</param>
-        public static void UpdateProject (
-            long projectId,
-            string name,
-            string summary,
-            int programVersion,
-            int resourceVersion,
-            bool passFlag,
-            Msg_RecordUploadParam recordUploadParam,
-            int timeLimit,
-            int winCondition,
-            Msg_ProjectUploadParam uploadParam,
-            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingUpdateProject) {
-                return;
-            }
-            _isRequstingUpdateProject = true;
-            Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
-            // 更新关卡
-            msg.ProjectId = projectId;
-            msg.Name = name;
-            msg.Summary = summary;
-            msg.ProgramVersion = programVersion;
-            msg.ResourceVersion = resourceVersion;
-            msg.PassFlag = passFlag;
-            msg.RecordUploadParam = recordUploadParam;
-            msg.TimeLimit = timeLimit;
-            msg.WinCondition = winCondition;
-            msg.UploadParam = uploadParam;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
-                SoyHttpApiPath.UpdateProject, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingUpdateProject = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateProject", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingUpdateProject = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingDeleteProject {
-            get { return _isRequstingDeleteProject; }
-        }
-        private static bool _isRequstingDeleteProject = false;
-        /// <summary>
-		/// 删除关卡
-		/// </summary>
-		/// <param name="projectId">关卡Id</param>
-        public static void DeleteProject (
-            List<long> projectId,
-            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingDeleteProject) {
-                return;
-            }
-            _isRequstingDeleteProject = true;
-            Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
-            // 删除关卡
-            msg.ProjectId.AddRange(projectId);
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProject>(
-                SoyHttpApiPath.DeleteProject, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingDeleteProject = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProject", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingDeleteProject = false;
-                },
-                form
-            );
-        }
-
         public static bool IsRequstingPublishWorldProject {
             get { return _isRequstingPublishWorldProject; }
         }
@@ -1111,6 +949,168 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDownloadProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCreateProject {
+            get { return _isRequstingCreateProject; }
+        }
+        private static bool _isRequstingCreateProject = false;
+        /// <summary>
+		/// 创建关卡
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="summary"></param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="passFlag"></param>
+		/// <param name="recordUploadParam"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
+        public static void CreateProject (
+            string name,
+            string summary,
+            int programVersion,
+            int resourceVersion,
+            bool passFlag,
+            Msg_RecordUploadParam recordUploadParam,
+            int timeLimit,
+            int winCondition,
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateProject) {
+                return;
+            }
+            _isRequstingCreateProject = true;
+            Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
+            // 创建关卡
+            msg.Name = name;
+            msg.Summary = summary;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.PassFlag = passFlag;
+            msg.RecordUploadParam = recordUploadParam;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
+                SoyHttpApiPath.CreateProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateProject {
+            get { return _isRequstingUpdateProject; }
+        }
+        private static bool _isRequstingUpdateProject = false;
+        /// <summary>
+		/// 更新关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="name"></param>
+		/// <param name="summary"></param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="passFlag"></param>
+		/// <param name="recordUploadParam"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
+        public static void UpdateProject (
+            long projectId,
+            string name,
+            string summary,
+            int programVersion,
+            int resourceVersion,
+            bool passFlag,
+            Msg_RecordUploadParam recordUploadParam,
+            int timeLimit,
+            int winCondition,
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateProject) {
+                return;
+            }
+            _isRequstingUpdateProject = true;
+            Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
+            // 更新关卡
+            msg.ProjectId = projectId;
+            msg.Name = name;
+            msg.Summary = summary;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.PassFlag = passFlag;
+            msg.RecordUploadParam = recordUploadParam;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
+                SoyHttpApiPath.UpdateProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteProject {
+            get { return _isRequstingDeleteProject; }
+        }
+        private static bool _isRequstingDeleteProject = false;
+        /// <summary>
+		/// 删除关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void DeleteProject (
+            List<long> projectId,
+            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProject) {
+                return;
+            }
+            _isRequstingDeleteProject = true;
+            Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
+            // 删除关卡
+            msg.ProjectId.AddRange(projectId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProject>(
+                SoyHttpApiPath.DeleteProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProject = false;
                 },
                 form
             );
