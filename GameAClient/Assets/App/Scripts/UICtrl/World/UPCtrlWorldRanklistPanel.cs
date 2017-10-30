@@ -123,17 +123,6 @@ namespace GameA
 //            CardDataRendererWrapper<Project> w;
 //            RequestData();
         }
-
-        public override void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
-        }
-
-        public override void SetMenu(UICtrlWorld.EMenu menu)
-        {
-            _menu = menu;
-        }
-
         public override void Clear()
         {
             _unload = true;
