@@ -14,7 +14,6 @@ namespace GameA
         private readonly UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
         private readonly UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
         private readonly WorldUserRecentRecordList _worldUserRecentRecordList = new WorldUserRecentRecordList();
-        private readonly MatchShadowBattleData _matchShadowBattleData = new MatchShadowBattleData();
         private  readonly  WorldRankList _rankList = new WorldRankList();
         public WorldNewestProjectList NewestProjectList
         {
@@ -39,11 +38,6 @@ namespace GameA
         public WorldUserRecentRecordList WorldUserRecentRecordList
         {
             get { return _worldUserRecentRecordList; }
-        }
-
-        public MatchShadowBattleData MatchShadowBattleData
-        {
-            get { return _matchShadowBattleData; }
         }
 
         public WorldRankList RankList
