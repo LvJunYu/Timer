@@ -143,6 +143,9 @@ namespace GameA
 
         private void InitBtn()
         {
+            int BtnNum = _cachedView.RankListBtnAry.Length-1 ;
+            _type = EWorldRankType.WRT_Player;
+            _bucket = ERankTimeBucket.RTB_Total;
             for (int i = 0; i <  _cachedView.RankListBtnAry.Length; i++)
             {
                 _cachedView.RankListBtnAry[i].SetActiveEx(true);
@@ -151,27 +154,32 @@ namespace GameA
             {
                 _cachedView.RankListBtnSelectAry[i].SetActiveEx(false);  
             }
+            _cachedView.RankListBtnAry[ BtnNum-(int)_bucket].SetActiveEx(false);
+            _cachedView.RankListBtnSelectAry[ BtnNum- (int)_bucket].SetActiveEx(true);
             for (int i = 0; i < _cachedView.RankListBtnAry.Length; i++)
             {
                 var i1 = i;
                 _cachedView.RankListBtnAry[i].onClick.AddListener(() =>
                 {
                     _cachedView.RankListBtnAry[i1].gameObject.SetActive(false);
-                    _cachedView.RankListBtnAry[_cachedView.RankListBtnAry.Length -1-(int)_bucket].gameObject.SetActive(true);
-                    _cachedView.RankListBtnSelectAry[_cachedView.RankListBtnAry.Length -1-(int)_bucket].gameObject.SetActive(false);
+                    _cachedView.RankListBtnAry[BtnNum-(int)_bucket].gameObject.SetActive(true);
+                    _cachedView.RankListBtnSelectAry[BtnNum-(int)_bucket].gameObject.SetActive(false);
                     _cachedView.RankListBtnSelectAry[i1].gameObject.SetActive(true);
-                    _bucket = (ERankTimeBucket) (_cachedView.RankListBtnAry.Length-1-i1);
+                    _bucket = (ERankTimeBucket) (BtnNum-i1);
+                    RequestData();
                     RefreshView();
                 });
             }
             _cachedView.AdventureBtn.onClick.AddListener(() =>
             {
                 _type = EWorldRankType.WRT_Player;
+                RequestData();
                 RefreshView();
             });
             _cachedView.CraftsmanBtn.onClick.AddListener(() =>
                 {
                     _type = EWorldRankType.WRT_Creator;
+                    RequestData();
                     RefreshView();
                 }
             );
