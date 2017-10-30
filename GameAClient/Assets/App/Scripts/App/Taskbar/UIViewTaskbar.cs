@@ -30,12 +30,18 @@ namespace GameA
 		public Button WorkshopButton;
 		public GameObject Workshop;
 		public GameObject WorkshopDisable;
-//        /// <summary>
+        /// <summary>
         /// 世界切换按钮
         /// </summary>
 		public Button WorldButton;
 		public GameObject World;
 		public GameObject WorldDisable;
+	    /// <summary>
+	    /// 对战按钮
+	    /// </summary>
+	    public Button BattleButton;
+	    public GameObject Battle;
+	    public GameObject BattleDisable;
         /// <summary>
         ///单人游戏按钮
         /// </summary>

@@ -2,8 +2,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UICommon)]
-    public class UICtrlShadowBattle : UICtrlInGameBase<UIViewShadowBattle>
+    [UIResAutoSetup(EResScenary.UIHome)]
+    public class UICtrlShadowBattle : UICtrlResManagedBase<UIViewShadowBattle>
     {
         private USCtrlGameFinishReward[] _rewardCtrl;
         private MatchShadowBattleData _data;

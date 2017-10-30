@@ -21,6 +21,7 @@ namespace GameA
 
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
+        private bool _battleAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
@@ -78,6 +79,7 @@ namespace GameA
 //            _cachedView.Account.onClick.AddListener(Account);
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 
+            _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -103,6 +105,7 @@ namespace GameA
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
+            SetLock(UIFunction.UI_Battle, _battleAvailable);
             SetLock(UIFunction.UI_Weapon, _weaponAvailable);
             SetLock(UIFunction.UI_Chat, _chatAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
@@ -201,6 +204,13 @@ namespace GameA
                     _worldAvailable = ifunlock;
                 }
                     break;
+                case UIFunction.UI_Battle:
+                {
+                    _cachedView.Battle.SetActiveEx(ifunlock);
+                    _cachedView.BattleDisable.SetActiveEx(!ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
                 case UIFunction.UI_Lottery:
                 {
                     _cachedView.Lottery.SetActiveEx(ifunlock);
@@ -247,7 +257,8 @@ namespace GameA
             UI_Train = 8,
             UI_Achievement = 9,
             UI_Weapon,
-            UI_Chat
+            UI_Chat,
+            UI_Battle
         }
 
         public void OnCreateBtn()
@@ -287,6 +298,11 @@ namespace GameA
             {
                 SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁世界功能，挑战其他玩家的制作的关卡~");
             }
+        }
+
+        public void OnBattleBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlBattle>();
         }
 
         public void OnMailBtn()
