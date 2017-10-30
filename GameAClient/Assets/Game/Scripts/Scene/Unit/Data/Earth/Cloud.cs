@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using SoyEngine;
-using UnityEditor.VersionControl;
 
 namespace GameA.Game
 {
