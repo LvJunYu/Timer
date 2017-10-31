@@ -49,7 +49,7 @@ namespace SoyEngine
                 return ECheckProfileResult.TooLong;
             }
             //中文英文字母下划线减号
-            if(!Regex.IsMatch(profile, "^[\\w\\d\u4E00-\u9FFF_-]+$")) {
+            if(!Regex.IsMatch(profile, "^[\\w\\d\\s\\,\\.\\!\\?\\，\\。\\！\\？\u4E00-\u9FFF_-]+$")) {
                 return ECheckProfileResult.IllegalCharacter;
             }
             return ECheckProfileResult.Success;
@@ -168,7 +168,7 @@ namespace SoyEngine
                 return ECheckProjectSumaryResult.TooLong;
             }
             //中文英文字母下划线减号
-            if(!Regex.IsMatch(projectSumary, "^[\\w\\d\u4E00-\u9FFF_-]+$")) {
+            if(!Regex.IsMatch(projectSumary, "^[\\w\\d\\s\\,\\.\\!\\?\\，\\。\\！\\？\u4E00-\u9FFF_-]+$")) {
                 return ECheckProjectSumaryResult.IllegalCharacter;
             }
             return ECheckProjectSumaryResult.Success;
