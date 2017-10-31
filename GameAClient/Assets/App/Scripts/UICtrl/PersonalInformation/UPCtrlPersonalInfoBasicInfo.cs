@@ -57,6 +57,8 @@ namespace GameA
             _cachedView.EditBtn.SetActiveEx(_mainCtrl.IsMyself);
             ChangeEditStatus(_isEditing);
             _cachedView.EditObj.SetActiveEx(_isEditing);
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void OnHeadBtn()
@@ -99,11 +101,23 @@ namespace GameA
             }
             if (_cachedView.NameInputField.text != _userInfoDetail.UserInfoSimple.NickName)
             {
-                if (CheckTools.CheckNickName(_cachedView.NameInputField.text) ==
-                    CheckTools.ECheckNickNameResult.Success)
+                var res = CheckTools.CheckNickName(_cachedView.NameInputField.text);
+                if (res == CheckTools.ECheckNickNameResult.Success)
                 {
                     userDataChanged.UserInfoSimple.NickName = _cachedView.NameInputField.text;
                     needUpdateInfo = true;
+                }
+                else if (res == CheckTools.ECheckNickNameResult.TooLong)
+                {
+                    ChangeEditStatus(false);
+                    SocialGUIManager.ShowPopupDialog("昵称字数太多");
+                    return;
+                }
+                else if (res == CheckTools.ECheckNickNameResult.TooShort)
+                {
+                    ChangeEditStatus(false);
+                    SocialGUIManager.ShowPopupDialog("昵称字数太少");
+                    return;
                 }
                 else
                 {
@@ -114,7 +128,8 @@ namespace GameA
             }
             if (_cachedView.DescInputField.text != _userInfoDetail.Profile)
             {
-                if (CheckTools.CheckProfile(_cachedView.DescInputField.text) == CheckTools.ECheckProfileResult.Success)
+                var res = CheckTools.CheckProfile(_cachedView.DescInputField.text);
+                if (res == CheckTools.ECheckProfileResult.Success)
                 {
                     if (string.IsNullOrEmpty(_cachedView.DescInputField.text))
                     {
@@ -125,6 +140,12 @@ namespace GameA
                         userDataChanged.Profile = _cachedView.DescInputField.text;
                     }
                     needUpdateInfo = true;
+                }
+                else if (res == CheckTools.ECheckProfileResult.TooLong)
+                {
+                    ChangeEditStatus(false);
+                    SocialGUIManager.ShowPopupDialog("签名字数太多");
+                    return;
                 }
                 else
                 {

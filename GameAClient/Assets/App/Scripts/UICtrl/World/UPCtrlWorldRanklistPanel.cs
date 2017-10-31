@@ -19,25 +19,8 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
             InitBtn();
-
         }
      
-        public override void Open()
-        {
-            base.Open();
-            _unload = false;
-            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            RequestData();
-            RefreshView();
-        }
-
-        public override void Close()
-        {
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
-            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
-            base.Close();
-        }
-
         protected override void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
@@ -56,7 +39,6 @@ namespace GameA
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
-        
         
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
