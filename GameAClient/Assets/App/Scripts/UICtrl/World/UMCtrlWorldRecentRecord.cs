@@ -32,12 +32,22 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.PlayBtn.onClick.AddListener(OnCardClick);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
         }
 
         protected override void OnDestroy()
         {
             _cachedView.PlayBtn.onClick.RemoveAllListeners();
             base.OnDestroy();
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_wrapper != null)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.UserInfoDetail);
+            }
         }
 
         private void OnCardClick()
