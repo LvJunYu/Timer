@@ -136,7 +136,11 @@ namespace GameA
         /// 匠人经验，等级
         /// </summary>
 		public Text CreatorLevel;
-
+		//蓝钻
+	    public GameObject BlueVipDock;
+	    public Image BlueImg;
+	    public Image SuperBlueImg;
+	    public Image BlueYearVipImg;
 
         public Button UnlockAll;
 

@@ -424,6 +424,9 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
+            //蓝钻更新信息
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void OnUnlockAll()

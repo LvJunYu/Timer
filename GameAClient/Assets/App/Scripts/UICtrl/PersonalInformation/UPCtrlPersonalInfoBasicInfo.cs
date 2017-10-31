@@ -57,6 +57,8 @@ namespace GameA
             _cachedView.EditBtn.SetActiveEx(_mainCtrl.IsMyself);
             ChangeEditStatus(_isEditing);
             _cachedView.EditObj.SetActiveEx(_isEditing);
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void OnHeadBtn()
