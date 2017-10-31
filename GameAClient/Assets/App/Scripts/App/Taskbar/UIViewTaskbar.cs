@@ -85,6 +85,12 @@ namespace GameA
 	    public GameObject Achievement;
 //	    public GameObject AchievementDisable;
 
+	    public Button QQHallBtn;
+	    public GameObject QQHall;
+
+	    public Button QQBlueBtn;
+	    public GameObject QQBlue;
+	    
 	    public Button ChatBtn;
         /// <summary>
         /// 人物动画
