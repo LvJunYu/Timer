@@ -34,6 +34,8 @@ namespace GameA
             _cachedView.FriendlinessTxt.text = _userInfoDetail.UserInfoSimple.RelationWithMe.Friendliness.ToString();
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
             bool followByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
             if (followByMe)

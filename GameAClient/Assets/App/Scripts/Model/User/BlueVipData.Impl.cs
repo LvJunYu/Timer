@@ -26,8 +26,14 @@ namespace GameA
             blueImg.SetActiveEx(!_isSuperBlueVip && _isBlueVip);
             superBlueImg.SetActiveEx(_isSuperBlueVip);
             lueYearVipImg.SetActiveEx(_isBlueYearVip);
-            blueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.BlueVipSprite;
-            superBlueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.SuperBlueVipSprite;
+            if (!_isSuperBlueVip && _isBlueVip)
+            {
+                blueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.BlueVipSprite;
+            }
+            else if (_isSuperBlueVip)
+            {
+                superBlueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.SuperBlueVipSprite;
+            }
         }
     }
 }
