@@ -24,7 +24,7 @@ namespace GameA
         // 默认体力增长时间／每点
         private const int DefaultChallengeGenerateTime = 300;
 
-        public const long PublishedProjectValidTimeLength = 90 * GameTimer.Second2Ms;
+        public const long PublishedProjectValidTimeLength = 24 * 3600 * GameTimer.Second2Ms;
 
         /// <summary>
         /// 玩挑战关卡的token
