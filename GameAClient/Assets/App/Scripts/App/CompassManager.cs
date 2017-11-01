@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using SoyEngine;
 using UnityEngine;
 
@@ -10,16 +11,12 @@ namespace GameA
         private const string _appId = "1106419259";
         private const string _version = "1"; //版本号 若未上报，则自动补齐为：1
         private const string _domain = "10"; //QQGame PC:10  IOS:18  Android:19
-        private double _timeOut;
+        private const int _reportOnlineInterval = 300; //游戏每5分钟上报一次在线数据
+        private float _lastReportOnlineTime;
+        StringBuilder url = new StringBuilder(128);
 
         private CompassManager()
         {
-        }
-
-        protected IEnumerator GetResult(WWW www)
-        {
-            yield return www;
-            LogHelper.Info(www.text);
         }
 
         /// <summary>
@@ -36,19 +33,20 @@ namespace GameA
         public void Login(string opuid, string opopenid, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null, string level = null)
         {
-            string url = "http://tencentlog.com/stat/report_login.php?";
-            url += string.Format("appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
-            url += source == null ? string.Empty : string.Format("&source={0}", source);
-            url += level == null ? string.Empty : string.Format("&level={0}", level);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_login.php?")
+                .Append(string.Format("appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(source == null ? string.Empty : string.Format("&source={0}", source))
+                .Append(level == null ? string.Empty : string.Format("&level={0}", level));
             LogHelper.Info("Login Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
@@ -58,19 +56,20 @@ namespace GameA
         public void Register(string opuid, string opopenid, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null)
         {
-            string url = "http://tencentlog.com/stat/report_register.php?";
-            url += string.Format("version={0}", _version);
-            url += string.Format("&appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
-            url += source == null ? string.Empty : string.Format("&source={0}", source);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_register.php?")
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("&appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(source == null ? string.Empty : string.Format("&source={0}", source));
             LogHelper.Info("Register Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
@@ -81,22 +80,23 @@ namespace GameA
         public void Quit(string opuid, string opopenid, string onlinetime, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null, string level = null)
         {
-            string url = "http://tencentlog.com/stat/report_quit.php?";
-            url += string.Format("version={0}", _version);
-            url += string.Format("&appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
-            url += string.Format("&onlinetime={0}", onlinetime);
-            url += source == null ? string.Empty : string.Format("&source={0}", source);
-            url += level == null ? string.Empty : string.Format("&level={0}", level);
-            LogHelper.Info("Login Url: " + url);
-            WWW www = new WWW(url);
-            CoroutineProxy.Instance.StartCoroutine(GetResult(www));
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_quit.php?")
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("&appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(string.Format("&onlinetime={0}", onlinetime))
+                .Append(source == null ? string.Empty : string.Format("&source={0}", source))
+                .Append(level == null ? string.Empty : string.Format("&level={0}", level));
+            LogHelper.Info("Quit Url: " + url);
+            WWW www = new WWW(url.ToString());
+//            CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
         /// <summary>
@@ -106,17 +106,18 @@ namespace GameA
         public void Online(string user_num = null, string userip = null, string svrip = null, string time = null,
             string worldid = null, string level = null)
         {
-            string url = "http://tencentlog.com/stat/report_online.php?";
-            url += string.Format("version={0}", _version);
-            url += string.Format("&appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += user_num == null ? "&user_num=1" : string.Format("&user_num={0}", user_num);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_online.php?")
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("&appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(user_num == null ? "&user_num=1" : string.Format("&user_num={0}", user_num));
             LogHelper.Info("Online Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
@@ -141,30 +142,31 @@ namespace GameA
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
         {
-            string url = "http://tencentlog.com/stat/report_consume.php?";
-            url += string.Format("version={0}", _version);
-            url += string.Format("&appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
-            url += string.Format("&modifyfee={0}", modifyfee);
-            url += totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee);
-            url += itemid == null ? string.Empty : string.Format("&itemid={0}", itemid);
-            url += itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype);
-            url += itemcnt == null ? string.Empty : string.Format("&itemcnt={0}", itemcnt);
-            url += modifyexp == null ? string.Empty : string.Format("&modifyexp={0}", modifyexp);
-            url += totalexp == null ? string.Empty : string.Format("&totalexp={0}", totalexp);
-            url += modifycoin == null ? string.Empty : string.Format("&modifycoin={0}", modifycoin);
-            url += totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee);
-            url += totalcoin == null ? string.Empty : string.Format("&totalcoin={0}", totalcoin);
-            url += level == null ? string.Empty : string.Format("&level={0}", level);
-            url += source == null ? string.Empty : string.Format("&source={0}", source);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_consume.php?")
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("&appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(string.Format("&modifyfee={0}", modifyfee))
+                .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
+                .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
+                .Append(itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype))
+                .Append(itemcnt == null ? string.Empty : string.Format("&itemcnt={0}", itemcnt))
+                .Append(modifyexp == null ? string.Empty : string.Format("&modifyexp={0}", modifyexp))
+                .Append(totalexp == null ? string.Empty : string.Format("&totalexp={0}", totalexp))
+                .Append(modifycoin == null ? string.Empty : string.Format("&modifycoin={0}", modifycoin))
+                .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
+                .Append(totalcoin == null ? string.Empty : string.Format("&totalcoin={0}", totalcoin))
+                .Append(level == null ? string.Empty : string.Format("&level={0}", level))
+                .Append(source == null ? string.Empty : string.Format("&source={0}", source));
             LogHelper.Info("Consume Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
@@ -176,30 +178,31 @@ namespace GameA
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
         {
-            string url = "http://tencentlog.com/stat/report_recharge.php?";
-            url += string.Format("version={0}", _version);
-            url += string.Format("&appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
-            url += string.Format("&modifyfee={0}", modifyfee);
-            url += totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee);
-            url += itemid == null ? string.Empty : string.Format("&itemid={0}", itemid);
-            url += itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype);
-            url += itemcnt == null ? string.Empty : string.Format("&itemcnt={0}", itemcnt);
-            url += modifyexp == null ? string.Empty : string.Format("&modifyexp={0}", modifyexp);
-            url += totalexp == null ? string.Empty : string.Format("&totalexp={0}", totalexp);
-            url += modifycoin == null ? string.Empty : string.Format("&modifycoin={0}", modifycoin);
-            url += totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee);
-            url += totalcoin == null ? string.Empty : string.Format("&totalcoin={0}", totalcoin);
-            url += level == null ? string.Empty : string.Format("&level={0}", level);
-            url += source == null ? string.Empty : string.Format("&source={0}", source);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report_recharge.php?")
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("&appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(string.Format("&modifyfee={0}", modifyfee))
+                .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
+                .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
+                .Append(itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype))
+                .Append(itemcnt == null ? string.Empty : string.Format("&itemcnt={0}", itemcnt))
+                .Append(modifyexp == null ? string.Empty : string.Format("&modifyexp={0}", modifyexp))
+                .Append(totalexp == null ? string.Empty : string.Format("&totalexp={0}", totalexp))
+                .Append(modifycoin == null ? string.Empty : string.Format("&modifycoin={0}", modifycoin))
+                .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
+                .Append(totalcoin == null ? string.Empty : string.Format("&totalcoin={0}", totalcoin))
+                .Append(level == null ? string.Empty : string.Format("&level={0}", level))
+                .Append(source == null ? string.Empty : string.Format("&source={0}", source));
             LogHelper.Info("Recharge Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 
@@ -229,21 +232,37 @@ namespace GameA
         public void Report(string optype, string actionid, string opuid, string opopenid, string userip = null,
             string svrip = null, string time = null, string worldid = null)
         {
-            string url = "http://tencentlog.com/stat/report.php?";
-            url += string.Format("optype={0}", optype);
-            url += string.Format("actionid={0}", actionid);
-            url += string.Format("version={0}", _version);
-            url += string.Format("appid={0}", _appId);
-            url += userip == null ? string.Empty : string.Format("&userip={0}", userip);
-            url += svrip == null ? string.Empty : string.Format("&svrip={0}", svrip);
-            url += time == null ? string.Empty : string.Format("&time={0}", time);
-            url += string.Format("&domain={0}", _domain);
-            url += worldid == null ? string.Empty : string.Format("&worldid={0}", worldid);
-            url += string.Format("&opuid={0}", opuid);
-            url += string.Format("&opopenid={0}", opopenid);
+            url.Length = 0;
+            url.Append("http://tencentlog.com/stat/report.php?")
+                .Append(string.Format("optype={0}", optype))
+                .Append(string.Format("actionid={0}", actionid))
+                .Append(string.Format("version={0}", _version))
+                .Append(string.Format("appid={0}", _appId))
+                .Append(userip == null ? string.Empty : string.Format("&userip={0}", userip))
+                .Append(svrip == null ? string.Empty : string.Format("&svrip={0}", svrip))
+                .Append(time == null ? string.Empty : string.Format("&time={0}", time))
+                .Append(string.Format("&domain={0}", _domain))
+                .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
+                .Append(string.Format("&opuid={0}", opuid))
+                .Append(string.Format("&opopenid={0}", opopenid));
             LogHelper.Info("Login Url: " + url);
-            WWW www = new WWW(url);
+            WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));
+        }
+
+        public void Update()
+        {
+            if (Time.realtimeSinceStartup - _lastReportOnlineTime > _reportOnlineInterval)
+            {
+                Online();
+                _lastReportOnlineTime += _reportOnlineInterval;
+            }
+        }
+
+        private IEnumerator GetResult(WWW www)
+        {
+            yield return www;
+            LogHelper.Info(www.text);
         }
     }
 }
