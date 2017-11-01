@@ -33,11 +33,13 @@ namespace GameA
 
         public void SetAward(Table_QQHallGrowAward award, bool isColltion)
         {
+            bool _levelUp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel >= award.Id;
             DictionaryTools.SetContentText(_cachedView.AwarLivesNum, award.Id.ToString());
             DictionaryTools.SetContentText(_cachedView.AwardCoinsNum, award.CoinNum.ToString());
             DictionaryTools.SetContentText(_cachedView.AwarDiamondDiNum, award.DiamodNum.ToString());
-            _cachedView.HaveColltionBtn.SetActiveEx(isColltion);
-            _cachedView.ColltionBtn.SetActiveEx(!isColltion);
+            _cachedView.HaveColltionBtn.SetActiveEx(isColltion&&_levelUp);
+            _cachedView.ColltionBtn.SetActiveEx(!isColltion&&_levelUp);
+            
         }
 
         protected override void OnViewCreated()
