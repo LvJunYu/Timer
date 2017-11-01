@@ -95,7 +95,7 @@ namespace GameA
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source))
                 .Append(level == null ? string.Empty : string.Format("&level={0}", level));
             LogHelper.Info("Quit Url: " + url);
-            WWW www = new WWW(url.ToString());
+            new WWW(url.ToString());
 //            CoroutineProxy.Instance.StartCoroutine(GetResult(www));
         }
 

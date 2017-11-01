@@ -160,8 +160,8 @@ namespace GameA
 
         private void OnDiamondPlusBtn()
         {
-//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.Instance.OpenUI<UICtrlShopPay> ();
+//            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
         }
 
         private void OnEnergyChanged()

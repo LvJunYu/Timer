@@ -577,5 +577,13 @@ namespace GameA
             int sec = (int) (time % 60);
             return string.Format("{0:D2}:{1:D2}", min, sec);
         }
+
+        public static string GetTimeStringBySecond(int seconds)
+        {
+            int hour = seconds / 60 / 60;
+            int minute = seconds / 60 - hour * 60;
+            int second = seconds - hour * 60 * 60 - minute * 60;
+            return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+        }
     }
 }
