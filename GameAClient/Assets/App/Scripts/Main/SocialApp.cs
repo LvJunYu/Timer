@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 ** Filename : SocialApp
 ** Author : Dong
 ** Date : 2015/5/30 18:18:18
@@ -105,13 +105,7 @@ namespace GameA
             {
                 ClearCache();
             }
-            var channel = PublishChannel.EType.None;
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                channel = PublishChannel.EType.QQGame;
-            }
-            PublishChannel.Init(channel);
-			RegisterGameTypeVersion();
+            RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
@@ -221,18 +215,6 @@ namespace GameA
             GameParticleManager.Instance.OnChangeScene();
         }
 
-        public void Exit()
-        {
-            if (Application.isEditor)
-            {
-                LogHelper.Info("App Exit");
-            }
-            else
-            {
-                Application.Quit();
-            }
-        }
-
         public void ChangeToGame()
         {
             SocialGUIManager.Instance.ChangeToGameMode();
@@ -259,12 +241,8 @@ namespace GameA
 
         protected override void OnDestroy()
         {
-            Messenger.Broadcast(EMessengerType.OnApplicationQuit);
-            if (PublishChannel.Instance != null)
-            {
-                PublishChannel.Instance.OnDestroy();
-            }
             base.OnDestroy();
+            Messenger.Broadcast(EMessengerType.OnApplicationQuit);
 //            CompassManager.Instance.Quit(LocalUser.Instance.UserGuid.ToString(), "836144322", ((int) Time.realtimeSinceStartup).ToString());
         }
 
@@ -272,6 +250,7 @@ namespace GameA
         {
             base.Update();
             GameManager.Instance.Update();
+//            CompassManager.Instance.Update();
 //            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {

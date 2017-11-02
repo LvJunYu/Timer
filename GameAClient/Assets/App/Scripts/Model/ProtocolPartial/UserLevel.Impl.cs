@@ -1,18 +1,16 @@
-﻿// 取等级数据 | 获取等级数据
-using System;
-using System.Collections.Generic;
-using SoyEngine.Proto;
-using SoyEngine;
+﻿using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserLevel{
-        protected override void OnSyncPartial ()
+    public partial class UserLevel
+    {
+        protected override void OnSyncPartial()
         {
-            base.OnSyncPartial ();
-            if (LocalUser.Instance.UserGuid == CS_UserId) {
-                Messenger.Broadcast (EMessengerType.OnGoldChanged);
-                Messenger.Broadcast (EMessengerType.OnDiamondChanged);
+            base.OnSyncPartial();
+            if (LocalUser.Instance.UserGuid == CS_UserId)
+            {
+                Messenger.Broadcast(EMessengerType.OnGoldChanged);
+                Messenger.Broadcast(EMessengerType.OnDiamondChanged);
             }
         }
     }
