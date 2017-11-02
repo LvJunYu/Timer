@@ -85,7 +85,7 @@ namespace GameA
             }
         }
 
-        public void RequestChat(UserInfoDetail userInfoDetail)
+        public void RequestChat(UserInfoDetail userInfoDetail, Action successAction = null)
         {
             RequestMyFriends(() =>
             {
@@ -96,16 +96,17 @@ namespace GameA
                     {
                         SocialGUIManager.Instance.OpenUI<UICtrlChat>(UICtrlChat.EMenu.Friend);
                         SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(inx, FriendList);
-                        SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
+                        if (successAction != null)
+                        {
+                            successAction.Invoke();
+                        }
                     }));
                 }
                 else
                 {
                     SocialGUIManager.ShowPopupDialog("该玩家不是相互关注好友。");
                 }
-            }, code =>
-            {
-            });
+            }, code => { SocialGUIManager.ShowPopupDialog("请求好友数据失败。"); });
         }
 
         public void RequestFollowUser(UserInfoDetail userInfoDetail)

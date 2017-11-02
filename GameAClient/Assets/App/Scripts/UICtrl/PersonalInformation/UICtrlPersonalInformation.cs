@@ -197,7 +197,8 @@ namespace GameA
 
         private void OnChatBtn()
         {
-            LocalUser.Instance.RelationUserList.RequestChat(UserInfoDetail);
+            LocalUser.Instance.RelationUserList.RequestChat(UserInfoDetail,
+                () => SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>());
         }
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)

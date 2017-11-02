@@ -26,6 +26,13 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.SelectBtn.onClick.AddListener(OnSelectBtn);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_userInfoDetail == null) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_userInfoDetail);
         }
 
         public void Set(object data)
