@@ -12,8 +12,8 @@ namespace GameA
                 },
                 code =>
                 {
-                    TempData();
-                    RefreshView();
+//                    TempData();
+//                    RefreshView();
 //                    SocialGUIManager.ShowPopupDialog("请求邮箱数据失败。");
                 });
         }
