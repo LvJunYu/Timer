@@ -94,6 +94,8 @@ namespace GameA
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
+            _cachedView.QQHallBtn.onClick.AddListener(OnQQHallBtn);
+            _cachedView.QQBlueBtn.onClick.AddListener(OnQQBlueBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -371,6 +373,16 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlHandBook>();
         }
 
+        private void OnQQHallBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlQQHall>();
+        }
+
+        private void OnQQBlueBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlQQBlue>();
+        }
+
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
 
@@ -424,6 +436,9 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
+            //蓝钻更新信息
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void OnUnlockAll()

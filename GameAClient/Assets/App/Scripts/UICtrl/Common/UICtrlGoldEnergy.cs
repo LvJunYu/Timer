@@ -17,6 +17,7 @@ namespace GameA
 
         private readonly Stack<EStyle> _styleStack = new Stack<EStyle>(5);
 
+        private int  _thousand = 1000;
         #endregion
 
         #region 属性
@@ -159,8 +160,8 @@ namespace GameA
 
         private void OnDiamondPlusBtn()
         {
-//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.Instance.OpenUI<UICtrlShopPay> ();
+//            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
         }
 
         private void OnEnergyChanged()
@@ -186,7 +187,14 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
+            if (LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin < _thousand)
+            {
+                _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
+            }
+            else
+            {
+                _cachedView.GoldNumber.text = (LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin/_thousand).ToString();
+            }
         }
 
         private void OnDiamondChanged()
@@ -195,7 +203,14 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
+            if (LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin < _thousand)
+            {
+                _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
+            }
+            else
+            {
+                _cachedView.DiamondNumber.text = (LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond/_thousand).ToString();
+            }
         }
 
         #endregion

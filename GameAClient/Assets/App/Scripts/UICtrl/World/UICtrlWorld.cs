@@ -15,6 +15,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
+            _cachedView.SearchBtn.onClick.AddListener(OnSearchBtn);
             _menuCtrlArray = new UPCtrlWorldPanelBase[(int) EMenu.Max];
             
             var upCtrlWorldRecommendProject = new UPCtrlWorldRecommendProject();
@@ -111,6 +112,11 @@ namespace GameA
                     _menuCtrlArray[i].Clear();
                 }
             }
+        }
+
+        private void OnSearchBtn()
+        {
+            SocialGUIManager.ShowPopupDialog("关卡搜索功能暂未开启。");
         }
 
         protected override void OnClose()

@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 ** Filename : SocialApp
 ** Author : Dong
 ** Date : 2015/5/30 18:18:18
@@ -30,7 +30,7 @@ namespace GameA
         private float _startTime;
         private const float MinLoadingTime = 2f;
 
-		internal static SocialApp Instance;
+        internal static SocialApp Instance;
 
         public EEnvironment Env
         {
@@ -45,7 +45,7 @@ namespace GameA
 
         public static AddressConfig GetAppServerAddress()
         {
-            if(GlobalVar.Instance.Env == EEnvironment.Production)
+            if (GlobalVar.Instance.Env == EEnvironment.Production)
             {
                 return new AddressConfig
                 {
@@ -72,7 +72,7 @@ namespace GameA
                     GameResoureRoot = "http://devtest.joy-you.com/res/gamea"
                 };
             }
-            if(GlobalVar.Instance.Env == EEnvironment.Development)
+            if (GlobalVar.Instance.Env == EEnvironment.Development)
             {
                 return new AddressConfig
                 {
@@ -123,7 +123,7 @@ namespace GameA
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
             gameObject.AddComponent<SocialGUIManager>();
             CoroutineManager.Instance.Init(this);
-            JoyResManager.Instance.Init ();
+            JoyResManager.Instance.Init();
             JoyResManager.Instance.SetDefaultResScenary(EResScenary.Default);
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
@@ -137,15 +137,13 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
+//            CompassManager.Instance.Login(LocalUser.Instance.UserGuid.ToString(), "836144322");
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
             {
                 SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
-                LocalUser.Instance.Account.LoginByToken(()=>
-                {
-                    LoginSucceed();
-                }, code =>
+                LocalUser.Instance.Account.LoginByToken(() => { LoginSucceed(); }, code =>
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
                     SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
@@ -156,9 +154,9 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
                 SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             }
-		}
+        }
 
-        public void LoginSucceed ()
+        public void LoginSucceed()
         {
             AppData.Instance.Init();
 //            ShareUtil.Init();
@@ -166,10 +164,10 @@ namespace GameA
 #if !UNITY_EDITOR_OSX
             YIMManager.Instance.Login();
 #endif
-            GetUserData ();
+            GetUserData();
         }
 
-        private void GetUserData ()
+        private void GetUserData()
         {
             if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
             {
@@ -179,8 +177,9 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
             }
-            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
-                GameProcessManager.Instance.Init ();
+            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(() =>
+            {
+                GameProcessManager.Instance.Init();
                 if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
@@ -190,8 +189,9 @@ namespace GameA
                     SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
-                SocialGUIManager.Instance.ShowAppView ();
-            }, code=>{
+                SocialGUIManager.Instance.ShowAppView();
+            }, code =>
+            {
                 if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
                 {
                     SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
@@ -201,13 +201,12 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
-                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
-                    new KeyValuePair<string, Action>("重试", ()=>{
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData));
-                    }));
+                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码：" + code.ToString(), null,
+                    new KeyValuePair<string, Action>("重试",
+                        () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData)); }));
             });
             //最少loading时间MinLoadingTime
-            helper.AddTask((successCb, failedCb)=>
+            helper.AddTask((successCb, failedCb) =>
             {
                 var leftTime = _startTime + MinLoadingTime - Time.realtimeSinceStartup;
                 if (leftTime > 0)
@@ -279,6 +278,7 @@ namespace GameA
                 PublishChannel.Instance.OnDestroy();
             }
             base.OnDestroy();
+//            CompassManager.Instance.Quit(LocalUser.Instance.UserGuid.ToString(), "836144322", ((int) Time.realtimeSinceStartup).ToString());
         }
 
         protected override void Update()
@@ -286,7 +286,7 @@ namespace GameA
             base.Update();
             GameManager.Instance.Update();
 //            RoomManager.Instance.Update();
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }

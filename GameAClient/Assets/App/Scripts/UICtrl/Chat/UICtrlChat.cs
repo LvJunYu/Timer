@@ -119,7 +119,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.MainPopUpUI2;
         }
 
         public override void OnUpdate()
@@ -162,6 +162,11 @@ namespace GameA
 
         private void OnFaceBtn()
         {
+//            CompassManager.Instance.Register(LocalUser.Instance.UserGuid.ToString(), "836144322");
+//            CompassManager.Instance.Online();
+//            CompassManager.Instance.Consume(LocalUser.Instance.UserGuid.ToString(), "836144322","33");
+//            CompassManager.Instance.Recharge(LocalUser.Instance.UserGuid.ToString(), "836144322","33");
+//            CompassManager.Instance.Quit(LocalUser.Instance.UserGuid.ToString(), "836144322","33");
         }
 
         protected void OnStartRecordVoiceBtn()

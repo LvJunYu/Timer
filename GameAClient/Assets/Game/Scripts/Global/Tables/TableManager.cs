@@ -28,6 +28,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Achievement> Table_AchievementDic = new Dictionary<int, Table_Achievement>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
+		public readonly Dictionary<int,Table_QQHallGrowAward> Table_QQHallGrowAwardDic = new Dictionary<int, Table_QQHallGrowAward>();
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
@@ -60,6 +61,7 @@ namespace GameA.Game
 		[SerializeField] private Table_Achievement[] _tableAchievements;
 		[SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[SerializeField] private Table_Turntable[] _tableTurntables;
+		[SerializeField] private Table_QQHallGrowAward[] _tableQQHallGrowAwards;
 		[SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[SerializeField] private Table_Background[] _tableBackgrounds;
 		[SerializeField] private Table_Decorate[] _tableDecorates;
@@ -123,6 +125,8 @@ namespace GameA.Game
             _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
 			string TurntableJsonStr = JoyResManager.Instance.GetJson ("Turntable", (int) EResScenary.TableAsset);
             _tableTurntables = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Turntable[]>(TurntableJsonStr);
+			string QQHallGrowAwardJsonStr = JoyResManager.Instance.GetJson ("QQHallGrowAward", (int) EResScenary.TableAsset);
+            _tableQQHallGrowAwards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_QQHallGrowAward[]>(QQHallGrowAwardJsonStr);
 			string FashionCouponJsonStr = JoyResManager.Instance.GetJson ("FashionCoupon", (int) EResScenary.TableAsset);
             _tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponJsonStr);
 			string BackgroundJsonStr = JoyResManager.Instance.GetJson ("Background", (int) EResScenary.TableAsset);
@@ -330,6 +334,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableTurntables table.Id {0} is duplicated!", _tableTurntables[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableQQHallGrowAwards.Length; i++)
+			{
+				if (!Table_QQHallGrowAwardDic.ContainsKey(_tableQQHallGrowAwards[i].Id))
+				{
+					Table_QQHallGrowAwardDic.Add(_tableQQHallGrowAwards[i].Id,_tableQQHallGrowAwards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableQQHallGrowAwards table.Id {0} is duplicated!", _tableQQHallGrowAwards[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableFashionCoupons.Length; i++)
@@ -651,6 +666,15 @@ namespace GameA.Game
 		{
 			Table_Turntable tmp;
 			if (Table_TurntableDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_QQHallGrowAward GetQQHallGrowAward(int key)
+		{
+			Table_QQHallGrowAward tmp;
+			if (Table_QQHallGrowAwardDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
