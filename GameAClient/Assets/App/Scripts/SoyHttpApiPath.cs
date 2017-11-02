@@ -32,6 +32,8 @@ namespace SoyEngine
         public const string GetVerificationCode = "/account/getVerificationCode";
         // 退出登录
         public const string Logout = "/account/logout";
+        // QQGame登录
+        public const string LoginByQQGame = "/account/loginByQQGame";
         // 用户简要信息
         public const string UserInfoSimple = "/user/getSimple";
         // 用户详细信息

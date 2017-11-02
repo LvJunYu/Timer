@@ -263,6 +263,7 @@ namespace GameA
         {
             base.Update();
             GameManager.Instance.Update();
+//            CompassManager.Instance.Update();
 //            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {

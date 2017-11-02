@@ -465,7 +465,7 @@ namespace GameA
                     //                        SocialGUIManager.ShowPopupDialog("网络错误");
                     //                    }
                     SocialGUIManager.ShowPopupDialog("执行成功，请重新启动程序", null,
-                        new KeyValuePair<string, Action>("OK", () => { Application.Quit(); }));
+                    new KeyValuePair<string, Action>("OK", () => { SocialApp.Instance.Exit(); }));
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 },
                 code =>

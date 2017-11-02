@@ -201,7 +201,7 @@ namespace GameA
                 new KeyValuePair<string, Action>("确定", () =>
                 {
                     _exitDialogIsOpen = false;
-                    Application.Quit();
+                    SocialApp.Instance.Exit();
                 }),
                 new KeyValuePair<string, Action>("取消", () => { _exitDialogIsOpen = false; })
             );
