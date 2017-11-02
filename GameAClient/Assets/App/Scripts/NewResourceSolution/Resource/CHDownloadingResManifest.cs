@@ -440,7 +440,7 @@ namespace NewResourceSolution
                 SocialGUIManager.ShowPopupDialog("资源解压失败，请检查剩余存储空间后重试", null,
                     new KeyValuePair<string, Action>("确定", () =>
                 {
-                    Application.Quit();
+                        SocialApp.Instance.Exit();
                 }));
                 while (true)
                 {

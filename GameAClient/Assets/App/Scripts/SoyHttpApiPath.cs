@@ -32,6 +32,8 @@ namespace SoyEngine
         public const string GetVerificationCode = "/account/getVerificationCode";
         // 退出登录
         public const string Logout = "/account/logout";
+        // QQGame登录
+        public const string LoginByQQGame = "/account/loginByQQGame";
         // 用户简要信息
         public const string UserInfoSimple = "/user/getSimple";
         // 用户详细信息
@@ -40,6 +42,8 @@ namespace SoyEngine
         public const string UserLevel = "/user/getLevelData";
         // 用户详细信息
         public const string UpdateUserInfo = "/user/updateInfo";
+        // 获取蓝钻数据
+        public const string BlueVipData = "/user/getBlueVipData";
         // 获取应用全局信息
         public const string AppData = "/appInfo/appData";
         // 社交关系统计
@@ -94,6 +98,10 @@ namespace SoyEngine
         public const string DownloadProject = "/world/downloadProject";
         // 最近录像
         public const string WorldUserRecentRecordList = "/world/getUserRecentRecordList";
+        // 评分最高
+        public const string WorldBestProjectList = "/world/getBestProjectList";
+        // 关注的关卡
+        public const string WorldFollowedUserProjectList = "/world/getFollowedUserProjectList";
         // 排行榜
         public const string WorldRankList = "/world/getRankList";
         // 匹配乱入对决
