@@ -14,6 +14,7 @@ namespace GameA
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
         private USCtrlProjectLabel[] _usCtrlProjectLabels;
+        private bool _onlyChangeView;
 
         protected override void OnViewCreated()
         {
@@ -194,6 +195,11 @@ namespace GameA
 
         private void OnBadTogValueChanged(bool value)
         {
+            if (_onlyChangeView)
+            {
+                _onlyChangeView = false;
+                return;
+            }
             if (Project == null) return;
             if (Project.ProjectUserData == null)
             {
@@ -203,6 +209,8 @@ namespace GameA
             if (Project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
+                _onlyChangeView = true;
+                _cachedView.BadTog.isOn = !value;
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
@@ -220,6 +228,11 @@ namespace GameA
 
         private void OnGoodTogValueChanged(bool value)
         {
+            if (_onlyChangeView)
+            {
+                _onlyChangeView = false;
+                return;
+            }
             if (Project == null) return;
             if (Project.ProjectUserData == null)
             {
@@ -229,6 +242,8 @@ namespace GameA
             if (Project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
+                _onlyChangeView = true;
+                _cachedView.GoodTog.isOn = !value;
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
@@ -389,9 +404,9 @@ namespace GameA
             {
                 return;
             }
-            if (!_isViewCreated)
+            if (Project != null)
             {
-                return;
+                Project.Request(Project.ProjectId, null, null);
             }
             for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
