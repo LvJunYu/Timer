@@ -10,6 +10,7 @@ namespace GameA
         private int _index;
         public int Index { get; set; }
         private bool _emptyProject;
+        private static string _newProject = "创建新关卡";
 
         public RectTransform Transform
         {
@@ -85,7 +86,7 @@ namespace GameA
             }
             else
             {
-                DictionaryTools.SetContentText(_cachedView.Title, string.Empty);
+                DictionaryTools.SetContentText(_cachedView.Title, _newProject);
             }
         }
 

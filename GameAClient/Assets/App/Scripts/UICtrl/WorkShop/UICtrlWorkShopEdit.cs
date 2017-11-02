@@ -139,7 +139,8 @@ namespace GameA
             if (null == _project) return;
             if (_project.PassFlag == false)
             {
-                SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关");
+                SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关", null,
+                    new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));
                 return;
             }
             if (_needSave)
