@@ -140,20 +140,7 @@ namespace GameA
 //            CompassManager.Instance.Login(LocalUser.Instance.UserGuid.ToString(), "836144322");
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
-            if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
-                LocalUser.Instance.Account.LoginByToken(() => { LoginSucceed(); }, code =>
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
-                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                });
-            }
-            else
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
-                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-            }
+            PublishChannel.Instance.Login();
         }
 
         public void LoginSucceed()
@@ -290,6 +277,7 @@ namespace GameA
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }
+            PublishChannel.Instance.Update();
         }
 
         [Serializable]

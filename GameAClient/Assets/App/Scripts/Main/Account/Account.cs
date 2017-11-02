@@ -260,6 +260,32 @@ namespace SoyEngine
                 }
             });
         }
+        
+        public void LoginByQQGame(string openId, string openKey, Action successCallback, Action<ELoginCode> failedCallback)
+        {
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.LoginByQQGame(openId, openKey, GlobalVar.Instance.AppVersion, Res, _devicePlatform, ret =>
+            {
+                if (ret.ResultCode == (int)ELoginCode.LoginC_Success)
+                {
+                    _userGuid = ret.UserId; 
+                    if (null != successCallback)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    failedCallback.Invoke((ELoginCode)ret.ResultCode);
+                }
+            }, (errorCode) => {
+                SoyHttpClient.ShowErrorTip(errorCode);
+                if (null != failedCallback)
+                {
+                    failedCallback.Invoke(ELoginCode.LoginC_None);
+                }
+            });
+        }
 
         public void GuestLoginIn(Action successCallback, Action<ELoginByTokenCode> failedCallback)
         {

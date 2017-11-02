@@ -428,6 +428,55 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingLoginByQQGame {
+            get { return _isRequstingLoginByQQGame; }
+        }
+        private static bool _isRequstingLoginByQQGame = false;
+        /// <summary>
+		/// QQGame登录
+		/// </summary>
+		/// <param name="openId">OpenId</param>
+		/// <param name="openKey">OpenKey</param>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void LoginByQQGame (
+            string openId,
+            string openKey,
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_LoginByQQGame> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingLoginByQQGame) {
+                return;
+            }
+            _isRequstingLoginByQQGame = true;
+            Msg_CS_CMD_LoginByQQGame msg = new Msg_CS_CMD_LoginByQQGame();
+            // QQGame登录
+            msg.OpenId = openId;
+            msg.OpenKey = openKey;
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginByQQGame>(
+                SoyHttpApiPath.LoginByQQGame, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingLoginByQQGame = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "LoginByQQGame", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingLoginByQQGame = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateUserInfo {
             get { return _isRequstingUpdateUserInfo; }
         }

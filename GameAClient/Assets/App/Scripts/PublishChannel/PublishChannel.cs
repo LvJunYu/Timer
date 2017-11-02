@@ -50,15 +50,32 @@ namespace GameA
 
         protected virtual void Init()
         {
-            
         }
-
+        
         public virtual void Update()
         {
         }
 
         public virtual void OnDestroy()
         {
+        }
+
+        public virtual void Login()
+        {
+            if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
+                LocalUser.Instance.Account.LoginByToken(() => { SocialApp.Instance.LoginSucceed(); }, code =>
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                });
+            }
+            else
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+            }
         }
     }
 }

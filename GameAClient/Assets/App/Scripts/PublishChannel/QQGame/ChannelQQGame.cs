@@ -52,14 +52,8 @@ namespace GameA
                 SocialApp.Instance.Exit();
                 return;
             }
-            
         }
         
-
-        public override void Update()
-        {
-            base.Update();
-        }
 
         public override void OnDestroy()
         {
@@ -71,6 +65,19 @@ namespace GameA
             ReleaseClientProcMsgObject(_clientObj);
             Release();
             base.OnDestroy();
+        }
+
+
+        public override void Login()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在登陆");
+            LocalUser.Instance.Account.LoginByQQGame(_openId, _openKey, () => { SocialApp.Instance.LoginSucceed(); }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("登陆失败", null, new KeyValuePair<string, Action>("重试", () =>
+                {
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(Login));
+                }), new KeyValuePair<string, Action>("退出", SocialApp.Instance.Exit));
+            });
         }
 
 
@@ -152,7 +159,7 @@ namespace GameA
         private bool InitMsgClient()
         {
             _clientObj = CreateClientProcMsgObject();
-            if (_clientObj == null)
+            if (_clientObj.ToInt32() == 0)
             {
                 LogHelper.Error("CreateClientProcMsgObject Failed");
                 return false;
