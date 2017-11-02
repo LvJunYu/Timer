@@ -585,5 +585,14 @@ namespace GameA
             int second = seconds - hour * 60 * 60 - minute * 60;
             return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
         }
+
+        public static string NumToThousand(long num)
+        {
+            if (num < 9999)
+            {
+                return num.ToString();
+            }
+            return string.Format("{0}k", num / 1000);
+        }
     }
 }
