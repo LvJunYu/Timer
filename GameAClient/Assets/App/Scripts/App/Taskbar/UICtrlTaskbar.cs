@@ -77,7 +77,9 @@ namespace GameA
             //为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
 //            _cachedView.Account.onClick.AddListener(Account);
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
-
+            _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
+            _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
+            _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
             _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
@@ -289,6 +291,18 @@ namespace GameA
 //            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
 //        }
 
+        private void RechargeBtn()
+        {
+        }
+
+        private void ForumBtn()
+        {
+        }
+
+        private void ServiceBtn()
+        {
+        }
+
         public void OnWorldBtn()
         {
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.World))
@@ -318,7 +332,6 @@ namespace GameA
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSingleMode>();
         }
-
 
         /// <summary>
         /// 家园角色被点击

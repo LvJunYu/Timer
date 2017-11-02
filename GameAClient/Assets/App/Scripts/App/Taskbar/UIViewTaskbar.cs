@@ -21,7 +21,11 @@ namespace GameA
 //        public UITaskButton Me;
 //        public RectTransform ScaleRoot;
         //public Button SignUpBtn;
-        public Button Account;
+	    public Button Account;
+	    public Button ServiceBtn;
+	    public Button ForumBtn;
+	    public Button RechargeBtn;
+	    
         public Button PersonalInformation;
 	    
         /// <summary>

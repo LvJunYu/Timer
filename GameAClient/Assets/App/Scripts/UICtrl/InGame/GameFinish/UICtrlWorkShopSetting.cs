@@ -21,6 +21,96 @@ namespace GameA
         public Project CurProject;
         public FinishCondition CurCondition;
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            InitFinishCondition();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
+            _cachedView.Toggle01.onValueChanged.AddListener(Toggle01OnValueChanged);
+            _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
+
+            _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
+            _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
+            _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
+            _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
+            _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
+
+            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
+            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
+            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
+            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
+            _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
+            _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
+            _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
+            _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
+            SetPlatform(CrossPlatformInputManager.Platform);
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _curMode = (UICtrlEdit.EMode) parameter;
+            if (GM2DGame.Instance != null) _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (_gameModeWorkshopEdit != null)
+                CurProject = _gameModeWorkshopEdit.Project;
+            _originalTitle = CurProject.Name;
+            _originalDesc = CurProject.Summary;
+            UpdateFinishCondition();
+            //默认显示关卡页面
+            _cachedView.Toggle01.isOn = true;
+            Toggle01OnValueChanged(true);
+            _openGamePlaying = false;
+            if (GM2DGame.Instance != null)
+            {
+                if (GameRun.Instance.IsPlaying)
+                {
+                    GM2DGame.Instance.Pause();
+                    _openGamePlaying = true;
+                }
+            }
+        }
+
+        protected override void OnClose()
+        {
+            _upCtrlWorkShopCommonSetting.Close();
+            GameSettingData.Instance.Save();
+            if (PlayMode.Instance == null)
+            {
+                return;
+            }
+            if (GM2DGame.Instance != null && _openGamePlaying)
+            {
+                GM2DGame.Instance.Continue();
+                _openGamePlaying = false;
+            }
+            Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
+            base.OnClose();
+        }
+        
+        protected override void OnDestroy()
+        {
+            _upCtrlWorkShopBasicSetting.OnDestroy();
+            _upCtrlWorkShopWinConditionSetting.OnDestroy();
+            _upCtrlWorkShopCommonSetting.OnDestroy();
+            _upCtrlWorkShopLevelSetting.OnDestroy();
+            CurProject = null;
+            CurCondition = null;
+            base.OnDestroy();
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            Messenger<KeyCode>.AddListener(EMessengerType.OnGetInputKeyCode, OnGetInputKeyCode);
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.AppGameUI;
+        }
+
         private void InitFinishCondition()
         {
             if (null == CurCondition)
@@ -124,96 +214,6 @@ namespace GameA
             {
                 _upCtrlWorkShopCommonSetting.ChangeInputKey(keyCode);
             }
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            Messenger<KeyCode>.AddListener(EMessengerType.OnGetInputKeyCode, OnGetInputKeyCode);
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.AppGameUI;
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            InitFinishCondition();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
-            _cachedView.Toggle01.onValueChanged.AddListener(Toggle01OnValueChanged);
-            _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
-
-            _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
-            _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
-            _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
-            _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
-            _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
-
-            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
-            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
-            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
-            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
-            _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
-            _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
-            _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
-            _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
-            SetPlatform(CrossPlatformInputManager.Platform);
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            _curMode = (UICtrlEdit.EMode) parameter;
-            if (GM2DGame.Instance != null) _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (_gameModeWorkshopEdit != null)
-                CurProject = _gameModeWorkshopEdit.Project;
-            _originalTitle = CurProject.Name;
-            _originalDesc = CurProject.Summary;
-            UpdateFinishCondition();
-            //默认显示关卡页面
-            _cachedView.Toggle01.isOn = true;
-            Toggle01OnValueChanged(true);
-            _openGamePlaying = false;
-            if (GM2DGame.Instance != null)
-            {
-                if (GameRun.Instance.IsPlaying)
-                {
-                    GM2DGame.Instance.Pause();
-                    _openGamePlaying = true;
-                }
-            }
-        }
-
-        protected override void OnClose()
-        {
-            _upCtrlWorkShopCommonSetting.Close();
-            GameSettingData.Instance.Save();
-            if (PlayMode.Instance == null)
-            {
-                return;
-            }
-            if (GM2DGame.Instance != null && _openGamePlaying)
-            {
-                GM2DGame.Instance.Continue();
-                _openGamePlaying = false;
-            }
-            Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
-            base.OnClose();
-        }
-        
-        protected override void OnDestroy()
-        {
-            _upCtrlWorkShopBasicSetting.OnDestroy();
-            _upCtrlWorkShopWinConditionSetting.OnDestroy();
-            _upCtrlWorkShopCommonSetting.OnDestroy();
-            _upCtrlWorkShopLevelSetting.OnDestroy();
-            CurProject = null;
-            CurCondition = null;
-            base.OnDestroy();
         }
 
         public void OnClickMusicButton(bool isOn)
