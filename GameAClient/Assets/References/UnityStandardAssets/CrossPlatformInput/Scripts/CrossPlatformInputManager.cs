@@ -42,7 +42,7 @@ namespace UnityStandardAssets.CrossPlatformInput
                 Platform = EPlatform.Standalone;
                 virtualInput = new StandaloneInput();
                 UpdateInputControlKeys();
-                #endif
+#endif
             }
         }
 
@@ -468,12 +468,12 @@ namespace UnityStandardAssets.CrossPlatformInput
 
             public bool GetButtonDown
             {
-                get { return lastPressedFrame - GameRun.Instance.LogicFrameCnt == 0; }
+                get { return lastPressedFrame == GameRun.Instance.LogicFrameCnt; }
             }
 
             public bool GetButtonUp
             {
-                get { return (releasedFrame == GameRun.Instance.LogicFrameCnt - 0); }
+                get { return releasedFrame == GameRun.Instance.LogicFrameCnt; }
             }
         }
     }
