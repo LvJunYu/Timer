@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using YIMEngine;
 
 namespace GameA

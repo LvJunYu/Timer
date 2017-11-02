@@ -15,7 +15,7 @@ namespace GameA
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
             _cachedView.SearchBtn.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
             _cachedView.SearchInputField.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
-            RequestData();
+            RequestData(true);
             RefreshView();
         }
 

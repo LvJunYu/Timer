@@ -96,6 +96,7 @@ namespace GameA
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;
+            _cachedView.GridDataScrollers[(int)_menu].ContentPosition = Vector2.zero;
         }
     }
 }

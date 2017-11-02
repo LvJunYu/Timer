@@ -96,11 +96,13 @@ namespace GameA
 //            CardDataRendererWrapper<Project> w;
 //            RequestData();
         }
+        
         public override void Clear()
         {
             _unload = true;
             _contentList.Clear();
             _projectList = null;
+            _cachedView.GridDataScrollers[(int)_menu].ContentPosition = Vector2.zero;
         }
 
         private void InitBtn()

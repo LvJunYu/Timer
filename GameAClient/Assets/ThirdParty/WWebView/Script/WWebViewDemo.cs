@@ -27,7 +27,10 @@ public sealed class WWebViewDemo : MonoBehaviour
     public Button javaScript = null;
     public Button goBack = null;
     public Button goForward = null;
-    public int margine = 30;
+    public int top = 200;
+    public int bottom = 200;
+    public int left = 1000;
+    public int right = 1000;
     public string url = "https://www.baidu.com";
     public string userAgent = "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0)";
 
@@ -70,7 +73,7 @@ public sealed class WWebViewDemo : MonoBehaviour
 #if UNIWEBVIEW2_SUPPORTED
             UniWebViewPlugin.Init(gameObject.name, margine, 0, margine, 0);
 #else
-            WWebViewPlugin.Init(gameObject.name, margine, 0, margine, 0);
+            WWebViewPlugin.Init(gameObject.name, top, left, bottom, right);
 #endif
             initialize = true;
         }
@@ -198,7 +201,7 @@ public sealed class WWebViewDemo : MonoBehaviour
         WWebViewPlugin.Show(gameObject.name, false, 0, 0f);
 #endif
         showFlag = true;
-        showText.text = "Hide";
+//        showText.text = "Hide";
     }
 
     public void Hide()
@@ -209,7 +212,7 @@ public sealed class WWebViewDemo : MonoBehaviour
         WWebViewPlugin.Hide(gameObject.name, false, 0, 0f);
 #endif
         showFlag = false;
-        showText.text = "Show";
+//        showText.text = "Show";
     }
 
     public void UserAgent()
