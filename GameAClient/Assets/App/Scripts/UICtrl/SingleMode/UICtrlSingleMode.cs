@@ -605,11 +605,11 @@ namespace GameA
                 }
             }
 
-            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
-            {
-                _cachedView.MatchBtn.gameObject.SetActive(true);
-            }
-            else
+//            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
+//            {
+//                _cachedView.MatchBtn.gameObject.SetActive(true);
+//            }
+//            else
             {
                 _cachedView.MatchBtn.gameObject.SetActive(false);
             }

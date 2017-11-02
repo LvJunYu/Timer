@@ -13,6 +13,8 @@ namespace GameA
             base.Open();
             _unload = false;
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
+            _cachedView.SearchBtn.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
+            _cachedView.SearchInputField.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
             RequestData();
             RefreshView();
         }
@@ -26,7 +28,9 @@ namespace GameA
 
         protected abstract void RequestData(bool append = false);
 
-        protected abstract void RefreshView();
+        protected virtual void RefreshView()
+        {
+        }
 
         protected abstract void OnItemRefresh(IDataItemRenderer item, int inx);
 
