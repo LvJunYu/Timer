@@ -326,21 +326,21 @@ namespace GameA
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
             //TODO 测试，请求排行榜第一的录像作为影子数据
-            if (Project.ProjectRecordRankList.AllList.Count > 0)
-            {
-                Record record = Project.ProjectRecordRankList.AllList[0].Record;
-                Project.RequestPlayShadowBattle(record, () =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayShadowBattle(Project, record);
-                    SocialApp.Instance.ChangeToGame();
-                }, () =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
-            }
-            else
+//            if (Project.ProjectRecordRankList.AllList.Count > 0)
+//            {
+//                Record record = Project.ProjectRecordRankList.AllList[0].Record;
+//                Project.RequestPlayShadowBattle(record, () =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    GameManager.Instance.RequestPlayShadowBattle(Project, record);
+//                    SocialApp.Instance.ChangeToGame();
+//                }, () =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+//                });
+//            }
+//            else
             {
                 Project.RequestPlay(() =>
                 {
