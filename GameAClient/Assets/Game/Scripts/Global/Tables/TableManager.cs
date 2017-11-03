@@ -32,6 +32,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
+		public readonly Dictionary<int,Table_DiamondShop> Table_DiamondShopDic = new Dictionary<int, Table_DiamondShop>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
@@ -65,6 +66,7 @@ namespace GameA.Game
 		[SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[SerializeField] private Table_Background[] _tableBackgrounds;
 		[SerializeField] private Table_Decorate[] _tableDecorates;
+		[SerializeField] private Table_DiamondShop[] _tableDiamondShops;
 		[SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
 		[SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
@@ -133,6 +135,8 @@ namespace GameA.Game
             _tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundJsonStr);
 			string DecorateJsonStr = JoyResManager.Instance.GetJson ("Decorate", (int) EResScenary.TableAsset);
             _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
+			string DiamondShopJsonStr = JoyResManager.Instance.GetJson ("DiamondShop", (int) EResScenary.TableAsset);
+            _tableDiamondShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_DiamondShop[]>(DiamondShopJsonStr);
 			string PuzzleSummonJsonStr = JoyResManager.Instance.GetJson ("PuzzleSummon", (int) EResScenary.TableAsset);
             _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
 			string PuzzleJsonStr = JoyResManager.Instance.GetJson ("Puzzle", (int) EResScenary.TableAsset);
@@ -378,6 +382,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableDecorates table.Id {0} is duplicated!", _tableDecorates[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableDiamondShops.Length; i++)
+			{
+				if (!Table_DiamondShopDic.ContainsKey(_tableDiamondShops[i].Id))
+				{
+					Table_DiamondShopDic.Add(_tableDiamondShops[i].Id,_tableDiamondShops[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableDiamondShops table.Id {0} is duplicated!", _tableDiamondShops[i].Id);
 				}
 			}
 			for (int i = 0; i < _tablePuzzleSummons.Length; i++)
@@ -702,6 +717,15 @@ namespace GameA.Game
 		{
 			Table_Decorate tmp;
 			if (Table_DecorateDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_DiamondShop GetDiamondShop(int key)
+		{
+			Table_DiamondShop tmp;
+			if (Table_DiamondShopDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
