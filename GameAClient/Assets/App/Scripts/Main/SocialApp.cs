@@ -24,6 +24,7 @@ namespace GameA
     {
         [SerializeField] private EEnvironment _env;
         [SerializeField] private LogHelper.ELogLevel _logLevel = LogHelper.ELogLevel.All;
+        [SerializeField] private PublishChannel.EType _publishChannel = PublishChannel.EType.None;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
@@ -108,7 +109,7 @@ namespace GameA
             var channel = PublishChannel.EType.None;
             if (Application.platform == RuntimePlatform.WindowsPlayer)
             {
-                channel = PublishChannel.EType.QQGame;
+                channel = _publishChannel;
             }
             PublishChannel.Init(channel);
 			RegisterGameTypeVersion();
