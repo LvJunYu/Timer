@@ -31,7 +31,7 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
-            Init();
+           
         }
 
         public override void Close()
