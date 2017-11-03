@@ -11,7 +11,7 @@ namespace GameA
             _data = data;
             _cachedView.BasicNumTxt.text = string.Format("x{0}", _data.Count);
             _cachedView.ExtraNumTxt.text = _data.AdditionalCount.ToString();
-            _cachedView.CostNumTxt.text = string.Format("￥ {0}", _data.Price);
+            _cachedView.CostNumTxt.text = string.Format("￥ {0}", _data.Price / 10);
         }
 
         protected override void OnViewCreated()

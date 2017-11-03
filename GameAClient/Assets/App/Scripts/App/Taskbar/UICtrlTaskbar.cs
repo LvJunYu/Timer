@@ -293,6 +293,8 @@ namespace GameA
 
         private void RechargeBtn()
         {
+            Application.OpenURL(
+                "http://pay.qq.com/ipay/index.shtml?c=qqacct_save&ch=qqcard,kj,weixin&n=60&aid=pay.index.header.paycenter&ADTAG=pay.index.header.paycenter&aid=7000201");
         }
 
         private void ForumBtn()
@@ -478,7 +480,7 @@ namespace GameA
                     //                        SocialGUIManager.ShowPopupDialog("网络错误");
                     //                    }
                     SocialGUIManager.ShowPopupDialog("执行成功，请重新启动程序", null,
-                    new KeyValuePair<string, Action>("OK", () => { SocialApp.Instance.Exit(); }));
+                        new KeyValuePair<string, Action>("OK", () => { SocialApp.Instance.Exit(); }));
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 },
                 code =>

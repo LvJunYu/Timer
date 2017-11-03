@@ -63,9 +63,9 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
             UniWebViewPlugin.Init(gameObject.name, margine, 0, margine, 0);
 #else
-//            _top = _bottom = (ScreenResolutionManager.Instance.CurResolution.height - Height) / 2;
-//            _left = _right = (ScreenResolutionManager.Instance.CurResolution.width - Width) / 2;
-            _top = 30;
+            _top = _bottom = (ScreenResolutionManager.Instance.CurRealResolution.height - Height) / 2;
+            _left = _right = (ScreenResolutionManager.Instance.CurRealResolution.width - Width) / 2;
+//            _top = 30;
             WWebViewPlugin.Init(gameObject.name, _top, _left, _bottom, _right);
 #endif
             initialize = true;
@@ -411,8 +411,9 @@ public sealed class WWebViewManager : MonoBehaviour
 //        status.text = "WebViewDone";
         initialize = false;
 #else
-        Application.Quit();
+//        Application.Quit();
 #endif
+        SocialGUIManager.Instance.CloseUI<UICtrlWWebView>();
     }
 
 #if UNIWEBVIEW2_SUPPORTED

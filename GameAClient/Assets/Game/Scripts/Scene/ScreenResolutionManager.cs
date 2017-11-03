@@ -26,9 +26,16 @@ namespace GameA.Game
         private bool _selectFullScreen;
         private int _selectIndex;
 
-        public Resolution CurResolution
+        public Resolution CurRealResolution
         {
-            get { return _curResolution; }
+            get
+            {
+                if (_fullScreen)
+                {
+                    return Screen.currentResolution;
+                }
+                return _curResolution;
+            }
         }
 
         public List<Resolution> AllResolutions
