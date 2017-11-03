@@ -187,7 +187,7 @@ namespace GameA
                 return;
             }
             _cachedView.GoldNumber.text =
-                GameATools.NumToThousand(LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin);
+                GameATools.FormatNumberString(LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin);
         }
 
         private void OnDiamondChanged()
@@ -197,7 +197,7 @@ namespace GameA
                 return;
             }
             _cachedView.DiamondNumber.text =
-                GameATools.NumToThousand(LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond);
+                GameATools.FormatNumberString(LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond);
         }
 
         #endregion

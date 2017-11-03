@@ -11,6 +11,11 @@ namespace GameA.Game
 		[ColumnMapping("Id")]
 		public int Id;
 		/// <summary>
+        /// 名称
+        /// </summary>
+		[ColumnMapping("Name")]
+		public string Name;
+		/// <summary>
         /// 描述
         /// </summary>
 		[ColumnMapping("Desc")]

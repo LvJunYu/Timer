@@ -506,15 +506,15 @@ namespace GameA
 
         public static string FormatNumberString(long num)
         {
-            if (num > 100000000)
+            if (num <= 9999)
             {
-                return "" + (num / 100000000) + "亿";
+                return num.ToString();
             }
-            else if (num > 10000)
+            if (num <= 99999999)
             {
-                return "" + (num / 10000) + "万";
+                return string.Format("{0}万", num / 10000);
             }
-            return "" + num;
+            return string.Format("{0}亿", num / 100000000);
         }
 
         /// <summary>
@@ -584,15 +584,6 @@ namespace GameA
             int minute = seconds / 60 - hour * 60;
             int second = seconds - hour * 60 * 60 - minute * 60;
             return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
-        }
-
-        public static string NumToThousand(long num)
-        {
-            if (num < 9999)
-            {
-                return num.ToString();
-            }
-            return string.Format("{0}k", num / 1000);
         }
     }
 }
