@@ -156,7 +156,8 @@ namespace GameA
 
         private void OnDredgeBtnGroupBtn()
         {
-            Application.OpenURL("http://pay.qq.com/ipay/index.shtml?n=3&c=xxzxgj,xxqgame&aid=VIP.APP*****.PLATqqgame&ch=qdqb,kj");
+            WWebViewManager.Instance.Open(ERequestType.OpenBlueVip);
+//            Application.OpenURL("http://pay.qq.com/ipay/index.shtml?n=3&c=xxzxgj,xxqgame&aid=VIP.APP*****.PLATqqgame&ch=qdqb,kj");
         }
 
         public enum EMenu

@@ -26,6 +26,11 @@ namespace GameA.Game
         private bool _selectFullScreen;
         private int _selectIndex;
 
+        public Resolution CurResolution
+        {
+            get { return _curResolution; }
+        }
+
         public List<Resolution> AllResolutions
         {
             get { return _allResolutions; }
