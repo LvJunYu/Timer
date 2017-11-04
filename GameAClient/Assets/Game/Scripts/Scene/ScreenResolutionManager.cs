@@ -108,6 +108,12 @@ namespace GameA.Game
             {
                 _fullScreen = false;
             }
+            if (_fullScreen)
+            {
+                _curResolutionIndex = 0;
+                _curResolution = _fullScreenResolutions[0];
+                return;
+            }
             _curResolution = new Resolution();
             //设置默认分辨率
             _curResolution.width = Screen.width;
@@ -115,28 +121,14 @@ namespace GameA.Game
             _curResolutionIndex = IndexOfResolutions(_curResolution, _allWindowResolutions);
             if (_curResolutionIndex >= 0)
             {
-                if (_fullScreen)
-                {
-                    _curResolutionIndex = 0;
-                }
-                else
-                {
-                    _curResolution = _allWindowResolutions[_curResolutionIndex];
-                }
+                _curResolution = _allWindowResolutions[_curResolutionIndex];
             }
             else
             {
                 //若列表中没有，则添加
                 _allWindowResolutions.Add(_curResolution);
                 _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
-                if (_fullScreen)
-                {
-                    _curResolutionIndex = 0;
-                }
-                else
-                {
-                    _curResolutionIndex = _allWindowResolutions.IndexOf(_curResolution);
-                }
+                _curResolutionIndex = _allWindowResolutions.IndexOf(_curResolution);
             }
         }
 

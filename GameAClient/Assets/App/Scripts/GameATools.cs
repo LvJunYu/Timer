@@ -506,7 +506,7 @@ namespace GameA
 
         public static string FormatNumberString(long num)
         {
-            if (num <= 9999)
+            if (num <= 99999)
             {
                 return num.ToString();
             }
