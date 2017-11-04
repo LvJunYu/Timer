@@ -7,7 +7,7 @@ namespace GameA
     {
         private USCtrlGameSettingItem _playBGMusic_2;
         private USCtrlGameSettingItem _playSoundsEffects_2;
-  
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -49,21 +49,29 @@ namespace GameA
             _cachedView.CommonSettingPanel.SetActive(false);
         }
 
+        protected override void OnFullScreenToggleValueChanged(bool arg0)
+        {
+            base.OnFullScreenToggleValueChanged(arg0);
+            _cachedView.ResolutionDropdown.options = _optionDatas;
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.SelectIndex;
+        }
+
         private void UpdateSettingItem()
         {
             _playBGMusic_2.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
-            _playSoundsEffects_2.SetData(GameSettingData.Instance.PlaySoundsEffects, _mainCtrl.OnClickSoundsEffectsButton);
+            _playSoundsEffects_2.SetData(GameSettingData.Instance.PlaySoundsEffects,
+                _mainCtrl.OnClickSoundsEffectsButton);
         }
-        
+
         private void UpdateScreenSettingView()
         {
             bool fullScreen = ScreenResolutionManager.Instance.FullScreen;
             _cachedView.WindowScreenToggle.isOn = !fullScreen;
             _cachedView.FullScreenToggle.isOn = fullScreen;
             OnFullScreenToggleValueChanged(fullScreen);
-            InitOptions(ScreenResolutionManager.Instance.AllResolutions);
+            RefreshOptions(ScreenResolutionManager.Instance.AllResolutionOptions);
             _cachedView.ResolutionDropdown.options = _optionDatas;
-            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.SelectIndex;
         }
     }
 }

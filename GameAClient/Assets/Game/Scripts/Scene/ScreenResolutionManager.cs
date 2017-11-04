@@ -16,41 +16,42 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new ScreenResolutionManager()); }
         }
 
-        private List<Resolution> _allResolutions;
+        private List<Resolution> _allWindowResolutions;
+        private List<Resolution> _fullScreenResolutions;
         private Resolution _curResolution;
         private int _curResolutionIndex;
         private bool _fullScreen;
+
         private const string FullScreenTag = "FullScreenTag";
-        private const string ScreenWidthTag = "ScreenWidthTag";
-        private const string ScreenHeightTag = "ScreenHeightTag";
         private bool _selectFullScreen;
+
         private int _selectIndex;
 
         public Resolution CurRealResolution
         {
+            get { return _curResolution; }
+        }
+
+        public List<Resolution> AllResolutionOptions
+        {
             get
             {
-                if (_fullScreen)
+                if (_selectFullScreen)
                 {
-                    return Screen.currentResolution;
+                    return _fullScreenResolutions;
                 }
-                return _curResolution;
+                return _allWindowResolutions;
             }
-        }
-
-        public List<Resolution> AllResolutions
-        {
-            get { return _allResolutions; }
-        }
-
-        public int CurResolutionIndex
-        {
-            get { return _curResolutionIndex; }
         }
 
         public bool FullScreen
         {
             get { return _fullScreen; }
+        }
+
+        public int SelectIndex
+        {
+            get { return _selectIndex; }
         }
 
         private ScreenResolutionManager()
@@ -62,13 +63,16 @@ namespace GameA.Game
 
         private void GetAllResolutions()
         {
-            _allResolutions = new List<Resolution>(10);
+            _fullScreenResolutions = new List<Resolution>(1);
+            _fullScreenResolutions.Add(Screen.currentResolution);
+            _allWindowResolutions = new List<Resolution>(10);
             var resolutions = Screen.resolutions;
             for (int i = 0; i < resolutions.Length; i++)
             {
                 int width = resolutions[i].width;
                 int height = resolutions[i].height;
-                if (width > Screen.currentResolution.width || height > Screen.currentResolution.height)
+                //分辨率高度必须小于屏幕分辨率高度，否则窗口会超出屏幕
+                if (width > Screen.currentResolution.width || height >= Screen.currentResolution.height)
                 {
                     continue;
                 }
@@ -77,9 +81,9 @@ namespace GameA.Game
                 {
                     canAdd = true;
                     //检查是否重复
-                    for (int j = 0; j < _allResolutions.Count; j++)
+                    for (int j = 0; j < _allWindowResolutions.Count; j++)
                     {
-                        if (CheckSameResolution(resolutions[i], _allResolutions[j]))
+                        if (CheckSameResolution(resolutions[i], _allWindowResolutions[j]))
                         {
                             canAdd = false;
                             break;
@@ -88,10 +92,10 @@ namespace GameA.Game
                 }
                 if (canAdd)
                 {
-                    _allResolutions.Add(resolutions[i]);
+                    _allWindowResolutions.Add(resolutions[i]);
                 }
             }
-            _allResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
+            _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
         }
 
         private void Load()
@@ -105,30 +109,35 @@ namespace GameA.Game
                 _fullScreen = false;
             }
             _curResolution = new Resolution();
-            if (PlayerPrefs.HasKey(ScreenWidthTag))
-            {
-                _curResolution.width = PlayerPrefs.GetInt(ScreenWidthTag);
-                _curResolution.height = PlayerPrefs.GetInt(ScreenHeightTag);
-                _curResolutionIndex = IndexOfResolutions(_curResolution, _allResolutions);
-                if (_curResolutionIndex >= 0)
-                {
-                    _curResolution = _allResolutions[_curResolutionIndex];
-                    return;
-                }
-            }
             //设置默认分辨率
             _curResolution.width = Screen.width;
             _curResolution.height = Screen.height;
-            _curResolutionIndex = IndexOfResolutions(_curResolution, _allResolutions);
+            _curResolutionIndex = IndexOfResolutions(_curResolution, _allWindowResolutions);
             if (_curResolutionIndex >= 0)
             {
-                _curResolution = _allResolutions[_curResolutionIndex];
-                return;
+                if (_fullScreen)
+                {
+                    _curResolutionIndex = 0;
+                }
+                else
+                {
+                    _curResolution = _allWindowResolutions[_curResolutionIndex];
+                }
             }
-            //若列表中没有，则添加
-            _allResolutions.Add(_curResolution);
-            _allResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
-            _curResolutionIndex = _allResolutions.IndexOf(_curResolution);
+            else
+            {
+                //若列表中没有，则添加
+                _allWindowResolutions.Add(_curResolution);
+                _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
+                if (_fullScreen)
+                {
+                    _curResolutionIndex = 0;
+                }
+                else
+                {
+                    _curResolutionIndex = _allWindowResolutions.IndexOf(_curResolution);
+                }
+            }
         }
 
         public void Save()
@@ -139,14 +148,22 @@ namespace GameA.Game
                 needSave = true;
                 _fullScreen = _selectFullScreen;
                 PlayerPrefs.SetInt(FullScreenTag, _fullScreen ? 1 : 0);
+                if (_selectFullScreen)
+                {
+                    _curResolution = _fullScreenResolutions[0];
+                    _curResolutionIndex = 0;
+                }
+                else
+                {
+                    _curResolution = _allWindowResolutions[_selectIndex];
+                    _curResolutionIndex = _selectIndex;
+                }
             }
-            if (_selectIndex != _curResolutionIndex)
+            else if (!_selectFullScreen && _selectIndex != _curResolutionIndex)
             {
                 needSave = true;
                 _curResolutionIndex = _selectIndex;
-                _curResolution = _allResolutions[_curResolutionIndex];
-                PlayerPrefs.SetInt(ScreenWidthTag, _curResolution.width);
-                PlayerPrefs.SetInt(ScreenHeightTag, _curResolution.height);
+                _curResolution = _allWindowResolutions[_curResolutionIndex];
             }
             if (needSave)
             {
@@ -160,15 +177,17 @@ namespace GameA.Game
             _selectFullScreen = _fullScreen;
         }
 
-        public void Init()
-        {
-            SetResolution(_curResolution, _fullScreen);
-        }
-
         public void SetFullScreen(bool value)
         {
             _selectFullScreen = value;
-//            SetResolution(_curResolution, value);
+            if (_selectFullScreen)
+            {
+                _selectIndex = 0;
+            }
+            else
+            {
+                _selectIndex = _curResolutionIndex;
+            }
         }
 
         public void SetResolution(Resolution resolution, bool fullScreen)
@@ -177,6 +196,18 @@ namespace GameA.Game
             _fullScreen = fullScreen;
             Screen.SetResolution(resolution.width, resolution.height, fullScreen);
             Screen.fullScreen = fullScreen;
+        }
+
+        public void SetResolution(int index)
+        {
+            if (index >= _allWindowResolutions.Count)
+            {
+                LogHelper.Error("resolutionIndex > _allResolutions.Count");
+                return;
+            }
+            _selectIndex = index;
+//            _curResolutionIndex = index;
+//            SetResolution(_allResolutions[index], _fullScreen);
         }
 
         private bool CheckSameResolution(Resolution r1, Resolution r2)
@@ -194,18 +225,6 @@ namespace GameA.Game
                 }
             }
             return -1;
-        }
-
-        public void SetResolution(int index)
-        {
-            if (index >= _allResolutions.Count)
-            {
-                LogHelper.Error("resolutionIndex > _allResolutions.Count");
-                return;
-            }
-            _selectIndex = index;
-//            _curResolutionIndex = index;
-//            SetResolution(_allResolutions[index], _fullScreen);
         }
     }
 }

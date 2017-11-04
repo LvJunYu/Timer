@@ -35,16 +35,23 @@ namespace GameA
             base.Open();
             UpdateScreenSettingView();
         }
-        
+
+        protected override void OnFullScreenToggleValueChanged(bool arg0)
+        {
+            base.OnFullScreenToggleValueChanged(arg0);
+            _cachedView.ResolutionDropdown.options = _optionDatas;
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.SelectIndex;
+        }
+
         private void UpdateScreenSettingView()
         {
             bool fullScreen = ScreenResolutionManager.Instance.FullScreen;
             _cachedView.WindowScreenToggle.isOn = !fullScreen;
             _cachedView.FullScreenToggle.isOn = fullScreen;
             OnFullScreenToggleValueChanged(fullScreen);
-            InitOptions(ScreenResolutionManager.Instance.AllResolutions);
+            RefreshOptions(ScreenResolutionManager.Instance.AllResolutionOptions);
             _cachedView.ResolutionDropdown.options = _optionDatas;
-            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.CurResolutionIndex;
+            _cachedView.ResolutionDropdown.value = ScreenResolutionManager.Instance.SelectIndex;
         }
     }
 }

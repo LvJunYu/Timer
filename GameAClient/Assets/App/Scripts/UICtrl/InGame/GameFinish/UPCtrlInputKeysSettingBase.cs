@@ -131,9 +131,10 @@ namespace GameA
             ScreenResolutionManager.Instance.SetResolution(arg0);
         }
 
-        protected void OnFullScreenToggleValueChanged(bool arg0)
+        protected virtual void OnFullScreenToggleValueChanged(bool arg0)
         {
             SetFullScreen(arg0);
+            RefreshOptions(ScreenResolutionManager.Instance.AllResolutionOptions);
         }
 
         private void SetFullScreen(bool value)
@@ -141,9 +142,13 @@ namespace GameA
             ScreenResolutionManager.Instance.SetFullScreen(value);
         }
 
-        protected void InitOptions(List<Resolution> resolutions)
+        protected void RefreshOptions(List<Resolution> resolutions)
         {
-            if (_optionDatas != null) return;
+            if (_optionDatas == null)
+            {
+                _optionDatas = new List<Dropdown.OptionData>(resolutions.Count);
+            }
+            _optionDatas.Clear();
             _optionDatas = new List<Dropdown.OptionData>(resolutions.Count);
             for (int i = 0; i < resolutions.Count; i++)
             {
