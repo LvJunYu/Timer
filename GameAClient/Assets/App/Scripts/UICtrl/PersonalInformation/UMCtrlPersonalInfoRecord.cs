@@ -37,12 +37,19 @@ namespace GameA
         {
             if (_record == null) return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入录像");
-            _record.RequestPlay(() =>
+            _record.ProjectData.PrepareRes(() =>
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                GameManager.Instance.RequestPlayRecord(_record.ProjectData, _record);
-                SocialApp.Instance.ChangeToGame();
-            }, error =>
+                _record.RequestPlay(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    GameManager.Instance.RequestPlayRecord(_record.ProjectData, _record);
+                    SocialApp.Instance.ChangeToGame();
+                }, error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入录像失败");
+                });
+            }, () =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("进入录像失败");

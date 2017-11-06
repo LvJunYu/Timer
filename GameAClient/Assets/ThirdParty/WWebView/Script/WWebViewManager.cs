@@ -385,7 +385,7 @@ public sealed class WWebViewManager : MonoBehaviour
     {
 #if UNITY_EDITOR
 //        status.text = "WebViewDone";
-        initialize = false;
+//        initialize = false;
 #else
 //        Application.Quit();
 #endif
