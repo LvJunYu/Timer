@@ -30,7 +30,7 @@ namespace GameA
         /// <param name="time">当前用户的操作时间，精确到秒，填入unix时间戳。若未上报，则自动补齐为：服务器当前时间</param>
         /// <param name="worldid">不进行分区分服就填1。若未上报，则自动补齐为：1</param>
         /// <param name="level">操作用户的等级，即opuid的等级</param>
-        public void Login(string opuid, string opopenid, string source = null, string userip = null,
+        public void Login(string opuid = null, string opopenid = null, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null, string level = null)
         {
             url.Length = 0;
@@ -41,8 +41,10 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source))
                 .Append(level == null ? string.Empty : string.Format("&level={0}", level));
             LogHelper.Info("Login Url: " + url);
@@ -53,7 +55,7 @@ namespace GameA
         /// <summary>
         /// 注册
         /// </summary>
-        public void Register(string opuid, string opopenid, string source = null, string userip = null,
+        public void Register(string opuid = null, string opopenid = null, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null)
         {
             url.Length = 0;
@@ -65,8 +67,10 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source));
             LogHelper.Info("Register Url: " + url);
             WWW www = new WWW(url.ToString());
@@ -77,8 +81,8 @@ namespace GameA
         /// 退出
         /// </summary>
         /// <param name="onlinetime">用户本次登录的在线时长</param>
-        public void Quit(string opuid, string opopenid, string onlinetime, string source = null, string userip = null,
-            string svrip = null, string time = null, string worldid = null, string level = null)
+        public void Quit(string onlinetime, string opuid = null, string opopenid = null, string source = null, string
+            userip = null, string svrip = null, string time = null, string worldid = null, string level = null)
         {
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_quit.php?")
@@ -89,8 +93,10 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid))
                 .Append(string.Format("&onlinetime={0}", onlinetime))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source))
                 .Append(level == null ? string.Empty : string.Format("&level={0}", level));
@@ -137,7 +143,7 @@ namespace GameA
          (1)某用户通过Q币直购游戏内商品，消费10Q币，则记入1000。
          (2)某用户通过点券(游戏币)购买游戏内商品，消费10点券(1Q币=10点券)，则记入100。
         */
-        public void Consume(string opuid, string opopenid, string modifyfee, string totalfee = null,
+        public void Consume(string modifyfee, string totalfee = null, string opuid = null, string opopenid = null,
             string itemid = null, string itemtype = null, string itemcnt = null, string modifyexp = null,
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
@@ -151,8 +157,10 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid))
                 .Append(string.Format("&modifyfee={0}", modifyfee))
                 .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
                 .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
@@ -173,7 +181,7 @@ namespace GameA
         /// <summary>
         /// 用户通过Q点/Q币兑换游戏内等值货币(例如“点券/金币/元宝”)的行为。
         /// </summary>
-        public void Recharge(string opuid, string opopenid, string modifyfee, string totalfee = null,
+        public void Recharge(string modifyfee, string totalfee = null, string opuid = null, string opopenid = null,
             string itemid = null, string itemtype = null, string itemcnt = null, string modifyexp = null,
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
@@ -188,8 +196,10 @@ namespace GameA
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
                 .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid))
-                .Append(string.Format("&modifyfee={0}", modifyfee))
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid))
                 .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
                 .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
                 .Append(itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype))
@@ -229,8 +239,8 @@ namespace GameA
             支付充值为15。
             其它操作请开发者使用100以上的int型数据上报。
          */
-        public void Report(string optype, string actionid, string opuid, string opopenid, string userip = null,
-            string svrip = null, string time = null, string worldid = null)
+        public void Report(string optype, string actionid, string opuid = null, string opopenid = null,
+            string userip = null, string svrip = null, string time = null, string worldid = null)
         {
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report.php?")
@@ -243,8 +253,10 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(string.Format("&opuid={0}", opuid))
-                .Append(string.Format("&opopenid={0}", opopenid));
+                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null
+                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
+                    : string.Format("&opopenid={0}", opopenid));
             LogHelper.Info("Login Url: " + url);
             WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));

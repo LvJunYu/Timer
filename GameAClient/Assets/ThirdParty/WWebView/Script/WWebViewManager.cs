@@ -30,14 +30,6 @@ public sealed class WWebViewManager : MonoBehaviour
     private string _urlFormat = "http://minigame.qq.com/plat/social_hall/app_frame/?appid=1106419259&param={0}";
     private string userAgent = "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0)";
 
-    private string script =
-        @"function Test()
-        {
-            var msg = 'Hello JavaScript';
-            alert(msg);
-            return msg;
-        } Test();";
-
     private string html =
         @"<html><body>
         <p><font size='5'>Hello WWebView - This is simple code string</font></p><br>
@@ -56,7 +48,7 @@ public sealed class WWebViewManager : MonoBehaviour
 
     public void Initialize()
     {
-        if (initialize == false)
+        if (!initialize)
         {
 #if UNIWEBVIEW3_SUPPORTED
             UniWebViewInterface.Init(gameObject.name, 0, margine, Screen.width, Screen.height - (margine * 2));
@@ -71,11 +63,6 @@ public sealed class WWebViewManager : MonoBehaviour
             initialize = true;
         }
     }
-
-//    public Vector2 GetRect()
-//    {
-//        
-//    }
 
     public void Open(ERequestType eRequestType, int itemId = 0, int itemCount = 0)
     {
@@ -159,17 +146,6 @@ public sealed class WWebViewManager : MonoBehaviour
         WWebViewPlugin.Reload(gameObject.name);
 #endif
         Show();
-    }
-
-    public void JavaScript()
-    {
-#if UNIWEBVIEW3_SUPPORTED
-        UniWebViewInterface.EvaluateJavaScript(gameObject.name, script, string.Empty);
-#elif UNIWEBVIEW2_SUPPORTED
-        UniWebViewPlugin.EvaluatingJavaScript(gameObject.name, script);
-#else
-        WWebViewPlugin.EvaluatingJavaScript(gameObject.name, script);
-#endif
     }
 
     public void Back()
@@ -414,6 +390,11 @@ public sealed class WWebViewManager : MonoBehaviour
 //        Application.Quit();
 #endif
         SocialGUIManager.Instance.CloseUI<UICtrlWWebView>();
+        if (initialize)
+        {
+            Destroy();
+        }
+       
     }
 
 #if UNIWEBVIEW2_SUPPORTED
