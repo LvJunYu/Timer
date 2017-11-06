@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Name: BuildConfig_Win
   m_EditorClassIdentifier: 
   _debug: 1
-  _outputPath: ../../AssetBundles
   _includeLocales: -1
   _fullResPackage: 1
-  _appVersion: 0.1.0
-  _minimumAppVersion: 0.1.0
-  _baseResVersion: 0.1.23
+  _appVersion: 0.1.0.0
+  _minimumAppVersion: 0.1.0.0
+  _baseResVersion: 
   _resVersion: 0.1.24
   _singleAdamResList:
   - 67979d915f7944ef0a171d534c13d1ec
