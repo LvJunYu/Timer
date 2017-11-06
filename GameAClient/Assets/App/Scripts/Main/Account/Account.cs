@@ -268,7 +268,8 @@ namespace SoyEngine
             {
                 if (ret.ResultCode == (int)ELoginCode.LoginC_Success)
                 {
-                    _userGuid = ret.UserId; 
+                    _userGuid = ret.UserId;
+                    OnTokenChange(ret.Token.ToString());
                     if (null != successCallback)
                     {
                         successCallback.Invoke();

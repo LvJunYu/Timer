@@ -15,10 +15,10 @@ namespace NewResourceSolution.EditorTool
     {
         private static int _errorCnt;
 
-        [MenuItem("JoyTools/MakeServerVersionConfig/Windows64")]
-        private static void MakeServerVersionConfigWin64()
+        [MenuItem("JoyTools/MakeServerVersionConfig/Windows32")]
+        private static void MakeServerVersionConfigWin()
         {
-            WriteServerVersionConfig(BuildTarget.StandaloneWindows64);
+            WriteServerVersionConfig(BuildTarget.StandaloneWindows);
         }
 
         [MenuItem("JoyTools/MakeServerVersionConfig/OSX64")]
@@ -86,10 +86,10 @@ namespace NewResourceSolution.EditorTool
             LogHelper.Info("CheckAssetDumplicate done");
         }
 
-        [MenuItem("JoyTools/AssetBundleTools/BuildAllAB_Windows64")]
+        [MenuItem("JoyTools/AssetBundleTools/BuildAllAB_Windows32")]
         private static void BuildAllAB_Windows()
         {
-            BuildAllAb(BuildTarget.StandaloneWindows64);
+            BuildAllAb(BuildTarget.StandaloneWindows);
         }
 
         [MenuItem("JoyTools/AssetBundleTools/BuildAllAB_OSX64")]

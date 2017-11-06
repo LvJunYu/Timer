@@ -20,10 +20,10 @@ namespace GameA
         protected override void Init()
         {
             base.Init();
-//            if (!CheckStartArgument())
-//            {
-//                SocialApp.Instance.Exit();
-//            }
+            if (!CheckStartArgument())
+            {
+                SocialApp.Instance.Exit();
+            }
             string path;
             if (!TryGetLibPath(out path))
             {
@@ -32,6 +32,10 @@ namespace GameA
             }
             LogHelper.Info("QQGameDllPath: {0}", path);
             SetLogCallback(DllLog);
+            SetOnReceiveMsgCallback(OnReceiveMsg);
+            SetOnConnectionSuccCallback(OnConnectSucc);
+            SetOnConnectionFailedCallback(OnConnectFailed);
+            SetOnConnectionDestroyedCallback(OnConnectionDestroyed);
             if(Initialize(path))
             {
                 LogHelper.Info("QQGameMsgExporter Initialize Success");
@@ -164,12 +168,12 @@ namespace GameA
                 LogHelper.Error("CreateClientProcMsgObject Failed");
                 return false;
             }
-            if (IClientProcMsgObject_Initialize(_clientObj))
+            if (!IClientProcMsgObject_Initialize(_clientObj))
             {
                 LogHelper.Error("IClientProcMsgObject_Initialize Failed");
                 return false;
             }
-            if (IClientProcMsgObject_Connect(_clientObj, _procParam))
+            if (!IClientProcMsgObject_Connect(_clientObj, _procParam))
             {
                 LogHelper.Error("IClientProcMsgObject_Connect Failed");
                 return false;
@@ -285,7 +289,7 @@ namespace GameA
         [DllImport("QQGameMsgExporter", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
         private static extern bool IClientProcMsgObject_Initialize(IntPtr obj);
         [DllImport("QQGameMsgExporter", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-        private static extern bool IClientProcMsgObject_Connect(IntPtr obj, string param);
+        private static extern bool IClientProcMsgObject_Connect(IntPtr obj, [MarshalAs(UnmanagedType.LPWStr)]string param);
         [DllImport("QQGameMsgExporter", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
         private static extern void IClientProcMsgObject_Disconnect(IntPtr obj);
         [DllImport("QQGameMsgExporter", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]

@@ -80,15 +80,8 @@ public sealed class WWebViewManager : MonoBehaviour
     public void Open(ERequestType eRequestType, int itemId = 0, int itemCount = 0)
     {
         string param = string.Empty;
-        if (eRequestType == ERequestType.OpenBlueVip)
-        {
-            param = ((int) ERequestType.OpenBlueVip).ToString();
-        }
-        else if (eRequestType == ERequestType.BuyItem)
-        {
-            param = string.Format("{0}|{1}|{2}", (int) eRequestType, itemId, itemCount);
-        }
-        Navigate(string.Format(_urlFormat, param));
+        param = string.Format("{0}I{1}I{2}", (int) eRequestType, itemId, itemCount);
+        Navigate(string.Format(_urlFormat,  param));
         SocialGUIManager.Instance.OpenUI<UICtrlWWebView>();
     }
 
