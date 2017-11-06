@@ -25,6 +25,10 @@ namespace GameA
         /// 蓝钻等级
         /// </summary>
         private int _blueVipLevel;
+        /// <summary>
+        /// OpopenId，对应QQ号
+        /// </summary>
+        private string _opopenId;
 
         // cs fields----------------------------------
         /// <summary>
@@ -72,6 +76,16 @@ namespace GameA
             get { return _blueVipLevel; }
             set { if (_blueVipLevel != value) {
                 _blueVipLevel = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// OpopenId，对应QQ号
+        /// </summary>
+        public string OpopenId { 
+            get { return _opopenId; }
+            set { if (_opopenId != value) {
+                _opopenId = value;
                 SetDirty();
             }}
         }
@@ -131,6 +145,7 @@ namespace GameA
             _isSuperBlueVip = msg.IsSuperBlueVip;           
             _isBlueYearVip = msg.IsBlueYearVip;           
             _blueVipLevel = msg.BlueVipLevel;           
+            _opopenId = msg.OpopenId;           
             OnSyncPartial(msg);
             return true;
         }
@@ -142,6 +157,7 @@ namespace GameA
             _isSuperBlueVip = msg.IsSuperBlueVip;           
             _isBlueYearVip = msg.IsBlueYearVip;           
             _blueVipLevel = msg.BlueVipLevel;           
+            _opopenId = msg.OpopenId;           
             return true;
         } 
 
@@ -152,6 +168,7 @@ namespace GameA
             _isSuperBlueVip = obj.IsSuperBlueVip;           
             _isBlueYearVip = obj.IsBlueYearVip;           
             _blueVipLevel = obj.BlueVipLevel;           
+            _opopenId = obj.OpopenId;           
             return true;
         }
 
