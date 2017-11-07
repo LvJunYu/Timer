@@ -7,7 +7,9 @@ namespace GameA
 {
     public class UMCtrlQQAwardGrow : UMCtrlBase<UMViewQQAwardGrow> ,IDataItemRenderer
     {
-        
+
+        private int _coinNum;
+        private int _diamodNum;
         public RectTransform Transform
         {
             get { return _cachedView.Trans; }
@@ -22,7 +24,7 @@ namespace GameA
             {
                 return;
             }
-            SetAward(award,true);
+            SetAward(award,false);
             return;
         }
 
@@ -37,6 +39,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.AwarLivesNum, award.Id.ToString());
             DictionaryTools.SetContentText(_cachedView.AwardCoinsNum, award.CoinNum.ToString());
             DictionaryTools.SetContentText(_cachedView.AwarDiamondDiNum, award.DiamodNum.ToString());
+            _coinNum = award.CoinNum;
+            _diamodNum = award.DiamodNum;
             _cachedView.HaveColltionBtn.SetActiveEx(isColltion&&_levelUp);
             _cachedView.ColltionBtn.SetActiveEx(!isColltion&&_levelUp);
             
@@ -55,6 +59,10 @@ namespace GameA
 
         private void OnColltionBtn()
         {
+            
+            LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += _coinNum;
+            LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += _diamodNum;
+            _cachedView.ColltionBtn.SetActiveEx(false);
         }
     }
 }

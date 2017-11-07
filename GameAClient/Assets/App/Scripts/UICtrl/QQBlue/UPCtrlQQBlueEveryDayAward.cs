@@ -15,16 +15,20 @@ namespace GameA
         private int _luxuryDiamondNum = 18;
         private int _yearCoinsNum = 200;
         private int _yearDiamondNum = 100;
-
+        private int _coinNum = 0;
+        private int _diamond = 0;
+        private bool _haveClotion = false;
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             Init();
+            _cachedView.ColltionEveryDayPlayer.onClick.AddListener(OnCllotionBtn);
         }
 
         public override void OnDestroy()
         {
             base.OnDestroy();
+            
         }
 
         public override void Open()
@@ -63,7 +67,37 @@ namespace GameA
             
             _cachedView.YearGetText.SetActiveEx(LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip);
             _cachedView.YearNoGetBtn.SetActiveEx(!LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip);
-            
+
+
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsSuperBlueVip)
+            {
+                _coinNum += _luxuryCoinsNum;
+                _diamond += _luxuryDiamondNum;
+            }
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip)
+            {
+                _coinNum += _yearCoinsNum;
+                _diamond += _yearDiamondNum;  
+            }
+
+            int level = Math.Max(0, LocalUser.Instance.User.UserInfoSimple.BlueVipData.BlueVipLevel - 1);
+           
+            level = Math.Min(level, 6);
+            _coinNum += _coinsNum[ level];
+            _diamond += _diamondNum[level];
+           _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveClotion);
+
+        }
+
+        private void OnCllotionBtn()
+        {
+
+            _haveClotion = true;
+            LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += _coinNum;
+            LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += _diamond;
+            Messenger.Broadcast(EMessengerType.OnGoldChanged);
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+            _cachedView.ColltionEveryDayPlayer.SetActiveEx(false);
         }
     }
 }

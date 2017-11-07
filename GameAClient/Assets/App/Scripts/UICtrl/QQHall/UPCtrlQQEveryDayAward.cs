@@ -34,6 +34,13 @@ namespace GameA
         
         private void OnClotion()
         {
+            _haveCllotion = true;
+            LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += 30;
+            LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += 20;
+            Messenger.Broadcast(EMessengerType.OnGoldChanged);
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+
+
             _cachedView.ColltionEveryDayPlayer.SetActiveEx(false);
         }
         
