@@ -169,6 +169,9 @@ namespace GameA
 
         protected void OnStartRecordVoiceBtn()
         {
+#if UNITY_STANDALONE_WIN
+
+#else
             if (_curMenu == EMenu.World)
             {
                 YIMManager.Instance.StartAudioRecordToRoom(YIMManager.Instance.WorldChatRoomId);
@@ -177,11 +180,16 @@ namespace GameA
             {
                 YIMManager.Instance.StartAudioRecordToUser(((UPCtrlChatFriend) _curMenuCtrl).CurFriendId.ToString());
             }
+#endif
         }
 
         protected void OnSendVoiceBtn()
         {
+#if UNITY_STANDALONE_WIN
+
+#else
             YIMManager.Instance.StopAudioMessage();
+#endif
         }
 
         private void ShowStatus(string msg)

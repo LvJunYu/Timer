@@ -94,6 +94,7 @@ namespace GameA
                 _cachedView.RankImage.SetActiveEx(false);
                 DictionaryTools.SetContentText(_cachedView.RankText, rank.ToString());
             }
+            _cachedView.LayoutElement.enabled = false;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
             DictionaryTools.SetContentText(_cachedView.UserLevel, user.LevelData.PlayerLevel.ToString());
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
@@ -101,6 +102,9 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
             LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            Canvas.ForceUpdateCanvases();
+            _cachedView.LayoutElement.enabled = _cachedView.UserName.rectTransform().rect.width >=
+                                                _cachedView.LayoutElement.preferredWidth;
         }
 
         public void Unload()

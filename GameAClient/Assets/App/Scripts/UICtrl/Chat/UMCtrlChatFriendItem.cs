@@ -48,6 +48,8 @@ namespace GameA
             _cachedView.OnlineInfoTxt.text = _userInfoDetail.IsOnline ? _onlineStr : _outlineStr;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshSelectStatus();
         }
 
