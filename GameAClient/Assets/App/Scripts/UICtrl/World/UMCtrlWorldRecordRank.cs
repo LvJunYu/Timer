@@ -99,6 +99,8 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultUserIconTexture);
             DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         public void Unload()

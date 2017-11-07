@@ -16,7 +16,12 @@ namespace GameA
         private string _openKey;
         private string _procParam;
         private IntPtr _clientObj;
-        
+
+        public string OpenId
+        {
+            get { return _openId; }
+        }
+
         protected override void Init()
         {
             base.Init();
@@ -75,7 +80,7 @@ namespace GameA
         public override void Login()
         {
             SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在登陆");
-            LocalUser.Instance.Account.LoginByQQGame(_openId, _openKey, () => { SocialApp.Instance.LoginSucceed(); }, code =>
+            LocalUser.Instance.Account.LoginByQQGame(OpenId, _openKey, () => { SocialApp.Instance.LoginSucceed(); }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("登陆失败", null, new KeyValuePair<string, Action>("重试", () =>
                 {
@@ -131,7 +136,7 @@ namespace GameA
             {
                 return false;
             }
-            if (string.IsNullOrEmpty(_openId)
+            if (string.IsNullOrEmpty(OpenId)
                 || string.IsNullOrEmpty(_openKey)
                 || string.IsNullOrEmpty(_procParam))
             {

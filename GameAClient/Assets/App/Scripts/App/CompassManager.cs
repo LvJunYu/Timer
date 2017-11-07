@@ -14,9 +14,26 @@ namespace GameA
         private const int _reportOnlineInterval = 300; //游戏每5分钟上报一次在线数据
         private float _lastReportOnlineTime;
         StringBuilder url = new StringBuilder(128);
+        private string _userGuid;
+        private string _openId;
+        private bool _hasInited;
 
         private CompassManager()
         {
+        }
+
+        public bool Init()
+        {
+            if (_hasInited) return true;
+            _userGuid = LocalUser.Instance.UserGuid.ToString();
+            var channel = ChannelQQGame.Instance as ChannelQQGame;
+            if (channel == null)
+            {
+                return false;
+            }
+            _openId = channel.OpenId;
+            _hasInited = true;
+            return true;
         }
 
         /// <summary>
@@ -33,6 +50,7 @@ namespace GameA
         public void Login(string opuid = null, string opopenid = null, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null, string level = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_login.php?")
                 .Append(string.Format("appid={0}", _appId))
@@ -41,10 +59,8 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source))
                 .Append(level == null ? string.Empty : string.Format("&level={0}", level));
             LogHelper.Info("Login Url: " + url);
@@ -58,6 +74,7 @@ namespace GameA
         public void Register(string opuid = null, string opopenid = null, string source = null, string userip = null,
             string svrip = null, string time = null, string worldid = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_register.php?")
                 .Append(string.Format("version={0}", _version))
@@ -67,10 +84,8 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source));
             LogHelper.Info("Register Url: " + url);
             WWW www = new WWW(url.ToString());
@@ -84,6 +99,7 @@ namespace GameA
         public void Quit(string onlinetime, string opuid = null, string opopenid = null, string source = null, string
             userip = null, string svrip = null, string time = null, string worldid = null, string level = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_quit.php?")
                 .Append(string.Format("version={0}", _version))
@@ -93,10 +109,8 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid))
                 .Append(string.Format("&onlinetime={0}", onlinetime))
                 .Append(source == null ? string.Empty : string.Format("&source={0}", source))
                 .Append(level == null ? string.Empty : string.Format("&level={0}", level));
@@ -112,6 +126,7 @@ namespace GameA
         public void Online(string user_num = null, string userip = null, string svrip = null, string time = null,
             string worldid = null, string level = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_online.php?")
                 .Append(string.Format("version={0}", _version))
@@ -148,6 +163,7 @@ namespace GameA
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_consume.php?")
                 .Append(string.Format("version={0}", _version))
@@ -157,10 +173,8 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid))
                 .Append(string.Format("&modifyfee={0}", modifyfee))
                 .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
                 .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
@@ -186,6 +200,7 @@ namespace GameA
             string totalexp = null, string modifycoin = null, string totalcoin = null, string level = null,
             string source = null, string userip = null, string svrip = null, string time = null, string worldid = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report_recharge.php?")
                 .Append(string.Format("version={0}", _version))
@@ -196,10 +211,8 @@ namespace GameA
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
                 .Append(string.Format("&opuid={0}", opuid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid))
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid))
                 .Append(totalfee == null ? string.Empty : string.Format("&totalfee={0}", totalfee))
                 .Append(itemid == null ? string.Empty : string.Format("&itemid={0}", itemid))
                 .Append(itemtype == null ? string.Empty : string.Format("&itemtype={0}", itemtype))
@@ -242,6 +255,7 @@ namespace GameA
         public void Report(string optype, string actionid, string opuid = null, string opopenid = null,
             string userip = null, string svrip = null, string time = null, string worldid = null)
         {
+            if (!Init()) return;
             url.Length = 0;
             url.Append("http://tencentlog.com/stat/report.php?")
                 .Append(string.Format("optype={0}", optype))
@@ -253,10 +267,8 @@ namespace GameA
                 .Append(time == null ? string.Empty : string.Format("&time={0}", time))
                 .Append(string.Format("&domain={0}", _domain))
                 .Append(worldid == null ? string.Empty : string.Format("&worldid={0}", worldid))
-                .Append(opuid == null ? LocalUser.Instance.UserGuid.ToString() : string.Format("&opuid={0}", opuid))
-                .Append(opopenid == null
-                    ? LocalUser.Instance.User.UserInfoSimple.BlueVipData.OpopenId
-                    : string.Format("&opopenid={0}", opopenid));
+                .Append(opuid == null ? _userGuid : string.Format("&opuid={0}", opuid))
+                .Append(opopenid == null ? _openId : string.Format("&opopenid={0}", opopenid));
             LogHelper.Info("Login Url: " + url);
             WWW www = new WWW(url.ToString());
             CoroutineProxy.Instance.StartCoroutine(GetResult(www));

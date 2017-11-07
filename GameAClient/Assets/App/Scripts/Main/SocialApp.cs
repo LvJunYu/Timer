@@ -138,7 +138,7 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-//            CompassManager.Instance.Login(LocalUser.Instance.UserGuid.ToString(), "836144322");
+            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
@@ -266,13 +266,14 @@ namespace GameA
                 PublishChannel.Instance.OnDestroy();
             }
             base.OnDestroy();
-//            CompassManager.Instance.Quit(LocalUser.Instance.UserGuid.ToString(), "836144322", ((int) Time.realtimeSinceStartup).ToString());
+            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
         }
 
         protected override void Update()
         {
             base.Update();
             GameManager.Instance.Update();
+            CompassManager.Instance.Update();
 //            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
