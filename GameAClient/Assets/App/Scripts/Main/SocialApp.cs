@@ -60,7 +60,7 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://joygame-logic-1.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
                     GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
