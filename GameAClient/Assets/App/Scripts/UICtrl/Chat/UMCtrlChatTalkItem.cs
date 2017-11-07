@@ -55,6 +55,7 @@ namespace GameA
                 _cachedView.NickText[index].text = _systemName;
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg[index],
                     _cachedView.HeadDeflautTexture);
+                _cachedView.BlueVipDocks[index].SetActive(false);
             }
             else
             {
@@ -64,6 +65,8 @@ namespace GameA
                 _cachedView.NickText[index].text = _chatInfo.SenderInfoDetail.UserInfoSimple.NickName;
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg[index],
                     _chatInfo.SenderInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDeflautTexture);
+                LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDocks[index],
+                    _cachedView.BlueImgs[index], _cachedView.SuperBlueImgs[index], _cachedView.BlueYearVipImgs[index]);
             }
             _cachedView.LayoutElements[index].enabled = false;
             _cachedView.TalkTxt[index].text = _chatInfo.Content;

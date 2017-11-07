@@ -9,6 +9,7 @@ namespace GameA
     {
         private int _width = 716;
         private int _height = 624;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -30,6 +31,12 @@ namespace GameA
             var height = Mathf.Abs((leftTop - center).y) * 2 + 30;
             _cachedView.ImgRtf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             _cachedView.ImgRtf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+        }
+
+        protected override void OnClose()
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.Request(LocalUser.Instance.UserGuid, null, null);
+            base.OnClose();
         }
 
         protected override void InitGroupId()

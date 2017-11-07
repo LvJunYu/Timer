@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class USCtrlLevelPoint : USCtrlBase<USViewLevelPoint>
+    public class UMCtrlLevel : UMCtrlBase<UMViewlLevel>
     {
         /// <summary>
         /// 章节id
@@ -38,6 +38,7 @@ namespace GameA
 
         protected override void OnViewCreated()
         {
+            base.OnViewCreated();
             _cachedView.LevelBtn.onClick.AddListener(OnClick);
             if (null != _cachedView.Current)
             {

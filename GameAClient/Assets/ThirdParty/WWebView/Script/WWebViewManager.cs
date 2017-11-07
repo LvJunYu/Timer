@@ -30,14 +30,6 @@ public sealed class WWebViewManager : MonoBehaviour
     private string _urlFormat = "http://minigame.qq.com/plat/social_hall/app_frame/?appid=1106419259&param={0}";
     private string userAgent = "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0)";
 
-    private string script =
-        @"function Test()
-        {
-            var msg = 'Hello JavaScript';
-            alert(msg);
-            return msg;
-        } Test();";
-
     private string html =
         @"<html><body>
         <p><font size='5'>Hello WWebView - This is simple code string</font></p><br>
@@ -56,7 +48,7 @@ public sealed class WWebViewManager : MonoBehaviour
 
     public void Initialize()
     {
-        if (initialize == false)
+        if (!initialize)
         {
 #if UNIWEBVIEW3_SUPPORTED
             UniWebViewInterface.Init(gameObject.name, 0, margine, Screen.width, Screen.height - (margine * 2));
@@ -72,23 +64,11 @@ public sealed class WWebViewManager : MonoBehaviour
         }
     }
 
-//    public Vector2 GetRect()
-//    {
-//        
-//    }
-
     public void Open(ERequestType eRequestType, int itemId = 0, int itemCount = 0)
     {
         string param = string.Empty;
-        if (eRequestType == ERequestType.OpenBlueVip)
-        {
-            param = ((int) ERequestType.OpenBlueVip).ToString();
-        }
-        else if (eRequestType == ERequestType.BuyItem)
-        {
-            param = string.Format("{0}|{1}|{2}", (int) eRequestType, itemId, itemCount);
-        }
-        Navigate(string.Format(_urlFormat, param));
+        param = string.Format("{0}I{1}I{2}", (int) eRequestType, itemId, itemCount);
+        Navigate(string.Format(_urlFormat,  param));
         SocialGUIManager.Instance.OpenUI<UICtrlWWebView>();
     }
 
@@ -159,17 +139,6 @@ public sealed class WWebViewManager : MonoBehaviour
         WWebViewPlugin.Reload(gameObject.name);
 #endif
         Show();
-    }
-
-    public void JavaScript()
-    {
-#if UNIWEBVIEW3_SUPPORTED
-        UniWebViewInterface.EvaluateJavaScript(gameObject.name, script, string.Empty);
-#elif UNIWEBVIEW2_SUPPORTED
-        UniWebViewPlugin.EvaluatingJavaScript(gameObject.name, script);
-#else
-        WWebViewPlugin.EvaluatingJavaScript(gameObject.name, script);
-#endif
     }
 
     public void Back()
@@ -409,11 +378,16 @@ public sealed class WWebViewManager : MonoBehaviour
     {
 #if UNITY_EDITOR
 //        status.text = "WebViewDone";
-        initialize = false;
+//        initialize = false;
 #else
 //        Application.Quit();
 #endif
         SocialGUIManager.Instance.CloseUI<UICtrlWWebView>();
+        if (initialize)
+        {
+            Destroy();
+        }
+       
     }
 
 #if UNIWEBVIEW2_SUPPORTED

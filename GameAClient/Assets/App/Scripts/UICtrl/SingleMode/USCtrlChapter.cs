@@ -19,9 +19,10 @@ namespace GameA
 {
     public class USCtrlChapter : USCtrlBase<USViewChapter>
     {
-        private USCtrlLevelPoint[] _normalLevels;
-        private USCtrlLevelPoint[] _bonusLevels;
+        private UMCtrlLevel[] _normalLevels;
+        private UMCtrlLevel[] _bonusLevels;
         private UIParticleItem _travelEffect;
+        private EResScenary _resScenary;
 
         private readonly string[] _islandSpriteName = new string[4]
             {"img_island", "img_island_ice", "img_island_three", "img_island_four"};
@@ -45,16 +46,11 @@ namespace GameA
             _tableStandaloneChapter = table;
             if (_normalLevels == null)
             {
-                _normalLevels = new USCtrlLevelPoint[9];
+                _normalLevels = new UMCtrlLevel[9];
                 for (int i = 0; i < 9; i++)
                 {
-                    GameObject levelObj =
-                        Object.Instantiate(_cachedView.NormalLevelPrefab, _cachedView.NormalLevelPos[i]);
-                    _normalLevels[i] = new USCtrlLevelPoint();
-                    _normalLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
-                    var rectTransform = levelObj.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = Vector2.zero;
-                    rectTransform.localScale = Vector3.one;
+                    _normalLevels[i] = new UMCtrlLevel();
+                    _normalLevels[i].Init(_cachedView.NormalLevelPos[i], _resScenary);
                     _normalLevels[i].SetIslandImage(_islandSprite);
 //					bool isDown = false;
 //					if (i%2 == 0){isDown = true;}
@@ -72,16 +68,11 @@ namespace GameA
             }
             if (_bonusLevels == null)
             {
-                _bonusLevels = new USCtrlLevelPoint[3];
+                _bonusLevels = new UMCtrlLevel[3];
                 for (int i = 0; i < 3; i++)
                 {
-                    GameObject levelObj =
-                        Object.Instantiate(_cachedView.BonusLevelPrefab, _cachedView.BonusLevelPos[i]);
-                    _bonusLevels[i] = new USCtrlLevelPoint();
-                    _bonusLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
-                    var rectTransform = levelObj.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = Vector2.zero;
-                    rectTransform.localScale = Vector3.one;
+                    _bonusLevels[i] = new UMCtrlBonusLevel();
+                    _bonusLevels[i].Init(_cachedView.BonusLevelPos[i], _resScenary);
 //					bool isDown = false;
 //					if (i%2 == 0){isDown = true;}
 //					_bonusLevels[i].SetTween(isDown, Vector2.up*i*2);
@@ -217,6 +208,11 @@ namespace GameA
             {
                 _normalLevels[i].ClearFriendProgress();
             }
+        }
+
+        public void SetResScenary(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
         }
     }
 }

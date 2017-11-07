@@ -160,6 +160,7 @@ namespace NewResourceSolution.EditorTool
 					platformFolder = ResPath.PlatformFolderiOS;
 					break;
 				case BuildTarget.StandaloneWindows64:
+				case BuildTarget.StandaloneWindows:
 					platformFolder = ResPath.PlatformFolderWin;
 					break;
 				case BuildTarget.StandaloneOSXIntel64:

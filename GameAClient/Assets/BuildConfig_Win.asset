@@ -11,14 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b983436fb90464747ab62d19a9abb9c3, type: 3}
   m_Name: BuildConfig_Win
   m_EditorClassIdentifier: 
-  _debug: 1
-  _outputPath: ../../AssetBundles
+  _debug: 0
   _includeLocales: -1
   _fullResPackage: 1
-  _appVersion: 0.1.0
-  _minimumAppVersion: 0.1.0
-  _baseResVersion: 0.1.23
-  _resVersion: 0.1.24
+  _appVersion: 0.1.0.2
+  _minimumAppVersion: 0.1.0.2
+  _baseResVersion: 0.1.25
+  _resVersion: 0.1.26
   _singleAdamResList:
   - 67979d915f7944ef0a171d534c13d1ec
   - 7021c4e00defc0a45bf964f888bf32d0

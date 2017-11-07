@@ -10,6 +10,14 @@ namespace GameA
         private static string _blueVipSpriteName = "icon_blue_{0}";
         private static string _superBlueVipSpriteName = "icon_luxury_{0}";
 
+        protected override void OnSyncPartial()
+        {
+            base.OnSyncPartial();
+            _isBlueYearVip = true;
+            _blueVipLevel = 3;
+            _isBlueVip = true;
+        }
+
         public Sprite BlueVipSprite
         {
             get { return JoyResManager.Instance.GetSprite(string.Format(_blueVipSpriteName, _blueVipLevel)); }

@@ -51,8 +51,8 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "https://app.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://res.joy-you.com/gamea"
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Staging)
@@ -60,8 +60,8 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://59f9aa51-0.bj.1255339982.clb.myqcloud.com/gameaapi",
-                    GameResoureRoot = "http://res-1255339982.file.myqcloud.com/gamea"
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Test)
@@ -138,7 +138,7 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-//            CompassManager.Instance.Login(LocalUser.Instance.UserGuid.ToString(), "836144322");
+            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
@@ -266,13 +266,14 @@ namespace GameA
                 PublishChannel.Instance.OnDestroy();
             }
             base.OnDestroy();
-//            CompassManager.Instance.Quit(LocalUser.Instance.UserGuid.ToString(), "836144322", ((int) Time.realtimeSinceStartup).ToString());
+            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
         }
 
         protected override void Update()
         {
             base.Update();
             GameManager.Instance.Update();
+            CompassManager.Instance.Update();
 //            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {

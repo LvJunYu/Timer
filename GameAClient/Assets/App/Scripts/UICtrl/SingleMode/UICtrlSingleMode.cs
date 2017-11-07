@@ -237,6 +237,7 @@ namespace GameA
             for (int i = 0; i < _chapterAry.Length; i++)
             {
                 _chapterAry[i] = new USCtrlChapter();
+                _chapterAry[i].SetResScenary(ResScenary);
                 _chapterAry[i].Init(_cachedView.Chapters[i]);
             }
             _cachedView.ChapterBg[_currentChapter - 1].gameObject.SetActive(true);

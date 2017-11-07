@@ -83,7 +83,7 @@ public static class PostProcessBuildCopyStreamingAssets
         }
         FileTools.CheckAndCreateFolder(dstPath);
         var dstDir = new DirectoryInfo(dstPath);
-        string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.StandaloneWindows64);
+        string resPath = ABUtility.GetBuildOutputStreamingAssetsPath(BuildTarget.StandaloneWindows);
         DirectoryInfo resDir = new DirectoryInfo(resPath);
         CopyDir(resDir.FullName, dstDir.FullName);
     }
