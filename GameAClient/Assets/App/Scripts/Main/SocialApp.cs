@@ -51,8 +51,8 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "https://app.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://res.joy-you.com/gamea"
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Staging)
