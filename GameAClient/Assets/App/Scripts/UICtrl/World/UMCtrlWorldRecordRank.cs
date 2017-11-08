@@ -80,7 +80,7 @@ namespace GameA
             }
             RecordRankHolder holder = _wrapper.Content;
             Record record = holder.Record;
-            UserInfoSimple user = record.UserInfo;
+            UserInfoSimple user = record.UserInfoDetail.UserInfoSimple;
             var rank = holder.Rank + 1;
             if (rank <= 3)
             {
@@ -103,7 +103,7 @@ namespace GameA
             user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock, _cachedView.BlueImg, _cachedView.SuperBlueImg,
                 _cachedView.BlueYearVipImg);
             Canvas.ForceUpdateCanvases();
-            _cachedView.LayoutElement.enabled = _cachedView.UserName.rectTransform().rect.width >=
+            _cachedView.LayoutElement.enabled = _cachedView.LayoutElement.rectTransform().rect.width >=
                                                 _cachedView.LayoutElement.preferredWidth;
         }
 

@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -101,130 +100,21 @@ namespace GameA
             return false;
         }
 
-        public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoDetail msg, bool save = false)
+        public UserInfoDetail UpdateData(Msg_SC_DAT_UserInfoDetail msgData)
         {
-            ReactiveLocalUser();
-            UserInfoDetail user;
-            if (!_caches.TryGetItem(msg.UserInfoSimple.UserId, out user))
+            if (msgData == null)
             {
-                //user = PoolFactory<User>.Get();
-                user = new UserInfoDetail();
-                _caches.Insert(msg.UserInfoSimple.UserId, user);
+                return null;
             }
-            //user.OnSyncFromParent(msg);
-            if (save)
+            UserInfoDetail userInfoDetail;
+            if (_caches.TryGetItem(msgData.UserInfoSimple.UserId, out userInfoDetail))
             {
-                LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_UserData, msg, msg.UserInfoSimple.UserId);
+                userInfoDetail.CopyMsgData(msgData);
+                return userInfoDetail;
             }
-            return user;
-        }
-
-        public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoSimple msg, bool save = false)
-        {
-            ReactiveLocalUser();
-            UserInfoSimple userSimple = new UserInfoSimple();
-            UserInfoDetail user;
-            if (!_caches.TryGetItem(msg.UserId, out user))
-            {
-                user = new UserInfoDetail();
-                _caches.Insert(msg.UserId, user);
-            }
-            userSimple.OnSyncFromParent(msg);
-            user = new UserInfoDetail(userSimple);
-            if (save)
-            {
-                LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_UserData, msg, msg.UserId);
-            }
-            return user;
-        }
-
-        //public List<UserInfoDetail> GetFollowList()
-        //{
-        //    List<UserInfoDetail> FollowList = new List<UserInfoDetail>();
-
-        //    for (int i = 0; i < _caches.Size(); i++)
-        //    {
-        //        var item = _caches.ElementAt(i).Value;
-        //    }
-        //    return FollowList;
-        //}
-
-        //		public User OnSyncUserData(Msg_SC_DAT_UserInfoSimple msg)
-        //        {
-        //            ReactiveLocalUser ();                                                                     
-        //            User user;
-        //            if (!_caches.TryGetItem(msg.UserId, out user))
-        //            {
-        //                //user = PoolFactory<User>.Get();
-        //                user = new User();
-        //                _caches.Insert(msg.UserId, user);
-        //            }
-        //            user.OnSyncUserData(msg);
-        //            return user;
-        //        }
-        //		public UserInfoDetail OnSyncUserData(UserInfoDetail userDetail)
-        //		{
-        //			ReactiveLocalUser ();
-        //			UserInfoDetail user;
-        //			if (!_caches.TryGetItem(userDetail.UserInfoSimple.UserId, out user))
-        //			{
-        //				//user = PoolFactory<User>.Get();
-        //				user = new UserInfoDetail();
-        //				_caches.Insert(userDetail.UserInfoSimple.UserId, user);
-        //			}
-        //			user.OnSync(userSimple);
-        //			return user;
-        //		}
-
-        public void BatchRequestUserInfo(List<long> userGuidList, bool force, Action onSuccess, Action onError)
-        {
-//            ReactiveLocalUser ();
-//            List<long> needRequest = null;
-//            if (force)
-//            {
-//                needRequest = userGuidList;
-//            }
-//            else
-//            {
-//                IsAllGuidsHasData(userGuidList, out needRequest);
-//            }
-//            if (needRequest.Count == 0)
-//            {
-//                if (onSuccess != null)
-//                {
-//                    onSuccess.Invoke();
-//                }
-//            }
-//            else
-//            {
-//                Msg_CA_RequestUserInfoList msg = new Msg_CA_RequestUserInfoList();
-//                msg.UserGuidList.AddRange(needRequest);
-//                NetworkManager.AppHttpClient.SendWithCb<Msg_AC_UserInfoList>(SoyHttpApiPath.BatchGetUserInfo, msg, ret =>
-//                {
-//                    for (int i = 0; i < ret.DataList.Count; i++)
-//                    {
-//                        OnSyncUserData(ret.DataList[i]);
-//                    }
-//                    if (onSuccess != null)
-//                    {
-//                        onSuccess.Invoke();
-//                    }
-//                }, (intCode, str) =>
-//                {
-//                    if (onError != null)
-//                    {
-//                        onError.Invoke();
-//                    }
-//                });
-//            }
-        }
-
-        private void ReactiveLocalUser()
-        {
-//            if (LocalUser.Instance.UserLegacy != null)
-//            {
-//				_caches.Insert (LocalUser.Instance.UserLegacy.UserId, LocalUser.Instance.UserLegacy);
-//            }
+            userInfoDetail = new UserInfoDetail(msgData);
+            _caches.Insert(msgData.UserInfoSimple.UserId, userInfoDetail);
+            return userInfoDetail;
         }
     }
 }

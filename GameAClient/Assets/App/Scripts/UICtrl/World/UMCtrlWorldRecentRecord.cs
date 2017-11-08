@@ -80,7 +80,7 @@ namespace GameA
                 return;
             }
             Record record = _wrapper.Content;
-            UserInfoSimple user = record.UserInfo;
+            UserInfoSimple user = record.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
             DictionaryTools.SetContentText(_cachedView.SuceessTxt,
                 record.Result == (int) EGameResult.GR_Success ? _successStr : _failStr);

@@ -75,7 +75,7 @@ namespace GameA
             }
             WorldRankItem.WorldRankHolder holder = _wrapper.Content;
             WorldRankItem record = holder.Record;
-            UserInfoSimple user = record.UserInfo;
+            UserInfoSimple user = record.UserInfoDetail.UserInfoSimple;
             var rank = holder.Rank + 1;
             if (rank <=3)
             {

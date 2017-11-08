@@ -7,7 +7,7 @@ namespace GameA
         protected override void OnSyncPartial()
         {
             base.OnSyncPartial();
-            Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
+            Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, _userId);
         }
     }
 }

@@ -43,16 +43,16 @@ namespace GameA
 
         protected override void TempData()
         {
-            base.TempData();
-            for (int i = 0; i < _userInfoDetailList.Count; i++)
-            {
-                _userInfoDetailList[i].UserInfoSimple.UserId += 2000;
-                _userInfoDetailList[i].UserInfoSimple.NickName =
-                    "粉丝" + _userInfoDetailList[i].UserInfoSimple.NickName;
-                _userInfoDetailList[i].UserInfoSimple.RelationWithMe.FollowMe = true;
-                _userInfoDetailList[i] = UserManager.Instance.UpdateData(_userInfoDetailList[i]);
-            }
-            LocalUser.Instance.RelationUserList.FanList = _userInfoDetailList;
+//            base.TempData();
+//            for (int i = 0; i < _userInfoDetailList.Count; i++)
+//            {
+//                _userInfoDetailList[i].UserInfoSimple.UserId += 2000;
+//                _userInfoDetailList[i].UserInfoSimple.NickName =
+//                    "粉丝" + _userInfoDetailList[i].UserInfoSimple.NickName;
+//                _userInfoDetailList[i].UserInfoSimple.RelationWithMe.FollowMe = true;
+//                _userInfoDetailList[i] = UserManager.Instance.UpdateData(_userInfoDetailList[i]);
+//            }
+//            LocalUser.Instance.RelationUserList.FanList = _userInfoDetailList;
         }
     }
 }
