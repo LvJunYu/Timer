@@ -29,6 +29,7 @@ namespace GameA
             var channel = ChannelQQGame.Instance as ChannelQQGame;
             if (channel == null)
             {
+                LogHelper.Info("channel == null, i can't get openId.");
                 return false;
             }
             _openId = channel.OpenId;
