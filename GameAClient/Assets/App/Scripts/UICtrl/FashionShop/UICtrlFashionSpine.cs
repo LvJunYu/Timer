@@ -18,8 +18,8 @@ namespace GameA
         private ChangePartsSpineView _avatarView;
         private RenderCamera _renderCamera;
         private int _timer;
-        private const  int IntervalTime = 15 * ConstDefineGM2D.FixedFrameCount;
-        private bool _buttonEnable;
+        private const int IntervalTime = 10 * ConstDefineGM2D.FixedFrameCount;
+        private bool _buttonEnable = true;
 
         public Texture AvatarRenderTexture
         {
@@ -144,16 +144,18 @@ namespace GameA
                     {
                         _timer = IntervalTime;
                         var main = Random.Range(1, 3);
-                        var num = Random.Range(3, 7);
+                        var num = Random.Range(3, 8);
                         _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + num, false).Complete +=
-                            (state, index, count) => _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + main, true);
+                            (state, index, count) =>
+                                _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + main, true);
                     }
                 }
             }
         }
-
+        
         private void OnAvatarBtn()
         {
+//            _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle3", false);
 //            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
