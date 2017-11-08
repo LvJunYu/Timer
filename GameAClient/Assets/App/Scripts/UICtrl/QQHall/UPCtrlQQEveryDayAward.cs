@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -23,6 +24,7 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
+            _haveCllotion = RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day);
             _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveCllotion);
         }
 
@@ -39,9 +41,12 @@ namespace GameA
             LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += 20;
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
-
-
+            
+            RewardSave.Instance.IsQQHallEveryDayColltion.Add(DateTime.Now.Day);
+            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
+            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
             _cachedView.ColltionEveryDayPlayer.SetActiveEx(false);
+            Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
         }
         
         private void Init()

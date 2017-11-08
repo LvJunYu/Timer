@@ -35,7 +35,10 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
-           
+            _haveClotion = RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day);
+            _cachedView.ColltionEveryDayPlayer.SetActiveEx(!_haveClotion);
+            _cachedView.ColltionNoBlueEveryDay.SetActiveEx(!LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip);
+//           _cachedView.ColltionNoBlueEveryDay.SetActiveEx(false);
         }
 
         public override void Close()
@@ -86,7 +89,6 @@ namespace GameA
             _coinNum += _coinsNum[ level];
             _diamond += _diamondNum[level];
            _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveClotion);
-
         }
 
         private void OnCllotionBtn()
@@ -98,6 +100,10 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
             _cachedView.ColltionEveryDayPlayer.SetActiveEx(false);
+            RewardSave.Instance.IsQQBlueEveryDayColltion.Add(DateTime.Now.Day);
+            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
+            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
+            Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace GameA
             {
                 return;
             }
-            SetAward(award,false);
+            SetAward(award,true);
             return;
         }
 

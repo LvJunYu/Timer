@@ -7,7 +7,7 @@ namespace GameA
     public  class UPCtrlQQNewPlayer : UPCtrlQQHallBase
     {
         private bool _haveCllotion = false;
-        
+        private string NewPlayGift = "QQHallNewPlayGift";
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -23,6 +23,7 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
+            _haveCllotion = RewardSave.Instance.IsQQHallNewPlayerColltion;
           _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveCllotion);
           
         }
@@ -41,6 +42,10 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
             _haveCllotion = true;
+            RewardSave.Instance.IsQQHallNewPlayerColltion = true;
+            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
+            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
+            Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
         }
 
         private void Init()

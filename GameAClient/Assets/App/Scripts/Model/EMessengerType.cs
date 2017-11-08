@@ -5,6 +5,8 @@
   ** Summary : EMessengerType.cs
   ***********************************************************************/
 
+using UnityEngine;
+
 namespace GameA
 {
     public static partial class EMessengerType
@@ -147,6 +149,10 @@ namespace GameA
         
         //好友
         public static int OnRelationShipChanged = SoyEngine.EMessengerType.NextId++;
+        
+       //QQ
+        public static int OnQQRewardGetChangee = SoyEngine.EMessengerType.NextId++;
+      
     }
 }
 

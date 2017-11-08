@@ -5,6 +5,7 @@
 ** Summary : UIViewTaskbar
 ***********************************************************************/
 
+using JetBrains.Annotations;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -91,9 +92,12 @@ namespace GameA
 
 	    public Button QQHallBtn;
 	    public GameObject QQHall;
+	    public Image QqHallImage;
 
 	    public Button QQBlueBtn;
 	    public GameObject QQBlue;
+	    public Image QQBlueLight;
+	    public Image QqOpenImage;
 	    
 	    public Button ChatBtn;
         /// <summary>

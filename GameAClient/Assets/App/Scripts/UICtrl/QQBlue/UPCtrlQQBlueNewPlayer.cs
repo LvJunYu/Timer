@@ -7,7 +7,6 @@ namespace GameA
     public  class UPCtrlQQBlueNewPlayer : UPCtrlQQBlueBase
     {
         private bool _haveCllotion = false;
-        
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -23,7 +22,10 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
+            _haveCllotion = RewardSave.Instance.IsQQBlueNewPlayerColltion;
+            _cachedView.ColltionNoBlueNewPlayer.SetActiveEx(!LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip);
           _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveCllotion);
+//            _cachedView.ColltionNoBlueNewPlayer .SetActiveEx(false);
           
         }
 
@@ -41,6 +43,10 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
             _cachedView.ColltionButtonNewPlayer.SetActiveEx(false);
             _haveCllotion = true;
+            RewardSave.Instance.IsQQBlueNewPlayerColltion = true;
+            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
+            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
+            Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
         }
 
         private void Init()

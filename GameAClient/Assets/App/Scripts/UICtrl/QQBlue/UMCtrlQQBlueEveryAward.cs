@@ -33,6 +33,7 @@ namespace GameA
             {
                 _cachedView.CanGetText.gameObject.SetActive(false);
             }
+         
         }
     }
 }

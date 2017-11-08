@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -33,6 +34,12 @@ namespace GameA
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
 
+        private string _buleOpen = "icon_home_qq_2_o";
+        private string _blueNoOpen = "icon_home_qq_2";
+
+        private string _hallOpen = "icon_home_qq_d";
+
+        private string _hallNoOpen = "icon_home_qq_1";
 //        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
@@ -60,6 +67,7 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+            RegisterEvent(EMessengerType.OnQQRewardGetChangee,RefreshQQReward);
         }
 
         private void OnChangeToUserInfo()
@@ -134,6 +142,8 @@ namespace GameA
             }
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
+            RefreshQQReward();
+            
         }
 
         protected override void OnClose()
@@ -454,6 +464,49 @@ namespace GameA
             //蓝钻更新信息
             LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+           
+          
+        }
+
+        private void RefreshQQReward()
+        {
+//            PlayerPrefs.DeleteKey(RewardSave.Instance.RewardKey);
+            if(PlayerPrefs.HasKey(RewardSave.Instance.RewardKey))
+            {
+                RewardSave.Instance =
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSave>(
+                        PlayerPrefs.GetString(RewardSave.Instance.RewardKey));
+            }
+            if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day)&&RewardSave.Instance.IsQQHallNewPlayerColltion)
+            {
+                Sprite openHall;
+                JoyResManager.Instance.TryGetSprite(_hallOpen, out openHall);
+                _cachedView.QqHallImage.sprite = openHall;
+                _cachedView.QQHallBtn.onClick.RemoveListener(OnQQHallBtn);
+                
+            }
+            else
+            {
+                Sprite openHall;
+                JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
+                _cachedView.QqHallImage.sprite = openHall; 
+            }
+            if (RewardSave.Instance.IsQQBlueNewPlayerColltion&&RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day))
+            {
+              _cachedView.QQBlueLight.SetActiveEx(false);
+                Sprite openBlue;
+                JoyResManager.Instance.TryGetSprite(_buleOpen, out openBlue);
+                _cachedView.QqOpenImage.sprite = openBlue;
+            }
+            else
+            {
+                _cachedView.QQBlueLight.SetActiveEx(true);
+                Sprite openBlue;
+                JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
+                _cachedView.QqOpenImage.sprite = openBlue;
+                
+            }
+            
         }
 
         private void OnUnlockAll()
