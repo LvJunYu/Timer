@@ -31,7 +31,7 @@ namespace GameA
         }
         private void OnIntroduceBtn()
         {
-           Application.OpenURL("http://gamevip.qq.com/?ADTAG=VIP.WEB.XXXX");
+           Application.OpenURL("http://gamevip.qq.com/?ADTAG=VIP.WEB.MXYCZ");
         }
 
     }
