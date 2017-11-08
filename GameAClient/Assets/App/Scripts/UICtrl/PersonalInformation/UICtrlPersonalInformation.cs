@@ -84,12 +84,12 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
-            RegisterEvent(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
+            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
         }
 
-        private void OnUserInfoChanged()
+        private void OnUserInfoChanged(long id)
         {
-            if (_isOpen && _curMenu == EMenu.BasicInfo)
+            if (_isOpen && _curMenu == EMenu.BasicInfo && id == UserInfoDetail.UserInfoSimple.UserId)
             {
                 _curMenuCtrl.RefreshView();
             }

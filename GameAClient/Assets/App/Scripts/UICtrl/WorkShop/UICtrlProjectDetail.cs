@@ -153,22 +153,23 @@ namespace GameA
                 SetNull();
                 return;
             }
+            UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
-            DictionaryTools.SetContentText(_cachedView.UserNickNameText, Project.UserInfo.NickName);
+            DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,
-                GameATools.GetLevelString(Project.UserInfo.LevelData.PlayerLevel));
+                GameATools.GetLevelString(user.LevelData.PlayerLevel));
             DictionaryTools.SetContentText(_cachedView.CreateLevelText,
-                GameATools.GetLevelString(Project.UserInfo.LevelData.CreatorLevel));
+                GameATools.GetLevelString(user.LevelData.CreatorLevel));
             DictionaryTools.SetContentText(_cachedView.PlayCountText,
                 Project.ExtendReady ? Project.PlayCount.ToString() : EmptyStr);
             DictionaryTools.SetContentText(_cachedView.CompleteRateText,
                 Project.ExtendReady ? GameATools.GetCompleteRateString(Project.CompleteRate) : EmptyStr);
             RefreshBtns();
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, Project.UserInfo.HeadImgUrl,
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
                 _cachedView.DefaultCoverTexture);
-            Project.UserInfo.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 

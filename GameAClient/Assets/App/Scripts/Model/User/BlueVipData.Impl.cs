@@ -1,5 +1,6 @@
 using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +11,14 @@ namespace GameA
         private static string _blueVipSpriteName = "icon_blue_{0}";
         private static string _superBlueVipSpriteName = "icon_luxury_{0}";
 
-//        protected override void OnSyncPartial()
-//        {
-//            base.OnSyncPartial();
-//            _isBlueYearVip = true;
-//            _blueVipLevel = 3;
-//            _isBlueVip = true;
-//        }
+        protected override void OnSyncPartial(Msg_SC_DAT_BlueVipData msg)
+        {
+            base.OnSyncPartial(msg);
+//            msg.IsBlueVip = Random.Range(0, 2) == 1;
+//            msg.IsSuperBlueVip = Random.Range(0, 2) == 1;
+//            msg.IsBlueYearVip = Random.Range(0, 2) == 1;
+//            msg.BlueVipLevel = Random.Range(1, 8);
+        }
 
         public Sprite BlueVipSprite
         {

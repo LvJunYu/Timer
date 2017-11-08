@@ -66,17 +66,18 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+
             RegisterEvent(EMessengerType.OnQQRewardGetChangee,RefreshQQReward);
+            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+
         }
 
-        private void OnChangeToUserInfo()
+        private void OnChangeToUserInfo(long id)
         {
-            if (!_isViewCreated)
+            if (_isOpen && id == LocalUser.Instance.UserGuid)
             {
-                return;
+                RefreshUserInfo();
             }
-            RefreshUserInfo();
         }
 
         protected override void OnViewCreated()

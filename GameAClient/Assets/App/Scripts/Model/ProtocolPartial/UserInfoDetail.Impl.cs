@@ -7,8 +7,6 @@ namespace GameA
 {
     public partial class UserInfoDetail
     {
-        #region 常量与字段
-
         private Dictionary<long, GameTimer> _publishedProjectRequestTimerDict;
         private Dictionary<long, GameTimer> _personalProjectRequestTimerDict;
         private GameTimer _followedListRequestTimer;
@@ -16,10 +14,6 @@ namespace GameA
         private Msg_SC_DAT_UserInfoDetail _msg_SC_DAT_UserInfoDetail;
         private bool _isOnline;
         private List<ChatInfo> _chatHistory = new List<ChatInfo>(); //与某人私聊记录
-
-        #endregion
-
-        #region 属性
 
         public List<ChatInfo> ChatHistory
         {
@@ -64,10 +58,6 @@ namespace GameA
             }
         }
 
-        #endregion
-
-        #region 方法
-
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
             _userInfoSimple = userInfoSimple;
@@ -103,7 +93,6 @@ namespace GameA
                     }, (failedCode, failedMsg) => { OnSyncFailed(failedCode, failedMsg); });
             }
         }
-
 
         private bool OnSyncPartialCompelete(Msg_SC_DAT_UserInfoDetail msg_SC_DAT_UserInfoDetail)
         {
@@ -170,7 +159,6 @@ namespace GameA
                 }
             });
         }
-
 
         public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
         {
@@ -369,15 +357,6 @@ namespace GameA
 //			_followerListRequestTimer = null;
             _userInfoRequestTimer = null;
 //			_snsBinding = null;
-        }
-
-        protected void OnSyncPart(Msg_SC_DAT_UserInfoDetail msg)
-        {
-            UserManager.Instance.OnSyncUserData(msg);
-            {
-            }
-
-            #endregion
         }
     }
 }

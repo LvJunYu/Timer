@@ -63,7 +63,7 @@ namespace GameA
                 return;
             }
             ProjectComment data = _content;
-            UserInfoSimple user = data.UserInfo;
+            UserInfoSimple user = data.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
             DictionaryTools.SetContentText(_cachedView.UserLevel,
                 GameATools.GetLevelString(user.LevelData.PlayerLevel));

@@ -164,7 +164,7 @@ namespace GameA
                     {
                         LocalUser.Instance.User.OnSync(ret.UserInfo);
                         _isEditing = false;
-                        Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
+                        Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.UserGuid);
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                     else
