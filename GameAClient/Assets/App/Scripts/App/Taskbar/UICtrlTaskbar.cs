@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
@@ -40,6 +41,7 @@ namespace GameA
         private string _hallOpen = "icon_home_qq_d";
 
         private string _hallNoOpen = "icon_home_qq_1";
+
 //        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
@@ -67,9 +69,8 @@ namespace GameA
         {
             base.InitEventListener();
 
-            RegisterEvent(EMessengerType.OnQQRewardGetChangee,RefreshQQReward);
+            RegisterEvent(EMessengerType.OnQQRewardGetChangee, RefreshQQReward);
             RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
-
         }
 
         private void OnChangeToUserInfo(long id)
@@ -144,7 +145,6 @@ namespace GameA
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
             RefreshQQReward();
-            
         }
 
         protected override void OnClose()
@@ -465,49 +465,54 @@ namespace GameA
             //蓝钻更新信息
             LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
-           
-          
         }
 
         private void RefreshQQReward()
         {
 //            PlayerPrefs.DeleteKey(RewardSave.Instance.RewardKey);
-            if(PlayerPrefs.HasKey(RewardSave.Instance.RewardKey))
+            if (PlayerPrefs.HasKey(RewardSave.Instance.RewardKey))
             {
                 RewardSave.Instance =
                     Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSave>(
                         PlayerPrefs.GetString(RewardSave.Instance.RewardKey));
             }
-            if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day)&&RewardSave.Instance.IsQQHallNewPlayerColltion)
+            if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day) &&
+                RewardSave.Instance.IsQQHallNewPlayerColltion)
             {
                 Sprite openHall;
                 JoyResManager.Instance.TryGetSprite(_hallOpen, out openHall);
                 _cachedView.QqHallImage.sprite = openHall;
                 _cachedView.QQHallBtn.onClick.RemoveListener(OnQQHallBtn);
-                
             }
             else
             {
                 Sprite openHall;
                 JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
-                _cachedView.QqHallImage.sprite = openHall; 
+                _cachedView.QqHallImage.sprite = openHall;
             }
-            if (RewardSave.Instance.IsQQBlueNewPlayerColltion&&RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day))
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip )
             {
-              _cachedView.QQBlueLight.SetActiveEx(false);
-                Sprite openBlue;
-                JoyResManager.Instance.TryGetSprite(_buleOpen, out openBlue);
-                _cachedView.QqOpenImage.sprite = openBlue;
+                if (
+                    RewardSave.Instance.IsQQBlueNewPlayerColltion &&
+                    RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day))
+                {
+                    _cachedView.QQBlueLight.SetActiveEx(false);
+                    Sprite openBlue;
+                    JoyResManager.Instance.TryGetSprite(_buleOpen, out openBlue);
+                    _cachedView.QqOpenImage.sprite = openBlue;
+                }
+                else
+                {
+                    _cachedView.QQBlueLight.SetActiveEx(true);
+                    Sprite openBlue;
+                    JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
+                    _cachedView.QqOpenImage.sprite = openBlue;
+                } 
             }
             else
             {
-                _cachedView.QQBlueLight.SetActiveEx(true);
-                Sprite openBlue;
-                JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
-                _cachedView.QqOpenImage.sprite = openBlue;
-                
+                _cachedView.QQBlueLight.SetActiveEx(false);
             }
-            
         }
 
         private void OnUnlockAll()

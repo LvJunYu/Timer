@@ -7,7 +7,7 @@ namespace GameA
     public  class UPCtrlQQNewPlayer : UPCtrlQQHallBase
     {
         private bool _haveCllotion = false;
-        private string NewPlayGift = "QQHallNewPlayGift";
+        private string _newPlayGift = "QQHallNewPlayGift";
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
