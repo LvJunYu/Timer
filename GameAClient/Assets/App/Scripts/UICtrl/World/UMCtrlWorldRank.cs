@@ -34,6 +34,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+        }
+
+        private void OnHeadBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.Record.UserInfoDetail);
         }
 
         protected override void OnDestroy()
@@ -87,6 +93,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.UserLevel, user.LevelData.PlayerLevel.ToString());
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
             DictionaryTools.SetContentText(_cachedView.Score, record.Count.ToString());
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock, _cachedView.BlueImg, _cachedView.SuperBlueImg,
+                _cachedView.BlueYearVipImg);
         }
 
         public void Unload()

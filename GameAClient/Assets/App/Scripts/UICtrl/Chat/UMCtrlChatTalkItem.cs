@@ -65,7 +65,7 @@ namespace GameA
                 _cachedView.NickText[index].text = _chatInfo.SenderInfoDetail.UserInfoSimple.NickName;
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg[index],
                     _chatInfo.SenderInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDeflautTexture);
-                LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDocks[index],
+                _chatInfo.SenderInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDocks[index],
                     _cachedView.BlueImgs[index], _cachedView.SuperBlueImgs[index], _cachedView.BlueYearVipImgs[index]);
             }
             _cachedView.LayoutElements[index].enabled = false;

@@ -100,8 +100,8 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultUserIconTexture);
             DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
-            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
-                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock, _cachedView.BlueImg, _cachedView.SuperBlueImg,
+                _cachedView.BlueYearVipImg);
             Canvas.ForceUpdateCanvases();
             _cachedView.LayoutElement.enabled = _cachedView.UserName.rectTransform().rect.width >=
                                                 _cachedView.LayoutElement.preferredWidth;

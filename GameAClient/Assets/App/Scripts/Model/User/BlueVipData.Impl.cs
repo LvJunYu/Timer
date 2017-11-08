@@ -36,11 +36,11 @@ namespace GameA
             lueYearVipImg.SetActiveEx(_isBlueYearVip);
             if (!_isSuperBlueVip && _isBlueVip)
             {
-                blueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.BlueVipSprite;
+                blueImg.sprite = BlueVipSprite;
             }
             else if (_isSuperBlueVip)
             {
-                superBlueImg.sprite = LocalUser.Instance.User.UserInfoSimple.BlueVipData.SuperBlueVipSprite;
+                superBlueImg.sprite = SuperBlueVipSprite;
             }
         }
     }

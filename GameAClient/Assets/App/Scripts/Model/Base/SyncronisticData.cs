@@ -90,7 +90,7 @@ namespace GameA
             _isRequesting = true;
 		}
 
-		protected virtual void OnSyncPartial (TMsg obj) { OnSyncPartial(); } 
+		protected virtual void OnSyncPartial (TMsg msg) { OnSyncPartial(); } 
 		protected virtual void OnSyncPartial () { } 
 
         protected virtual void OnCreate () { }

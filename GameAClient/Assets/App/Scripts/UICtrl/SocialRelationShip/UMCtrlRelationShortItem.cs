@@ -40,7 +40,7 @@ namespace GameA
                 GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.CreatorLevel);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
-            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+            _userInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshBtn();
         }

@@ -1,4 +1,4 @@
-﻿  /********************************************************************
+﻿/********************************************************************
   ** Filename : UMCtrlWorldProjectComment.cs
   ** Author : quan
   ** Date : 11/11/2016 1:47 PM
@@ -16,16 +16,11 @@ namespace GameA
     {
         private ProjectComment _content;
         private int _index;
+
         public int Index
         {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
+            get { return _index; }
+            set { _index = value; }
         }
 
         public RectTransform Transform
@@ -62,7 +57,7 @@ namespace GameA
 
         public void RefreshView()
         {
-            if(_content == null)
+            if (_content == null)
             {
                 Unload();
                 return;
@@ -70,12 +65,15 @@ namespace GameA
             ProjectComment data = _content;
             UserInfoSimple user = data.UserInfo;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.LevelData.PlayerLevel));
-            DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(data.CreateTime));
+            DictionaryTools.SetContentText(_cachedView.UserLevel,
+                GameATools.GetLevelString(user.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.CreateTime,
+                DateTimeUtil.GetServerSmartDateStringByTimestampMillis(data.CreateTime));
             DictionaryTools.SetContentText(_cachedView.Content, data.Comment);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultIconTexture);
-            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
-                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
+                _cachedView.DefaultIconTexture);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock, _cachedView.BlueImg, _cachedView.SuperBlueImg,
+                _cachedView.BlueYearVipImg);
         }
 
         public void Unload()

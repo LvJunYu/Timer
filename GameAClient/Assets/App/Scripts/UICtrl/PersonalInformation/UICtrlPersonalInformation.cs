@@ -89,7 +89,7 @@ namespace GameA
 
         private void OnUserInfoChanged()
         {
-            if (_isOpen && _curMenu == EMenu.BasicInfo && IsMyself)
+            if (_isOpen && _curMenu == EMenu.BasicInfo)
             {
                 _curMenuCtrl.RefreshView();
             }

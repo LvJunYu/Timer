@@ -1,12 +1,4 @@
-﻿/********************************************************************
-** Filename : ProjectPlayRecord.cs
-** Author : quan
-** Date : 1/4/2017 7:30 PM
-** Summary : ProjectPlayRecord.cs
-***********************************************************************/
-
-using System;
-using SoyEngine;
+﻿
 using SoyEngine.Proto;
 
 namespace GameA
@@ -14,6 +6,20 @@ namespace GameA
 
 	public partial class WorldRankItem
 	{
+		private UserInfoDetail _userInfoDetail;
+
+		public UserInfoDetail UserInfoDetail
+		{
+			get { return _userInfoDetail; }
+		}
+
+
+		protected override void OnSyncPartial(Msg_WorldRankItem msg)
+		{
+			base.OnSyncPartial(msg);
+			_userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
+		}
+
 		public class WorldRankHolder
 		{
 			private WorldRankItem _record;
