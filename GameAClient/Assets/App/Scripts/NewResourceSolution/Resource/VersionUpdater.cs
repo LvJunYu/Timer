@@ -76,10 +76,11 @@ namespace NewResourceSolution
                 {
                     // 要求用户下载最新版本
                     LogHelper.Info("MinimumAppVersion: {0}", serverVersionConfig.MinimumAppVersion);
-                    SocialGUIManager.ShowPopupDialog("请更新最新版本进入游戏", null,
-                        new KeyValuePair<string, Action>("更新", () =>
+                    SocialGUIManager.ShowPopupDialog("重新从QQ游戏大厅进入，更新最新版本进入游戏", null,
+                        new KeyValuePair<string, Action>("确定", () =>
                         {
-                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+//                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+                            SocialApp.Instance.Exit();
                         })
                     );
                     yield return new WaitForSeconds(float.MaxValue);
@@ -96,7 +97,8 @@ namespace NewResourceSolution
                         }),
                         new KeyValuePair<string, Action>("更新", () =>
                         {
-                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+//                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+                            SocialApp.Instance.Exit();
                         })
                     );
                     while (waitForUserInput) yield return null;
