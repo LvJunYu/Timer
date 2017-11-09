@@ -40,14 +40,6 @@ public class YIMManager :
         {
             MessageType = MessageBodyType.Voice;
         }
-
-        public void Clear()
-        {
-            RequestID = 0;
-            Duration = 0;
-            SenderID = RecvID = SavePath = null;
-            ChatType = ChatType.Unknow;
-        }
     }
 
     public struct AudioInfoRaw
@@ -65,8 +57,6 @@ public class YIMManager :
     public readonly string WorldChatRoomId = "10001";
     private LRUCache<ulong, AudioInfoRaw> _iRequestCache = new LRUCache<ulong, AudioInfoRaw>(64);
     private Dictionary<ulong, MyMessage> _messageCahceList = new Dictionary<ulong, MyMessage>(); //记录消息状态
-    private MyMessage _myMessage = new MyMessage();
-    private MyVoice _myVoice = new MyVoice();
     private bool _manualLogout;
     private long _userid;
     private static YIMManager _instance;
@@ -95,21 +85,6 @@ public class YIMManager :
             "y7/AAtmf6Ry6awljGzwbs0x6VFPQcckKlpHQCno1KiA3YEu1g5UwLPbVxBEnSLGfbPDfE8Qj/qYp1shwQVptV3uvmVsueIaHKrzZ+uOY715kpAnNGIYEQsp7Pi0QV07/Ii3z9oRShJKdj/I7qWM9UYF0+pJxkCnAgkR8SD15tuUBAAE=");
         Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Logout);
         Messenger.AddListener(EMessengerType.OnApplicationQuit, Destroy);
-    }
-
-    private void ShowStatus(string msg)
-    {
-//        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
-    }
-
-    private void ReceiveText(TextMessage message)
-    {
-        Messenger<TextMessage>.Broadcast(EMessengerType.OnReceiveText, message);
-    }
-
-    private void ReceiveVoice(VoiceMessage message)
-    {
-        Messenger<VoiceMessage>.Broadcast(EMessengerType.OnReceiveVoice, message);
     }
 
     public void Login()
@@ -141,6 +116,11 @@ public class YIMManager :
         LogHelper.Debug("leavechatroom");
     }
 
+    private void ShowStatus(string msg)
+    {
+        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
+    }
+
     public void SendTextToUser(string content, string userId)
     {
         SendTextMessage(content, userId, ChatType.PrivateChat);
@@ -153,15 +133,25 @@ public class YIMManager :
 
     private void SendTextMessage(string content, string id, ChatType chatType)
     {
-        _myMessage.Clear();
-        _myMessage.id = 0;
-        _myMessage.TextContent = content;
-        _myMessage.ReciverId = id;
-        _myMessage.ChatType = chatType;
-        IMAPI.Instance().SendTextMessage(_myMessage.ReciverId, _myMessage.ChatType, _myMessage.TextContent,
-            ref _myMessage.id);
-        _messageCahceList.Add(_myMessage.id, _myMessage);
-        ShowTalk(_myMessage);
+       var myMessage = new MyMessage();
+        myMessage.id = 0;
+        myMessage.TextContent = content;
+        myMessage.ReciverId = id;
+        myMessage.ChatType = chatType;
+        IMAPI.Instance().SendTextMessage(myMessage.ReciverId, myMessage.ChatType, myMessage.TextContent,
+            ref myMessage.id);
+        _messageCahceList.Add(myMessage.id, myMessage);
+        ShowSendText(myMessage);
+    }
+
+    private void ReceiveText(TextMessage message)
+    {
+        Messenger<TextMessage>.Broadcast(EMessengerType.OnReceiveText, message);
+    }
+
+    private void ReceiveVoice(VoiceMessage message)
+    {
+        Messenger<VoiceMessage>.Broadcast(EMessengerType.OnReceiveVoice, message);
     }
 
     public void StartAudioRecordToUser(string userId)
@@ -240,15 +230,15 @@ public class YIMManager :
             AudioInfoRaw audioInfoRaw;
             if (_iRequestCache.TryGetItem(iRequestID, out audioInfoRaw))
             {
-                _myVoice.Clear();
-                _myVoice.RequestID = iRequestID;
-                _myVoice.Text = strText;
-                _myVoice.SavePath = strAudioPath;
-                _myVoice.Duration = iDuration;
-                _myVoice.SenderID = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
-                _myVoice.RecvID = audioInfoRaw.ReceiveId;
-                _myVoice.ChatType = audioInfoRaw.ChatType;
-                ShowVoice(_myVoice);
+                var myVoice = new MyVoice();
+                myVoice.RequestID = iRequestID;
+                myVoice.Text = strText;
+                myVoice.SavePath = strAudioPath;
+                myVoice.Duration = iDuration;
+                myVoice.SenderID = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
+                myVoice.RecvID = audioInfoRaw.ReceiveId;
+                myVoice.ChatType = audioInfoRaw.ChatType;
+                ShowVoice(myVoice);
                 YIMAudioPlayer.Instance.PlayAudioFile(strAudioPath);
             }
         }
@@ -372,7 +362,7 @@ public class YIMManager :
         //这个函数是假设用来更新消息的发送是否成功的状态
     }
 
-    private void ShowTalk(MyMessage message)
+    private void ShowSendText(MyMessage message)
     {
         //这个函数是假设用来添加消息到UI上
         Messenger<MyMessage>.Broadcast(EMessengerType.OnSendText, message);

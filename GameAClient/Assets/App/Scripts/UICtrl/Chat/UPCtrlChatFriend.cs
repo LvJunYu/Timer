@@ -29,22 +29,33 @@ namespace GameA
 
         public override void AddChatItem(ChatInfo chatInfo)
         {
-            long userId = long.Parse(chatInfo.ReceiverId);
-            if (CurFriendId == userId)
+            long userId = 0;
+            UserInfoDetail chatUserInfoDetail = null;
+            if (chatInfo.EChatSender == EChatSender.Myself)
+            {
+                userId = long.Parse(chatInfo.ReceiverId);
+                chatUserInfoDetail = chatInfo.ReceiverInfoDetail;
+            }
+            else if (chatInfo.EChatSender == EChatSender.Other)
+            {
+                chatUserInfoDetail = chatInfo.SenderInfoDetail;
+                userId = chatUserInfoDetail.UserInfoSimple.UserId;
+            }
+            if (userId == CurFriendId)
             {
                 _dataList.Add(chatInfo);
                 RefreshView();
             }
             else
             {
-                if (chatInfo.ReceiverInfoDetail != null)
+                if (chatUserInfoDetail != null)
                 {
-                    chatInfo.ReceiverInfoDetail.ChatHistory.Add(chatInfo);
+                    chatUserInfoDetail.ChatHistory.Add(chatInfo);
                 }
                 else
                 {
                     UserManager.Instance.GetDataOnAsync(userId,
-                        userInfoDetail => { userInfoDetail.ChatHistory.Add(chatInfo); });
+                        userInfoDetail => userInfoDetail.ChatHistory.Add(chatInfo));
                 }
             }
         }

@@ -247,6 +247,7 @@ namespace GameA
                     chatInfo.EChatType = EChatType.Text;
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
+                    chatInfo.ReceiverId = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
                     _menuCtrlArray[(int) EMenu.World].AddChatItem(chatInfo);
                 });
             }
@@ -322,6 +323,7 @@ namespace GameA
                     chatInfo.EChatType = EChatType.Voice;
                     chatInfo.SenderInfoDetail = userInfoDetail;
                     chatInfo.ReceiverInfoDetail = LocalUser.Instance.User;
+                    chatInfo.ReceiverId = LocalUser.Instance.User.UserInfoSimple.UserId.ToString();
                     _menuCtrlArray[(int) EMenu.Friend].AddChatItem(chatInfo);
                 });
             }
