@@ -122,7 +122,8 @@ namespace GameA
             if (_curTimer > _checkOnlineInterval)
             {
                 CheckOnLine();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(3, () =>
+                _curTimer = 0;
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(3, () =>
                 {
                     SortFriendList();
                     RefreshFriendsView();

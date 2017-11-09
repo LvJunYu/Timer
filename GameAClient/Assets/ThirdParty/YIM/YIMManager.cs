@@ -133,7 +133,7 @@ public class YIMManager :
 
     private void SendTextMessage(string content, string id, ChatType chatType)
     {
-       var myMessage = new MyMessage();
+        var myMessage = new MyMessage();
         myMessage.id = 0;
         myMessage.TextContent = content;
         myMessage.ReciverId = id;
