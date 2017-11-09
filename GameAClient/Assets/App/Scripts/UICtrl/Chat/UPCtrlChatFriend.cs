@@ -67,6 +67,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 _friendList = LocalUser.Instance.RelationUserList.FriendList;
+                _curTimer = _checkOnlineInterval;
                 if (_isOpen)
                 {
                     SortFriendList();
@@ -86,6 +87,7 @@ namespace GameA
         public void ChatToFriend(int index, List<UserInfoDetail> _friends)
         {
             _friendList = _friends;
+            _curTimer = _checkOnlineInterval;
             var friend = _friends[index];
             SortFriendList(true);
             RefreshFriendsView();
@@ -119,11 +121,11 @@ namespace GameA
         public void OnUpdate()
         {
             if (!_isOpen) return;
-            if (_curTimer > _checkOnlineInterval)
+            if (_curTimer >= _checkOnlineInterval)
             {
                 CheckOnLine();
                 _curTimer = 0;
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(3, () =>
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(0.1f, () =>
                 {
                     SortFriendList();
                     RefreshFriendsView();

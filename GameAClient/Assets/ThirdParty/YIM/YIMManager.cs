@@ -79,6 +79,7 @@ public class YIMManager :
         IMAPI.Instance().SetLoginListen(this);
         IMAPI.Instance().SetMessageListen(this);
         IMAPI.Instance().SetChatRoomListen(this);
+        IMAPI.Instance().SetContactListen(this);
         IMAPI.Instance().SetDownloadListen(this);
         //初始化
         IMAPI.Instance().Init("YOUMEE9036C7A45B37ED5F7AC6F0C6479BB48EC2CA10E",
