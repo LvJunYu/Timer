@@ -246,17 +246,9 @@ namespace GameA
                 _isEditTitle = false;
                 RefreshTitleDock();
             }
-            else if (testRes == CheckTools.ECheckProjectNameResult.TooShort)
-            {
-                SocialGUIManager.ShowPopupDialog("标题名称太短。");
-            }
-            else if (testRes == CheckTools.ECheckProjectNameResult.TooLong)
-            {
-                SocialGUIManager.ShowPopupDialog("标题名称太长。");
-            }
             else
             {
-                SocialGUIManager.ShowPopupDialog("标题格式错误。");
+                SocialGUIManager.ShowCheckProjectNameRes(testRes);
             }
         }
 
@@ -291,13 +283,9 @@ namespace GameA
                 _isEditDesc = false;
                 RefreshDescDock();
             }
-            else if (testRes == CheckTools.ECheckProjectSumaryResult.TooLong)
-            {
-                SocialGUIManager.ShowPopupDialog("简介内容太长。");
-            }
             else
             {
-                SocialGUIManager.ShowPopupDialog("简介格式错误。");
+                SocialGUIManager.ShowCheckProjectDescRes(testRes);
             }
         }
 

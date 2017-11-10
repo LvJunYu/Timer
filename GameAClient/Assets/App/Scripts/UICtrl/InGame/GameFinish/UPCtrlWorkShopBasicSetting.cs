@@ -12,7 +12,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.SaveBtn.onClick.AddListener(OnSaveBtn);
             _cachedView.TestBtn.onClick.AddListener(_mainCtrl.OnTestBtn);
             _cachedView.PublishBtn.onClick.AddListener(_mainCtrl.OnPublishBtn);
             _cachedView.TitleInputField.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
@@ -21,25 +20,6 @@ namespace GameA
             _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
             _playSoundsEffects = new USCtrlGameSettingItem();
             _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
-        }
-
-        private void OnSaveBtn()
-        {
-            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (null != _gameModeWorkshopEdit)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存");
-                _gameModeWorkshopEdit.Save(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    UpdateBtns();
-                    SocialGUIManager.ShowPopupDialog("保存成功");
-                }, result =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("保存失败");
-                });
-            }
         }
 
         public override void Open()

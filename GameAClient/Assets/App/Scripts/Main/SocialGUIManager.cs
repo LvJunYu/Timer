@@ -258,6 +258,34 @@ namespace GameA
             Instance.GetUI<UICtrlReward>().SetAbility(title, icon, closeCb);
         }
 
+        public static void ShowCheckProjectNameRes(CheckTools.ECheckProjectNameResult testRes)
+        {
+            if (testRes == CheckTools.ECheckProjectNameResult.TooShort)
+            {
+                ShowPopupDialog("标题名称太短。");
+            }
+            else if (testRes == CheckTools.ECheckProjectNameResult.TooLong)
+            {
+                ShowPopupDialog("标题名称太长。");
+            }
+            else
+            {
+                ShowPopupDialog("标题格式错误。");
+            }
+        }
+
+        public static void ShowCheckProjectDescRes(CheckTools.ECheckProjectSumaryResult testRes)
+        {
+            if (testRes == CheckTools.ECheckProjectSumaryResult.TooLong)
+            {
+                ShowPopupDialog("简介内容太长。");
+            }
+            else
+            {
+                ShowPopupDialog("简介格式错误。");
+            }
+        }
+
         public enum EMode
         {
             None,

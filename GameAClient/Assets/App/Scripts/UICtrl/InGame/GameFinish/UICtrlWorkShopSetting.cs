@@ -88,7 +88,7 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
         }
-        
+
         protected override void OnDestroy()
         {
             _upCtrlWorkShopBasicSetting.OnDestroy();
@@ -226,27 +226,43 @@ namespace GameA
             GameSettingData.Instance.PlaySoundsEffects = isOn;
         }
 
-        public void OnDescEndEdit(string arg0)
+        public void OnDescEndEdit(string content)
         {
-            if (arg0 != _originalDesc && CurProject != null)
+            if (content != _originalDesc && CurProject != null)
             {
-                _originalDesc = CurProject.Summary = arg0;
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                if (_gameModeWorkshopEdit != null)
-                    _gameModeWorkshopEdit.NeedSave = true;
-                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+                var testRes = CheckTools.CheckProjectDesc(content);
+                if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
+                {
+                    _originalDesc = CurProject.Summary = content;
+                    _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (_gameModeWorkshopEdit != null)
+                        _gameModeWorkshopEdit.NeedSave = true;
+                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+                }
+                else
+                {
+                    SocialGUIManager.ShowCheckProjectDescRes(testRes);
+                }
             }
         }
 
-        public void OnTitleEndEdit(string arg0)
+        public void OnTitleEndEdit(string content)
         {
-            if (arg0 != _originalTitle && CurProject != null)
+            if (content != _originalTitle && CurProject != null)
             {
-                _originalTitle = CurProject.Name = arg0;
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                if (_gameModeWorkshopEdit != null)
-                    _gameModeWorkshopEdit.NeedSave = true;
-                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+                var testRes = CheckTools.CheckProjectName(content);
+                if (testRes == CheckTools.ECheckProjectNameResult.Success)
+                {
+                    _originalTitle = CurProject.Name = content;
+                    _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (_gameModeWorkshopEdit != null)
+                        _gameModeWorkshopEdit.NeedSave = true;
+                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+                }
+                else
+                {
+                    SocialGUIManager.ShowCheckProjectNameRes(testRes);
+                }
             }
         }
 
