@@ -189,7 +189,7 @@ namespace GameA
                                        Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
             _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
-            DictionaryTools.SetContentText(_cachedView.ScoreTxt, string.Format("{0:F1}", Project.Score));
+            DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             for (int i = 0; i < _cachedView.ScoreTogs.Length; i++)
             {
                 _cachedView.ScoreTogs[i].isOn = Project.Score >= i * 2 + 1;

@@ -77,12 +77,13 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
                 DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
                 DictionaryTools.SetContentText(_cachedView.Title, p.Name);
+                DictionaryTools.SetContentText(_cachedView.PraiseScoreTxt, p.ScoreFormat);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
-                for (int i = 0; i < _cachedView.ScoreToggles.Length; i++)
-                {
-                    _cachedView.ScoreToggles[i].isOn = _wrapper.Content.Score >= 2 * i + 1;
-                }
+//                for (int i = 0; i < _cachedView.ScoreToggles.Length; i++)
+//                {
+//                    _cachedView.ScoreToggles[i].isOn = _wrapper.Content.Score >= 2 * i + 1;
+//                }
             }
             else
             {

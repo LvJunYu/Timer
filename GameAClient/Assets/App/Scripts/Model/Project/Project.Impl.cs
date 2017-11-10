@@ -18,6 +18,7 @@ namespace GameA
     {
         #region 变量
 
+        private static string _scoreFormat = "{0:F1}";
         private long _guid;
         private int _downloadPrice;
 
@@ -58,6 +59,14 @@ namespace GameA
                     return _extendData.Score;
                 }
                 return 0;
+            }
+        }
+
+        public string ScoreFormat
+        {
+            get
+            {
+                return string.Format(_scoreFormat, Score);
             }
         }
 
