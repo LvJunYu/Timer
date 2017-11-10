@@ -12,7 +12,7 @@ namespace GameA
     }
 
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
+    public class UICtrlSocialRelationship : UICtrlResManagedBase<UIViewSocialRelationship>
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlRelationshipBase _curMenuCtrl;
@@ -113,13 +113,6 @@ namespace GameA
             {
                 _menuCtrlArray[i].HasInited = false;
             }
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
 
         private void ChangeMenu(EMenu menu)
