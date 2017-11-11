@@ -1,6 +1,7 @@
 ﻿using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
@@ -14,6 +15,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.NameInputField.onEndEdit.AddListener(OnEditEnd);
+            _cachedView.DescInputField.onEndEdit.AddListener(OnEditEnd);
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.SaveEditBtn.onClick.AddListener(OnSaveEditBtn);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
@@ -78,6 +81,14 @@ namespace GameA
             _cachedView.DescInputField.text = _userInfoDetail.Profile;
             _cachedView.MaleToggle.isOn = _userInfoDetail.UserInfoSimple.Sex == ESex.S_Male;
             _cachedView.FamaleToggle.isOn = _userInfoDetail.UserInfoSimple.Sex == ESex.S_Female;
+        }
+
+        private void OnEditEnd(string content)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OnSaveEditBtn();
+            }
         }
 
         private void OnSaveEditBtn()
@@ -165,6 +176,12 @@ namespace GameA
                         LocalUser.Instance.User.OnSync(ret.UserInfo);
                         _isEditing = false;
                         Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.UserGuid);
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                    else if (ret.ResultCode == (int) EUpdateUserInfoCode.UUC_NickNameDuplication)
+                    {
+                        ChangeEditStatus(false);
+                        SocialGUIManager.ShowPopupDialog("昵称已被占用");
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                     else
