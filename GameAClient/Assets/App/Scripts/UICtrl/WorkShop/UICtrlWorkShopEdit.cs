@@ -23,7 +23,6 @@ namespace GameA
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
             _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
-            _cachedView.EditLabelBtn.onClick.AddListener(OnEditLabelBtn);
             _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
             _cachedView.TitleInput.onEndEdit.AddListener(msg => OnConfirmTitleBtn());
@@ -238,7 +237,7 @@ namespace GameA
                 RefreshTitleDock();
                 return;
             }
-            var testRes = CheckTools.CheckProjectName(_cachedView.TitleInput.text);
+            var testRes = CheckTools.CheckProjectName(newTitle);
             if (testRes == CheckTools.ECheckProjectNameResult.Success)
             {
                 _project.Name = newTitle;
@@ -275,7 +274,7 @@ namespace GameA
                 RefreshDescDock();
                 return;
             }
-            var testRes = CheckTools.CheckProjectDesc(_cachedView.TitleInput.text);
+            var testRes = CheckTools.CheckProjectDesc(newDesc);
             if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
             {
                 _project.Summary = newDesc;

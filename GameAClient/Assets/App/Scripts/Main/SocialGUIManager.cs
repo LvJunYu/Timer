@@ -260,6 +260,7 @@ namespace GameA
 
         public static void ShowCheckProjectNameRes(CheckTools.ECheckProjectNameResult testRes)
         {
+            if (testRes == CheckTools.ECheckProjectNameResult.Success) return;
             if (testRes == CheckTools.ECheckProjectNameResult.TooShort)
             {
                 ShowPopupDialog("标题名称太短。");
@@ -276,6 +277,7 @@ namespace GameA
 
         public static void ShowCheckProjectDescRes(CheckTools.ECheckProjectSumaryResult testRes)
         {
+            if (testRes == CheckTools.ECheckProjectSumaryResult.Success) return;
             if (testRes == CheckTools.ECheckProjectSumaryResult.TooLong)
             {
                 ShowPopupDialog("简介内容太长。");
