@@ -27,6 +27,7 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteTogValueChanged);
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtn);
+            _cachedView.RecordsBtn.onClick.AddListener(OnRecordsBtn);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
@@ -272,6 +273,11 @@ namespace GameA
 
         private void OnShareBtn()
         {
+        }
+
+        private void OnRecordsBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailRecords>(Project);
         }
 
         private void OnPlayBtnClick()

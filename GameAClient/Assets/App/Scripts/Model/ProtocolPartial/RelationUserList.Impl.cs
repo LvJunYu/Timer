@@ -116,7 +116,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("不能关注自己！");
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, true, res =>
             {
                 if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
@@ -127,17 +127,17 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("关注失败。");
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("关注失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 
         public void RequestRemoveFollowUser(UserInfoDetail userInfoDetail)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, false, res =>
             {
                 if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
@@ -148,11 +148,11 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("取消关注失败。");
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("取消关注失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 
@@ -163,7 +163,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("不能屏蔽自己！");
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, true, res =>
             {
                 if (res.ResultCode == (int) EUpdateBlockStateCode.UBSS_Success)
@@ -174,17 +174,17 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("屏蔽失败。");
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("屏蔽失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 
         public void RequestRemoveBlockUser(UserInfoDetail userInfoDetail)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, false, res =>
             {
                 if (res.ResultCode == (int) EUpdateBlockStateCode.UBSS_Success)
@@ -195,11 +195,11 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 

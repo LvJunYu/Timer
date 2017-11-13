@@ -1,11 +1,4 @@
-﻿/********************************************************************
-  ** Filename : UMCtrlWorldRecordRank.cs
-  ** Author : quan
-  ** Date : 11/11/2016 1:47 PM
-  ** Summary : UMCtrlWorldRecordRank.cs
-  ***********************************************************************/
-
-using NewResourceSolution;
+﻿using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
@@ -44,6 +37,7 @@ namespace GameA
         {
             if (_wrapper != null)
             {
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailRecords>();
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.Record.UserInfoDetail);
             }

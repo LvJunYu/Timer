@@ -12,7 +12,7 @@ namespace GameA
                 return;
             }
             _isRequesting = true;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             LocalUser.Instance.RelationUserList.RequestMyFollows(() =>
             {
                 _userInfoDetailList = LocalUser.Instance.RelationUserList.FollowList;
@@ -24,12 +24,12 @@ namespace GameA
                 }
 //                TempData();
                 RefreshView();
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 _isRequesting = false;
                 SocialGUIManager.ShowPopupDialog("请求数据失败。");
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 

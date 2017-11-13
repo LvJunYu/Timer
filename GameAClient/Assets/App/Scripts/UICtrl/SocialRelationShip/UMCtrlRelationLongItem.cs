@@ -38,6 +38,7 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
             bool followByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            _cachedView.TalkBtn.SetActiveEx(followMe && followByMe);
             if (followByMe)
             {
                 if (followMe)
