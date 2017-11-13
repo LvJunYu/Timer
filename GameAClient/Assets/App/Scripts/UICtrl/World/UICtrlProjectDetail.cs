@@ -1,5 +1,6 @@
 ﻿using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
@@ -7,14 +8,15 @@ namespace GameA
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
     {
         public static string EmptyStr = "-";
+        public static string CountFormat = "({0})";
         public Project Project;
-        private EMenu _curMenu = EMenu.None;
-        private UPCtrlProjectDetailBase _curMenuCtrl;
-        private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
-        private USCtrlProjectLabel[] _usCtrlProjectLabels;
         private bool _onlyChangeView;
+        private bool _collected;
+        private float _srollRectHeight;
+        private float _contentHeight;
+        private UPCtrlProjectComment _upCtrlProjectComment;
 
         protected override void OnViewCreated()
         {
@@ -22,7 +24,7 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.BgBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
-            _cachedView.FavoriteTog.onValueChanged.AddListener(OnFavoriteTogValueChanged);
+            _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteTogValueChanged);
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtn);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
@@ -30,85 +32,31 @@ namespace GameA
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
 
-            _usCtrlProjectLabels = new USCtrlProjectLabel[_cachedView.Labels.Length];
-            for (int i = 0; i < _cachedView.Labels.Length; i++)
-            {
-                _usCtrlProjectLabels[i] = new USCtrlProjectLabel();
-                _usCtrlProjectLabels[i].Init(_cachedView.Labels[i]);
-            }
-
-            _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
-            var upCtrlProjectInfo = new UPCtrlProjectRecentRecord();
-            upCtrlProjectInfo.Set(ResScenary);
-            upCtrlProjectInfo.SetMenu(EMenu.Recent);
-            upCtrlProjectInfo.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Recent] = upCtrlProjectInfo;
-
-            var upCtrlProjectRecordRank = new UPCtrlProjectRecordRank();
-            upCtrlProjectRecordRank.Set(ResScenary);
-            upCtrlProjectRecordRank.SetMenu(EMenu.Rank);
-            upCtrlProjectRecordRank.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Rank] = upCtrlProjectRecordRank;
-
-            var upCtrlProjectComment = new UPCtrlProjectComment();
-            upCtrlProjectComment.Set(ResScenary);
-            upCtrlProjectComment.SetMenu(EMenu.Comment);
-            upCtrlProjectComment.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Comment] = upCtrlProjectComment;
-
-            for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
-            {
-                var inx = i;
-                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
-                    b => ClickMenu(inx, b));
-                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
-                {
-                    _menuCtrlArray[i].Close();
-                }
-            }
+            _upCtrlProjectComment = new UPCtrlProjectComment();
+            _upCtrlProjectComment.Set(ResScenary);
+            _upCtrlProjectComment.Init(this, _cachedView);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            Clear();
             Project = parameter as Project;
+            _upCtrlProjectComment.Open();
+            _srollRectHeight = _cachedView.ScrollRect.rectTransform().rect.height;
+            _contentHeight = _cachedView.ScrollRect.content.rect.height;
+            _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
             if (Project != null)
             {
                 Project.Request(Project.ProjectId, null, null);
-            }
-            if (_curMenu == EMenu.None)
-            {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.Recent, true);
-            }
-            else
-            {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
             RefreshView();
         }
 
         protected override void OnClose()
         {
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Close();
-            }
+            _upCtrlProjectComment.Close();
             Project = null;
             base.OnClose();
-        }
-
-        protected override void OnDestroy()
-        {
-            for (int i = 0; i < _menuCtrlArray.Length; i++)
-            {
-                if (_menuCtrlArray[i] != null)
-                {
-                    _menuCtrlArray[i].OnDestroy();
-                }
-            }
-            _curMenuCtrl = null;
-            base.OnDestroy();
         }
 
 //        protected override void SetPartAnimations()
@@ -131,17 +79,26 @@ namespace GameA
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            bool down = _cachedView.ScrollRect.content.anchoredPosition.y >= _contentHeight - _srollRectHeight;
+            _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = down && _upCtrlProjectComment.HasComment;
+            _cachedView.CommentTableScroller.ScorllWheelDownOff = !down;
+            bool up = _cachedView.CommentTableScroller.ContentPosition.y <= 0;
+            _cachedView.CommentTableScroller.ScorllWheelUpOff = up && _upCtrlProjectComment.HasComment;
+            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !up;
+        }
+
         private void SetNull()
         {
             DictionaryTools.SetContentText(_cachedView.TitleText, EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.Desc, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.CreateLevelText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.PlayCountText, EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.CompleteRateText, EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.FavoriteCount, EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.DownloadCount, EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.ShareCount, EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,EmptyStr);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
         }
@@ -155,6 +112,7 @@ namespace GameA
             }
             UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
+            DictionaryTools.SetContentText(_cachedView.Desc, Project.Summary);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,
                 GameATools.GetLevelString(user.LevelData.PlayerLevel));
@@ -162,8 +120,8 @@ namespace GameA
                 GameATools.GetLevelString(user.LevelData.CreatorLevel));
             DictionaryTools.SetContentText(_cachedView.PlayCountText,
                 Project.ExtendReady ? Project.PlayCount.ToString() : EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.CompleteRateText,
-                Project.ExtendReady ? GameATools.GetCompleteRateString(Project.CompleteRate) : EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
+                GameATools.FormatServerDateString(Project.CreateTime));
             RefreshBtns();
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultCoverTexture);
@@ -181,19 +139,14 @@ namespace GameA
             _cachedView.FollowBtn.SetActiveEx(!myself);
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
-            _cachedView.FavoriteTog.isOn = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
-            DictionaryTools.SetContentText(_cachedView.FavoriteCount, Project.FavoriteCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.DownloadCount, Project.ExtendData.DownloadCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.ShareCount, Project.ExtendData.ShareCount.ToString());
+            _collected = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
+            _cachedView.FavoriteTxt.text = _collected ? "已收藏" : "收藏";
             _cachedView.GoodTog.isOn = Project.ProjectUserData != null &&
                                        Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
             _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
-            for (int i = 0; i < _cachedView.ScoreTogs.Length; i++)
-            {
-                _cachedView.ScoreTogs[i].isOn = Project.Score >= i * 2 + 1;
-            }
+            DictionaryTools.SetContentText(_cachedView.LikeCountTxt, string.Format(CountFormat, Project.LikeCount));
         }
 
         private void OnBadTogValueChanged(bool value)
@@ -284,14 +237,14 @@ namespace GameA
             }
         }
 
-        private void OnFavoriteTogValueChanged(bool value)
+        private void OnFavoriteTogValueChanged()
         {
             if (Project == null || _isRequestFavorite)
             {
                 return;
             }
             _isRequestFavorite = true;
-            Project.UpdateFavorite(value, () =>
+            Project.UpdateFavorite(!_collected, () =>
             {
                 _isRequestFavorite = false;
                 RefreshBtns();
@@ -358,41 +311,12 @@ namespace GameA
             }
         }
 
-        private void ChangeMenu(EMenu menu)
-        {
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Close();
-            }
-            _curMenu = menu;
-            var inx = (int) _curMenu;
-            if (inx < _menuCtrlArray.Length)
-            {
-                _curMenuCtrl = _menuCtrlArray[inx];
-            }
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Open();
-            }
-        }
-
-        private void ClickMenu(int selectInx, bool open)
-        {
-            if (open)
-            {
-                ChangeMenu((EMenu) selectInx);
-            }
-        }
-
         private void OnProjectDataChanged(long projectId)
         {
             if (_isOpen && Project != null && Project.ProjectId == projectId)
             {
                 RefreshView();
-                if (_curMenuCtrl != null)
-                {
-                    ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
-                }
+                _upCtrlProjectComment.OnChangeHandler(projectId);
             }
         }
 
@@ -403,20 +327,10 @@ namespace GameA
 
         private void OnChangeToApp()
         {
-            if (!_isOpen)
-            {
-                return;
-            }
-            if (Project != null)
+            if (_isOpen && Project != null)
             {
                 Project.Request(Project.ProjectId, null, null);
-            }
-            for (int i = 0; i < _menuCtrlArray.Length; i++)
-            {
-                if (_menuCtrlArray[i] != null)
-                {
-                    _menuCtrlArray[i].OnChangeToApp();
-                }
+                _upCtrlProjectComment.OnChangeToApp();
             }
         }
 
@@ -426,14 +340,6 @@ namespace GameA
             if (userInfoDetail == Project.UserInfoDetail)
             {
                 RefreshBtns();
-            }
-        }
-
-        private void Clear()
-        {
-            for (int i = 0; i < _menuCtrlArray.Length; i++)
-            {
-                _menuCtrlArray[i].Clear();
             }
         }
 

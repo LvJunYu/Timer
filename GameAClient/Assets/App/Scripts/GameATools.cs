@@ -483,7 +483,7 @@ namespace GameA
                 return sbh.ToString();
             }
         }
-
+        
         public static string GetLevelString(int level)
         {
             return string.Format("Lv.{0}", level);
