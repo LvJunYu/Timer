@@ -92,6 +92,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            if (null != parameter)
+            {
+                _curMenu = (EMenu)parameter;
+            }
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Follow, true);
