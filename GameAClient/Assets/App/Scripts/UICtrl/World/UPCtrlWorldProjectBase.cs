@@ -76,7 +76,7 @@ namespace GameA
             }
         }
 
-        protected override void RequestData(bool append = false)
+        public override void RequestData(bool append = false)
         {
         }
 
@@ -97,6 +97,17 @@ namespace GameA
             _dict.Clear();
             _projectList = null;
             _cachedView.GridDataScrollers[(int)_menu].ContentPosition = Vector2.zero;
+        }
+
+        public void ShowSearchedProject(Project project)
+        {
+            if (_projectList == null)
+            {
+                _projectList = new List<Project>(1);
+            }
+            _projectList.Clear();
+            _projectList.Add(project);
+            RefreshView();
         }
     }
 }

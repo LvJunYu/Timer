@@ -14,6 +14,10 @@ namespace GameA
         /// </summary>
         private long _projectId;
         /// <summary>
+        /// 短id
+        /// </summary>
+        private long _shortId;
+        /// <summary>
         /// 发布者信息
         /// </summary>
         private UserInfoSimple _userInfo;
@@ -142,6 +146,16 @@ namespace GameA
             get { return _projectId; }
             set { if (_projectId != value) {
                 _projectId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 短id
+        /// </summary>
+        public long ShortId { 
+            get { return _shortId; }
+            set { if (_shortId != value) {
+                _shortId = value;
                 SetDirty();
             }}
         }
@@ -487,6 +501,7 @@ namespace GameA
         {
             if (null == msg) return false;
             _projectId = msg.ProjectId;           
+            _shortId = msg.ShortId;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
@@ -535,6 +550,7 @@ namespace GameA
         {
             if (null == msg) return false;
             _projectId = msg.ProjectId;           
+            _shortId = msg.ShortId;           
             if(null != msg.UserInfo){
                 if (null == _userInfo){
                     _userInfo = new UserInfoSimple(msg.UserInfo);
@@ -585,6 +601,7 @@ namespace GameA
         {
             if (null == obj) return false;
             _projectId = obj.ProjectId;           
+            _shortId = obj.ShortId;           
             if(null != obj.UserInfo){
                 if (null == _userInfo){
                     _userInfo = new UserInfoSimple();

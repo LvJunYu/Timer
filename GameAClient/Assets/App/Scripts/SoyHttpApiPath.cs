@@ -106,6 +106,8 @@ namespace SoyEngine
         public const string WorldRankList = "/world/getRankList";
         // 匹配乱入对决
         public const string MatchShadowBattleData = "/world/matchShadowBattleData";
+        // 搜索关卡
+        public const string SearchWorldProject = "/world/searchProject";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据

@@ -31,7 +31,7 @@ namespace GameA
             }
         }
 
-        protected override void RequestData(bool append = false)
+        public override void RequestData(bool append = false)
         {
             _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             int startInx = 0;

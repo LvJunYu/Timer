@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -17,37 +18,37 @@ namespace GameA
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
             _cachedView.SearchBtn.onClick.AddListener(OnSearchBtn);
             _menuCtrlArray = new UPCtrlWorldPanelBase[(int) EMenu.Max];
-            
+
             var upCtrlWorldRecommendProject = new UPCtrlWorldRecommendProject();
             upCtrlWorldRecommendProject.Set(ResScenary);
             upCtrlWorldRecommendProject.SetMenu(EMenu.Recommend);
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
-            
+
             var upCtrlNewestProject = new UPCtrlWorldNewestProject();
             upCtrlNewestProject.Set(ResScenary);
             upCtrlNewestProject.SetMenu(EMenu.NewestProject);
             upCtrlNewestProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlNewestProject;
-            
+
             var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
             upCtrlWorldUserFavorite.Set(ResScenary);
             upCtrlWorldUserFavorite.SetMenu(EMenu.UserFavorite);
             upCtrlWorldUserFavorite.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserFavorite] = upCtrlWorldUserFavorite;
-            
+
             var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
             upCtrlWorldUserPlayHistory.Set(ResScenary);
             upCtrlWorldUserPlayHistory.SetMenu(EMenu.UserPlayHistory);
             upCtrlWorldUserPlayHistory.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
-            
+
             var uPCtrlWorldRanklistPanel = new UPCtrlWorldRanklistPanel();
             uPCtrlWorldRanklistPanel.Set(ResScenary);
             uPCtrlWorldRanklistPanel.SetMenu(EMenu.RankList);
             uPCtrlWorldRanklistPanel.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.RankList] = uPCtrlWorldRanklistPanel;
-            
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -116,7 +117,30 @@ namespace GameA
 
         private void OnSearchBtn()
         {
-            SocialGUIManager.ShowPopupDialog("关卡搜索功能暂未开启。");
+            if (!(_curMenuCtrl is UPCtrlWorldProjectBase)) return;
+            if (string.IsNullOrEmpty(_cachedView.SearchInputField.text))
+            {
+                ((UPCtrlWorldProjectBase) _curMenuCtrl).RequestData();
+            }
+            else
+            {
+                long projectId;
+                if (long.TryParse(_cachedView.SearchInputField.text, out projectId))
+                {
+                    RemoteCommands.SearchWorldProject(projectId,
+                        msg =>
+                        {
+                            if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_Success)
+                            {
+                                ((UPCtrlWorldProjectBase) _curMenuCtrl).ShowSearchedProject(new Project(msg.Data));
+                            }
+                            else if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_NotExsit)
+                            {
+                                SocialGUIManager.ShowPopupDialog(string.Format("关卡{0}不存在。", projectId));
+                            }
+                        }, code => SocialGUIManager.ShowPopupDialog("搜索关卡失败。"));
+                }
+            }
         }
 
         protected override void OnClose()
@@ -136,8 +160,8 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.17f);
-            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft,new Vector3(-200,0,0));
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, new Vector3(-200, 0, 0));
             SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
             SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }

@@ -1003,6 +1003,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSearchWorldProject {
+            get { return _isRequstingSearchWorldProject; }
+        }
+        private static bool _isRequstingSearchWorldProject = false;
+        /// <summary>
+		/// 搜索关卡
+		/// </summary>
+		/// <param name="shortId">短id</param>
+        public static void SearchWorldProject (
+            long shortId,
+            Action<Msg_SC_CMD_SearchWorldProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSearchWorldProject) {
+                return;
+            }
+            _isRequstingSearchWorldProject = true;
+            Msg_CS_CMD_SearchWorldProject msg = new Msg_CS_CMD_SearchWorldProject();
+            // 搜索关卡
+            msg.ShortId = shortId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchWorldProject>(
+                SoyHttpApiPath.SearchWorldProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSearchWorldProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchWorldProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSearchWorldProject = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCreateProject {
             get { return _isRequstingCreateProject; }
         }

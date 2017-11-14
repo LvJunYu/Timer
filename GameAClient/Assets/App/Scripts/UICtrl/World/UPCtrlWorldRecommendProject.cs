@@ -5,7 +5,7 @@ namespace GameA
     {
         private WorldRecommendProjectList _data;
 
-        protected override void RequestData(bool append = false)
+        public override void RequestData(bool append = false)
         {
             _data = AppData.Instance.WorldData.RecommendProjectList;
             if (_isRequesting)

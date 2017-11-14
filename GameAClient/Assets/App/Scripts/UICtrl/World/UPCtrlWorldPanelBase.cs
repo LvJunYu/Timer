@@ -26,7 +26,7 @@ namespace GameA
             base.Close();
         }
 
-        protected abstract void RequestData(bool append = false);
+        public abstract void RequestData(bool append = false);
 
         protected virtual void RefreshView()
         {
@@ -49,5 +49,6 @@ namespace GameA
         public virtual void Clear()
         {
         }
+        
     }
 }

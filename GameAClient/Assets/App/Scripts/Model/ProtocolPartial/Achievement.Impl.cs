@@ -9,6 +9,9 @@ namespace GameA
         private Dictionary<int, AchievementStatisticItem> _achieveDic =
             new Dictionary<int, AchievementStatisticItem>(100);
 
+        private Dictionary<long, AchievementStatisticItem> _staticsticDic =
+            new Dictionary<long, AchievementStatisticItem>(10);
+
         private List<AchievementStatisticItem> _unFinishedAchieve = new List<AchievementStatisticItem>();
         private List<AchievementStatisticItem> _finishedAchive = new List<AchievementStatisticItem>();
         private List<AchiveItemData> _allAchiveData = new List<AchiveItemData>();
@@ -22,10 +25,11 @@ namespace GameA
         protected override void OnSyncPartial()
         {
             base.OnSyncPartial();
-            BuildData();
+            BuildAchieveData();
+            BuildStaticsticData();
         }
 
-        public void BuildData()
+        public void BuildAchieveData()
         {
             var achievements = TableManager.Instance.Table_AchievementDic;
             //建立type字典
@@ -43,7 +47,6 @@ namespace GameA
                 {
                     if (!_achieveDic.ContainsKey(value.Type))
                     {
-                   
                         _achieveDic.Add(value.Type, achievementItem);
                     }
                     else
@@ -51,7 +54,7 @@ namespace GameA
                         _achieveDic[value.Type].DeepCopy(achievementItem);
                     }
                 }
-                
+
                 _achieveDic[value.Type].SetValue(value.Level, value);
             }
             //建立未完成和已完成成就列表
@@ -72,6 +75,25 @@ namespace GameA
             _hasBuild = true;
         }
 
+        public void BuildStaticsticData()
+        {
+            _staticsticDic.Clear();
+            for (int i = 0; i < StatisticList.Count; i++)
+            {
+                _staticsticDic.Add(StatisticList[i].Type, StatisticList[i]);
+            }
+        }
+
+        public long GetStatisticCount(long type)
+        {
+            AchievementStatisticItem statisticItem;
+            if (_staticsticDic.TryGetValue(type, out statisticItem))
+            {
+                return statisticItem.Count;
+            }
+            return 0;
+        }
+
         private void RefreshAchieveData()
         {
             _allAchiveData.Clear();
@@ -89,7 +111,7 @@ namespace GameA
         {
             if (!_hasBuild)
             {
-                BuildData();
+                BuildAchieveData();
             }
             if (!_achieveDic.ContainsKey(type))
             {

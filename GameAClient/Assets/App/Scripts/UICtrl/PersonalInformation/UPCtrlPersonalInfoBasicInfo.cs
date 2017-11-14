@@ -11,6 +11,7 @@ namespace GameA
         private static string _lvFormat = "Lv{0}";
         private UserInfoDetail _userInfoDetail;
         private bool _isEditing;
+        private Achievement _achievement = new Achievement();
 
         protected override void OnViewCreated()
         {
@@ -27,7 +28,28 @@ namespace GameA
             base.Open();
             _userInfoDetail = _mainCtrl.UserInfoDetail;
             _isEditing = false;
+            _achievement.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshStatistics, null);
+            RefreshStatistics();
             RefreshView();
+        }
+
+        private void RefreshStatistics()
+        {
+            if (_achievement == null) return;
+            _cachedView.TotalPlayCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_PlayProjectCount).ToString();
+            _cachedView.TotalSuccessCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_CompleteProjectCount).ToString();
+            _cachedView.TotalCommentCount.text =_achievement.
+                GetStatisticCount((long) EStatisticItemType.SIT_CommentCount).ToString();
+            _cachedView.TotalScoreCount.text = _achievement.
+                GetStatisticCount((long) EStatisticItemType.SIT_TotalScore).ToString();
+            _cachedView.TotalPublishCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_PublishedProjectCount).ToString();
+            _cachedView.TotalPlayedCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_ProjectPlayedCount).ToString();
+            _cachedView.TotalPraisedCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_ProjectLikedCount).ToString();
         }
 
         public override void RefreshView()
@@ -35,6 +57,7 @@ namespace GameA
             if (!_isOpen) return;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
+            _cachedView.IdTxt.text = _userInfoDetail.ShortId.ToString();
             _cachedView.Name.text = _userInfoDetail.UserInfoSimple.NickName;
             _cachedView.Desc.text = _userInfoDetail.Profile;
             _cachedView.FollowNum.text = _userInfoDetail.RelationStatistic.FollowCount.ToString();

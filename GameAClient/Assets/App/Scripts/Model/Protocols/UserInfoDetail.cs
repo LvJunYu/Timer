@@ -14,6 +14,10 @@ namespace GameA
         /// </summary>
         private UserInfoSimple _userInfoSimple;
         /// <summary>
+        /// 短id
+        /// </summary>
+        private long _shortId;
+        /// <summary>
         /// 
         /// </summary>
         private string _userName;
@@ -78,6 +82,16 @@ namespace GameA
             get { return _userInfoSimple; }
             set { if (_userInfoSimple != value) {
                 _userInfoSimple = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 短id
+        /// </summary>
+        public long ShortId { 
+            get { return _shortId; }
+            set { if (_shortId != value) {
+                _shortId = value;
                 SetDirty();
             }}
         }
@@ -264,6 +278,7 @@ namespace GameA
             } else {
                 _userInfoSimple.OnSyncFromParent(msg.UserInfoSimple);
             }
+            _shortId = msg.ShortId;           
             _userName = msg.UserName;           
             _phoneNum = msg.PhoneNum;           
             _birthDay = msg.BirthDay;           
@@ -293,6 +308,7 @@ namespace GameA
                 }
                 _userInfoSimple.CopyMsgData(msg.UserInfoSimple);
             }
+            _shortId = msg.ShortId;           
             _userName = msg.UserName;           
             _phoneNum = msg.PhoneNum;           
             _birthDay = msg.BirthDay;           
@@ -322,6 +338,7 @@ namespace GameA
                 }
                 _userInfoSimple.DeepCopy(obj.UserInfoSimple);
             }
+            _shortId = obj.ShortId;           
             _userName = obj.UserName;           
             _phoneNum = obj.PhoneNum;           
             _birthDay = obj.BirthDay;           

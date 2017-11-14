@@ -32,7 +32,7 @@ namespace GameA
             }, code =>
             {
                 //Todo 测试数据
-                LocalUser.Instance.Achievement.BuildData();
+                LocalUser.Instance.Achievement.BuildAchieveData();
                 _dataList = LocalUser.Instance.Achievement.AllAchiveData;
                 RefreshView();
 //                SocialGUIManager.ShowPopupDialog("请求成就数据失败。");

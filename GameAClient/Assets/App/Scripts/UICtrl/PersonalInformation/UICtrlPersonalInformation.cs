@@ -87,14 +87,6 @@ namespace GameA
             RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
         }
 
-        private void OnUserInfoChanged(long id)
-        {
-            if (_isOpen && _curMenu == EMenu.BasicInfo && id == UserInfoDetail.UserInfoSimple.UserId)
-            {
-                _curMenuCtrl.RefreshView();
-            }
-        }
-
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -127,6 +119,14 @@ namespace GameA
             }
             UserInfoDetail = null;
             base.OnClose();
+        }
+
+        private void OnUserInfoChanged(long id)
+        {
+            if (_isOpen && _curMenu == EMenu.BasicInfo && id == UserInfoDetail.UserInfoSimple.UserId)
+            {
+                _curMenuCtrl.RefreshView();
+            }
         }
 
         private void ChangeMenu(EMenu menu)
