@@ -93,6 +93,7 @@ namespace GameA
         private void SetNull()
         {
             DictionaryTools.SetContentText(_cachedView.TitleText, EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.ProjectId, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.Desc, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText, EmptyStr);
@@ -111,6 +112,7 @@ namespace GameA
                 return;
             }
             UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
+            DictionaryTools.SetContentText(_cachedView.ProjectId, Project.ShortId.ToString());
             DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
             DictionaryTools.SetContentText(_cachedView.Desc, Project.Summary);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
