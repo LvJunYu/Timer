@@ -19,6 +19,7 @@ namespace GameA
         #region 变量
 
         private static string _scoreFormat = "{0:F1}";
+        private static string _fullScore = "10";
         private long _guid;
         private int _downloadPrice;
 
@@ -66,6 +67,7 @@ namespace GameA
         {
             get
             {
+                if (Score == 10) return _fullScore;
                 return string.Format(_scoreFormat, Score);
             }
         }

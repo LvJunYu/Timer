@@ -25,12 +25,24 @@ namespace GameA
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
 
+            var upCtrlWorldBestProject = new UPCtrlWorldBestProject();
+            upCtrlWorldBestProject.Set(ResScenary);
+            upCtrlWorldBestProject.SetMenu(EMenu.MaxScore);
+            upCtrlWorldBestProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MaxScore] = upCtrlWorldBestProject;
+            
             var upCtrlNewestProject = new UPCtrlWorldNewestProject();
             upCtrlNewestProject.Set(ResScenary);
             upCtrlNewestProject.SetMenu(EMenu.NewestProject);
             upCtrlNewestProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlNewestProject;
 
+            var upCtrlWorldFollowedUserProject = new UPCtrlWorldFollowedUserProject();
+            upCtrlWorldFollowedUserProject.Set(ResScenary);
+            upCtrlWorldFollowedUserProject.SetMenu(EMenu.Follows);
+            upCtrlWorldFollowedUserProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Follows] = upCtrlWorldFollowedUserProject;
+            
             var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
             upCtrlWorldUserFavorite.Set(ResScenary);
             upCtrlWorldUserFavorite.SetMenu(EMenu.UserFavorite);

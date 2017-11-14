@@ -55,7 +55,7 @@ namespace GameA
         protected override void OnClose()
         {
             _upCtrlProjectComment.Close();
-            Project = null;
+            Clear();
             base.OnClose();
         }
 
@@ -99,7 +99,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.AdvLevelText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.CreateLevelText, EmptyStr);
             DictionaryTools.SetContentText(_cachedView.PlayCountText, EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate, EmptyStr);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
         }
@@ -143,10 +143,12 @@ namespace GameA
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _collected = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
             _cachedView.FavoriteTxt.text = _collected ? "已收藏" : "收藏";
+            _onlyChangeView = true;
             _cachedView.GoodTog.isOn = Project.ProjectUserData != null &&
                                        Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
             _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
+            _onlyChangeView = false;
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt, string.Format(CountFormat, Project.LikeCount));
         }
@@ -155,7 +157,6 @@ namespace GameA
         {
             if (_onlyChangeView)
             {
-                _onlyChangeView = false;
                 return;
             }
             if (Project == null) return;
@@ -169,6 +170,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 _onlyChangeView = true;
                 _cachedView.BadTog.isOn = !value;
+                _onlyChangeView = false;
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
@@ -188,7 +190,6 @@ namespace GameA
         {
             if (_onlyChangeView)
             {
-                _onlyChangeView = false;
                 return;
             }
             if (Project == null) return;
@@ -202,6 +203,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 _onlyChangeView = true;
                 _cachedView.GoodTog.isOn = !value;
+                _onlyChangeView = false;
                 return;
             }
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
@@ -326,6 +328,15 @@ namespace GameA
                 RefreshView();
                 _upCtrlProjectComment.OnChangeHandler(projectId);
             }
+        }
+
+        private void Clear()
+        {
+            _onlyChangeView = true;
+            _cachedView.GoodTog.isOn = false;
+            _cachedView.BadTog.isOn = false;
+            _onlyChangeView = false;
+            Project = null;
         }
 
         private void OnCloseBtn()
