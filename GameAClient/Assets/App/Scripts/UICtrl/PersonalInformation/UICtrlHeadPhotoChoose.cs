@@ -43,7 +43,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         private void OnItemRefresh(IDataItemRenderer item, int inx)

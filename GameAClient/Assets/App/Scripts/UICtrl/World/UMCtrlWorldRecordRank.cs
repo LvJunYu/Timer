@@ -37,8 +37,8 @@ namespace GameA
         {
             if (_wrapper != null)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailRecords>();
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailRecords>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.Record.UserInfoDetail);
             }
         }

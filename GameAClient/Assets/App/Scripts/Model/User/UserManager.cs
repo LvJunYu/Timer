@@ -1,12 +1,4 @@
-﻿/********************************************************************
-** Filename : UserManager
-** Author : Dong
-** Date : 2015/10/20 星期二 上午 10:54:53
-** Summary : UserManager
-***********************************************************************/
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using SoyEngine.Proto;
 using SoyEngine;
 
@@ -16,8 +8,13 @@ namespace GameA
     {
         public static readonly UserManager Instance = new UserManager();
 
-        private readonly LRUCache<long, UserInfoDetail> _caches =
-            new LRUCache<long, UserInfoDetail>(ConstDefine.MaxLRUUserCount);
+        private readonly LRUCache<long, UserInfoDetail> _caches;
+
+        public UserManager()
+        {
+            _caches = new LRUCache<long, UserInfoDetail>(ConstDefine.MaxLRUUserCount);
+            _caches.Insert(LocalUser.Instance.UserGuid, LocalUser.Instance.User);
+        }
 
         public UserInfoDetail UpdateData(UserInfoDetail newData)
         {

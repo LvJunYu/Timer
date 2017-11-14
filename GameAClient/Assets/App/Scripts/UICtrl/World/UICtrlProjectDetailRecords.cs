@@ -51,7 +51,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.Overlay;
         }
 
         private void RequestData(bool append = false)

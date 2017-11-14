@@ -8,7 +8,7 @@ namespace GameA
     /// <summary>
     /// UI动画基类
     /// </summary>
-    public abstract class UICtrlAnimationBase<T> : UICtrlResManagedBase<T> where T : UIViewBase
+    public abstract class UICtrlAnimationBase<T> : UICtrlResManagedBase<T>, IAnimation where T : UIViewBase
     {
         protected EAnimationType _animationType;
 
@@ -16,8 +16,14 @@ namespace GameA
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
         protected bool _openAnimation;
+        private bool _passAnimation;
         private float _screenHeight;
         private float _screenWidth;
+
+        public void PassAnimation(bool value)
+        {
+            _passAnimation = value;
+        }
 
         protected virtual void CreateSequences()
         {
@@ -99,25 +105,31 @@ namespace GameA
 
         private void OpenAnimation(bool immediateFinish = false)
         {
-            if (immediateFinish)
+            if (_passAnimation || immediateFinish)
             {
                 _openSequence.Restart();
                 _openSequence.Complete(true);
-                return;
+                _passAnimation = false;
             }
-            _openSequence.Restart();
+            else
+            {
+                _openSequence.Restart();
+            }
         }
 
         private void CloseAnimation(bool immediateFinish = false)
         {
             _cachedView.gameObject.SetActive(true);
-            if (immediateFinish)
+            if (_passAnimation || immediateFinish)
             {
                 _closeSequence.PlayForward();
                 _closeSequence.Complete(true);
-                return;
+                _passAnimation = false;
             }
-            _closeSequence.PlayForward();
+            else
+            {
+                _closeSequence.PlayForward();
+            }
         }
 
         private Vector3 GetStartPos(EAnimationType animationType)

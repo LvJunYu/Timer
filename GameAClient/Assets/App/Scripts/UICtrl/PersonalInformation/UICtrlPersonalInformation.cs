@@ -77,7 +77,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.Overlay;
         }
 
         protected override void InitEventListener()

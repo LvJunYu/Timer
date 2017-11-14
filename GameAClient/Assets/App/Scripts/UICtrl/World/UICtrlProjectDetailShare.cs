@@ -27,7 +27,6 @@ namespace GameA
             }
         }
 
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -64,7 +63,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.Overlay;
         }
 
         private void RequestData()
@@ -175,8 +174,8 @@ namespace GameA
 
         private void OnAddFriendsBtn()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
-            SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
             SocialGUIManager.Instance.OpenUI<UICtrlSocialRelationship>(UICtrlSocialRelationship.EMenu.AddNew);
         }
 

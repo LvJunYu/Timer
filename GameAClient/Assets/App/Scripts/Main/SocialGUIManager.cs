@@ -36,13 +36,15 @@ namespace GameA
         MainPopUpUI2,
 
         /// <summary>
+        /// 会互相遮挡的UI，通常指那些会在不同的UI页面被开启的页面，例如个人信息、关卡详情页面
+        /// </summary>
+        Overlay,
+
+        /// <summary>
         /// 在所有主界面和一般弹出界面之上的界面 关卡详情
         /// </summary>
         FrontUI,
 
-        /// <summary>
-        /// 
-        /// </summary>
         FrontUI2,
 
         /// <summary>
@@ -79,9 +81,9 @@ namespace GameA
     public class SocialGUIManager : ResManagedGuiManager
     {
         public static SocialGUIManager Instance;
-
         private EMode _currentMode = EMode.None;
         private bool _exitDialogIsOpen;
+        private Stack<UIRaw> _overlayUIs = new Stack<UIRaw>(8);//缓存互相遮挡的UI
 
         public EMode CurrentMode
         {
@@ -288,11 +290,71 @@ namespace GameA
             }
         }
 
+        public override T OpenUI<T>(object value = null)
+        {
+            var ui = base.OpenUI<T>(value);
+            // 关闭互相遮挡的UI，并缓存在栈中
+            if (ui != null && ui.GroupId == (int) EUIGroupType.Overlay)
+            {
+                UICtrlBase lastUI = null;
+                if (_overlayUIs.Count > 0)
+                {
+                    lastUI = _overlayUIs.Peek().UI;
+                }
+                if (lastUI != null && lastUI != ui)
+                {
+                    if (lastUI is IAnimation)
+                    {
+                        ((IAnimation) lastUI).PassAnimation(true);
+                    }
+                    lastUI.Close();
+                }
+                if (lastUI != ui)
+                {
+                    _overlayUIs.Push(new UIRaw(ui, value));
+                }
+            }
+            return ui;
+        }
+
+        public override T CloseUI<T>()
+        {
+            var ui = base.CloseUI<T>();
+            if (ui.GroupId == (int) EUIGroupType.Overlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
+            {
+                _overlayUIs.Pop();
+            }
+            // 打开上一个关闭的遮挡UI
+            if (_overlayUIs.Count > 0)
+            {
+                var lastUI = _overlayUIs.Peek().UI;
+                if (lastUI.IsOpen) return ui;
+                if (lastUI is IAnimation)
+                {
+                    ((IAnimation) lastUI).PassAnimation(true);
+                }
+                lastUI.Open(_overlayUIs.Peek().Param);
+            }
+            return ui;
+        }
+
         public enum EMode
         {
             None,
             App,
             Game
+        }
+
+        public class UIRaw
+        {
+            public UICtrlBase UI;
+            public object Param;
+
+            public UIRaw(UICtrlBase ui, object param)
+            {
+                UI = ui;
+                Param = param;
+            }
         }
     }
 }

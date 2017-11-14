@@ -22,7 +22,6 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.BgBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteTogValueChanged);
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
@@ -69,7 +68,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.Overlay;
         }
 
         protected override void InitEventListener()
@@ -221,7 +220,7 @@ namespace GameA
             if (Project != null)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
             }
         }
 
