@@ -99,15 +99,5 @@ namespace GameA
             _cachedView.GridDataScrollers[(int)_menu].ContentPosition = Vector2.zero;
         }
 
-        public void ShowSearchedProject(Project project)
-        {
-            if (_projectList == null)
-            {
-                _projectList = new List<Project>(1);
-            }
-            _projectList.Clear();
-            _projectList.Add(project);
-            RefreshView();
-        }
     }
 }

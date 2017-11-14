@@ -16,7 +16,7 @@ namespace GameA
             }
             _data.Request(startInx, _pageSize, () =>
             {
-                _projectList = _data.ProjectList;
+                _projectList = _data.AllList;
                 if (_isOpen)
                 {
                     RefreshView();

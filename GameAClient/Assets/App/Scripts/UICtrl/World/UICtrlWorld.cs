@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace GameA
         private UPCtrlWorldPanelBase _curMenuCtrl;
         private UPCtrlWorldPanelBase[] _menuCtrlArray;
         private bool _pushGoldEnergyStyle;
+        private UMCtrlProject _sarchUmCtrlProject;
 
         protected override void OnViewCreated()
         {
@@ -30,7 +32,7 @@ namespace GameA
             upCtrlWorldBestProject.SetMenu(EMenu.MaxScore);
             upCtrlWorldBestProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.MaxScore] = upCtrlWorldBestProject;
-            
+
             var upCtrlNewestProject = new UPCtrlWorldNewestProject();
             upCtrlNewestProject.Set(ResScenary);
             upCtrlNewestProject.SetMenu(EMenu.NewestProject);
@@ -42,7 +44,7 @@ namespace GameA
             upCtrlWorldFollowedUserProject.SetMenu(EMenu.Follows);
             upCtrlWorldFollowedUserProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Follows] = upCtrlWorldFollowedUserProject;
-            
+
             var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
             upCtrlWorldUserFavorite.Set(ResScenary);
             upCtrlWorldUserFavorite.SetMenu(EMenu.UserFavorite);
@@ -125,6 +127,7 @@ namespace GameA
                     _menuCtrlArray[i].Clear();
                 }
             }
+            _cachedView.SearchInputField.text = String.Empty;
         }
 
         private void OnSearchBtn()
@@ -132,19 +135,24 @@ namespace GameA
             if (!(_curMenuCtrl is UPCtrlWorldProjectBase)) return;
             if (string.IsNullOrEmpty(_cachedView.SearchInputField.text))
             {
-                ((UPCtrlWorldProjectBase) _curMenuCtrl).RequestData();
+                ChangeMenu(_curMenu);
             }
             else
             {
                 long projectId;
                 if (long.TryParse(_cachedView.SearchInputField.text, out projectId))
                 {
+                    if (projectId == 0)
+                    {
+                        SocialGUIManager.ShowPopupDialog("关卡0不存在。");
+                        return;
+                    }
                     RemoteCommands.SearchWorldProject(projectId,
                         msg =>
                         {
                             if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_Success)
                             {
-                                ((UPCtrlWorldProjectBase) _curMenuCtrl).ShowSearchedProject(new Project(msg.Data));
+                                ShowSearchedProject(new Project(msg.Data));
                             }
                             else if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_NotExsit)
                             {
@@ -152,6 +160,32 @@ namespace GameA
                             }
                         }, code => SocialGUIManager.ShowPopupDialog("搜索关卡失败。"));
                 }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("请输入正确的关卡号！");
+                }
+            }
+        }
+
+        private void ShowSearchedProject(Project project)
+        {
+            _cachedView.Pannels[(int) _curMenu].SetActive(false);
+            _cachedView.SearchPannelRtf.SetActiveEx(true);
+            if (_sarchUmCtrlProject == null)
+            {
+                _sarchUmCtrlProject = new UMCtrlProject();
+                _sarchUmCtrlProject.Init(_cachedView.SearchPannelRtf, ResScenary);
+            }
+            CardDataRendererWrapper<Project> w =
+                new CardDataRendererWrapper<Project>(project, OnItemClick);
+            _sarchUmCtrlProject.Set(w);
+        }
+
+        private void OnItemClick(CardDataRendererWrapper<Project> item)
+        {
+            if (null != item && null != item.Content)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorkShopEdit>(item.Content);
             }
         }
 
@@ -180,6 +214,7 @@ namespace GameA
 
         private void ChangeMenu(EMenu menu)
         {
+            _cachedView.SearchPannelRtf.SetActiveEx(false);
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();

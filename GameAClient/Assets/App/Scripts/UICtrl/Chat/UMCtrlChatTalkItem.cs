@@ -46,6 +46,9 @@ namespace GameA
         {
             if (_chatInfo == null) return;
             int index = _chatInfo.EChatSender == EChatSender.Myself ? 1 : 0;
+            _cachedView.VerticalLayoutGroup.childAlignment = _chatInfo.EChatSender == EChatSender.Myself
+                ? TextAnchor.UpperRight
+                : TextAnchor.UpperLeft;
             _cachedView.Pannels[0].SetActiveEx(_chatInfo.EChatSender != EChatSender.Myself);
             _cachedView.Pannels[1].SetActiveEx(_chatInfo.EChatSender == EChatSender.Myself);
             if (_chatInfo.EChatSender == EChatSender.System)
@@ -65,7 +68,8 @@ namespace GameA
                 _cachedView.NickText[index].text = _chatInfo.SenderInfoDetail.UserInfoSimple.NickName;
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg[index],
                     _chatInfo.SenderInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDeflautTexture);
-                _chatInfo.SenderInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDocks[index],
+                _chatInfo.SenderInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(
+                    _cachedView.BlueVipDocks[index],
                     _cachedView.BlueImgs[index], _cachedView.SuperBlueImgs[index], _cachedView.BlueYearVipImgs[index]);
             }
             _cachedView.LayoutElements[index].enabled = false;
