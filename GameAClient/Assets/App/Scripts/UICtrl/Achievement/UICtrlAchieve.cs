@@ -12,7 +12,7 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlAchieve : UICtrlAnimationBase<UIViewAchieve>
     {
-        private Queue<Table_Achievement> _queue = new Queue<Table_Achievement>(5);
+        private Queue<Table_Achievement> _queue = new Queue<Table_Achievement>(4);
         private WaitForSeconds _showTime = new WaitForSeconds(3);
         private bool _isShowing;
 

@@ -99,6 +99,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             UserInfoDetail = parameter as UserInfoDetail;
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnHonorReport, UserInfoDetail);
             if (null == UserInfoDetail)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();

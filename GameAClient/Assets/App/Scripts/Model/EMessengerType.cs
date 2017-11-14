@@ -136,6 +136,9 @@ namespace GameA
         public static int OnAchieve = SoyEngine.EMessengerType.NextId++;
         public static int OnAddAchievementCount = SoyEngine.EMessengerType.NextId++;
         
+        //荣誉通报
+        public static int OnHonorReport = SoyEngine.EMessengerType.NextId++;
+
         //修改按键
         public static int OnGetInputKeyCode = SoyEngine.EMessengerType.NextId++;
         public static int OnInputKeyCodeChanged = SoyEngine.EMessengerType.NextId++;
