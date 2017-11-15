@@ -150,7 +150,8 @@ namespace GameA
                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
             _onlyChangeView = false;
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
-            DictionaryTools.SetContentText(_cachedView.LikeCountTxt, string.Format(CountFormat, Project.LikeCount));
+            DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
+                string.Format(CountFormat, Project.LikeCount + Project.UnlikeCount));
         }
 
         private void OnBadTogValueChanged(bool value)

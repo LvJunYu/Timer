@@ -58,30 +58,29 @@ namespace GameA
                 RequestData();
                 return;
             }
-            if (CheckTools.CheckNickName(_cachedView.SeachInputField.text) != CheckTools.ECheckNickNameResult.Success)
+            long shortId;
+            if (long.TryParse(_cachedView.SeachInputField.text, out shortId))
             {
-                SocialGUIManager.ShowPopupDialog("您输入的昵称格式错误");
-                return;
+                RemoteCommands.SearchUseId(shortId, msg =>
+                {
+                    if (msg.ResultCode == (int) ESearchUseIdCode.SUIC_Success)
+                    {
+                        ShowSearchUser(UserManager.Instance.UpdateData(msg.Data));
+                    }
+                    else if (msg.ResultCode == (int) ESearchUseIdCode.SUIC_NotExsit)
+                    {
+                        SocialGUIManager.ShowPopupDialog(string.Format("没有找到ID为{0}的玩家。", shortId));
+                    }
+                    else
+                    {
+                        SocialGUIManager.ShowPopupDialog("查找失败。");
+                    }
+                }, code => { SocialGUIManager.ShowPopupDialog("查找失败。"); });
             }
-            RemoteCommands.SearchUser(_cachedView.SeachInputField.text, ret =>
+            else
             {
-                if (ret.ResultCode == (int) ESearchUserCode.SUC_Success)
-                {
-                    ShowSearchUser(UserManager.Instance.UpdateData(ret.Data));
-                }
-                else if (ret.ResultCode == (int) ESearchUserCode.SUC_NotExsit)
-                {
-                    SocialGUIManager.ShowPopupDialog(string.Format("没有找到昵称为{0}的玩家。",
-                        _cachedView.SeachInputField.text));
-                }
-                else
-                {
-                    SocialGUIManager.ShowPopupDialog("查找失败。");
-                }
-            }, code =>
-            {
-                SocialGUIManager.ShowPopupDialog("查找失败。");
-            });
+                SocialGUIManager.ShowPopupDialog("请输入正确玩家ID");
+            }
         }
 
         private void ShowSearchUser(UserInfoDetail user)

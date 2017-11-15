@@ -49,10 +49,12 @@ namespace GameA
                 {
                     _cachedView.BtnTxt.text = RelationCommonString.FollowedStr;
                 }
+                _cachedView.BtnTxt.color = _cachedView.FollowedColor;
             }
             else
             {
                 _cachedView.BtnTxt.text = RelationCommonString.FollowStr;
+                _cachedView.BtnTxt.color = Color.white;
             }
         }
 

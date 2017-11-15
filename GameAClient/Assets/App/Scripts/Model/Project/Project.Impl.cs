@@ -83,6 +83,18 @@ namespace GameA
                 return 0;
             }
         }
+        
+        public int UnlikeCount
+        {
+            get
+            {
+                if (_extendReady)
+                {
+                    return _extendData.UnlikeCount;
+                }
+                return 0;
+            }
+        }
 
         public int FavoriteCount
         {

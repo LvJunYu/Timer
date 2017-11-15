@@ -8,6 +8,10 @@ namespace GameA
     {
         private UserInfoDetail _userInfoDetail;
         private UICtrlSocialRelationship.EMenu _belongMenu;
+        private bool _followedByMe;
+        private static string _followStr = "关注";
+        private static string _followedStr = "已关注";
+        private static string _removeBlockStr = "移除";
 
         protected override void OnViewCreated()
         {
@@ -15,22 +19,19 @@ namespace GameA
             _cachedView.InfoBtn.onClick.AddListener(OnInfoBtn);
             if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew)
             {
-                _cachedView.BtnTxt.text = "关注";
+                _cachedView.BtnTxt.text = _followStr;
                 _cachedView.Btn.onClick.AddListener(OnFollowBtn);
             }
             else if (_belongMenu == UICtrlSocialRelationship.EMenu.Block)
             {
-                _cachedView.BtnTxt.text = "移除";
+                _cachedView.BtnTxt.text = _removeBlockStr;
                 _cachedView.Btn.onClick.AddListener(OnRemoveBlockBtn);
             }
         }
 
         public void RefreshView()
         {
-            if (null == _userInfoDetail)
-            {
-                return;
-            }
+            if (null == _userInfoDetail) return;
             _cachedView.UserNickNameTxt.text = _userInfoDetail.UserInfoSimple.NickName;
             _cachedView.Male.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Male);
             _cachedView.Famale.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
@@ -42,7 +43,11 @@ namespace GameA
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
             _userInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
-            RefreshBtn();
+            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew && _userInfoDetail != null)
+            {
+                _followedByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+                _cachedView.BtnTxt.text = _followedByMe ? _followedStr : _followStr;
+            }
         }
 
         public RectTransform Transform
@@ -59,10 +64,12 @@ namespace GameA
 
         public void Set(object data)
         {
-            if (data != null)
+            if (data == null)
             {
-                _userInfoDetail = data as UserInfoDetail;
+                Unload();
+                return;
             }
+            _userInfoDetail = data as UserInfoDetail;
             RefreshView();
         }
 
@@ -78,15 +85,13 @@ namespace GameA
                 LogHelper.Error("follow user, but _userInfoDetail == null");
                 return;
             }
-            LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
-        }
-
-        private void RefreshBtn()
-        {
-            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew && _userInfoDetail != null)
+            if (_followedByMe)
             {
-                _cachedView.Btn.SetActiveEx(!_userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
-                _cachedView.Btn_Disable.SetActiveEx(_userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(_userInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
             }
         }
 
@@ -99,10 +104,10 @@ namespace GameA
             }
             LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
         }
-        
+
         private void OnInfoBtn()
         {
-            if(null==_userInfoDetail) return;
+            if (null == _userInfoDetail) return;
             SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_userInfoDetail);
         }
 

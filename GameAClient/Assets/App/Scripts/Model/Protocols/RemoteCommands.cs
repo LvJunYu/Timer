@@ -631,6 +631,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSearchUseId {
+            get { return _isRequstingSearchUseId; }
+        }
+        private static bool _isRequstingSearchUseId = false;
+        /// <summary>
+		/// 搜索玩家ID
+		/// </summary>
+		/// <param name="shortId">短id</param>
+        public static void SearchUseId (
+            long shortId,
+            Action<Msg_SC_CMD_SearchUseId> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSearchUseId) {
+                return;
+            }
+            _isRequstingSearchUseId = true;
+            Msg_CS_CMD_SearchUseId msg = new Msg_CS_CMD_SearchUseId();
+            // 搜索玩家ID
+            msg.ShortId = shortId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUseId>(
+                SoyHttpApiPath.SearchUseId, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSearchUseId = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUseId", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSearchUseId = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingPublishWorldProject {
             get { return _isRequstingPublishWorldProject; }
         }

@@ -60,6 +60,8 @@ namespace SoyEngine
         public const string AddUserList = "/relation/getAddUserList";
         // 搜索好友
         public const string SearchUser = "/relation/getSearchedUser";
+        // 搜索玩家ID
+        public const string SearchUseId = "/relation/searchUser";
         // 发布关卡
         public const string PublishWorldProject = "/world/publishProject";
         // 取消发布
