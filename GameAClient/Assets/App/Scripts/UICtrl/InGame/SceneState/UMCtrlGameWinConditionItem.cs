@@ -1,5 +1,5 @@
-﻿using GameA.Game;
-using SoyEngine;
+﻿using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {

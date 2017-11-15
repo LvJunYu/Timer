@@ -8,15 +8,16 @@
 
 
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     public partial class UMViewGamePlayItem
     {
         protected FinishCondition _refData;
-        protected Game.EWinCondition _condition;
+        protected EWinCondition _condition;
 
-        public Game.EWinCondition WinCondition
+        public EWinCondition WinCondition
         {
             get
             {
@@ -24,7 +25,7 @@ namespace GameA
             }
         }
 
-        public virtual void InitItem(Game.EWinCondition value,FinishCondition data)
+        public virtual void InitItem(EWinCondition value,FinishCondition data)
         {
             _condition = value;
             _refData = data;
@@ -45,7 +46,7 @@ namespace GameA
 
         private void OnClickButton()
         {
-	        if (_condition == Game.EWinCondition.TimeLimit)
+	        if (_condition == EWinCondition.WC_TimeLimit)
 	        {
 		        return;
 	        }
@@ -62,19 +63,19 @@ namespace GameA
         {
             switch (_condition)
             {
-                case Game.EWinCondition.Arrived:
+                case EWinCondition.WC_Arrive:
                     {
                         return GM2DUIConstDefine.FinishConditionArrive;
                     }
-                case Game.EWinCondition.TimeLimit:
+                case EWinCondition.WC_TimeLimit:
                     {
                         return GM2DUIConstDefine.FinishConditionTimeLimit;
                     }
-                case Game.EWinCondition.CollectTreasure:
+                case EWinCondition.WC_Collect:
                     {
                         return GM2DUIConstDefine.FinishConditionCollectTreasure;
                     }
-                case Game.EWinCondition.KillMonster:
+                case EWinCondition.WC_Monster:
                     {
                         return GM2DUIConstDefine.FinishConditionKillMonster;
                     }
@@ -93,15 +94,15 @@ namespace GameA
         {
             switch (_condition)
             {
-                case Game.EWinCondition.Arrived:
+                case EWinCondition.WC_Arrive:
                     {
                         return Game.EditMode.Instance.MapStatistics.FinalCount;
                     }
-                case Game.EWinCondition.CollectTreasure:
+                case EWinCondition.WC_Collect:
                     {
                         return Game.EditMode.Instance.MapStatistics.GemCount;
                     }
-                case Game.EWinCondition.KillMonster:
+                case EWinCondition.WC_Monster:
                     {
                         return Game.EditMode.Instance.MapStatistics.MonsterCount;
                     }

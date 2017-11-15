@@ -59,9 +59,9 @@ namespace SoyEngine
         // 添加好友列表
         public const string AddUserList = "/relation/getAddUserList";
         // 搜索好友
-        public const string SearchUser = "/relation/getSearchedUser";
+        public const string SearchUser = "/relation/searchUser";
         // 搜索玩家ID
-        public const string SearchUseId = "/relation/searchUser";
+        public const string SearchUserByShortId = "/relation/searchUserByShortId";
         // 发布关卡
         public const string PublishWorldProject = "/world/publishProject";
         // 取消发布

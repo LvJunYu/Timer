@@ -233,15 +233,6 @@ namespace GameA.Game
         Max
     }
 
-    public enum EWinCondition
-    {
-        TimeLimit = 0,
-        Arrived,
-        CollectTreasure,
-        KillMonster,
-        Max,
-    }
-
     public enum EAnchore
     {
         None,

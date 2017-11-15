@@ -1,5 +1,6 @@
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using PlayMode = GameA.Game.PlayMode;
@@ -116,13 +117,13 @@ namespace GameA
             if (null == CurCondition)
             {
                 CurCondition = new FinishCondition();
-                CurCondition.SettingValue = new bool[(int) EWinCondition.Max];
+                CurCondition.SettingValue = new bool[(int) EWinCondition.WC_Max];
             }
         }
 
         private void UpdateFinishCondition()
         {
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
                 CurCondition.SettingValue[(int) i] = EditMode.Instance.MapStatistics.HasWinCondition(i);
             }

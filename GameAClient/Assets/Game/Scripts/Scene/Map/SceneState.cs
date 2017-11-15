@@ -232,15 +232,15 @@ namespace GameA.Game
         {
             if (_mapStatistics.FinalCount == 0)
             {
-                RemoveCondition(EWinCondition.Arrived);
+                RemoveCondition(EWinCondition.WC_Arrive);
             }
             if (_mapStatistics.GemCount == 0)
             {
-                RemoveCondition(EWinCondition.CollectTreasure);
+                RemoveCondition(EWinCondition.WC_Collect);
             }
             if (_mapStatistics.MonsterCount == 0)
             {
-                RemoveCondition(EWinCondition.KillMonster);
+                RemoveCondition(EWinCondition.WC_Monster);
             }
             _gameTimer = 0;
             _runState = ESceneState.Run;
@@ -285,7 +285,7 @@ namespace GameA.Game
                 SocialApp.Instance.ReturnToApp();
                 return;
             }
-            if (HasWinCondition(EWinCondition.TimeLimit))
+            if (HasWinCondition(EWinCondition.WC_TimeLimit))
             {
                 _gameTimer += deltaTime;
                 if (CheckWinTimeLimit())
@@ -297,13 +297,13 @@ namespace GameA.Game
                     {
                         if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
                         {
-                            _runState = ESceneState.Win;
-                            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+                            _runState = ESceneState.Fail;
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
                         }
                         else
                         {
-                            _runState = ESceneState.Fail;
-                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
+                            _runState = ESceneState.Win;
+                            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
                         }
                     }
                     else
@@ -351,7 +351,7 @@ namespace GameA.Game
                 return false;
             }
 
-            if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.TimeLimit)
+            if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
@@ -417,12 +417,12 @@ namespace GameA.Game
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.CollectTreasure) && _gemGain < _mapStatistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < _mapStatistics.GemCount;
         }
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.KillMonster) && _monsterKilled < _mapStatistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < _mapStatistics.MonsterCount;
         }
 
         //private bool CheckWinRescueHero()
@@ -432,12 +432,12 @@ namespace GameA.Game
 
         private bool CheckWinArrived()
         {
-            return HasWinCondition(EWinCondition.Arrived) && !_arrived;
+            return HasWinCondition(EWinCondition.WC_Arrive) && !_arrived;
         }
 
         private bool CheckWinTimeLimit()
         {
-            return HasWinCondition(EWinCondition.TimeLimit) && _gameTimer >= RunTimeTimeLimit;
+            return HasWinCondition(EWinCondition.WC_TimeLimit) && _gameTimer >= RunTimeTimeLimit;
         }
     }
 }

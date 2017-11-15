@@ -631,38 +631,38 @@ namespace GameA
             );
         }
 
-        public static bool IsRequstingSearchUseId {
-            get { return _isRequstingSearchUseId; }
+        public static bool IsRequstingSearchUserByShortId {
+            get { return _isRequstingSearchUserByShortId; }
         }
-        private static bool _isRequstingSearchUseId = false;
+        private static bool _isRequstingSearchUserByShortId = false;
         /// <summary>
 		/// 搜索玩家ID
 		/// </summary>
 		/// <param name="shortId">短id</param>
-        public static void SearchUseId (
+        public static void SearchUserByShortId (
             long shortId,
-            Action<Msg_SC_CMD_SearchUseId> successCallback, Action<ENetResultCode> failedCallback,
+            Action<Msg_SC_CMD_SearchUserByShortId> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingSearchUseId) {
+            if (_isRequstingSearchUserByShortId) {
                 return;
             }
-            _isRequstingSearchUseId = true;
-            Msg_CS_CMD_SearchUseId msg = new Msg_CS_CMD_SearchUseId();
+            _isRequstingSearchUserByShortId = true;
+            Msg_CS_CMD_SearchUserByShortId msg = new Msg_CS_CMD_SearchUserByShortId();
             // 搜索玩家ID
             msg.ShortId = shortId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUseId>(
-                SoyHttpApiPath.SearchUseId, msg, ret => {
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUserByShortId>(
+                SoyHttpApiPath.SearchUserByShortId, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingSearchUseId = false;
+                    _isRequstingSearchUserByShortId = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUseId", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUserByShortId", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingSearchUseId = false;
+                    _isRequstingSearchUserByShortId = false;
                 },
                 form
             );

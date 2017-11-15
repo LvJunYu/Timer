@@ -6,11 +6,9 @@
 ***********************************************************************/
 
 
-using System.Diagnostics;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using GameA.Game;
 
 namespace GameA
 {
@@ -45,7 +43,7 @@ namespace GameA
             _timer = 0f;
             _showComplete = false;
             int winConditionCnt = 0;
-            if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.Arrived)) {
+            if (Game.PlayMode.Instance.SceneState.HasWinCondition (EWinCondition.WC_Arrive)) {
 //                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [0], out sprite);
                 //if (sprite != null) {
@@ -55,7 +53,7 @@ namespace GameA
                 winConditionCnt++;
             }
 
-            if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.CollectTreasure)) {
+            if (Game.PlayMode.Instance.SceneState.HasWinCondition (EWinCondition.WC_Collect)) {
 //                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [1], out sprite);
                 //if (sprite != null) {
@@ -65,7 +63,7 @@ namespace GameA
                 winConditionCnt++;
             }
 
-            if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.KillMonster)) {
+            if (Game.PlayMode.Instance.SceneState.HasWinCondition (EWinCondition.WC_Monster)) {
 //                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [2], out sprite);
                 //if (sprite != null) {
@@ -75,7 +73,7 @@ namespace GameA
                 winConditionCnt++;
             }
 
-            if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.TimeLimit)) {
+            if (Game.PlayMode.Instance.SceneState.HasWinCondition (EWinCondition.WC_TimeLimit)) {
 //                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [3], out sprite);
                 //if (sprite != null) {

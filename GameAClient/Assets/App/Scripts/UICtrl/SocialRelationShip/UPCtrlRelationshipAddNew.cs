@@ -61,13 +61,13 @@ namespace GameA
             long shortId;
             if (long.TryParse(_cachedView.SeachInputField.text, out shortId))
             {
-                RemoteCommands.SearchUseId(shortId, msg =>
+                RemoteCommands.SearchUserByShortId(shortId, msg =>
                 {
-                    if (msg.ResultCode == (int) ESearchUseIdCode.SUIC_Success)
+                    if (msg.ResultCode == (int) ESearchUserByShortIdCode.SUBSIC_Success)
                     {
                         ShowSearchUser(UserManager.Instance.UpdateData(msg.Data));
                     }
-                    else if (msg.ResultCode == (int) ESearchUseIdCode.SUIC_NotExsit)
+                    else if (msg.ResultCode == (int) ESearchUserByShortIdCode.SUBSIC_NotExsit)
                     {
                         SocialGUIManager.ShowPopupDialog(string.Format("没有找到ID为{0}的玩家。", shortId));
                     }

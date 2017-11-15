@@ -7,6 +7,7 @@
 
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -61,7 +62,7 @@ namespace GameA
                     var winCondition = string.Empty;
                     switch ((EWinCondition) table.WinConditions[i])
                     {
-                        case EWinCondition.TimeLimit:
+                        case EWinCondition.WC_TimeLimit:
                             if (table.WinConditions.Length == 1)
                             {
                                 winCondition = string.Format("坚持存活 {0}", GameATools.SecondToHour(table.TimeLimit, true));
@@ -71,13 +72,13 @@ namespace GameA
                                 winCondition = string.Format("{0} 内过关", GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             break;
-                        case EWinCondition.Arrived:
+                        case EWinCondition.WC_Arrive:
                             winCondition = "到达终点";
                             break;
-                        case EWinCondition.CollectTreasure:
+                        case EWinCondition.WC_Collect:
                             winCondition = "收集所有兽牙";
                             break;
-                        case EWinCondition.KillMonster:
+                        case EWinCondition.WC_Monster:
                             winCondition = "杀死所有怪物";
                             break;
                     }

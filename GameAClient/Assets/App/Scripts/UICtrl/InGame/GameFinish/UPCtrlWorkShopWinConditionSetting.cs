@@ -1,5 +1,6 @@
 ﻿using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -36,7 +37,7 @@ namespace GameA
 
         private void OnButtonEnsureClick()
         {
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
                 EditMode.Instance.MapStatistics.SetWinCondition(i, _mainCtrl.CurCondition.SettingValue[(int) i]);
             }
