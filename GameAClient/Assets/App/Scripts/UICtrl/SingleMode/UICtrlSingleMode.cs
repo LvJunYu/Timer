@@ -65,6 +65,8 @@ namespace GameA
         private UIParticleItem[] _uiParticleItemAry;
         private bool _pushGoldEnergyStyle;
         private List<AdvProgressData> _advProgressList;
+        private Vector2 _preBtnPos;
+        private Vector2 _nextBtnPos;
 
         #endregion
 
@@ -147,7 +149,6 @@ namespace GameA
 //			);
 //			RefreshEnergyInfo ();
             RefreshChapterInfo();
-            RefreshFriendProgress();
 //            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.ModifyMatch))
 //            {
 //                _cachedView.MatchBtn.gameObject.SetActive(true); //todo
@@ -194,7 +195,7 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.1f);
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.BGRtf, EAnimationType.Fade);
             SetPart(_cachedView.LeftBtnRtf, EAnimationType.MoveFromDown);
@@ -204,7 +205,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
             _cachedView.MatchBtn.onClick.AddListener(OnMatchBtnClick);
             //_cachedView.TreasureBtn.onClick.AddListener (OnTreasureBtnClick);
@@ -244,13 +244,14 @@ namespace GameA
             _cachedView.ChapterScrollRect.horizontalNormalizedPosition =
                 _chapterRightNormalizedHorizontalPos[_currentChapter - 1];
             _uiParticleItemAry = new UIParticleItem[_cachedView.Chapters.Length];
+            _preBtnPos = _cachedView.PreBtnRtf.anchoredPosition;
+            _nextBtnPos = _cachedView.NextBtnRtf.anchoredPosition;
         }
 
         public override void OnUpdate()
         {
-            _cachedView.NextSection.rectTransform.localPosition =
-                new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) + new Vector2(-70f, -16);
-            _cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f);
+            _cachedView.NextBtnRtf.anchoredPosition = _nextBtnPos + new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f);
+            _cachedView.PreBtnRtf.anchoredPosition = _preBtnPos - new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f);
             base.OnUpdate();
             if (_currentChapter < 1)
             {
@@ -390,15 +391,16 @@ namespace GameA
             {
                 _cachedView.NextBtn.gameObject.SetActive(true);
             }
+            RefreshFriendProgress(_currentChapter, _currentChapter);
         }
 
-        private void RefreshFriendProgress()
+        private void RefreshFriendProgress(int startChapter, int endChapter)
         {
             for (int i = 0; i < _chapterAry.Length; i++)
             {
                 _chapterAry[i].ClearFriendProgress();
             }
-            AppData.Instance.AdventureData.FriendsAdvProgressList.Request(1, 1, ChapterCnt, 9, () =>
+            AppData.Instance.AdventureData.FriendsAdvProgressList.Request(startChapter, 1, endChapter, 9, () =>
             {
                 _advProgressList = AppData.Instance.AdventureData.FriendsAdvProgressList.AdvProgressDataList;
                 if (_advProgressList == null)
