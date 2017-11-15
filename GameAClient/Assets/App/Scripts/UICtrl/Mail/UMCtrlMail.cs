@@ -31,17 +31,17 @@ namespace GameA
 
         private void RefreshView()
         {
-            if (_mail.Type == EMailType.EMailT_Gift)
+            if (_mail.Type == EFuncMailType.EFuncMailT_Reward)
             {
                 _cachedView.TextRff.anchoredPosition = Vector3.down * 20;
             }
-            else if (_mail.Type == EMailType.EMailT_ShadowBattleHelp)
+            else if (_mail.Type == EFuncMailType.EFuncMailT_ShadowBattleHelp)
             {
                 _cachedView.TextRff.anchoredPosition = Vector3.zero;
             }
-            _cachedView.MainDetailBtn.enabled = _mail.Type != EMailType.EMailT_ShadowBattleHelp;
-            _cachedView.BtnsObj.SetActive(_mail.Type == EMailType.EMailT_ShadowBattleHelp);
-            _cachedView.RewardImg.SetActiveEx(_mail.Type == EMailType.EMailT_Gift);
+            _cachedView.MainDetailBtn.enabled = _mail.Type != EFuncMailType.EFuncMailT_ShadowBattleHelp;
+            _cachedView.BtnsObj.SetActive(_mail.Type == EFuncMailType.EFuncMailT_ShadowBattleHelp);
+            _cachedView.RewardImg.SetActiveEx(_mail.Type == EFuncMailType.EFuncMailT_Reward);
             _cachedView.NameTxt.text = _mail.UserInfoDetail.UserInfoSimple.NickName;
             _cachedView.ContentTxt.text = _mail.Title;
             _cachedView.DateTxt.text = GameATools.DateCount(_mail.CreateTime);

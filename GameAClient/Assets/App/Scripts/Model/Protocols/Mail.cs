@@ -19,7 +19,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private EMailType _type;
+        private EFuncMailType _type;
         /// <summary>
         /// 
         /// </summary>
@@ -53,6 +53,10 @@ namespace GameA
         /// </summary>
         private long _createTime;
         /// <summary>
+        /// 关卡数据
+        /// </summary>
+        private Project _projectData;
+        /// <summary>
         /// 乱入战斗数据
         /// </summary>
         private MatchShadowBattleData _shadowBattleData;
@@ -82,7 +86,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public EMailType Type { 
+        public EFuncMailType Type { 
             get { return _type; }
             set { if (_type != value) {
                 _type = value;
@@ -170,6 +174,16 @@ namespace GameA
             }}
         }
         /// <summary>
+        /// 关卡数据
+        /// </summary>
+        public Project ProjectData { 
+            get { return _projectData; }
+            set { if (_projectData != value) {
+                _projectData = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
         /// 乱入战斗数据
         /// </summary>
         public MatchShadowBattleData ShadowBattleData { 
@@ -204,6 +218,11 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;     
             _receiptedTime = msg.ReceiptedTime;     
             _createTime = msg.CreateTime;     
+            if (null == _projectData) {
+                _projectData = new Project(msg.ProjectData);
+            } else {
+                _projectData.OnSyncFromParent(msg.ProjectData);
+            }
             if (null == _shadowBattleData) {
                 _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
             } else {
@@ -237,6 +256,12 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;           
             _receiptedTime = msg.ReceiptedTime;           
             _createTime = msg.CreateTime;           
+            if(null != msg.ProjectData){
+                if (null == _projectData){
+                    _projectData = new Project(msg.ProjectData);
+                }
+                _projectData.CopyMsgData(msg.ProjectData);
+            }
             if(null != msg.ShadowBattleData){
                 if (null == _shadowBattleData){
                     _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
@@ -270,6 +295,12 @@ namespace GameA
             _receiptedFlag = obj.ReceiptedFlag;           
             _receiptedTime = obj.ReceiptedTime;           
             _createTime = obj.CreateTime;           
+            if(null != obj.ProjectData){
+                if (null == _projectData){
+                    _projectData = new Project();
+                }
+                _projectData.DeepCopy(obj.ProjectData);
+            }
             if(null != obj.ShadowBattleData){
                 if (null == _shadowBattleData){
                     _shadowBattleData = new MatchShadowBattleData();
@@ -294,6 +325,7 @@ namespace GameA
         public Mail () { 
             _userInfo = new UserInfoSimple();
             _attachItemList = new Reward();
+            _projectData = new Project();
             _shadowBattleData = new MatchShadowBattleData();
         }
         #endregion
