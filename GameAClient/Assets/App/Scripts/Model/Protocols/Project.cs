@@ -129,6 +129,10 @@ namespace GameA
         /// 最后发布时间
         /// </summary>
         private long _publishTime;
+        /// <summary>
+        /// 继承的关卡ID
+        /// </summary>
+        private long _parentId;
 
         // cs fields----------------------------------
         /// <summary>
@@ -439,6 +443,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 继承的关卡ID
+        /// </summary>
+        public long ParentId { 
+            get { return _parentId; }
+            set { if (_parentId != value) {
+                _parentId = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -542,6 +556,7 @@ namespace GameA
             _winCondition = msg.WinCondition;           
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
+            _parentId = msg.ParentId;           
             OnSyncPartial(msg);
             return true;
         }
@@ -594,6 +609,7 @@ namespace GameA
             _winCondition = msg.WinCondition;           
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
+            _parentId = msg.ParentId;           
             return true;
         } 
 
@@ -645,6 +661,7 @@ namespace GameA
             _winCondition = obj.WinCondition;           
             _updateTime = obj.UpdateTime;           
             _publishTime = obj.PublishTime;           
+            _parentId = obj.ParentId;           
             return true;
         }
 

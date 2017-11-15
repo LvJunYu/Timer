@@ -9,7 +9,6 @@ namespace GameA
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
         public int Index { get; set; }
-        private bool _emptyProject;
         private static string _newProject = "创建新关卡";
 
         public RectTransform Transform
@@ -53,9 +52,9 @@ namespace GameA
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
-                if (_wrapper.Content != null && _efunc == EFunc.Editing)
+                if (_wrapper.Content != null && _efunc == EFunc.Editing && _wrapper.Content == Project.EmptyProject)
                 {
-                    _emptyProject = _wrapper.Content == Project.EmptyProject;
+                    _efunc = EFunc.Empty;
                 }
             }
             RefreshView();
@@ -68,10 +67,16 @@ namespace GameA
                 Unload();
                 return;
             }
+            _cachedView.DownloadObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId != 0);
+            _cachedView.DownloadObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId == 0);
             _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
-            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing && !_emptyProject);
-            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Editing && _emptyProject);
-            if (!_emptyProject)
+            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing);
+            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Empty);
+            if (_efunc == EFunc.Empty)
+            {
+                DictionaryTools.SetContentText(_cachedView.Title, _newProject);
+            }
+            else
             {
                 Project p = _wrapper.Content;
                 DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
@@ -80,14 +85,6 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.PraiseScoreTxt, p.ScoreFormat);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
-//                for (int i = 0; i < _cachedView.ScoreToggles.Length; i++)
-//                {
-//                    _cachedView.ScoreToggles[i].isOn = _wrapper.Content.Score >= 2 * i + 1;
-//                }
-            }
-            else
-            {
-                DictionaryTools.SetContentText(_cachedView.Title, _newProject);
             }
         }
 
@@ -105,6 +102,7 @@ namespace GameA
         {
             Published,
             Editing,
+            Empty
         }
     }
 }
