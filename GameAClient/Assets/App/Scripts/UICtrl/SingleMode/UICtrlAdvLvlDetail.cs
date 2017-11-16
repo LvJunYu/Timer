@@ -8,28 +8,17 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
     public class UICtrlAdvLvlDetail : UICtrlAnimationBase<UIViewAdvLvlDetail>
     {
-        #region Fields
-
         private USCtrlAdvLvlDetailInfo _infoPanel;
-        private USCtrlAdvLvlDetailRecord _recordPanel;
+//        private USCtrlAdvLvlDetailRecord _recordPanel;
         private USCtrlAdvLvlDetailRank _rankPanel;
-
-        private EPanel _currentPanel;
-
         private int _chapterIdx;
         private int _levelIdx;
         private bool _isBonus;
-
         private int EndDisplayOnRank = 20;
         private int BeginningDisplayOnRank = 0;
-
         private Table_StandaloneLevel _table;
         private Project _project;
         private AdventureUserLevelDataDetail _userLevelDataDetail;
-
-        #endregion
-
-        #region Properties
 
         public int ChapterIdx
         {
@@ -51,10 +40,6 @@ namespace GameA
             get { return _project; }
         }
 
-        #endregion
-
-        #region Methods
-
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -62,6 +47,36 @@ namespace GameA
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
+            RefreshView();
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _infoPanel = new USCtrlAdvLvlDetailInfo();
+            _infoPanel.Init(_cachedView.InfoPanel);
+//            _recordPanel = new USCtrlAdvLvlDetailRecord();
+//            _recordPanel.Init(_cachedView.RecordPanel);
+            _rankPanel = new USCtrlAdvLvlDetailRank();
+            _rankPanel.Init(_cachedView.RankPanel);
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
+        private void RefreshView()
+        {
             _cachedView.Title.text = string.Format("{0} - {1}", _chapterIdx, _levelIdx);
             _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx,
                 _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
@@ -83,66 +98,9 @@ namespace GameA
                 _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
 
             InitPanel();
-            switch (_currentPanel)
-            {
-                case EPanel.Info:
-                    OpenInfoPanel();
-                    break;
-                case EPanel.Record:
-                    OpenRecordPanel();
-                    break;
-                case EPanel.Rank:
-                    OpenRankPanel();
-                    break;
-            }
-        }
-
-        protected override void OnClose()
-        {
-            _currentPanel = EPanel.Info;
-            base.OnClose();
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-
-            _infoPanel = new USCtrlAdvLvlDetailInfo();
-            _infoPanel.Init(_cachedView.InfoPanel);
-            _recordPanel = new USCtrlAdvLvlDetailRecord();
-            _recordPanel.Init(_cachedView.RecordPanel);
-            _rankPanel = new USCtrlAdvLvlDetailRank();
-            _rankPanel.Init(_cachedView.RankPanel);
-
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
-//            _cachedView.PlayBtn.onClick.AddListener (TestPlayBtn);
-            _cachedView.InfoBtn1.onClick.AddListener(OnInfoBtn1);
-            _cachedView.RecordBtn1.onClick.AddListener(OnRecordBtn1);
-            _cachedView.RankBtn1.onClick.AddListener(OnRankBtn1);
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
-        }
-
-        public void RefreshAdventureUserLevelDataDetail()
-        {
-            _userLevelDataDetail.Request(
-                LocalUser.Instance.UserGuid,
-                _chapterIdx,
-                JudgeBonus(),
-                _levelIdx,
-                () => { _recordPanel.Set(_userLevelDataDetail, ResScenary); }
-                , null);
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.MainPopUpUI;
+            _infoPanel.Open(_project, _table, _userLevelDataDetail);
+            _rankPanel.Open();
+            RefreshRankData();
         }
 
         private void RefreshRankData()
@@ -213,56 +171,6 @@ namespace GameA
             }
         }
 
-        private void OpenInfoPanel()
-        {
-            _currentPanel = EPanel.Info;
-            _infoPanel.Open(_project, _table, _userLevelDataDetail);
-            _recordPanel.Close();
-            _rankPanel.Close();
-
-            _cachedView.InfoBtn1.gameObject.SetActive(false);
-            _cachedView.InfoBtn2.gameObject.SetActive(true);
-            _cachedView.RecordBtn1.gameObject.SetActive(true);
-            _cachedView.RecordBtn2.gameObject.SetActive(false);
-            _cachedView.RankBtn1.gameObject.SetActive(true);
-            _cachedView.RankBtn2.gameObject.SetActive(false);
-        }
-
-        private void OpenRecordPanel()
-        {
-            _currentPanel = EPanel.Record;
-            //RefreshRankData();
-            RefreshAdventureUserLevelDataDetail();
-            //_recordPanel.Set();
-
-            _infoPanel.Close();
-            _recordPanel.Open();
-            _rankPanel.Close();
-
-            _cachedView.InfoBtn1.gameObject.SetActive(true);
-            _cachedView.InfoBtn2.gameObject.SetActive(false);
-            _cachedView.RecordBtn1.gameObject.SetActive(false);
-            _cachedView.RecordBtn2.gameObject.SetActive(true);
-            _cachedView.RankBtn1.gameObject.SetActive(true);
-            _cachedView.RankBtn2.gameObject.SetActive(false);
-        }
-
-        private void OpenRankPanel()
-        {
-            _currentPanel = EPanel.Rank;
-            _infoPanel.Close();
-            _recordPanel.Close();
-            _rankPanel.Open();
-            RefreshRankData();
-
-            _cachedView.InfoBtn1.gameObject.SetActive(true);
-            _cachedView.InfoBtn2.gameObject.SetActive(false);
-            _cachedView.RecordBtn1.gameObject.SetActive(true);
-            _cachedView.RecordBtn2.gameObject.SetActive(false);
-            _cachedView.RankBtn1.gameObject.SetActive(false);
-            _cachedView.RankBtn2.gameObject.SetActive(true);
-        }
-
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
@@ -273,7 +181,6 @@ namespace GameA
             if (_isBonus && !GameATools.CheckEnergy(_table.EnergyCost))
                 return;
             EAdventureProjectType eAPType = EAdventureProjectType.APT_Normal;
-
 
             var param = new SituationAdventureParam();
             param.ProjectType = eAPType;
@@ -300,53 +207,5 @@ namespace GameA
                 error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
             );
         }
-
-        //TEST
-        private void TestPlayBtn()
-        {
-            EAdventureProjectType eAPType =
-                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
-                this,
-                string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
-
-            AppData.Instance.AdventureData.TestPlayAdventureLevel(
-                _chapterIdx,
-                _levelIdx,
-                eAPType,
-                () =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    // set local energy data
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                    Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
-                },
-                error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
-            );
-        }
-
-        private void OnInfoBtn1()
-        {
-            OpenInfoPanel();
-        }
-
-        private void OnRecordBtn1()
-        {
-            OpenRecordPanel();
-        }
-
-        private void OnRankBtn1()
-        {
-            OpenRankPanel();
-        }
-
-        private enum EPanel
-        {
-            Info,
-            Record,
-            Rank,
-        }
-
-        #endregion
     }
 }
