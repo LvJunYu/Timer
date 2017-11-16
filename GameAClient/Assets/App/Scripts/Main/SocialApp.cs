@@ -78,8 +78,10 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res/gamea"
+//                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
+//                    GameResoureRoot = "http://dev.joy-you.com/res/gamea",
+                    AppServerApiRoot = "http://139.129.229.229/gameaapi",
+                    GameResoureRoot = "http://139.129.229.229/res/gamea"
                 };
             }
             for (int i = 0; i < Instance._appServerAddress.Length; i++)
