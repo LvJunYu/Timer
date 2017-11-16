@@ -17,6 +17,11 @@ namespace GameA
         private float _srollRectHeight;
         private float _contentHeight;
         private UPCtrlProjectComment _upCtrlProjectComment;
+        private bool _pannelDown;
+        private bool _commentUp;
+        private float _pannelDownTimer;
+        private float _commentUpTimer;
+        private const float _scrollSwitchDelay = 0.4f;
 
         protected override void OnViewCreated()
         {
@@ -45,6 +50,8 @@ namespace GameA
             _srollRectHeight = _cachedView.ScrollRect.rectTransform().rect.height;
             _contentHeight = _cachedView.ScrollRect.content.rect.height;
             _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
+            _commentUp = true;
+            _pannelDown = false;
             if (Project != null)
             {
                 Project.Request(Project.ProjectId, null, null);
@@ -82,12 +89,38 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-            bool down = _cachedView.ScrollRect.content.anchoredPosition.y >= _contentHeight - _srollRectHeight;
-            _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = down && _upCtrlProjectComment.HasComment;
-            _cachedView.CommentTableScroller.ScorllWheelDownOff = !down;
-            bool up = _cachedView.CommentTableScroller.ContentPosition.y <= 0;
-            _cachedView.CommentTableScroller.ScorllWheelUpOff = up && _upCtrlProjectComment.HasComment;
-            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !up;
+            if (_cachedView.ScrollRect.content.anchoredPosition.y >= _contentHeight - _srollRectHeight - 0.2f)
+            {
+                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = _upCtrlProjectComment.HasComment;
+                _pannelDownTimer += Time.deltaTime;
+                if (_pannelDownTimer > _scrollSwitchDelay)
+                {
+                    _pannelDown = true;
+                }
+            }
+            else
+            {
+                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = false;
+                _pannelDownTimer = 0;
+                _pannelDown = false;
+            }
+            _cachedView.CommentTableScroller.ScorllWheelDownOff = !_pannelDown;
+            if (_cachedView.CommentTableScroller.ContentPosition.y <= 0.2f)
+            {
+                _cachedView.CommentTableScroller.ScorllWheelUpOff = true;
+                _commentUpTimer += Time.deltaTime;
+                if (_commentUpTimer > _scrollSwitchDelay)
+                {
+                    _commentUp = true;
+                }
+            }
+            else
+            {
+                _cachedView.CommentTableScroller.ScorllWheelUpOff = false;
+                _commentUpTimer = 0;
+                _commentUp = false;
+            }
+            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !_commentUp && _cachedView.CommentTableScroller.MouseIn;
         }
 
         private void SetNull()
