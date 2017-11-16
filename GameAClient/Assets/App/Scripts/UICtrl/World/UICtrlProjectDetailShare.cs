@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -7,8 +8,10 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlProjectDetailShare : UICtrlAnimationBase<UIViewProjectDetailShare>
     {
+        private const int _maxSharedNum = 10;
+        private Project _project;
         private bool _allSelected;
-        private List<UserInfoDetail> _sharedList = new List<UserInfoDetail>();
+        private List<long> _sharedList = new List<long>();
         private List<UserInfoDetail> _dataList;
 
         private List<CardDataRendererWrapper<UserInfoDetail>> _contentList =
@@ -41,6 +44,12 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _project = parameter as Project;
+            if (_project == null)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
+                return;
+            }
             RequestData();
             RefreshView();
         }
@@ -103,13 +112,13 @@ namespace GameA
 
         private void OnItemClick(CardDataRendererWrapper<UserInfoDetail> item)
         {
-            if (item.IsSelected && !_sharedList.Contains(item.Content))
+            if (item.IsSelected && !_sharedList.Contains(item.Content.UserInfoSimple.UserId))
             {
-                _sharedList.Add(item.Content);
+                _sharedList.Add(item.Content.UserInfoSimple.UserId);
             }
-            else if (!item.IsSelected && _sharedList.Contains(item.Content))
+            else if (!item.IsSelected && _sharedList.Contains(item.Content.UserInfoSimple.UserId))
             {
-                _sharedList.Remove(item.Content);
+                _sharedList.Remove(item.Content.UserInfoSimple.UserId);
                 AllSelected = false;
             }
         }
@@ -170,6 +179,35 @@ namespace GameA
 
         private void OnOKBtn()
         {
+            if (_sharedList.Count == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("请选择分享的好友。");
+            }
+            else if (_sharedList.Count > _maxSharedNum)
+            {
+                SocialGUIManager.ShowPopupDialog("最多分享10个好友。");
+            }
+            else
+            {
+                RemoteCommands.ShareProject(_project.ProjectId, _sharedList, msg =>
+                {
+                    if (msg.ResultCode == (int) EShareProjectCode.SPC_Success)
+                    {
+                        SocialGUIManager.ShowPopupDialog("分享成功。");
+                        SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
+                    }
+                    else
+                    {
+                        SocialGUIManager.ShowPopupDialog("分享失败。");
+                        SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
+                    }
+                    
+                }, code =>
+                {
+                    SocialGUIManager.ShowPopupDialog("分享失败。");
+                    SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
+                });
+            }
         }
 
         private void OnAddFriendsBtn()

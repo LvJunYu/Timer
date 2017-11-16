@@ -2374,9 +2374,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void MarkMailRead (
             EMarkMailReadTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_MarkMailRead> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2388,6 +2390,7 @@ namespace GameA
             // 标记已读
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkMailRead>(
                 SoyHttpApiPath.MarkMailRead, msg, ret => {
                     if (successCallback != null) {
@@ -2414,9 +2417,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void ReceiptMailAttach (
             EReceiptMailAttachTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_ReceiptMailAttach> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2428,6 +2433,7 @@ namespace GameA
             // 领取附件
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiptMailAttach>(
                 SoyHttpApiPath.ReceiptMailAttach, msg, ret => {
                     if (successCallback != null) {
@@ -2454,9 +2460,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void DeleteMail (
             EDeleteMailTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_DeleteMail> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2468,6 +2476,7 @@ namespace GameA
             // 领取附件
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteMail>(
                 SoyHttpApiPath.DeleteMail, msg, ret => {
                     if (successCallback != null) {
@@ -2480,6 +2489,46 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDeleteMail = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingShareProject {
+            get { return _isRequstingShareProject; }
+        }
+        private static bool _isRequstingShareProject = false;
+        /// <summary>
+		/// 分享关卡
+		/// </summary>
+		/// <param name="projectId"></param>
+		/// <param name="userIdList"></param>
+        public static void ShareProject (
+            long projectId,
+            List<long> userIdList,
+            Action<Msg_SC_CMD_ShareProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingShareProject) {
+                return;
+            }
+            _isRequstingShareProject = true;
+            Msg_CS_CMD_ShareProject msg = new Msg_CS_CMD_ShareProject();
+            // 分享关卡
+            msg.ProjectId = projectId;
+            msg.UserIdList.AddRange(userIdList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ShareProject>(
+                SoyHttpApiPath.ShareProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingShareProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ShareProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingShareProject = false;
                 },
                 form
             );

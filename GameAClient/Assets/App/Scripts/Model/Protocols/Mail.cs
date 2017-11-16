@@ -19,7 +19,11 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private EFuncMailType _type;
+        private EMailType _mailType;
+        /// <summary>
+        /// 
+        /// </summary>
+        private EMailFuncType _funcType;
         /// <summary>
         /// 
         /// </summary>
@@ -28,6 +32,10 @@ namespace GameA
         /// 
         /// </summary>
         private string _content;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _contentId;
         /// <summary>
         /// 
         /// </summary>
@@ -52,14 +60,6 @@ namespace GameA
         /// 
         /// </summary>
         private long _createTime;
-        /// <summary>
-        /// 关卡数据
-        /// </summary>
-        private Project _projectData;
-        /// <summary>
-        /// 乱入战斗数据
-        /// </summary>
-        private MatchShadowBattleData _shadowBattleData;
         #endregion
 
         #region 属性
@@ -86,10 +86,20 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public EFuncMailType Type { 
-            get { return _type; }
-            set { if (_type != value) {
-                _type = value;
+        public EMailType MailType { 
+            get { return _mailType; }
+            set { if (_mailType != value) {
+                _mailType = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public EMailFuncType FuncType { 
+            get { return _funcType; }
+            set { if (_funcType != value) {
+                _funcType = value;
                 SetDirty();
             }}
         }
@@ -110,6 +120,16 @@ namespace GameA
             get { return _content; }
             set { if (_content != value) {
                 _content = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long ContentId { 
+            get { return _contentId; }
+            set { if (_contentId != value) {
+                _contentId = value;
                 SetDirty();
             }}
         }
@@ -173,26 +193,6 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 关卡数据
-        /// </summary>
-        public Project ProjectData { 
-            get { return _projectData; }
-            set { if (_projectData != value) {
-                _projectData = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 乱入战斗数据
-        /// </summary>
-        public MatchShadowBattleData ShadowBattleData { 
-            get { return _shadowBattleData; }
-            set { if (_shadowBattleData != value) {
-                _shadowBattleData = value;
-                SetDirty();
-            }}
-        }
         #endregion
 
         #region 方法
@@ -205,9 +205,11 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            _type = msg.Type;     
+            _mailType = msg.MailType;     
+            _funcType = msg.FuncType;     
             _title = msg.Title;     
             _content = msg.Content;     
+            _contentId = msg.ContentId;     
             if (null == _attachItemList) {
                 _attachItemList = new Reward(msg.AttachItemList);
             } else {
@@ -218,16 +220,6 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;     
             _receiptedTime = msg.ReceiptedTime;     
             _createTime = msg.CreateTime;     
-            if (null == _projectData) {
-                _projectData = new Project(msg.ProjectData);
-            } else {
-                _projectData.OnSyncFromParent(msg.ProjectData);
-            }
-            if (null == _shadowBattleData) {
-                _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
-            } else {
-                _shadowBattleData.OnSyncFromParent(msg.ShadowBattleData);
-            }
             OnSyncPartial(msg);
             return true;
         }
@@ -242,9 +234,11 @@ namespace GameA
                 }
                 _userInfo.CopyMsgData(msg.UserInfo);
             }
-            _type = msg.Type;           
+            _mailType = msg.MailType;           
+            _funcType = msg.FuncType;           
             _title = msg.Title;           
             _content = msg.Content;           
+            _contentId = msg.ContentId;           
             if(null != msg.AttachItemList){
                 if (null == _attachItemList){
                     _attachItemList = new Reward(msg.AttachItemList);
@@ -256,18 +250,6 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;           
             _receiptedTime = msg.ReceiptedTime;           
             _createTime = msg.CreateTime;           
-            if(null != msg.ProjectData){
-                if (null == _projectData){
-                    _projectData = new Project(msg.ProjectData);
-                }
-                _projectData.CopyMsgData(msg.ProjectData);
-            }
-            if(null != msg.ShadowBattleData){
-                if (null == _shadowBattleData){
-                    _shadowBattleData = new MatchShadowBattleData(msg.ShadowBattleData);
-                }
-                _shadowBattleData.CopyMsgData(msg.ShadowBattleData);
-            }
             return true;
         } 
 
@@ -281,9 +263,11 @@ namespace GameA
                 }
                 _userInfo.DeepCopy(obj.UserInfo);
             }
-            _type = obj.Type;           
+            _mailType = obj.MailType;           
+            _funcType = obj.FuncType;           
             _title = obj.Title;           
             _content = obj.Content;           
+            _contentId = obj.ContentId;           
             if(null != obj.AttachItemList){
                 if (null == _attachItemList){
                     _attachItemList = new Reward();
@@ -295,18 +279,6 @@ namespace GameA
             _receiptedFlag = obj.ReceiptedFlag;           
             _receiptedTime = obj.ReceiptedTime;           
             _createTime = obj.CreateTime;           
-            if(null != obj.ProjectData){
-                if (null == _projectData){
-                    _projectData = new Project();
-                }
-                _projectData.DeepCopy(obj.ProjectData);
-            }
-            if(null != obj.ShadowBattleData){
-                if (null == _shadowBattleData){
-                    _shadowBattleData = new MatchShadowBattleData();
-                }
-                _shadowBattleData.DeepCopy(obj.ShadowBattleData);
-            }
             return true;
         }
 
@@ -325,8 +297,6 @@ namespace GameA
         public Mail () { 
             _userInfo = new UserInfoSimple();
             _attachItemList = new Reward();
-            _projectData = new Project();
-            _shadowBattleData = new MatchShadowBattleData();
         }
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿
+﻿using SoyEngine.Proto;
+
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
@@ -19,13 +20,13 @@ namespace GameA
             upCtrlMailFriend.SetMenu(EMenu.FriendMail);
             upCtrlMailFriend.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.FriendMail] = upCtrlMailFriend;
-            
+
             var upCtrlMailSystem = new UPCtrlMailSystem();
             upCtrlMailSystem.SetResScenary(ResScenary);
             upCtrlMailSystem.SetMenu(EMenu.SystemMail);
             upCtrlMailSystem.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.SystemMail] = upCtrlMailSystem;
-            
+
             var upCtrlMailInfoCenter = new UPCtrlMailInfoCenter();
             upCtrlMailInfoCenter.SetResScenary(ResScenary);
             upCtrlMailInfoCenter.SetMenu(EMenu.InfoCenter);
@@ -78,15 +79,21 @@ namespace GameA
             _curMenuCtrl = null;
             base.OnDestroy();
         }
-        
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
+            RegisterEvent(EMessengerType.OnMailListChanged, OnMailListChanged);
+        }
+
+        private void OnMailListChanged()
+        {
+            _curMenuCtrl.OnMailListChanged();
         }
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         private void OnCloseBtn()

@@ -150,6 +150,9 @@ namespace GameA
         public static int OnReceiveVoice = SoyEngine.EMessengerType.NextId++;
         public static int OnReceiveStatus = SoyEngine.EMessengerType.NextId++;
         
+        //邮箱
+        public static int OnMailListChanged = SoyEngine.EMessengerType.NextId++;
+
         //好友
         public static int OnRelationShipChanged = SoyEngine.EMessengerType.NextId++;
         

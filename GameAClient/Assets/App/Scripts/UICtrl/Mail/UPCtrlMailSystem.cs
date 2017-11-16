@@ -6,7 +6,7 @@ namespace GameA
     {
         protected override void RefreshData()
         {
-            LocalUser.Instance.Mail.Request(0, _maxCount, EMailType.EMailT_System, () =>
+            LocalUser.Instance.Mail.Request(EMailType.EMailT_System, 0, _maxCount, () =>
                 {
                     _dataList = LocalUser.Instance.Mail.DataList;
                     RefreshView();

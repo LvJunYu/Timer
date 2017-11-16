@@ -238,6 +238,8 @@ namespace SoyEngine
         public const string ReceiptMailAttach = "/mail/receiptAttach";
         // 领取附件
         public const string DeleteMail = "/mail/delete";
+        // 分享关卡
+        public const string ShareProject = "/mail/shareProject";
         // 执行GM指令
         public const string ExecuteCommand = "/gm/executeCommand";
     }

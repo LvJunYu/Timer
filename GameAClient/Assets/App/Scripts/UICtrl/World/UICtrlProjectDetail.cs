@@ -277,7 +277,7 @@ namespace GameA
 
         private void OnShareBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailShare>();
+            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailShare>(Project);
         }
 
         private void OnRecordsBtn()

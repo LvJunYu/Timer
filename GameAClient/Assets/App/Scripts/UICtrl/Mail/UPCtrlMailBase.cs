@@ -49,7 +49,7 @@ namespace GameA
             for (int i = 0; i < 10; i++)
             {
                 Msg_Mail mail = new Msg_Mail();
-                mail.Type = i % 2 == 0 ? EFuncMailType.EFuncMailT_Reward : EFuncMailType.EFuncMailT_ShadowBattleHelp;
+                mail.FuncType = i % 2 == 0 ? EMailFuncType.MFT_Reward : EMailFuncType.MFT_ShareProject;
                 mail.UserInfo = new Msg_SC_DAT_UserInfoSimple();
                 mail.UserInfo.UserId = 3400 + i;
                 mail.UserInfo.NickName = "赵四" + i;
@@ -100,6 +100,11 @@ namespace GameA
         public void SetMenu(UICtrlMail.EMenu menu)
         {
             _menu = menu;
+        }
+
+        public void OnMailListChanged()
+        {
+            RefreshData();
         }
     }
 }

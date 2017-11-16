@@ -32,6 +32,10 @@ namespace GameA
 
         // cs fields----------------------------------
         /// <summary>
+        /// 邮件类型
+        /// </summary>
+        private EMailType _cs_mailType;
+        /// <summary>
         /// 
         /// </summary>
         private int _cs_startInx;
@@ -39,10 +43,6 @@ namespace GameA
         /// 
         /// </summary>
         private int _cs_maxCount;
-        /// <summary>
-        /// 邮件类型
-        /// </summary>
-        private EMailType _cs_mailType;
         #endregion
 
         #region 属性
@@ -100,6 +100,13 @@ namespace GameA
         
         // cs properties----------------------------------
         /// <summary>
+        /// 邮件类型
+        /// </summary>
+        public EMailType CS_MailType { 
+            get { return _cs_mailType; }
+            set { _cs_mailType = value; }
+        }
+        /// <summary>
         /// 
         /// </summary>
         public int CS_StartInx { 
@@ -112,13 +119,6 @@ namespace GameA
         public int CS_MaxCount { 
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
-        }
-        /// <summary>
-        /// 邮件类型
-        /// </summary>
-        public EMailType CS_MailType { 
-            get { return _cs_mailType; }
-            set { _cs_mailType = value; }
         }
 
         public override bool IsDirty {
@@ -139,16 +139,20 @@ namespace GameA
         /// <summary>
 		/// 查询邮件
 		/// </summary>
+		/// <param name="mailType">邮件类型.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="mailType">邮件类型.</param>
         public void Request (
+            EMailType mailType,
             int startInx,
             int maxCount,
-            EMailType mailType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
+                if (_cs_mailType != mailType) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -157,21 +161,17 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
-                if (_cs_mailType != mailType) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
                 OnRequest (successCallback, failedCallback);
             } else {
+                _cs_mailType = mailType;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
-                _cs_mailType = mailType;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_MailList msg = new Msg_CS_DAT_MailList();
+                msg.MailType = mailType;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
-                msg.MailType = mailType;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_MailList>(
                     SoyHttpApiPath.MailList, msg, ret => {
                         if (OnSync(ret)) {
