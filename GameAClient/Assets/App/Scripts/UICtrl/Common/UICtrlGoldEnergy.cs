@@ -154,13 +154,13 @@ namespace GameA
         private void OnGoldPlusBtn()
         {
 //            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启购买金币功能哦~");
         }
 
         private void OnDiamondPlusBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlShopPay>();
-//            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启充值功能哦~");
+//            SocialGUIManager.Instance.OpenUI<UICtrlShopPay>();
         }
 
         private void OnEnergyChanged()

@@ -15,6 +15,13 @@ namespace GameA
         protected List<Project> _projectList;
         protected bool _isRequesting;
 
+        public override void Open()
+        {
+            base.Open();
+            RequestData(true);
+            RefreshView();
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -96,8 +103,7 @@ namespace GameA
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;
-            _cachedView.GridDataScrollers[(int)_menu].ContentPosition = Vector2.zero;
+            _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
         }
-
     }
 }

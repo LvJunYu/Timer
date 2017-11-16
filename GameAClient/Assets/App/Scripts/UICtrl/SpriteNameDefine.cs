@@ -49,7 +49,7 @@ namespace GameA
 
         public static readonly string[] HeadImageSpriteName =
         {
-            "gamea/default/head/boy.jpg", "gamea/default/head/girl.jpg",
+//            "gamea/default/head/boy.jpg", "gamea/default/head/girl.jpg",
             "gamea/default/head/constellation_1.jpg", "gamea/default/head/constellation_2.jpg",
             "gamea/default/head/constellation_3.jpg", "gamea/default/head/constellation_4.jpg",
             "gamea/default/head/constellation_5.jpg", "gamea/default/head/constellation_6.jpg",

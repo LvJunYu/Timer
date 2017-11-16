@@ -78,8 +78,6 @@ namespace GameA
         protected override void OnSyncPartial(Msg_SC_DAT_WorldRankList msg)
         {
             base.OnSyncPartial();
-            Debug.Log(_cs_type);
-            Debug.Log(msg.ResultCode);
             switch (CS_Type)
             {
                 case EWorldRankType.WRT_Player:
