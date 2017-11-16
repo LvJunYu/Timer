@@ -391,7 +391,6 @@ namespace GameA.Game
 
         public void OnBoostItemSelectFinish(List<int> items)
         {
-            Debug.Log("OnBoostItemSelectFinish");
             _boostItems = items;
         }
 

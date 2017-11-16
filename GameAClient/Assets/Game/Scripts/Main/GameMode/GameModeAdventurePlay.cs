@@ -14,7 +14,6 @@ namespace GameA.Game
         private const string HandbookEventPrefix = "Book_";
         private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
 
-
         public SituationAdventureParam GetLevelInfo()
         {
             return _adventureLevelInfo;
@@ -361,14 +360,11 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-//            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
-//            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
-//
-//            List<int> useItems = uictrlBoostItem.SelectedItems;
-//            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
+            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
+            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
+            PlayMode.Instance.OnBoostItemSelectFinish(uictrlBoostItem.SelectedItems);
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
-
 //            if (!Application.isMobilePlatform)
 //            {
 //                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
@@ -376,10 +372,8 @@ namespace GameA.Game
 //                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
 //            }
             yield return null;
-
             GameRun.Instance.Playing();
         }
-
 
         public void HandleHandbook(string triggerName, bool active)
         {
