@@ -55,6 +55,7 @@ namespace GameA
         public override void RefreshView()
         {
             if (!_isOpen) return;
+            _cachedView.EmptyObj.SetActive(false);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
             _cachedView.IdTxt.text = _userInfoDetail.ShortId.ToString();

@@ -74,6 +74,7 @@ namespace GameA
                 _contentList.Add(w);
                 _dict.Add(p.ProjectId, w);
             }
+            _cachedView.EmptyObj.SetActive(_contentList.Count == 0);
             _cachedView.GridDataScrollers[(int) _menu - 1].SetItemCount(_contentList.Count);
         }
 

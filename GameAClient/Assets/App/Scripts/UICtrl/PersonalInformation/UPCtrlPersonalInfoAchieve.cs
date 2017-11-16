@@ -49,9 +49,11 @@ namespace GameA
             if (!_isOpen) return;
             if (_dataList == null)
             {
+                _cachedView.EmptyObj.SetActive(true);
                 _cachedView.GridDataScrollers[(int) _menu - 1].SetEmpty();
                 return;
             }
+            _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
             _cachedView.GridDataScrollers[(int) _menu - 1].SetItemCount(_dataList.Count);
         }
 
