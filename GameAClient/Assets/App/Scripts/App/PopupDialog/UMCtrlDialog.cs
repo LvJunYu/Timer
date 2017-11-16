@@ -1,10 +1,3 @@
-/********************************************************************
-  ** Filename : UMCtrlDialog.cs
-  ** Author : quan
-  ** Date : 15/7/5 下午3:07
-  ** Summary : 通用弹窗
-  ***********************************************************************/
-
 using System;
 using System.Collections.Generic;
 using System.Collections;

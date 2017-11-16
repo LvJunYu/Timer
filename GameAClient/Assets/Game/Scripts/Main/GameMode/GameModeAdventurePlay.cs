@@ -360,9 +360,9 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
-            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
-            PlayMode.Instance.OnBoostItemSelectFinish(uictrlBoostItem.SelectedItems);
+//            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
+//            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
+//            PlayMode.Instance.OnBoostItemSelectFinish(uictrlBoostItem.SelectedItems);
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
 //            if (!Application.isMobilePlatform)
