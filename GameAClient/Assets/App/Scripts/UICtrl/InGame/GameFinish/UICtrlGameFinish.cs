@@ -1,11 +1,3 @@
-/********************************************************************
-** Filename : UICtrlGameFinish  
-** Author : ake
-** Date : 4/29/2016 8:24:49 PM
-** Summary : UICtrlGameFinish  
-***********************************************************************/
-
-
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -440,7 +432,7 @@ namespace GameA
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
-                    _cachedView.RewardObj.SetActive(true);
+                    _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(true);
                     _cachedView.PlayRecordObj.SetActive(true);
                     GetFriendRecord();

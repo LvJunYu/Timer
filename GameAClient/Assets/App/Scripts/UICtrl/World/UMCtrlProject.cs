@@ -68,7 +68,7 @@ namespace GameA
                 return;
             }
             _cachedView.DownloadObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId != 0);
-            _cachedView.DownloadObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId == 0);
+            _cachedView.OriginalObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId == 0);
             _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
             _cachedView.EditImg.SetActive(_efunc == EFunc.Editing);
             _cachedView.NewEditObj.SetActive(_efunc == EFunc.Empty);
