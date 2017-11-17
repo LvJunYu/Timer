@@ -162,7 +162,7 @@ namespace NewResourceSolution.EditorTool
 			defaultSetting.overridden = true;
 			defaultSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			defaultSetting.maxTextureSize = 1024;
-			defaultSetting.format = TextureImporterFormat.ARGB32;
+			defaultSetting.format = TextureImporterFormat.RGBA32;
 			var ds = textureImporter.GetPlatformTextureSettings(defaultSetting.name);
 			if (ds == null || JsonUtility.ToJson(ds) != JsonUtility.ToJson(defaultSetting))
 			{
