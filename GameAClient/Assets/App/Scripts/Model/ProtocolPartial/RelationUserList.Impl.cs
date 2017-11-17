@@ -193,12 +193,12 @@ namespace GameA
                 }
                 else
                 {
-                    SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
+                    SocialGUIManager.ShowPopupDialog("解除屏蔽失败");
                 }
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
-                SocialGUIManager.ShowPopupDialog("解除屏蔽失败。");
+                SocialGUIManager.ShowPopupDialog("解除屏蔽失败");
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
@@ -218,6 +218,7 @@ namespace GameA
                 }
             }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+            SocialGUIManager.ShowPopupDialog("关注成功");
         }
 
         private void RemoveFollowUser(UserInfoDetail userInfoDetail)
@@ -235,6 +236,7 @@ namespace GameA
                 }
             }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+            SocialGUIManager.ShowPopupDialog("已取消关注");
         }
 
         private void BlockUser(UserInfoDetail userInfoDetail)
@@ -259,6 +261,7 @@ namespace GameA
 //                FriendList.Remove(userInfoDetail);
 //            }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+            SocialGUIManager.ShowPopupDialog("屏蔽成功");
         }
 
         private void RemoveBlockUser(UserInfoDetail userInfoDetail)
@@ -269,6 +272,7 @@ namespace GameA
                 BlockList.Remove(userInfoDetail);
             }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
+            SocialGUIManager.ShowPopupDialog("已取消屏蔽");
         }
     }
 }
