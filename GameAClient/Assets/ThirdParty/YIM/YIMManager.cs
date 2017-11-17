@@ -119,7 +119,7 @@ public class YIMManager :
 
     private void ShowStatus(string msg)
     {
-        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
+//        Messenger<string>.Broadcast(EMessengerType.OnReceiveStatus, msg);
     }
 
     public void SendTextToUser(string content, string userId)

@@ -57,7 +57,7 @@ namespace GameA
                 mail.Title = "请赐予我力量！";
                 mail.Content = "你被神秘力量看中，快，拯救世界的使命就交给你了！";
                 mail.AttachItemList = new Msg_Reward();
-                
+
                 _dataList.Add(new Mail(mail));
             }
         }
@@ -68,9 +68,11 @@ namespace GameA
             if (_dataList == null)
             {
                 _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+                _cachedView.EmptyObj.SetActive(true);
             }
             else
             {
+                _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
                 _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
             }
         }

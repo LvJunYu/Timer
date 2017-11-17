@@ -185,7 +185,7 @@ namespace GameA
         {
             if (null != item && null != item.Content)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlWorkShopEdit>(item.Content);
+                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
             }
         }
 

@@ -7,6 +7,10 @@ namespace GameA
 {
     public class UPCtrlWorldRanklistPanel : UPCtrlWorldPanelBase
     {
+        private const string _advLv = "冒险等级";
+        private const string _createLv = "创造等级";
+        private const string _advCount = "通关个数";
+        private const string _createCount = "被点赞数";
         private WorldRankList _data;
         protected const int _pageSize = 20;
 
@@ -17,10 +21,7 @@ namespace GameA
         private EWorldRankType _curType = EWorldRankType.WRT_Player;
         private ERankTimeBucket _curBucket;
         private int _timeBucketCount;
-        private const string _advLv = "冒险等级";
-        private const string _createLv = "创造等级";
-        private const string _advCount = "通关个数";
-        private const string _createCount = "被点赞数";
+        private bool _isRequesting;
 
         public override void Open()
         {
@@ -51,6 +52,8 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            if (_isRequesting) return;
+            _isRequesting = true;
             _data = AppData.Instance.WorldData.RankList;
             int startInx = 0;
             if (append)
@@ -60,12 +63,17 @@ namespace GameA
             _data.Request(_curType, _curBucket, startInx, _pageSize,
                 () =>
                 {
+                    _isRequesting = false;
                     _projectList = _data.CurList;
                     if (_isOpen)
                     {
                         RefreshView();
                     }
-                }, code => { SocialGUIManager.ShowPopupDialog(string.Format("请求数据失败。错误代码：{0}", code)); });
+                }, code =>
+                {
+                    _isRequesting = false;
+                    SocialGUIManager.ShowPopupDialog(string.Format("请求数据失败。错误代码：{0}", code));
+                });
         }
 
         protected override void RefreshView()
