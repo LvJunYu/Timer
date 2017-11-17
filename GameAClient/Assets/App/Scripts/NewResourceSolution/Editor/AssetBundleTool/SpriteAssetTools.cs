@@ -114,7 +114,16 @@ namespace NewResourceSolution.EditorTool
 			var textureImporterfilterMode = FilterMode.Bilinear;
 			var textureImporterfadeout = false;
 			var textureImporterwrapMode = TextureWrapMode.Clamp;
-
+			uint textureImporterSpriteExtrude = 2;
+			
+			TextureImporterSettings settings = new TextureImporterSettings();
+			textureImporter.ReadTextureSettings(settings);
+			if (settings.spriteExtrude != textureImporterSpriteExtrude)
+			{
+				settings.spriteExtrude = textureImporterSpriteExtrude;
+				textureImporter.SetTextureSettings(settings);
+				isDirty = true;
+			}
 			if (textureImporter.textureType != textureImportertextureType)
 			{
 				textureImporter.textureType = textureImportertextureType;
@@ -176,7 +185,6 @@ namespace NewResourceSolution.EditorTool
 				textureImporter.SetPlatformTextureSettings(defaultSetting);
 				isDirty = true;
 			}
-			
 			
 			// iOS
 			TextureImporterPlatformSettings iosSetting = new TextureImporterPlatformSettings();

@@ -16,18 +16,18 @@ namespace GameA
             _cachedView.GridDataScrollers[(int) _menu - 1].Set(OnItemRefresh, GetItemRenderer);
         }
 
-        public override void OnDestroy()
-        {
-            _dataList = null;
-            base.OnDestroy();
-        }
-
         public override void Open()
         {
             base.Open();
             _data = AppData.Instance.WorldData.WorldUserRecentRecordList;
             RequestData();
             RefreshView();
+        }
+
+        public override void Close()
+        {
+            _dataList = null;
+            base.Close();
         }
 
         private void RequestData(bool append = false)
