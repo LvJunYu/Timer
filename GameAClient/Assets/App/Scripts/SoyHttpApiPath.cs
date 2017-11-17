@@ -178,6 +178,10 @@ namespace SoyEngine
         public const string UpgradeTrainGrade = "/home/upgradeTrainGrade";
         // 获取成就数据
         public const string Achievement = "/home/getAchievementData";
+        // QQ蓝钻大厅特权奖励数据
+        public const string QQGameReward = "/home/getQQGameReward";
+        // QQ蓝钻大厅特权奖励领取
+        public const string ReceiveQQGameReward = "/home/receiveQQGameReward";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

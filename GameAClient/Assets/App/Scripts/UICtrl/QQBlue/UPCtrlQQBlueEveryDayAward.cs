@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -17,7 +18,7 @@ namespace GameA
         private int _yearDiamondNum = 100;
         private int _coinNum = 0;
         private int _diamond = 0;
-        private bool _haveClotion = false;
+        private EQQGameRewardStatus _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_Unsatisfied;
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -34,13 +35,30 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _isOpen = true;
-            _haveClotion = RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day);
-            _cachedView.ColltionEveryDayPlayer.SetActiveEx(!_haveClotion);
-            _cachedView.ColltionNoBlueEveryDay.SetActiveEx(!LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueYearVip);
-//           _cachedView.ColltionNoBlueEveryDay.SetActiveEx(false);
+           _isOpen = true;
+            ReqestData();
+            ReferView();
+        }
+        private void ReqestData()
+        {
+            LocalUser.Instance.QqGameReward.Request(0,
+                () =>
+                {
+                    if (_isOpen)
+                    {
+                        _eqqGameRewardStatus = (EQQGameRewardStatus) LocalUser.Instance.QqGameReward.BlueSuperDaily;
+                        ReferView();
+                    }
+                },
+                code => { });
         }
 
+        private void ReferView()
+        {
+            _cachedView.ColltionNoBlueEveryDay.SetActiveEx(_eqqGameRewardStatus == EQQGameRewardStatus.QGRS_Unsatisfied);
+            _cachedView.ColltionEveryDayPlayer.SetActiveEx(_eqqGameRewardStatus == EQQGameRewardStatus.QGRS_CanReceive);
+        }
+        
         public override void Close()
         {
             base.Close();
@@ -88,22 +106,37 @@ namespace GameA
             level = Math.Min(level, 6);
             _coinNum += _coinsNum[ level];
             _diamond += _diamondNum[level];
-           _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveClotion);
         }
-
+        
         private void OnCllotionBtn()
         {
+            SocialGUIManager.Instance.OpenUI<UICtrlLittleLoading>();
+            RemoteCommands.ReceiveQQGameReward(EQQGamePrivilegeType.QGPT_BlueVip, EQQGamePrivilegeSubType.QGPST_Daily,0,EQQGameBlueVipType.QGBVT_All,
+                msg =>
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
+                    if (msg.ResultCode == (int) EExecuteCommandCode.ECC_Success)
+                    {
+                        EndCllotion();
+                    }
+                    else
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
+                    }
+                },
+                code => { });
+            SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
 
-            _haveClotion = true;
+        }
+
+        private void EndCllotion()
+        {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += _coinNum;
             LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += _diamond;
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
-            _cachedView.ColltionEveryDayPlayer.SetActiveEx(false);
-            RewardSave.Instance.IsQQBlueEveryDayColltion.Add(DateTime.Now.Day);
-            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
-            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
             Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
+            ReqestData();
         }
     }
 }

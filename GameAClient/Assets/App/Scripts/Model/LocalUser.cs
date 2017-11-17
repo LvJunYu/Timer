@@ -47,6 +47,8 @@ namespace GameA
         private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
         //成就数据
         private readonly Achievement _achievement = new Achievement();
+        
+        private readonly QQGameReward _qqGameReward = new QQGameReward();
 
         #endregion
         #region 属性
@@ -106,6 +108,12 @@ namespace GameA
                 return _validAvatarData;
             }
         }
+
+        public QQGameReward QqGameReward
+        {
+            get { return _qqGameReward; }
+        }
+
         /// <summary>
         /// 抽奖相关数据
         /// </summary>

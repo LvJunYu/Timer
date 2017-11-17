@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -11,7 +12,8 @@ namespace GameA
         private Dictionary<int, Table_QQHallGrowAward> _growAwards = TableManager.Instance.Table_QQHallGrowAwardDic;
         private RectTransform _contentRect;
         private List<Table_QQHallGrowAward> _contentList;
-
+        private List<int> _statusList = new List<int>();
+        private List<Table_QQHallGrowAwardStatus>  _hallGrowAwardStatuses = new List<Table_QQHallGrowAwardStatus>();
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -31,8 +33,33 @@ namespace GameA
             _isOpen = true;
           
             RefreshView();
+            ReqestData();
         }
 
+        private void ReqestData()
+        {
+            LocalUser.Instance.QqGameReward.Request(0,
+                () =>
+                {
+                    if (_isOpen)
+                    {
+                        _statusList = LocalUser.Instance.QqGameReward.BlueGrow;
+                        
+                        _hallGrowAwardStatuses.Clear();
+                        for (int i = 0; i < _contentList.Count; i++)
+                        {
+                            if (_statusList.Count <i+1)
+                            {
+                                _statusList.Add((int)EQQGameRewardStatus.QGRS_Unsatisfied);
+                            }
+                            _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
+                                (EQQGameRewardStatus)_statusList[i] ,EQQGamePrivilegeType.QGPT_BlueVip )); 
+                        }
+                        RefreshView();
+                    }
+                },
+                code => { });
+        }
         public override void Close()
         {
             base.Close();
@@ -71,18 +98,17 @@ namespace GameA
             }
             else
             {
-                if (inx >= _contentList.Count)
+                if (inx >= _hallGrowAwardStatuses.Count)
                 {
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
-                item.Set(_contentList[inx]);
+                item.Set(_hallGrowAwardStatuses[inx]);
             }
         }
         protected  void RefreshView()
         {
-           
-            _cachedView.GrowAwardDataScroller.SetItemCount(_contentList.Count);
+            _cachedView.GrowAwardDataScroller.SetItemCount(_hallGrowAwardStatuses.Count);
         }
     }
 }

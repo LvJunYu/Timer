@@ -14,6 +14,7 @@ namespace GameA
         private UPCtrlQQBlueBase _curMenuCtrl;
         private UPCtrlQQBlueBase[] _menuCtrlArray;
         private string _renewImage = "icon_blue_renew";
+        private string _openImage = "icon_blue_open";
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -64,7 +65,7 @@ namespace GameA
                 {
                     _cachedView.DredgeBtnGroup[i].GetComponent<Image>().sprite = JoyResManager.Instance.GetSprite(_renewImage);
                 }
-                _cachedView.DredgeBtnGroup[i].GetComponent<Image>().sprite = JoyResManager.Instance.GetSprite(_renewImage);
+                _cachedView.DredgeBtnGroup[i].GetComponent<Image>().sprite = JoyResManager.Instance.GetSprite(_openImage);
 
             }
          

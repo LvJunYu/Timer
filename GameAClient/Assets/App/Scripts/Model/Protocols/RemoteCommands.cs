@@ -1759,6 +1759,52 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingReceiveQQGameReward {
+            get { return _isRequstingReceiveQQGameReward; }
+        }
+        private static bool _isRequstingReceiveQQGameReward = false;
+        /// <summary>
+		/// QQ蓝钻大厅特权奖励领取
+		/// </summary>
+		/// <param name="type">特权类型</param>
+		/// <param name="subType">特权子类型</param>
+		/// <param name="inx">下标</param>
+		/// <param name="blueVipType">蓝钻类型</param>
+        public static void ReceiveQQGameReward (
+            EQQGamePrivilegeType type,
+            EQQGamePrivilegeSubType subType,
+            int inx,
+            EQQGameBlueVipType blueVipType,
+            Action<Msg_SC_CMD_ReceiveQQGameReward> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReceiveQQGameReward) {
+                return;
+            }
+            _isRequstingReceiveQQGameReward = true;
+            Msg_CS_CMD_ReceiveQQGameReward msg = new Msg_CS_CMD_ReceiveQQGameReward();
+            // QQ蓝钻大厅特权奖励领取
+            msg.Type = type;
+            msg.SubType = subType;
+            msg.Inx = inx;
+            msg.BlueVipType = blueVipType;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiveQQGameReward>(
+                SoyHttpApiPath.ReceiveQQGameReward, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReceiveQQGameReward = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReceiveQQGameReward", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReceiveQQGameReward = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

@@ -1,19 +1,21 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
 {
-    public  class UPCtrlQQNewPlayer : UPCtrlQQHallBase
+    public class UPCtrlQQNewPlayer : UPCtrlQQHallBase
     {
-        private bool _haveCllotion = false;
-//        private string _newPlayGift = "QQHallNewPlayGift";
+        private EQQGameRewardStatus _rewardStatus = EQQGameRewardStatus.QGRS_CanReceive;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.ColltionButtonNewPlayer.onClick.AddListener(OnClotion);
             Init();
-        }   
+        }
+
         public override void OnDestroy()
         {
             base.OnDestroy();
@@ -23,9 +25,27 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
-            _haveCllotion = RewardSave.Instance.IsQQHallNewPlayerColltion;
-          _cachedView.ColltionButtonNewPlayer.SetActiveEx(!_haveCllotion);
-          
+            ReqestData();
+            ReferView();
+        }
+
+        private void ReqestData()
+        {
+            LocalUser.Instance.QqGameReward.Request(0,
+                () =>
+                {
+                    if (_isOpen)
+                    {
+                        _rewardStatus = (EQQGameRewardStatus) LocalUser.Instance.QqGameReward.HallBeginner;
+                        ReferView();
+                    }
+                },
+                code => { });
+        }
+
+        private void ReferView()
+        {
+            _cachedView.ColltionButtonNewPlayer.SetActiveEx(_rewardStatus == EQQGameRewardStatus.QGRS_CanReceive);
         }
 
         public override void Close()
@@ -33,19 +53,37 @@ namespace GameA
             base.Close();
             _isOpen = false;
         }
-        
-        private void OnClotion()
+
+        private void EndColltion()
         {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += 50;
             LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += 10;
-            _cachedView.ColltionButtonNewPlayer.SetActiveEx(false);
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
-            _haveCllotion = true;
-            RewardSave.Instance.IsQQHallNewPlayerColltion = true;
-            string saveStr = Newtonsoft.Json.JsonConvert.SerializeObject(RewardSave.Instance);
-            PlayerPrefs.SetString(RewardSave.Instance.RewardKey,saveStr);
             Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
+        }
+        private void OnClotion()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlLittleLoading>();
+            RemoteCommands.ReceiveQQGameReward(EQQGamePrivilegeType.QGPT_Hall,
+                EQQGamePrivilegeSubType.QGPST_Beginner, 0, EQQGameBlueVipType.QGBVT_All, 
+                msg =>
+                {
+                    if (msg.ResultCode == (int) EExecuteCommandCode.ECC_Success)
+                    {
+                        ReqestData();
+                        EndColltion();
+                    }
+                    else
+                    {
+                    }
+                    SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
+                },
+                code =>
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();  
+                });
+            
         }
 
         private void Init()
@@ -53,7 +91,7 @@ namespace GameA
             for (int i = 0; i < UICtrlQQHall.NewPlayerAwards.Count; i++)
             {
                 UMCtrlQQAward award = new UMCtrlQQAward();
-                award.Init(_cachedView.NewPlayerRect,EResScenary.Home,Vector3.zero);
+                award.Init(_cachedView.NewPlayerRect, EResScenary.Home, Vector3.zero);
                 award.SetAward(UICtrlQQHall.NewPlayerAwards[i]);
             }
         }
