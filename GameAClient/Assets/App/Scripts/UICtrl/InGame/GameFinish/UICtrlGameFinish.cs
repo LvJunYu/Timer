@@ -53,7 +53,6 @@ namespace GameA
             _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
             _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
             _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
-
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -523,21 +522,15 @@ namespace GameA
             _friendRecordData.Request(gameMode.GetLevelInfo().Section, gameMode.GetLevelInfo().Level, 0, 1,
                 () =>
                 {
-                    ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImg,
-                        _friendRecordData.RecordList[0].UserInfoDetail.UserInfoSimple.HeadImgUrl,
-                        _cachedView.DefaultHeadImg);
-                    _friendRecord = _friendRecordData.RecordList[0];
-                },
-                code =>
-                {
-                    //测试数据
-//                    ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg,
-//                        _cachedView.DefaultHeadImg);
-//                    if (gameMode.Project.AdventureLevelRankList.RecordList.Count > 0)
-//                    {
-//                        _friendRecord = gameMode.Project.AdventureLevelRankList.RecordList[0];
-//                    }
-                });
+                    _cachedView.PlayRecordObj.SetActive(_friendRecordData.RecordList.Count != 0);
+                    if (_friendRecordData.RecordList.Count != 0)
+                    {
+                        ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImg,
+                            _friendRecordData.RecordList[0].UserInfoDetail.UserInfoSimple.HeadImgUrl,
+                            _cachedView.DefaultHeadImg);
+                        _friendRecord = _friendRecordData.RecordList[0];
+                    }
+                }, code => { LogHelper.Error("FriendRecordData request fail, code = {0}", code); });
         }
 
         private void UpdateReward(Reward reward)
