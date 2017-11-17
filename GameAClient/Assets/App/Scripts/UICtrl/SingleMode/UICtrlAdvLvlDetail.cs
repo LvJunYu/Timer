@@ -114,7 +114,7 @@ namespace GameA
                     () =>
                     {
                         //RefreshAdventureUserLevelDataDetail();
-                        _rankPanel.Set(_project.AdventureLevelRankList.RecordList, ResScenary);
+                        _rankPanel.Set(_project, _project.AdventureLevelRankList.RecordList, ResScenary);
                         if (_project.AdventureLevelRankList.RecordList.Count > 0)
                         {
                             _cachedView.FirstName.text =
