@@ -96,6 +96,7 @@ namespace GameA
 
         public void OnChangeHandler(UserInfoDetail val)
         {
+//            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
             RefreshView();
         }
     }
