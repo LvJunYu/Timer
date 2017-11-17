@@ -99,7 +99,11 @@ namespace GameA
             }
             UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             RefreshView();
-            _cachedView.TabGroup.SelectIndex((int) EMenu.BasicInfo, true);
+            if (_curMenu == EMenu.None)
+            {
+                _curMenu = EMenu.BasicInfo;
+            }
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
         private void RefreshView()

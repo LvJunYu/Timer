@@ -1,10 +1,3 @@
-/********************************************************************
-** Filename : UICtrlGameSetting  
-** Author : ake
-** Date : 6/8/2016 8:15:38 PM
-** Summary : UICtrlGameSetting  
-***********************************************************************/
-
 using System;
 using System.Collections.Generic;
 using GameA.Game;

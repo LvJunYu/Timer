@@ -35,6 +35,9 @@ namespace GameA
         {
             _unload = true;
             _cachedView.GridDataScrollers[(int) _menu - 1].RefreshCurrent();
+            _pojectList = null;
+            _contentList.Clear();
+            _dict.Clear();
             base.Close();
         }
 

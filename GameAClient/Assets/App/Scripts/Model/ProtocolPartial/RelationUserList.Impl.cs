@@ -224,17 +224,18 @@ namespace GameA
         private void RemoveFollowUser(UserInfoDetail userInfoDetail)
         {
             userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe = false;
-            if (FollowList != null && FollowList.Contains(userInfoDetail))
-            {
-                FollowList.Remove(userInfoDetail);
-            }
-            if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
-            {
-                if (FriendList != null && FriendList.Contains(userInfoDetail))
-                {
-                    FriendList.Remove(userInfoDetail);
-                }
-            }
+            //故意不清除列表，给玩家反悔的机会。下次打开会重新刷新列表
+//            if (FollowList != null && FollowList.Contains(userInfoDetail))
+//            {
+//                FollowList.Remove(userInfoDetail);
+//            }
+//            if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
+//            {
+//                if (FriendList != null && FriendList.Contains(userInfoDetail))
+//                {
+//                    FriendList.Remove(userInfoDetail);
+//                }
+//            }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
             SocialGUIManager.ShowPopupDialog("已取消关注");
         }

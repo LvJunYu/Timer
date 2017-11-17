@@ -123,9 +123,11 @@ namespace GameA.Game
             {
                 _curResolution = _allWindowResolutions[_curResolutionIndex];
             }
-            else
+            //若列表中没有，且不会超出屏幕，则添加
+            else if (_curResolution.width <= Screen.currentResolution.width &&
+                     _curResolution.height < Screen.currentResolution.height)
             {
-                //若列表中没有，则添加
+                
                 _allWindowResolutions.Add(_curResolution);
                 _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
                 _curResolutionIndex = _allWindowResolutions.IndexOf(_curResolution);

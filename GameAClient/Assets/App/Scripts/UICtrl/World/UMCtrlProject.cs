@@ -10,6 +10,7 @@ namespace GameA
         private int _index;
         public int Index { get; set; }
         private static string _newProject = "创建新关卡";
+        private bool _emptyProject;
 
         public RectTransform Transform
         {
@@ -52,10 +53,8 @@ namespace GameA
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
-                if (_wrapper.Content != null && _efunc == EFunc.Editing && _wrapper.Content == Project.EmptyProject)
-                {
-                    _efunc = EFunc.Empty;
-                }
+                _emptyProject = _wrapper.Content != null && _efunc == EFunc.Editing &&
+                                _wrapper.Content == Project.EmptyProject;
             }
             RefreshView();
         }
@@ -67,12 +66,14 @@ namespace GameA
                 Unload();
                 return;
             }
-            _cachedView.DownloadObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId != 0);
-            _cachedView.OriginalObj.SetActive(_efunc == EFunc.Editing && _wrapper.Content.ParentId == 0);
+            _cachedView.DownloadObj.SetActive(!_emptyProject && _efunc == EFunc.Editing &&
+                                              _wrapper.Content.ParentId != 0);
+            _cachedView.OriginalObj.SetActive(!_emptyProject && _efunc == EFunc.Editing &&
+                                              _wrapper.Content.ParentId == 0);
             _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
-            _cachedView.EditImg.SetActive(_efunc == EFunc.Editing);
-            _cachedView.NewEditObj.SetActive(_efunc == EFunc.Empty);
-            if (_efunc == EFunc.Empty)
+            _cachedView.EditImg.SetActive(!_emptyProject && _efunc == EFunc.Editing);
+            _cachedView.NewEditObj.SetActive(_emptyProject);
+            if (_emptyProject)
             {
                 DictionaryTools.SetContentText(_cachedView.Title, _newProject);
             }
@@ -102,7 +103,6 @@ namespace GameA
         {
             Published,
             Editing,
-            Empty
         }
     }
 }

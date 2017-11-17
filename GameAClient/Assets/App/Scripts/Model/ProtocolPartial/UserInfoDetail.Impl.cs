@@ -358,5 +358,11 @@ namespace GameA
             _userInfoRequestTimer = null;
 //			_snsBinding = null;
         }
+        
+        protected override void OnSyncPartial()
+        {
+            base.OnSyncPartial();
+            Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, _userInfoSimple.UserId);
+        }
     }
 }
