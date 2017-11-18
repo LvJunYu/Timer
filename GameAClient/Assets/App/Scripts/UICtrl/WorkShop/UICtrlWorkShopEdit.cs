@@ -12,12 +12,16 @@ namespace GameA
         private bool _isEditTitle;
         private bool _isEditDesc;
         private bool _needSave;
+        private EEditState _editState;
+        private const string _hasPublishedStr = "已发布";
+        private const string _publishStr = "发 布";
+        private const string _editStr = "编 辑";
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
-            _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
@@ -32,12 +36,18 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnPersonalProjectDataChanged);
+            RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             _project = parameter as Project;
+            if (_project == null)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+                return;
+            }
             RefreshView();
         }
 
@@ -70,10 +80,33 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
                 return;
             }
+            RefreshEditStateAndBtnName();
             RefreshTitleDock();
             RefreshDescDock();
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
                 _cachedView.DefaultCoverTexture);
+        }
+
+        private void RefreshEditStateAndBtnName()
+        {
+            if (_project.PublishTime + 10 >= _project.UpdateTime)
+            {
+                _editState = EEditState.HasPublished;
+                _cachedView.OKBtnTxt.text = _hasPublishedStr;
+            }
+            else
+            {
+                if (_project.PassFlag)
+                {
+                    _editState = EEditState.HasPassed;
+                    _cachedView.OKBtnTxt.text = _publishStr;
+                }
+                else
+                {
+                    _editState = EEditState.Editing;
+                    _cachedView.OKBtnTxt.text = _editStr;
+                }
+            }
         }
 
         private void RefreshTitleDock()
@@ -132,10 +165,33 @@ namespace GameA
             );
         }
 
-        private void OnPublishBtn()
+        private void OnWorkShopProjectPublished(long projectId)
+        {
+            if (_project != null && projectId == _project.ProjectId)
+            {
+                if (_isOpen)
+                {
+                    RefreshEditStateAndBtnName();
+                }
+            }
+        }
+
+        private void OnOKBtn()
+        {
+            if (_editState == EEditState.HasPassed)
+            {
+                OnPublish();
+            }
+            else
+            {
+                OnEditBtn();
+            }
+        }
+
+        private void OnPublish()
         {
             if (null == _project) return;
-            if (_project.PassFlag == false)
+            if (!_project.PassFlag)
             {
                 SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关", null,
                     new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));
@@ -289,5 +345,12 @@ namespace GameA
                 RefreshView();
             }
         }
+    }
+
+    public enum EEditState
+    {
+        Editing,
+        HasPassed,
+        HasPublished
     }
 }

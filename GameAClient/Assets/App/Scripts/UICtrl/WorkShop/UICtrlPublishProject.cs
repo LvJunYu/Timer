@@ -113,6 +113,7 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     CommonTools.ShowPopupDialog("发布关卡成功");
+                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _project.ProjectId);
                     if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
                     {
                         GM2DGame.Instance.QuitGame(null, null);

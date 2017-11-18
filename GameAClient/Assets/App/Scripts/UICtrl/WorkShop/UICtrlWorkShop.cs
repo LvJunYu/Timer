@@ -140,17 +140,6 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShop>();
         }
 
-        private void Clear()
-        {
-            for (int i = 0; i < _menuCtrlArray.Length; i++)
-            {
-                if (_menuCtrlArray[i] != null)
-                {
-                    _menuCtrlArray[i].Clear();
-                }
-            }
-        }
-
         private void OnEditingProjectsChanged()
         {
             if (!_isOpen)
