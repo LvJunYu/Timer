@@ -170,7 +170,7 @@ namespace GameA
             _cachedView.FollowBtnTxt.text = follow ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr;
             _cachedView.BlockBtnTxt.text = block ? RelationCommonString.BlockedStr : RelationCommonString.BlockStr;
             _cachedView.FollowBtn.SetActiveEx(!block);
-            _cachedView.ChatBtn.SetActiveEx(!block);
+            _cachedView.ChatBtn.SetActiveEx(false);
         }
 
         private void OnCloseBtn()
@@ -204,8 +204,8 @@ namespace GameA
 
         private void OnChatBtn()
         {
-            LocalUser.Instance.RelationUserList.RequestChat(UserInfoDetail,
-                () => SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>());
+//            LocalUser.Instance.RelationUserList.RequestChat(UserInfoDetail,
+//                () => SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>());
         }
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)

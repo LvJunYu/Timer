@@ -76,16 +76,16 @@ public class YIMManager :
     public YIMManager()
     {
         //注册回调
-        IMAPI.Instance().SetLoginListen(this);
-        IMAPI.Instance().SetMessageListen(this);
-        IMAPI.Instance().SetChatRoomListen(this);
-        IMAPI.Instance().SetContactListen(this);
-        IMAPI.Instance().SetDownloadListen(this);
+//        IMAPI.Instance().SetLoginListen(this);
+//        IMAPI.Instance().SetMessageListen(this);
+//        IMAPI.Instance().SetChatRoomListen(this);
+//        IMAPI.Instance().SetContactListen(this);
+//        IMAPI.Instance().SetDownloadListen(this);
         //初始化
-        IMAPI.Instance().Init("YOUMEE9036C7A45B37ED5F7AC6F0C6479BB48EC2CA10E",
-            "y7/AAtmf6Ry6awljGzwbs0x6VFPQcckKlpHQCno1KiA3YEu1g5UwLPbVxBEnSLGfbPDfE8Qj/qYp1shwQVptV3uvmVsueIaHKrzZ+uOY715kpAnNGIYEQsp7Pi0QV07/Ii3z9oRShJKdj/I7qWM9UYF0+pJxkCnAgkR8SD15tuUBAAE=");
-        Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Logout);
-        Messenger.AddListener(EMessengerType.OnApplicationQuit, Destroy);
+//        IMAPI.Instance().Init("YOUMEE9036C7A45B37ED5F7AC6F0C6479BB48EC2CA10E",
+//            "y7/AAtmf6Ry6awljGzwbs0x6VFPQcckKlpHQCno1KiA3YEu1g5UwLPbVxBEnSLGfbPDfE8Qj/qYp1shwQVptV3uvmVsueIaHKrzZ+uOY715kpAnNGIYEQsp7Pi0QV07/Ii3z9oRShJKdj/I7qWM9UYF0+pJxkCnAgkR8SD15tuUBAAE=");
+//        Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, Logout);
+//        Messenger.AddListener(EMessengerType.OnApplicationQuit, Destroy);
     }
 
     public void Login()

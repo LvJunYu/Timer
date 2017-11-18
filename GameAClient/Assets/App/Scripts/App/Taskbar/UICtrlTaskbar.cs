@@ -27,7 +27,7 @@ namespace GameA
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
-        private bool _chatAvailable = true;
+        private bool _chatAvailable;
         private bool _fashionShopAvailable = true;
         private bool _puzzleAvailable;
         private bool _trainAvailable = false;

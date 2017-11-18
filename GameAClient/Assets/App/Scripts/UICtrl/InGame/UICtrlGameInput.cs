@@ -122,10 +122,7 @@ namespace GameA
 
         public void SetSkillBtnVisible(int slot, bool visible)
         {
-            if (null == _cachedView)
-            {
-                return;
-            }
+            if (null == _cachedView) return;
             if (null == _usSkillBtns)
             {
                 CreateUMSkillBtns();
@@ -166,7 +163,8 @@ namespace GameA
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
-            if (!_isViewCreated)
+            if (!_isViewCreated || GM2DGame.Instance != null && GM2DGame.Instance.GameMode != null &&
+                GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
             {
                 return;
             }

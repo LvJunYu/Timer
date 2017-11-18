@@ -36,10 +36,10 @@ namespace GameA
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
             _userInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
-            bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
+//            bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
             bool followByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
             bool isFriend = _userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend;
-            _cachedView.TalkBtn.SetActiveEx(followMe && followByMe);
+            _cachedView.TalkBtn.SetActiveEx(false);
             if (isFriend)
             {
                 _cachedView.BtnTxt.text = RelationCommonString.FriendStr;
@@ -110,8 +110,8 @@ namespace GameA
 
         private void OnTalkBtn()
         {
-            if (null == _userInfoDetail) return;
-            LocalUser.Instance.RelationUserList.RequestChat(_userInfoDetail);
+//            if (null == _userInfoDetail) return;
+//            LocalUser.Instance.RelationUserList.RequestChat(_userInfoDetail);
         }
 
         private void OnInfoBtn()
