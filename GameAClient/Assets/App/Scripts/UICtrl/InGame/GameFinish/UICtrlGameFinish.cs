@@ -409,7 +409,7 @@ namespace GameA
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
-                    _cachedView.RetryBtn.gameObject.SetActive(false);
+                    _cachedView.RetryBtn.gameObject.SetActive(true);
                     _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);

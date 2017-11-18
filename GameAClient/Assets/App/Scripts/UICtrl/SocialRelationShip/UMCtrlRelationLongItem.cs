@@ -38,23 +38,25 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
             bool followByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            bool isFriend = _userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend;
             _cachedView.TalkBtn.SetActiveEx(followMe && followByMe);
-            if (followByMe)
+            if (isFriend)
             {
-                if (followMe)
-                {
-                    _cachedView.BtnTxt.text = RelationCommonString.FriendStr;
-                }
-                else
-                {
-                    _cachedView.BtnTxt.text = RelationCommonString.FollowedStr;
-                }
+                _cachedView.BtnTxt.text = RelationCommonString.FriendStr;
                 _cachedView.BtnTxt.color = _cachedView.FollowedColor;
             }
             else
             {
-                _cachedView.BtnTxt.text = RelationCommonString.FollowStr;
-                _cachedView.BtnTxt.color = Color.white;
+                if (followByMe)
+                {
+                    _cachedView.BtnTxt.text = RelationCommonString.FollowedStr;
+                    _cachedView.BtnTxt.color = _cachedView.FollowedColor;
+                }
+                else
+                {
+                    _cachedView.BtnTxt.text = RelationCommonString.FollowStr;
+                    _cachedView.BtnTxt.color = Color.white;
+                }
             }
         }
 

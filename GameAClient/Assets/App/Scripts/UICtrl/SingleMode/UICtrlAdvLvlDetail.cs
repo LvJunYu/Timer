@@ -9,8 +9,10 @@ namespace GameA
     public class UICtrlAdvLvlDetail : UICtrlAnimationBase<UIViewAdvLvlDetail>
     {
         private USCtrlAdvLvlDetailInfo _infoPanel;
+
 //        private USCtrlAdvLvlDetailRecord _recordPanel;
         private USCtrlAdvLvlDetailRank _rankPanel;
+
         private int _chapterIdx;
         private int _levelIdx;
         private bool _isBonus;
@@ -178,8 +180,7 @@ namespace GameA
 
         private void OnPlayBtn()
         {
-            if (_isBonus && !GameATools.CheckEnergy(_table.EnergyCost))
-                return;
+            if (!GameATools.CheckEnergy(_table.EnergyCost)) return;
             EAdventureProjectType eAPType = EAdventureProjectType.APT_Normal;
 
             var param = new SituationAdventureParam();

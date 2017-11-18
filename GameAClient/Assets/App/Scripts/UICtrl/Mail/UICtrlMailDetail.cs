@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA
 {

@@ -112,11 +112,13 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
-            base.OnClose();
             for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
                 _menuCtrlArray[i].HasInited = false;
             }
+            _cachedView.SeachInputField.text = string.Empty;
+            base.OnClose();
+            
         }
 
         private void ChangeMenu(EMenu menu)

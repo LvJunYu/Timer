@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SoyEngine;
 using UnityEngine;
 using YIMEngine;
 
@@ -14,7 +13,6 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlChatBase _curMenuCtrl;
         private UPCtrlChatBase[] _menuCtrlArray;
-        private bool _isEditing;
 
         protected override void OnViewCreated()
         {
@@ -25,7 +23,6 @@ namespace GameA
             _cachedView.VoiceBtn.OnPress += OnStartRecordVoiceBtn;
             _cachedView.VoiceBtn.OnRelease += OnSendVoiceBtn;
             _cachedView.InptField.onEndEdit.AddListener(OnInptFieldEndEdit);
-            _cachedView.InptField.onValueChanged.AddListener(OnInptFieldonValueChanged);
             _menuCtrlArray = new UPCtrlChatBase[(int) EMenu.Max];
 
             var upCtrlChatWorld = new UPCtrlChatWorld();
@@ -81,7 +78,6 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
-            _isEditing = false;
             base.OnClose();
         }
 
@@ -122,13 +118,9 @@ namespace GameA
 
         public override void OnUpdate()
         {
-            if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                if (!_isEditing)
-                {
-                    _cachedView.InptField.Select();
-                    _isEditing = true;
-                }
+                _cachedView.InptField.Select();
             }
             //刷洗好友在线信息
             if (_menuCtrlArray != null && _menuCtrlArray[(int) EMenu.Friend] != null)
@@ -331,17 +323,11 @@ namespace GameA
 
         private void OnInptFieldEndEdit(string arg0)
         {
-            if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 _cachedView.SendTexBtn.Select();
                 OnSendTexBtn();
             }
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => _isEditing = false));
-        }
-
-        private void OnInptFieldonValueChanged(string arg0)
-        {
-            _isEditing = true;
         }
 
         private void OnCloseBtn()

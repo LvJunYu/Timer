@@ -18,8 +18,6 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
     public class UICtrlSingleMode : UICtrlAnimationBase<UIViewSingleMode>
     {
-        #region 常量与字段
-
         /// <summary>
         /// 每个章节界面间的水平距离
         /// </summary>
@@ -68,10 +66,6 @@ namespace GameA
         private Vector2 _preBtnPos;
         private Vector2 _nextBtnPos;
 
-        #endregion
-
-        #region 属性
-
         /// <summary>
         /// 当前显示章节
         /// </summary>
@@ -88,10 +82,6 @@ namespace GameA
             }
             get { return _currentChapter; }
         }
-
-        #endregion
-
-        #region 方法
 
         public void SetChapterBonusLevelLockState(int chapter, int levelInx, bool isLock, bool playAnimation = false)
         {
@@ -417,8 +407,6 @@ namespace GameA
             }, code => { });
         }
 
-        #region 接口
-
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainUI;
@@ -474,50 +462,6 @@ namespace GameA
             RefreshChapterInfo();
             BeginChangeChapter();
             _dragging = false;
-        }
-
-        /// <summary>
-        /// 关卡被点击，从关卡图标按钮发出的消息调用
-        /// </summary>
-        /// <param name="data">Parameter.</param>
-        public void OnLevelClicked(object data)
-        {
-            IntVec3 intVec3Param = (IntVec3) data;
-            var chapterIdx = intVec3Param.x;
-            var levelIdx = intVec3Param.y;
-            bool isBonus = intVec3Param.z == 1;
-            EAdventureProjectType eAPType =
-                isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
-
-            var param = new SituationAdventureParam();
-            param.ProjectType = eAPType;
-            param.Section = chapterIdx;
-            param.Level = levelIdx;
-            var project = AppData.Instance.AdventureData.GetAdvLevelProject(chapterIdx, eAPType, levelIdx);
-            if (!isBonus)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(data);
-            }
-            else
-            {
-                // 奖励关直接进去游戏 todo
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
-                    this,
-                    string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", "奖励", chapterIdx, levelIdx));
-
-                AppData.Instance.AdventureData.PlayAdventureLevel(
-                    chapterIdx,
-                    levelIdx,
-                    eAPType,
-                    () =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        GameManager.Instance.RequestPlayAdvNormal(project, param);
-                        SocialApp.Instance.ChangeToGame();
-                    },
-                    (error) => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
-                );
-            }
         }
 
         private void OnBeginDrag(PointerEventData eventData)
@@ -637,9 +581,5 @@ namespace GameA
             _uiParticleItemAry = null;
             base.OnDestroy();
         }
-
-        #endregion 接口
-
-        #endregion
     }
 }

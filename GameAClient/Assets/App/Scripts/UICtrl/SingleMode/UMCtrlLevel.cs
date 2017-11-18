@@ -265,8 +265,42 @@ namespace GameA
 
         private void OnClick()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlSingleMode>()
-                .OnLevelClicked(new IntVec3(_chapterId, _levelIdx, _isBonus ? 1 : 0));
+            EAdventureProjectType eAPType =
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            var param = new SituationAdventureParam();
+            param.ProjectType = eAPType;
+            param.Section = _chapterId;
+            param.Level = _levelIdx;
+            var project = AppData.Instance.AdventureData.GetAdvLevelProject(_chapterId, eAPType, _levelIdx);
+            if (!_isBonus)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(new IntVec3(_chapterId, _levelIdx,
+                    _isBonus ? 1 : 0));
+            }
+            else
+            {
+                // 奖励关直接进去游戏
+                if (GameATools.CheckEnergy(_tableLevel.EnergyCost))
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(
+                        this,
+                        string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", "奖励", _chapterId, _levelIdx));
+
+                    AppData.Instance.AdventureData.PlayAdventureLevel(
+                        _chapterId,
+                        _levelIdx,
+                        eAPType,
+                        () =>
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            GameATools.LocalUseEnergy(_tableLevel.EnergyCost);
+                            GameManager.Instance.RequestPlayAdvNormal(project, param);
+                            SocialApp.Instance.ChangeToGame();
+                        },
+                        error => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); }
+                    );
+                }
+            }
         }
 
         public void SetTween(bool isDown, Vector2 offset)
@@ -300,7 +334,6 @@ namespace GameA
         {
             _moVector2 = -_moVector2;
             _tweener = _cachedView.rectTransform().DOAnchorPosY((_startPos + _moVector2).y, 2.0f);
-            _tweener.OnComplete(SetOnComplete);
         }
 
         public void ClearFriendProgress()
@@ -310,9 +343,9 @@ namespace GameA
                 _cachedView.FriendHeadImgs[i].SetActiveEx(false);
             }
             for (int i = 0; i < _friends.Length; i++)
-                         {
-                             _friends[i] = null;
-                         }
+            {
+                _friends[i] = null;
+            }
         }
 
         public void RefreshFriendProgress(List<UserInfoDetail> friendsDataList)

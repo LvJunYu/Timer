@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace GameA
@@ -249,11 +248,6 @@ namespace GameA
             {
                 SocialGUIManager.ShowCheckProjectNameRes(testRes);
             }
-        }
-
-        private void OnEditLabelBtn()
-        {
-            SocialGUIManager.ShowPopupDialog("暂未开启标签功能。");
         }
 
         private void OnEditDescBtn()

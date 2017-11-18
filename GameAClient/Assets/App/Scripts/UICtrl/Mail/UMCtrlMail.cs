@@ -7,7 +7,10 @@ namespace GameA
 {
     public class UMCtrlMail : UMCtrlBase<UMViewMail>, IDataItemRenderer
     {
-        private const string _titleFormat = "<color=orange>{0}</color>给您分享了一个关卡";
+      
+        private static string _receive = "接受";
+        private static string _findout = "查看";
+        private static string _titleFormat = "<color=orange>{0}</color>给您分享了一个关卡";
         private Mail _mail;
         private List<long> _idList = new List<long>(1);
         public int Index { get; set; }
@@ -50,11 +53,21 @@ namespace GameA
             }
             _cachedView.BtnsObj.SetActive(_mail.FuncType != EMailFuncType.MFT_Reward);
             _cachedView.RewardImg.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_Reward);
-//            _cachedView.NameTxt.text = _mail.UserInfoDetail.UserInfoSimple.NickName;
+            _cachedView.GiveupBtn.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp);
+            _cachedView.OKBtnTxt.text = GetOKText();
             _cachedView.ContentTxt.text = GetMailTile();
             _cachedView.DateTxt.text = GameATools.DateCount(_mail.CreateTime);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                 _mail.UserInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
+        }
+
+        private string GetOKText()
+        {
+            if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
+            {
+                return _receive;
+            }
+            return _findout;
         }
 
         protected override void OnViewCreated()
@@ -62,7 +75,7 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.MainDetailBtn.onClick.AddListener(OnMainDetailBtn);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
-            _cachedView.ReceiveBtn.onClick.AddListener(OnMainDetailBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnMainDetailBtn);
             _cachedView.GiveupBtn.onClick.AddListener(OnGiveupBtn);
         }
 

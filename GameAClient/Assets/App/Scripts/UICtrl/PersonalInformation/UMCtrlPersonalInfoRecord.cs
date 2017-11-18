@@ -25,12 +25,21 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
+            _cachedView.ProjectBtn.onClick.AddListener(OnProjectBtn);
         }
 
         protected override void OnDestroy()
         {
             _cachedView.PlayRecordBtn.onClick.RemoveAllListeners();
             base.OnDestroy();
+        }
+
+        private void OnProjectBtn()
+        {
+            if (_record != null && _record.ProjectData != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_record.ProjectData);
+            }
         }
 
         private void OnPlayRecordBtn()

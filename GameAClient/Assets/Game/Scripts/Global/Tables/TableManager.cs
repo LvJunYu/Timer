@@ -26,6 +26,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_Achievement> Table_AchievementDic = new Dictionary<int, Table_Achievement>();
+		public readonly Dictionary<int,Table_HonorReport> Table_HonorReportDic = new Dictionary<int, Table_HonorReport>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
 		public readonly Dictionary<int,Table_QQHallGrowAward> Table_QQHallGrowAwardDic = new Dictionary<int, Table_QQHallGrowAward>();
@@ -60,6 +61,7 @@ namespace GameA.Game
 		[SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[SerializeField] private Table_Achievement[] _tableAchievements;
+		[SerializeField] private Table_HonorReport[] _tableHonorReports;
 		[SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[SerializeField] private Table_Turntable[] _tableTurntables;
 		[SerializeField] private Table_QQHallGrowAward[] _tableQQHallGrowAwards;
@@ -123,6 +125,8 @@ namespace GameA.Game
             _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
 			string AchievementJsonStr = JoyResManager.Instance.GetJson ("Achievement", (int) EResScenary.TableAsset);
             _tableAchievements = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Achievement[]>(AchievementJsonStr);
+			string HonorReportJsonStr = JoyResManager.Instance.GetJson ("HonorReport", (int) EResScenary.TableAsset);
+            _tableHonorReports = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HonorReport[]>(HonorReportJsonStr);
 			string TreasureMapJsonStr = JoyResManager.Instance.GetJson ("TreasureMap", (int) EResScenary.TableAsset);
             _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
 			string TurntableJsonStr = JoyResManager.Instance.GetJson ("Turntable", (int) EResScenary.TableAsset);
@@ -316,6 +320,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableAchievements table.Id {0} is duplicated!", _tableAchievements[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableHonorReports.Length; i++)
+			{
+				if (!Table_HonorReportDic.ContainsKey(_tableHonorReports[i].Id))
+				{
+					Table_HonorReportDic.Add(_tableHonorReports[i].Id,_tableHonorReports[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableHonorReports table.Id {0} is duplicated!", _tableHonorReports[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTreasureMaps.Length; i++)
@@ -663,6 +678,15 @@ namespace GameA.Game
 		{
 			Table_Achievement tmp;
 			if (Table_AchievementDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_HonorReport GetHonorReport(int key)
+		{
+			Table_HonorReport tmp;
+			if (Table_HonorReportDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

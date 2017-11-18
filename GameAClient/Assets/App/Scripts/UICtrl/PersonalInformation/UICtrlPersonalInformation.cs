@@ -7,6 +7,7 @@ namespace GameA
     {
         public UserInfoDetail UserInfoDetail;
         public bool IsMyself;
+        private long _lastUserId = -1;
         private EMenu _curMenu = EMenu.None;
         private UPCtrlPersonalInfoBase _curMenuCtrl;
         private UPCtrlPersonalInfoBase[] _menuCtrlArray;
@@ -99,9 +100,10 @@ namespace GameA
             }
             UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             RefreshView();
-            if (_curMenu == EMenu.None)
+            if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
                 _curMenu = EMenu.BasicInfo;
+                _lastUserId = UserInfoDetail.UserInfoSimple.UserId;
             }
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }

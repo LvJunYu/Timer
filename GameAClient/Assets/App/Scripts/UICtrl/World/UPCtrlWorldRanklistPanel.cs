@@ -12,7 +12,7 @@ namespace GameA
         private const string _advCount = "通关个数";
         private const string _createCount = "被点赞数";
         private WorldRankList _data;
-        protected const int _pageSize = 20;
+        private const int _pageSize = 20;
 
         protected List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>> _contentList =
             new List<CardDataRendererWrapper<WorldRankItem.WorldRankHolder>>();
@@ -64,9 +64,13 @@ namespace GameA
                 () =>
                 {
                     _isRequesting = false;
-                    _projectList = _data.CurList;
+                    _projectList = _data.AllList;
                     if (_isOpen)
                     {
+                        if (!append)
+                        {
+                            _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+                        }
                         RefreshView();
                     }
                 }, code =>
@@ -145,6 +149,7 @@ namespace GameA
         {
             if (open)
             {
+                _isRequesting = false;
                 _curBucket = (ERankTimeBucket) (_timeBucketCount - 1 - selectInx);
                 RequestData();
             }
@@ -154,6 +159,7 @@ namespace GameA
         {
             if (open)
             {
+                _isRequesting = false;
                 _curType = (EWorldRankType) selectInx;
                 RequestData();
             }

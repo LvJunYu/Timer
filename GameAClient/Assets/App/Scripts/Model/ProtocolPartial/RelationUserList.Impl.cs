@@ -212,6 +212,7 @@ namespace GameA
             }
             if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
             {
+                userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend = true;
                 if (FriendList != null && !FriendList.Contains(userInfoDetail))
                 {
                     FriendList.Add(userInfoDetail);
@@ -229,13 +230,15 @@ namespace GameA
 //            {
 //                FollowList.Remove(userInfoDetail);
 //            }
-//            if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
-//            {
+            if (userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend)
+            {
+                userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend = false;
+                userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe = true;
 //                if (FriendList != null && FriendList.Contains(userInfoDetail))
 //                {
 //                    FriendList.Remove(userInfoDetail);
 //                }
-//            }
+            }
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
             SocialGUIManager.ShowPopupDialog("已取消关注");
         }

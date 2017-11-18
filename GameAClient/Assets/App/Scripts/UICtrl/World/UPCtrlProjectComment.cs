@@ -116,9 +116,8 @@ namespace GameA
         private void OnPostCommentBtn()
         {
             if (_mainCtrl.Project == null || _mainCtrl.Project.ProjectUserData == null) return;
-            if (_mainCtrl.Project.ProjectUserData.PlayCount == 0)
+            if (!_mainCtrl.CheckPlayed("玩过才能评论哦~~现在进入关卡吗？"))
             {
-                SocialGUIManager.ShowPopupDialog("玩过才能评论哦~~");
                 return;
             }
             if (_isPostComment)

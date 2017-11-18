@@ -1,4 +1,6 @@
-﻿using SoyEngine;
+﻿using System;
+using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 
@@ -123,6 +125,18 @@ namespace GameA
             _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !_commentUp && _cachedView.CommentTableScroller.MouseIn;
         }
 
+        public bool CheckPlayed(string content)
+        {
+            if (Project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.ShowPopupDialog(content, null,
+                    new KeyValuePair<string, Action>("取消", null),
+                    new KeyValuePair<string, Action>("进入", OnPlayBtnClick));
+                return false;
+            }
+            return true;
+        }
+
         private void SetNull()
         {
             DictionaryTools.SetContentText(_cachedView.TitleText, EmptyStr);
@@ -199,9 +213,8 @@ namespace GameA
                 Project.Request(Project.ProjectId, null, null);
                 return;
             }
-            if (Project.ProjectUserData.PlayCount == 0)
+            if (!CheckPlayed("玩过才能评分哦~~现在进入关卡吗？"))
             {
-                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 _onlyChangeView = true;
                 _cachedView.BadTog.isOn = !value;
                 _onlyChangeView = false;
@@ -232,9 +245,8 @@ namespace GameA
                 Project.Request(Project.ProjectId, null, null);
                 return;
             }
-            if (Project.ProjectUserData.PlayCount == 0)
+            if (!CheckPlayed("玩过才能评分哦~~现在进入关卡吗？"))
             {
-                SocialGUIManager.ShowPopupDialog("玩过才能评分哦~~");
                 _onlyChangeView = true;
                 _cachedView.GoodTog.isOn = !value;
                 _onlyChangeView = false;
@@ -258,7 +270,6 @@ namespace GameA
             if (Project != null)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
-//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
             }
         }
 

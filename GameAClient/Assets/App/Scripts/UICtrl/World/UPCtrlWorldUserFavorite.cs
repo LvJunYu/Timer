@@ -42,6 +42,7 @@ namespace GameA
             _data.Request(LocalUser.Instance.Account.UserGuid, startInx, _pageSize,
                 EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
+                    _hasRequested = true;
                     _projectList = _data.AllList;
                     if (_isOpen)
                     {

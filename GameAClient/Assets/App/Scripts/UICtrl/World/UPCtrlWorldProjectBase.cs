@@ -14,11 +14,15 @@ namespace GameA
 
         protected List<Project> _projectList;
         protected bool _isRequesting;
+        protected bool _hasRequested;
 
         public override void Open()
         {
             base.Open();
-            RequestData(true);
+            if (!_hasRequested)
+            {
+                RequestData();
+            }
             RefreshView();
         }
 
@@ -39,13 +43,16 @@ namespace GameA
                 return;
             }
             _contentList.Clear();
-            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
+            _contentList.Capacity = _projectList.Count;
             _dict.Clear();
             for (int i = 0; i < _projectList.Count; i++)
             {
                 CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
-                _contentList.Add(w);
-                _dict.Add(_projectList[i].ProjectId, w);
+                if (!_dict.ContainsKey(_projectList[i].ProjectId))
+                {
+                    _contentList.Add(w);
+                    _dict.Add(_projectList[i].ProjectId, w);
+                }
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
@@ -99,6 +106,7 @@ namespace GameA
 
         public override void Clear()
         {
+            _hasRequested = false;
             _unload = true;
             _contentList.Clear();
             _dict.Clear();

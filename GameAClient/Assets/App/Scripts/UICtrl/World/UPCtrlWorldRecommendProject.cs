@@ -15,6 +15,7 @@ namespace GameA
             _isRequesting = true;
             _data.Request(0, () =>
             {
+                _hasRequested = true;
                 _isRequesting = false;
                 _projectList = _data.ProjectList;
                 if (_isOpen)
