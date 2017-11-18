@@ -130,8 +130,7 @@ namespace GameA.Game
 
         public override bool Restart(Action successCb, Action failedCb)
         {
-            if (_adventureLevelInfo.ProjectType != EAdventureProjectType.APT_Bonus
-                && !GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
+            if (!GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
             {
                 if (successCb != null)
                 {

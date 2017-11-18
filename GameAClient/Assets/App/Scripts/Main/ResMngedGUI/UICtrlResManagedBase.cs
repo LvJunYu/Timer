@@ -26,5 +26,7 @@ namespace GameA
                 }
             }
         }
+        
+        public virtual void PassAnimation(){}
     }
 }

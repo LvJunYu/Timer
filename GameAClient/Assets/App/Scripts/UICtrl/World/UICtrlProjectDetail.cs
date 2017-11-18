@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
+    public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>, ICheckOverlay
     {
         public static string EmptyStr = "-";
         public static string CountFormat = "({0})";
@@ -77,7 +77,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Overlay;
+            _groupId = (int) EUIGroupType.MainPopUpUI2;
         }
 
         protected override void InitEventListener()

@@ -1,13 +1,4 @@
-﻿/********************************************************************
-  ** Filename : UMCtrlWorldProjectComment.cs
-  ** Author : quan
-  ** Date : 11/11/2016 1:47 PM
-  ** Summary : UMCtrlWorldProjectComment.cs
-  ***********************************************************************/
-
-using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA
@@ -37,6 +28,15 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.Button.onClick.AddListener(OnCardClick);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_content != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_content.UserInfoDetail);
+            }
         }
 
         protected override void OnDestroy()

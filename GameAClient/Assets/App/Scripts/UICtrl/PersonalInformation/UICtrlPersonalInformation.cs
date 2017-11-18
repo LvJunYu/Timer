@@ -3,7 +3,7 @@
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlPersonalInformation : UICtrlResManagedBase<UIViewPersonalInformation>
+    public class UICtrlPersonalInformation : UICtrlResManagedBase<UIViewPersonalInformation>, ICheckOverlay
     {
         public UserInfoDetail UserInfoDetail;
         public bool IsMyself;
@@ -78,7 +78,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Overlay;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         protected override void InitEventListener()

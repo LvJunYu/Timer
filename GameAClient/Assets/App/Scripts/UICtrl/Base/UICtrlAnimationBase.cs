@@ -20,9 +20,9 @@ namespace GameA
         private float _screenHeight;
         private float _screenWidth;
 
-        public void PassAnimation(bool value)
+        public override void PassAnimation()
         {
-            _passAnimation = value;
+            _passAnimation = true;
         }
 
         protected virtual void CreateSequences()

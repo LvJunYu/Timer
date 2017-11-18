@@ -36,11 +36,6 @@ namespace GameA
         MainPopUpUI2,
 
         /// <summary>
-        /// 会互相遮挡的UI，通常指那些会在不同的UI页面被开启的页面，例如个人信息、关卡详情页面
-        /// </summary>
-        Overlay,
-
-        /// <summary>
         /// 在所有主界面和一般弹出界面之上的界面 关卡详情
         /// </summary>
         FrontUI,
@@ -83,7 +78,7 @@ namespace GameA
         public static SocialGUIManager Instance;
         private EMode _currentMode = EMode.None;
         private bool _exitDialogIsOpen;
-        private Stack<UIRaw> _overlayUIs = new Stack<UIRaw>(8);//缓存互相遮挡的UI
+        private Stack<UIRaw> _overlayUIs = new Stack<UIRaw>(8); //缓存互相遮挡的UI
 
         public EMode CurrentMode
         {
@@ -292,9 +287,15 @@ namespace GameA
 
         public override T OpenUI<T>(object value = null)
         {
-            var ui = base.OpenUI<T>(value);
-            // 关闭互相遮挡的UI，并缓存在栈中
-            if (ui != null && ui.GroupId == (int) EUIGroupType.Overlay)
+            if (UIRoot == null) return null;
+            var ui = UIRoot.GetUI(typeof(T));
+            if (null == ui) return null;
+            if (!ui.IsViewCreated)
+            {
+                UIRoot.CreateUI(typeof(T));
+            }
+            //检查是否是会互相遮挡的UI
+            if (ui is ICheckOverlay)
             {
                 UICtrlBase lastUI = null;
                 if (_overlayUIs.Count > 0)
@@ -303,37 +304,59 @@ namespace GameA
                 }
                 if (lastUI != null && lastUI != ui)
                 {
-                    if (lastUI is IAnimation)
+                    // 关闭会互相遮挡的UI
+                    if (lastUI.OrderOfView > ui.OrderOfView)
                     {
-                        ((IAnimation) lastUI).PassAnimation(true);
+                        foreach (var uiRaw in _overlayUIs)
+                        {
+                            if (uiRaw.UI.IsOpen)
+                            {
+                                uiRaw.UI.Close();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                     }
-                    lastUI.Close();
                 }
                 if (lastUI != ui)
                 {
                     _overlayUIs.Push(new UIRaw(ui, value));
+                    Debug.Log(_overlayUIs.Count);
                 }
             }
-            return ui;
+            return base.OpenUI<T>(value);
         }
 
         public override T CloseUI<T>()
         {
             var ui = base.CloseUI<T>();
-            if (ui.GroupId == (int) EUIGroupType.Overlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
+            if (ui is ICheckOverlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
             {
                 _overlayUIs.Pop();
+                Debug.Log(_overlayUIs.Count);
             }
-            // 打开上一个关闭的遮挡UI
+            // 打开关闭的遮挡UI
             if (_overlayUIs.Count > 0)
             {
-                var lastUI = _overlayUIs.Peek().UI;
-                if (lastUI.IsOpen) return ui;
-                if (lastUI is IAnimation)
+                int curIndex = 999999;
+                foreach (var uiRaw in _overlayUIs)
                 {
-                    ((IAnimation) lastUI).PassAnimation(true);
+                    if (!uiRaw.UI.IsOpen && uiRaw.UI.OrderOfView < curIndex)
+                    {
+                        if (uiRaw.UI is IAnimation)
+                        {
+                            ((IAnimation) uiRaw.UI).PassAnimation();
+                        }
+                        uiRaw.UI.Open(uiRaw.Param);
+                        curIndex = uiRaw.UI.OrderOfView;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                lastUI.Open(_overlayUIs.Peek().Param);
             }
             return ui;
         }
@@ -356,5 +379,12 @@ namespace GameA
                 Param = param;
             }
         }
+    }
+
+    /// <summary>
+    /// 会互相遮挡的UI，那些会在不同的UI页面被开启的页面需要继承该接口，例如个人信息、关卡详情页面、聊天页面
+    /// </summary>
+    public interface ICheckOverlay
+    {
     }
 }

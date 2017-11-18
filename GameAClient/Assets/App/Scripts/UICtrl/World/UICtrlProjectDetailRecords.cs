@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlProjectDetailRecords : UICtrlAnimationBase<UIViewProjectDetailRecords>
+    public class UICtrlProjectDetailRecords : UICtrlAnimationBase<UIViewProjectDetailRecords>, ICheckOverlay
     {
         private const int _pageSize = 10;
         private Project _project;
@@ -51,7 +51,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Overlay;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         private void RequestData(bool append = false)

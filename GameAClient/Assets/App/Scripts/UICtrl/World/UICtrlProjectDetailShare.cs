@@ -6,7 +6,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlProjectDetailShare : UICtrlAnimationBase<UIViewProjectDetailShare>
+    public class UICtrlProjectDetailShare : UICtrlAnimationBase<UIViewProjectDetailShare>, ICheckOverlay
     {
         private const int _maxSharedNum = 10;
         private Project _project;
@@ -72,7 +72,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Overlay;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         private void RequestData()

@@ -8,7 +8,7 @@ namespace GameA
     /// 聊天页面
     /// </summary>
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlChat : UICtrlAnimationBase<UIViewChat>
+    public class UICtrlChat : UICtrlAnimationBase<UIViewChat>, ICheckOverlay
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlChatBase _curMenuCtrl;
@@ -113,7 +113,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Overlay;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         public override void OnUpdate()
