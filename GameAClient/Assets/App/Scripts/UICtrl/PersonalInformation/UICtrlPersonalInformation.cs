@@ -3,7 +3,7 @@
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlPersonalInformation : UICtrlResManagedBase<UIViewPersonalInformation>, ICheckOverlay
+    public class UICtrlPersonalInformation : UICtrlAnimationBase<UIViewPersonalInformation>, ICheckOverlay
     {
         public UserInfoDetail UserInfoDetail;
         public bool IsMyself;
@@ -108,6 +108,23 @@ namespace GameA
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
+        protected override void OnClose()
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            Clear();
+            base.OnClose();
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
         private void RefreshView()
         {
             IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
@@ -117,14 +134,13 @@ namespace GameA
             RefreshBtns();
         }
 
-        protected override void OnClose()
+        private void Clear()
         {
-            if (_curMenuCtrl != null)
+//            UserInfoDetail = null;
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
-                _curMenuCtrl.Close();
+                _menuCtrlArray[i].Clear();
             }
-            UserInfoDetail = null;
-            base.OnClose();
         }
 
         private void OnUserInfoChanged(long id)

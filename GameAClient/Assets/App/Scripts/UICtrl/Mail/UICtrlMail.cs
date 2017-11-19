@@ -1,5 +1,4 @@
-﻿using SoyEngine.Proto;
-
+﻿
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
@@ -86,14 +85,21 @@ namespace GameA
             RegisterEvent(EMessengerType.OnMailListChanged, OnMailListChanged);
         }
 
-        private void OnMailListChanged()
+        protected override void SetPartAnimations()
         {
-            _curMenuCtrl.OnMailListChanged();
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainPopUpUI;
+            _groupId = (int) EUIGroupType.MainUI;
+        }
+
+        private void OnMailListChanged()
+        {
+            _curMenuCtrl.OnMailListChanged();
         }
 
         private void OnCloseBtn()

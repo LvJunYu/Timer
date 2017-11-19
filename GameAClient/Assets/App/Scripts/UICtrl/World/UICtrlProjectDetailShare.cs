@@ -63,16 +63,16 @@ namespace GameA
             base.OnClose();
         }
 
-//        protected override void SetPartAnimations()
-//        {
-//            base.SetPartAnimations();
-//            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-//            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
-//        }
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void RequestData()

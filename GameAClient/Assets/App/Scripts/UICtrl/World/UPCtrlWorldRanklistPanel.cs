@@ -76,7 +76,7 @@ namespace GameA
                 }, code =>
                 {
                     _isRequesting = false;
-                    SocialGUIManager.ShowPopupDialog(string.Format("请求数据失败。错误代码：{0}", code));
+                    SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！");
                 });
         }
 

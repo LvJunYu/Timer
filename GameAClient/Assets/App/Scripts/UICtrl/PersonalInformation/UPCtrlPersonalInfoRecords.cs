@@ -24,12 +24,6 @@ namespace GameA
             RefreshView();
         }
 
-        public override void Close()
-        {
-            _dataList = null;
-            base.Close();
-        }
-
         private void RequestData(bool append = false)
         {
             if (_mainCtrl.UserInfoDetail == null) return;
@@ -86,6 +80,12 @@ namespace GameA
             var item = new UMCtrlPersonalInfoRecord();
             item.Init(parent, _resScenary);
             return item;
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            _dataList = null;
         }
     }
 }

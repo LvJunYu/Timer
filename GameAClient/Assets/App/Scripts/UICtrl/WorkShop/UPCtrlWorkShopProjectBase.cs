@@ -44,21 +44,23 @@ namespace GameA
         public virtual void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
+            _contentList.Clear();
+            _dict.Clear();
             if (_projectList == null)
             {
-                _contentList.Clear();
-                _dict.Clear();
                 _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
-            _contentList.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
-            _dict.Clear();
             for (int i = 0; i < _projectList.Count; i++)
             {
-                CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
-                _contentList.Add(w);
-                _dict.Add(_projectList[i].ProjectId, w);
+                if (!_dict.ContainsKey(_projectList[i].ProjectId))
+                {
+                    CardDataRendererWrapper<Project> w =
+                        new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
+                    _contentList.Add(w);
+                    _dict.Add(_projectList[i].ProjectId, w);
+                }
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }

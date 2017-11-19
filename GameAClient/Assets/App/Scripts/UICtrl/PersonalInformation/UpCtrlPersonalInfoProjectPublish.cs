@@ -10,7 +10,6 @@ namespace GameA
         protected override void RequestData(bool append = false)
         {
             _data = LocalUser.Instance.UserPublishedWorldProjectList;
-            _pojectList = _data.AllList;
             if (_mainCtrl.UserInfoDetail == null) return;
             int startInx = 0;
             if (append)
@@ -20,6 +19,7 @@ namespace GameA
             _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize,
                 EPublishedProjectOrderBy.PPOB_PublishTime, EOrderType.OT_Desc, () =>
                 {
+                    _projectList = _data.AllList;
                     if (_isOpen)
                     {
                         RefreshView();

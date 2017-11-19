@@ -20,7 +20,7 @@ namespace GameA
         private float _screenHeight;
         private float _screenWidth;
 
-        public override void PassAnimation()
+        public void PassAnimation()
         {
             _passAnimation = true;
         }
@@ -86,10 +86,10 @@ namespace GameA
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
                 .OnUpdate(OnOpenAnimationUpdate).PrependCallback(() =>
                 {
-                    _cachedView.gameObject.SetActive(true);
                     if (_closeSequence.IsPlaying())
                     {
                         _closeSequence.Complete(true);
+                        _cachedView.gameObject.SetActive(true);
                     }
                 });
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
@@ -100,7 +100,6 @@ namespace GameA
                         _openSequence.Complete(true);
                     }
                 });
-//            _openSequence.Complete(true);
         }
 
         private void OpenAnimation(bool immediateFinish = false)
@@ -119,7 +118,6 @@ namespace GameA
 
         private void CloseAnimation(bool immediateFinish = false)
         {
-            _cachedView.gameObject.SetActive(true);
             if (_passAnimation || immediateFinish)
             {
                 _closeSequence.PlayForward();
@@ -128,6 +126,7 @@ namespace GameA
             }
             else
             {
+                _cachedView.gameObject.SetActive(true);
                 _closeSequence.PlayForward();
             }
         }

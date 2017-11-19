@@ -12,7 +12,7 @@ namespace GameA
     }
 
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlSocialRelationship : UICtrlResManagedBase<UIViewSocialRelationship>
+    public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>, ICheckOverlay
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlRelationshipBase _curMenuCtrl;
@@ -89,12 +89,19 @@ namespace GameA
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             if (null != parameter)
             {
-                _curMenu = (EMenu)parameter;
+                _curMenu = (EMenu) parameter;
             }
             if (_curMenu == EMenu.None)
             {
@@ -118,7 +125,6 @@ namespace GameA
             }
             _cachedView.SeachInputField.text = string.Empty;
             base.OnClose();
-            
         }
 
         private void ChangeMenu(EMenu menu)

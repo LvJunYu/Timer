@@ -311,6 +311,10 @@ namespace GameA
                         {
                             if (uiRaw.UI.IsOpen)
                             {
+                                if (uiRaw.UI is IAnimation)
+                                {
+                                    ((IAnimation) uiRaw.UI).PassAnimation();
+                                }
                                 uiRaw.UI.Close();
                             }
                             else
@@ -323,6 +327,7 @@ namespace GameA
                 if (lastUI != ui)
                 {
                     _overlayUIs.Push(new UIRaw(ui, value));
+                    Debug.Log(_overlayUIs.Count);
                 }
             }
             return base.OpenUI<T>(value);
@@ -334,25 +339,26 @@ namespace GameA
             if (ui is ICheckOverlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
             {
                 _overlayUIs.Pop();
-            }
-            // 打开关闭的遮挡UI
-            if (_overlayUIs.Count > 0)
-            {
-                int curIndex = 999999;
-                foreach (var uiRaw in _overlayUIs)
+                Debug.Log(_overlayUIs.Count);
+                // 打开关闭的遮挡UI
+                if (_overlayUIs.Count > 0)
                 {
-                    if (!uiRaw.UI.IsOpen && uiRaw.UI.OrderOfView < curIndex)
+                    int curIndex = 999999;
+                    foreach (var uiRaw in _overlayUIs)
                     {
-                        if (uiRaw.UI is IAnimation)
+                        if (!uiRaw.UI.IsOpen && uiRaw.UI.OrderOfView < curIndex)
                         {
-                            ((IAnimation) uiRaw.UI).PassAnimation();
+                            if (uiRaw.UI is IAnimation)
+                            {
+                                ((IAnimation) uiRaw.UI).PassAnimation();
+                            }
+                            uiRaw.UI.Open(uiRaw.Param);
+                            curIndex = uiRaw.UI.OrderOfView;
                         }
-                        uiRaw.UI.Open(uiRaw.Param);
-                        curIndex = uiRaw.UI.OrderOfView;
-                    }
-                    else
-                    {
-                        break;
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }

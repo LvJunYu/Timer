@@ -73,5 +73,11 @@ namespace GameA
             item.Init(parent, _resScenary);
             return item;
         }
+
+        public override void Clear()
+        {
+            base.Clear();
+            _dataList = null;
+        }
     }
 }

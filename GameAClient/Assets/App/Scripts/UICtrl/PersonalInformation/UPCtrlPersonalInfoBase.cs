@@ -30,5 +30,7 @@ namespace GameA
         {
             _menu = menu;
         }
+
+        public virtual void Clear(){}
     }
 }

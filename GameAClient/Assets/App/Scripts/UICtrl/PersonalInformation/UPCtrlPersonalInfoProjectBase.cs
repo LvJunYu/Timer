@@ -13,7 +13,7 @@ namespace GameA
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
             new Dictionary<long, CardDataRendererWrapper<Project>>();
 
-        protected List<Project> _pojectList;
+        protected List<Project> _projectList;
 
         protected bool _unload;
 
@@ -29,16 +29,6 @@ namespace GameA
             _unload = false;
             RequestData();
             RefreshView();
-        }
-
-        public override void Close()
-        {
-            _unload = true;
-            _cachedView.GridDataScrollers[(int) _menu - 1].RefreshCurrent();
-            _pojectList = null;
-            _contentList.Clear();
-            _dict.Clear();
-            base.Close();
         }
 
         protected void OnItemClick(CardDataRendererWrapper<Project> item)
@@ -68,14 +58,22 @@ namespace GameA
         public override void RefreshView()
         {
             _contentList.Clear();
-            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _pojectList.Count);
             _dict.Clear();
-            for (int i = 0; i < _pojectList.Count; i++)
+            if (_projectList == null)
             {
-                Project p = _pojectList[i];
-                CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(p, OnItemClick);
-                _contentList.Add(w);
-                _dict.Add(p.ProjectId, w);
+                _cachedView.EmptyObj.SetActive(true);
+                _cachedView.GridDataScrollers[(int) _menu - 1].SetEmpty();
+                return;
+            }
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
+            for (int i = 0; i < _projectList.Count; i++)
+            {
+                if (!_dict.ContainsKey(_projectList[i].ProjectId))
+                {
+                    CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
+                    _contentList.Add(w);
+                    _dict.Add(_projectList[i].ProjectId, w);
+                }
             }
             _cachedView.EmptyObj.SetActive(_contentList.Count == 0);
             _cachedView.GridDataScrollers[(int) _menu - 1].SetItemCount(_contentList.Count);
@@ -95,6 +93,16 @@ namespace GameA
             _contentList = null;
             _dict = null;
             base.OnDestroy();
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            _unload = true;
+            _cachedView.GridDataScrollers[(int) _menu - 1].RefreshCurrent();
+            _projectList = null;
+            _contentList.Clear();
+            _dict.Clear();
         }
     }
 }
