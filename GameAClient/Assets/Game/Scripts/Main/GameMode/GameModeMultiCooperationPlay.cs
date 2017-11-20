@@ -29,14 +29,14 @@ namespace GameA.Game
             SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
         }
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             _project.RequestPlay(() => {
                 GameRun.Instance.RePlay();
                 OnGameStart();
                 if (successCb != null)
                 {
-                    successCb.Invoke();
+                    successCb.Invoke(true);
                 }
             }, code => failedCb());
             return true;

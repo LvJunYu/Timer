@@ -223,10 +223,13 @@ namespace GameA
             }
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            GM2DGame.Instance.GameMode.Restart(() =>
+            GM2DGame.Instance.GameMode.Restart(value =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                if (value)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                }
             }, () =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);

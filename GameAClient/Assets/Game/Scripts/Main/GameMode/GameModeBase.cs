@@ -158,13 +158,13 @@ namespace GameA.Game
             return true;
         }
 
-        public virtual bool Restart(Action successCb, Action failedCb)
+        public virtual bool Restart(Action<bool> successCb, Action failedCb)
         {
             GameRun.Instance.RePlay();
             OnGameStart();
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }

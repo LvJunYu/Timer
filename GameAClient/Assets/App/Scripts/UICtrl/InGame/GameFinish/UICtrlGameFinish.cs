@@ -141,10 +141,13 @@ namespace GameA
         private void OnRetryBtn()
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
-            GM2DGame.Instance.GameMode.Restart(() =>
+            GM2DGame.Instance.GameMode.Restart(value =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    if (value)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    }
                 }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -164,10 +167,13 @@ namespace GameA
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入下一关");
-            gameMode.PlayNext(() =>
+            gameMode.PlayNext(value =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    if (value)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    }
                 }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);

@@ -54,7 +54,7 @@ namespace GameA.Game
 			});
         }
 
-        public override bool Restart (Action successCb, Action failedCb)
+        public override bool Restart (Action<bool> successCb, Action failedCb)
         {
             SocialApp.Instance.ReturnToApp ();
             return true;

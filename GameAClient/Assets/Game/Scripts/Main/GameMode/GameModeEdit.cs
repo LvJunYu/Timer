@@ -227,13 +227,13 @@ namespace GameA.Game
 	    
 	    
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             ChangeMode(EMode.Edit);
             ChangeMode(EMode.EditTest);
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }

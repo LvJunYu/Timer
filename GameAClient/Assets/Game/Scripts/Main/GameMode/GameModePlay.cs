@@ -31,12 +31,12 @@ namespace GameA.Game
 		    return GameManager.Instance.HasNext();
 	    }
 
-        public virtual bool PlayNext(Action successCb, Action failedCb)
+        public virtual bool PlayNext(Action<bool> successCb, Action failedCb)
         {
             GameManager.Instance.PlayNext();
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }

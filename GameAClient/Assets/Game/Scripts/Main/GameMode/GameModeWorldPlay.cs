@@ -11,6 +11,7 @@ namespace GameA.Game
     {
         protected UICtrlGameFinish.EShowState _successType;
         protected UICtrlGameFinish.EShowState _failType;
+
         public override bool SaveShadowData
         {
             get { return true; }
@@ -147,7 +148,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             _project.RequestPlay(() =>
             {
@@ -155,7 +156,7 @@ namespace GameA.Game
                 OnGameStart();
                 if (successCb != null)
                 {
-                    successCb.Invoke();
+                    successCb.Invoke(true);
                 }
             }, code => failedCb());
             return true;

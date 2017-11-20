@@ -55,7 +55,7 @@ namespace GameA
         private void OnRetryBtn()
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
-            GM2DGame.Instance.GameMode.Restart(() =>
+            GM2DGame.Instance.GameMode.Restart(value =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.CloseUI<UICtrlEditTestFinish>();

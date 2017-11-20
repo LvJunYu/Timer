@@ -128,13 +128,13 @@ namespace GameA.Game
                 });
         }
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             if (!GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
             {
                 if (successCb != null)
                 {
-                    successCb.Invoke();
+                    successCb.Invoke(false);
                 }
                 return true;
             }
@@ -155,7 +155,7 @@ namespace GameA.Game
                     OnGameStart();
                     if (successCb != null)
                     {
-                        successCb.Invoke();
+                        successCb.Invoke(true);
                     }
                 },
                 error =>
@@ -176,7 +176,7 @@ namespace GameA.Game
                    && _adventureLevelInfo.Level != ConstDefineGM2D.AdvNormallevelPerChapter;
         }
 
-        public override bool PlayNext(Action successCb, Action failedCb)
+        public override bool PlayNext(Action<bool> successCb, Action failedCb)
         {
             if (!HasNext())
             {
@@ -186,7 +186,14 @@ namespace GameA.Game
                 }
                 return false;
             }
-
+            if (!GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
+            {
+                if (successCb != null)
+                {
+                    successCb.Invoke(false);
+                }
+                return true;
+            }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
 
             var section = _adventureLevelInfo.Section;
@@ -206,7 +213,7 @@ namespace GameA.Game
                     {
                         if (successCb != null)
                         {
-                            successCb.Invoke();
+                            successCb.Invoke(true);
                         }
                         SocialApp.Instance.ReturnToApp();
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
