@@ -14,6 +14,8 @@ namespace GameA
         /// </summary>
         private int _buyCnt;
 
+        private const int _costPerEnergy = 5;
+
         private long _nextEnergyGenerateTime;
 
         protected override void InitGroupId()
@@ -55,9 +57,9 @@ namespace GameA
             }
 
             // todo
-            _cachedView.UnitPrice.text = "998";
+            _cachedView.UnitPrice.text = _costPerEnergy.ToString();
             _cachedView.BuyCnt.text = _buyCnt.ToString();
-            _cachedView.TotalPrice.text = (998 * _buyCnt).ToString();
+            _cachedView.TotalPrice.text = (_costPerEnergy * _buyCnt).ToString();
             _cachedView.AccPrice.text = "1998";
         }
 
@@ -79,7 +81,7 @@ namespace GameA
                     _buyCnt = 1;
                 }
                 _cachedView.BuyCnt.text = _buyCnt.ToString();
-                _cachedView.TotalPrice.text = (998 * _buyCnt).ToString();
+                _cachedView.TotalPrice.text = (_costPerEnergy * _buyCnt).ToString();
             }
         }
 
@@ -103,7 +105,7 @@ namespace GameA
                 return;
             }
             // todo
-            if (GameATools.CheckGold(998 * _buyCnt))
+            if (GameATools.CheckDiamond(_costPerEnergy * _buyCnt))
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
                 RemoteCommands.BuyEnergy(
@@ -114,7 +116,7 @@ namespace GameA
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             GameATools.LocalSetEnergy(msg.CurEnergy);
-                            GameATools.LocalUseGold(998 * _buyCnt);
+                            GameATools.LocalUseDiamond(_costPerEnergy * _buyCnt);
                             SocialGUIManager.Instance.CloseUI<UICtrlBuyEnergy>();
                         }
                         else
@@ -146,7 +148,7 @@ namespace GameA
                 AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity -
                 AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
             _cachedView.BuyCnt.text = _buyCnt.ToString();
-            _cachedView.TotalPrice.text = (998 * _buyCnt).ToString();
+            _cachedView.TotalPrice.text = (_costPerEnergy * _buyCnt).ToString();
         }
 
         private void OnDropBtn()
@@ -158,7 +160,7 @@ namespace GameA
                 AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity -
                 AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
             _cachedView.BuyCnt.text = _buyCnt.ToString();
-            _cachedView.TotalPrice.text = (998 * _buyCnt).ToString();
+            _cachedView.TotalPrice.text = (_costPerEnergy * _buyCnt).ToString();
         }
 
         private void OnCloseBtn()

@@ -25,13 +25,13 @@ namespace GameA
         public bool Init()
         {
             if (_hasInited) return true;
-            _userGuid = LocalUser.Instance.UserGuid.ToString();
+            _userGuid = "&opuid=" + LocalUser.Instance.UserGuid;
             var channel = ChannelQQGame.Instance as ChannelQQGame;
             if (channel == null)
             {
                 return false;
             }
-            _openId = channel.OpenId;
+            _openId = "&opopenid=" + channel.OpenId;
             _hasInited = true;
             return true;
         }
@@ -286,7 +286,7 @@ namespace GameA
         private IEnumerator GetResult(WWW www)
         {
             yield return www;
-            LogHelper.Info(www.text);
+            LogHelper.Error(www.text);
         }
     }
 }

@@ -89,7 +89,7 @@ namespace GameA
 
         private void RefreshEditStateAndBtnName()
         {
-            if (_project.PublishTime + 10 >= _project.UpdateTime)
+            if (_project.PublishTime >= _project.UpdateTime)
             {
                 _editState = EEditState.HasPublished;
                 _cachedView.OKBtnTxt.text = _hasPublishedStr;
@@ -182,6 +182,10 @@ namespace GameA
             {
                 OnPublish();
             }
+//            else if (_editState == EEditState.HasPublished)
+//            {
+//                SocialGUIManager.ShowPopupDialog("关卡已经发布。继续编辑");
+//            }
             else
             {
                 OnEditBtn();
