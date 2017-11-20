@@ -135,7 +135,7 @@ namespace GameA
                 if (flag)
                 {
                     _cachedView.CommentInput.text = string.Empty;
-                    RefreshView();
+                    _mainCtrl.Project.Request();
                 }
             });
         }

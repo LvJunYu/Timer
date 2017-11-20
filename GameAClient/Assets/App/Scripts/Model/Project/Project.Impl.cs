@@ -83,7 +83,7 @@ namespace GameA
                 return 0;
             }
         }
-        
+
         public int UnlikeCount
         {
             get
@@ -257,7 +257,7 @@ namespace GameA
 
         public void Request(Action successCallback = null, Action<ENetResultCode> failedCallback = null)
         {
-            Request(_projectId,successCallback,failedCallback);
+            Request(_projectId, successCallback, failedCallback);
         }
 
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)

@@ -222,7 +222,7 @@ namespace GameA
             if (Project == null) return;
             if (Project.ProjectUserData == null)
             {
-                Project.Request(Project.ProjectId, null, null);
+                Project.Request();
                 return;
             }
             if (!CheckPlayed("玩过才能评分哦~~现在进入关卡吗？"))
@@ -235,13 +235,13 @@ namespace GameA
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_Unlike,
-                    () => { Project.Request(Project.ProjectId, null, null); });
+                    () => { Project.Request(); });
             }
             else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike &&
                      !_cachedView.GoodTog.isOn)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_AllRight,
-                    () => { Project.Request(Project.ProjectId, null, null); });
+                    () => { Project.Request(); });
             }
         }
 
@@ -267,13 +267,13 @@ namespace GameA
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_Like,
-                    () => { Project.Request(Project.ProjectId, null, null); });
+                    () => { Project.Request(); });
             }
             else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like &&
                      !_cachedView.BadTog.isOn)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_AllRight,
-                    () => { Project.Request(Project.ProjectId, null, null); });
+                    () => { Project.Request(); });
             }
         }
 
@@ -407,7 +407,7 @@ namespace GameA
         {
             if (_isOpen && Project != null)
             {
-                Project.Request(Project.ProjectId, null, null);
+                Project.Request();
                 _upCtrlProjectComment.OnChangeToApp();
                 _upCtrlProjectRecentRecord.OnChangeToApp();
             }
