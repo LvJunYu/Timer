@@ -44,9 +44,35 @@ namespace GameA
             LocalUser.Instance.QqGameReward.Request(0,
                 () =>
                 {
+                    _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_Unsatisfied;
+                    if (LocalUser.Instance.QqGameReward.BlueSuperDaily == (int) EQQGameRewardStatus.QGRS_CanReceive
+                        || LocalUser.Instance.QqGameReward.BlueYearDaily == (int) EQQGameRewardStatus.QGRS_CanReceive)
+                    {
+                        _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_CanReceive;
+                    }
+                    else
+                    {
+                        if (LocalUser.Instance.QqGameReward.BlueSuperDaily == (int) EQQGameRewardStatus.QGRS_Received
+                            || LocalUser.Instance.QqGameReward.BlueYearDaily == (int) EQQGameRewardStatus.QGRS_Received)
+                        {
+                            _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_Received;
+                        }
+                        for (int i = 0; i < LocalUser.Instance.QqGameReward.BlueNormalDaily.Count; i++)
+                        {
+                            if (LocalUser.Instance.QqGameReward.BlueNormalDaily[i] == (int) EQQGameRewardStatus.QGRS_CanReceive)
+                            {
+                                _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_CanReceive;
+                                break;
+                            }
+                            if (LocalUser.Instance.QqGameReward.BlueNormalDaily[i] == (int) EQQGameRewardStatus.QGRS_Received)
+                            {
+                                _eqqGameRewardStatus = EQQGameRewardStatus.QGRS_Received;
+                            }
+                        }   
+                            
+                    }
                     if (_isOpen)
                     {
-                        _eqqGameRewardStatus = (EQQGameRewardStatus) LocalUser.Instance.QqGameReward.BlueSuperDaily;
                         ReferView();
                     }
                 },

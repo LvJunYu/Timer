@@ -46,7 +46,7 @@ namespace GameA
 
         private void ReferView()
         {
-            _cachedView.ColltionButtonNewPlayer.SetActiveEx(_rewardStatus == EQQGameRewardStatus.QGRS_CanReceive);
+            _cachedView.ColltionEveryDayPlayer.SetActiveEx(_rewardStatus == EQQGameRewardStatus.QGRS_CanReceive);
         }
 
         public override void Close()
@@ -92,7 +92,7 @@ namespace GameA
             {
                 UMCtrlQQAward award = new UMCtrlQQAward();
                 award.Init(_cachedView.EveryDayRect, EResScenary.Home, Vector3.zero);
-                award.SetAward(UICtrlQQHall.NewPlayerAwards[i]);
+                award.SetAward(UICtrlQQHall.EveryDayACtiveAwards[i]);
             }
         }
     }

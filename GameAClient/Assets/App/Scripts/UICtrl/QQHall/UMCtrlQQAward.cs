@@ -7,7 +7,7 @@ namespace GameA
     public class UMCtrlQQAward : UMCtrlBase<UMViewQQAward>
     {
         private string _diamondSpriteName = "icon_diam_1";
-        private string _coinSpriteName = "icon_gold_1";
+        private string _coinSpriteName = "icon_gold";
         private Sprite _awardSprite;
         private string _spriteName;
 
