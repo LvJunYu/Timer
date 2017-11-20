@@ -316,17 +316,22 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (SpeedY > 0 && _fanForce.y == 0)
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-                    }
-                    else
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-                    }
+                    CaculateGravity();
                 }
             }
             _fanForce.y = 0;
+        }
+
+        protected virtual void CaculateGravity()
+        {
+            if (SpeedY > 0 && _fanForce.y == 0)
+            {
+                SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
+            }
+            else
+            {
+                SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
+            }
         }
         
         public override void SetClimbState(EClimbState eClimbState)
@@ -407,7 +412,8 @@ namespace GameA.Game
         public virtual void OnBoxHoldingChanged()
         {
         }
-        
+
+        private IntVec2 _lastPos;
         public override void UpdateView(float deltaTime)
         {
             if (_isAlive)
@@ -415,8 +421,19 @@ namespace GameA.Game
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
+                _lastPos =  _curPos = GetPos(_colliderPos);
+                if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                {
+                    GM2DGame.Instance.GameMode.ShadowData.RecordPos(_curPos);
+                }
                 UpdateTransPos();
+            }
+            else if(GameRun.Instance.IsPlaying)
+            {
+                if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                {
+                    GM2DGame.Instance.GameMode.ShadowData.RecordPos(_lastPos);
+                }
             }
             UpdateDynamicView(deltaTime);
             _lastGrounded = _grounded;

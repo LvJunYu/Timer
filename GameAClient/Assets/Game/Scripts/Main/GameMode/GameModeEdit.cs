@@ -86,7 +86,7 @@ namespace GameA.Game
 			{
 				if (_iconBytes == null)
 				{
-					_iconBytes = LocalCacheManager.Instance.Load(LocalCacheManager.EType.Image, _project.IconPath);
+					_iconBytes = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.Image, _project.IconPath);
 				}
 				return _iconBytes;
 			}
@@ -227,13 +227,13 @@ namespace GameA.Game
 	    
 	    
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             ChangeMode(EMode.Edit);
             ChangeMode(EMode.EditTest);
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }
@@ -325,6 +325,10 @@ namespace GameA.Game
 			    return;
 		    }
 		    _inputDatas.Clear();
+		    if (SaveShadowData)
+		    {
+			    ShadowData.RecordClear();
+		    }
 		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 		    SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
@@ -338,8 +342,8 @@ namespace GameA.Game
 
 		public byte[] CaptureLevel()
 		{
-			const int imageWidth = 1280;
-			const int imageHeight = 720;
+			const int imageWidth = 640;
+			const int imageHeight = 360;
 			float imageAspectRatio = 1f * imageWidth / imageHeight;
 			Vector2 captureScreenSize = Vector2.zero;
 			Rect captureRect = new Rect();
@@ -400,6 +404,10 @@ namespace GameA.Game
 
 		public bool CheckCanPublish(bool showPrompt = false)
 		{
+			if (LocalUser.Instance.User.RoleType == (int) EAccountRoleType.AcRT_Admin)
+			{
+				return true;
+			}
 			if (RecordBytes == null && (NeedSave || !_project.PassFlag))
 			{
 				if (showPrompt)

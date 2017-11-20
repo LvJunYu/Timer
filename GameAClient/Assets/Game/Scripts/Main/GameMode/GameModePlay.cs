@@ -26,13 +26,17 @@ namespace GameA.Game
 			yield return null;
 		}
 
+	    public virtual bool HasNext()
+	    {
+		    return GameManager.Instance.HasNext();
+	    }
 
-        public virtual bool PlayNext(Action successCb, Action failedCb)
+        public virtual bool PlayNext(Action<bool> successCb, Action failedCb)
         {
             GameManager.Instance.PlayNext();
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }
@@ -146,6 +150,10 @@ namespace GameA.Game
 	    {
 		    base.OnGameStart();
 		    _inputDatas.Clear();
+		    if (SaveShadowData)
+		    {
+			    ShadowData.RecordClear();
+		    }
 		    InitUI();
 	    }
     }

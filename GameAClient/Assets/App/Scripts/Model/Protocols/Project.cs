@@ -6,13 +6,17 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Project : SyncronisticData {
+    public partial class Project : SyncronisticData<Msg_SC_DAT_Project> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
         /// 
         /// </summary>
         private long _projectId;
+        /// <summary>
+        /// 短id
+        /// </summary>
+        private long _shortId;
         /// <summary>
         /// 发布者信息
         /// </summary>
@@ -125,6 +129,10 @@ namespace GameA
         /// 最后发布时间
         /// </summary>
         private long _publishTime;
+        /// <summary>
+        /// 继承的关卡ID
+        /// </summary>
+        private long _parentId;
 
         // cs fields----------------------------------
         /// <summary>
@@ -142,6 +150,16 @@ namespace GameA
             get { return _projectId; }
             set { if (_projectId != value) {
                 _projectId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 短id
+        /// </summary>
+        public long ShortId { 
+            get { return _shortId; }
+            set { if (_shortId != value) {
+                _shortId = value;
                 SetDirty();
             }}
         }
@@ -425,6 +443,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 继承的关卡ID
+        /// </summary>
+        public long ParentId { 
+            get { return _parentId; }
+            set { if (_parentId != value) {
+                _parentId = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -487,6 +515,7 @@ namespace GameA
         {
             if (null == msg) return false;
             _projectId = msg.ProjectId;           
+            _shortId = msg.ShortId;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
@@ -527,7 +556,112 @@ namespace GameA
             _winCondition = msg.WinCondition;           
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
-            OnSyncPartial();
+            _parentId = msg.ParentId;           
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_Project msg)
+        {
+            if (null == msg) return false;
+            _projectId = msg.ProjectId;           
+            _shortId = msg.ShortId;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _name = msg.Name;           
+            _summary = msg.Summary;           
+            _iconPath = msg.IconPath;           
+            _resPath = msg.ResPath;           
+            _createTime = msg.CreateTime;           
+            _localDataState = msg.LocalDataState;           
+            _projectStatus = msg.ProjectStatus;           
+            _localUpdateTime = msg.LocalUpdateTime;           
+            _programVersion = msg.ProgramVersion;           
+            _resourcesVersion = msg.ResourcesVersion;           
+            _isValid = msg.IsValid;           
+            if(null != msg.ExtendData){
+                if (null == _extendData){
+                    _extendData = new ProjectExtend(msg.ExtendData);
+                }
+                _extendData.CopyMsgData(msg.ExtendData);
+            }
+            if(null != msg.ProjectUserData){
+                if (null == _projectUserData){
+                    _projectUserData = new ProjectUserData(msg.ProjectUserData);
+                }
+                _projectUserData.CopyMsgData(msg.ProjectUserData);
+            }
+            _passFlag = msg.PassFlag;           
+            _recordUsedTime = msg.RecordUsedTime;           
+            _targetSection = msg.TargetSection;           
+            _targetLevel = msg.TargetLevel;           
+            _mapWidth = msg.MapWidth;           
+            _mapHeight = msg.MapHeight;           
+            _totalUnitCount = msg.TotalUnitCount;           
+            _addCount = msg.AddCount;           
+            _deleteCount = msg.DeleteCount;           
+            _modifyCount = msg.ModifyCount;           
+            _timeLimit = msg.TimeLimit;           
+            _winCondition = msg.WinCondition;           
+            _updateTime = msg.UpdateTime;           
+            _publishTime = msg.PublishTime;           
+            _parentId = msg.ParentId;           
+            return true;
+        } 
+
+        public bool DeepCopy (Project obj)
+        {
+            if (null == obj) return false;
+            _projectId = obj.ProjectId;           
+            _shortId = obj.ShortId;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _name = obj.Name;           
+            _summary = obj.Summary;           
+            _iconPath = obj.IconPath;           
+            _resPath = obj.ResPath;           
+            _createTime = obj.CreateTime;           
+            _localDataState = obj.LocalDataState;           
+            _projectStatus = obj.ProjectStatus;           
+            _localUpdateTime = obj.LocalUpdateTime;           
+            _programVersion = obj.ProgramVersion;           
+            _resourcesVersion = obj.ResourcesVersion;           
+            _isValid = obj.IsValid;           
+            if(null != obj.ExtendData){
+                if (null == _extendData){
+                    _extendData = new ProjectExtend();
+                }
+                _extendData.DeepCopy(obj.ExtendData);
+            }
+            if(null != obj.ProjectUserData){
+                if (null == _projectUserData){
+                    _projectUserData = new ProjectUserData();
+                }
+                _projectUserData.DeepCopy(obj.ProjectUserData);
+            }
+            _passFlag = obj.PassFlag;           
+            _recordUsedTime = obj.RecordUsedTime;           
+            _targetSection = obj.TargetSection;           
+            _targetLevel = obj.TargetLevel;           
+            _mapWidth = obj.MapWidth;           
+            _mapHeight = obj.MapHeight;           
+            _totalUnitCount = obj.TotalUnitCount;           
+            _addCount = obj.AddCount;           
+            _deleteCount = obj.DeleteCount;           
+            _modifyCount = obj.ModifyCount;           
+            _timeLimit = obj.TimeLimit;           
+            _winCondition = obj.WinCondition;           
+            _updateTime = obj.UpdateTime;           
+            _publishTime = obj.PublishTime;           
+            _parentId = obj.ParentId;           
             return true;
         }
 

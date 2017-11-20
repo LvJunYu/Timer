@@ -7,8 +7,6 @@
 
 using System;
 using HedgehogTeam.EasyTouch;
-using NewResourceSolution;
-using SoyEngine;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
@@ -19,15 +17,15 @@ namespace GameA.Game
     {
         private static InputManager _instance;
 
-        public static readonly string TagJump = "Jump";
-        public static readonly string TagSkill1 = "Fire1";
-        public static readonly string TagSkill2 = "Fire2";
-        public static readonly string TagSkill3 = "Fire3";
-        public static readonly string TagAssist = "Assist";
-        public static readonly string TagHorizontal = "Horizontal";
-        public static readonly string TagVertical = "Vertical";
+        public const string TagJump = "Jump";
+        public const string TagSkill1 = "Fire1";
+        public const string TagSkill2 = "Fire2";
+        public const string TagSkill3 = "Fire3";
+        public const string TagAssist = "Assist";
+        public const string TagHorizontal = "Horizontal";
+        public const string TagVertical = "Vertical";
 
-        public UICtrlMobileInputControl MobileInputCtrl;
+        public UICtrlGameInput GameInputCtrlGame;
         private GameObject _easyTouchObject;
 
         private EPhase _mouseRightButtonDragPhase;
@@ -44,10 +42,12 @@ namespace GameA.Game
         public event Action<Gesture> OnTouchStart;
         public event Action<Gesture> OnTouchDown;
         public event Action<Gesture> OnTouchUp;
+
         /// <summary>
         /// Pos, Delta
         /// </summary>
         public event Action<Vector3, Vector2> OnMouseWheelChange;
+
         public event Action<Vector3> OnMouseRightButtonDragStart;
         public event Action<Vector3, Vector2> OnMouseRightButtonDrag;
         public event Action<Vector3, Vector2> OnMouseRightButtonDragEnd;
@@ -149,7 +149,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public void Dispose()
         {
             if (_easyTouchObject != null)
@@ -161,7 +161,7 @@ namespace GameA.Game
             {
                 EasyTouch.On_TouchDown -= EasyTouchOnTouchDown;
                 EasyTouch.On_TouchUp -= EasyTouchOnTouchUp;
-                
+
                 EasyTouch.On_Pinch -= EasyTouchOnPinch;
                 EasyTouch.On_PinchEnd -= EasyTouchOnPinchEnd;
                 EasyTouch.On_DragStart -= EasyTouchOnDragStart;
@@ -183,7 +183,7 @@ namespace GameA.Game
             EasyTouch.On_TouchStart += EasyTouchOnTouchStart;
             EasyTouch.On_TouchDown += EasyTouchOnTouchDown;
             EasyTouch.On_TouchUp += EasyTouchOnTouchUp;
-            
+
             EasyTouch.On_Pinch += EasyTouchOnPinch;
             EasyTouch.On_PinchEnd += EasyTouchOnPinchEnd;
             EasyTouch.On_DragStart += EasyTouchOnDragStart;
@@ -284,7 +284,7 @@ namespace GameA.Game
             }
 //            LogHelper.Info("OnTouchStart: " + gesture);
         }
-        
+
         private void EasyTouchOnTouchDown(Gesture gesture)
         {
             IsTouchDown = true;
@@ -307,32 +307,14 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-            if (Application.isEditor)
-            {
-                if (RuntimeConfig.Instance.UseDebugMobileInput)
-                {
-                    SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
-                }
-                else
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
-                }
-                return;
-            }
-            if (Application.isMobilePlatform)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlGameInput>();
         }
 
         public void HideGameInput()
         {
-            if (Application.isMobilePlatform)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
-            }
+            SocialGUIManager.Instance.CloseUI<UICtrlGameInput>();
         }
-        
+
         private enum EPhase
         {
             None,

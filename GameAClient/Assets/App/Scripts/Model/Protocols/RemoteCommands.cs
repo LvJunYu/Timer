@@ -428,6 +428,55 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingLoginByQQGame {
+            get { return _isRequstingLoginByQQGame; }
+        }
+        private static bool _isRequstingLoginByQQGame = false;
+        /// <summary>
+		/// QQGame登录
+		/// </summary>
+		/// <param name="openId">OpenId</param>
+		/// <param name="openKey">OpenKey</param>
+		/// <param name="appVersion">应用版本号</param>
+		/// <param name="resVersion">资源版本号</param>
+		/// <param name="devicePlatform">设备类型</param>
+        public static void LoginByQQGame (
+            string openId,
+            string openKey,
+            string appVersion,
+            string resVersion,
+            EPhoneType devicePlatform,
+            Action<Msg_SC_CMD_LoginByQQGame> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingLoginByQQGame) {
+                return;
+            }
+            _isRequstingLoginByQQGame = true;
+            Msg_CS_CMD_LoginByQQGame msg = new Msg_CS_CMD_LoginByQQGame();
+            // QQGame登录
+            msg.OpenId = openId;
+            msg.OpenKey = openKey;
+            msg.AppVersion = appVersion;
+            msg.ResVersion = resVersion;
+            msg.DevicePlatform = devicePlatform;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginByQQGame>(
+                SoyHttpApiPath.LoginByQQGame, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingLoginByQQGame = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "LoginByQQGame", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingLoginByQQGame = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateUserInfo {
             get { return _isRequstingUpdateUserInfo; }
         }
@@ -545,163 +594,75 @@ namespace GameA
             );
         }
 
-        public static bool IsRequstingCreateProject {
-            get { return _isRequstingCreateProject; }
+        public static bool IsRequstingSearchUser {
+            get { return _isRequstingSearchUser; }
         }
-        private static bool _isRequstingCreateProject = false;
+        private static bool _isRequstingSearchUser = false;
         /// <summary>
-		/// 创建关卡
+		/// 搜索好友
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="summary"></param>
-		/// <param name="programVersion"></param>
-		/// <param name="resourceVersion"></param>
-		/// <param name="passFlag"></param>
-		/// <param name="recordUploadParam"></param>
-		/// <param name="timeLimit">时间限制</param>
-		/// <param name="winCondition">胜利条件</param>
-		/// <param name="uploadParam">上传参数</param>
-        public static void CreateProject (
-            string name,
-            string summary,
-            int programVersion,
-            int resourceVersion,
-            bool passFlag,
-            Msg_RecordUploadParam recordUploadParam,
-            int timeLimit,
-            int winCondition,
-            Msg_ProjectUploadParam uploadParam,
-            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
+		/// <param name="userNickName">用户名</param>
+        public static void SearchUser (
+            string userNickName,
+            Action<Msg_SC_CMD_SearchUser> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingCreateProject) {
+            if (_isRequstingSearchUser) {
                 return;
             }
-            _isRequstingCreateProject = true;
-            Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
-            // 创建关卡
-            msg.Name = name;
-            msg.Summary = summary;
-            msg.ProgramVersion = programVersion;
-            msg.ResourceVersion = resourceVersion;
-            msg.PassFlag = passFlag;
-            msg.RecordUploadParam = recordUploadParam;
-            msg.TimeLimit = timeLimit;
-            msg.WinCondition = winCondition;
-            msg.UploadParam = uploadParam;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
-                SoyHttpApiPath.CreateProject, msg, ret => {
+            _isRequstingSearchUser = true;
+            Msg_CS_CMD_SearchUser msg = new Msg_CS_CMD_SearchUser();
+            // 搜索好友
+            msg.UserNickName = userNickName;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUser>(
+                SoyHttpApiPath.SearchUser, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingCreateProject = false;
+                    _isRequstingSearchUser = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateProject", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUser", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingCreateProject = false;
+                    _isRequstingSearchUser = false;
                 },
                 form
             );
         }
 
-        public static bool IsRequstingUpdateProject {
-            get { return _isRequstingUpdateProject; }
+        public static bool IsRequstingSearchUserByShortId {
+            get { return _isRequstingSearchUserByShortId; }
         }
-        private static bool _isRequstingUpdateProject = false;
+        private static bool _isRequstingSearchUserByShortId = false;
         /// <summary>
-		/// 更新关卡
+		/// 搜索玩家ID
 		/// </summary>
-		/// <param name="projectId">关卡Id</param>
-		/// <param name="name"></param>
-		/// <param name="summary"></param>
-		/// <param name="programVersion"></param>
-		/// <param name="resourceVersion"></param>
-		/// <param name="passFlag"></param>
-		/// <param name="recordUploadParam"></param>
-		/// <param name="timeLimit">时间限制</param>
-		/// <param name="winCondition">胜利条件</param>
-		/// <param name="uploadParam">上传参数</param>
-        public static void UpdateProject (
-            long projectId,
-            string name,
-            string summary,
-            int programVersion,
-            int resourceVersion,
-            bool passFlag,
-            Msg_RecordUploadParam recordUploadParam,
-            int timeLimit,
-            int winCondition,
-            Msg_ProjectUploadParam uploadParam,
-            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
+		/// <param name="shortId">短id</param>
+        public static void SearchUserByShortId (
+            long shortId,
+            Action<Msg_SC_CMD_SearchUserByShortId> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingUpdateProject) {
+            if (_isRequstingSearchUserByShortId) {
                 return;
             }
-            _isRequstingUpdateProject = true;
-            Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
-            // 更新关卡
-            msg.ProjectId = projectId;
-            msg.Name = name;
-            msg.Summary = summary;
-            msg.ProgramVersion = programVersion;
-            msg.ResourceVersion = resourceVersion;
-            msg.PassFlag = passFlag;
-            msg.RecordUploadParam = recordUploadParam;
-            msg.TimeLimit = timeLimit;
-            msg.WinCondition = winCondition;
-            msg.UploadParam = uploadParam;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
-                SoyHttpApiPath.UpdateProject, msg, ret => {
+            _isRequstingSearchUserByShortId = true;
+            Msg_CS_CMD_SearchUserByShortId msg = new Msg_CS_CMD_SearchUserByShortId();
+            // 搜索玩家ID
+            msg.ShortId = shortId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchUserByShortId>(
+                SoyHttpApiPath.SearchUserByShortId, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingUpdateProject = false;
+                    _isRequstingSearchUserByShortId = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateProject", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchUserByShortId", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingUpdateProject = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingDeleteProject {
-            get { return _isRequstingDeleteProject; }
-        }
-        private static bool _isRequstingDeleteProject = false;
-        /// <summary>
-		/// 删除关卡
-		/// </summary>
-		/// <param name="projectId">关卡Id</param>
-        public static void DeleteProject (
-            List<long> projectId,
-            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingDeleteProject) {
-                return;
-            }
-            _isRequstingDeleteProject = true;
-            Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
-            // 删除关卡
-            msg.ProjectId.AddRange(projectId);
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProject>(
-                SoyHttpApiPath.DeleteProject, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingDeleteProject = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProject", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingDeleteProject = false;
+                    _isRequstingSearchUserByShortId = false;
                 },
                 form
             );
@@ -1074,6 +1035,205 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDownloadProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingSearchWorldProject {
+            get { return _isRequstingSearchWorldProject; }
+        }
+        private static bool _isRequstingSearchWorldProject = false;
+        /// <summary>
+		/// 搜索关卡
+		/// </summary>
+		/// <param name="shortId">短id</param>
+        public static void SearchWorldProject (
+            long shortId,
+            Action<Msg_SC_CMD_SearchWorldProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSearchWorldProject) {
+                return;
+            }
+            _isRequstingSearchWorldProject = true;
+            Msg_CS_CMD_SearchWorldProject msg = new Msg_CS_CMD_SearchWorldProject();
+            // 搜索关卡
+            msg.ShortId = shortId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SearchWorldProject>(
+                SoyHttpApiPath.SearchWorldProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSearchWorldProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SearchWorldProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSearchWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCreateProject {
+            get { return _isRequstingCreateProject; }
+        }
+        private static bool _isRequstingCreateProject = false;
+        /// <summary>
+		/// 创建关卡
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="summary"></param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="passFlag"></param>
+		/// <param name="recordUploadParam"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
+        public static void CreateProject (
+            string name,
+            string summary,
+            int programVersion,
+            int resourceVersion,
+            bool passFlag,
+            Msg_RecordUploadParam recordUploadParam,
+            int timeLimit,
+            int winCondition,
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateProject) {
+                return;
+            }
+            _isRequstingCreateProject = true;
+            Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
+            // 创建关卡
+            msg.Name = name;
+            msg.Summary = summary;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.PassFlag = passFlag;
+            msg.RecordUploadParam = recordUploadParam;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
+                SoyHttpApiPath.CreateProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateProject {
+            get { return _isRequstingUpdateProject; }
+        }
+        private static bool _isRequstingUpdateProject = false;
+        /// <summary>
+		/// 更新关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="name"></param>
+		/// <param name="summary"></param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="passFlag"></param>
+		/// <param name="recordUploadParam"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
+		/// <param name="uploadParam">上传参数</param>
+        public static void UpdateProject (
+            long projectId,
+            string name,
+            string summary,
+            int programVersion,
+            int resourceVersion,
+            bool passFlag,
+            Msg_RecordUploadParam recordUploadParam,
+            int timeLimit,
+            int winCondition,
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateProject) {
+                return;
+            }
+            _isRequstingUpdateProject = true;
+            Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
+            // 更新关卡
+            msg.ProjectId = projectId;
+            msg.Name = name;
+            msg.Summary = summary;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.PassFlag = passFlag;
+            msg.RecordUploadParam = recordUploadParam;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
+            msg.UploadParam = uploadParam;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
+                SoyHttpApiPath.UpdateProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteProject {
+            get { return _isRequstingDeleteProject; }
+        }
+        private static bool _isRequstingDeleteProject = false;
+        /// <summary>
+		/// 删除关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void DeleteProject (
+            List<long> projectId,
+            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProject) {
+                return;
+            }
+            _isRequstingDeleteProject = true;
+            Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
+            // 删除关卡
+            msg.ProjectId.AddRange(projectId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProject>(
+                SoyHttpApiPath.DeleteProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProject = false;
                 },
                 form
             );
@@ -1594,6 +1754,52 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingUpgradeTrainGrade = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReceiveQQGameReward {
+            get { return _isRequstingReceiveQQGameReward; }
+        }
+        private static bool _isRequstingReceiveQQGameReward = false;
+        /// <summary>
+		/// QQ蓝钻大厅特权奖励领取
+		/// </summary>
+		/// <param name="type">特权类型</param>
+		/// <param name="subType">特权子类型</param>
+		/// <param name="inx">下标</param>
+		/// <param name="blueVipType">蓝钻类型</param>
+        public static void ReceiveQQGameReward (
+            EQQGamePrivilegeType type,
+            EQQGamePrivilegeSubType subType,
+            int inx,
+            EQQGameBlueVipType blueVipType,
+            Action<Msg_SC_CMD_ReceiveQQGameReward> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReceiveQQGameReward) {
+                return;
+            }
+            _isRequstingReceiveQQGameReward = true;
+            Msg_CS_CMD_ReceiveQQGameReward msg = new Msg_CS_CMD_ReceiveQQGameReward();
+            // QQ蓝钻大厅特权奖励领取
+            msg.Type = type;
+            msg.SubType = subType;
+            msg.Inx = inx;
+            msg.BlueVipType = blueVipType;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiveQQGameReward>(
+                SoyHttpApiPath.ReceiveQQGameReward, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReceiveQQGameReward = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReceiveQQGameReward", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReceiveQQGameReward = false;
                 },
                 form
             );
@@ -2214,9 +2420,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void MarkMailRead (
             EMarkMailReadTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_MarkMailRead> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2228,6 +2436,7 @@ namespace GameA
             // 标记已读
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkMailRead>(
                 SoyHttpApiPath.MarkMailRead, msg, ret => {
                     if (successCallback != null) {
@@ -2254,9 +2463,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void ReceiptMailAttach (
             EReceiptMailAttachTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_ReceiptMailAttach> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2268,6 +2479,7 @@ namespace GameA
             // 领取附件
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiptMailAttach>(
                 SoyHttpApiPath.ReceiptMailAttach, msg, ret => {
                     if (successCallback != null) {
@@ -2294,9 +2506,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="targetType"></param>
 		/// <param name="idList"></param>
+		/// <param name="mailType">邮件类型</param>
         public static void DeleteMail (
             EDeleteMailTargetType targetType,
             List<long> idList,
+            EMailType mailType,
             Action<Msg_SC_CMD_DeleteMail> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2308,6 +2522,7 @@ namespace GameA
             // 领取附件
             msg.TargetType = targetType;
             msg.IdList.AddRange(idList);
+            msg.MailType = mailType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteMail>(
                 SoyHttpApiPath.DeleteMail, msg, ret => {
                     if (successCallback != null) {
@@ -2320,6 +2535,46 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDeleteMail = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingShareProject {
+            get { return _isRequstingShareProject; }
+        }
+        private static bool _isRequstingShareProject = false;
+        /// <summary>
+		/// 分享关卡
+		/// </summary>
+		/// <param name="projectId"></param>
+		/// <param name="userIdList"></param>
+        public static void ShareProject (
+            long projectId,
+            List<long> userIdList,
+            Action<Msg_SC_CMD_ShareProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingShareProject) {
+                return;
+            }
+            _isRequstingShareProject = true;
+            Msg_CS_CMD_ShareProject msg = new Msg_CS_CMD_ShareProject();
+            // 分享关卡
+            msg.ProjectId = projectId;
+            msg.UserIdList.AddRange(userIdList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ShareProject>(
+                SoyHttpApiPath.ShareProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingShareProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ShareProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingShareProject = false;
                 },
                 form
             );

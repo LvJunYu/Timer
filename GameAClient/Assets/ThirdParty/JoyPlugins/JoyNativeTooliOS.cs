@@ -140,7 +140,7 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
     
     public bool TryGetFromStreamingAssets(string fileName, out byte[] bytes)
     {
-        string fileFullName = Path.Combine(ResPath.StreamingAssetsPath, fileName);
+        string fileFullName = Path.Combine(ResPath.RuntimeStreamingAssetsPath, fileName);
         bytes = null;
         if (!File.Exists(fileFullName)) {
             return false;

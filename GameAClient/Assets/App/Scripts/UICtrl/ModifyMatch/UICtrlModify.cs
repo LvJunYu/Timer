@@ -1,124 +1,109 @@
-﻿/********************************************************************
-** Filename : UICtrlModifyMatchMain
-** Author : Quan
-** Date : 2015/4/30 16:35:16
-** Summary : UICtrlSingleMode
-***********************************************************************/
-
-using System;
-using System.Collections;
+﻿using System;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlModify : UICtrlGenericBase<UIViewModify>
+    [UIResAutoSetup(EResScenary.UIHome)]
+    public class UICtrlModify : UICtrlGenericBase<UIViewModify>
     {
-        #region 常量与字段
         private const float _randomPickStateTime = 4.0f;
         private const string _canPublish = "可发布";
         private const string _cantPublish = "还未通关";
+
         /// <summary>
         /// 随机改造关卡计时器，点击随机按钮后进入随机状态，至少持续N秒，收到回包且计时器结束则进入下一状态
         /// </summary>
         private float _randomPickTimer;
+
         private USCtrlModifyCard _curModifyCard;
-        #endregion
 
-        #region 属性
-
-
-        #endregion
-
-        #region 方法
-        protected override void OnOpen (object parameter)
+        protected override void OnViewCreated()
         {
-            base.OnOpen (parameter);
-            Refresh ();
-            _cachedView.InputBlock.SetActiveEx (false);
-            _randomPickTimer = 0;
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.RandomPickBtn.onClick.AddListener(OnRamdomPickBtn);
+            _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
+            _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.RepickBtn.onClick.AddListener(OnRepickBtn);
+            _curModifyCard = new USCtrlModifyCard();
+            _curModifyCard.Init(_cachedView.CurrentModifyCard);
         }
 
-        protected override void OnClose()
+        protected override void OnOpen(object parameter)
         {
-            base.OnClose();
+            base.OnOpen(parameter);
+            RefreshView();
+            _cachedView.InputBlock.SetActiveEx(false);
+            _randomPickTimer = 0;
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
-			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
-//            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
         }
 
-        protected override void OnViewCreated()
+        protected override void InitGroupId()
         {
-            base.OnViewCreated();
-
-			_cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
-
-            _cachedView.RandomPickBtn.onClick.AddListener (OnRamdomPickBtn);
-            _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
-            _cachedView.EditBtn.onClick.AddListener (OnEditBtn);
-            _cachedView.RepickBtn.onClick.AddListener (OnRepickBtn);
-
-            _curModifyCard = new USCtrlModifyCard ();
-            _curModifyCard.Init (_cachedView.CurrentModifyCard);
+            _groupId = (int) EUIGroupType.MainPopUpUI2;
         }
 
-        public override void OnUpdate ()
+        public override void OnUpdate()
         {
-            base.OnUpdate ();
-
-            if (_randomPickTimer > 0) {
+            base.OnUpdate();
+            if (_randomPickTimer > 0)
+            {
                 _randomPickTimer -= Time.deltaTime;
-                if (_randomPickTimer <= 0) {
-                    if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
+                if (_randomPickTimer <= 0)
+                {
+                    if (LocalUser.Instance.MatchUserData.CurReformState == (int) EReformState.RS_Editing)
+                    {
                         if (_isOpen)
-                            Refresh ();
-                        _cachedView.InputBlock.SetActiveEx (false);
-                    } else {
+                        {
+                            RefreshView();
+                        }
+                        _cachedView.InputBlock.SetActiveEx(false);
+                    }
+                    else
+                    {
                         _randomPickTimer = 0.001f;
                     }
                 }
             }
         }
-			
 
-		private void Refresh () {
-            if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
-                _curModifyCard.SeEmpty ();
-                _cachedView.RandomPickBtn.SetActiveEx (true);
-                _cachedView.EditBtn.SetActiveEx (false);
-                _cachedView.RepickBtn.SetActiveEx (false);
-                _cachedView.PublishBtn.SetActiveEx (false);
-            } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
-                _curModifyCard.SetProject (
-                    LocalUser.Instance.MatchUserData.CurReformProject,
-                    LocalUser.Instance.MatchUserData.CurReformSection,
-                    LocalUser.Instance.MatchUserData.CurReformLevel
-                );
-
-                _cachedView.RandomPickBtn.SetActiveEx (false);
-                _cachedView.EditBtn.SetActiveEx (true);
-                _cachedView.RepickBtn.SetActiveEx (true);
-                _cachedView.PublishBtn.SetActiveEx (true);
-
-            } else {
-                SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
+        private void RefreshView()
+        {
+            if (LocalUser.Instance.MatchUserData.CurReformState <= (int) EReformState.RS_WaitForChance)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlModify>();
+                return;
             }
-		}
+            bool empty = LocalUser.Instance.MatchUserData.CurReformState == (int) EReformState.RS_ChanceReady;
+            _cachedView.RandomPickBtn.SetActiveEx(empty);
+            _cachedView.EditBtn.SetActiveEx(!empty);
+            _cachedView.RepickBtn.SetActiveEx(!empty);
+            _cachedView.PublishBtn.SetActiveEx(!empty);
+            if (empty)
+            {
+                _curModifyCard.SeEmpty();
+            }
+            else
+            {
+                _curModifyCard.SetProject(LocalUser.Instance.MatchUserData.CurReformProject,
+                    LocalUser.Instance.MatchUserData.CurReformSection,
+                    LocalUser.Instance.MatchUserData.CurReformLevel);
+            }
+        }
 
-        private void StartModifyEdit () {
+        private void StartModifyEdit()
+        {
             if (!LocalUser.Instance.MatchUserData.CurReformProject.IsInited)
                 return;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在获取关卡数据");
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在获取关卡数据");
             Project project = LocalUser.Instance.MatchUserData.CurReformProject;
 //            if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited && 
 //                !string.IsNullOrEmpty(LocalUser.Instance.MatchUserData.CurReformProject.ResPath)) {
@@ -151,145 +136,166 @@ namespace GameA
 //            if (null == project)
 //                return;
             project.PrepareRes(
-                () => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     GameManager.Instance.RequestModify(project);
                     SocialApp.Instance.ChangeToGame();
                 }
             );
         }
 
-        private void PublishProject ()
+        private void PublishProject()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在发布关卡");
-            LocalUser.Instance.MatchUserData.CurReformProject.PublishModifyProject (
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在发布关卡");
+            LocalUser.Instance.MatchUserData.CurReformProject.PublishModifyProject(
                 () =>
                 {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
-                    SocialGUIManager.ShowPopupDialog ("改造关卡发布成功");
-                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_WaitForChance;
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlModify>();
+                    SocialGUIManager.ShowPopupDialog("改造关卡发布成功");
+                    LocalUser.Instance.MatchUserData.CurReformState = (int) EReformState.RS_WaitForChance;
                     LocalUser.Instance.MatchUserData.CurPublishTime = LocalUser.Instance.MatchUserData.CurPublishTime;
                 },
-                (code) => 
+                (code) =>
                 {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + code.ToString ());
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("改造关卡发布失败，代码：" + code.ToString());
                 }
             );
         }
 
-        #region 接口
-        protected override void InitGroupId()
+        private void OnCloseBtn()
         {
-			_groupId = (int)EUIGroupType.PopUpUI;
-        }
-			
-
-		private void OnCloseBtn () {
             SocialGUIManager.Instance.CloseUI<UICtrlModify>();
-		}
+        }
 
-		private void OnPublishBtn () {
-            
+        private void OnPublishBtn()
+        {
             if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited &&
-                true == LocalUser.Instance.MatchUserData.CurReformProject.PassFlag) {
-
+                LocalUser.Instance.MatchUserData.CurReformProject.PassFlag)
+            {
                 // 判断有没有正在生效的关卡
                 bool hasValidPublishProject = LocalUser.Instance.MatchUserData.CurPublishProject != null;
-                long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
-                if ((now - LocalUser.Instance.MatchUserData.CurPublishTime) > MatchUserData.PublishedProjectValidTimeLength) {
+                long now = DateTimeUtil.GetServerTimeNowTimestampMillis();
+                if ((now - LocalUser.Instance.MatchUserData.CurPublishTime) >
+                    MatchUserData.PublishedProjectValidTimeLength)
+                {
                     hasValidPublishProject = false;
                 }
                 if (hasValidPublishProject)
                 {
-                    SocialGUIManager.ShowPopupDialog (
-	                    "新发布的关卡会覆盖正在生效的发布关卡，确认要发布吗？",
-	                    "确认发布",
-	                    new KeyValuePair<string, Action> ("确定", () => {
-                            if (LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f) {
-                                SocialGUIManager.ShowPopupDialog (
+                    SocialGUIManager.ShowPopupDialog(
+                        "新发布的关卡会覆盖正在生效的发布关卡，确认要发布吗？",
+                        "确认发布",
+                        new KeyValuePair<string, Action>("确定", () =>
+                        {
+                            if (LocalUser.Instance.MatchUserData.PlayCountForReward /
+                                (float) LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f)
+                            {
+                                SocialGUIManager.ShowPopupDialog(
                                     "当前还有未领取的奖励，请先领取奖励",
                                     null,
-                                    new KeyValuePair<string, Action> ("确定", null)
+                                    new KeyValuePair<string, Action>("确定", null)
                                 );
                                 return;
                             }
-                            PublishProject ();
+                            PublishProject();
                         }),
-                        new KeyValuePair<string, Action> ("取消", null)
+                        new KeyValuePair<string, Action>("取消", null)
                     );
-                } else {
+                }
+                else
+                {
                     // 判断有没有未收取的奖励
-                    if (LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f) {
-                        SocialGUIManager.ShowPopupDialog (
+                    if (LocalUser.Instance.MatchUserData.PlayCountForReward /
+                        (float) LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f)
+                    {
+                        SocialGUIManager.ShowPopupDialog(
                             "当前还有未领取的奖励，请先领取奖励",
                             null,
-                            new KeyValuePair<string, Action> ("确定", null)
+                            new KeyValuePair<string, Action>("确定", null)
                         );
                         return;
                     }
-                    PublishProject ();
+                    PublishProject();
                 }
-
-            } else {
-                SocialGUIManager.ShowPopupDialog ("改造关卡还没有成功通关，不可发布");
             }
-		}
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("改造关卡还没有成功通关，不可发布");
+            }
+        }
 
-        private void OnEditBtn () {
-            if (LocalUser.Instance.MatchUserData.IsDirty) {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在获取关卡数据");
-                LocalUser.Instance.MatchUserData.Request (
+        private void OnEditBtn()
+        {
+            if (LocalUser.Instance.MatchUserData.IsDirty)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在获取关卡数据");
+                LocalUser.Instance.MatchUserData.Request(
                     LocalUser.Instance.UserGuid,
-                    () => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    () =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         StartModifyEdit();
                     },
-                    code => {
+                    code =>
+                    {
                         // todo network error
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                 );
-            } else {
+            }
+            else
+            {
                 StartModifyEdit();
             }
         }
 
-        private void OnRepickBtn () {
-            if (LocalUser.Instance.MatchUserData.CurReformState != (int)EReformState.RS_Editing) {
+        private void OnRepickBtn()
+        {
+            if (LocalUser.Instance.MatchUserData.CurReformState != (int) EReformState.RS_Editing)
+            {
                 return;
             }
-            SocialGUIManager.ShowPopupDialog (
-                string.Format ("花费 {0}金币 重新随机改造的基础关卡，当前编辑的内容全部作废，可以吗？", 10),
+            SocialGUIManager.ShowPopupDialog(
+                string.Format("花费 {0}金币 重新随机改造的基础关卡，当前编辑的内容全部作废，可以吗？", 10),
                 "确定重新随机吗",
-                new KeyValuePair<string, Action> ("确定", () => {
+                new KeyValuePair<string, Action>("确定", () =>
+                {
                     // todo repick cost
-                    if (GameATools.CheckGold(10)) {
-                        LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_ChanceReady;
+                    if (GameATools.CheckGold(10))
+                    {
+                        LocalUser.Instance.MatchUserData.CurReformState = (int) EReformState.RS_ChanceReady;
                         _randomPickTimer = _randomPickStateTime;
-                        _cachedView.InputBlock.SetActiveEx (true);                        
+                        _cachedView.InputBlock.SetActiveEx(true);
                         RemoteCommands.ReselectReformLevel(
                             LocalUser.Instance.MatchUserData.CurReformSection,
                             LocalUser.Instance.MatchUserData.CurReformLevel,
-                            msg => {
-                                if (msg.ResultCode == (int)EReselectReformLevelCode.RRLC_Success) {
+                            msg =>
+                            {
+                                if (msg.ResultCode == (int) EReselectReformLevelCode.RRLC_Success)
+                                {
                                     LocalUser.Instance.MatchUserData.CurReformSection = msg.NewReformSection;
                                     LocalUser.Instance.MatchUserData.CurReformLevel = msg.NewReformLevel;
-                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
-                                    LocalUser.Instance.MatchUserData.CurReformProject.TargetSection = msg.NewReformSection;
+                                    LocalUser.Instance.MatchUserData.CurReformState = (int) EReformState.RS_Editing;
+                                    LocalUser.Instance.MatchUserData.CurReformProject.TargetSection =
+                                        msg.NewReformSection;
                                     LocalUser.Instance.MatchUserData.CurReformProject.TargetLevel = msg.NewReformLevel;
                                     LocalUser.Instance.MatchUserData.CurReformProject.ResPath = string.Empty;
                                     GameATools.LocalUseGold(10);
                                     // 立刻请求更新数据，以获取改造中的project
                                     LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
-                                } else {
-                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
+                                }
+                                else
+                                {
+                                    LocalUser.Instance.MatchUserData.CurReformState = (int) EReformState.RS_Editing;
                                     SocialGUIManager.ShowPopupDialog("重新随机改造关卡失败，原因代码：" + msg.ResultCode.ToString());
                                     _randomPickTimer = 0.01f;
                                 }
                             },
-                            code => {
+                            code =>
+                            {
                                 // todo handle error
                                 SocialGUIManager.ShowPopupDialog("重新随机改造关卡失败，原因代码：" + code.ToString());
                                 _randomPickTimer = 0.01f;
@@ -297,57 +303,45 @@ namespace GameA
                         );
                     }
                 }),
-                new KeyValuePair<string, Action> ("取消", () => {
-                })
+                new KeyValuePair<string, Action>("取消", () => { })
             );
         }
 
-        private void OnRamdomPickBtn () {
-            if (LocalUser.Instance.MatchUserData.CurReformState != (int)EReformState.RS_ChanceReady) {
-                return;
-            }
+        private void OnRamdomPickBtn()
+        {
+            if (LocalUser.Instance.MatchUserData.CurReformState != (int) EReformState.RS_ChanceReady) return;
             _randomPickTimer = _randomPickStateTime;
-            _cachedView.InputBlock.SetActiveEx (true);
-            RemoteCommands.Reform (0,
-                msg => {
-                    if ((int)EReformCode.ReformC_Success == msg.ResultCode) {
+            _cachedView.InputBlock.SetActiveEx(true);
+            RemoteCommands.Reform(0, msg =>
+                {
+                    if ((int) EReformCode.ReformC_Success == msg.ResultCode)
+                    {
                         LocalUser.Instance.MatchUserData.CurReformSection = msg.NewReformSection;
                         LocalUser.Instance.MatchUserData.CurReformLevel = msg.NewReformLevel;
-                        LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
+                        LocalUser.Instance.MatchUserData.CurReformState = (int) EReformState.RS_Editing;
                         // 立刻请求更新数据，以获取改造中的project
-                        LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
-                    } else {
-                        // todo network error handle
-                        //Debug.Log ("___________________Reform error result code : " + msg.ResultCode);
-                        _cachedView.InputBlock.SetActiveEx (false);
+                        LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, RefreshView, null);
+                    }
+                    else
+                    {
+                        _cachedView.InputBlock.SetActiveEx(false);
                         _randomPickTimer = 0f;
-                        SocialGUIManager.ShowPopupDialog ("错误代码： " + msg.ResultCode, "出错了", new KeyValuePair<string, Action>("确认", null));
+                        SocialGUIManager.ShowPopupDialog("错误代码： " + msg.ResultCode, "出错了",
+                            new KeyValuePair<string, Action>("确认", null));
                     }
                 },
-                code => {
-                    // todo network error handle
-                    _cachedView.InputBlock.SetActiveEx (false);
+                code =>
+                {
+                    _cachedView.InputBlock.SetActiveEx(false);
                     _randomPickTimer = 0f;
-                    SocialGUIManager.ShowPopupDialog ("错误代码： " + code.ToString (), "网络错误", new KeyValuePair<string, Action> ("确认", null));
+                    SocialGUIManager.ShowPopupDialog("错误代码： " + code.ToString(), "网络错误",
+                        new KeyValuePair<string, Action>("确认", null));
                 }
             );
         }
 
-        private void OnReturnToApp () {
-//            if (LocalUser.Instance.MatchUserData.IsDirty) {
-//                LocalUser.Instance.MatchUserData.Request (
-//                    LocalUser.Instance.UserGuid,
-//                    () => {
-//                        Refresh();
-//                    },
-//                    code => {
-//                        // todo network error
-//                    }
-//                );
-//            }
+        private void OnReturnToApp()
+        {
         }
-        #endregion 接口
-        #endregion
-
     }
 }

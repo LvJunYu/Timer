@@ -39,3 +39,13 @@ GameAClient/GameAClient.CSharp.Editor.Plugins.csproj
 *.user
 GameAClient/iOSProject
 *.apk
+*.app
+ProjectVersion.txt
+*.pdb
+*.pdb.meta
+*.sdf
+Tools/Project/QQGame_Joyyou_Dll/QQGameMsgExporter/QQGameMsgExporter/Release
+Tools/Project/QQGame_Joyyou_Dll/QQGameMsgExporter/Release
+Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/ipch
+Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Debug
+Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Release

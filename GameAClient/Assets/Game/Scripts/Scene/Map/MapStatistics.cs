@@ -6,10 +6,8 @@
 ***********************************************************************/
 
 using System;
-using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using IntRect = SoyEngine.IntRect;
 
 namespace GameA.Game
 {
@@ -109,19 +107,19 @@ namespace GameA.Game
 
         public int MsgWinCondition {
             get {
-                int result = 0;
-                if (HasWinCondition (EWinCondition.KillMonster)) {
-                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Monster;
+                int result = 1;
+                if (HasWinCondition (EWinCondition.WC_Monster)) {
+                    result |= 1 << (int)EWinCondition.WC_Monster;
                 }
-                if (HasWinCondition (EWinCondition.CollectTreasure)) {
-                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Collect;
+                if (HasWinCondition (EWinCondition.WC_Collect)) {
+                    result |= 1 << (int)EWinCondition.WC_Collect;
                 }
-                if (HasWinCondition (EWinCondition.Arrived)) {
-                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Arrive;
+                if (HasWinCondition (EWinCondition.WC_Arrive)) {
+                    result |= 1 << (int)EWinCondition.WC_Arrive;
                 }
                 // 
                 if (result == 0) {
-                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_None;
+                    result |= 1 << (int)EWinCondition.WC_TimeLimit;
                 }
                 return result;
             }
@@ -134,7 +132,7 @@ namespace GameA.Game
 
         public MapStatistics()
         {
-            _winCondition = 1 << (int) EWinCondition.Arrived | 1 << (int) EWinCondition.TimeLimit;
+            _winCondition = 1 << (int) EWinCondition.WC_Arrive | 1 << (int) EWinCondition.WC_TimeLimit;
             _timeLimit = 30;
             _lifeCount = 3;
         }
@@ -166,7 +164,7 @@ namespace GameA.Game
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
-            if (eWinCondition == EWinCondition.TimeLimit)
+            if (eWinCondition == EWinCondition.WC_TimeLimit)
             {
                 return true;
             }

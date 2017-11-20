@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AchievementStatisticItem : SyncronisticData {
+    public partial class AchievementStatisticItem : SyncronisticData<Msg_AchievementStatisticItem> {
         #region 字段
         /// <summary>
         /// 统计数据类别
@@ -62,7 +62,25 @@ namespace GameA
             _type = msg.Type;     
             _count = msg.Count;     
             _lastActionTime = msg.LastActionTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_AchievementStatisticItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _count = msg.Count;           
+            _lastActionTime = msg.LastActionTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (AchievementStatisticItem obj)
+        {
+            if (null == obj) return false;
+            _type = obj.Type;           
+            _count = obj.Count;           
+            _lastActionTime = obj.LastActionTime;           
             return true;
         }
 

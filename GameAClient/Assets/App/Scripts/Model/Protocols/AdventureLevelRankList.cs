@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureLevelRankList : SyncronisticData {
+    public partial class AdventureLevelRankList : SyncronisticData<Msg_SC_DAT_AdventureLevelRankList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -202,7 +202,38 @@ namespace GameA
             for (int i = 0; i < msg.RecordList.Count; i++) {
                 _recordList.Add(new Record(msg.RecordList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AdventureLevelRankList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _recordList) {
+                _recordList = new List<Record>();
+            }
+            _recordList.Clear();
+            for (int i = 0; i < msg.RecordList.Count; i++) {
+                _recordList.Add(new Record(msg.RecordList[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (AdventureLevelRankList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.RecordList) return false;
+            if (null ==  _recordList) {
+                _recordList = new List<Record>();
+            }
+            _recordList.Clear();
+            for (int i = 0; i < obj.RecordList.Count; i++){
+                _recordList.Add(obj.RecordList[i]);
+            }
             return true;
         }
 

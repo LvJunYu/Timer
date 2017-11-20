@@ -1,26 +1,15 @@
-﻿/********************************************************************
-** Filename : UICtrlModifyMatchMain
-** Author : Quan
-** Date : 2015/4/30 16:35:16
-** Summary : UICtrlSingleMode
-***********************************************************************/
-
-using GameA.Game;
+﻿using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
     public class USCtrlAdvLvlDetailInfo : USCtrlBase<USViewAdvLvlDetailInfo>
     {
-        #region 常量与字段
-        #endregion
-
-        #region 属性
-
-
-        #endregion
-
-        #region 方法
+        private const string _icon_star_detail = "icon_star_detail";
+        private const string _icon_star_detail_grey = "icon_star_detail_grey";
 
         public void Open(Project project, Table_StandaloneLevel table, AdventureUserLevelDataDetail userLevelDataDetail)
         {
@@ -39,7 +28,7 @@ namespace GameA
                 userLevelDataDetail.SimpleData.Star2Flag,
                 userLevelDataDetail.SimpleData.Star3Flag
             };
-            
+
             for (int i = 0; i < table.StarConditions.Length; i++)
             {
                 var tableStarRequire = TableManager.Instance.GetStarRequire(table.StarConditions[i]);
@@ -50,7 +39,7 @@ namespace GameA
                 }
                 _cachedView.StarDescAry[i].text = string.Format(tableStarRequire.Desc, starValueAry[i]);
                 _cachedView.StarImageAry[i].sprite =
-                    starAry[i] ? _cachedView.PassStarSprite : _cachedView.UnpassStarSprite;
+                    starAry[i] ? GetSprite(_icon_star_detail) : GetSprite(_icon_star_detail_grey);
             }
 
             for (int i = 0; i < _cachedView.PassDescAry.Length; i++)
@@ -61,23 +50,24 @@ namespace GameA
                     var winCondition = string.Empty;
                     switch ((EWinCondition) table.WinConditions[i])
                     {
-                        case EWinCondition.TimeLimit:
+                        case EWinCondition.WC_TimeLimit:
                             if (table.WinConditions.Length == 1)
                             {
-                                winCondition = string.Format("坚持存活 {0}", GameATools.SecondToHour(table.TimeLimit, true));
+                                winCondition = string.Format("坚持存活 {0}",
+                                    GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             else
                             {
                                 winCondition = string.Format("{0} 内过关", GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             break;
-                        case EWinCondition.Arrived:
+                        case EWinCondition.WC_Arrive:
                             winCondition = "到达终点";
                             break;
-                        case EWinCondition.CollectTreasure:
-                            winCondition = "收集所有兽角";
+                        case EWinCondition.WC_Collect:
+                            winCondition = "收集所有兽牙";
                             break;
-                        case EWinCondition.KillMonster:
+                        case EWinCondition.WC_Monster:
                             winCondition = "杀死所有怪物";
                             break;
                     }
@@ -90,11 +80,14 @@ namespace GameA
             }
         }
 
-        public void Close() {
-            _cachedView.gameObject.SetActive (false);
+        public void Close()
+        {
+            _cachedView.gameObject.SetActive(false);
         }
 
-        #endregion
-
+        private Sprite GetSprite(string spriteName)
+        {
+            return JoyResManager.Instance.GetSprite(spriteName);
+        }
     }
 }

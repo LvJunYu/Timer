@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class DataExample : SyncronisticData {
+    public partial class DataExample : SyncronisticData<Msg_SC_DAT_DataExample> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -179,7 +179,40 @@ namespace GameA
             for (int i = 0; i < msg.Struct.Count; i++) {
                 _struct.Add(new Struct(msg.Struct[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_DataExample msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            _name = msg.Name;           
+            _score = msg.Score;           
+            if (null ==  _struct) {
+                _struct = new List<Struct>();
+            }
+            _struct.Clear();
+            for (int i = 0; i < msg.Struct.Count; i++) {
+                _struct.Add(new Struct(msg.Struct[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (DataExample obj)
+        {
+            if (null == obj) return false;
+            _id = obj.Id;           
+            _name = obj.Name;           
+            _score = obj.Score;           
+            if (null ==  obj.Struct) return false;
+            if (null ==  _struct) {
+                _struct = new List<Struct>();
+            }
+            _struct.Clear();
+            for (int i = 0; i < obj.Struct.Count; i++){
+                _struct.Add(obj.Struct[i]);
+            }
             return true;
         }
 

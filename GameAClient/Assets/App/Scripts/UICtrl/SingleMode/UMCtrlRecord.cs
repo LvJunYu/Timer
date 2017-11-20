@@ -13,6 +13,7 @@ namespace GameA
     {
         private Record _record;
         private int _index;
+        private Project _project;
 
         public int Index
         {
@@ -51,25 +52,33 @@ namespace GameA
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, string.Format ("请求进入录像"));
 
-            _record.RequestPlay (() => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                UICtrlAdvLvlDetail uictrlAdvLvlDetail = SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>();
-                SituationAdventureParam param = new SituationAdventureParam();
-                param.ProjectType = uictrlAdvLvlDetail.ProjectType;
-                param.Section = uictrlAdvLvlDetail.ChapterIdx;
-                param.Level = uictrlAdvLvlDetail.LevelIdx;
-                param.Record = _record;
-                GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
-                SocialApp.Instance.ChangeToGame();
-            }, (error) => {
+            _project.PrepareRes(() =>
+            {
+                _record.RequestPlay (() => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    UICtrlAdvLvlDetail uictrlAdvLvlDetail = SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>();
+                    SituationAdventureParam param = new SituationAdventureParam();
+                    param.ProjectType = uictrlAdvLvlDetail.ProjectType;
+                    param.Section = uictrlAdvLvlDetail.ChapterIdx;
+                    param.Level = uictrlAdvLvlDetail.LevelIdx;
+                    param.Record = _record;
+                    GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
+                    SocialApp.Instance.ChangeToGame();
+                }, (error) => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    SocialGUIManager.ShowPopupDialog("进入录像失败");
+                });
+            }, () =>
+            {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 SocialGUIManager.ShowPopupDialog("进入录像失败");
             });
         }
 
-        public void Set(object obj,string name)
+        public void Set(Record record, Project project, string name)
         {
-            _record = obj as Record;
+            _record = record;
+            _project = project;
             _cachedView.TapName.text = name;
             _cachedView.SubmitTime.text = GetSubmitTime();
             _cachedView.Duration.text = GameATools.SecondToHour(_record.UsedTime);

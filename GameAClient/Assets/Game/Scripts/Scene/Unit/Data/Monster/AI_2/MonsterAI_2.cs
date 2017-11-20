@@ -154,6 +154,7 @@ namespace GameA.Game
             {
                 _timerStupid--;
             }
+            if(_isClayOnWall) return;
             switch (_eMonsterState)
             {
                 case EMonsterState.Idle:
@@ -161,7 +162,19 @@ namespace GameA.Game
                     SetInput(EInputType.Left, false);
                     break;
                 case EMonsterState.Run:
-                    OnRun();
+                    SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    if (_timerRun == 0)
+                    {
+                        int value = Random.Range(0, 10);
+                        if (_intelligenc <= value)
+                        {
+                            ChangeState(EMonsterState.Stupid);
+                        }
+                        else
+                        {
+                            _timerRun = 30;
+                        }
+                    } 
                     break;
                 case EMonsterState.Stupid:
                     SetInput(EInputType.Right, false);
@@ -216,23 +229,6 @@ namespace GameA.Game
                     SetInput(EInputType.Skill1, true);
                     break;
             }
-        }
-
-        protected virtual void OnRun()
-        {
-            SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
-            if (_timerRun == 0)
-            {
-                int value = Random.Range(0, 10);
-                if (_intelligenc <= value)
-                {
-                    ChangeState(EMonsterState.Stupid);
-                }
-                else
-                {
-                    _timerRun = 30;
-                }
-            } 
         }
     }
 }

@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -21,19 +23,30 @@ namespace GameA
 
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
+        private bool _battleAvailable;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
+        private bool _chatAvailable;
         private bool _fashionShopAvailable = true;
         private bool _puzzleAvailable;
         private bool _trainAvailable = false;
         private bool _achievementAvailable;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
+
+        private string _buleOpen = "icon_home_qq_2_o";
+        private string _blueNoOpen = "icon_home_qq_2";
+
+        private string _hallOpen = "icon_home_qq_d";
+
+        private string _hallNoOpen = "icon_home_qq_1";
+
 //        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
         private bool _pushGoldEnergyStyle;
+
         #endregion
 
         #region 属性
@@ -55,16 +68,17 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+
+            RegisterEvent(EMessengerType.OnQQRewardGetChangee, RefreshQQReward);
+            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
         }
 
-        private void OnChangeToUserInfo()
+        private void OnChangeToUserInfo(long id)
         {
-            if (!_isViewCreated)
+            if (_isOpen && id == LocalUser.Instance.UserGuid)
             {
-                return;
+                RefreshUserInfo();
             }
-            RefreshUserInfo();
         }
 
         protected override void OnViewCreated()
@@ -73,7 +87,10 @@ namespace GameA
             //为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
 //            _cachedView.Account.onClick.AddListener(Account);
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
-
+            _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
+            _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
+            _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
+            _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -87,7 +104,10 @@ namespace GameA
             _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
+            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
+            _cachedView.QQHallBtn.onClick.AddListener(OnQQHallBtn);
+            _cachedView.QQBlueBtn.onClick.AddListener(OnQQBlueBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -98,7 +118,9 @@ namespace GameA
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
+            SetLock(UIFunction.UI_Battle, _battleAvailable);
             SetLock(UIFunction.UI_Weapon, _weaponAvailable);
+            SetLock(UIFunction.UI_Chat, _chatAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
@@ -116,11 +138,13 @@ namespace GameA
             base.OnOpen(parameter);
             if (!_pushGoldEnergyStyle)
             {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>()
+                    .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
                 _pushGoldEnergyStyle = true;
             }
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
+            RefreshQQReward();
         }
 
         protected override void OnClose()
@@ -194,6 +218,13 @@ namespace GameA
                     _worldAvailable = ifunlock;
                 }
                     break;
+                case UIFunction.UI_Battle:
+                {
+                    _cachedView.Battle.SetActiveEx(ifunlock);
+                    _cachedView.BattleDisable.SetActiveEx(!ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
                 case UIFunction.UI_Lottery:
                 {
                     _cachedView.Lottery.SetActiveEx(ifunlock);
@@ -218,6 +249,12 @@ namespace GameA
                     }
                 }
                     break;
+                case UIFunction.UI_Chat:
+                {
+                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
+                    _chatAvailable = ifunlock;
+                }
+                    break;
             }
         }
 
@@ -233,7 +270,9 @@ namespace GameA
             UI_Friends = 7,
             UI_Train = 8,
             UI_Achievement = 9,
-            UI_Weapon
+            UI_Weapon,
+            UI_Chat,
+            UI_Battle
         }
 
         public void OnCreateBtn()
@@ -250,10 +289,7 @@ namespace GameA
 
         public void UIPersonalInformation()
         {
-            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.WorkShop))
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>();
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User);
         }
 
         public void OnSignUpBtn()
@@ -266,6 +302,20 @@ namespace GameA
 //            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
 //        }
 
+        private void RechargeBtn()
+        {
+            Application.OpenURL(
+                "http://pay.qq.com/ipay/index.shtml?c=qqacct_save&ch=qqcard,kj,weixin&n=60&aid=pay.index.header.paycenter&ADTAG=pay.index.header.paycenter&aid=7000201");
+        }
+
+        private void ForumBtn()
+        {
+        }
+
+        private void ServiceBtn()
+        {
+        }
+
         public void OnWorldBtn()
         {
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.World))
@@ -276,6 +326,11 @@ namespace GameA
             {
                 SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁世界功能，挑战其他玩家的制作的关卡~");
             }
+        }
+
+        public void OnBattleBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlBattle>();
         }
 
         public void OnMailBtn()
@@ -290,7 +345,6 @@ namespace GameA
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSingleMode>();
         }
-
 
         /// <summary>
         /// 家园角色被点击
@@ -345,6 +399,16 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlHandBook>();
         }
 
+        private void OnQQHallBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlQQHall>();
+        }
+
+        private void OnQQBlueBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlQQBlue>();
+        }
+
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
 
@@ -368,14 +432,21 @@ namespace GameA
             }
         }
 
+        private void OnChatBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+        }
+
         private void RefreshUserInfo()
         {
             _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
                 _cachedView.DefaultUserHeadTexture);
-            //_cachedView.AdventureLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
-            //_cachedView.CreatorLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString();
+            _cachedView.AdventureLevel.text =
+                GameATools.GetLevelString(LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+            _cachedView.CreatorLevel.text =
+                GameATools.GetLevelString(LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel);
             if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Male)
             {
                 _cachedView.MaleIcon.gameObject.SetActive(true);
@@ -391,8 +462,58 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
+            //蓝钻更新信息
+            LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
+        private void RefreshQQReward()
+        {
+//            PlayerPrefs.DeleteKey(RewardSave.Instance.RewardKey);
+            if (PlayerPrefs.HasKey(RewardSave.Instance.RewardKey))
+            {
+                RewardSave.Instance =
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSave>(
+                        PlayerPrefs.GetString(RewardSave.Instance.RewardKey));
+            }
+            if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day) &&
+                RewardSave.Instance.IsQQHallNewPlayerColltion)
+            {
+                Sprite openHall;
+                JoyResManager.Instance.TryGetSprite(_hallOpen, out openHall);
+                _cachedView.QqHallImage.sprite = openHall;
+                _cachedView.QQHallBtn.onClick.RemoveListener(OnQQHallBtn);
+            }
+            else
+            {
+                Sprite openHall;
+                JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
+                _cachedView.QqHallImage.sprite = openHall;
+            }
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip )
+            {
+                if (
+                    RewardSave.Instance.IsQQBlueNewPlayerColltion &&
+                    RewardSave.Instance.IsQQBlueEveryDayColltion.Contains(DateTime.Now.Day))
+                {
+                    _cachedView.QQBlueLight.SetActiveEx(false);
+                    Sprite openBlue;
+                    JoyResManager.Instance.TryGetSprite(_buleOpen, out openBlue);
+                    _cachedView.QqOpenImage.sprite = openBlue;
+                }
+                else
+                {
+                    _cachedView.QQBlueLight.SetActiveEx(true);
+                    Sprite openBlue;
+                    JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
+                    _cachedView.QqOpenImage.sprite = openBlue;
+                } 
+            }
+            else
+            {
+                _cachedView.QQBlueLight.SetActiveEx(false);
+            }
+        }
 
         private void OnUnlockAll()
         {
@@ -418,7 +539,7 @@ namespace GameA
                     //                        SocialGUIManager.ShowPopupDialog("网络错误");
                     //                    }
                     SocialGUIManager.ShowPopupDialog("执行成功，请重新启动程序", null,
-                        new KeyValuePair<string, Action>("OK", () => { Application.Quit(); }));
+                        new KeyValuePair<string, Action>("OK", () => { SocialApp.Instance.Exit(); }));
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 },
                 code =>

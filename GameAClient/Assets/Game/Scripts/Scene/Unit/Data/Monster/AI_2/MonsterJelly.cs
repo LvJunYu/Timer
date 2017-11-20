@@ -20,7 +20,16 @@ namespace GameA.Game
             _maxSpeedX = 20;
             return true;
         }
-        
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (unit.IsPlayer)
+            {
+                Jelly.OnEffect(unit, eDirectionType);
+            }
+            base.Hit(unit, eDirectionType);
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly && other.IsPlayer)

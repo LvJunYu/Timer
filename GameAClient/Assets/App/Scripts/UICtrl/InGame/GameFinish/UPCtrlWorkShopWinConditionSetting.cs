@@ -1,5 +1,6 @@
 ﻿using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -11,10 +12,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitData();
             InitUI();
             _cachedView.SureBtn.onClick.AddListener(OnButtonEnsureClick);
-            _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
         }
 
         public override void Open()
@@ -32,44 +31,29 @@ namespace GameA
 
         public void UpdateAll()
         {
-            UpdateData();
             UpdateUIItem();
             UpdateLifeItem();
         }
-        
-        private FinishCondition _curCondition;
 
         private void OnButtonEnsureClick()
         {
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
-                EditMode.Instance.MapStatistics.SetWinCondition(i, _curCondition.SettingValue[(int) i]);
+                EditMode.Instance.MapStatistics.SetWinCondition(i, _mainCtrl.CurCondition.SettingValue[(int) i]);
             }
-            EditMode.Instance.MapStatistics.TimeLimit = _curCondition.TimeLimit;
-            EditMode.Instance.MapStatistics.LifeCount = _curCondition.LifeCount;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
-        }
-
-        private void OnButtonCancleClick()
-        {
+            EditMode.Instance.MapStatistics.TimeLimit = _mainCtrl.CurCondition.TimeLimit;
+            EditMode.Instance.MapStatistics.LifeCount = _mainCtrl.CurCondition.LifeCount;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
         }
 
         private void OnLifeItemButtonClick(int lifeId)
         {
-            if (_curCondition.LifeCount == lifeId)
+            if (_mainCtrl.CurCondition.LifeCount == lifeId)
             {
                 return;
             }
-            _curCondition.LifeCount = lifeId;
+            _mainCtrl.CurCondition.LifeCount = lifeId;
             UpdateLifeItem();
-        }
-
-        private void InitData()
-        {
-            _curCondition = new FinishCondition();
-            _curCondition.SettingValue = new bool[(int) EWinCondition.Max];
-            _curCondition.TimeLimit = 0;
         }
 
         private void InitUI()
@@ -78,7 +62,7 @@ namespace GameA
             {
                 var item = _cachedView.ItemArray[i];
                 if (item != null)
-                    item.InitItem((EWinCondition) i, _curCondition);
+                    item.InitItem((EWinCondition) i, _mainCtrl.CurCondition);
             }
             for (int i = 0; i < _cachedView.LifeItemArray.Length; i++)
             {
@@ -86,16 +70,6 @@ namespace GameA
                 item.Init(i + 1, OnLifeItemButtonClick);
             }
             _cachedView.LifeShowText.text = "初始生命";
-        }
-
-        public void UpdateData()
-        {
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
-            {
-                _curCondition.SettingValue[(int) i] = EditMode.Instance.MapStatistics.HasWinCondition(i);
-            }
-            _curCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
-            _curCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
 
         private void UpdateUIItem()
@@ -112,7 +86,7 @@ namespace GameA
         {
             for (int i = 0; i < _cachedView.LifeItemArray.Length; i++)
             {
-                _cachedView.LifeItemArray[i].UpdateShow(_curCondition.LifeCount);
+                _cachedView.LifeItemArray[i].UpdateShow(_mainCtrl.CurCondition.LifeCount);
             }
         }
     }

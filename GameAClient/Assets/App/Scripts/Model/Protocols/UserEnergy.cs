@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserEnergy : SyncronisticData {
+    public partial class UserEnergy : SyncronisticData<Msg_SC_DAT_UserEnergy> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -131,7 +131,27 @@ namespace GameA
             _energyBoostingEndTime = msg.EnergyBoostingEndTime;           
             _energyLastRefreshTime = msg.EnergyLastRefreshTime;           
             _energyCapacity = msg.EnergyCapacity;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserEnergy msg)
+        {
+            if (null == msg) return false;
+            _energy = msg.Energy;           
+            _energyBoostingEndTime = msg.EnergyBoostingEndTime;           
+            _energyLastRefreshTime = msg.EnergyLastRefreshTime;           
+            _energyCapacity = msg.EnergyCapacity;           
+            return true;
+        } 
+
+        public bool DeepCopy (UserEnergy obj)
+        {
+            if (null == obj) return false;
+            _energy = obj.Energy;           
+            _energyBoostingEndTime = obj.EnergyBoostingEndTime;           
+            _energyLastRefreshTime = obj.EnergyLastRefreshTime;           
+            _energyCapacity = obj.EnergyCapacity;           
             return true;
         }
 

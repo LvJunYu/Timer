@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectUploadParam : SyncronisticData {
+    public partial class ProjectUploadParam : SyncronisticData<Msg_ProjectUploadParam> {
         #region 字段
         /// <summary>
         /// 添加的地块信息
@@ -200,7 +200,56 @@ namespace GameA
             _recordUsedLifeCount = msg.RecordUsedLifeCount;     
             _operateCount = msg.OperateCount;     
             _totalOperateTime = msg.TotalOperateTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_ProjectUploadParam msg)
+        {
+            if (null == msg) return false;
+            if (null ==  _usedUnitDataList) {
+                _usedUnitDataList = new List<UnitDataItem>();
+            }
+            _usedUnitDataList.Clear();
+            for (int i = 0; i < msg.UsedUnitDataList.Count; i++) {
+                _usedUnitDataList.Add(new UnitDataItem(msg.UsedUnitDataList[i]));
+            }
+            _mapWidth = msg.MapWidth;           
+            _mapHeight = msg.MapHeight;           
+            _totalUnitCount = msg.TotalUnitCount;           
+            _addCount = msg.AddCount;           
+            _deleteCount = msg.DeleteCount;           
+            _modifyCount = msg.ModifyCount;           
+            _reformRate = msg.ReformRate;           
+            _recordRestartCount = msg.RecordRestartCount;           
+            _recordUsedLifeCount = msg.RecordUsedLifeCount;           
+            _operateCount = msg.OperateCount;           
+            _totalOperateTime = msg.TotalOperateTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (ProjectUploadParam obj)
+        {
+            if (null == obj) return false;
+            if (null ==  obj.UsedUnitDataList) return false;
+            if (null ==  _usedUnitDataList) {
+                _usedUnitDataList = new List<UnitDataItem>();
+            }
+            _usedUnitDataList.Clear();
+            for (int i = 0; i < obj.UsedUnitDataList.Count; i++){
+                _usedUnitDataList.Add(obj.UsedUnitDataList[i]);
+            }
+            _mapWidth = obj.MapWidth;           
+            _mapHeight = obj.MapHeight;           
+            _totalUnitCount = obj.TotalUnitCount;           
+            _addCount = obj.AddCount;           
+            _deleteCount = obj.DeleteCount;           
+            _modifyCount = obj.ModifyCount;           
+            _reformRate = obj.ReformRate;           
+            _recordRestartCount = obj.RecordRestartCount;           
+            _recordUsedLifeCount = obj.RecordUsedLifeCount;           
+            _operateCount = obj.OperateCount;           
+            _totalOperateTime = obj.TotalOperateTime;           
             return true;
         }
 

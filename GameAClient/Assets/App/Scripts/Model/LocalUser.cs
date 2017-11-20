@@ -22,12 +22,14 @@ namespace GameA
         private readonly UsingAvatarPart _usingAvatarData = new UsingAvatarPart();
         private readonly MailList _mailList = new MailList();
         private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
-        private readonly RelationUserList _followRelationUserList = new RelationUserList();
-        private readonly RelationUserList _blockRelationUserList = new RelationUserList();
+        private readonly RelationUserList _relationUserList = new RelationUserList();
+        private readonly AddUserList _addUserList = new AddUserList();
         // 抽奖相关数据
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
         private readonly MatchUserData _matchUserData = new MatchUserData();
+        // 乱入对战相关数据
+        private readonly MatchShadowBattleData _matchShadowBattleData = new MatchShadowBattleData();
         // 增益道具
         private readonly UserProp _userProp = new UserProp();
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
@@ -45,6 +47,8 @@ namespace GameA
         private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
         //成就数据
         private readonly Achievement _achievement = new Achievement();
+        
+        private readonly QQGameReward _qqGameReward = new QQGameReward();
 
         #endregion
         #region 属性
@@ -74,19 +78,19 @@ namespace GameA
             get { return _mailList; }
         }
 
-        public RelationUserList FollowRelationUserList
+        public RelationUserList RelationUserList
         {
             get
             {
-                return _followRelationUserList;
+                return _relationUserList;
             }
         }
-
-        public RelationUserList BlockRelationUserList
+        
+        public AddUserList AddUserList
         {
             get
             {
-                return _blockRelationUserList;
+                return _addUserList;
             }
         }
 
@@ -104,6 +108,12 @@ namespace GameA
                 return _validAvatarData;
             }
         }
+
+        public QQGameReward QqGameReward
+        {
+            get { return _qqGameReward; }
+        }
+
         /// <summary>
         /// 抽奖相关数据
         /// </summary>
@@ -120,6 +130,12 @@ namespace GameA
                 return _matchUserData;
             }
         }
+        
+        public MatchShadowBattleData MatchShadowBattleData
+        {
+            get { return _matchShadowBattleData; }
+        }
+
 
         public PersonalProjectList PersonalProjectList
         {

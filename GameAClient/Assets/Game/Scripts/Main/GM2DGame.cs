@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 游戏所属情景 世界 冒险 匹配
+    /// 游戏所属情景 世界 冒险 匹配 对战
     /// </summary>
     public enum EGameSituation
     {
@@ -23,6 +23,7 @@ namespace GameA.Game
         Adventure,
         Match,
         Battle,
+        ShadowBattle,
     }
 
     /// <summary>
@@ -39,19 +40,32 @@ namespace GameA.Game
     public class GM2DGame : GameBase
     {
         public static GM2DGame Instance;
+
         /// <summary>
         /// 创作工具程序版本号 新做地图无法用老程序打开时变化 比如新加物品类型
         /// </summary>
         public const int Version = 4;
+
         /// <summary>
         /// 地图数据版本号 地图数据含义改变时变化 比如原来记录碰撞体区域，现在改为数据区域
         /// </summary>
         public const int MapVersion = 1;
+
         public const string GameName = "GameMaker2D";
         private GameModeBase _gameMode;
         private GameObject _inputControl;
 
         public static PaintMask PaintMask;
+        public static Action GameExitCallBack;
+
+        public static void OnExit()
+        {
+            if (GameExitCallBack != null)
+            {
+                GameExitCallBack.Invoke();
+                GameExitCallBack = null;
+            }
+        }
 
         public GameModeBase GameMode
         {
@@ -65,18 +79,12 @@ namespace GameA.Game
 
         public int GameScreenWidth
         {
-            get
-            {
-                return Screen.width;
-            }
+            get { return Screen.width; }
         }
 
         public int GameScreenHeight
         {
-            get
-            {
-                return Screen.height;
-            }
+            get { return Screen.height; }
         }
 
         public float GameScreenAspectRatio
@@ -101,6 +109,9 @@ namespace GameA.Game
             {
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
+                    break;
+                case GameManager.EStartType.ShadowBattlePlay:
+                    _gameMode = new GameModeShadowBattlePlay();
                     break;
                 case GameManager.EStartType.WorkshopCreate:
                     _gameMode = new GameModeWorkshopEdit();
@@ -218,7 +229,8 @@ namespace GameA.Game
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             yield return _gameMode.InitByStep();
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+            {
                 Messenger.Broadcast(EMessengerType.OnGameStartComplete);
                 _gameMode.OnGameStart();
             }));
@@ -263,13 +275,12 @@ namespace GameA.Game
             OnGameLoadError("游戏资源加载出错，正在返回");
         }
 
-        public void OnGameLoadError(string msg)
+        public static void OnGameLoadError(string msg)
         {
             CommonTools.ShowPopupDialog(msg);
             Messenger.Broadcast(EMessengerType.OnLoadingErrorCloseUI);
             SocialApp.Instance.ReturnToApp();
         }
-
 
         #endregion
 

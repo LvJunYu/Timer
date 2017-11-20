@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class RewardItem : SyncronisticData {
+    public partial class RewardItem : SyncronisticData<Msg_RewardItem> {
         #region 字段
         /// <summary>
         /// ERewardType奖励类型
@@ -77,7 +77,27 @@ namespace GameA
             _subType = msg.SubType;     
             _id = msg.Id;     
             _count = msg.Count;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_RewardItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _subType = msg.SubType;           
+            _id = msg.Id;           
+            _count = msg.Count;           
+            return true;
+        } 
+
+        public bool DeepCopy (RewardItem obj)
+        {
+            if (null == obj) return false;
+            _type = obj.Type;           
+            _subType = obj.SubType;           
+            _id = obj.Id;           
+            _count = obj.Count;           
             return true;
         }
 

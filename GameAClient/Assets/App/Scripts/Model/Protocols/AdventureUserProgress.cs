@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserProgress : SyncronisticData {
+    public partial class AdventureUserProgress : SyncronisticData<Msg_SC_DAT_AdventureUserProgress> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -161,7 +161,31 @@ namespace GameA
             _encouragePoint = msg.EncouragePoint;           
             _sectionKeyCount = msg.SectionKeyCount;           
             _sectionUnlockProgress = msg.SectionUnlockProgress;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_AdventureUserProgress msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            _completeSection = msg.CompleteSection;           
+            _completeLevel = msg.CompleteLevel;           
+            _encouragePoint = msg.EncouragePoint;           
+            _sectionKeyCount = msg.SectionKeyCount;           
+            _sectionUnlockProgress = msg.SectionUnlockProgress;           
+            return true;
+        } 
+
+        public bool DeepCopy (AdventureUserProgress obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _completeSection = obj.CompleteSection;           
+            _completeLevel = obj.CompleteLevel;           
+            _encouragePoint = obj.EncouragePoint;           
+            _sectionKeyCount = obj.SectionKeyCount;           
+            _sectionUnlockProgress = obj.SectionUnlockProgress;           
             return true;
         }
 

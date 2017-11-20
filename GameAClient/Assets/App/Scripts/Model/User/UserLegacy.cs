@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA
 {
     //[Poolable(MinPoolSize = ConstDefine.MaxLRUUserCount / 10, PreferedPoolSize = ConstDefine.MaxLRUUserCount / 5, MaxPoolSize = ConstDefine.MaxLRUUserCount)]
-    public class User : SyncronisticData
+    public class User
     {
         #region field
         private long _UserId;

@@ -14,7 +14,7 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-	public class SyncronisticData  {
+	public class SyncronisticData<TMsg> {
 		#region Fields
 		protected long _lastSyncTime;
 		protected long _lastDirtyTime;
@@ -65,21 +65,21 @@ namespace GameA
 			_lastSyncTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
 			_inited = true;
 			_dirty = false;
+			_isRequesting = false;
 			if (_syncSuccessCB != null) {
 				_syncSuccessCB.Invoke ();
 				_syncSuccessCB = null;
 			}
 			_syncFailedCB = null;
-            _isRequesting = false;
 		}
 
 		protected void OnSyncFailed (ENetResultCode netResultCode, string errorMsg) {
 			LogHelper.Error ("Network error when sync {0}, error code: {1}, msg: {2}", this.GetType().ToString(), netResultCode, errorMsg);
+			_isRequesting = false;
 			if (_syncFailedCB != null) {
 				_syncFailedCB.Invoke (netResultCode);
 			}
 			_syncSuccessCB = null;
-            _isRequesting = false;
 		}
 
         protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {
@@ -90,7 +90,8 @@ namespace GameA
             _isRequesting = true;
 		}
 
-		protected virtual void OnSyncPartial () { }
+		protected virtual void OnSyncPartial (TMsg msg) { OnSyncPartial(); } 
+		protected virtual void OnSyncPartial () { } 
 
         protected virtual void OnCreate () { }
 		#endregion

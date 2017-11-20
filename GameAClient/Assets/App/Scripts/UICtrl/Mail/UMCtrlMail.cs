@@ -1,91 +1,132 @@
-﻿
-using System;
-using System.Collections;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using System.Collections.Generic;
-using GameA;
-using NewResourceSolution;
 using SoyEngine.Proto;
 
 namespace GameA
 {
-    public class UMCtrlMail: UMCtrlBase<UMViewMail>
+    public class UMCtrlMail : UMCtrlBase<UMViewMail>, IDataItemRenderer
     {
-        private string _mailfetched = "icon_enclosure_d";
-        private string _mailUnfetched = "icon_enclosure";
-        private string _mailRead = "icon_mail_open";
-        private string _mailUnRead = "icon_mail";
+      
+        private static string _receive = "接受";
+        private static string _findout = "查看";
+        private static string _titleFormat = "<color=orange>{0}</color>给您分享了一个关卡";
         private Mail _mail;
+        private List<long> _idList = new List<long>(1);
+        public int Index { get; set; }
 
-        public void Set(Mail mail)
+        public RectTransform Transform
         {
-            _mail = mail;
-            //_cachedView.MailSource.text = JudgeSource(mail);
-            _cachedView.Title.text = mail.Title;
-            _cachedView.MainBody.onClick.AddListener(OnButton);
-            _cachedView.Date.text = GameATools.DateCount(mail.CreateTime);
-            Sprite Flag = null;
-            if (mail.ReadFlag == false)
-            { 
-                //未读
-                if (JoyResManager.Instance.TryGetSprite(_mailUnRead, out Flag))
-                {
-                    _cachedView.ReadFlag.sprite = Flag;
-                }
-            }
-            else
-            {
-                if (JoyResManager.Instance.TryGetSprite(_mailRead, out Flag))
-                {
-                    _cachedView.ReadFlag.sprite = Flag;
-                }
-            }
+            get { return _cachedView.Trans; }
+        }
 
-            if (mail.ReceiptedFlag == false)
+        public object Data
+        {
+            get { return _mail; }
+        }
+
+        public void Set(object data)
+        {
+            if (data == null)
             {
-                //未接收
-                if (JoyResManager.Instance.TryGetSprite(_mailUnfetched, out Flag))
-                {
-                    _cachedView.RewardFlag.sprite = Flag;
-                }
+                Unload();
+                return;
             }
-            else
+            _mail = data as Mail;
+            if (_mail != null)
             {
-                if (JoyResManager.Instance.TryGetSprite(_mailfetched, out Flag))
-                {
-                    _cachedView.RewardFlag.sprite = Flag;
-                }
+                _idList.Clear();
+                _idList.Add(_mail.Id);
+                RefreshView();
             }
         }
 
-        //private String JudgeSource(Mail mail)
-        //{
-        //    String source;
-        //    if (mail.Type == EMailType.EMailT_System)
-        //    {
-
-        //        source = "系统邮件";
-        //    }
-        //    else
-        //    {
-        //        source = mail.UserInfo.NickName;
-        //    }
-        //    return source;
-        //}
-
-        private void OnButton()
+        private void RefreshView()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlMailDetail>();
-            SocialGUIManager.Instance.GetUI<UICtrlMailDetail>().Set(_mail);
-
+            if (_mail.FuncType == EMailFuncType.MFT_Reward)
+            {
+                _cachedView.TextRff.anchoredPosition = Vector3.down * 20;
+            }
+            else
+            {
+                _cachedView.TextRff.anchoredPosition = Vector3.zero;
+            }
+            _cachedView.BtnsObj.SetActive(_mail.FuncType != EMailFuncType.MFT_Reward);
+            _cachedView.RewardImg.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_Reward);
+            _cachedView.GiveupBtn.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp);
+            _cachedView.OKBtnTxt.text = GetOKText();
+            _cachedView.ContentTxt.text = GetMailTile();
+            _cachedView.DateTxt.text = GameATools.DateCount(_mail.CreateTime);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
+                _mail.UserInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
         }
 
+        private string GetOKText()
+        {
+            if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
+            {
+                return _receive;
+            }
+            return _findout;
+        }
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.MainDetailBtn.onClick.AddListener(OnMainDetailBtn);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnMainDetailBtn);
+            _cachedView.GiveupBtn.onClick.AddListener(OnGiveupBtn);
+        }
 
+        private void OnGiveupBtn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除邮件。");
+            RemoteCommands.DeleteMail(EDeleteMailTargetType.EDMTT_List, _idList, _mail.MailType,
+                msg =>
+                {
+                    if (msg.ResultCode == (int) EDeleteMailCode.EDMC_Success)
+                    {
+                        Messenger.Broadcast(EMessengerType.OnMailListChanged);
+                    }
+                    else
+                    {
+                        SocialGUIManager.ShowPopupDialog("删除失败。");
+                    }
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }, code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog(string.Format("删除失败。错误代码{0}", code));
+                });
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_mail.UserInfoDetail != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_mail.UserInfoDetail);
+            }
+        }
+
+        private void OnMainDetailBtn()
+        {
+            if (_mail == null) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlMailDetail>(_mail);
+        }
+
+        private string GetMailTile()
+        {
+            if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
+            {
+                return string.Format(_titleFormat, _mail.UserInfoDetail.UserInfoSimple.NickName);
+            }
+            return _mail.Title;
+        }
+
+        public void Unload()
+        {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.HeadDefaltTexture);
+        }
     }
-
 }
-
-
-   

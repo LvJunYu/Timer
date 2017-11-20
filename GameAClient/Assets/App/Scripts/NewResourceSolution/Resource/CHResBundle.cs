@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using GameA;
 using Newtonsoft.Json;
@@ -11,6 +10,20 @@ namespace NewResourceSolution
 {
     public class CHResBundle : IEquatable<CHResBundle>
     {
+        #region Struct
+        public class MaterialDependency
+        {
+            [JsonProperty(PropertyName = "M")] public string MaterialName;
+            [JsonProperty(PropertyName = "TL")] public MaterialTextureProperty[] TextureProperties;
+        }
+        
+        public class MaterialTextureProperty
+        {
+            [JsonProperty(PropertyName = "P")] public string PropertyName;
+            [JsonProperty(PropertyName = "T")] public string TextureName;
+        }
+        #endregion
+        
         [JsonProperty(PropertyName = "GI")] public int GroupId;
         [JsonProperty(PropertyName = "AN")] public string[] AssetNames;
         [JsonProperty(PropertyName = "BN")] public string AssetBundleName;
@@ -30,9 +43,10 @@ namespace NewResourceSolution
         /// 以怎样的压缩格式进行打包发布的
         /// </summary>
         [JsonProperty(PropertyName = "CT")] public EAssetBundleCompressType CompressType;
-
         [JsonProperty(PropertyName = "FL")] public EFileLocation FileLocation;
-
+        [JsonProperty(PropertyName = "RT")] public EResType ResType;
+        [JsonProperty(PropertyName = "MD")] public MaterialDependency[] MaterialDependencies;
+        
         private string _filePathPersistent;
         private string _filePathStreamingAsset;
         private string _filePathTemporaryCache;
@@ -41,7 +55,6 @@ namespace NewResourceSolution
         #region used by runtime manifest
 
         [JsonIgnore] public AssetBundle CachedBundle;
-        [JsonIgnore] public Dictionary<string, Object> AssetDic = new Dictionary<string, Object>();
         [JsonIgnore] public long ScenaryMask;
         [JsonIgnore] public bool IsLocaleRes;
         [JsonIgnore] public string LocaleName;
@@ -76,7 +89,7 @@ namespace NewResourceSolution
                 if (null == _filePathStreamingAsset)
                 {
                     _filePathStreamingAsset = StringUtil.Format(StringFormat.TwoLevelPathWithExtention,
-                        ResPath.StreamingAssetsPath, AssetBundleName, md5Str);
+                        ResPath.RuntimeStreamingAssetsPath, AssetBundleName, md5Str);
                 }
                 return _filePathStreamingAsset;
             }
@@ -93,8 +106,8 @@ namespace NewResourceSolution
             {
                 if (null == _filePathServer)
                 {
-                    _filePathServer = StringUtil.Format(StringFormat.ThreeLevelPathWithExtention,
-                        SocialApp.GetAppServerAddress().GameResoureRoot, resVersion, AssetBundleName, md5Str);
+                    _filePathServer = StringUtil.Format(StringFormat.FourLevelPathWithExtention,
+                        SocialApp.GetAppServerAddress().GameResoureRoot, ResPath.GetPlatformFolder(), resVersion, AssetBundleName, md5Str);
                 }
                 return _filePathServer;
             }
@@ -176,7 +189,29 @@ namespace NewResourceSolution
                 }
 //                LogHelper.Info ("Decompress file done");
             }
+            CompressType = EAssetBundleCompressType.NoCompress;
             FileLocation = EFileLocation.Persistent;
+            return true;
+        }
+
+        public bool TryGetAsset(string name, out Object obj, int scenary, bool logWhenError = false)
+        {
+            obj = null;
+            if (!Cache(scenary, logWhenError))
+            {
+                return false;
+            }
+            obj = CachedBundle.LoadAsset(name);
+            if (null == obj)
+            {
+                if (logWhenError)
+                {
+                    LogHelper.Error("Load asset {0} from asset bundle {1} failed.",
+                        name,
+                        AssetBundleName);
+                }
+                return false;
+            }
             return true;
         }
 
@@ -193,32 +228,6 @@ namespace NewResourceSolution
                         LogHelper.Error("Load assetbundle {0} failed.", AssetBundleName);
                     }
                     return false;
-                }
-                AssetDic.Clear();
-
-//                UnityEngine.Object[] allAssets = CachedBundle.LoadAllAssets();
-//                for (int j = 0; j < allAssets.Length; j++)
-//                {
-//                    if (AssetNames.Contains(allAssets[j].name))
-//                    {
-//                        AssetDic [allAssets[j].name] =  allAssets[j];
-//                    }
-//                }
-
-                for (int j = 0; j < AssetNames.Length; j++)
-                {
-                    Object asset = CachedBundle.LoadAsset(AssetNames[j]);
-                    if (null == asset)
-                    {
-                        if (logWhenError)
-                        {
-                            LogHelper.Error("Load asset {0} from asset bundle {1} failed.",
-                                AssetNames[j],
-                                AssetBundleName);
-                        }
-                        return false;
-                    }
-                    AssetDic.Add(AssetNames[j], asset);
                 }
             }
             ScenaryMask |= 1L << scenary;
@@ -252,19 +261,19 @@ namespace NewResourceSolution
         public void UncacheAll(bool force = true)
         {
             ScenaryMask = 0;
-            AssetDic.Clear();
             if (null != CachedBundle)
             {
                 CachedBundle.Unload(force);
                 CachedBundle = null;
             }
-            LogHelper.Info("UncacheAll {0}", AssetBundleName);
+            LogHelper.Debug("UncacheAll {0}", AssetBundleName);
         }
 
         
         public bool NeedWriteToPersistent()
         {//不在本地 并且是压缩资源或者是安卓
-            return EFileLocation.Persistent != FileLocation
+            return EFileLocation.TemporaryCache == FileLocation
+                   ||EFileLocation.Persistent != FileLocation
                    && (CompressType != EAssetBundleCompressType.NoCompress
                        || Application.platform == RuntimePlatform.Android);
         }
@@ -305,6 +314,10 @@ namespace NewResourceSolution
 
         public override int GetHashCode()
         {
+            if (RawMd5 == null)
+            {
+                return 0;
+            }
             return RawMd5.GetHashCode();
         }
 
@@ -313,7 +326,7 @@ namespace NewResourceSolution
 
     public class BundleDownloader
     {
-        private static long s_webRequestTimeoutInMilliSeconds = 3000;
+        private static long s_webRequestTimeoutInMilliSeconds = 20000;
         private static string s_webRequestTimeoutErrorInfo = "{0} www time out.";
         private static string s_sizeNotMatchErrorInfo = "{0} download size not match.";
         private static string s_webRequestMd5CheckFailedErrorInfo = "{0} www md5 check failed.";
@@ -418,8 +431,15 @@ namespace NewResourceSolution
                 State = EDownloaderState.Serializing;
                 Loom.RunAsync(() =>
                 {
-                    //TODO 异常处理
-                    FileTools.WriteBytesToFile(bytes, destPath);
+                    try
+                    {
+                        FileTools.WriteBytesToFile(bytes, destPath);
+                    }
+                    catch (Exception e)
+                    {
+                        LogHelper.Error(e.ToString());
+                        Error = e.ToString();
+                    }
                     State = EDownloaderState.SerializeDone;
                 });
             }
@@ -428,8 +448,15 @@ namespace NewResourceSolution
                 State = EDownloaderState.Serializing;
                 Loom.RunAsync(() =>
                 {
-                    //TODO 异常处理
-                    CompressTools.DecompressBytesLZMA(bytes, destPath);
+                    try
+                    {
+                        CompressTools.DecompressBytesLZMA(bytes, destPath);
+                    }
+                    catch (Exception e)
+                    {
+                        LogHelper.Error(e.ToString());
+                        Error = e.ToString();
+                    }
                     State = EDownloaderState.SerializeDone;
                 });
             }

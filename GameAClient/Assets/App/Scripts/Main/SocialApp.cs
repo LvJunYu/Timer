@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 ** Filename : SocialApp
 ** Author : Dong
 ** Date : 2015/5/30 18:18:18
@@ -22,26 +22,21 @@ namespace GameA
     [Serializable]
     public class SocialApp : App
     {
-		public ELanguage Language = ELanguage.CN;
-        [SerializeField] private bool _isMaster;
         [SerializeField] private EEnvironment _env;
+        [SerializeField] private LogHelper.ELogLevel _logLevel = LogHelper.ELogLevel.All;
+        [SerializeField] private PublishChannel.EType _publishChannel = PublishChannel.EType.None;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
         private float _startTime;
         private const float MinLoadingTime = 2f;
 
-		internal static SocialApp Instance;
+        internal static SocialApp Instance;
 
         public EEnvironment Env
         {
             get { return _env; }
             set { _env = value; }
-        }
-
-        public bool IsMaster
-        {
-            get { return _isMaster; }
         }
 
         public string RoomServerAddress
@@ -51,13 +46,13 @@ namespace GameA
 
         public static AddressConfig GetAppServerAddress()
         {
-            if(GlobalVar.Instance.Env == EEnvironment.Production)
+            if (GlobalVar.Instance.Env == EEnvironment.Production)
             {
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "https://app.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://res.joy-you.com"
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Staging)
@@ -65,8 +60,8 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res"
+                    AppServerApiRoot = "http://joygame-logic.gz.1255339982.clb.myqcloud.com/gameaapi",
+                    GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
             if (GlobalVar.Instance.Env == EEnvironment.Test)
@@ -75,16 +70,18 @@ namespace GameA
                 {
                     Enable = true,
                     AppServerApiRoot = "http://devtest.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://devtest.joy-you.com/res"
+                    GameResoureRoot = "http://devtest.joy-you.com/res/gamea"
                 };
             }
-            if(GlobalVar.Instance.Env == EEnvironment.Development)
+            if (GlobalVar.Instance.Env == EEnvironment.Development)
             {
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res"
+//                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
+//                    GameResoureRoot = "http://dev.joy-you.com/res/gamea",
+                    AppServerApiRoot = "http://139.129.229.229/gameaapi",
+                    GameResoureRoot = "http://139.129.229.229/res/gamea"
                 };
             }
             for (int i = 0; i < Instance._appServerAddress.Length; i++)
@@ -99,17 +96,24 @@ namespace GameA
             {
                 Enable = true,
                 AppServerApiRoot = "http://localhost:8080/GameAServer/gameaapi",
-                GameResoureRoot = "http://dev.joy-you.com/res"
+                GameResoureRoot = "http://dev.joy-you.com/res/gamea"
             };
         }
 
         protected override void OnStart()
         {
             Instance = this;
+            LogHelper.LogLevel = _logLevel;
             if (_clearCache)
             {
                 ClearCache();
             }
+            var channel = PublishChannel.EType.None;
+            if (Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                channel = _publishChannel;
+            }
+            PublishChannel.Init(channel);
 			RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
@@ -122,7 +126,7 @@ namespace GameA
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
             gameObject.AddComponent<SocialGUIManager>();
             CoroutineManager.Instance.Init(this);
-            JoyResManager.Instance.Init ();
+            JoyResManager.Instance.Init();
             JoyResManager.Instance.SetDefaultResScenary(EResScenary.Default);
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
@@ -136,37 +140,24 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
+            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
-            if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
-                LocalUser.Instance.Account.LoginByToken(()=>
-                {
-                    LoginSucceed();
-                }, code =>
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
-                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                });
-            }
-            else
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
-                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-            }
-		}
+            PublishChannel.Instance.Login();
+        }
 
-        public void LoginSucceed ()
+        public void LoginSucceed()
         {
             AppData.Instance.Init();
 //            ShareUtil.Init();
 //            RoomManager.Instance.Init();
-
-            GetUserData ();
+#if !UNITY_EDITOR_OSX && !UNITY_STANDALONE_OSX
+//            YIMManager.Instance.Login();
+#endif
+            GetUserData();
         }
 
-        private void GetUserData ()
+        private void GetUserData()
         {
             if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
             {
@@ -176,8 +167,9 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
             }
-            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
-                GameProcessManager.Instance.Init ();
+            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(() =>
+            {
+                GameProcessManager.Instance.Init();
                 if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
@@ -187,24 +179,27 @@ namespace GameA
                     SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
-                SocialGUIManager.Instance.ShowAppView ();
-            }, code=>{
-                if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                SocialGUIManager.Instance.ShowAppView();
+            }, code =>
+            {
+                if (GlobalVar.Instance.Env != EEnvironment.Production)
                 {
-                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                    if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                        SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                    }
+                    else
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
                 }
-                else
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }
-                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
-                    new KeyValuePair<string, Action>("重试", ()=>{
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData));
-                    }));
+                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码：" + code.ToString(), null,
+                    new KeyValuePair<string, Action>("重试",
+                        () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData)); }));
             });
             //最少loading时间MinLoadingTime
-            helper.AddTask((successCb, failedCb)=>
+            helper.AddTask((successCb, failedCb) =>
             {
                 var leftTime = _startTime + MinLoadingTime - Time.realtimeSinceStartup;
                 if (leftTime > 0)
@@ -223,13 +218,25 @@ namespace GameA
             helper.AddTask(LocalUser.Instance.LoadWorkshopUnitData);
         }
 
-        public void ReturnToApp(bool withScreenEffect = true)
+        public void ReturnToApp()
         {
             GameManager.Instance.RequestStopGame();
             //JoySceneManager.Instance.LoadEmptyScene();
             JoyResManager.Instance.SetDefaultResScenary(EResScenary.Home);
             SocialGUIManager.Instance.ChangeToAppMode();
             GameParticleManager.Instance.OnChangeScene();
+        }
+
+        public void Exit()
+        {
+            if (Application.isEditor)
+            {
+                LogHelper.Info("App Exit");
+            }
+            else
+            {
+                Application.Quit();
+            }
         }
 
         public void ChangeToGame()
@@ -256,16 +263,28 @@ namespace GameA
             GameManager.Instance.Init(typeof(GM2DGame));
         }
 
+        protected override void OnDestroy()
+        {
+            Messenger.Broadcast(EMessengerType.OnApplicationQuit);
+            if (PublishChannel.Instance != null)
+            {
+                PublishChannel.Instance.OnDestroy();
+            }
+            base.OnDestroy();
+            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
+        }
 
         protected override void Update()
         {
             base.Update();
             GameManager.Instance.Update();
+            CompassManager.Instance.Update();
 //            RoomManager.Instance.Update();
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }
+            PublishChannel.Instance.Update();
         }
 
         [Serializable]

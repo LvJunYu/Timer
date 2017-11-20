@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserUsingPictureFullData : SyncronisticData {
+    public partial class UserUsingPictureFullData : SyncronisticData<Msg_SC_DAT_UserUsingPictureFullData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -126,7 +126,38 @@ namespace GameA
                 _itemDataList.Add(new PictureFull(msg.ItemDataList[i]));
             }
             _slotCount = msg.SlotCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserUsingPictureFullData msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<PictureFull>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < msg.ItemDataList.Count; i++) {
+                _itemDataList.Add(new PictureFull(msg.ItemDataList[i]));
+            }
+            _slotCount = msg.SlotCount;           
+            return true;
+        } 
+
+        public bool DeepCopy (UserUsingPictureFullData obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.ItemDataList) return false;
+            if (null ==  _itemDataList) {
+                _itemDataList = new List<PictureFull>();
+            }
+            _itemDataList.Clear();
+            for (int i = 0; i < obj.ItemDataList.Count; i++){
+                _itemDataList.Add(obj.ItemDataList[i]);
+            }
+            _slotCount = obj.SlotCount;           
             return true;
         }
 

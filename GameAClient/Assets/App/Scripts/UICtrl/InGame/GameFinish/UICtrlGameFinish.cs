@@ -1,16 +1,9 @@
-/********************************************************************
-** Filename : UICtrlGameFinish  
-** Author : ake
-** Date : 4/29/2016 8:24:49 PM
-** Summary : UICtrlGameFinish  
-***********************************************************************/
-
-
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using PlayMode = GameA.Game.PlayMode;
 
@@ -32,15 +25,18 @@ namespace GameA
             AdvBonusWin,
             AdvBonusLose,
             ChallengeWin,
-            ChallengeLose
+            ChallengeLose,
+            ShadowBattleWin,
+            ShadowBattleLose
         }
 
         private EShowState _showState;
         private bool _finishRes;
         private readonly List<UIParticleItem> _particleList = new List<UIParticleItem>();
         private int _curMarkStarValue;
-
         private USCtrlGameFinishReward[] _rewardCtrl;
+        private Record _friendRecord;
+        private FriendRecordData _friendRecordData = new FriendRecordData();
 
         protected override void InitGroupId()
         {
@@ -50,7 +46,20 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitUI();
+            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
+            _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
+            _cachedView.ContinueEditBtn.onClick.AddListener(OnContinueEditBtn);
+            _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
+            _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
+            _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
+            _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
+            for (int i = 0; i < _cachedView.Rewards.Length; i++)
+            {
+                _rewardCtrl[i] = new USCtrlGameFinishReward();
+                _rewardCtrl[i].Init(_cachedView.Rewards[i]);
+            }
+            _cachedView.UpGrade.SetActiveEx(false);
         }
 
         protected override void OnOpen(object parameter)
@@ -71,6 +80,7 @@ namespace GameA
                 _particleList[i].Particle.DestroySelf();
             }
             _particleList.Clear();
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
             base.OnClose();
         }
 
@@ -80,24 +90,42 @@ namespace GameA
             _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
         }
 
-        #region   private
-
-        private void InitUI()
+        private void OnPlayRecordBtn()
         {
-            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
-            _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
-            _cachedView.ContinueEditBtn.onClick.AddListener(OnContinueEditBtn);
-
-            _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
-            for (int i = 0; i < _cachedView.Rewards.Length; i++)
-            {
-                _rewardCtrl[i] = new USCtrlGameFinishReward();
-                _rewardCtrl[i].Init(_cachedView.Rewards[i]);
-            }
-            _cachedView.UpGrade.SetActiveEx(false);
+            if (_friendRecord == null) return;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载录像");
+            _friendRecord.RequestPlay(
+                () =>
+                {
+                    SituationAdventureParam param = new SituationAdventureParam();
+                    GameModeAdventurePlay gameMode = GM2DGame.Instance.GameMode as GameModeAdventurePlay;
+                    if (gameMode == null) return;
+                    param.ProjectType = gameMode.GetLevelInfo().ProjectType;
+                    param.Section = gameMode.GetLevelInfo().Section;
+                    param.Level = gameMode.GetLevelInfo().Level;
+                    param.Record = _friendRecord;
+                    //录像结束后的回调
+                    GM2DGame.GameExitCallBack = () =>
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(new IntVec3(param.Section, param.Level,
+                            param.ProjectType == EAdventureProjectType.APT_Bonus ? 1 : 0));
+                    };
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    SocialApp.Instance.ReturnToApp();
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                    {
+                        GC.Collect();
+                        GameManager.Instance.RequestPlayAdvRecord(gameMode.Project, param);
+                        SocialApp.Instance.ChangeToGame();
+                    }));
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                },
+                code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入录像失败");
+                });
         }
-
-        #region UIEvent
 
         private void OnReturnBtn()
         {
@@ -113,10 +141,13 @@ namespace GameA
         private void OnRetryBtn()
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
-            GM2DGame.Instance.GameMode.Restart(() =>
+            GM2DGame.Instance.GameMode.Restart(value =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    if (value)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    }
                 }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -124,7 +155,32 @@ namespace GameA
                         new KeyValuePair<string, Action>("重试",
                             () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnRetryBtn)); }),
                         new KeyValuePair<string, Action>("取消", () => { }));
-                    OnReturnBtn();
+                }
+            );
+        }
+
+        private void OnNextBtn()
+        {
+            GameModeAdventurePlay gameMode = GM2DGame.Instance.GameMode as GameModeAdventurePlay;
+            if (gameMode == null)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入下一关");
+            gameMode.PlayNext(value =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (value)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    }
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    CommonTools.ShowPopupDialog("进入下一关失败", null,
+                        new KeyValuePair<string, Action>("重试",
+                            () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnNextBtn)); }),
+                        new KeyValuePair<string, Action>("取消", () => { }));
                 }
             );
         }
@@ -134,8 +190,6 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
             PauseGame();
         }
-
-        #endregion
 
         private float CountExpRatio(float exp, int level)
         {
@@ -185,7 +239,7 @@ namespace GameA
             }
             else //升级
             {
-                long initialExp = 0;
+                long initialExp;
                 if (LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel == 2)
                 {
                     initialExp = (currentPlayerExp - RewardExp);
@@ -220,6 +274,9 @@ namespace GameA
 
         private void UpdateView()
         {
+            _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
+            _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
+            _cachedView.FriendHelpObj.SetActive(_showState == EShowState.ShadowBattleLose);
             switch (_showState)
             {
                 case EShowState.Win:
@@ -228,7 +285,7 @@ namespace GameA
                     _cachedView.RetryBtn.gameObject.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
@@ -237,8 +294,9 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                    _cachedView.PlayRecordObj.SetActive(false);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.Lose:
@@ -246,13 +304,49 @@ namespace GameA
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.RetryBtn.gameObject.SetActive(true);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
+                    PlayLoseEffect();
+                    break;
+                case EShowState.ShadowBattleWin:
+                    _cachedView.Win.SetActive(true);
+                    _cachedView.Lose.SetActive(false);
+                    _cachedView.RetryBtn.gameObject.SetActive(false);
+                    _cachedView.ReturnBtn.gameObject.SetActive(true);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive(false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
+                    _cachedView.Score.gameObject.SetActive(true);
+                    _cachedView.ScoreOutLine.gameObject.SetActive(true);
+                    _cachedView.ScoreOutLine.text =
+                        _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
+                    _cachedView.RewardObj.SetActive(true);
+                    _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    //Todo 更新奖励
+                    //UpdateReward ();
+
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
+                    PlayWinEffect();
+                    break;
+                case EShowState.ShadowBattleLose:
+                    _cachedView.Win.SetActive(false);
+                    _cachedView.Lose.SetActive(true);
+                    _cachedView.ReturnBtn.gameObject.SetActive(false);
+                    _cachedView.RetryBtn.gameObject.SetActive(false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive(false);
+                    _cachedView.Score.gameObject.SetActive(false);
+                    _cachedView.ScoreOutLine.gameObject.SetActive(false);
+                    _cachedView.RewardObj.SetActive(false);
+                    _cachedView.ExpBarObj.SetActive(false);
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.AdvBonusWin:
@@ -261,7 +355,7 @@ namespace GameA
                     _cachedView.RetryBtn.gameObject.SetActive(false);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
@@ -269,10 +363,11 @@ namespace GameA
                     // 奖励
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.AdvNormalWin:
@@ -281,14 +376,9 @@ namespace GameA
                     _cachedView.RetryBtn.gameObject.SetActive(false);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
-
+                    GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
                     // 如果是一章中的最后一关，则不显示下一关按钮
-//                if (GameManager.Instance.CurrentGame.Project.LevelId == Game.ConstDefineGM2D.AdvNormallevelPerChapter) {
-//                    _cachedView.NextBtn.gameObject.SetActive (false);
-//                } else {
-//                    _cachedView.NextBtn.gameObject.SetActive (true);
-//                }
+                    _cachedView.NextBtn.gameObject.SetActive(gameModePlay != null && gameModePlay.HasNext());
                     // 得分
                     _cachedView.Score.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
@@ -297,6 +387,7 @@ namespace GameA
                     // 奖励
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
 
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
@@ -324,35 +415,36 @@ namespace GameA
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
-                    _cachedView.RetryBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.RetryBtn.gameObject.SetActive(true);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
-
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
-
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.AdvNormalLose:
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
-                    _cachedView.RetryBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.RetryBtn.gameObject.SetActive(true);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
-                    _cachedView.RewardObj.SetActive(true);
+                    _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(true);
+                    GetFriendRecord();
                     JudgeExpAndLvl();
                     UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.ChallengeWin:
@@ -360,7 +452,7 @@ namespace GameA
                     _cachedView.Lose.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(false);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
 
                     // 得分
@@ -371,10 +463,10 @@ namespace GameA
                     // 奖励
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
                     UpdateReward(LocalUser.Instance.MatchUserData.LastChallengeReward);
-
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
                 case EShowState.ChallengeLose:
@@ -382,17 +474,16 @@ namespace GameA
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.RetryBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
+                    _cachedView.PlayRecordObj.SetActive(false);
                     JudgeExpAndLvl();
-
                     UpdateReward(LocalUser.Instance.MatchUserData.LastChallengeReward);
-
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
                 case EShowState.EditorLose:
@@ -400,22 +491,21 @@ namespace GameA
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(true);
                     _cachedView.Score.gameObject.SetActive(false);
                     _cachedView.ScoreOutLine.gameObject.SetActive(false);
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
-
-
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
+                    _cachedView.PlayRecordObj.SetActive(false);
+                    _cachedView.Animation.Play("UICtrlGameFinishLose");
                     break;
                 case EShowState.EditorWin:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
                     _cachedView.ReturnBtn.gameObject.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(false);
-                    //_cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(true);
                     _cachedView.Score.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
@@ -423,11 +513,30 @@ namespace GameA
                     _cachedView.ScoreOutLine.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
+                    _cachedView.PlayRecordObj.SetActive(false);
 
-
-                    _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
+                    _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     break;
             }
+        }
+
+        private void GetFriendRecord()
+        {
+            _friendRecord = null;
+            GameModeAdventurePlay gameMode = GM2DGame.Instance.GameMode as GameModeAdventurePlay;
+            if (gameMode == null) return;
+            _friendRecordData.Request(gameMode.GetLevelInfo().Section, gameMode.GetLevelInfo().Level, 0, 1,
+                () =>
+                {
+                    _cachedView.PlayRecordObj.SetActive(_friendRecordData.RecordList.Count != 0);
+                    if (_friendRecordData.RecordList.Count != 0)
+                    {
+                        ImageResourceManager.Instance.SetDynamicImage(_cachedView.FriendHeadImg,
+                            _friendRecordData.RecordList[0].UserInfoDetail.UserInfoSimple.HeadImgUrl,
+                            _cachedView.DefaultHeadImg);
+                        _friendRecord = _friendRecordData.RecordList[0];
+                    }
+                }, code => { LogHelper.Error("FriendRecordData request fail, code = {0}", code); });
         }
 
         private void UpdateReward(Reward reward)
@@ -481,11 +590,5 @@ namespace GameA
             uiparticle.Particle.Play();
             _particleList.Add(uiparticle);
         }
-
-        #endregion
-
-        #region event
-
-        #endregion
     }
 }

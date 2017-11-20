@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MailList : SyncronisticData {
+    public partial class MailList : SyncronisticData<Msg_SC_DAT_MailList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -31,6 +31,10 @@ namespace GameA
         private int _unreadCount;
 
         // cs fields----------------------------------
+        /// <summary>
+        /// 邮件类型
+        /// </summary>
+        private EMailType _cs_mailType;
         /// <summary>
         /// 
         /// </summary>
@@ -96,6 +100,13 @@ namespace GameA
         
         // cs properties----------------------------------
         /// <summary>
+        /// 邮件类型
+        /// </summary>
+        public EMailType CS_MailType { 
+            get { return _cs_mailType; }
+            set { _cs_mailType = value; }
+        }
+        /// <summary>
         /// 
         /// </summary>
         public int CS_StartInx { 
@@ -128,14 +139,20 @@ namespace GameA
         /// <summary>
 		/// 查询邮件
 		/// </summary>
+		/// <param name="mailType">邮件类型.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
         public void Request (
+            EMailType mailType,
             int startInx,
             int maxCount,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
+                if (_cs_mailType != mailType) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -146,11 +163,13 @@ namespace GameA
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
+                _cs_mailType = mailType;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_MailList msg = new Msg_CS_DAT_MailList();
+                msg.MailType = mailType;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_MailList>(
@@ -175,7 +194,42 @@ namespace GameA
             }
             _totalCount = msg.TotalCount;           
             _unreadCount = msg.UnreadCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_MailList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _dataList) {
+                _dataList = new List<Mail>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < msg.DataList.Count; i++) {
+                _dataList.Add(new Mail(msg.DataList[i]));
+            }
+            _totalCount = msg.TotalCount;           
+            _unreadCount = msg.UnreadCount;           
+            return true;
+        } 
+
+        public bool DeepCopy (MailList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.DataList) return false;
+            if (null ==  _dataList) {
+                _dataList = new List<Mail>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < obj.DataList.Count; i++){
+                _dataList.Add(obj.DataList[i]);
+            }
+            _totalCount = obj.TotalCount;           
+            _unreadCount = obj.UnreadCount;           
             return true;
         }
 

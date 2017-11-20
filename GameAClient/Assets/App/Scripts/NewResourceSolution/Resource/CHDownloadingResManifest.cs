@@ -7,7 +7,7 @@ using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 namespace NewResourceSolution
 {
-    public class CHDownloadingResManifest : CHResManifest
+    public class CHDownloadingResManifest : CHRuntimeResManifest
     {
         /// <summary>
         /// 同时并发的www请求数
@@ -90,7 +90,7 @@ namespace NewResourceSolution
             _adamBundleNameList = runtimeManifest.AdamBundleNameList;
         }
         /// <summary>
-        /// 混合下载manifest和(包内/本地/临时)manifest (现在仅为混合包内和persistent)
+        /// 混合下载manifest和(包内/本地/临时)manifest
         /// </summary>
         /// <param name="existingManifest">Existing manifest.</param>
         public IEnumerator MergeExistingManifest (CHRuntimeResManifest existingManifest)
@@ -101,12 +101,13 @@ namespace NewResourceSolution
 				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(bundle.AssetBundleName);
                 if (null != bundleInExistingManifest && EFileLocation.Server != bundleInExistingManifest.FileLocation)
                 {
-                    if (String.CompareOrdinal(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
+                    if (String.CompareOrdinal(_bundles[i].RawMd5, bundleInExistingManifest.RawMd5) == 0)
                     {
                         EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation);
                         if (EFileIntegrity.Integral == integrity)
                         {
                             _bundles[i].FileLocation = bundleInExistingManifest.FileLocation;
+                            _bundles[i].CompressType = bundleInExistingManifest.CompressType;
 							LogHelper.Info("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                         }
                         else
@@ -162,6 +163,7 @@ namespace NewResourceSolution
                     if (EFileIntegrity.Integral == integrity)
                     {
                         _bundles[i].FileLocation = EFileLocation.Persistent;
+                        _bundles[i].CompressType = bundleInExistingManifest.CompressType;
                         LogHelper.Debug("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                     }
                 }
@@ -328,7 +330,7 @@ namespace NewResourceSolution
                         {
                             LogHelper.Error ("Error when serialize assetBundle: {0}", currentSerializeDownloader.Error);
                             _serializeFailed = true;
-//                            yield break;
+                            yield break;
                         }
                         else
                         {
@@ -341,6 +343,10 @@ namespace NewResourceSolution
                     {
                         currentSerializeDownloader = _waitDecompressQueue.Dequeue ();
                         currentSerializeDownloader.BeginDecompressAndSave ();
+                    }
+                    else
+                    {
+                        currentSerializeDownloader = null;
                     }
                 }
                 yield return null;
@@ -355,7 +361,8 @@ namespace NewResourceSolution
                 {
                     if (EFileLocation.Server == _bundles [i].FileLocation)
                     {
-                        _bundles [i].FileLocation = EFileLocation.TemporaryCache;
+                        _bundles[i].FileLocation = EFileLocation.TemporaryCache;
+                        _bundles[i].CompressType = EAssetBundleCompressType.NoCompress;
                     }
                 }
                 Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, _needsDownloadTotalByte, _needsDownloadTotalByte);
@@ -433,7 +440,7 @@ namespace NewResourceSolution
                 SocialGUIManager.ShowPopupDialog("资源解压失败，请检查剩余存储空间后重试", null,
                     new KeyValuePair<string, Action>("确定", () =>
                 {
-                    Application.Quit();
+                        SocialApp.Instance.Exit();
                 }));
                 while (true)
                 {

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AvatarPartDiscountCouponItem : SyncronisticData {
+    public partial class AvatarPartDiscountCouponItem : SyncronisticData<Msg_AvatarPartDiscountCouponItem> {
         #region 字段
         /// <summary>
         /// 数据Id
@@ -167,7 +167,39 @@ namespace GameA
             _used = msg.Used;     
             _useTime = msg.UseTime;     
             _isValid = msg.IsValid;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_AvatarPartDiscountCouponItem msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            _configTableId = msg.ConfigTableId;           
+            _partType = msg.PartType;           
+            _partId = msg.PartId;           
+            _durationType = msg.DurationType;           
+            _expirationTime = msg.ExpirationTime;           
+            _discount = msg.Discount;           
+            _used = msg.Used;           
+            _useTime = msg.UseTime;           
+            _isValid = msg.IsValid;           
+            return true;
+        } 
+
+        public bool DeepCopy (AvatarPartDiscountCouponItem obj)
+        {
+            if (null == obj) return false;
+            _id = obj.Id;           
+            _configTableId = obj.ConfigTableId;           
+            _partType = obj.PartType;           
+            _partId = obj.PartId;           
+            _durationType = obj.DurationType;           
+            _expirationTime = obj.ExpirationTime;           
+            _discount = obj.Discount;           
+            _used = obj.Used;           
+            _useTime = obj.UseTime;           
+            _isValid = obj.IsValid;           
             return true;
         }
 

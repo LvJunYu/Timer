@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRelationStatistic : SyncronisticData {
+    public partial class UserRelationStatistic : SyncronisticData<Msg_SC_DAT_UserRelationStatistic> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -131,7 +131,27 @@ namespace GameA
             _followCount = msg.FollowCount;           
             _followerCount = msg.FollowerCount;           
             _friendCount = msg.FriendCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserRelationStatistic msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            _followCount = msg.FollowCount;           
+            _followerCount = msg.FollowerCount;           
+            _friendCount = msg.FriendCount;           
+            return true;
+        } 
+
+        public bool DeepCopy (UserRelationStatistic obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _followCount = obj.FollowCount;           
+            _followerCount = obj.FollowerCount;           
+            _friendCount = obj.FriendCount;           
             return true;
         }
 

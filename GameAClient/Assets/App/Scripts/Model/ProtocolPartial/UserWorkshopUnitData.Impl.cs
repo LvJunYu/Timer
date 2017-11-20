@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class UserWorkshopUnitData : SyncronisticData
+	public partial class UserWorkshopUnitData
 	{
 		private Dictionary<int, int> _unitLimitDic = new Dictionary<int, int>();
 		protected override void OnSyncPartial()

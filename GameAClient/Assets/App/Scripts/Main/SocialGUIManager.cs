@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,26 +23,23 @@ namespace GameA
         ///     主体ui架子
         /// </summary>
         MainFrame,
+
         /// <summary>
         ///     主体ui
         /// </summary>
         MainUI,
 
-
         /// <summary>
         ///     主体Ui打开后弹出的二级三级界面 持续向上叠加
         /// </summary>
-        PopUpUI,
-        PopUpUI2,
+        MainPopUpUI,
+        MainPopUpUI2,
 
         /// <summary>
-        /// 在所有主界面和一般弹出界面之上的界面
+        /// 在所有主界面和一般弹出界面之上的界面 关卡详情
         /// </summary>
         FrontUI,
 
-        /// <summary>
-        /// 录像 排名 关卡详情
-        /// </summary>
         FrontUI2,
 
         /// <summary>
@@ -78,9 +76,9 @@ namespace GameA
     public class SocialGUIManager : ResManagedGuiManager
     {
         public static SocialGUIManager Instance;
-
         private EMode _currentMode = EMode.None;
         private bool _exitDialogIsOpen;
+        private Stack<UIRaw> _overlayUIs = new Stack<UIRaw>(8); //缓存互相遮挡的UI
 
         public EMode CurrentMode
         {
@@ -138,11 +136,11 @@ namespace GameA
                     UIRoot.SetGroupActive(i, true);
                 }
             }
-            LoadUI(EResScenary.Game);
-            LoadUI(EResScenary.UIInGame);
-            UnloadUI(EResScenary.UIHome);
-            UnloadUI(EResScenary.UISingleMode);
-            UnloadUI(EResScenary.Home);
+            LoadAtlas(EResScenary.Game);
+            LoadAtlas(EResScenary.UIInGame);
+            UnloadAtlas(EResScenary.UIHome);
+            UnloadAtlas(EResScenary.UISingleMode);
+            UnloadAtlas(EResScenary.Home);
             //UIRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
         }
@@ -178,13 +176,14 @@ namespace GameA
                     UIRoot.SetGroupActive(i, false);
                 }
             }
-            
-            LoadUI(EResScenary.Home);
-            LoadUI(EResScenary.UIHome);
-            LoadUI(EResScenary.UISingleMode);
-            UnloadUI(EResScenary.UIInGame);
-            UnloadUI(EResScenary.Game);
+
+            LoadAtlas(EResScenary.Home);
+            LoadAtlas(EResScenary.UIHome);
+            LoadAtlas(EResScenary.UISingleMode);
+            UnloadAtlas(EResScenary.UIInGame);
+            UnloadAtlas(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
+            GM2DGame.OnExit();
         }
 
         private void OnEscapeClick()
@@ -199,7 +198,7 @@ namespace GameA
                 new KeyValuePair<string, Action>("确定", () =>
                 {
                     _exitDialogIsOpen = false;
-                    Application.Quit();
+                    SocialApp.Instance.Exit();
                 }),
                 new KeyValuePair<string, Action>("取消", () => { _exitDialogIsOpen = false; })
             );
@@ -256,11 +255,140 @@ namespace GameA
             Instance.GetUI<UICtrlReward>().SetAbility(title, icon, closeCb);
         }
 
+        public static void ShowCheckProjectNameRes(CheckTools.ECheckProjectNameResult testRes)
+        {
+            if (testRes == CheckTools.ECheckProjectNameResult.Success) return;
+            if (testRes == CheckTools.ECheckProjectNameResult.TooShort)
+            {
+                ShowPopupDialog("标题名称太短。");
+            }
+            else if (testRes == CheckTools.ECheckProjectNameResult.TooLong)
+            {
+                ShowPopupDialog("标题名称太长。");
+            }
+            else
+            {
+                ShowPopupDialog("标题格式错误。");
+            }
+        }
+
+        public static void ShowCheckProjectDescRes(CheckTools.ECheckProjectSumaryResult testRes)
+        {
+            if (testRes == CheckTools.ECheckProjectSumaryResult.Success) return;
+            if (testRes == CheckTools.ECheckProjectSumaryResult.TooLong)
+            {
+                ShowPopupDialog("简介内容太长。");
+            }
+            else
+            {
+                ShowPopupDialog("简介格式错误。");
+            }
+        }
+
+        public override T OpenUI<T>(object value = null)
+        {
+            if (UIRoot == null) return null;
+            var ui = UIRoot.GetUI(typeof(T));
+            if (null == ui) return null;
+            if (!ui.IsViewCreated)
+            {
+                UIRoot.CreateUI(typeof(T));
+            }
+            //检查是否是会互相遮挡的UI
+            if (ui is ICheckOverlay)
+            {
+                UICtrlBase lastUI = null;
+                if (_overlayUIs.Count > 0)
+                {
+                    lastUI = _overlayUIs.Peek().UI;
+                }
+                if (lastUI != null && lastUI != ui)
+                {
+                    // 关闭会互相遮挡的UI
+                    if (lastUI.OrderOfView > ui.OrderOfView)
+                    {
+                        foreach (var uiRaw in _overlayUIs)
+                        {
+                            if (uiRaw.UI.IsOpen)
+                            {
+                                if (uiRaw.UI is IAnimation)
+                                {
+                                    ((IAnimation) uiRaw.UI).PassAnimation();
+                                }
+                                uiRaw.UI.Close();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (lastUI != ui)
+                {
+                    _overlayUIs.Push(new UIRaw(ui, value));
+                    LogHelper.Debug("_overlayUIs.Push(), _overlayUIs.Count is {0}",_overlayUIs.Count);
+                }
+            }
+            return base.OpenUI<T>(value);
+        }
+
+        public override T CloseUI<T>()
+        {
+            var ui = base.CloseUI<T>();
+            if (ui is ICheckOverlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
+            {
+                _overlayUIs.Pop();
+                LogHelper.Debug("_overlayUIs.Pop(), _overlayUIs.Count is {0}",_overlayUIs.Count);
+                // 打开关闭的遮挡UI
+                if (_overlayUIs.Count > 0)
+                {
+                    int curIndex = 999999;
+                    foreach (var uiRaw in _overlayUIs)
+                    {
+                        if (!uiRaw.UI.IsOpen && uiRaw.UI.OrderOfView < curIndex)
+                        {
+                            if (uiRaw.UI is IAnimation)
+                            {
+                                ((IAnimation) uiRaw.UI).PassAnimation();
+                            }
+                            uiRaw.UI.Open(uiRaw.Param);
+                            curIndex = uiRaw.UI.OrderOfView;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            return ui;
+        }
+
         public enum EMode
         {
             None,
             App,
             Game
         }
+
+        public class UIRaw
+        {
+            public UICtrlBase UI;
+            public object Param;
+
+            public UIRaw(UICtrlBase ui, object param)
+            {
+                UI = ui;
+                Param = param;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 会互相遮挡的UI，那些会在不同的UI页面被开启的页面需要继承该接口，例如个人信息、关卡详情页面、聊天页面
+    /// </summary>
+    public interface ICheckOverlay
+    {
     }
 }

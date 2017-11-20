@@ -9,6 +9,14 @@ namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
+        protected UICtrlGameFinish.EShowState _successType;
+        protected UICtrlGameFinish.EShowState _failType;
+
+        public override bool SaveShadowData
+        {
+            get { return true; }
+        }
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -17,6 +25,8 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
+            _successType = UICtrlGameFinish.EShowState.Win;
+            _failType = UICtrlGameFinish.EShowState.Lose;
             return true;
         }
 
@@ -33,7 +43,7 @@ namespace GameA.Game
             byte[] record;
             Loom.RunAsync(() =>
             {
-                record = GetRecord();
+                record = GetRecord(false);
                 Loom.QueueOnMainThread(() =>
                 {
                     _project.CommitPlayResult(
@@ -44,6 +54,10 @@ namespace GameA.Game
                         PlayMode.Instance.SceneState.MonsterKilled,
                         PlayMode.Instance.SceneState.SecondLeft,
                         PlayMode.Instance.MainPlayer.Life,
+                        PlayMode.Instance.Statistic.KillByTrapCnt,
+                        PlayMode.Instance.Statistic.KillByMonsterCnt,
+                        PlayMode.Instance.Statistic.BreakBrickCnt,
+                        PlayMode.Instance.Statistic.TrampCloudCnt,
                         record,
                         DeadMarkManager.Instance.GetDeadPosition(),
                         () =>
@@ -51,53 +65,7 @@ namespace GameA.Game
                             LogHelper.Info("游戏成绩提交成功");
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             if (!PlayMode.Instance.SceneState.GameFailed) return;
-                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
-                        }, (errCode) =>
-                        {
-                            LogHelper.Info("游戏成绩提交失败");
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            if (!PlayMode.Instance.SceneState.GameFailed) return;
-                            CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
-                                new KeyValuePair<string, Action>("重试",
-                                    () =>
-                                    {
-                                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFailed));
-                                    }),
-                                new KeyValuePair<string, Action>("跳过", () =>
-                                {
-                                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
-                                }));
-                        });
-                });
-            });
-        }
-
-        public override void OnGameSuccess()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            byte[] record;
-            Loom.RunAsync(() =>
-            {
-                record = GetRecord();
-                Loom.QueueOnMainThread(() =>
-                {
-                    _project.CommitPlayResult(
-                        true,
-                        PlayMode.Instance.GameSuccessFrameCnt,
-                        PlayMode.Instance.SceneState.CurScore,
-                        PlayMode.Instance.SceneState.GemGain,
-                        PlayMode.Instance.SceneState.MonsterKilled,
-                        PlayMode.Instance.SceneState.SecondLeft,
-                        PlayMode.Instance.MainPlayer.Life,
-                        record,
-                        DeadMarkManager.Instance.GetDeadPosition(),
-                        () =>
-                        {
-                            LogHelper.Info("游戏成绩提交成功");
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            if (!PlayMode.Instance.SceneState.GameSucceed) return;
-                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
                         }, (errCode) =>
                         {
                             LogHelper.Info("游戏成绩提交失败");
@@ -113,14 +81,74 @@ namespace GameA.Game
                                 new KeyValuePair<string, Action>("跳过", () =>
                                 {
                                     //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
                                 }));
                         });
                 });
             });
         }
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override void OnGameSuccess()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+            byte[] record;
+            Loom.RunAsync(() =>
+            {
+                record = GetRecord(true);
+                Loom.QueueOnMainThread(() =>
+                {
+                    _project.CommitPlayResult(
+                        true,
+                        PlayMode.Instance.GameSuccessFrameCnt,
+                        PlayMode.Instance.SceneState.CurScore,
+                        PlayMode.Instance.SceneState.GemGain,
+                        PlayMode.Instance.SceneState.MonsterKilled,
+                        PlayMode.Instance.SceneState.SecondLeft,
+                        PlayMode.Instance.MainPlayer.Life,
+                        PlayMode.Instance.Statistic.KillByTrapCnt,
+                        PlayMode.Instance.Statistic.KillByMonsterCnt,
+                        PlayMode.Instance.Statistic.BreakBrickCnt,
+                        PlayMode.Instance.Statistic.TrampCloudCnt,
+                        record,
+                        DeadMarkManager.Instance.GetDeadPosition(),
+                        () =>
+                        {
+                            LogHelper.Info("游戏成绩提交成功");
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            if (!PlayMode.Instance.SceneState.GameSucceed) return;
+                            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
+                        }, (errCode) =>
+                        {
+                            LogHelper.Info("游戏成绩提交失败");
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            if (!PlayMode.Instance.SceneState.GameFailed) return;
+                            CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
+                                new KeyValuePair<string, Action>("重试",
+                                    () =>
+                                    {
+                                        CoroutineProxy.Instance.StartCoroutine(
+                                            CoroutineProxy.RunNextFrame(OnGameFailed));
+                                    }),
+                                new KeyValuePair<string, Action>("跳过", () =>
+                                {
+                                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
+                                    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
+                                }));
+                        });
+                });
+            });
+        }
+
+        public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
+        {
+            base.QuitGame(successCB, failureCB, forceQuitWhenFailed);
+            if (_project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorldProjectComment>(_project);
+            }
+        }
+
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
             _project.RequestPlay(() =>
             {
@@ -128,18 +156,21 @@ namespace GameA.Game
                 OnGameStart();
                 if (successCb != null)
                 {
-                    successCb.Invoke();
+                    successCb.Invoke(true);
                 }
             }, code => failedCb());
             return true;
         }
 
-
-        private byte[] GetRecord()
+        protected byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            if (SaveShadowData && win)
+            {
+                recordData.ShadowData = ShadowData.GetRecShadowData();
+            }
             recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
@@ -154,7 +185,7 @@ namespace GameA.Game
             return record;
         }
 
-        private IEnumerator GameFlow()
+        protected IEnumerator GameFlow()
         {
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);

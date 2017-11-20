@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AvatarPartItem : SyncronisticData {
+    public partial class AvatarPartItem : SyncronisticData<Msg_AvatarPartItem> {
         #region 字段
         /// <summary>
         /// 下边枚举
@@ -77,7 +77,27 @@ namespace GameA
             _id = msg.Id;     
             _using = msg.Using;     
             _expirationTime = msg.ExpirationTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_AvatarPartItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _id = msg.Id;           
+            _using = msg.Using;           
+            _expirationTime = msg.ExpirationTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (AvatarPartItem obj)
+        {
+            if (null == obj) return false;
+            _type = obj.Type;           
+            _id = obj.Id;           
+            _using = obj.Using;           
+            _expirationTime = obj.ExpirationTime;           
             return true;
         }
 

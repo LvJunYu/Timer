@@ -54,7 +54,7 @@ namespace GameA.Game
 			});
         }
 
-        public override bool Restart (Action successCb, Action failedCb)
+        public override bool Restart (Action<bool> successCb, Action failedCb)
         {
             SocialApp.Instance.ReturnToApp ();
             return true;
@@ -104,6 +104,10 @@ namespace GameA.Game
 				PlayMode.Instance.SceneState.MonsterKilled,
 				PlayMode.Instance.SceneState.SecondLeft,
 				PlayMode.Instance.MainPlayer.Life,
+				PlayMode.Instance.Statistic.KillByTrapCnt,
+				PlayMode.Instance.Statistic.KillByMonsterCnt,
+				PlayMode.Instance.Statistic.BreakBrickCnt,
+				PlayMode.Instance.Statistic.TrampCloudCnt,
 				null,
 				() =>
 				{

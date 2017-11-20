@@ -1,21 +1,17 @@
-/********************************************************************
-** Filename : UICtrlGameSetting  
-** Author : ake
-** Date : 6/8/2016 8:15:38 PM
-** Summary : UICtrlGameSetting  
-***********************************************************************/
-
-
 using System;
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
+using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
     [UIAutoSetup]
     public class UICtrlGameSetting : UICtrlGenericBase<UIViewGameSetting>
     {
+        private UPCtrlGameSettingInputKeys _upCtrlGameSettingInputKeys;
         private USCtrlGameSettingItem _showShadow;
         private USCtrlGameSettingItem _showRoute;
         private USCtrlGameSettingItem _playBGMusic;
@@ -27,34 +23,37 @@ namespace GameA
             _groupId = (int) EUIGroupType.AppGameUI;
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<KeyCode>(EMessengerType.OnGetInputKeyCode, OnGetInputKeyCode);
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            SetPlatform(CrossPlatformInputManager.Platform);
             _cachedView.LoginOut.onClick.AddListener(LoginOut);
             _cachedView.ChangePwdBtn.onClick.AddListener(OnChangePWDBtnClick);
             _cachedView.BindingBtn.onClick.AddListener(OnBindingBtnClick);
 
-            _showShadow = new USCtrlGameSettingItem();
-            _showShadow.Init(_cachedView.ShowShadow);
-            _showRoute = new USCtrlGameSettingItem();
-            _showRoute.Init(_cachedView.ShowRoute);
-
-
-            _playBGMusic = new USCtrlGameSettingItem();
-            _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
-            _playSoundsEffects = new USCtrlGameSettingItem();
-            _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
-
-            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.RestartBtn.onClick.AddListener(OnRestartBtn);
+            
+            _cachedView.ReturnBtn_2.onClick.AddListener(OnReturnBtn);
+            _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
+            _cachedView.RestartBtn_2.onClick.AddListener(OnRestartBtn);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             UpdateSettingItem();
-            UpdateShowState();
+            if (CrossPlatformInputManager.Platform == EPlatform.Standalone)
+            {
+                _upCtrlGameSettingInputKeys.Open();
+            }
             _cachedView.NickName.text = string.Format("账号：{0}", LocalUser.Instance.User.UserInfoSimple.NickName);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
@@ -76,6 +75,10 @@ namespace GameA
         protected override void OnClose()
         {
             GameSettingData.Instance.Save();
+            if (_upCtrlGameSettingInputKeys != null)
+            {
+                _upCtrlGameSettingInputKeys.Close();
+            }
             if (PlayMode.Instance == null)
             {
                 return;
@@ -89,11 +92,31 @@ namespace GameA
             base.OnClose();
         }
 
-//		protected override void SetAnimationType()
-//		{
-//			base.SetAnimationType();
-//			_animationType = EAnimationType.None;
-//		}
+        private void SetPlatform(EPlatform ePlatform)
+        {
+            _cachedView.MobilePanel.SetActive(ePlatform == EPlatform.Moblie);
+            _cachedView.PCPanel.SetActive(ePlatform == EPlatform.Standalone);
+            _showShadow = new USCtrlGameSettingItem();
+            _showRoute = new USCtrlGameSettingItem();
+            _playBGMusic = new USCtrlGameSettingItem();
+            _playSoundsEffects = new USCtrlGameSettingItem();
+            if (ePlatform == EPlatform.Standalone)
+            {
+                _upCtrlGameSettingInputKeys = new UPCtrlGameSettingInputKeys();
+                _upCtrlGameSettingInputKeys.Init(this, _cachedView);
+                _showShadow.Init(_cachedView.ShowShadow_2);
+                _showRoute.Init(_cachedView.ShowRoute_2);
+                _playBGMusic.Init(_cachedView.PlayBackGroundMusic_2);
+                _playSoundsEffects.Init(_cachedView.PlaySoundsEffects_2);
+            }
+            else
+            {
+                _showShadow.Init(_cachedView.ShowShadow);
+                _showRoute.Init(_cachedView.ShowRoute);
+                _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
+                _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
+            }
+        }
 
         private void LoginOut()
         {
@@ -111,13 +134,13 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
-        
+
         public void OnBindingBtnClick()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlBindingPhone>();
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
-        
+
         public void OnChangePWDBtnClick()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlChangePassword>();
@@ -128,28 +151,23 @@ namespace GameA
         {
             _cachedView.BtnGroup1.SetActiveEx(true);
             _cachedView.BtnGroup2.SetActiveEx(false);
+            _cachedView.BtnGroup1_2.SetActiveEx(true);
+            _cachedView.BtnGroup2_2.SetActiveEx(false);
         }
 
         public void ChangeToSettingInGame()
         {
             _cachedView.BtnGroup1.SetActiveEx(false);
             _cachedView.BtnGroup2.SetActiveEx(true);
+            _cachedView.BtnGroup1_2.SetActiveEx(false);
+            _cachedView.BtnGroup2_2.SetActiveEx(true);
         }
 
-        #region private 
-
-        private void UpdateShowState()
+        private void OnGetInputKeyCode(KeyCode keyCode)
         {
-            if (GM2DGame.Instance != null)
+            if (_isOpen)
             {
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-                {
-                    _cachedView.RestartBtn.gameObject.SetActive(false);
-                }
-                else
-                {
-                    _cachedView.RestartBtn.gameObject.SetActive(true);
-                }
+                _upCtrlGameSettingInputKeys.ChangeInputKey(keyCode);
             }
         }
 
@@ -166,12 +184,10 @@ namespace GameA
             GameSettingData.Instance.PlayMusic = isOn;
         }
 
-
         private void OnClickSoundsEffectsButton(bool isOn)
         {
             GameSettingData.Instance.PlaySoundsEffects = isOn;
         }
-
 
         private void OnClickShowRuntimeShadow(bool isOn)
         {
@@ -207,10 +223,13 @@ namespace GameA
             }
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            GM2DGame.Instance.GameMode.Restart(() =>
+            GM2DGame.Instance.GameMode.Restart(value =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                if (value)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                }
             }, () =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -220,6 +239,5 @@ namespace GameA
                     new KeyValuePair<string, Action>("取消", () => { }));
             });
         }
-        #endregion
     }
 }

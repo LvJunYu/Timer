@@ -341,10 +341,6 @@ namespace GameA.Game
                 Hit(unit, eDirectionType);
             }
         }
-
-        protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
-        {
-        }
         
         internal override void InFan(UnitBase fanUnit, IntVec2 force)
         {

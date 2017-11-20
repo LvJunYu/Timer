@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Mail : SyncronisticData {
+    public partial class Mail : SyncronisticData<Msg_Mail> {
         #region 字段
         /// <summary>
         /// Id
@@ -19,7 +19,11 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private EMailType _type;
+        private EMailType _mailType;
+        /// <summary>
+        /// 
+        /// </summary>
+        private EMailFuncType _funcType;
         /// <summary>
         /// 
         /// </summary>
@@ -28,6 +32,10 @@ namespace GameA
         /// 
         /// </summary>
         private string _content;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _contentId;
         /// <summary>
         /// 
         /// </summary>
@@ -78,10 +86,20 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public EMailType Type { 
-            get { return _type; }
-            set { if (_type != value) {
-                _type = value;
+        public EMailType MailType { 
+            get { return _mailType; }
+            set { if (_mailType != value) {
+                _mailType = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public EMailFuncType FuncType { 
+            get { return _funcType; }
+            set { if (_funcType != value) {
+                _funcType = value;
                 SetDirty();
             }}
         }
@@ -102,6 +120,16 @@ namespace GameA
             get { return _content; }
             set { if (_content != value) {
                 _content = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long ContentId { 
+            get { return _contentId; }
+            set { if (_contentId != value) {
+                _contentId = value;
                 SetDirty();
             }}
         }
@@ -177,9 +205,11 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            _type = msg.Type;     
+            _mailType = msg.MailType;     
+            _funcType = msg.FuncType;     
             _title = msg.Title;     
             _content = msg.Content;     
+            _contentId = msg.ContentId;     
             if (null == _attachItemList) {
                 _attachItemList = new Reward(msg.AttachItemList);
             } else {
@@ -190,7 +220,65 @@ namespace GameA
             _receiptedFlag = msg.ReceiptedFlag;     
             _receiptedTime = msg.ReceiptedTime;     
             _createTime = msg.CreateTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_Mail msg)
+        {
+            if (null == msg) return false;
+            _id = msg.Id;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _mailType = msg.MailType;           
+            _funcType = msg.FuncType;           
+            _title = msg.Title;           
+            _content = msg.Content;           
+            _contentId = msg.ContentId;           
+            if(null != msg.AttachItemList){
+                if (null == _attachItemList){
+                    _attachItemList = new Reward(msg.AttachItemList);
+                }
+                _attachItemList.CopyMsgData(msg.AttachItemList);
+            }
+            _readFlag = msg.ReadFlag;           
+            _readTime = msg.ReadTime;           
+            _receiptedFlag = msg.ReceiptedFlag;           
+            _receiptedTime = msg.ReceiptedTime;           
+            _createTime = msg.CreateTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (Mail obj)
+        {
+            if (null == obj) return false;
+            _id = obj.Id;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _mailType = obj.MailType;           
+            _funcType = obj.FuncType;           
+            _title = obj.Title;           
+            _content = obj.Content;           
+            _contentId = obj.ContentId;           
+            if(null != obj.AttachItemList){
+                if (null == _attachItemList){
+                    _attachItemList = new Reward();
+                }
+                _attachItemList.DeepCopy(obj.AttachItemList);
+            }
+            _readFlag = obj.ReadFlag;           
+            _readTime = obj.ReadTime;           
+            _receiptedFlag = obj.ReceiptedFlag;           
+            _receiptedTime = obj.ReceiptedTime;           
+            _createTime = obj.CreateTime;           
             return true;
         }
 

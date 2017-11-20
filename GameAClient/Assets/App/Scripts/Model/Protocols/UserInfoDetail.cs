@@ -6,13 +6,17 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoDetail : SyncronisticData {
+    public partial class UserInfoDetail : SyncronisticData<Msg_SC_DAT_UserInfoDetail> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
         /// 简要信息
         /// </summary>
         private UserInfoSimple _userInfoSimple;
+        /// <summary>
+        /// 短id
+        /// </summary>
+        private long _shortId;
         /// <summary>
         /// 
         /// </summary>
@@ -78,6 +82,16 @@ namespace GameA
             get { return _userInfoSimple; }
             set { if (_userInfoSimple != value) {
                 _userInfoSimple = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 短id
+        /// </summary>
+        public long ShortId { 
+            get { return _shortId; }
+            set { if (_shortId != value) {
+                _shortId = value;
                 SetDirty();
             }}
         }
@@ -264,6 +278,7 @@ namespace GameA
             } else {
                 _userInfoSimple.OnSyncFromParent(msg.UserInfoSimple);
             }
+            _shortId = msg.ShortId;           
             _userName = msg.UserName;           
             _phoneNum = msg.PhoneNum;           
             _birthDay = msg.BirthDay;           
@@ -280,7 +295,67 @@ namespace GameA
             }
             _loginCount = msg.LoginCount;           
             _lastLoginTime = msg.LastLoginTime;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserInfoDetail msg)
+        {
+            if (null == msg) return false;
+            if(null != msg.UserInfoSimple){
+                if (null == _userInfoSimple){
+                    _userInfoSimple = new UserInfoSimple(msg.UserInfoSimple);
+                }
+                _userInfoSimple.CopyMsgData(msg.UserInfoSimple);
+            }
+            _shortId = msg.ShortId;           
+            _userName = msg.UserName;           
+            _phoneNum = msg.PhoneNum;           
+            _birthDay = msg.BirthDay;           
+            _country = msg.Country;           
+            _province = msg.Province;           
+            _city = msg.City;           
+            _profile = msg.Profile;           
+            _updateTime = msg.UpdateTime;           
+            _roleType = msg.RoleType;           
+            if(null != msg.RelationStatistic){
+                if (null == _relationStatistic){
+                    _relationStatistic = new UserRelationStatistic(msg.RelationStatistic);
+                }
+                _relationStatistic.CopyMsgData(msg.RelationStatistic);
+            }
+            _loginCount = msg.LoginCount;           
+            _lastLoginTime = msg.LastLoginTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (UserInfoDetail obj)
+        {
+            if (null == obj) return false;
+            if(null != obj.UserInfoSimple){
+                if (null == _userInfoSimple){
+                    _userInfoSimple = new UserInfoSimple();
+                }
+                _userInfoSimple.DeepCopy(obj.UserInfoSimple);
+            }
+            _shortId = obj.ShortId;           
+            _userName = obj.UserName;           
+            _phoneNum = obj.PhoneNum;           
+            _birthDay = obj.BirthDay;           
+            _country = obj.Country;           
+            _province = obj.Province;           
+            _city = obj.City;           
+            _profile = obj.Profile;           
+            _updateTime = obj.UpdateTime;           
+            _roleType = obj.RoleType;           
+            if(null != obj.RelationStatistic){
+                if (null == _relationStatistic){
+                    _relationStatistic = new UserRelationStatistic();
+                }
+                _relationStatistic.DeepCopy(obj.RelationStatistic);
+            }
+            _loginCount = obj.LoginCount;           
+            _lastLoginTime = obj.LastLoginTime;           
             return true;
         }
 

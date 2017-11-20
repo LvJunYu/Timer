@@ -27,7 +27,7 @@ namespace GameA
         {
             "冥想训练",
             "长跑训练",
-            "跳远训练",
+            "跳跃训练",
             "拳击训练",
             "摩擦训练"
         };
@@ -66,7 +66,47 @@ namespace GameA
         private int _count;
         private float _angel;
 
-        private void CreateUmItems()
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.UpgradeGradeBtn.onClick.AddListener(OnUpgradeGradeBtn);
+            _cachedView.FinishImmediatelyBtn.onClick.AddListener(OnFinishImmediatelyBtn);
+            InitUI();
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            RefreshView();
+        }
+
+        protected override void OnOpenAnimationUpdate()
+        {
+            base.OnOpenAnimationUpdate();
+            RefreshMap();
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnUpgradeTrainProperty, OnCharacterUpgradeProperty);
+            RegisterEvent(EMessengerType.OnUpgradeTrainGrade, OnCharacterUpgradeGrade);
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
+        private void InitUI()
         {
             _angel = 90 - (180 - 360 / 5) / (float) 2;
             _userTrainProperty = LocalUser.Instance.UserTrainProperty;
@@ -104,6 +144,8 @@ namespace GameA
                 _propertyItems[i].Refresh();
                 _propertyInfos[i].Refresh();
             }
+            _cachedView.PropertyListRTF.gameObject.SetActive(!_isTraining);
+            _cachedView.IsTraining.SetActive(_isTraining);
             if (_isTraining)
             {
                 if (null == _curTrainingProperty)
@@ -111,17 +153,21 @@ namespace GameA
                     LogHelper.Error("_isTraining==ture, but _curTrainingProperty==null");
                     return;
                 }
+                int index = (int) _curTrainingProperty.Property - 1;
                 _cachedView.TrainingTxt.text =
-                    string.Format("{0}中", _propertyNames[(int) (_curTrainingProperty.Property) - 1]);
+                    string.Format("{0}中", _propertyNames[index]);
                 _cachedView.ValueDescTxt.text = string.Format("{0}→{1}", _curTrainingProperty.ValueDesc,
                     _curTrainingProperty.NextValueDesc);
+                //刷新动画
+                for (int i = 0; i < _cachedView.Animations.Length; i++)
+                {
+                    _cachedView.Animations[i].SetActive(index == i);
+                }
             }
-            _cachedView.IsTraining.SetActive(_isTraining);
-            _cachedView.PropertyListRTF.gameObject.SetActive(!_isTraining);
             //刷新拥有的培养点
-            int grade = _userTrainProperty.Grade;
-            _cachedView.OwnedTrainPointTxt.text = grade.ToString();
+            _cachedView.OwnedTrainPointTxt.text = _userTrainProperty.TrainPoint.ToString();
             //刷新阶层Image
+            int grade = _userTrainProperty.Grade;
             for (int i = 0; i < _cachedView.GradeImgs.Length; i++)
             {
                 _cachedView.GradeImgs[i].SetActive(grade == i + 1);
@@ -431,47 +477,6 @@ namespace GameA
                 _cachedView.TrainingSlider.value =
                     _curTrainingProperty.RemainTrainingTime / (float) _curTrainingProperty.Time;
             }
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.UpgradeGradeBtn.onClick.AddListener(OnUpgradeGradeBtn);
-            _cachedView.FinishImmediatelyBtn.onClick.AddListener(OnFinishImmediatelyBtn);
-            CreateUmItems();
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            RefreshView();
-//            LocalUser.Instance.Achievement.AddAchievementCount(1, 1);
-        }
-
-        protected override void OnOpenAnimationUpdate()
-        {
-            base.OnOpenAnimationUpdate();
-            RefreshMap();
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
-        }
-        
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent(EMessengerType.OnUpgradeTrainProperty, OnCharacterUpgradeProperty);
-            RegisterEvent(EMessengerType.OnUpgradeTrainGrade, OnCharacterUpgradeGrade);
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.PopUpUI;
         }
     }
 }

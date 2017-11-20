@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class UMViewAudioItem: UMViewBase
+	public partial class UMViewAudioItem
 	{
 		private Action _clickCallback;
 

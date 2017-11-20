@@ -18,8 +18,8 @@ namespace GameA
         private ChangePartsSpineView _avatarView;
         private RenderCamera _renderCamera;
         private int _timer;
-        private const  int IntervalTime = 15 * ConstDefineGM2D.FixedFrameCount;
-        private bool _buttonEnable;
+        private const int IntervalTime = 10 * ConstDefineGM2D.FixedFrameCount;
+        private bool _buttonEnable = true;
 
         public Texture AvatarRenderTexture
         {
@@ -76,7 +76,11 @@ namespace GameA
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
-                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", (int) EResScenary.Default);
+                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
+                    (int) EResScenary.Default);
+//            _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
+//                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
+//                    (int) EResScenary.Default, false);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
@@ -84,6 +88,12 @@ namespace GameA
                 RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
             _cachedView.AvatarImage.texture = AvatarRenderTexture;
             _cachedView.AvatarImage.SetActiveEx(false);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy0",
+//                (int) EResScenary.Default);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy04",
+//                (int) EResScenary.Default);
+//            JoyResManager.Instance.SetupTexture(EResType.SpineData, "SMainBoy0_SkeletonData", "SMainBoy0_SMainBoy05",
+//                (int) EResScenary.Default);
 
             LocalUser.Instance.UsingAvatarData.Request(
                 LocalUser.Instance.UserGuid,
@@ -104,9 +114,15 @@ namespace GameA
 
         private IEnumerator DoFunc()
         {
-            _cachedView.AvatarImage.SetActiveEx(false);
+            if (_cachedView)
+            {
+                _cachedView.AvatarImage.SetActiveEx(false);
+            }
             yield return null;
-            _cachedView.AvatarImage.SetActiveEx(true);
+            if (_cachedView)
+            {
+                _cachedView.AvatarImage.SetActiveEx(true);
+            }
         }
 
         protected override void InitGroupId()
@@ -128,16 +144,18 @@ namespace GameA
                     {
                         _timer = IntervalTime;
                         var main = Random.Range(1, 3);
-                        var num = Random.Range(3, 7);
+                        var num = Random.Range(3, 8);
                         _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + num, false).Complete +=
-                            (state, index, count) => _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + main, true);
+                            (state, index, count) =>
+                                _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + main, true);
                     }
                 }
             }
         }
-
+        
         private void OnAvatarBtn()
         {
+//            _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle3", false);
 //            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 

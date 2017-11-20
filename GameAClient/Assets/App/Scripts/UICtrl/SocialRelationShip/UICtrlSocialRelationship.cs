@@ -1,169 +1,180 @@
 ﻿using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
+    public static class RelationCommonString
     {
-        private USCtrlSocialRelationship _usctrlPage1;
-        private USCtrlSocialRelationship _usctrlPage2;
-        //public List<UMCtrlRelationCard> _cardList = new List<UMCtrlRelationCard>();
-        private int _startIndex = 0;
-        private int _endIndex = 10;
+        public static string FollowedStr = "已关注";
+        public static string FollowStr = "关 注";
+        public static string BlockedStr = "已屏蔽";
+        public static string BlockStr = "屏蔽";
+        public static string FriendStr = "相互关注";
+    }
 
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.MainUI;
-        }
+    [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
+    public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>, ICheckOverlay
+    {
+        private EMenu _curMenu = EMenu.None;
+        private UPCtrlRelationshipBase _curMenuCtrl;
+        private UPCtrlRelationshipBase[] _menuCtrlArray;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitGroupId();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
-            _cachedView.FollowCount.text = LocalUser.Instance.User.RelationStatistic.FollowCount.ToString();
-            _cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
-            InitTagGroup();
-            LoadMyRelationStatistic();
-        }
+            _cachedView.CloseBtn.onClick.AddListener(OnReturnBtnClick);
+            _menuCtrlArray = new UPCtrlRelationshipBase[(int) EMenu.Max];
+            var upCtrlRelationshipFollow = new UPCtrlRelationshipFollow();
+            upCtrlRelationshipFollow.SetResScenary(ResScenary);
+            upCtrlRelationshipFollow.SetMenu(EMenu.Follow);
+            upCtrlRelationshipFollow.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Follow] = upCtrlRelationshipFollow;
 
-        public void OnCloseBtnClick()
-        {
-            //CardList.Clear();
-            SocialGUIManager.Instance.CloseUI<UICtrlSocialRelationship>();
-        }
+            var upCtrlRelationshipFans = new UPCtrlRelationshipFans();
+            upCtrlRelationshipFans.SetResScenary(ResScenary);
+            upCtrlRelationshipFans.SetMenu(EMenu.Fans);
+            upCtrlRelationshipFans.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Fans] = upCtrlRelationshipFans;
 
-        private void LoadMyFollowUserList()
-        {
-            LocalUser.Instance.FollowRelationUserList.CS_DataType = ERelationUserType.RUT_FollowedByMe;
-            Debug.Log("___UserGuid___" + LocalUser.Instance.UserGuid);
-            LocalUser.Instance.FollowRelationUserList.RequestFollowList(
-                LocalUser.Instance.UserGuid,
-                _startIndex,
-                _endIndex,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc,
-                () =>
+            var upCtrlRelationshipFriends = new UPCtrlRelationshipFriends();
+            upCtrlRelationshipFriends.SetResScenary(ResScenary);
+            upCtrlRelationshipFriends.SetMenu(EMenu.Friends);
+            upCtrlRelationshipFriends.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Friends] = upCtrlRelationshipFriends;
+
+            var upCtrlRelationshipAddNew = new UPCtrlRelationshipAddNew();
+            upCtrlRelationshipAddNew.SetResScenary(ResScenary);
+            upCtrlRelationshipAddNew.SetMenu(EMenu.AddNew);
+            upCtrlRelationshipAddNew.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.AddNew] = upCtrlRelationshipAddNew;
+
+            var upCtrlRelationshipBlock = new UPCtrlRelationshipBlock();
+            upCtrlRelationshipBlock.SetResScenary(ResScenary);
+            upCtrlRelationshipBlock.SetMenu(EMenu.Block);
+            upCtrlRelationshipBlock.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Block] = upCtrlRelationshipBlock;
+
+            for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
+            {
+                var index = i;
+                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
+                    b => ClickMenu(index, b));
+                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
                 {
-                    _usctrlPage1.Set(LocalUser.Instance.FollowRelationUserList.FollowRelationList, ResScenary);
-                    
-                },
-                code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
-                );
+                    _menuCtrlArray[i].Close();
+                }
+            }
         }
 
-        private void LoadMyBlockUserList()
+        protected override void OnDestroy()
         {
-            LocalUser.Instance.BlockRelationUserList.CS_DataType = ERelationUserType.RUT_BlockByMe;
-            LocalUser.Instance.BlockRelationUserList.RequestBlockList(
-                LocalUser.Instance.UserGuid,
-                _startIndex,
-                _endIndex,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc,
-                () =>
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                if (_menuCtrlArray[i] != null)
                 {
-                    _usctrlPage2.Set(LocalUser.Instance.BlockRelationUserList.BlockRelationList, ResScenary);
-                },
-                code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
-                );
+                    _menuCtrlArray[i].OnDestroy();
+                }
+            }
+            _curMenuCtrl = null;
+            base.OnDestroy();
         }
 
-        private void LoadMyRelationStatistic()
+        protected override void InitGroupId()
         {
-            LocalUser.Instance.LoadUserData(
-                 () =>
-                 {
-                     _cachedView.FollowCount.text = LocalUser.Instance.User.RelationStatistic.FollowCount.ToString();
-                     _cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
-                 },
-                code => { LogHelper.Error("Network error when get RefreshMyRelationStatistic, {0}", code); }
-                );
+            _groupId = (int) EUIGroupType.MainPopUpUI;
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
 
         protected override void OnOpen(object parameter)
         {
-            LoadMyRelationStatistic();
-            LoadMyBlockUserList();
-            LoadMyFollowUserList();
-        }
-
-        //private void SetData()
-        //{
-        //    _usctrlPage1.Set(LocalUser.Instance.RelationUserList.FollowRelationList);
-        //    _usctrlPage2.Set(LocalUser.Instance.RelationUserList.BlockRelationList);
-
-
-        //}
-        //public void Set(List<UserInfoDetail> fittingList)
-        //{
-        //    if (_cardList.Count > 0)
-        //    {
-        //        for (int i = 0; i < _cardList.Count; i++)
-        //        {
-        //            _cardList[i].Destroy();
-        //        }
-        //    }
-        //    _cardList.Clear();
-        //    for (int i = 0; i < fittingList.Count; i++)
-        //    {
-        //        SetEachCard(fittingList[i]);
-        //    }
-        //    //RefreshPage();
-        //}
-
-        //private void SetEachCard(UserInfoDetail fittingFashion)
-        //{
-        //    if (_cachedView != null)
-        //    {
-        //        var UM = new UMCtrlRelationCard();
-        //        UM.Init(_cachedView.Dock as RectTransform);
-        //        UM.Set(fittingFashion);
-        //        _cardList.Add(UM);
-        //    }
-        //}
-
-        private void InitTagGroup()
-        {
-            _cachedView.TagGroup.AddButton(_cachedView.USView.Page1Btn, OnPage1ButtonClick);
-            _cachedView.TagGroup.AddButton(_cachedView.USView.Page2Btn, OnPage2ButtonClick);
-
-            _usctrlPage1 = new USCtrlSocialRelationship();
-            _usctrlPage1.Init(_cachedView.Page1);
-            _usctrlPage1.RelationPage = USCtrlSocialRelationship.RelationshipPage.Relationshippage1;
-
-            _usctrlPage2 = new USCtrlSocialRelationship();
-            _usctrlPage2.Init(_cachedView.Page2);
-            _usctrlPage2.RelationPage = USCtrlSocialRelationship.RelationshipPage.Relationshippage2;
-
-        }
-
-
-        private void OnPage1ButtonClick(bool open)
-        {
-            if (open)
+            base.OnOpen(parameter);
+            if (null != parameter)
             {
-                _usctrlPage1.Open();
+                _curMenu = (EMenu) parameter;
+            }
+            if (_curMenu == EMenu.None)
+            {
+                _cachedView.TabGroup.SelectIndex((int) EMenu.Follow, true);
             }
             else
             {
-                _usctrlPage1.Close();
+                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
         }
 
-        private void OnPage2ButtonClick(bool open)
+        protected override void OnClose()
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                _menuCtrlArray[i].HasInited = false;
+            }
+            _cachedView.SeachInputField.text = string.Empty;
+            base.OnClose();
+        }
+
+        private void ChangeMenu(EMenu menu)
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            _curMenu = menu;
+            var inx = (int) _curMenu;
+            if (inx < _menuCtrlArray.Length)
+            {
+                _curMenuCtrl = _menuCtrlArray[inx];
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Open();
+            }
+        }
+
+        private void ClickMenu(int selectInx, bool open)
         {
             if (open)
             {
-                _usctrlPage2.Open();
-            }
-            else
-            {
-                _usctrlPage2.Close();
+                ChangeMenu((EMenu) selectInx);
             }
         }
 
+        private void OnReturnBtnClick()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlSocialRelationship>();
+        }
+
+        private void OnRelationShipChanged(UserInfoDetail arg1)
+        {
+            if (_curMenuCtrl != null)
+            {
+                ((IOnChangeHandler<UserInfoDetail>) _curMenuCtrl).OnChangeHandler(arg1);
+            }
+        }
+
+        public enum EMenu
+        {
+            None = -1,
+            Follow,
+            Fans,
+            Friends,
+            AddNew,
+            Block,
+            Max
+        }
     }
 }

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MailStatistic : SyncronisticData {
+    public partial class MailStatistic : SyncronisticData<Msg_SC_DAT_MailStatistic> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -101,7 +101,23 @@ namespace GameA
             if (null == msg) return false;
             _totalCount = msg.TotalCount;           
             _unreadCount = msg.UnreadCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_MailStatistic msg)
+        {
+            if (null == msg) return false;
+            _totalCount = msg.TotalCount;           
+            _unreadCount = msg.UnreadCount;           
+            return true;
+        } 
+
+        public bool DeepCopy (MailStatistic obj)
+        {
+            if (null == obj) return false;
+            _totalCount = obj.TotalCount;           
+            _unreadCount = obj.UnreadCount;           
             return true;
         }
 

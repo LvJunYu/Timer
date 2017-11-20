@@ -1,9 +1,9 @@
-﻿using SoyEngine;
-using System;
-using SoyEngine.Proto;
-using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -13,7 +13,6 @@ namespace GameA.Game
         private AdventureGuideBase _guideBase;
         private const string HandbookEventPrefix = "Book_";
         private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
-
 
         public SituationAdventureParam GetLevelInfo()
         {
@@ -39,7 +38,7 @@ namespace GameA.Game
             {
                 _guideBase.Init();
             }
-            
+
             Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
             return true;
         }
@@ -52,7 +51,7 @@ namespace GameA.Game
                 _guideBase.UpdateLogic();
             }
         }
-        
+
         public override void Update()
         {
             base.Update();
@@ -83,7 +82,7 @@ namespace GameA.Game
         public override void OnGameFailed()
         {
             UICtrlGameFinish.EShowState showState
-                = _startType == GameManager.EStartType.AdventureNormalPlay
+                = _adventureLevelInfo.ProjectType == EAdventureProjectType.APT_Normal
                     ? UICtrlGameFinish.EShowState.AdvNormalLose
                     : UICtrlGameFinish.EShowState.AdvBonusLose;
 
@@ -103,7 +102,7 @@ namespace GameA.Game
         public override void OnGameSuccess()
         {
             UICtrlGameFinish.EShowState showState
-                = _startType == GameManager.EStartType.AdventureNormalPlay
+                = _adventureLevelInfo.ProjectType == EAdventureProjectType.APT_Normal
                     ? UICtrlGameFinish.EShowState.AdvNormalWin
                     : UICtrlGameFinish.EShowState.AdvBonusWin;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
@@ -129,23 +128,133 @@ namespace GameA.Game
                 });
         }
 
-        public override bool Restart(Action successCb, Action failedCb)
+        public override bool Restart(Action<bool> successCb, Action failedCb)
         {
-            if (successCb != null)
+            if (!GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
             {
-                successCb.Invoke();
+                if (successCb != null)
+                {
+                    successCb.Invoke(false);
+                }
+                return true;
             }
-            SocialApp.Instance.ReturnToApp();
+            EAdventureProjectType eAPType = _adventureLevelInfo.ProjectType;
+
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
+
+            AppData.Instance.AdventureData.PlayAdventureLevel(
+                _adventureLevelInfo.Section,
+                _adventureLevelInfo.Level,
+                eAPType,
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    // set local energy data
+                    GameATools.LocalUseEnergy(_adventureLevelInfo.Table.EnergyCost);
+                    GameRun.Instance.RePlay();
+                    OnGameStart();
+                    if (successCb != null)
+                    {
+                        successCb.Invoke(true);
+                    }
+                },
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (failedCb != null)
+                    {
+                        failedCb.Invoke();
+                    }
+                }
+            );
             return true;
         }
 
+        public override bool HasNext()
+        {
+            return _adventureLevelInfo.ProjectType != EAdventureProjectType.APT_Bonus
+                   && _adventureLevelInfo.Level != ConstDefineGM2D.AdvNormallevelPerChapter;
+        }
+
+        public override bool PlayNext(Action<bool> successCb, Action failedCb)
+        {
+            if (!HasNext())
+            {
+                if (failedCb != null)
+                {
+                    failedCb.Invoke();
+                }
+                return false;
+            }
+            if (!GameATools.CheckEnergy(_adventureLevelInfo.Table.EnergyCost))
+            {
+                if (successCb != null)
+                {
+                    successCb.Invoke(false);
+                }
+                return true;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求中");
+
+            var section = _adventureLevelInfo.Section;
+            var level = _adventureLevelInfo.Level + 1;
+            var projectType = EAdventureProjectType.APT_Normal;
+            AppData.Instance.AdventureData.PlayAdventureLevel(
+                section,
+                level,
+                projectType,
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    // set local energy data
+                    GameATools.LocalUseEnergy(_adventureLevelInfo.Table.EnergyCost);
+                    var p = AppData.Instance.AdventureData.GetAdvLevelProject(section, projectType, level);
+                    p.PrepareRes(() =>
+                    {
+                        if (successCb != null)
+                        {
+                            successCb.Invoke(true);
+                        }
+                        SocialApp.Instance.ReturnToApp();
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                        {
+                            GC.Collect();
+                            SituationAdventureParam param = new SituationAdventureParam
+                            {
+                                Level = level,
+                                ProjectType = projectType,
+                                Section = section
+                            };
+                            GameManager.Instance.RequestPlayAdvNormal(p, param);
+                            SocialApp.Instance.ChangeToGame();
+                        }));
+                    }, () =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        if (failedCb != null)
+                        {
+                            failedCb.Invoke();
+                        }
+                    });
+                },
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (failedCb != null)
+                    {
+                        failedCb.Invoke();
+                    }
+                }
+            );
+            return true;
+        }
 
         private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
         {
             byte[] record;
             Loom.RunAsync(() =>
             {
-                record = GetRecord();
+                record = GetRecord(PlayMode.Instance.SceneState.GameSucceed);
                 Loom.QueueOnMainThread(() =>
                 {
                     AppData.Instance.AdventureData.CommitLevelResult(
@@ -156,6 +265,10 @@ namespace GameA.Game
                         PlayMode.Instance.SceneState.MonsterKilled,
                         PlayMode.Instance.SceneState.SecondLeft,
                         PlayMode.Instance.MainPlayer.Life,
+                        PlayMode.Instance.Statistic.KillByTrapCnt,
+                        PlayMode.Instance.Statistic.KillByMonsterCnt,
+                        PlayMode.Instance.Statistic.BreakBrickCnt,
+                        PlayMode.Instance.Statistic.TrampCloudCnt,
                         record,
                         () =>
                         {
@@ -176,11 +289,15 @@ namespace GameA.Game
             });
         }
 
-        private byte[] GetRecord()
+        private byte[] GetRecord(bool win)
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            if (SaveShadowData && win)
+            {
+                recordData.ShadowData = ShadowData.GetRecShadowData();
+            }
             recordData.Data.AddRange(_inputDatas);
             recordData.BoostItem = new BoostItemData();
             recordData.BoostItem.ExtraLife =
@@ -251,12 +368,9 @@ namespace GameA.Game
         {
 //            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
 //            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
-//
-//            List<int> useItems = uictrlBoostItem.SelectedItems;
-//            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
+//            PlayMode.Instance.OnBoostItemSelectFinish(uictrlBoostItem.SelectedItems);
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
-
 //            if (!Application.isMobilePlatform)
 //            {
 //                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
@@ -264,11 +378,9 @@ namespace GameA.Game
 //                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
 //            }
             yield return null;
-
             GameRun.Instance.Playing();
         }
-        
-        
+
         public void HandleHandbook(string triggerName, bool active)
         {
             if (!active)

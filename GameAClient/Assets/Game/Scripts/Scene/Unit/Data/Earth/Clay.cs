@@ -49,13 +49,34 @@ namespace GameA.Game
                     other.SetStepOnClay();
                     break;
                 case EDirectionType.Down:
-                    other.SetClimbState(EClimbState.Up);
+                    if (other.IsMonster)
+                    {
+                       ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Down);
+                    }
+                    else
+                    {
+                        other.SetClimbState(EClimbState.Up);
+                    }
                     break;
                 case EDirectionType.Left:
-                    other.SetClimbState(EClimbState.Right);
+                    if (other.IsMonster)
+                    {
+                        ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Left);
+                    }
+                    else
+                    {
+                        other.SetClimbState(EClimbState.Right);
+                    }
                     break;
                 case EDirectionType.Right:
-                    other.SetClimbState(EClimbState.Left);
+                    if (other.IsMonster)
+                    {
+                        ((MonsterBase)other).ClayOnWall(EClayOnWallDirection.Right);
+                    }
+                    else
+                    {
+                        other.SetClimbState(EClimbState.Left);
+                    }
                     break;
             }
         }

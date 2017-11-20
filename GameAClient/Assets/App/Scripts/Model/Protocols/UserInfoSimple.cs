@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoSimple : SyncronisticData {
+    public partial class UserInfoSimple : SyncronisticData<Msg_SC_DAT_UserInfoSimple> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -33,6 +33,10 @@ namespace GameA
         /// 等级数据
         /// </summary>
         private UserLevel _levelData;
+        /// <summary>
+        /// 蓝钻数据
+        /// </summary>
+        private BlueVipData _blueVipData;
 
         // cs fields----------------------------------
         /// <summary>
@@ -103,6 +107,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 蓝钻数据
+        /// </summary>
+        public BlueVipData BlueVipData { 
+            get { return _blueVipData; }
+            set { if (_blueVipData != value) {
+                _blueVipData = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -119,6 +133,9 @@ namespace GameA
                     return true;
                 }
                 if (null != _levelData && _levelData.IsDirty) {
+                    return true;
+                }
+                if (null != _blueVipData && _blueVipData.IsDirty) {
                     return true;
                 }
                 return base.IsDirty;
@@ -175,7 +192,68 @@ namespace GameA
             } else {
                 _levelData.OnSyncFromParent(msg.LevelData);
             }
-            OnSyncPartial();
+            if (null == _blueVipData) {
+                _blueVipData = new BlueVipData(msg.BlueVipData);
+            } else {
+                _blueVipData.OnSyncFromParent(msg.BlueVipData);
+            }
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserInfoSimple msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            _nickName = msg.NickName;           
+            _headImgUrl = msg.HeadImgUrl;           
+            _sex = msg.Sex;           
+            if(null != msg.RelationWithMe){
+                if (null == _relationWithMe){
+                    _relationWithMe = new UserRelationWithMe(msg.RelationWithMe);
+                }
+                _relationWithMe.CopyMsgData(msg.RelationWithMe);
+            }
+            if(null != msg.LevelData){
+                if (null == _levelData){
+                    _levelData = new UserLevel(msg.LevelData);
+                }
+                _levelData.CopyMsgData(msg.LevelData);
+            }
+            if(null != msg.BlueVipData){
+                if (null == _blueVipData){
+                    _blueVipData = new BlueVipData(msg.BlueVipData);
+                }
+                _blueVipData.CopyMsgData(msg.BlueVipData);
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (UserInfoSimple obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            _nickName = obj.NickName;           
+            _headImgUrl = obj.HeadImgUrl;           
+            _sex = obj.Sex;           
+            if(null != obj.RelationWithMe){
+                if (null == _relationWithMe){
+                    _relationWithMe = new UserRelationWithMe();
+                }
+                _relationWithMe.DeepCopy(obj.RelationWithMe);
+            }
+            if(null != obj.LevelData){
+                if (null == _levelData){
+                    _levelData = new UserLevel();
+                }
+                _levelData.DeepCopy(obj.LevelData);
+            }
+            if(null != obj.BlueVipData){
+                if (null == _blueVipData){
+                    _blueVipData = new BlueVipData();
+                }
+                _blueVipData.DeepCopy(obj.BlueVipData);
+            }
             return true;
         }
 
@@ -194,6 +272,7 @@ namespace GameA
         public UserInfoSimple () { 
             _relationWithMe = new UserRelationWithMe();
             _levelData = new UserLevel();
+            _blueVipData = new BlueVipData();
             OnCreate();
         }
         #endregion

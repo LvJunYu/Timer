@@ -11,7 +11,6 @@ using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using EWinCondition = GameA.Game.EWinCondition;
 using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
@@ -108,7 +107,7 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-            UpdateShowHelper();
+//            UpdateShowHelper();
             UpdateTimeLimit();
 
             if (_showStar)
@@ -205,7 +204,7 @@ namespace GameA
             _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
 
             var hasOtherLimit = false;
-            for (EWinCondition i = 0; i < EWinCondition.Max; i++)
+            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
                 bool hasCondition = PlayMode.Instance.SceneState.HasWinCondition(i);
                 if (hasCondition)
@@ -223,7 +222,7 @@ namespace GameA
                     {
                         winConditionItem.Show();
                     }
-                    if (i != EWinCondition.TimeLimit)
+                    if (i != EWinCondition.WC_TimeLimit)
                     {
                         hasOtherLimit = true;
                     }
@@ -231,8 +230,8 @@ namespace GameA
             }
             if (!hasOtherLimit)
             {//没有其他条件，时间限制改为存活
-                _winConditionItemDict[EWinCondition.TimeLimit]
-                    .SetText(GetWinConditionString(EWinCondition.TimeLimit, true));
+                _winConditionItemDict[EWinCondition.WC_TimeLimit]
+                    .SetText(GetWinConditionString(EWinCondition.WC_TimeLimit, true));
             }
             UpdateWinDataWithOutTimeLimit();
             UpdateTimeLimit();
@@ -271,20 +270,20 @@ namespace GameA
                 _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
                     () => UpdateCollectText(curScore)));
             }
-            if (_winConditionItemDict.ContainsKey(EWinCondition.CollectTreasure))
+            if (_winConditionItemDict.ContainsKey(EWinCondition.WC_Collect))
             {
-                _winConditionItemDict[EWinCondition.CollectTreasure].SetComplete(curScore == totalScore);
+                _winConditionItemDict[EWinCondition.WC_Collect].SetComplete(curScore == totalScore);
             }
             int killCount = PlayMode.Instance.SceneState.MonsterKilled;
             int totalCount = PlayMode.Instance.SceneState.MonsterCount;
             _cachedView.EnemyText.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
-            if (_winConditionItemDict.ContainsKey(EWinCondition.KillMonster))
+            if (_winConditionItemDict.ContainsKey(EWinCondition.WC_Monster))
             {
-                _winConditionItemDict[EWinCondition.KillMonster].SetComplete(killCount == totalCount);
+                _winConditionItemDict[EWinCondition.WC_Monster].SetComplete(killCount == totalCount);
             }
-            if (_winConditionItemDict.ContainsKey(EWinCondition.Arrived))
+            if (_winConditionItemDict.ContainsKey(EWinCondition.WC_Arrive))
             {
-                _winConditionItemDict[EWinCondition.Arrived].SetComplete(PlayMode.Instance.SceneState.Arrived);
+                _winConditionItemDict[EWinCondition.WC_Arrive].SetComplete(PlayMode.Instance.SceneState.Arrived);
             }
         }
 
@@ -322,11 +321,11 @@ namespace GameA
                 _lastShowSceonds = curValue;
                 if (_winConditionItemDict.Count > 1)
                 {
-                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue > 0);
+                    _winConditionItemDict[EWinCondition.WC_TimeLimit].SetComplete(curValue > 0);
                 }
                 else
                 {
-                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue <= 0);
+                    _winConditionItemDict[EWinCondition.WC_TimeLimit].SetComplete(curValue <= 0);
                 }
             }
         }
@@ -472,7 +471,7 @@ namespace GameA
         {
             switch (winCondition)
             {
-                case EWinCondition.TimeLimit:
+                case EWinCondition.WC_TimeLimit:
                     if (special)
                     {
                         return string.Format("坚持存活 {0}",
@@ -483,11 +482,11 @@ namespace GameA
                         return string.Format("{0} 内过关",
                             GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
                     }
-                case EWinCondition.Arrived:
+                case EWinCondition.WC_Arrive:
                     return "到达终点";
-                case EWinCondition.CollectTreasure:
-                    return "收集所有兽角";
-                case EWinCondition.KillMonster:
+                case EWinCondition.WC_Collect:
+                    return "收集所有兽牙";
+                case EWinCondition.WC_Monster:
                     return "杀死所有怪物";
             }
             return string.Empty;

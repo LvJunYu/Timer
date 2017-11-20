@@ -43,7 +43,7 @@ namespace GameA.Game
             {
                 if (IntersectX(other, _colliderGrid.Shrink(160)))
                 {
-                    OnEffect(other, EDirectionType.Up);
+                    OnEffect(other);
                 }
             }
             return base.OnUpHit(other, ref y, checkOnly);
@@ -55,7 +55,7 @@ namespace GameA.Game
             {
                 if (IntersectX(other, _colliderGrid.Shrink(160)))
                 {
-                    OnEffect(other, EDirectionType.Down);
+                    OnEffect(other);
                 }
             }
             return base.OnDownHit(other, ref y, checkOnly);
@@ -67,7 +67,7 @@ namespace GameA.Game
             {
                 if (IntersectY(other, _colliderGrid.Shrink(160)))
                 {
-                    OnEffect(other, EDirectionType.Left);
+                    OnEffect(other);
                 }
             }
             return base.OnLeftHit(other, ref x, checkOnly);
@@ -79,13 +79,39 @@ namespace GameA.Game
             {
                 if (IntersectY(other, _colliderGrid.Shrink(160)))
                 {
-                    OnEffect(other, EDirectionType.Right);
+                    OnEffect(other);
                 }
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
+        
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            if (Rotation != (int) eDirectionType)
+            {
+                return;
+            }
+            switch (eDirectionType)
+            {
+                    case EDirectionType.Left:
+                    case EDirectionType.Right:
+                        if (IntersectY(unit, _colliderGrid.Shrink(160)))
+                        {
+                            OnEffect(unit);
+                        }
+                        break;
+                    case EDirectionType.Up:
+                    case EDirectionType.Down:
+                        if (IntersectX(unit, _colliderGrid.Shrink(160)))
+                        {
+                            OnEffect(unit);
+                        }
+                        break;
+            }
+        }
 
-        private void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        private void OnEffect(UnitBase other)
         {
             if (other.IsActor && !other.IsInvincible)
             {

@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
     public class AdventureGuide_1_N_6 : AdventureGuideBase
     {
         private UICtrlUIGuideBubble _uiCtrlUIGuideBubble;
+        private UICtrlGameBottomTip _uiCtrlGameBottomTip;
         
         private UMCtrlUIGuideBubble _skillDirGuideBubble;
         private UMCtrlUIGuideBubble _skillGuideBubble;
@@ -22,6 +24,7 @@ namespace GameA.Game
                 .RegistEvent("SkillVGuideEnd", SkillVGuideEnd)
                 .End();
             _uiCtrlUIGuideBubble = SocialGUIManager.Instance.GetUI<UICtrlUIGuideBubble>();
+            _uiCtrlGameBottomTip = SocialGUIManager.Instance.GetUI<UICtrlGameBottomTip>();
         }
 
         private void SkillHGuide(bool flag)
@@ -30,14 +33,25 @@ namespace GameA.Game
             {
                 return;
             }
-            if (flag && _skillGuideBubble == null)
+            if (Application.isMobilePlatform)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI.IsViewCreated)
+                if (flag && _skillGuideBubble == null)
                 {
-                    _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.UmSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
-                        "点击这里喷水");
+                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                    if (inputUI.IsViewCreated)
+                    {
+                        _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                            inputUI.UsSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
+                            "点击这里喷水");
+                    }
+                }
+            }
+            else
+            {
+                if (flag && !_uiCtrlGameBottomTip.IsOpen)
+                {
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("按 ‘{0}’键 喷水",
+                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill1)));
                 }
             }
         }
@@ -49,10 +63,20 @@ namespace GameA.Game
                 return;
             }
             _hFinish = true;
-            if (_skillGuideBubble != null)
+            if (Application.isMobilePlatform)
             {
-                _uiCtrlUIGuideBubble.CloseBubble(_skillGuideBubble);
-                _skillGuideBubble = null;
+                if (_skillGuideBubble != null)
+                {
+                    _uiCtrlUIGuideBubble.CloseBubble(_skillGuideBubble);
+                    _skillGuideBubble = null;
+                }
+            }
+            else
+            {
+                if (_uiCtrlGameBottomTip.IsOpen)
+                {
+                    _uiCtrlGameBottomTip.CloseTip();
+                }
             }
         }
         
@@ -64,18 +88,57 @@ namespace GameA.Game
             }
             if (flag)
             {
-                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI.IsViewCreated)
+                if (Application.isMobilePlatform)
                 {
-                    _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.UmSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
-                        "点击这里喷水");
-                    _skillDirGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                        inputUI.CachedView.JoyStickEx.UpArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
-                        "同时按下这里可以改变喷水方向");
+                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                    if (inputUI.IsViewCreated)
+                    {
+                        _skillGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                            inputUI.UsSkillBtns[0].CachedView.BtnIcon.rectTransform, EDirectionType.Down,
+                            "点击这里喷水");
+                        _skillDirGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                            inputUI.CachedViewGame.JoyStickEx.UpArrowNormal.GetComponent<RectTransform>(),
+                            EDirectionType.Down,
+                            "同时按下这里可以改变喷水方向");
+                    }
+                }
+                else
+                {
+                    _uiCtrlGameBottomTip.ShowTip(string.Format("按‘{0}’键喷水同时按下‘{1}’键可以改变喷水方向",
+                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagSkill1),
+                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagVertical)));
                 }
             }
             else
+            {
+                if (Application.isMobilePlatform)
+                {
+                    if (_skillGuideBubble != null)
+                    {
+                        _uiCtrlUIGuideBubble.CloseBubble(_skillGuideBubble);
+                        _skillGuideBubble = null;
+                    }
+                    if (_skillDirGuideBubble != null)
+                    {
+                        _uiCtrlUIGuideBubble.CloseBubble(_skillDirGuideBubble);
+                        _skillDirGuideBubble = null;
+                    }
+                }
+                else
+                {
+                    _uiCtrlGameBottomTip.CloseTip();
+                }
+            }
+        }
+        
+        private void SkillVGuideEnd(bool flag)
+        {
+            if (_vFinish)
+            {
+                return;
+            }
+            _vFinish = true;
+            if (Application.isMobilePlatform)
             {
                 if (_skillGuideBubble != null)
                 {
@@ -88,24 +151,12 @@ namespace GameA.Game
                     _skillDirGuideBubble = null;
                 }
             }
-        }
-        
-        private void SkillVGuideEnd(bool flag)
-        {
-            if (_vFinish)
+            else
             {
-                return;
-            }
-            _vFinish = true;
-            if (_skillGuideBubble != null)
-            {
-                _uiCtrlUIGuideBubble.CloseBubble(_skillGuideBubble);
-                _skillGuideBubble = null;
-            }
-            if (_skillDirGuideBubble != null)
-            {
-                _uiCtrlUIGuideBubble.CloseBubble(_skillDirGuideBubble);
-                _skillDirGuideBubble = null;
+                if (_uiCtrlGameBottomTip.IsOpen)
+                {
+                    _uiCtrlGameBottomTip.CloseTip();
+                }
             }
         }
         
@@ -120,6 +171,10 @@ namespace GameA.Game
             {
                 _uiCtrlUIGuideBubble.CloseBubble(_skillDirGuideBubble);
                 _skillDirGuideBubble = null;
+            }
+            if (_uiCtrlGameBottomTip != null)
+            {
+                _uiCtrlGameBottomTip.CloseTip();
             }
             base.Dispose();
         }

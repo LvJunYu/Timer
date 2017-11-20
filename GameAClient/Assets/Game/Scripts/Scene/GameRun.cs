@@ -282,7 +282,7 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnPlay);
             if (Application.isMobilePlatform)
             {
-                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputControl != null)
                 {
                     for (int i = 0; i < 3; i++)

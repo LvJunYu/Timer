@@ -1,13 +1,5 @@
-﻿  /********************************************************************
-  ** Filename : UMCtrlWorldRecentRecord.cs
-  ** Author : quan
-  ** Date : 11/11/2016 1:47 PM
-  ** Summary : UMCtrlWorldRecentRecord.cs
-  ***********************************************************************/
-
-using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -15,18 +7,9 @@ namespace GameA
     public class UMCtrlWorldRecentRecord : UMCtrlBase<UMViewWorldRecentRecord>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Record> _wrapper;
-        private int _index;
-        public int Index
-        {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
-        }
+        private static string _successStr = "成功";
+        private static string _failStr = "失败";
+        public int Index { get; set; }
 
         public RectTransform Transform
         {
@@ -41,28 +24,40 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Button.onClick.AddListener(OnCardClick);
+            _cachedView.PlayBtn.onClick.AddListener(OnCardClick);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
         }
 
         protected override void OnDestroy()
         {
-            _cachedView.Button.onClick.RemoveAllListeners();
+            _cachedView.PlayBtn.onClick.RemoveAllListeners();
             base.OnDestroy();
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_wrapper != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.UserInfoDetail);
+            }
         }
 
         private void OnCardClick()
         {
-            _wrapper.FireOnClick();
+            if (_wrapper != null)
+            {
+                _wrapper.FireOnClick();
+            }
         }
 
         public void Set(object obj)
         {
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
             _wrapper = obj as CardDataRendererWrapper<Record>;
-            if(_wrapper != null)
+            if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
             }
@@ -71,24 +66,28 @@ namespace GameA
 
         public void RefreshView()
         {
-            if(_wrapper == null)
+            if (_wrapper == null)
             {
                 Unload();
                 return;
             }
             Record record = _wrapper.Content;
-            UserInfoSimple user = record.UserInfo;
+            UserInfoSimple user = record.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.LevelData.PlayerLevel));
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
-            DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
-            DictionaryTools.SetContentText(_cachedView.UsedTime, GameATools.SecondToHour(record.UsedTime));
-            DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
+            DictionaryTools.SetContentText(_cachedView.SuceessTxt,
+                record.Result == (int) EGameResult.GR_Success ? _successStr : _failStr);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
+                _cachedView.DefaultUserIconTexture);
+            DictionaryTools.SetContentText(_cachedView.DateTxt,
+                DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         public void Unload()
         {
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultUserIconTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon,
+                _cachedView.DefaultUserIconTexture);
         }
     }
 }

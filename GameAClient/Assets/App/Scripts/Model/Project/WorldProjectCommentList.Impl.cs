@@ -12,7 +12,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorldProjectCommentList : SyncronisticData
+    public partial class WorldProjectCommentList
     {
         private readonly List<ProjectComment> _allList = new List<ProjectComment>();
         public bool IsEnd { get; private set; }

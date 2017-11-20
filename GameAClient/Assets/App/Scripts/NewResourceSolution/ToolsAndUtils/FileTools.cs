@@ -11,10 +11,10 @@ namespace NewResourceSolution
         public static bool TryReadFileToBytes(string fileFullName, out byte[] bytes)
         {
             bytes = null;
-            if (fileFullName.StartsWith(ResPath.StreamingAssetsPath))
+            if (fileFullName.StartsWith(ResPath.RuntimeStreamingAssetsPath))
             {
                 if (!JoyNativeTool.Instance.TryGetFromStreamingAssets(
-                    fileFullName.Substring(ResPath.StreamingAssetsPath.Length + 1), out bytes))
+                    fileFullName.Substring(ResPath.RuntimeStreamingAssetsPath.Length + 1), out bytes))
                 {
                     return false;
                 }
@@ -55,10 +55,10 @@ namespace NewResourceSolution
         public static byte[] ReadFileToBytes(string fileFullName)
         {
             byte[] bytes = null;
-            if (fileFullName.StartsWith(ResPath.StreamingAssetsPath))
+            if (fileFullName.StartsWith(ResPath.RuntimeStreamingAssetsPath))
             {
                 if (!JoyNativeTool.Instance.TryGetFromStreamingAssets(
-                    fileFullName.Substring(ResPath.StreamingAssetsPath.Length + 1), out bytes))
+                    fileFullName.Substring(ResPath.RuntimeStreamingAssetsPath.Length + 1), out bytes))
                 {
                     return null;
                 }
@@ -175,7 +175,7 @@ namespace NewResourceSolution
 
         public static void CopyFileSync(string sourceFileFullName, string destFileFullName, bool overwrite = true)
         {
-            if (sourceFileFullName.StartsWith(ResPath.StreamingAssetsPath))
+            if (sourceFileFullName.StartsWith(ResPath.RuntimeStreamingAssetsPath))
             {
                 byte[] bytes;
                 if (!TryReadFileToBytes(sourceFileFullName, out bytes))

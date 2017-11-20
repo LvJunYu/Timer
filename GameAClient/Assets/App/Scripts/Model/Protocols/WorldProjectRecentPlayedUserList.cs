@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorldProjectRecentPlayedUserList : SyncronisticData {
+    public partial class WorldProjectRecentPlayedUserList : SyncronisticData<Msg_SC_DAT_WorldProjectRecentPlayedUserList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -164,7 +164,38 @@ namespace GameA
             for (int i = 0; i < msg.DataList.Count; i++) {
                 _dataList.Add(new ProjectRecentPlayedUserData(msg.DataList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_WorldProjectRecentPlayedUserList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _dataList) {
+                _dataList = new List<ProjectRecentPlayedUserData>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < msg.DataList.Count; i++) {
+                _dataList.Add(new ProjectRecentPlayedUserData(msg.DataList[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (WorldProjectRecentPlayedUserList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.DataList) return false;
+            if (null ==  _dataList) {
+                _dataList = new List<ProjectRecentPlayedUserData>();
+            }
+            _dataList.Clear();
+            for (int i = 0; i < obj.DataList.Count; i++){
+                _dataList.Add(obj.DataList[i]);
+            }
             return true;
         }
 

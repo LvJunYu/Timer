@@ -15,6 +15,9 @@ namespace GameA
         /// </summary>
         private static long _updateLocalDirtyValueInterval = 30000;
 
+        private static string _todayStr = "今天";
+        private static string _dateFormat = "{0}天前";
+
         #region check gde
 
         /// <summary>
@@ -422,22 +425,22 @@ namespace GameA
         public static string DateCount(long dateTime)
         {
             long difftime = DateTimeUtil.GetServerTimeNowTimestampMillis() - dateTime;
-            float days = difftime * 1.0f / 1000 / 60 / 60 / 24;
-            if (days <= 1.0f)
+            float days = difftime / 1000 / 60 / 60 / 24;
+            if (days < 1.0f)
             {
-                return "今天";
+                return _todayStr;
             }
-            else if (days <= 2.0f)
-            {
-                return "昨天";
-            }
-            else if (days <= 3.0f)
-            {
-                return "前天";
-            }
+//            else if (days < 2.0f)
+//            {
+//                return "昨天";
+//            }
+//            else if (days < 3.0f)
+//            {
+//                return "前天";
+//            }
             else
             {
-                return string.Format("{0}天前", (int) days);
+                return string.Format(_dateFormat, (int) days);
             }
         }
 
@@ -480,7 +483,7 @@ namespace GameA
                 return sbh.ToString();
             }
         }
-
+        
         public static string GetLevelString(int level)
         {
             return string.Format("Lv.{0}", level);
@@ -503,15 +506,15 @@ namespace GameA
 
         public static string FormatNumberString(long num)
         {
-            if (num > 100000000)
+            if (num <= 99999)
             {
-                return "" + (num / 100000000) + "亿";
+                return num.ToString();
             }
-            else if (num > 10000)
+            if (num <= 99999999)
             {
-                return "" + (num / 10000) + "万";
+                return string.Format("{0}万", num / 10000);
             }
-            return "" + num;
+            return string.Format("{0}亿", num / 100000000);
         }
 
         /// <summary>
@@ -566,5 +569,21 @@ namespace GameA
             tstrRet = System.Text.RegularExpressions.Regex.Replace(tstrRet, "零零*零*", "零");
             return tstrRet;
         } //end
+
+        public static string GetTimeStringByFrameCount(int count)
+        {
+            var time = count * ConstDefineGM2D.FixedDeltaTime;
+            int min = (int) time / 60;
+            int sec = (int) (time % 60);
+            return string.Format("{0:D2}:{1:D2}", min, sec);
+        }
+
+        public static string GetTimeStringBySecond(int seconds)
+        {
+            int hour = seconds / 60 / 60;
+            int minute = seconds / 60 - hour * 60;
+            int second = seconds - hour * 60 * 60 - minute * 60;
+            return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+        }
     }
 }

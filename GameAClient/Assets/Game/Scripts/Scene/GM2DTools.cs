@@ -423,6 +423,25 @@ namespace GameA.Game
             guid.Z = value.z;
             return guid;
         }
+        
+        public static IntVec2Proto ToProto(IntVec2 value)
+        {
+            var v2 = new IntVec2Proto();
+            v2.X = value.x;
+            v2.Y = value.y;
+            return v2;
+        }
+
+        public static RecAnimData ToProto(ShadowData.AnimRec value)
+        {
+            var r = new RecAnimData();
+            r.FrameIdx = value.FrameIdx;
+            r.NameIdx = value.NameIdx;
+            r.TimeScale = value.TimeScale;
+            r.TrackIdx = value.TrackIdx;
+            r.Loop = value.Loop;
+            return r;
+        }
 
         public static PairUnitData ToProto(PairUnit pairUnit)
         {
@@ -437,7 +456,23 @@ namespace GameA.Game
 	    {
 		    return new IntVec3(guid.X, guid.Y, guid.Z);
 	    }
-
+        
+        public static IntVec2 ToEngine(IntVec2Proto guid)
+        {
+            return new IntVec2(guid.X, guid.Y);
+        }
+        
+        public static ShadowData.AnimRec ToEngine(RecAnimData value)
+        {
+            var r = new ShadowData.AnimRec();
+            r.FrameIdx = value.FrameIdx;
+            r.NameIdx = (byte)value.NameIdx;
+            r.TimeScale = (byte)value.TimeScale;
+            r.TrackIdx = (byte)value.TrackIdx;
+            r.Loop = value.Loop;
+            return r;
+        }
+        
         internal static IntRect ToEngine(IntRectProto intRect)
         {
             return new IntRect(intRect.Min.X, intRect.Min.Y, intRect.Max.X, intRect.Max.Y);

@@ -1,76 +1,72 @@
-﻿using SoyEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    /// <summary>
-    /// 成就页面
-    /// </summary>
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlAchievement : UICtrlAnimationBase<UIViewAchievement>
     {
-        private const int _maxAchievementNum = 40;
-        private List<UMCtrlAchievementItem> _unFinishUMs;
-        private List<UMCtrlAchievementItem> _finishUMs;
-        private List<UMCtrlAchievementItem> _umCtrlAchievementItemCache;
-        private Dictionary<int, AchievementStatisticItem> _allAchievements;
+        private List<AchiveItemData> _dataList;
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.GridDataScroller.Set(OnItemRefresh, GetItemRenderer);
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            RefreshData();
+            RefreshView();
+        }
+
+        private void RefreshData()
+        {
+            LocalUser.Instance.Achievement.Request(LocalUser.Instance.UserGuid, () =>
+            {
+                _dataList = LocalUser.Instance.Achievement.AllAchiveData;
+                RefreshView();
+            }, code =>
+            {
+                //Todo 测试数据
+                LocalUser.Instance.Achievement.BuildAchieveData();
+                _dataList = LocalUser.Instance.Achievement.AllAchiveData;
+                RefreshView();
+//                SocialGUIManager.ShowPopupDialog("请求成就数据失败。");
+            });
+        }
 
         private void RefreshView()
         {
             if (!_isOpen) return;
-            _allAchievements = LocalUser.Instance.Achievement.AllAchievements;
-            if (null == _unFinishUMs)
-                _unFinishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
-            if (null == _finishUMs)
-                _finishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
-            _unFinishUMs.Clear();
-            _finishUMs.Clear();
-            CollectAllUMItems();
-            //生成未完成成就
-            foreach (AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
+            if (_dataList == null)
             {
-                if (achievementStatisticItem.NextLevel != null)
-                {
-                    UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(achievementStatisticItem, false);
-                    _unFinishUMs.Add(umCtrlAchievementItem);
-                }
+                _cachedView.GridDataScroller.SetEmpty();
             }
-            //生成已完成成就
-            foreach (AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
+            else
             {
-                if (achievementStatisticItem.FinishLevel != 0)
-                {
-                    UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(achievementStatisticItem, true);
-                    _finishUMs.Add(umCtrlAchievementItem);
-                }
+                _cachedView.GridDataScroller.SetItemCount(_dataList.Count);
             }
         }
 
-        private UMCtrlAchievementItem createAchievementItem()
+        protected void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if (null == _umCtrlAchievementItemCache)
-                _umCtrlAchievementItemCache = new List<UMCtrlAchievementItem>(_maxAchievementNum * 2);
-            var umCtrlAchievementItem = _umCtrlAchievementItemCache.Find(p => !p.IsShow);
-            if (umCtrlAchievementItem != null)
+            if (inx >= _dataList.Count)
             {
-                umCtrlAchievementItem.Show();
-                return umCtrlAchievementItem;
+                LogHelper.Error("OnItemRefresh Error Inx > count");
+                return;
             }
-            umCtrlAchievementItem = new UMCtrlAchievementItem();
-            umCtrlAchievementItem.Init(_cachedView.UMItemRTF, ResScenary);
-            _umCtrlAchievementItemCache.Add(umCtrlAchievementItem);
-            return umCtrlAchievementItem;
+            item.Set(_dataList[inx]);
         }
 
-        private void CollectAllUMItems()
+        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            if (null == _umCtrlAchievementItemCache) return;
-            for (int i = 0; i < _umCtrlAchievementItemCache.Count; i++)
-            {
-                _umCtrlAchievementItemCache[i].Collect();
-            }
+            var item = new UMCtrlAchievementItem();
+            item.Init(parent, ResScenary);
+            return item;
         }
 
         private void OnCloseBtn()
@@ -78,25 +74,13 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlAchievement>();
         }
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            RefreshView();
-        }
-        
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
-        
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -105,16 +89,15 @@ namespace GameA
 
         private void OnAddAchievementCount()
         {
-            if (!_isViewCreated)
+            if (_isOpen)
             {
-                return;
+                RefreshView();
             }
-            RefreshView();
         }
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.MainPopUpUI;
         }
 
         protected override void OnOpenAnimationUpdate()

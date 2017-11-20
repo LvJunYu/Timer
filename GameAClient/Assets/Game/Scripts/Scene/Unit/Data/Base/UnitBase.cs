@@ -478,6 +478,11 @@ namespace GameA.Game
             get { return false; }
         }
         
+        public virtual bool IsShadow
+        {
+            get { return false; }
+        }
+        
         public virtual bool IsPlayer
         {
             get { return false; }
@@ -855,7 +860,7 @@ namespace GameA.Game
             {
                 _eActiveState = EActiveState.Active;
             }
-            if (IsMain)
+            if (IsMain || IsShadow)
             {
                 _moveDirection = EMoveDirection.Right;
             }
@@ -1418,17 +1423,22 @@ namespace GameA.Game
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection)
+            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection )
             {
                 return;
             }
+            EMoveDirection lastMoveDirection = _moveDirection;
             _moveDirection = eMoveDirection;
-            if (_trans != null && _moveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
+            if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor||IsShadow) && Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _moveDirection != EMoveDirection.Right
                     ? new Vector3(euler.x, 180, euler.z)
                     : new Vector3(euler.x, 0, euler.z);
+                if (lastMoveDirection != _moveDirection && GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
+                {
+                     GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
+                }
             }
         }
 
@@ -1680,6 +1690,10 @@ namespace GameA.Game
         protected void SetCross(bool value)
         {
             _canCross = value;
+            if (_tableUnit.IsGround == 1)
+            {
+                ColliderScene2D.Instance.SetGround(_guid, !value);
+            }
         }
 
         public virtual void SetLifeTime(int lifeTime)

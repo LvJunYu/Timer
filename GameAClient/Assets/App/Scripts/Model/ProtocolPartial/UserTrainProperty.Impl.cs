@@ -8,34 +8,31 @@ namespace GameA
     public partial class UserTrainProperty
     {
         private TrainProperty[] _trainProperties;
-        private bool _hasInited;
+        private bool _hasRequested;
         public const int MaxPropertyCount = 5;
 
         public TrainProperty[] TrainProperties
         {
             get
             {
-                if (!_hasInited)
-                    ReqeustData();
+                ReqeustData();
                 return _trainProperties;
             }
         }
 
         private void ReqeustData()
         {
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            Request(LocalUser.Instance.UserGuid,
-                () =>
+            if(_hasRequested) return;
+            Request(LocalUser.Instance.UserGuid,() =>
                 {
                     InitData();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                },
-                code =>
+                    _hasRequested = true;
+                },code =>
                 {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     LogHelper.Error("Network error when get UserTrainProperty, {0}", code);
                 });
             InitData();
+            _hasRequested = true;
         }
 
         private void InitData()
@@ -56,7 +53,6 @@ namespace GameA
                     _trainProperties[i] = new TrainProperty(i + 1, level);
                 }
             }
-            _hasInited = true;
         }
 
         public bool CheckTrainPoint(int num)

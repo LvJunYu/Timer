@@ -121,6 +121,19 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
             return virtualMousePosition;
         }
 
+        public override void SetButtonPositiveKey(string name, KeyCode positiveKey)
+        {
+        }
+
+        public override void SetButtonNegativeKey(string name, KeyCode negativeKey)
+        {
+        }
+
+        public override KeyCode GetButtonPositiveKey(string name)
+        {
+            return KeyCode.None;
+        }
+
         public override void Update ()
         {
         }

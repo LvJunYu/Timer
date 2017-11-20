@@ -70,7 +70,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-            if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CanMove)
             {
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
@@ -109,12 +109,12 @@ namespace GameA.Game
                 {
                     if (CanMove)
                     {
-                        _animation.PlayLoop("Idle");
+                        _animation.PlayLoop(Idle);
                     }
                 }
                 else
                 {
-                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? "Attack" : "Run",
+                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? Attack : Run,
                         Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }

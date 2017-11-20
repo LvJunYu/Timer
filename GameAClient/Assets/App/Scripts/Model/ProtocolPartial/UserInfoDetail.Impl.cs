@@ -5,25 +5,31 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoDetail : SyncronisticData
+    public partial class UserInfoDetail
     {
-        #region 常量与字段
-
         private Dictionary<long, GameTimer> _publishedProjectRequestTimerDict;
         private Dictionary<long, GameTimer> _personalProjectRequestTimerDict;
         private GameTimer _followedListRequestTimer;
         private GameTimer _userInfoRequestTimer;
         private Msg_SC_DAT_UserInfoDetail _msg_SC_DAT_UserInfoDetail;
+        private bool _isOnline;
+        private List<ChatInfo> _chatHistory = new List<ChatInfo>(); //与某人私聊记录
 
-        #endregion
+        public List<ChatInfo> ChatHistory
+        {
+            get { return _chatHistory; }
+            set { _chatHistory = value; }
+        }
 
-        #region 属性
+        public bool IsOnline
+        {
+            get { return _isOnline; }
+            set { _isOnline = value; }
+        }
+
         public Msg_SC_DAT_UserInfoDetail GetUserInfoDetail
         {
-            get
-            {
-                return _msg_SC_DAT_UserInfoDetail;
-            }
+            get { return _msg_SC_DAT_UserInfoDetail; }
         }
 
         public GameTimer FollowedListRequestTimer
@@ -36,7 +42,6 @@ namespace GameA
                     _followedListRequestTimer.Zero();
                 }
                 return _followedListRequestTimer;
-
             }
         }
 
@@ -52,11 +57,6 @@ namespace GameA
                 return _userInfoRequestTimer;
             }
         }
-
-        #endregion
-
-        #region 方法
-
 
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
@@ -90,13 +90,9 @@ namespace GameA
                         {
                             OnSyncSucceed();
                         }
-                    }, (failedCode, failedMsg) =>
-                    {
-                        OnSyncFailed(failedCode, failedMsg);
-                    });
+                    }, (failedCode, failedMsg) => { OnSyncFailed(failedCode, failedMsg); });
             }
         }
-
 
         private bool OnSyncPartialCompelete(Msg_SC_DAT_UserInfoDetail msg_SC_DAT_UserInfoDetail)
         {
@@ -163,7 +159,6 @@ namespace GameA
                 }
             });
         }
-
 
         public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
         {
@@ -235,10 +230,7 @@ namespace GameA
 
                 return true;
             });
-            list.Sort((p1, p2) =>
-            {
-                return -p1.UpdateTime.CompareTo(p2.UpdateTime);
-            });
+            list.Sort((p1, p2) => { return -p1.UpdateTime.CompareTo(p2.UpdateTime); });
             return list;
         }
 
@@ -266,10 +258,7 @@ namespace GameA
 
             if (msg.ResultCode == (int) ECachedDataState.CDS_Recreate)
             {
-                localSavedProjectList.ForEach(p =>
-                {
-                    p.Delete();
-                });
+                localSavedProjectList.ForEach(p => { p.Delete(); });
                 localSavedProjectList.Clear();
             }
             Dictionary<long, Project> localProjectDict = new Dictionary<long, Project>();
@@ -286,12 +275,10 @@ namespace GameA
                 }
                 else
                 {
-
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
                     project = ProjectManager.Instance.OnSyncProject(msgProject, true);
                     localSavedProjectList.Add(project);
                 }
-
             }
             ST_CacheList newLocalSavedProjectList = new ST_CacheList();
             foreach (var entry in localSavedProjectList)
@@ -371,15 +358,11 @@ namespace GameA
             _userInfoRequestTimer = null;
 //			_snsBinding = null;
         }
-
-        protected void OnSyncPart(Msg_SC_DAT_UserInfoDetail msg)
+        
+        protected override void OnSyncPartial()
         {
-            UserManager.Instance.OnSyncUserData(msg);
-            {
-
-            }
-
-            #endregion
+            base.OnSyncPartial();
+            Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, _userInfoSimple.UserId);
         }
     }
 }

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserWorldProjectPlayHistoryList : SyncronisticData {
+    public partial class UserWorldProjectPlayHistoryList : SyncronisticData<Msg_SC_DAT_UserWorldProjectPlayHistoryList> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -164,7 +164,38 @@ namespace GameA
             for (int i = 0; i < msg.ProjectList.Count; i++) {
                 _projectList.Add(new Project(msg.ProjectList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserWorldProjectPlayHistoryList msg)
+        {
+            if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
+            if (null ==  _projectList) {
+                _projectList = new List<Project>();
+            }
+            _projectList.Clear();
+            for (int i = 0; i < msg.ProjectList.Count; i++) {
+                _projectList.Add(new Project(msg.ProjectList[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (UserWorldProjectPlayHistoryList obj)
+        {
+            if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
+            if (null ==  obj.ProjectList) return false;
+            if (null ==  _projectList) {
+                _projectList = new List<Project>();
+            }
+            _projectList.Clear();
+            for (int i = 0; i < obj.ProjectList.Count; i++){
+                _projectList.Add(obj.ProjectList[i]);
+            }
             return true;
         }
 

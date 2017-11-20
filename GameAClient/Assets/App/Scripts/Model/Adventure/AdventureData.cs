@@ -21,6 +21,7 @@ namespace GameA
 
         private AdventureProjectList _projectList = new AdventureProjectList();
         private AdventureUserData _userData = new AdventureUserData();
+        private FriendsAdvProgressData _friendsAdvProgressList = new FriendsAdvProgressData();
 
         private long _lastRequiredLevelToken;
 
@@ -55,6 +56,11 @@ namespace GameA
         public AdventureUserData UserData
         {
             get { return _userData; }
+        }
+
+        public FriendsAdvProgressData FriendsAdvProgressList
+        {
+            get { return _friendsAdvProgressList; }
         }
 
         public Reward LastAdvReward
@@ -195,23 +201,10 @@ namespace GameA
                     _lastAdvSuccess = false;
                     project.PrepareRes(() =>
                     {
-                        var param = new SituationAdventureParam();
-                        param.ProjectType = type;
-                        param.Section = sectionId;
-                        param.Level = levelIdx;
-                        if (EAdventureProjectType.APT_Bonus == type)
-                        {
-                            GameManager.Instance.RequestPlayAdvBonus(project, param);
-                        }
-                        else
-                        {
-                            GameManager.Instance.RequestPlayAdvNormal(project, param);
-                        }
                         if (null != successCallback)
                         {
                             successCallback.Invoke();
                         }
-                        SocialApp.Instance.ChangeToGame();
                     });
                 }
                 else
@@ -253,15 +246,6 @@ namespace GameA
             }
         }
         
-        /// <summary>
-        /// 重新尝试冒险关卡
-        /// </summary>
-        public void RetryAdvLevel(Action successCallback, Action<ENetResultCode> failedCallback)
-        {
-            PlayAdventureLevel(_lastPlayedChapterIdx, _lastPlayedLevelIdx, _lastPlayedLevelType,
-                successCallback, failedCallback);
-        }
-
         public Table_StandaloneLevel GetAdvLevelTable(int chapteIdx, EAdventureProjectType type, int levelIdx)
         {
             if (chapteIdx == 0 || levelIdx == 0) return null;
@@ -345,6 +329,10 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
+            int killByTrapCount,
+            int killByMonsterCount,
+            int breakBrickCount,
+            int trampCloud,
             byte[] recordBytes,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
@@ -403,6 +391,10 @@ namespace GameA
                 KillMonsterCount = killMonsterCount,
                 LeftTime = leftTime,
                 LeftLife = leftLife,
+                KillByTrapCount = killByTrapCount,
+                KillByMonsterCount = killByMonsterCount,
+                BreakBrickCount = breakBrickCount,
+                TrampCloudCount = trampCloud,
                 DeadPos = null
             };
             RemoteCommands.CommitAdventureLevelResult(

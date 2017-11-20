@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserLevelData : SyncronisticData {
+    public partial class AdventureUserLevelData : SyncronisticData<Msg_AdventureUserLevelData> {
         #region 字段
         /// <summary>
         /// 
@@ -137,7 +137,35 @@ namespace GameA
             _successCount = msg.SuccessCount;     
             _failureCount = msg.FailureCount;     
             _lastPlayTime = msg.LastPlayTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_AdventureUserLevelData msg)
+        {
+            if (null == msg) return false;
+            _highScore = msg.HighScore;           
+            _star1Flag = msg.Star1Flag;           
+            _star2Flag = msg.Star2Flag;           
+            _star3Flag = msg.Star3Flag;           
+            _challengeCount = msg.ChallengeCount;           
+            _successCount = msg.SuccessCount;           
+            _failureCount = msg.FailureCount;           
+            _lastPlayTime = msg.LastPlayTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (AdventureUserLevelData obj)
+        {
+            if (null == obj) return false;
+            _highScore = obj.HighScore;           
+            _star1Flag = obj.Star1Flag;           
+            _star2Flag = obj.Star2Flag;           
+            _star3Flag = obj.Star3Flag;           
+            _challengeCount = obj.ChallengeCount;           
+            _successCount = obj.SuccessCount;           
+            _failureCount = obj.FailureCount;           
+            _lastPlayTime = obj.LastPlayTime;           
             return true;
         }
 

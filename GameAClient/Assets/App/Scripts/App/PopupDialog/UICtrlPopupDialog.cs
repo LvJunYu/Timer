@@ -1,12 +1,4 @@
-﻿  /********************************************************************
-  ** Filename : UICtrlPopupDialog.cs
-  ** Author : quan
-  ** Date : 2015/6/5 7:53
-  ** Summary : UICtrlPopupDialog
-  ***********************************************************************/
-
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using System;
 

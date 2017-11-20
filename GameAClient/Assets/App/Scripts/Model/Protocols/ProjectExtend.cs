@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectExtend : SyncronisticData {
+    public partial class ProjectExtend : SyncronisticData<Msg_SC_DAT_ProjectExtend> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -236,7 +236,41 @@ namespace GameA
             _favoriteCount = msg.FavoriteCount;           
             _downloadCount = msg.DownloadCount;           
             _shareCount = msg.ShareCount;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_ProjectExtend msg)
+        {
+            if (null == msg) return false;
+            _projectId = msg.ProjectId;           
+            _isValid = msg.IsValid;           
+            _commentCount = msg.CommentCount;           
+            _playCount = msg.PlayCount;           
+            _completeCount = msg.CompleteCount;           
+            _failCount = msg.FailCount;           
+            _unlikeCount = msg.UnlikeCount;           
+            _likeCount = msg.LikeCount;           
+            _favoriteCount = msg.FavoriteCount;           
+            _downloadCount = msg.DownloadCount;           
+            _shareCount = msg.ShareCount;           
+            return true;
+        } 
+
+        public bool DeepCopy (ProjectExtend obj)
+        {
+            if (null == obj) return false;
+            _projectId = obj.ProjectId;           
+            _isValid = obj.IsValid;           
+            _commentCount = obj.CommentCount;           
+            _playCount = obj.PlayCount;           
+            _completeCount = obj.CompleteCount;           
+            _failCount = obj.FailCount;           
+            _unlikeCount = obj.UnlikeCount;           
+            _likeCount = obj.LikeCount;           
+            _favoriteCount = obj.FavoriteCount;           
+            _downloadCount = obj.DownloadCount;           
+            _shareCount = obj.ShareCount;           
             return true;
         }
 

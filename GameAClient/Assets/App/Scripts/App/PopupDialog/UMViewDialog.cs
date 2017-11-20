@@ -1,18 +1,9 @@
-﻿/********************************************************************
-** Filename : UMViewDialog.cs
-** Author : quan
-** Date : 15/7/5 下午3:11
-** Summary : UMViewDialog.cs
-***********************************************************************/
-
-using System;
-using SoyEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 namespace GameA
 {
-    public class UMViewDialog : UMViewBase
+    public class UMViewDialog : UMViewResManagedBase
     {
         public Button CloseBtn;
         public Text Title;

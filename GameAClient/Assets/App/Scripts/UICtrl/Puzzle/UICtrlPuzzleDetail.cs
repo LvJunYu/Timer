@@ -449,7 +449,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI2;
+            _groupId = (int)EUIGroupType.MainPopUpUI;
         }
     }
 }

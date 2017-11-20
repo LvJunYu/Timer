@@ -1,134 +1,68 @@
-﻿using GameA.Game;
+﻿using System;
+using System.Text;
+using GameA.Game;
 using SoyEngine;
-using EWinCondition = SoyEngine.Proto.EWinCondition;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     [UIAutoSetup]
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
-        #region Fields
-
         private Project _project;
-
-        #endregion
-
-        #region Properties
-
-        #endregion
-
-        #region Methods
+        private const string _winConditionStr = "胜利条件：";
+        private const string _timeLimitFormat = "时间限制：{0}s";
+        private const string _comma = "、";
+        private const string _timeLimit = "坚持到最后";
+        private const string _arrive = "到达终点";
+        private const string _collect = "收集所有宝石";
+        private const string _killMonster = "消灭所有怪物";
+        private StringBuilder _stringBuilder = new StringBuilder(64);
+        private bool _needSave;
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-
             _project = parameter as Project;
             if (null == _project)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                 return;
             }
-
+            _needSave = false;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
                 _cachedView.DefaultCover);
-            _cachedView.ProjectTitle.text = _project.Name;
-            _cachedView.ProjectDetailIntro.text = _project.Summary;
+            _cachedView.TitleField.text = _project.Name;
+            _cachedView.DescField.text = _project.Summary;
+            RefreshWinConditionText();
+            _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
+        }
 
-            int winCondition = _project.WinCondition;
-            // 等于1 就是什么也没有
-            if (winCondition == 1)
+        protected override void OnClose()
+        {
+            if (_needSave)
             {
-                _cachedView.PassCondition.SetActiveEx(false);
-                // 既然目标都没有 时间限制也没有必要了
-                _cachedView.TimeLimit.SetActiveEx(false);
+                SaveProject();
             }
-            else
-            {
-                // 时间限制转化成分钟
-                int timelimit = _project.TimeLimit * 10;
-                int min = timelimit / 60;
-                int seconds = timelimit % 60;
-                string timeCondition = string.Empty;
-                if (min == 0 && seconds == 0)
-                {
-                    LogHelper.Error("The Time Limit Conditions is zero");
-                    timeCondition = "";
-                }
-                if (min > 0)
-                {
-                    timeCondition = min + "分钟";
-                }
-                if (seconds > 0)
-                {
-                    timeCondition = string.Format("{0}{1} 秒", timeCondition, seconds);
-                }
-                timeCondition = string.Format("{0}内", timeCondition);
-
-                // 单独判断只有一个或者3个都有的情况
-                string conditon = timeCondition;
-                string tmp;
-                int conditonCount = 0;
-                // 先判断到达终点
-                if (((winCondition >> (int) EWinCondition.WC_Arrive) & 1) == 1)
-                {
-                    tmp = "到达终点";
-                    conditon = string.Format("{0}{1}", conditon, tmp);
-                    conditonCount++;
-                }
-                // 再判断收集
-                if (((winCondition >> (int) EWinCondition.WC_Collect) & 1) == 1)
-                {
-                    tmp = "消灭所有宝石";
-                    // 目前为止 个数肯定是0或者1
-                    if (conditonCount == 1)
-                    {
-                        conditon = string.Format("{0}、{1}", conditon, tmp);
-                    }
-                    else if (conditonCount == 0)
-                    {
-                        conditon = string.Format("{0}{1}", conditon, tmp);
-                    }
-                    conditonCount++;
-                }
-                // 最后判断击杀怪物
-                if (((winCondition >> (int) EWinCondition.WC_Monster) & 1) == 1)
-                {
-                    tmp = "消灭所有怪物";
-                    // 目前为止 个数肯定是0或者1或者2
-                    if (conditonCount == 2)
-                    {
-                        conditon = string.Format("{0}、并且{1}", conditon, tmp);
-                    }
-                    else if (conditonCount == 1)
-                    {
-                        conditon = string.Format("{0}、{1}", conditon, tmp);
-                    }
-                    else if (conditonCount == 0)
-                    {
-                        conditon = string.Format("{0}{1}", conditon, tmp);
-                    }
-                }
-                _cachedView.PassCondition.text = conditon;
-                _cachedView.TimeLimit.text = "时间限制：" + timelimit + "s";
-                _cachedView.PassCondition.SetActiveEx(true);
-                _cachedView.TimeLimit.SetActiveEx(true);
-            }
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCover);
+            base.OnClose();
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.CloseBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.TitleField.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.DescField.onEndEdit.AddListener(OnDescEndEdit);
         }
 
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.PopUpDialog;
         }
-        
+
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
@@ -136,11 +70,111 @@ namespace GameA
             SetPart(_cachedView.transform, EAnimationType.Fade);
         }
 
+        private void RefreshWinConditionText()
+        {
+            int winCondition = _project.WinCondition;
+            _stringBuilder.Length = 0;
+            _stringBuilder.Append(_winConditionStr);
+            int conditonCount = 0;
+            if (((1 << (int) EWinCondition.WC_Arrive) & winCondition) != 0)
+            {
+                _stringBuilder.Append(_arrive);
+                conditonCount++;
+            }
+            if (((1 << (int) EWinCondition.WC_Collect) & winCondition) != 0)
+            {
+                if (conditonCount > 0)
+                {
+                    _stringBuilder.Append(_comma);
+                }
+                _stringBuilder.Append(_collect);
+                conditonCount++;
+            }
+            if (((1 << (int) EWinCondition.WC_Monster) & winCondition) != 0)
+            {
+                if (conditonCount > 0)
+                {
+                    _stringBuilder.Append(_comma);
+                }
+                _stringBuilder.Append(_killMonster);
+                conditonCount++;
+            }
+            if (conditonCount == 0)
+            {
+                _stringBuilder.Append(_timeLimit);
+            }
+            _cachedView.PassCondition.text = _stringBuilder.ToString();
+        }
+
+        private void OnDescEndEdit(string arg0)
+        {
+            string newDesc = _cachedView.DescField.text;
+            if (string.IsNullOrEmpty(newDesc) || newDesc == _project.Summary)
+            {
+                return;
+            }
+            var testRes = CheckTools.CheckProjectDesc(newDesc);
+            if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
+            {
+                _project.Summary = newDesc;
+                _needSave = true;
+            }
+            else
+            {
+                SocialGUIManager.ShowCheckProjectDescRes(testRes);
+                _cachedView.DescField.text = _project.Summary;
+            }
+        }
+
+        private void OnTitleEndEdit(string arg0)
+        {
+            string newTitle = _cachedView.TitleField.text;
+            if (string.IsNullOrEmpty(newTitle) || newTitle == _project.Name)
+            {
+                return;
+            }
+            var testRes = CheckTools.CheckProjectName(newTitle);
+            if (testRes == CheckTools.ECheckProjectNameResult.Success)
+            {
+                _project.Name = newTitle;
+                _needSave = true;
+            }
+            else
+            {
+                SocialGUIManager.ShowCheckProjectNameRes(testRes);
+                _cachedView.TitleField.text = _project.Name;
+            }
+        }
+        
         private void OnOKBtn()
+        {
+            if (_needSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
+                SaveProject(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    Publsih();
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                });
+            }
+            else
+            {
+                Publsih();
+            }
+            
+        }
+
+        private void Publsih()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
             if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
+            {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
+            }
             if (null == _project)
             {
                 return;
@@ -150,6 +184,7 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     CommonTools.ShowPopupDialog("发布关卡成功");
+                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _project.ProjectId);
                     if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
                     {
                         GM2DGame.Instance.QuitGame(null, null);
@@ -167,6 +202,42 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
         }
 
-        #endregion
+        private void SaveProject(Action successAction = null, Action failAction = null)
+        {
+            if (!_needSave) return;
+            _project.Save(
+                _project.Name,
+                _project.Summary,
+                null,
+                null,
+                _project.PassFlag,
+                _project.PassFlag,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                _project.TimeLimit,
+                _project.WinCondition,
+                () =>
+                {
+                    _needSave = false;
+                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
+                    if (successAction != null)
+                    {
+                        successAction.Invoke();
+                    }
+                },
+                code =>
+                {
+                    if (failAction != null)
+                    {
+                        failAction.Invoke();
+                    }
+                }
+            );
+        }
     }
 }

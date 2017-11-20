@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Achievement : SyncronisticData {
+    public partial class Achievement : SyncronisticData<Msg_SC_DAT_Achievement> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -136,7 +136,51 @@ namespace GameA
             for (int i = 0; i < msg.AchievementList.Count; i++) {
                 _achievementList.Add(new AchievementItem(msg.AchievementList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_Achievement msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if (null ==  _statisticList) {
+                _statisticList = new List<AchievementStatisticItem>();
+            }
+            _statisticList.Clear();
+            for (int i = 0; i < msg.StatisticList.Count; i++) {
+                _statisticList.Add(new AchievementStatisticItem(msg.StatisticList[i]));
+            }
+            if (null ==  _achievementList) {
+                _achievementList = new List<AchievementItem>();
+            }
+            _achievementList.Clear();
+            for (int i = 0; i < msg.AchievementList.Count; i++) {
+                _achievementList.Add(new AchievementItem(msg.AchievementList[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (Achievement obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if (null ==  obj.StatisticList) return false;
+            if (null ==  _statisticList) {
+                _statisticList = new List<AchievementStatisticItem>();
+            }
+            _statisticList.Clear();
+            for (int i = 0; i < obj.StatisticList.Count; i++){
+                _statisticList.Add(obj.StatisticList[i]);
+            }
+            if (null ==  obj.AchievementList) return false;
+            if (null ==  _achievementList) {
+                _achievementList = new List<AchievementItem>();
+            }
+            _achievementList.Clear();
+            for (int i = 0; i < obj.AchievementList.Count; i++){
+                _achievementList.Add(obj.AchievementList[i]);
+            }
             return true;
         }
 

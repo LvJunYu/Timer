@@ -109,7 +109,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.MainPopUpUI;
         }
 
         public void SetRewards (Reward reward, Action closeCB = null) {

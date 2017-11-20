@@ -9,7 +9,7 @@ namespace JoyEditorTools {
     public class JoyToolUtility {
         public static void RunBash(string shellPath) {
             ProcessStartInfo psi = new ProcessStartInfo ();
-            psi.FileName = "/bin/bash";
+            psi.FileName = "bash";
             psi.Arguments = shellPath;
 
             psi.CreateNoWindow = true;

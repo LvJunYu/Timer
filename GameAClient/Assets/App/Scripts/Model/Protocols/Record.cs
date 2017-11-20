@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Record : SyncronisticData {
+    public partial class Record : SyncronisticData<Msg_SC_DAT_Record> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -400,7 +400,81 @@ namespace GameA
             _userBuy = msg.UserBuy;           
             _userLike = msg.UserLike;           
             _userFavorite = msg.UserFavorite;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_Record msg)
+        {
+            if (null == msg) return false;
+            _recordId = msg.RecordId;           
+            _projectId = msg.ProjectId;           
+            _section = msg.Section;           
+            _level = msg.Level;           
+            if(null != msg.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple(msg.UserInfo);
+                }
+                _userInfo.CopyMsgData(msg.UserInfo);
+            }
+            _score = msg.Score;           
+            _usedTime = msg.UsedTime;           
+            _createTime = msg.CreateTime;           
+            _recordPath = msg.RecordPath;           
+            _result = msg.Result;           
+            _playCount = msg.PlayCount;           
+            _lastPlayTime = msg.LastPlayTime;           
+            _playUserCount = msg.PlayUserCount;           
+            _favoriteCount = msg.FavoriteCount;           
+            _likeCount = msg.LikeCount;           
+            _commentCount = msg.CommentCount;           
+            _shareCount = msg.ShareCount;           
+            if(null != msg.ProjectData){
+                if (null == _projectData){
+                    _projectData = new Project(msg.ProjectData);
+                }
+                _projectData.CopyMsgData(msg.ProjectData);
+            }
+            _userBuy = msg.UserBuy;           
+            _userLike = msg.UserLike;           
+            _userFavorite = msg.UserFavorite;           
+            return true;
+        } 
+
+        public bool DeepCopy (Record obj)
+        {
+            if (null == obj) return false;
+            _recordId = obj.RecordId;           
+            _projectId = obj.ProjectId;           
+            _section = obj.Section;           
+            _level = obj.Level;           
+            if(null != obj.UserInfo){
+                if (null == _userInfo){
+                    _userInfo = new UserInfoSimple();
+                }
+                _userInfo.DeepCopy(obj.UserInfo);
+            }
+            _score = obj.Score;           
+            _usedTime = obj.UsedTime;           
+            _createTime = obj.CreateTime;           
+            _recordPath = obj.RecordPath;           
+            _result = obj.Result;           
+            _playCount = obj.PlayCount;           
+            _lastPlayTime = obj.LastPlayTime;           
+            _playUserCount = obj.PlayUserCount;           
+            _favoriteCount = obj.FavoriteCount;           
+            _likeCount = obj.LikeCount;           
+            _commentCount = obj.CommentCount;           
+            _shareCount = obj.ShareCount;           
+            if(null != obj.ProjectData){
+                if (null == _projectData){
+                    _projectData = new Project();
+                }
+                _projectData.DeepCopy(obj.ProjectData);
+            }
+            _userBuy = obj.UserBuy;           
+            _userLike = obj.UserLike;           
+            _userFavorite = obj.UserFavorite;           
             return true;
         }
 

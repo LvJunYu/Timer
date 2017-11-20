@@ -209,6 +209,12 @@ namespace GameA.Game
             return true;
         }
 
+        public void SetGround(IntVec3 guid, bool flag)
+        {
+            _pathGrid[guid.x / ConstDefineGM2D.ServerTileScale, guid.y / ConstDefineGM2D.ServerTileScale] =
+                (byte) (flag ? 0 : 1);
+        }
+
         public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             UnitBase unit;

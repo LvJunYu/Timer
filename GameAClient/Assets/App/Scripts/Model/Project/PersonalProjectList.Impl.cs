@@ -12,8 +12,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData
-    {
+    public partial class PersonalProjectList{
 
         public void Request (
             Action successCallback = null, Action<ENetResultCode> failedCallback = null)

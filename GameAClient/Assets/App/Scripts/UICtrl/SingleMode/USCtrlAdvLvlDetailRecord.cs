@@ -20,6 +20,7 @@ namespace GameA
         private string Star2FlagRecord = "首次获得2星录像";
         private string Star1FlagRecord = "首次获得1星录像";
         private EResScenary _resScenary;
+        private Project _project;
         #endregion
 
         #region 属性
@@ -45,9 +46,10 @@ namespace GameA
             //_avatarmsg.Clear();
         }
 
-        public void Set(AdventureUserLevelDataDetail levelDataDetail, EResScenary resScenary)
+        public void Set(AdventureUserLevelDataDetail levelDataDetail, Project project, EResScenary resScenary)
         {
             _resScenary = resScenary;
+            _project = project;
             if (_cardList.Count > 0)
             {
                 for (int i = 0; i < _cardList.Count; i++)
@@ -78,7 +80,7 @@ namespace GameA
             {
                 var um = new UMCtrlRecord();
                 um.Init(_cachedView.Dock, _resScenary);
-                um.Set(record,name);
+                um.Set(record, _project, name);
                 _cardList.Add(um);
             }
         }
@@ -96,7 +98,7 @@ namespace GameA
                         string m = String.Format("最近尝试{0}次录像",i+1);
                         //string name =
                         um.Init(_cachedView.Dock, _resScenary);
-                        um.Set(record[i], m);
+                        um.Set(record[i], _project, m);
                         _cardList.Add(um);
                     }
                 }

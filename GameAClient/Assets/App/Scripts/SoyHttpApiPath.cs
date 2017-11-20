@@ -32,6 +32,8 @@ namespace SoyEngine
         public const string GetVerificationCode = "/account/getVerificationCode";
         // 退出登录
         public const string Logout = "/account/logout";
+        // QQGame登录
+        public const string LoginByQQGame = "/account/loginByQQGame";
         // 用户简要信息
         public const string UserInfoSimple = "/user/getSimple";
         // 用户详细信息
@@ -40,6 +42,8 @@ namespace SoyEngine
         public const string UserLevel = "/user/getLevelData";
         // 用户详细信息
         public const string UpdateUserInfo = "/user/updateInfo";
+        // 获取蓝钻数据
+        public const string BlueVipData = "/user/getBlueVipData";
         // 获取应用全局信息
         public const string AppData = "/appInfo/appData";
         // 社交关系统计
@@ -52,18 +56,12 @@ namespace SoyEngine
         public const string UpdateBlockState = "/relation/updateBlockState";
         // 获取社交用户列表
         public const string RelationUserList = "/relation/getUserList";
-        // 获取关卡数据
-        public const string Project = "/project/get";
-        // 关卡扩展信息
-        public const string ProjectExtend = "/project/getExtend";
-        // 创建关卡
-        public const string CreateProject = "/project/create";
-        // 更新关卡
-        public const string UpdateProject = "/project/update";
-        // 删除关卡
-        public const string DeleteProject = "/project/delete";
-        // 工坊关卡
-        public const string PersonalProjectList = "/project/getPersonalList";
+        // 添加好友列表
+        public const string AddUserList = "/relation/getAddUserList";
+        // 搜索好友
+        public const string SearchUser = "/relation/searchUser";
+        // 搜索玩家ID
+        public const string SearchUserByShortId = "/relation/searchUserByShortId";
         // 发布关卡
         public const string PublishWorldProject = "/world/publishProject";
         // 取消发布
@@ -100,8 +98,32 @@ namespace SoyEngine
         public const string WorldRecommendProjectList = "/world/getRecommendProjectList";
         // 下载关卡
         public const string DownloadProject = "/world/downloadProject";
+        // 最近录像
+        public const string WorldUserRecentRecordList = "/world/getUserRecentRecordList";
+        // 评分最高
+        public const string WorldBestProjectList = "/world/getBestProjectList";
+        // 关注的关卡
+        public const string WorldFollowedUserProjectList = "/world/getFollowedUserProjectList";
+        // 排行榜
+        public const string WorldRankList = "/world/getRankList";
+        // 匹配乱入对决
+        public const string MatchShadowBattleData = "/world/matchShadowBattleData";
+        // 搜索关卡
+        public const string SearchWorldProject = "/world/searchProject";
         // 录像
         public const string Record = "/record/get";
+        // 获取关卡数据
+        public const string Project = "/project/get";
+        // 关卡扩展信息
+        public const string ProjectExtend = "/project/getExtend";
+        // 创建关卡
+        public const string CreateProject = "/project/create";
+        // 更新关卡
+        public const string UpdateProject = "/project/update";
+        // 删除关卡
+        public const string DeleteProject = "/project/delete";
+        // 工坊关卡
+        public const string PersonalProjectList = "/project/getPersonalList";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
@@ -156,6 +178,10 @@ namespace SoyEngine
         public const string UpgradeTrainGrade = "/home/upgradeTrainGrade";
         // 获取成就数据
         public const string Achievement = "/home/getAchievementData";
+        // QQ蓝钻大厅特权奖励数据
+        public const string QQGameReward = "/home/getQQGameReward";
+        // QQ蓝钻大厅特权奖励领取
+        public const string ReceiveQQGameReward = "/home/receiveQQGameReward";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度
@@ -178,6 +204,10 @@ namespace SoyEngine
         public const string UnlockAdventureSection = "/adventure/unlockSection";
         // 提交冒险模式数据
         public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
+        // 好友通关录像
+        public const string FriendRecordData = "/adventure/getFriendRecordData";
+        // 冒险模式好友最高关数据
+        public const string FriendsAdvProgressData = "/adventure/getFriendsAdvProgressData";
         // 用户匹配改造数据
         public const string MatchUserData = "/match/getUserData";
         // 改造
@@ -212,6 +242,8 @@ namespace SoyEngine
         public const string ReceiptMailAttach = "/mail/receiptAttach";
         // 领取附件
         public const string DeleteMail = "/mail/delete";
+        // 分享关卡
+        public const string ShareProject = "/mail/shareProject";
         // 执行GM指令
         public const string ExecuteCommand = "/gm/executeCommand";
     }

@@ -27,7 +27,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         protected override void InitEventListener()
@@ -41,13 +41,13 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
             _cachedView.EnergyPlusBtn.onClick.AddListener(OnEnergyPlusBtn);
             _cachedView.GoldPlusBtn.onClick.AddListener(OnGoldPlusBtn);
             _cachedView.DiamondPlusBtn.onClick.AddListener(OnDiamondPlusBtn);
             _cachedView.SettingBtn.onClick.AddListener(OnSettingBtn);
+            _cachedView.MailBtn.onClick.AddListener(OnMailBtn);
 //            _styleStack.Push(EStyle.None);
-            _startPos = new Vector3(0,100,0);
+            _startPos = new Vector3(0, 100, 0);
         }
 
         protected override void OnOpen(object parameter)
@@ -110,6 +110,7 @@ namespace GameA
             _cachedView.Gold.SetActiveEx((styleVal & 1 << (int) ESlot.Gold) > 0);
             _cachedView.Energy.SetActiveEx((styleVal & 1 << (int) ESlot.Energy) > 0);
             _cachedView.SettingBtn.gameObject.SetActiveEx((styleVal & 1 << (int) ESlot.Setting) > 0);
+//            _cachedView.MailBtn.gameObject.SetActiveEx((styleVal & 1 << (int) ESlot.Mail) > 0);
         }
 
         public override void OnUpdate()
@@ -121,10 +122,15 @@ namespace GameA
                 OnEnergyChanged();
             }
         }
-        
+
         public void OnSettingBtn()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
+        }
+
+        public void OnMailBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlMail>();
         }
 
         private void OnEnergyPlusBtn()
@@ -148,13 +154,13 @@ namespace GameA
         private void OnGoldPlusBtn()
         {
 //            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启购买金币功能哦~");
         }
 
         private void OnDiamondPlusBtn()
         {
-//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启充值功能哦~");
+//            SocialGUIManager.Instance.OpenUI<UICtrlShopPay>();
         }
 
         private void OnEnergyChanged()
@@ -180,7 +186,8 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
+            _cachedView.GoldNumber.text =
+                GameATools.FormatNumberString(LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin);
         }
 
         private void OnDiamondChanged()
@@ -189,7 +196,8 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
+            _cachedView.DiamondNumber.text =
+                GameATools.FormatNumberString(LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond);
         }
 
         #endregion
@@ -199,7 +207,8 @@ namespace GameA
             Diamond,
             Gold,
             Energy,
-            Setting
+            Setting,
+            Mail
         }
 
         public enum EStyle

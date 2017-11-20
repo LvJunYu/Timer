@@ -112,6 +112,10 @@ namespace GameA.Game
 					return;
 				}
 				_inputDatas.Clear();
+				if (SaveShadowData)
+				{
+					ShadowData.RecordClear();
+				}
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
 				SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 				SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();

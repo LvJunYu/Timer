@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -15,7 +16,21 @@ namespace GameA.Game
         protected MonoBehaviour _coroutineProxy;
         protected List<int> _inputDatas = new List<int>(1024);
         protected bool _run;
-        
+        protected Record _record;
+        protected GM2DRecordData _gm2drecordData;
+        public ShadowData ShadowData = new ShadowData();
+        public ShadowData ShadowDataPlayed;
+
+        public virtual bool PlayShadowData
+        {
+            get { return false; }
+        }
+
+        public virtual bool SaveShadowData
+        {
+            get { return false; }
+        }
+
         public Project Project
         {
             get { return _project; }
@@ -31,12 +46,18 @@ namespace GameA.Game
             get { return _gameRunMode; }
         }
 
+        public Record Record
+        {
+            get { return _record; }
+        }
+
         public List<int> InputDatas
         {
             get { return _inputDatas; }
         }
 
-        public virtual bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour coroutineProxy)
+        public virtual bool Init(Project project, object param, GameManager.EStartType startType,
+            MonoBehaviour coroutineProxy)
         {
             _project = project;
             _startType = startType;
@@ -46,11 +67,38 @@ namespace GameA.Game
         }
 
         public abstract IEnumerator InitByStep();
+
         public abstract void OnGameSuccess();
+
         public abstract void OnGameFailed();
+
+        protected virtual bool InitRecord()
+        {
+            byte[] recordBytes = MatrixProjectTools.DecompressLZMA(_record.RecordData);
+            if (recordBytes == null)
+            {
+                GM2DGame.OnGameLoadError("录像解析失败");
+                return false;
+            }
+            _gm2drecordData = GameMapDataSerializer.Instance.Deserialize<GM2DRecordData>(recordBytes);
+            if (_gm2drecordData == null)
+            {
+                GM2DGame.OnGameLoadError("录像解析失败");
+                return false;
+            }
+            return true;
+        }
 
         public virtual void OnGameStart()
         {
+        }
+
+        public void RecordAnimation(string animName, bool loop, float timeScale = 1f, int trackIdx = 0)
+        {
+            if (SaveShadowData)
+            {
+                ShadowData.RecordAnimation(animName, loop, timeScale, trackIdx);
+            }
         }
 
         public virtual void Update()
@@ -110,13 +158,13 @@ namespace GameA.Game
             return true;
         }
 
-        public virtual bool Restart(Action successCb, Action failedCb)
+        public virtual bool Restart(Action<bool> successCb, Action failedCb)
         {
             GameRun.Instance.RePlay();
             OnGameStart();
             if (successCb != null)
             {
-                successCb.Invoke();
+                successCb.Invoke(true);
             }
             return true;
         }
@@ -130,7 +178,8 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
-        public virtual bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit, ECharacterAbility eCharacterAbility)
+        public virtual bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit,
+            ECharacterAbility eCharacterAbility)
         {
             return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
         }

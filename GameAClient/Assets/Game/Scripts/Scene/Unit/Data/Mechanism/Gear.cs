@@ -1,4 +1,6 @@
-﻿namespace GameA.Game
+﻿using SoyEngine;
+
+namespace GameA.Game
 {
     [Unit(Id = 5017, Type = typeof(Gear))]
     public class Gear : BlockBase
@@ -47,6 +49,12 @@
                 OnTrigger(other);
             }
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            OnTrigger(unit);
         }
 
         private void OnTrigger(UnitBase other)

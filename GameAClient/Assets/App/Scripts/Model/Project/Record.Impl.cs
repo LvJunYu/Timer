@@ -14,6 +14,13 @@ namespace GameA
 
 	public partial class Record
 	{
+	    private UserInfoDetail _userInfoDetail;
+
+	    public UserInfoDetail UserInfoDetail
+	    {
+	        get { return _userInfoDetail; }
+	    }
+	    
         public byte[] RecordData
         {
             get
@@ -22,14 +29,16 @@ namespace GameA
                 {
                     return null;
                 }
-                else
-                {
-                    return LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, _recordPath);
-                }
+                return LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, _recordPath);
             }
         }
 
-
+	    protected override void OnSyncPartial (Msg_SC_DAT_Record msg)
+	    {
+	        base.OnSyncPartial ();
+	        _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
+	    }
+	    
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
             PrepareRecord (() => {
@@ -55,7 +64,7 @@ namespace GameA
                 }
                 return;
             }
-            byte[] recordData = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, _recordPath);
+            byte[] recordData = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, _recordPath);
             if (recordData != null)
             {
                 if (successCallback != null)
@@ -80,7 +89,6 @@ namespace GameA
                     }
                 });
         }
-
 
         public void UpdateFavorite(bool favorite, Action<bool> callback = null)
         {

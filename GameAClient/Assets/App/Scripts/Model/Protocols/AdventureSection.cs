@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureSection : SyncronisticData {
+    public partial class AdventureSection : SyncronisticData<Msg_AdventureSection> {
         #region 字段
         /// <summary>
         /// 章节
@@ -68,7 +68,51 @@ namespace GameA
             for (int i = 0; i < msg.BonusProjectList.Count; i++) {
                 _bonusProjectList.Add(new Project(msg.BonusProjectList[i]));
             }
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_AdventureSection msg)
+        {
+            if (null == msg) return false;
+            _section = msg.Section;           
+            if (null ==  _normalProjectList) {
+                _normalProjectList = new List<Project>();
+            }
+            _normalProjectList.Clear();
+            for (int i = 0; i < msg.NormalProjectList.Count; i++) {
+                _normalProjectList.Add(new Project(msg.NormalProjectList[i]));
+            }
+            if (null ==  _bonusProjectList) {
+                _bonusProjectList = new List<Project>();
+            }
+            _bonusProjectList.Clear();
+            for (int i = 0; i < msg.BonusProjectList.Count; i++) {
+                _bonusProjectList.Add(new Project(msg.BonusProjectList[i]));
+            }
+            return true;
+        } 
+
+        public bool DeepCopy (AdventureSection obj)
+        {
+            if (null == obj) return false;
+            _section = obj.Section;           
+            if (null ==  obj.NormalProjectList) return false;
+            if (null ==  _normalProjectList) {
+                _normalProjectList = new List<Project>();
+            }
+            _normalProjectList.Clear();
+            for (int i = 0; i < obj.NormalProjectList.Count; i++){
+                _normalProjectList.Add(obj.NormalProjectList[i]);
+            }
+            if (null ==  obj.BonusProjectList) return false;
+            if (null ==  _bonusProjectList) {
+                _bonusProjectList = new List<Project>();
+            }
+            _bonusProjectList.Clear();
+            for (int i = 0; i < obj.BonusProjectList.Count; i++){
+                _bonusProjectList.Add(obj.BonusProjectList[i]);
+            }
             return true;
         }
 

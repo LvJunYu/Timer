@@ -26,11 +26,14 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_Achievement> Table_AchievementDic = new Dictionary<int, Table_Achievement>();
+		public readonly Dictionary<int,Table_HonorReport> Table_HonorReportDic = new Dictionary<int, Table_HonorReport>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
+		public readonly Dictionary<int,Table_QQHallGrowAward> Table_QQHallGrowAwardDic = new Dictionary<int, Table_QQHallGrowAward>();
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
+		public readonly Dictionary<int,Table_DiamondShop> Table_DiamondShopDic = new Dictionary<int, Table_DiamondShop>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
@@ -58,11 +61,14 @@ namespace GameA.Game
 		[SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[SerializeField] private Table_Achievement[] _tableAchievements;
+		[SerializeField] private Table_HonorReport[] _tableHonorReports;
 		[SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[SerializeField] private Table_Turntable[] _tableTurntables;
+		[SerializeField] private Table_QQHallGrowAward[] _tableQQHallGrowAwards;
 		[SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[SerializeField] private Table_Background[] _tableBackgrounds;
 		[SerializeField] private Table_Decorate[] _tableDecorates;
+		[SerializeField] private Table_DiamondShop[] _tableDiamondShops;
 		[SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
 		[SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
@@ -119,16 +125,22 @@ namespace GameA.Game
             _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
 			string AchievementJsonStr = JoyResManager.Instance.GetJson ("Achievement", (int) EResScenary.TableAsset);
             _tableAchievements = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Achievement[]>(AchievementJsonStr);
+			string HonorReportJsonStr = JoyResManager.Instance.GetJson ("HonorReport", (int) EResScenary.TableAsset);
+            _tableHonorReports = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HonorReport[]>(HonorReportJsonStr);
 			string TreasureMapJsonStr = JoyResManager.Instance.GetJson ("TreasureMap", (int) EResScenary.TableAsset);
             _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
 			string TurntableJsonStr = JoyResManager.Instance.GetJson ("Turntable", (int) EResScenary.TableAsset);
             _tableTurntables = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Turntable[]>(TurntableJsonStr);
+			string QQHallGrowAwardJsonStr = JoyResManager.Instance.GetJson ("QQHallGrowAward", (int) EResScenary.TableAsset);
+            _tableQQHallGrowAwards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_QQHallGrowAward[]>(QQHallGrowAwardJsonStr);
 			string FashionCouponJsonStr = JoyResManager.Instance.GetJson ("FashionCoupon", (int) EResScenary.TableAsset);
             _tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponJsonStr);
 			string BackgroundJsonStr = JoyResManager.Instance.GetJson ("Background", (int) EResScenary.TableAsset);
             _tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundJsonStr);
 			string DecorateJsonStr = JoyResManager.Instance.GetJson ("Decorate", (int) EResScenary.TableAsset);
             _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
+			string DiamondShopJsonStr = JoyResManager.Instance.GetJson ("DiamondShop", (int) EResScenary.TableAsset);
+            _tableDiamondShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_DiamondShop[]>(DiamondShopJsonStr);
 			string PuzzleSummonJsonStr = JoyResManager.Instance.GetJson ("PuzzleSummon", (int) EResScenary.TableAsset);
             _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
 			string PuzzleJsonStr = JoyResManager.Instance.GetJson ("Puzzle", (int) EResScenary.TableAsset);
@@ -310,6 +322,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableAchievements table.Id {0} is duplicated!", _tableAchievements[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableHonorReports.Length; i++)
+			{
+				if (!Table_HonorReportDic.ContainsKey(_tableHonorReports[i].Id))
+				{
+					Table_HonorReportDic.Add(_tableHonorReports[i].Id,_tableHonorReports[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableHonorReports table.Id {0} is duplicated!", _tableHonorReports[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableTreasureMaps.Length; i++)
 			{
 				if (!Table_TreasureMapDic.ContainsKey(_tableTreasureMaps[i].Id))
@@ -330,6 +353,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableTurntables table.Id {0} is duplicated!", _tableTurntables[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableQQHallGrowAwards.Length; i++)
+			{
+				if (!Table_QQHallGrowAwardDic.ContainsKey(_tableQQHallGrowAwards[i].Id))
+				{
+					Table_QQHallGrowAwardDic.Add(_tableQQHallGrowAwards[i].Id,_tableQQHallGrowAwards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableQQHallGrowAwards table.Id {0} is duplicated!", _tableQQHallGrowAwards[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableFashionCoupons.Length; i++)
@@ -363,6 +397,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableDecorates table.Id {0} is duplicated!", _tableDecorates[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableDiamondShops.Length; i++)
+			{
+				if (!Table_DiamondShopDic.ContainsKey(_tableDiamondShops[i].Id))
+				{
+					Table_DiamondShopDic.Add(_tableDiamondShops[i].Id,_tableDiamondShops[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableDiamondShops table.Id {0} is duplicated!", _tableDiamondShops[i].Id);
 				}
 			}
 			for (int i = 0; i < _tablePuzzleSummons.Length; i++)
@@ -638,6 +683,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_HonorReport GetHonorReport(int key)
+		{
+			Table_HonorReport tmp;
+			if (Table_HonorReportDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_TreasureMap GetTreasureMap(int key)
 		{
 			Table_TreasureMap tmp;
@@ -651,6 +705,15 @@ namespace GameA.Game
 		{
 			Table_Turntable tmp;
 			if (Table_TurntableDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_QQHallGrowAward GetQQHallGrowAward(int key)
+		{
+			Table_QQHallGrowAward tmp;
+			if (Table_QQHallGrowAwardDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -678,6 +741,15 @@ namespace GameA.Game
 		{
 			Table_Decorate tmp;
 			if (Table_DecorateDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_DiamondShop GetDiamondShop(int key)
+		{
+			Table_DiamondShop tmp;
+			if (Table_DiamondShopDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

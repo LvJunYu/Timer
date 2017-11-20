@@ -53,6 +53,7 @@ namespace NewResourceSolution
         {
             return GetJson(name, (int) _defaultResScenary);
         }
+        
         public T GetAsset<T> (
             EResType resType,
             string name
@@ -61,9 +62,9 @@ namespace NewResourceSolution
             return GetAsset<T>(resType, name, (int) _defaultResScenary);
         }
         
-        public void UnloadScenary (EResScenary scenary)
+        public void UnloadScenary (EResScenary scenary, long resTypeMask = -1L)
         {
-            UnloadScenary((int) scenary);
+            UnloadScenary((int) scenary, resTypeMask);
         }
     }
 }

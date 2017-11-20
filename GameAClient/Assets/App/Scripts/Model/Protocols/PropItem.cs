@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PropItem : SyncronisticData {
+    public partial class PropItem : SyncronisticData<Msg_PropItem> {
         #region 字段
         /// <summary>
         /// 
@@ -62,7 +62,25 @@ namespace GameA
             _type = msg.Type;     
             _id = msg.Id;     
             _count = msg.Count;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_PropItem msg)
+        {
+            if (null == msg) return false;
+            _type = msg.Type;           
+            _id = msg.Id;           
+            _count = msg.Count;           
+            return true;
+        } 
+
+        public bool DeepCopy (PropItem obj)
+        {
+            if (null == obj) return false;
+            _type = obj.Type;           
+            _id = obj.Id;           
+            _count = obj.Count;           
             return true;
         }
 

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class SNSUserInfo : SyncronisticData {
+    public partial class SNSUserInfo : SyncronisticData<Msg_SNSUserInfo> {
         #region 字段
         /// <summary>
         /// 平台id
@@ -182,7 +182,41 @@ namespace GameA
             _accessToken = msg.AccessToken;     
             _refreshToken = msg.RefreshToken;     
             _additionalId = msg.AdditionalId;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_SNSUserInfo msg)
+        {
+            if (null == msg) return false;
+            _pid = msg.Pid;           
+            _userNickName = msg.UserNickName;           
+            _headImgUrl = msg.HeadImgUrl;           
+            _sex = msg.Sex;           
+            _birthDay = msg.BirthDay;           
+            _province = msg.Province;           
+            _city = msg.City;           
+            _country = msg.Country;           
+            _accessToken = msg.AccessToken;           
+            _refreshToken = msg.RefreshToken;           
+            _additionalId = msg.AdditionalId;           
+            return true;
+        } 
+
+        public bool DeepCopy (SNSUserInfo obj)
+        {
+            if (null == obj) return false;
+            _pid = obj.Pid;           
+            _userNickName = obj.UserNickName;           
+            _headImgUrl = obj.HeadImgUrl;           
+            _sex = obj.Sex;           
+            _birthDay = obj.BirthDay;           
+            _province = obj.Province;           
+            _city = obj.City;           
+            _country = obj.Country;           
+            _accessToken = obj.AccessToken;           
+            _refreshToken = obj.RefreshToken;           
+            _additionalId = obj.AdditionalId;           
             return true;
         }
 

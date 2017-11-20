@@ -23,8 +23,7 @@ namespace GameA.Game
             Fail,
         }
 
-        [SerializeField]
-        private ESceneState _runState;
+        [SerializeField] private ESceneState _runState;
         private float _gameTimer;
 
         [SerializeField] private bool _arrived;
@@ -47,15 +46,16 @@ namespace GameA.Game
         public int SecondLeft
         {
             //get { return _secondLeft; }
-            get 
+            get
             {
                 if (_runState == ESceneState.Fail || _runState == ESceneState.Fail)
                 {
                     return 0;
                 }
-                return (int)(RunTimeTimeLimit - _gameTimer);
+                return (int) (RunTimeTimeLimit - _gameTimer);
             }
         }
+
         /// <summary>
         /// 关卡运行时时间限制（受到增益道具的影响）
         /// </summary>
@@ -101,7 +101,7 @@ namespace GameA.Game
             {
                 _gemGain = value;
                 UpdateWinState();
-                Messenger.Broadcast (EMessengerType.OnGemCollect);
+                Messenger.Broadcast(EMessengerType.OnGemCollect);
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
                 Messenger.Broadcast(EMessengerType.OnScoreChanged);
             }
@@ -147,7 +147,6 @@ namespace GameA.Game
 
         public int Life
         {
-
             get
             {
 //                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
@@ -158,7 +157,6 @@ namespace GameA.Game
                 {
                     return _mapStatistics.LifeCount;
                 }
-               
             }
         }
 
@@ -182,21 +180,26 @@ namespace GameA.Game
             get
             {
                 // 总分 = 杀死怪物得分 + 拾取宝石得分 + 剩余时间得分 + 剩余生命
-                int total = 0;
-                if (_runState == ESceneState.Fail) return 0;
-                if (_runState == ESceneState.Win)
-                {
-                    total += ((int)(RunTimeTimeLimit - _gameTimer)) * 10;
-                    total += PlayMode.Instance.MainPlayer.Life * 200;
-                }
-                total += _gemGain * 100;
-                total += _monsterKilled * 200;
-                //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
-                //{
-                //    total += total / 5;
-                //}
-                return total;
+                return GetScore();
             }
+        }
+
+        private int GetScore(bool forceCalculateAll = false)
+        {
+            int total = 0;
+            if (_runState == ESceneState.Fail) return 0;
+            if (_runState == ESceneState.Win || forceCalculateAll)
+            {
+                total += ((int) (RunTimeTimeLimit - _gameTimer)) * 10;
+                total += PlayMode.Instance.MainPlayer.Life * 200;
+            }
+            //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
+            //{
+            //    total += total / 5;
+            //}
+            total += _gemGain * 100;
+            total += _monsterKilled * 200;
+            return total;
         }
 
         /// <summary>
@@ -229,15 +232,15 @@ namespace GameA.Game
         {
             if (_mapStatistics.FinalCount == 0)
             {
-                RemoveCondition(EWinCondition.Arrived);
+                RemoveCondition(EWinCondition.WC_Arrive);
             }
             if (_mapStatistics.GemCount == 0)
             {
-                RemoveCondition(EWinCondition.CollectTreasure);
+                RemoveCondition(EWinCondition.WC_Collect);
             }
             if (_mapStatistics.MonsterCount == 0)
             {
-                RemoveCondition(EWinCondition.KillMonster);
+                RemoveCondition(EWinCondition.WC_Monster);
             }
             _gameTimer = 0;
             _runState = ESceneState.Run;
@@ -254,7 +257,7 @@ namespace GameA.Game
         /// </summary>
         public void ForceSetTimeFinish()
         {
-            _gameTimer = _mapStatistics.TimeLimit*10;
+            _gameTimer = _mapStatistics.TimeLimit * 10;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)
@@ -275,13 +278,14 @@ namespace GameA.Game
             }
             //录像模式下如果出了问题至少保证时间超过录像长度就退出。
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord &&
-                GameRun.Instance.LogicFrameCnt >= ((GameModePlayRecord)GM2DGame.Instance.GameMode).Record.UsedTime + 250)
+                GameRun.Instance.LogicFrameCnt >=
+                ((GameModePlayRecord) GM2DGame.Instance.GameMode).Record.UsedTime + 250)
             {
                 _runState = ESceneState.Win;
                 SocialApp.Instance.ReturnToApp();
                 return;
             }
-            if (HasWinCondition(EWinCondition.TimeLimit))
+            if (HasWinCondition(EWinCondition.WC_TimeLimit))
             {
                 _gameTimer += deltaTime;
                 if (CheckWinTimeLimit())
@@ -291,8 +295,16 @@ namespace GameA.Game
 
                     if (value)
                     {
-                        _runState = ESceneState.Win;
-                        Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
+                        {
+                            _runState = ESceneState.Fail;
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
+                        }
+                        else
+                        {
+                            _runState = ESceneState.Win;
+                            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+                        }
                     }
                     else
                     {
@@ -339,7 +351,7 @@ namespace GameA.Game
                 return false;
             }
 
-            if (_mapStatistics.WinCondition == 1 << (int)EWinCondition.TimeLimit)
+            if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
@@ -373,25 +385,44 @@ namespace GameA.Game
             return true;
         }
 
+        //判断乱入胜利条件
+        private bool CheckShadowWin()
+        {
+            int score = GetScore(true);
+            int shadowScore = GM2DGame.Instance.GameMode.Record.Score;
+//            int usedTime = GameRun.Instance.LogicFrameCnt;
+//            int shadowUsedTime = GM2DGame.Instance.GameMode.Record.UsedTime;
+            return score >= shadowScore;
+        }
+
         private void UpdateWinState()
         {
             if (!CheckWin())
             {
                 return;
             }
-            _runState = ESceneState.Win;
-            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
-            LogHelper.Debug("Win");
+            if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
+            {
+                _runState = ESceneState.Fail;
+                Messenger.Broadcast(EMessengerType.GameFinishFailed);
+                LogHelper.Debug("Lose");
+            }
+            else
+            {
+                _runState = ESceneState.Win;
+                Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+                LogHelper.Debug("Win");
+            }
         }
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.CollectTreasure) && _gemGain < _mapStatistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < _mapStatistics.GemCount;
         }
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.KillMonster) && _monsterKilled < _mapStatistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < _mapStatistics.MonsterCount;
         }
 
         //private bool CheckWinRescueHero()
@@ -401,12 +432,12 @@ namespace GameA.Game
 
         private bool CheckWinArrived()
         {
-            return HasWinCondition(EWinCondition.Arrived) && !_arrived;
+            return HasWinCondition(EWinCondition.WC_Arrive) && !_arrived;
         }
 
         private bool CheckWinTimeLimit()
         {
-            return HasWinCondition(EWinCondition.TimeLimit) && _gameTimer >= RunTimeTimeLimit;
+            return HasWinCondition(EWinCondition.WC_TimeLimit) && _gameTimer >= RunTimeTimeLimit;
         }
     }
 }

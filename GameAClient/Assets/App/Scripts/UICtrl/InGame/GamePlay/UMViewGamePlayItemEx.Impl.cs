@@ -7,12 +7,13 @@
 
 
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 
 namespace GameA.Game
 {
-    public partial class UMViewGamePlayItemEx: UMViewGamePlayItem
+    public partial class UMViewGamePlayItemEx
     {
 
 	    public const float PressAddWaitTime = 0.5f;

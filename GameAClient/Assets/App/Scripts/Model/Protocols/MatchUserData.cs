@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MatchUserData : SyncronisticData {
+    public partial class MatchUserData : SyncronisticData<Msg_SC_DAT_MatchUserData> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -480,7 +480,137 @@ namespace GameA
             }
             _playCountForReward = msg.PlayCountForReward;           
             _playCountForRewardCapacity = msg.PlayCountForRewardCapacity;           
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+        
+        public bool CopyMsgData (Msg_SC_DAT_MatchUserData msg)
+        {
+            if (null == msg) return false;
+            _userId = msg.UserId;           
+            if(null != msg.UnitData){
+                if (null == _unitData){
+                    _unitData = new UserMatchUnitData(msg.UnitData);
+                }
+                _unitData.CopyMsgData(msg.UnitData);
+            }
+            _curPublishTime = msg.CurPublishTime;           
+            if(null != msg.CurPublishProject){
+                if (null == _curPublishProject){
+                    _curPublishProject = new Project(msg.CurPublishProject);
+                }
+                _curPublishProject.CopyMsgData(msg.CurPublishProject);
+            }
+            _curReformSection = msg.CurReformSection;           
+            _curReformLevel = msg.CurReformLevel;           
+            _curReformState = msg.CurReformState;           
+            _reformIntervalSeconds = msg.ReformIntervalSeconds;           
+            if(null != msg.CurReformProject){
+                if (null == _curReformProject){
+                    _curReformProject = new Project(msg.CurReformProject);
+                }
+                _curReformProject.CopyMsgData(msg.CurReformProject);
+            }
+            _reformModifyUnitCapacity = msg.ReformModifyUnitCapacity;           
+            _reformAddUnitCapacity = msg.ReformAddUnitCapacity;           
+            _reformDeleteUnitCapacity = msg.ReformDeleteUnitCapacity;           
+            _leftChallengeCount = msg.LeftChallengeCount;           
+            _leftChallengeCountRefreshTime = msg.LeftChallengeCountRefreshTime;           
+            _challengeIntervalSecond = msg.ChallengeIntervalSecond;           
+            _challengeCapacity = msg.ChallengeCapacity;           
+            _curMatchChallengeCount = msg.CurMatchChallengeCount;           
+            _curSelectedChallengeType = msg.CurSelectedChallengeType;           
+            if(null != msg.EasyChallengeProjectData){
+                if (null == _easyChallengeProjectData){
+                    _easyChallengeProjectData = new Project(msg.EasyChallengeProjectData);
+                }
+                _easyChallengeProjectData.CopyMsgData(msg.EasyChallengeProjectData);
+            }
+            if(null != msg.MediumChallengeProjectData){
+                if (null == _mediumChallengeProjectData){
+                    _mediumChallengeProjectData = new Project(msg.MediumChallengeProjectData);
+                }
+                _mediumChallengeProjectData.CopyMsgData(msg.MediumChallengeProjectData);
+            }
+            if(null != msg.DifficultChallengeProjectData){
+                if (null == _difficultChallengeProjectData){
+                    _difficultChallengeProjectData = new Project(msg.DifficultChallengeProjectData);
+                }
+                _difficultChallengeProjectData.CopyMsgData(msg.DifficultChallengeProjectData);
+            }
+            if(null != msg.RandomChallengeProjectData){
+                if (null == _randomChallengeProjectData){
+                    _randomChallengeProjectData = new Project(msg.RandomChallengeProjectData);
+                }
+                _randomChallengeProjectData.CopyMsgData(msg.RandomChallengeProjectData);
+            }
+            _playCountForReward = msg.PlayCountForReward;           
+            _playCountForRewardCapacity = msg.PlayCountForRewardCapacity;           
+            return true;
+        } 
+
+        public bool DeepCopy (MatchUserData obj)
+        {
+            if (null == obj) return false;
+            _userId = obj.UserId;           
+            if(null != obj.UnitData){
+                if (null == _unitData){
+                    _unitData = new UserMatchUnitData();
+                }
+                _unitData.DeepCopy(obj.UnitData);
+            }
+            _curPublishTime = obj.CurPublishTime;           
+            if(null != obj.CurPublishProject){
+                if (null == _curPublishProject){
+                    _curPublishProject = new Project();
+                }
+                _curPublishProject.DeepCopy(obj.CurPublishProject);
+            }
+            _curReformSection = obj.CurReformSection;           
+            _curReformLevel = obj.CurReformLevel;           
+            _curReformState = obj.CurReformState;           
+            _reformIntervalSeconds = obj.ReformIntervalSeconds;           
+            if(null != obj.CurReformProject){
+                if (null == _curReformProject){
+                    _curReformProject = new Project();
+                }
+                _curReformProject.DeepCopy(obj.CurReformProject);
+            }
+            _reformModifyUnitCapacity = obj.ReformModifyUnitCapacity;           
+            _reformAddUnitCapacity = obj.ReformAddUnitCapacity;           
+            _reformDeleteUnitCapacity = obj.ReformDeleteUnitCapacity;           
+            _leftChallengeCount = obj.LeftChallengeCount;           
+            _leftChallengeCountRefreshTime = obj.LeftChallengeCountRefreshTime;           
+            _challengeIntervalSecond = obj.ChallengeIntervalSecond;           
+            _challengeCapacity = obj.ChallengeCapacity;           
+            _curMatchChallengeCount = obj.CurMatchChallengeCount;           
+            _curSelectedChallengeType = obj.CurSelectedChallengeType;           
+            if(null != obj.EasyChallengeProjectData){
+                if (null == _easyChallengeProjectData){
+                    _easyChallengeProjectData = new Project();
+                }
+                _easyChallengeProjectData.DeepCopy(obj.EasyChallengeProjectData);
+            }
+            if(null != obj.MediumChallengeProjectData){
+                if (null == _mediumChallengeProjectData){
+                    _mediumChallengeProjectData = new Project();
+                }
+                _mediumChallengeProjectData.DeepCopy(obj.MediumChallengeProjectData);
+            }
+            if(null != obj.DifficultChallengeProjectData){
+                if (null == _difficultChallengeProjectData){
+                    _difficultChallengeProjectData = new Project();
+                }
+                _difficultChallengeProjectData.DeepCopy(obj.DifficultChallengeProjectData);
+            }
+            if(null != obj.RandomChallengeProjectData){
+                if (null == _randomChallengeProjectData){
+                    _randomChallengeProjectData = new Project();
+                }
+                _randomChallengeProjectData.DeepCopy(obj.RandomChallengeProjectData);
+            }
+            _playCountForReward = obj.PlayCountForReward;           
+            _playCountForRewardCapacity = obj.PlayCountForRewardCapacity;           
             return true;
         }
 

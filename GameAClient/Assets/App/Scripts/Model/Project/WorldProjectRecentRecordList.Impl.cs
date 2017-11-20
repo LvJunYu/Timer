@@ -12,7 +12,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class WorldProjectRecentRecordList : SyncronisticData
+    public partial class WorldProjectRecentRecordList
     {
         private List<Record> _allList = new List<Record>();
         public bool IsEnd { get; private set; }

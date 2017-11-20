@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectUserData : SyncronisticData {
+    public partial class ProjectUserData : SyncronisticData<Msg_ProjectUserData> {
         #region 字段
         /// <summary>
         /// 胜利条件枚举
@@ -36,6 +36,14 @@ namespace GameA
         /// 
         /// </summary>
         private int _completeCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _lastCompleteTime;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _playCount;
         /// <summary>
         /// 
         /// </summary>
@@ -116,6 +124,26 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public long LastCompleteTime { 
+            get { return _lastCompleteTime; }
+            set { if (_lastCompleteTime != value) {
+                _lastCompleteTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int PlayCount { 
+            get { return _playCount; }
+            set { if (_playCount != value) {
+                _playCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -136,8 +164,42 @@ namespace GameA
             _favorite = msg.Favorite;     
             _lastFavoriteTime = msg.LastFavoriteTime;     
             _completeCount = msg.CompleteCount;     
+            _lastCompleteTime = msg.LastCompleteTime;     
+            _playCount = msg.PlayCount;     
             _lastPlayTime = msg.LastPlayTime;     
-            OnSyncPartial();
+            OnSyncPartial(msg);
+            return true;
+        }
+
+        public bool CopyMsgData (Msg_ProjectUserData msg)
+        {
+            if (null == msg) return false;
+            _projectId = msg.ProjectId;           
+            _userId = msg.UserId;           
+            _likeState = msg.LikeState;           
+            _lastLikeTime = msg.LastLikeTime;           
+            _favorite = msg.Favorite;           
+            _lastFavoriteTime = msg.LastFavoriteTime;           
+            _completeCount = msg.CompleteCount;           
+            _lastCompleteTime = msg.LastCompleteTime;           
+            _playCount = msg.PlayCount;           
+            _lastPlayTime = msg.LastPlayTime;           
+            return true;
+        } 
+
+        public bool DeepCopy (ProjectUserData obj)
+        {
+            if (null == obj) return false;
+            _projectId = obj.ProjectId;           
+            _userId = obj.UserId;           
+            _likeState = obj.LikeState;           
+            _lastLikeTime = obj.LastLikeTime;           
+            _favorite = obj.Favorite;           
+            _lastFavoriteTime = obj.LastFavoriteTime;           
+            _completeCount = obj.CompleteCount;           
+            _lastCompleteTime = obj.LastCompleteTime;           
+            _playCount = obj.PlayCount;           
+            _lastPlayTime = obj.LastPlayTime;           
             return true;
         }
 

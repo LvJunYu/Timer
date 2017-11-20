@@ -24,7 +24,7 @@ namespace UnityStandardAssets.CrossPlatformInput.Inspector
 
 
         #if GM2DPROJECT
-        #elif
+        #else
         [MenuItem("Mobile Input/Enable")]
         private static void Enable()
         {

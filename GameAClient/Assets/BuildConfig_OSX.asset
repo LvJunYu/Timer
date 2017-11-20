@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b983436fb90464747ab62d19a9abb9c3, type: 3}
+  m_Name: BuildConfig_OSX
+  m_EditorClassIdentifier: 
+  _debug: 1
+  _outputPath: ../../AssetBundles
+  _includeLocales: -1
+  _fullResPackage: 1
+  _appVersion: 0.1.0
+  _minimumAppVersion: 0.1.0
+  _baseResVersion: 0.1.23
+  _resVersion: 0.1.23
+  _singleAdamResList:
+  - 67979d915f7944ef0a171d534c13d1ec
+  - 7021c4e00defc0a45bf964f888bf32d0
+  - a46f6d2e562fa294caa663dfefab170d
+  - 6bcb9f247a91dea44956c9cd18ee7c96
+  _folderAdamResList:
+  - f96453f6ec9904fd0a45c972fc0d793f
+  - 73e2a82b8e6d94665bcb3f7190e7f371

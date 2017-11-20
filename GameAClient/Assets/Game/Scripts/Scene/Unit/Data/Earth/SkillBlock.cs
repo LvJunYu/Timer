@@ -47,7 +47,40 @@ namespace GameA.Game
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
-        
+
+        protected override void Hit(UnitBase other, EDirectionType eDirectionType)
+        {
+            base.Hit(other, eDirectionType);
+            switch (eDirectionType)
+            {
+                case EDirectionType.Left:
+                case EDirectionType.Right:
+                    if (other.IsActor)
+                    {
+                        var min = new IntVec2(_colliderGrid.XMin, other.CenterPos.y);
+                        var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
+                        CheckSkillHit(other, grid, eDirectionType);
+                    }
+                    break;
+                case EDirectionType.Up:
+                    if (other.IsActor || other.Id == UnitDefine.BoxId)
+                    {
+                        var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
+                        var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
+                        CheckSkillHit(other, grid, eDirectionType);
+                    }
+                    break;
+                case EDirectionType.Down:
+                    if (other.IsActor)
+                    {
+                        var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
+                        var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
+                        CheckSkillHit(other, grid, eDirectionType);
+                    }
+                    break;
+            }
+        }
+
         protected virtual void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
         }

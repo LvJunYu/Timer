@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace GameA
 {
-	public partial class HomePartData : SyncronisticData {
+	public partial class HomePartData{
 //        private long _userId;
         private Dictionary<EHomePart, Item> _homePartDict = new Dictionary<EHomePart, Item>();
         public HomePartData(long userId)
