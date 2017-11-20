@@ -182,14 +182,17 @@ namespace GameA
                 SocialGUIManager.Instance.ShowAppView();
             }, code =>
             {
-                if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                if (GlobalVar.Instance.Env != EEnvironment.Production)
                 {
-                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
-                }
-                else
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                        SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                    }
+                    else
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
                 }
                 SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码：" + code.ToString(), null,
                     new KeyValuePair<string, Action>("重试",
