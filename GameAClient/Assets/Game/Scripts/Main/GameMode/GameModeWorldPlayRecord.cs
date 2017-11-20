@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System;
-using SoyEngine.Proto;
 
 namespace GameA.Game
 {
@@ -31,6 +29,7 @@ namespace GameA.Game
 //            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
 //            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
             yield return null;
+            _run = true;
             GameRun.Instance.Playing();
         }
     }

@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine.Unity;

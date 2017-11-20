@@ -228,6 +228,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 if (value)
                 {
+                    _openGamePlaying = false;
                     SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
                 }
             }, () =>

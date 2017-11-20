@@ -51,6 +51,7 @@ namespace GameA.Game
             yield return new WaitUntil(() => _startBattleMsg);
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
+            _run = true;
             GameRun.Instance.Playing();
         }
 

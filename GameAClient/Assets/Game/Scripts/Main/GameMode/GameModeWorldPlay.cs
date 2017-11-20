@@ -196,6 +196,7 @@ namespace GameA.Game
 //                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
 //            }
             yield return null;
+            _run = true;
             GameRun.Instance.Playing();
         }
     }
