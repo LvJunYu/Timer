@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -78,6 +79,7 @@ namespace GameA
             {
                 _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
+            _cachedView.gameObject.transform.FindChild("Mask").GetComponent<Image>().enabled = true;
         }
 
         private void Clear()
