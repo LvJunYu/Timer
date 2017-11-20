@@ -40,7 +40,10 @@ namespace GameA
                         ReferView();
                     }
                 },
-                code => { });
+                code =>
+                {
+                    
+                });
         }
 
         private void ReferView()
@@ -73,9 +76,7 @@ namespace GameA
                     {
                         ReqestData();
                         EndColltion();
-                    }
-                    else
-                    {
+                        ReferView();
                     }
                     SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
                 },
