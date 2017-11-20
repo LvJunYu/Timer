@@ -19,6 +19,7 @@ namespace GameA
         private float _srollRectHeight;
         private float _contentHeight;
         private UPCtrlProjectComment _upCtrlProjectComment;
+        private UPCtrlProjectRecentRecord _upCtrlProjectRecentRecord;
         private bool _pannelDown;
         private bool _commentUp;
         private float _pannelDownTimer;
@@ -42,6 +43,10 @@ namespace GameA
             _upCtrlProjectComment = new UPCtrlProjectComment();
             _upCtrlProjectComment.Set(ResScenary);
             _upCtrlProjectComment.Init(this, _cachedView);
+
+            _upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
+            _upCtrlProjectRecentRecord.Set(ResScenary);
+            _upCtrlProjectRecentRecord.Init(this, _cachedView);
         }
 
         protected override void OnOpen(object parameter)
@@ -49,6 +54,7 @@ namespace GameA
             base.OnOpen(parameter);
             Project = parameter as Project;
             _upCtrlProjectComment.Open();
+            _upCtrlProjectRecentRecord.Open();
             _srollRectHeight = _cachedView.ScrollRect.rectTransform().rect.height;
             _contentHeight = _cachedView.ScrollRect.content.rect.height;
             _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
@@ -64,6 +70,7 @@ namespace GameA
         protected override void OnClose()
         {
             _upCtrlProjectComment.Close();
+            _upCtrlProjectRecentRecord.Close();
             Clear();
             base.OnClose();
         }
@@ -107,6 +114,7 @@ namespace GameA
                 _pannelDown = false;
             }
             _cachedView.CommentTableScroller.ScorllWheelDownOff = !_pannelDown;
+
             if (_cachedView.CommentTableScroller.ContentPosition.y <= 0.2f)
             {
                 _cachedView.CommentTableScroller.ScorllWheelUpOff = true;
@@ -123,6 +131,10 @@ namespace GameA
                 _commentUp = false;
             }
             _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !_commentUp && _cachedView.CommentTableScroller.MouseIn;
+            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff |=
+                _cachedView.RecordGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
+            _cachedView.MouseScrollWheelTool.ScorllWheelDownOff |=
+                _cachedView.RecordGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
         }
 
         public bool CheckPlayed(string content)
@@ -372,11 +384,13 @@ namespace GameA
             {
                 RefreshView();
                 _upCtrlProjectComment.OnChangeHandler(projectId);
+                _upCtrlProjectRecentRecord.OnChangeHandler(projectId);
             }
         }
 
         private void Clear()
         {
+            _upCtrlProjectRecentRecord.Clear();
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = false;
             _cachedView.BadTog.isOn = false;
@@ -395,6 +409,7 @@ namespace GameA
             {
                 Project.Request(Project.ProjectId, null, null);
                 _upCtrlProjectComment.OnChangeToApp();
+                _upCtrlProjectRecentRecord.OnChangeToApp();
             }
         }
 

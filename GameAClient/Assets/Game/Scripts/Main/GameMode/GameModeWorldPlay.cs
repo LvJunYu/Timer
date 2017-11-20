@@ -138,6 +138,15 @@ namespace GameA.Game
             });
         }
 
+        public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
+        {
+            base.QuitGame(successCB, failureCB, forceQuitWhenFailed);
+            if (_project.ProjectUserData.PlayCount == 0)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorldProjectComment>(_project);
+            }
+        }
+
         public override bool Restart(Action successCb, Action failedCb)
         {
             _project.RequestPlay(() =>

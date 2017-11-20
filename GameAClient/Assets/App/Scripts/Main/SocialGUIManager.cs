@@ -327,7 +327,7 @@ namespace GameA
                 if (lastUI != ui)
                 {
                     _overlayUIs.Push(new UIRaw(ui, value));
-                    Debug.Log(_overlayUIs.Count);
+                    LogHelper.Debug("_overlayUIs.Push(), _overlayUIs.Count is {0}",_overlayUIs.Count);
                 }
             }
             return base.OpenUI<T>(value);
@@ -339,7 +339,7 @@ namespace GameA
             if (ui is ICheckOverlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
             {
                 _overlayUIs.Pop();
-                Debug.Log(_overlayUIs.Count);
+                LogHelper.Debug("_overlayUIs.Pop(), _overlayUIs.Count is {0}",_overlayUIs.Count);
                 // 打开关闭的遮挡UI
                 if (_overlayUIs.Count > 0)
                 {

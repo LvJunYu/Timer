@@ -255,6 +255,11 @@ namespace GameA
 
         #region 方法
 
+        public void Request(Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        {
+            Request(_projectId,successCallback,failedCallback);
+        }
+
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
             RemoteCommands.PlayWorldProject(_projectId, ret =>
