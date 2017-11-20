@@ -26,7 +26,7 @@ namespace GameA
         /// <summary>
         /// 总章节数
         /// </summary>
-        public const int ChapterCnt = 4;
+        public const int ChapterCnt = 2;
 
         /// <summary>
         /// 当前显示章节

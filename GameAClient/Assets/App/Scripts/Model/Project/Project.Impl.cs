@@ -522,6 +522,7 @@ namespace GameA
                 {
                     if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
+                        _publishTime = UpdateTime;
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
                         //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
