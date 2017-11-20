@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -17,6 +18,7 @@ namespace GameA
         private const string _collect = "收集所有宝石";
         private const string _killMonster = "消灭所有怪物";
         private StringBuilder _stringBuilder = new StringBuilder(64);
+        private bool _needSave;
 
         protected override void OnOpen(object parameter)
         {
@@ -27,16 +29,21 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                 return;
             }
+            _needSave = false;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
                 _cachedView.DefaultCover);
-            _cachedView.ProjectTitle.text = _project.Name;
-            _cachedView.ProjectDetailIntro.text = _project.Summary;
+            _cachedView.TitleField.text = _project.Name;
+            _cachedView.DescField.text = _project.Summary;
             RefreshWinConditionText();
             _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
         }
 
         protected override void OnClose()
         {
+            if (_needSave)
+            {
+                SaveProject();
+            }
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCover);
             base.OnClose();
         }
@@ -47,6 +54,8 @@ namespace GameA
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
             _cachedView.CloseBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.TitleField.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.DescField.onEndEdit.AddListener(OnDescEndEdit);
         }
 
         protected override void InitGroupId()
@@ -97,7 +106,69 @@ namespace GameA
             _cachedView.PassCondition.text = _stringBuilder.ToString();
         }
 
+        private void OnDescEndEdit(string arg0)
+        {
+            string newDesc = _cachedView.DescField.text;
+            if (string.IsNullOrEmpty(newDesc) || newDesc == _project.Summary)
+            {
+                return;
+            }
+            var testRes = CheckTools.CheckProjectDesc(newDesc);
+            if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
+            {
+                _project.Summary = newDesc;
+                _needSave = true;
+            }
+            else
+            {
+                SocialGUIManager.ShowCheckProjectDescRes(testRes);
+                _cachedView.DescField.text = _project.Summary;
+            }
+        }
+
+        private void OnTitleEndEdit(string arg0)
+        {
+            string newTitle = _cachedView.TitleField.text;
+            if (string.IsNullOrEmpty(newTitle) || newTitle == _project.Name)
+            {
+                return;
+            }
+            var testRes = CheckTools.CheckProjectName(newTitle);
+            if (testRes == CheckTools.ECheckProjectNameResult.Success)
+            {
+                _project.Name = newTitle;
+                _needSave = true;
+            }
+            else
+            {
+                SocialGUIManager.ShowCheckProjectNameRes(testRes);
+                _cachedView.TitleField.text = _project.Name;
+            }
+        }
+        
         private void OnOKBtn()
+        {
+            if (_needSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
+                SaveProject(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    Publsih();
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                });
+            }
+            else
+            {
+                Publsih();
+            }
+            
+        }
+
+        private void Publsih()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
             if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
@@ -129,6 +200,44 @@ namespace GameA
         private void OnCancelBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+        }
+
+        private void SaveProject(Action successAction = null, Action failAction = null)
+        {
+            if (!_needSave) return;
+            _project.Save(
+                _project.Name,
+                _project.Summary,
+                null,
+                null,
+                _project.PassFlag,
+                _project.PassFlag,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                _project.TimeLimit,
+                _project.WinCondition,
+                () =>
+                {
+                    _needSave = false;
+                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
+                    if (successAction != null)
+                    {
+                        successAction.Invoke();
+                    }
+                },
+                code =>
+                {
+                    if (failAction != null)
+                    {
+                        failAction.Invoke();
+                    }
+                }
+            );
         }
     }
 }

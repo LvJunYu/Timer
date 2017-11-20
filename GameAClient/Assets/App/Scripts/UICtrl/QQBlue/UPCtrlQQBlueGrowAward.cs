@@ -41,24 +41,12 @@ namespace GameA
             LocalUser.Instance.QqGameReward.Request(0,
                 () =>
                 {
-                    if (_isOpen)
-                    {
-                        _statusList = LocalUser.Instance.QqGameReward.BlueGrow;
-                        
-                        _hallGrowAwardStatuses.Clear();
-                        for (int i = 0; i < _contentList.Count; i++)
-                        {
-                            if (_statusList.Count <i+1)
-                            {
-                                _statusList.Add((int)EQQGameRewardStatus.QGRS_Unsatisfied);
-                            }
-                            _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
-                                (EQQGameRewardStatus)_statusList[i] ,EQQGamePrivilegeType.QGPT_BlueVip )); 
-                        }
-                        RefreshView();
-                    }
+                    SetContent(true);
                 },
-                code => { });
+                code =>
+                {
+                   SetContent(false);
+                });
         }
         public override void Close()
         {
@@ -109,6 +97,39 @@ namespace GameA
         protected  void RefreshView()
         {
             _cachedView.GrowAwardDataScroller.SetItemCount(_hallGrowAwardStatuses.Count);
+        }
+
+        private void SetContent(bool success)
+        {
+            if (_isOpen)
+            {
+                _statusList = LocalUser.Instance.QqGameReward.BlueGrow;
+                if (_statusList == null)
+                {
+                    _statusList = new List<int>();
+                }
+                        
+                _hallGrowAwardStatuses.Clear();
+                for (int i = 0; i < _contentList.Count; i++)
+                {
+                    if (_statusList.Count <i+1)
+                    {
+                        _statusList.Add((int)EQQGameRewardStatus.QGRS_Unsatisfied);
+                    }
+                    if (success)
+                    {
+                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
+                            (EQQGameRewardStatus)_statusList[i] ,EQQGamePrivilegeType.QGPT_BlueVip ));  
+                    }
+                    else
+                    {
+                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
+                            EQQGameRewardStatus.QGRS_Unsatisfied ,EQQGamePrivilegeType.QGPT_BlueVip ));  
+                    }
+              
+                }
+                RefreshView();   
+            }
         }
     }
 }
