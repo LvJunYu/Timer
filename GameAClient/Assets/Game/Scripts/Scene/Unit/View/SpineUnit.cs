@@ -6,6 +6,8 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -21,6 +23,7 @@ namespace GameA.Game
         protected Renderer _renderer;
         protected Shader _damageShader;
         private bool _hasSetShader;
+        private List<Material> _materialsCache = new List<Material>();
 
         public SpineUnit()
         {
@@ -45,6 +48,7 @@ namespace GameA.Game
             _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
+            _materialsCache.Clear();
             return true;
         }
 
@@ -64,25 +68,57 @@ namespace GameA.Game
             }
         }
 
+        private static string _oldShaderName = "Spine/Skeleton";
+
         public override void SetDamageShaderValue(string name, float value)
         {
-            InitShader();
-            if (_renderer == null) return;
+            if (_renderer == null || name == null || _unit == null)
+            {
+                LogHelper.Error("SetDamageShaderValue , but _renderer == null || name == null || _unit == null");
+                return;
+            }
+            if (_damageShader == null)
+            {
+                _damageShader = Shader.Find("Spine/SkeletonWhite");
+            }
             Material[] materials;
             //玩家只有一個，直接改shareMals，不頻繁創創建实例
             if (_unit.IsMain)
             {
                 materials = _renderer.sharedMaterials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if ( materials[i] != null)
+                    {
+                        if (materials[i].shader.name == _oldShaderName)
+                        {
+                            materials[i].shader = _damageShader;
+                        }
+                        //玩家的materials在动态变化，缓存后一起修改
+                        if (!_materialsCache.Contains(materials[i]))
+                        {
+                            _materialsCache.Add(materials[i]);
+                        }
+                    }
+                }
+                for (int i = 0; i < _materialsCache.Count; i++)
+                {
+                    _materialsCache[i].SetFloat(name, value);
+                }
             }
             else
             {
                 materials = _renderer.materials;
-            }
-            for (int i = 0; i < materials.Length; i++)
-            {
-                if (name != null && materials[i] != null)
+                for (int i = 0; i < materials.Length; i++)
                 {
-                    materials[i].SetFloat(name, value);
+                    if (materials[i] != null)
+                    {
+                        if (materials[i].shader.name == _oldShaderName)
+                        {
+                            materials[i].shader = _damageShader;
+                        }
+                        materials[i].SetFloat(name, value);
+                    }
                 }
             }
         }
@@ -90,16 +126,11 @@ namespace GameA.Game
         private void InitShader()
         {
             if (_hasSetShader) return;
-            var materials = _renderer.sharedMaterials;
             if (_damageShader == null)
             {
                 _damageShader = Shader.Find("Spine/SkeletonWhite");
             }
-            for (int i = 0; i < materials.Length; i++)
-            {
-                if (materials[i] != null && materials[i].shader.name == "Spine/Skeleton")
-                    materials[i].shader = _damageShader;
-            }
+            
             _hasSetShader = true;
         }
 
