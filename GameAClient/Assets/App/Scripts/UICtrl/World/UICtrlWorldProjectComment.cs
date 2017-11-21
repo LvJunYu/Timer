@@ -6,7 +6,7 @@ namespace GameA
     public class UICtrlWorldProjectComment : UICtrlResManagedBase<UIViewWorldProjectComment>
     {
         private Project _project;
-
+        private bool _onlyChangeView;
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -65,6 +65,7 @@ namespace GameA
 
         private void OnBadTogValueChanged(bool value)
         {
+            if (_onlyChangeView) return;
             if (_project == null) return;
             if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
             {
@@ -79,6 +80,7 @@ namespace GameA
 
         private void OnGoodTogValueChanged(bool value)
         {
+            if (_onlyChangeView) return;
             if (_project == null) return;
             if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
             {
@@ -89,6 +91,14 @@ namespace GameA
             {
                 _project.UpdateLike(EProjectLikeState.PLS_AllRight);
             }
+        }
+
+        private void Clear()
+        {
+            _onlyChangeView = true;
+            _cachedView.GoodTog.isOn = false;
+            _cachedView.BadTog.isOn = false;
+            _onlyChangeView = false;
         }
     }
 }

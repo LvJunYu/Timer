@@ -215,10 +215,7 @@ namespace GameA
 
         private void OnBadTogValueChanged(bool value)
         {
-            if (_onlyChangeView)
-            {
-                return;
-            }
+            if (_onlyChangeView) return;
             if (Project == null) return;
             if (Project.ProjectUserData == null)
             {
@@ -247,10 +244,7 @@ namespace GameA
 
         private void OnGoodTogValueChanged(bool value)
         {
-            if (_onlyChangeView)
-            {
-                return;
-            }
+            if (_onlyChangeView) return;
             if (Project == null) return;
             if (Project.ProjectUserData == null)
             {
