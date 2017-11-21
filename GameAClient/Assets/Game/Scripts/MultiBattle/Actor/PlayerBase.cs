@@ -81,6 +81,20 @@ namespace GameA.Game
             _playerId = roomUser.Guid;
         }
 
+        protected override bool OnInit()
+        {
+            Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            return base.OnInit();
+        }
+        
+        private void OnChangeToAppMode()
+        {
+            if (_view != null)
+            {
+                _view.SetDamageShaderValue("Value", 0);
+            }
+        }
+
         protected override void Clear()
         {
             base.Clear();
@@ -475,6 +489,7 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
+            Messenger.RemoveListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();

@@ -31,8 +31,11 @@ namespace GameA
         private Table_StandaloneLevel _tableLevel;
         private int _lastStarCount;
         private EState _state = EState.None;
-        private Sequence _sequence;
         private UserInfoDetail[] _friends;
+        private Sequence _sequence;
+        private static float _duration = 2f;
+        private static Vector2 _animOffset = Vector2.up * 10;  
+       
 
         protected override void OnViewCreated()
         {
@@ -300,19 +303,13 @@ namespace GameA
             }
         }
 
-        private static float _duration = 2f;
-        private static Vector2 _animOffset = Vector2.up * 20;
-        private static float _waitTime = 0.2f;
-
         public void SetTween()
         {
             if (_sequence == null)
             {
                 _sequence = DOTween.Sequence()
                     .Append(_cachedView.rectTransform().DOBlendableLocalMoveBy(-_animOffset * 2, _duration))
-                    .AppendInterval(_waitTime)
                     .Append(_cachedView.rectTransform().DOBlendableLocalMoveBy(_animOffset * 2, _duration))
-                    .AppendInterval(_waitTime)
                     .OnComplete(() => _sequence.Restart()).Pause();
                 _cachedView.rectTransform().DOBlendableLocalMoveBy(_animOffset, _duration)
                     .SetDelay(1)
