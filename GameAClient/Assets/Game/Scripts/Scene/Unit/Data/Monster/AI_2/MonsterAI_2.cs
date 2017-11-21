@@ -1,7 +1,5 @@
 ﻿using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
-
 namespace GameA.Game
 {
     public class MonsterAI_2 : MonsterBase
@@ -113,18 +111,17 @@ namespace GameA.Game
                     OnChangeRun();
                     break;
             }
-//            LogHelper.Debug(_eMonsterState+"~");
         }
 
         protected virtual void OnChangeRun()
         {
-            _timerRun = Random.Range(90, 140);
+            _timerRun = RandomDependFrame(90, 140);
         }
 
         protected virtual void OnChangeStupid(Vector3 pos)
         {
-            _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
-            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 
+            _timerStupid = RandomDependFrame(0, 2) == 0 ? 150 : 225;
+            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos,
                 ESortingOrder.EffectItem);
         }
 
@@ -154,7 +151,7 @@ namespace GameA.Game
             {
                 _timerStupid--;
             }
-            if(_isClayOnWall) return;
+            if (_isClayOnWall) return;
             switch (_eMonsterState)
             {
                 case EMonsterState.Idle:
@@ -165,7 +162,7 @@ namespace GameA.Game
                     SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
                     if (_timerRun == 0)
                     {
-                        int value = Random.Range(0, 10);
+                        int value = GameRun.Instance.LogicFrameCnt % 11;
                         if (_intelligenc <= value)
                         {
                             ChangeState(EMonsterState.Stupid);
@@ -174,7 +171,7 @@ namespace GameA.Game
                         {
                             _timerRun = 30;
                         }
-                    } 
+                    }
                     break;
                 case EMonsterState.Stupid:
                     SetInput(EInputType.Right, false);
@@ -229,6 +226,11 @@ namespace GameA.Game
                     SetInput(EInputType.Skill1, true);
                     break;
             }
+        }
+
+        private int RandomDependFrame(int min, int max)
+        {
+            return Mathf.Clamp(GameRun.Instance.LogicFrameCnt % (max - min) + min, min, max);
         }
     }
 }

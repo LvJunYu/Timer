@@ -267,13 +267,13 @@ namespace GameA.Game
         public bool Playing()
         {
             LogHelper.Debug("Playing");
+            _gameTimeSinceGameStarted = 0;
+            _logicFrameCnt = 0;
             if (!PlayMode.Instance.Playing())
             {
                 LogHelper.Debug("Playing failed");
                 return false;
             }
-            _gameTimeSinceGameStarted = 0;
-            _logicFrameCnt = 0;
             _isPlaying = true;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.StartGame);
             _bgmMusic = GM2DGame.Instance.Project.AdventureProjectType == EAdventureProjectType.APT_Bonus ? AudioNameConstDefineGM2D.LevelBonusBgm : AudioNameConstDefineGM2D.LevelNormalBgm;
