@@ -557,9 +557,9 @@ namespace GameA
 //                _cachedView.MatchBtn.gameObject.SetActive(true);
 //            }
 //            else
-            {
-                _cachedView.MatchBtn.gameObject.SetActive(false);
-            }
+//            {
+//                _cachedView.MatchBtn.gameObject.SetActive(false);
+//            }
         }
 
         private void FadeOutChanterBg(CanvasGroup chapterBg)

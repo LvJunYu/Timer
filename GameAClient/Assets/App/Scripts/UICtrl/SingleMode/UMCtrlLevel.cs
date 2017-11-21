@@ -31,9 +31,7 @@ namespace GameA
         private Table_StandaloneLevel _tableLevel;
         private int _lastStarCount;
         private EState _state = EState.None;
-        private Vector2 _startPos;
-        private Vector2 _moVector2 = new Vector2(0.0f, 15.0f);
-        private Tweener _tweener;
+        private Sequence _sequence;
         private UserInfoDetail[] _friends;
 
         protected override void OnViewCreated()
@@ -83,6 +81,7 @@ namespace GameA
             {
                 if (state == EState.Lock)
                 {
+                    StopTween();
                     _cachedView.Current.gameObject.SetActive(false);
                     _cachedView.Active.SetActive(false);
                     _cachedView.Disactive.SetActive(true);
@@ -118,10 +117,11 @@ namespace GameA
                         _cachedView.StarDarkAry[i].SetActiveEx(true);
                     }
                     _lastStarCount = 0;
-                    SetTween(true, _moVector2);
+                    SetTween();
                 }
                 else
                 {
+                    StopTween();
                     var levelData =
                         advData.GetAdventureUserLevelDataDetail(_chapterId, EAdventureProjectType.APT_Normal,
                             _levelIdx);
@@ -166,7 +166,6 @@ namespace GameA
                     _cachedView.Active.SetActive(true);
                     _cachedView.Disactive.SetActive(false);
                     _lastStarCount = starCnt;
-                    StopTween();
                 }
             }
             else
@@ -186,7 +185,6 @@ namespace GameA
                     _cachedView.Disactive.SetActive(false);
                     _cachedView.StarLightAry[0].SetActiveEx(false);
                     _cachedView.LightImage.gameObject.SetActive(true);
-                    SetTween(true, _moVector2);
                     var needAnimation = playAnimation && _state != state;
                     SocialGUIManager.Instance.GetUI<UICtrlSingleMode>()
                         .SetChapterBonusLevelLockState(_chapterId, _levelIdx, false, needAnimation);
@@ -197,7 +195,6 @@ namespace GameA
                     _cachedView.Disactive.SetActive(false);
                     _cachedView.StarLightAry[0].SetActiveEx(true);
                     _cachedView.LightImage.gameObject.SetActive(false);
-                    StopTween();
                 }
                 if (AppData.Instance.AdventureData.UserData.SectionList.Count > (_chapterId - 1))
                 {
@@ -303,37 +300,39 @@ namespace GameA
             }
         }
 
-        public void SetTween(bool isDown, Vector2 offset)
+        private static float _duration = 2f;
+        private static Vector2 _animOffset = Vector2.up * 20;
+        private static float _waitTime = 0.2f;
+
+        public void SetTween()
         {
-            if (isDown)
+            if (_sequence == null)
             {
-                _moVector2 = -_moVector2;
+                _sequence = DOTween.Sequence()
+                    .Append(_cachedView.rectTransform().DOBlendableLocalMoveBy(-_animOffset * 2, _duration))
+                    .AppendInterval(_waitTime)
+                    .Append(_cachedView.rectTransform().DOBlendableLocalMoveBy(_animOffset * 2, _duration))
+                    .AppendInterval(_waitTime)
+                    .OnComplete(() => _sequence.Restart()).Pause();
+                _cachedView.rectTransform().DOBlendableLocalMoveBy(_animOffset, _duration)
+                    .SetDelay(1)
+                    .OnComplete(() => _sequence.Play());
             }
-            _startPos = _cachedView.rectTransform().anchoredPosition;
-            _cachedView.rectTransform().anchoredPosition += offset;
-            _tweener = _cachedView.rectTransform().DOAnchorPosY((_startPos + _moVector2).y, 2.0f);
-            _tweener.SetDelay(offset.y * 0.1f);
-            _tweener.OnComplete(SetOnComplete);
         }
 
         public void StopTween()
         {
-            if (_tweener != null)
+            if (_sequence != null)
             {
-                _tweener.Pause();
+                _sequence.Kill();
+                _sequence = null;
+                _cachedView.rectTransform().anchoredPosition = Vector2.zero;
             }
-            _cachedView.rectTransform().anchoredPosition = Vector2.zero;
         }
 
         public void SetIslandImage(Sprite isLandImageSprite)
         {
             _cachedView.IslandImage.sprite = isLandImageSprite;
-        }
-
-        private void SetOnComplete()
-        {
-            _moVector2 = -_moVector2;
-            _tweener = _cachedView.rectTransform().DOAnchorPosY((_startPos + _moVector2).y, 2.0f);
         }
 
         public void ClearFriendProgress()
