@@ -19,7 +19,7 @@ public class ReplaceRef : EditorWindow
     private bool isContainPrefab = true;
     private bool isContainMat;
     private bool isContainAsset;
-    private const string _searchRoot = "Assets/JoyGameArt/Locale/WW/Prefabs/UI";
+    private string _searchRoot = "Assets/JoyGameArt/Locale/WW/Prefabs/UI";
     private List<string> withoutExtensions = new List<string>();
     private List<string> _list = new List<string>();
 
@@ -37,9 +37,14 @@ public class ReplaceRef : EditorWindow
         _sourceOld = EditorGUILayout.ObjectField("旧的资源", _sourceOld, typeof(Object), true);
         _sourceNew = EditorGUILayout.ObjectField("新的资源", _sourceNew, typeof(Object), true);
 
-        // 在那些类型中查找（.unity\.prefab\.mat）
+        //查找的根目录
         GUILayout.Space(20);
-        GUILayout.Label("要在哪些类型中查找替换：");
+        GUILayout.Label("查找的根目录：");
+        _searchRoot = EditorGUILayout.TextField(_searchRoot);
+        
+        // 查找的资源类型（.unity\.prefab\.mat）
+        GUILayout.Space(20);
+        GUILayout.Label("查找的资源类型：");
         EditorGUILayout.BeginHorizontal();
         isContainScene = GUILayout.Toggle(isContainScene, ".unity");
         isContainPrefab = GUILayout.Toggle(isContainPrefab, ".prefab");

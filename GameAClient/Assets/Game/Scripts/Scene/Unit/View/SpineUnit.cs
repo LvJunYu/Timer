@@ -72,31 +72,36 @@ namespace GameA.Game
 
         public override void SetDamageShaderValue(string name, float value)
         {
-            if (_renderer == null || name == null || _unit == null)
+            if (_renderer == null)
             {
-                LogHelper.Error("SetDamageShaderValue , but _renderer == null || name == null || _unit == null");
+                LogHelper.Error("SetDamageShaderValue , but _renderer == null");
                 return;
             }
-            if (_damageShader == null)
+            if (_unit == null)
             {
-                _damageShader = Shader.Find("Spine/SkeletonWhite");
+                LogHelper.Error("SetDamageShaderValue , but _unit == null");
+                return;
             }
             Material[] materials;
             //玩家只有一個，直接改shareMals，不頻繁創創建实例
             if (_unit.IsMain)
             {
+                if (_damageShader == null)
+                {
+                    _damageShader = Shader.Find("Spine/SkeletonWhite");
+                }
                 materials = _renderer.sharedMaterials;
                 for (int i = 0; i < materials.Length; i++)
                 {
-                    if ( materials[i] != null)
+                    if (materials[i] != null)
                     {
-                        if (materials[i].shader.name == _oldShaderName)
-                        {
-                            materials[i].shader = _damageShader;
-                        }
                         //玩家的materials在动态变化，缓存后一起修改
                         if (!_materialsCache.Contains(materials[i]))
                         {
+                            if (materials[i].shader.name == _oldShaderName)
+                            {
+                                materials[i].shader = _damageShader;
+                            }
                             _materialsCache.Add(materials[i]);
                         }
                     }
@@ -108,15 +113,12 @@ namespace GameA.Game
             }
             else
             {
+                InitShader();
                 materials = _renderer.materials;
                 for (int i = 0; i < materials.Length; i++)
                 {
                     if (materials[i] != null)
                     {
-                        if (materials[i].shader.name == _oldShaderName)
-                        {
-                            materials[i].shader = _damageShader;
-                        }
                         materials[i].SetFloat(name, value);
                     }
                 }
@@ -130,7 +132,14 @@ namespace GameA.Game
             {
                 _damageShader = Shader.Find("Spine/SkeletonWhite");
             }
-            
+            var materials = _renderer.sharedMaterials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (materials[i] != null && materials[i].shader.name == _oldShaderName)
+                {
+                    materials[i].shader = _damageShader;
+                }
+            }
             _hasSetShader = true;
         }
 
