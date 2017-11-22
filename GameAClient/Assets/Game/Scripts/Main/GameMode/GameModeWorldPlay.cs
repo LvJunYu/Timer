@@ -121,7 +121,7 @@ namespace GameA.Game
                         {
                             LogHelper.Info("游戏成绩提交失败");
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            if (!PlayMode.Instance.SceneState.GameFailed) return;
+                            if (!PlayMode.Instance.SceneState.GameSucceed) return;
                             CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
                                 new KeyValuePair<string, Action>("重试",
                                     () =>

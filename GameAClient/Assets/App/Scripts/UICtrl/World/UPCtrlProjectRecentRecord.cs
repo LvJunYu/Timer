@@ -152,6 +152,7 @@ namespace GameA
         {
             _dataList = null;
             _contentList.Clear();
+            _cachedView.RecordGridDataScroller.ContentPosition = Vector2.zero;
         }
     }
 }
