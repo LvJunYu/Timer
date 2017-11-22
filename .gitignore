@@ -49,3 +49,6 @@ Tools/Project/QQGame_Joyyou_Dll/QQGameMsgExporter/Release
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/ipch
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Debug
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Release
+Tools/Project/MicroClientEx/Debug
+Tools/Project/MicroClientEx/Release
+*.VC.db

@@ -1,0 +1,257 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\MicroClientEx.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MicroClientEx.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MICROCLIENTEX_DIALOG DIALOGEX 0, 0, 320, 226
+STYLE WS_POPUP | WS_VISIBLE | WS_BORDER
+EXSTYLE WS_EX_APPWINDOW
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,263,7,50,14
+    PUSHBUTTON      "取消",IDCANCEL,263,23,50,14
+    CTEXT           "TODO: 在这里设置对话控制。",IDC_STATIC_INFO,113,180,200,
+                    8
+END
+
+IDD_DIALOG_WEBBROWSER DIALOG DISCARDABLE  0, 0, 304, 246
+STYLE WS_POPUP | WS_BORDER
+FONT 10, "System"
+BEGIN
+    CONTROL         "",IDC_EXPLORER,"{8856F961-340A-11D0-A96B-00C04FD705A2}",
+                    WS_TABSTOP,28,39,150,75
+    CONTROL         "HotKey1",IDC_HOTKEY1,"msctls_hotkey32",NOT WS_VISIBLE | 
+                    WS_BORDER | WS_TABSTOP,99,125,6,6
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,1,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "MicroClientEx Microsoft 基础类应用程序\0"
+            VALUE "FileVersion", "2, 1, 0, 1\0"
+            VALUE "InternalName", "MicroClientEx\0"
+            VALUE "LegalCopyright", "版权所有 (C) 2013\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "MicroClientEx.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "MicroClientEx 应用程序\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_MICROCLIENTEX_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+
+    IDD_DIALOG_WEBBROWSER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 239
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG_WEBBROWSER DLGINIT
+BEGIN
+    IDC_EXPLORER, 0x376, 160, 0
+0x0000, 0x0000, 0x004c, 0x0000, 0x1f02, 0x0000, 0x0f81, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x004c, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001, 
+0x0000, 0xd0e0, 0x0057, 0x3573, 0x11cf, 0x69ae, 0x0008, 0x2e2b, 0x6212, 
+0x0002, 0x0000, 0x0000, 0x0000, 0x004c, 0x0000, 0x1401, 0x0002, 0x0000, 
+0x0000, 0x00c0, 0x0000, 0x0000, 0x4600, 0x0080, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CLOSE_DOWN          BITMAP  DISCARDABLE     "res\\closebtn_down.bmp"
+IDB_CLOSE_HOT           BITMAP  DISCARDABLE     "res\\closebtn_hot.bmp"
+IDB_CLOSE_NOR           BITMAP  DISCARDABLE     "res\\closebtn_normal.bmp"
+IDB_MAX_DOWN            BITMAP  DISCARDABLE     "res\\maxbtn_down.bmp"
+IDB_MAX_HOT             BITMAP  DISCARDABLE     "res\\maxbtn_hot.bmp"
+IDB_MAX_NOR             BITMAP  DISCARDABLE     "res\\maxbtn_normal.bmp"
+IDB_MIN_DOWN            BITMAP  DISCARDABLE     "res\\minbtn_down.bmp"
+IDB_MIN_HOT             BITMAP  DISCARDABLE     "res\\minbtn_hot.bmp"
+IDB_MIN_NOR             BITMAP  DISCARDABLE     "res\\minbtn_normal.bmp"
+IDB_RESTORE_DOWN        BITMAP  DISCARDABLE     "res\\restorebtn_down.bmp"
+IDB_RESTORE_HOT         BITMAP  DISCARDABLE     "res\\restorebtn_hot.bmp"
+IDB_RESTORE_NOR         BITMAP  DISCARDABLE     "res\\restorebtn_nor.bmp"
+IDB_FUNCTION_DOWN       BITMAP  DISCARDABLE     "res\\功能_down.bmp"
+IDB_FUNCTION_HOT        BITMAP  DISCARDABLE     "res\\功能_hot.bmp"
+IDB_FUNCTION_NOR        BITMAP  DISCARDABLE     "res\\功能_normal.bmp"
+IDB_REFRESH_DOWN        BITMAP  DISCARDABLE     "res\\刷新_down.bmp"
+IDB_REFRESH_HOT         BITMAP  DISCARDABLE     "res\\刷新_hot.bmp"
+IDB_REFRESH_NOR         BITMAP  DISCARDABLE     "res\\刷新_normal.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP " "
+    BEGIN
+        MENUITEM "全屏/还原 F11 ",              ID_MENUITEM_FULLSCR
+        MENUITEM "老板键    F8  ",              ID_MENUITEM_BOSS
+        MENUITEM " 清理缓存",                   ID_MENUITEM_CLEAN
+    END
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\MicroClientEx.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

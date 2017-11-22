@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MicroClientEx", "MicroClientEx.vcxproj", "{5291C62C-424B-443A-9030-D22B193FC838}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MicroClientInstaller", "..\..\INSTALLER\MicroClientInstaller\MicroClientInstaller.vcxproj", "{9C6C3196-1B7F-4545-89DF-432F002F3BA0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "killcrash", "..\..\killcrash\killcrash.vcxproj", "{370D7794-1AEE-4B92-B25D-D0B0784BFB96}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uninst", "..\..\uninst\uninst.vcxproj", "{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Template|Win32 = Template|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5291C62C-424B-443A-9030-D22B193FC838}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5291C62C-424B-443A-9030-D22B193FC838}.Debug|Win32.Build.0 = Debug|Win32
+		{5291C62C-424B-443A-9030-D22B193FC838}.Release|Win32.ActiveCfg = Release|Win32
+		{5291C62C-424B-443A-9030-D22B193FC838}.Release|Win32.Build.0 = Release|Win32
+		{5291C62C-424B-443A-9030-D22B193FC838}.Template|Win32.ActiveCfg = Release|Win32
+		{5291C62C-424B-443A-9030-D22B193FC838}.Template|Win32.Build.0 = Release|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Debug|Win32.Build.0 = Debug|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Release|Win32.ActiveCfg = Release|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Release|Win32.Build.0 = Release|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Template|Win32.ActiveCfg = Template|Win32
+		{9C6C3196-1B7F-4545-89DF-432F002F3BA0}.Template|Win32.Build.0 = Template|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Debug|Win32.ActiveCfg = Debug|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Debug|Win32.Build.0 = Debug|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Release|Win32.ActiveCfg = Release|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Release|Win32.Build.0 = Release|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Template|Win32.ActiveCfg = Template|Win32
+		{370D7794-1AEE-4B92-B25D-D0B0784BFB96}.Template|Win32.Build.0 = Template|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Debug|Win32.Build.0 = Debug|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Release|Win32.ActiveCfg = Release|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Release|Win32.Build.0 = Release|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Template|Win32.ActiveCfg = Template|Win32
+		{EC546B2C-78F7-413D-97EC-B9F2534DD0A1}.Template|Win32.Build.0 = Template|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
