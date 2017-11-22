@@ -14,6 +14,10 @@ using SoyEngine.Proto;
 using UnityEngine;
 using FileTools = SoyEngine.FileTools;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace GameA
 {
     /// <summary>
@@ -114,7 +118,7 @@ namespace GameA
                 channel = _publishChannel;
             }
             PublishChannel.Init(channel);
-			RegisterGameTypeVersion();
+            RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
@@ -131,7 +135,22 @@ namespace GameA
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
             _startTime = Time.realtimeSinceStartup;
-            JoyResManager.Instance.CheckApplicationAndResourcesVersion();
+            if (_env == EEnvironment.Production && Application.isEditor)
+            {
+                SocialGUIManager.ShowPopupDialog("当前环境为正式服，你真的确定要继续吗？", null,
+                    new KeyValuePair<string, Action>("确定",
+                        () => { JoyResManager.Instance.CheckApplicationAndResourcesVersion(); }),
+                    new KeyValuePair<string, Action>("取消", () =>
+                    {
+#if UNITY_EDITOR
+                        EditorApplication.isPlaying = false;
+#endif
+                    }));
+            }
+            else
+            {
+                JoyResManager.Instance.CheckApplicationAndResourcesVersion();
+            }
         }
 
         public void LoginAfterUpdateResComplete()
