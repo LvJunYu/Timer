@@ -116,6 +116,11 @@ namespace GameA.Game
             return id == 65535 || id == 65534;
         }
 
+        public static bool IsAirWall(int id)
+        {
+            return id == 4100;
+        }
+
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
             return node.Id == SwitchTriggerPressId &&

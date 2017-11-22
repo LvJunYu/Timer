@@ -92,7 +92,7 @@ namespace GameA
                 return;
             }
             _contentList.Clear();
-            _contentList.Capacity = _projectList.Count;
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
             for (int i = 0; i < _projectList.Count; i++)
             {
                 CardDataRendererWrapper<WorldRankItem.WorldRankHolder> w =

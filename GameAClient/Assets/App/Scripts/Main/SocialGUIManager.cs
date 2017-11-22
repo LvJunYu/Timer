@@ -297,15 +297,16 @@ namespace GameA
             //检查是否是会互相遮挡的UI
             if (ui is ICheckOverlay)
             {
-                UICtrlBase lastUI = null;
+                var overlayUI = ui as ICheckOverlay;
+                ICheckOverlay lastUI = null;
                 if (_overlayUIs.Count > 0)
                 {
                     lastUI = _overlayUIs.Peek().UI;
                 }
-                if (lastUI != null && lastUI != ui)
+                if (lastUI != null && lastUI != overlayUI)
                 {
                     // 关闭会互相遮挡的UI
-                    if (lastUI.OrderOfView > ui.OrderOfView)
+                    if (lastUI.OrderOfView > overlayUI.OrderOfView)
                     {
                         foreach (var uiRaw in _overlayUIs)
                         {
@@ -324,10 +325,10 @@ namespace GameA
                         }
                     }
                 }
-                if (lastUI != ui)
+                if (lastUI != overlayUI)
                 {
-                    _overlayUIs.Push(new UIRaw(ui, value));
-                    LogHelper.Debug("_overlayUIs.Push(), _overlayUIs.Count is {0}",_overlayUIs.Count);
+                    _overlayUIs.Push(new UIRaw(overlayUI, value));
+                    LogHelper.Debug("_overlayUIs.Push(), _overlayUIs.Count is {0}", _overlayUIs.Count);
                 }
             }
             return base.OpenUI<T>(value);
@@ -339,7 +340,7 @@ namespace GameA
             if (ui is ICheckOverlay && _overlayUIs.Count > 0 && _overlayUIs.Peek().UI == ui)
             {
                 _overlayUIs.Pop();
-                LogHelper.Debug("_overlayUIs.Pop(), _overlayUIs.Count is {0}",_overlayUIs.Count);
+                LogHelper.Debug("_overlayUIs.Pop(), _overlayUIs.Count is {0}", _overlayUIs.Count);
                 // 打开关闭的遮挡UI
                 if (_overlayUIs.Count > 0)
                 {
@@ -374,10 +375,10 @@ namespace GameA
 
         public class UIRaw
         {
-            public UICtrlBase UI;
+            public ICheckOverlay UI;
             public object Param;
 
-            public UIRaw(UICtrlBase ui, object param)
+            public UIRaw(ICheckOverlay ui, object param)
             {
                 UI = ui;
                 Param = param;
@@ -390,5 +391,9 @@ namespace GameA
     /// </summary>
     public interface ICheckOverlay
     {
+        int OrderOfView { get; }
+        bool IsOpen { get; }
+        void Open(object param);
+        void Close();
     }
 }

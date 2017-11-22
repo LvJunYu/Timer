@@ -15,12 +15,13 @@ namespace GameA.Game
                 public Vector2 MousePos;
                 public Vector2 MouseActualPos;
                 public Vector3 MouseObjectOffsetInWorld;
+
                 /// <summary>
                 /// 正在拖拽的地块的Extra
                 /// </summary>
                 public UnitExtra DragUnitExtra;
             }
-            
+
             public override bool CanRevertTo()
             {
                 return false;
@@ -138,9 +139,9 @@ namespace GameA.Game
                     return;
                 }
                 var stateData = boardData.GetStateData<Data>();
-                
+
                 ProcessDrop(boardData, stateData);
-                
+
                 boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
                 {
@@ -156,7 +157,6 @@ namespace GameA.Game
                 EditMode.Instance.StateMachine.RevertToPreviousState();
             }
 
-
             private void ProcessDrop(EditMode.BlackBoard boardData, Data stateData)
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
@@ -171,9 +171,18 @@ namespace GameA.Game
                 unitDesc.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 float minDepth, maxDepth;
                 EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
+                var coverUnits =
+                    DataScene2D.GridCastAllReturnUnits(unitDesc, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
+                    //检查是否覆盖了空气墙
+                    for (int i = 0; i < coverUnits.Count; i++)
+                    {
+                        if (UnitDefine.IsAirWall(coverUnits[i].Id))
+                        {
+                            return;
+                        }
+                    }
                     for (int i = 0; i < coverUnits.Count; i++)
                     {
                         var deleteUnitDesc = coverUnits[i];
@@ -195,7 +204,6 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                 }
-                var tableUnit = stateData.CurrentMovingUnitBase.TableUnit;
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc, stateData.DragUnitExtra))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
@@ -203,7 +211,8 @@ namespace GameA.Game
                     recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc, recordBatch);
+                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc,
+                            recordBatch);
                     }
                 }
                 else

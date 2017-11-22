@@ -352,7 +352,11 @@ namespace GameA.Game
                     }
                     OnHpChanged(_maxHp);
                     _dieTime = 0;
-                    _box = null;
+                    if (_box != null)
+                    {
+                        _box.IsHoldingByMain = false;
+                        _box = null;
+                    }
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     SetPos(_revivePos);
                     PlayMode.Instance.UpdateWorldRegion(_curPos);

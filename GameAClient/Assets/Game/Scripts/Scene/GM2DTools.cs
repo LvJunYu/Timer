@@ -549,7 +549,6 @@ namespace GameA.Game
 			{
 				return false;
 			}
-			unitDesc = new UnitDesc();
 			unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
 	        unitDesc.Scale = targetNode.Scale;
