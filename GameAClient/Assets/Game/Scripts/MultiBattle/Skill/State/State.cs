@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -22,8 +20,13 @@ namespace GameA.Game
         {
             get { return _tableState; }
         }
-        
+
         public void OnFree()
+        {
+            Clear();
+        }
+
+        private void Clear()
         {
             _tableState = null;
             _duration = 0;
@@ -42,9 +45,11 @@ namespace GameA.Game
             _run = true;
             _tableState = tableState;
             _target = target;
-            if (_tableState.EffectTypes.Length != _tableState.EffectValues.Length || _tableState.EffectTypes.Length != _tableState.EffectIds.Length)
+            if (_tableState.EffectTypes.Length != _tableState.EffectValues.Length ||
+                _tableState.EffectTypes.Length != _tableState.EffectIds.Length)
             {
-                LogHelper.Error("Wrong TableState. Types : {0}, Values: {1}, Ids: {2}", _tableState.EffectTypes.Length, _tableState.EffectValues.Length, _tableState.EffectIds.Length);
+                LogHelper.Error("Wrong TableState. Types : {0}, Values: {1}, Ids: {2}", _tableState.EffectTypes.Length,
+                    _tableState.EffectValues.Length, _tableState.EffectIds.Length);
                 return false;
             }
             _duration = TableConvert.GetTime(_tableState.Duration);
@@ -64,7 +69,7 @@ namespace GameA.Game
         {
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
-                if (_tableState.EffectTypes[i] != (int)eEffectType)
+                if (_tableState.EffectTypes[i] != (int) eEffectType)
                 {
                     continue;
                 }
@@ -122,7 +127,7 @@ namespace GameA.Game
                         _target.RemoveEnvState(EEnvState.Clay);
                         if (_target is MonsterBase)
                         {
-                            ((MonsterBase)_target).IsClayOnWall = false;
+                            ((MonsterBase) _target).IsClayOnWall = false;
                         }
                         break;
                     case EEffectId.Stun:
@@ -134,7 +139,7 @@ namespace GameA.Game
             Excute(EEffectType.End);
             return true;
         }
-        
+
         public void UpdateLogic()
         {
             UpdateStateView();
@@ -159,6 +164,7 @@ namespace GameA.Game
 
         public void OnGet()
         {
+            Clear();
         }
 
         public void OnDestroyObject()
@@ -167,7 +173,7 @@ namespace GameA.Game
 
         public static State operator ++(State state)
         {
-            switch ((EOverlapType)state.TableState.OverlapType)
+            switch ((EOverlapType) state.TableState.OverlapType)
             {
                 case EOverlapType.None:
                     break;
@@ -190,7 +196,7 @@ namespace GameA.Game
 
         public static State operator --(State state)
         {
-            switch ((EOverlapType)state.TableState.OverlapType)
+            switch ((EOverlapType) state.TableState.OverlapType)
             {
                 case EOverlapType.None:
                     break;
@@ -208,7 +214,7 @@ namespace GameA.Game
                     state._effectOverlapCount--;
                     break;
             }
-            if (state._curDuration <= 0 || state._effectOverlapCount< 0)
+            if (state._curDuration <= 0 || state._effectOverlapCount < 0)
             {
                 state._target.RemoveState(state);
                 return null;
@@ -218,15 +224,17 @@ namespace GameA.Game
 
         public override string ToString()
         {
-            return string.Format("Duration: {0}, IntervalTime: {1}, Target: {2}, Timer: {3}, EffectOverlapCount: {4}, CurDuration: {5}", _duration, _intervalTime, _target, _timer, _effectOverlapCount, _curDuration);
+            return string.Format(
+                "Duration: {0}, IntervalTime: {1}, Target: {2}, Timer: {3}, EffectOverlapCount: {4}, CurDuration: {5}",
+                _duration, _intervalTime, _target, _timer, _effectOverlapCount, _curDuration);
         }
-        
+
         #region view renderer
 
         private void OnAddView()
         {
             string path = _tableState.Particle;
-            if (_tableState.StateType == (int)EStateType.Clay)
+            if (_tableState.StateType == (int) EStateType.Clay)
             {
                 if (_target is MonsterBase && ((MonsterBase) _target).IsClayOnWall)
                 {
@@ -259,12 +267,13 @@ namespace GameA.Game
                     _effect.Play();
                 }
             }
-            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
+            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) &&
+                _target.Animation.HasAnimation(_tableState.Animation))
             {
                 _target.Animation.Reset();
                 _target.Animation.PlayLoop(_tableState.Animation, 1, 1);
             }
-            if (_tableState.StateType == (int)EStateType.Fire && _target.IsMain)
+            if (_tableState.StateType == (int) EStateType.Fire && _target.IsMain)
             {
                 _target.View.SetRendererColor(Color.grey);
             }
@@ -277,11 +286,12 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_tableState.StateType == (int)EStateType.Invincible || _tableState.StateType == (int)EStateType.Fire)
+            if (_tableState.StateType == (int) EStateType.Invincible || _tableState.StateType == (int) EStateType.Fire)
             {
                 view.SetRendererColor(Color.white);
             }
-            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
+            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) &&
+                _target.Animation.HasAnimation(_tableState.Animation))
             {
                 _target.Animation.Reset();
             }
@@ -292,7 +302,8 @@ namespace GameA.Game
             //利用相对位置设置Effect的层级
             if (_effect != null)
             {
-                _effect.Trans.localPosition = Vector3.forward * (_target.MoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+                _effect.Trans.localPosition =
+                    Vector3.forward * (_target.MoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
                 _effect.Trans.rotation = Quaternion.identity;
             }
             if (_tableState.Id == 61)
@@ -304,7 +315,7 @@ namespace GameA.Game
                 Chameleon();
             }
         }
-        
+
         protected void FlashRenderer()
         {
             var view = _target.View;
@@ -342,7 +353,7 @@ namespace GameA.Game
                 view.SetRendererColor(Color.Lerp(a, c, (3f * interval - t) * (1f / interval)));
             }
         }
-        
+
         #endregion
     }
 }
