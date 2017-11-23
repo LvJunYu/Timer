@@ -13,9 +13,9 @@ using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using FileTools = SoyEngine.FileTools;
-
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 
 namespace GameA
@@ -159,6 +159,7 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
+            ReYunManager.Instance.Login();
             CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
@@ -199,6 +200,10 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
                 SocialGUIManager.Instance.ShowAppView();
+                if (LocalUser.Instance.User.LoginCount == 1)
+                {
+                    ReYunManager.Instance.Register();
+                }
             }, code =>
             {
                 if (GlobalVar.Instance.Env != EEnvironment.Production)
@@ -291,6 +296,7 @@ namespace GameA
             }
             base.OnDestroy();
             CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
+            ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
         }
 
         protected override void Update()
@@ -298,6 +304,7 @@ namespace GameA
             base.Update();
             GameManager.Instance.Update();
             CompassManager.Instance.Update();
+            ReYunManager.Instance.Update();
 //            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {

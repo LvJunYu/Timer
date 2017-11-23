@@ -13,7 +13,7 @@ namespace GameA.Game
         {
             get { return true; }
         }
-     
+
         public override void OnIntersect(UnitBase other)
         {
             if (other.IsMain)
@@ -27,14 +27,11 @@ namespace GameA.Game
             if (_trigger)
             {
                 _time++;
-                if (!_colliderGrid.Intersects(_unit.ColliderGrid))
+                if (!_colliderGrid.Intersects(_unit.ColliderGrid) && _time >= 100)
                 {
-                    if (_time >= 100)
-                    {
-                        _trigger = false;
-                        _unit = null;
-                        Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
-                    }
+                    _trigger = false;
+                    _unit = null;
+//                    Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
                 }
             }
         }
@@ -71,7 +68,7 @@ namespace GameA.Game
 //                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
         }
-        
+
         protected override bool IsCheckClimb()
         {
             return false;
