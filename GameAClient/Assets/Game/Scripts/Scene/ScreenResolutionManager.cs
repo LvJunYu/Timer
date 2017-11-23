@@ -16,11 +16,12 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new ScreenResolutionManager()); }
         }
 
-        private List<Resolution> _allWindowResolutions;
-        private List<Resolution> _fullScreenResolutions;
+        private List<Resolution> _allWindowResolutions = new List<Resolution>(10);
+        private List<Resolution> _fullScreenResolutions = new List<Resolution>(1);
         private Resolution _curResolution;
         private int _curResolutionIndex;
         private bool _fullScreen;
+        private bool _beyondBoard;
 
         private const string FullScreenTag = "FullScreenTag";
         private bool _selectFullScreen;
@@ -63,16 +64,14 @@ namespace GameA.Game
 
         private void GetAllResolutions()
         {
-            _fullScreenResolutions = new List<Resolution>(1);
             _fullScreenResolutions.Add(Screen.currentResolution);
-            _allWindowResolutions = new List<Resolution>(10);
             var resolutions = Screen.resolutions;
             for (int i = 0; i < resolutions.Length; i++)
             {
                 int width = resolutions[i].width;
                 int height = resolutions[i].height;
                 //分辨率高度必须小于屏幕分辨率高度，否则窗口会超出屏幕
-                if (width > Screen.currentResolution.width || height >= Screen.currentResolution.height)
+                if (!CheckResolution(width, height))
                 {
                     continue;
                 }
@@ -124,13 +123,51 @@ namespace GameA.Game
                 _curResolution = _allWindowResolutions[_curResolutionIndex];
             }
             //若列表中没有，且不会超出屏幕，则添加
-            else if (_curResolution.width <= Screen.currentResolution.width &&
-                     _curResolution.height < Screen.currentResolution.height)
+            else if (CheckResolution(_curResolution.width, _curResolution.height))
             {
-                
                 _allWindowResolutions.Add(_curResolution);
                 _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
                 _curResolutionIndex = _allWindowResolutions.IndexOf(_curResolution);
+            }
+            else
+            {
+                _beyondBoard = true;
+            }
+        }
+
+        private bool CheckResolution(int width, int height)
+        {
+            return width <= Screen.currentResolution.width || height <= Screen.currentResolution.height - 80;
+        }
+
+        //处理默认分辨率比屏幕分辨率小的情况
+        public void Init()
+        {
+            if (_beyondBoard)
+            {
+                _beyondBoard = false;
+                if (_allWindowResolutions.Count > 0)
+                {
+                    _curResolutionIndex = _allWindowResolutions.Count - 1;
+                    SetResolution(_allWindowResolutions[_curResolutionIndex], false);
+                    return;
+                }
+                //处理比支持的分辨率还小的情况
+                int height = (Screen.currentResolution.height - 100) / 90 * 90;
+                int width = height / 9 * 16;
+                if (width > Screen.currentResolution.width)
+                {
+                    width = Screen.currentResolution.width / 160 * 160;
+                    height = width / 16 * 9;
+                }
+                Resolution resolution = new Resolution();
+                resolution.width = width;
+                resolution.height = height;
+                _allWindowResolutions.Add(resolution);
+                _allWindowResolutions.Sort((p, q) => p.width * 1000 + p.height - q.width * 1000 - q.height);
+                _curResolutionIndex = _allWindowResolutions.IndexOf(resolution);
+                SetResolution(resolution, false);
+                ClearChange();
             }
         }
 

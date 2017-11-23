@@ -107,6 +107,7 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
+            ScreenResolutionManager.Instance.Init();
             LogHelper.LogLevel = _logLevel;
             if (_clearCache)
             {
