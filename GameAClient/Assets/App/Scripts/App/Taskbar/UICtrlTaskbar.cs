@@ -70,12 +70,12 @@ namespace GameA
             base.InitEventListener();
 
             RegisterEvent(EMessengerType.OnQQRewardGetChangee, RefreshQQReward);
-            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
         }
 
-        private void OnChangeToUserInfo(long id)
+        private void OnUserInfoChanged(UserInfoDetail user)
         {
-            if (_isOpen && id == LocalUser.Instance.UserGuid)
+            if (_isOpen && user == LocalUser.Instance.User)
             {
                 RefreshUserInfo();
             }

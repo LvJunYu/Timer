@@ -199,7 +199,7 @@ namespace GameA
                     {
                         LocalUser.Instance.User.OnSync(ret.UserInfo);
                         _isEditing = false;
-                        Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.UserGuid);
+                        Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.User);
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                     else if (ret.ResultCode == (int) EUpdateUserInfoCode.UUC_NickNameDuplication)

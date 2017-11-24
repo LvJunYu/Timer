@@ -82,7 +82,7 @@ namespace GameA
                     if (ret.ResultCode == (int) EUpdateUserInfoCode.UUC_Success)
                     {
                         LocalUser.Instance.User.OnSync(ret.UserInfo);
-                        Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.UserGuid);
+                        Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnUserInfoChanged, LocalUser.Instance.User);
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         SocialGUIManager.Instance.CloseUI<UICtrlHeadPhotoChoose>();
                     }

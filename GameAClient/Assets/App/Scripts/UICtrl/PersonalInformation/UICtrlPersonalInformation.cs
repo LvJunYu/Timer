@@ -10,6 +10,9 @@ namespace GameA
         public bool IsMyself;
         private long _lastUserId = -1;
         private EMenu _curMenu = EMenu.None;
+        private const string _numFormat = "({0})";
+        private const string _maxShow = "99+";
+        private const string _maxShowLong = "999+";
         private UPCtrlPersonalInfoBase _curMenuCtrl;
         private UPCtrlPersonalInfoBase[] _menuCtrlArray;
 
@@ -93,20 +96,21 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
-            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             UserInfoDetail = parameter as UserInfoDetail;
-//            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnHonorReport, UserInfoDetail);
             if (null == UserInfoDetail)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
                 return;
             }
             UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
+            _cachedView.MessageNum.SetActiveEx(false);
+            _cachedView.MessageSelectedNum.SetActiveEx(false);
             RefreshView();
             if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
@@ -163,11 +167,22 @@ namespace GameA
             }
         }
 
-        private void OnUserInfoChanged(long id)
+        private void OnUserInfoChanged(UserInfoDetail user)
         {
-            if (_isOpen && _curMenu == EMenu.BasicInfo && id == UserInfoDetail.UserInfoSimple.UserId)
+            if (_isOpen && user == UserInfoDetail)
             {
-                _curMenuCtrl.RefreshView();
+                int count = UserInfoDetail.MessageCount;
+                _cachedView.MessageNum.SetActiveEx(count > 0);
+                _cachedView.MessageSelectedNum.SetActiveEx(count > 0);
+                if (count > 0)
+                {
+                    _cachedView.MessageNum.text = count < 100 ? string.Format(_numFormat, count):_maxShow;
+                    _cachedView.MessageSelectedNum.text = count < 1000 ? string.Format(_numFormat, count):_maxShowLong;
+                }
+                if (_curMenu == EMenu.BasicInfo)
+                {
+                    _curMenuCtrl.RefreshView();
+                }
             }
         }
 
