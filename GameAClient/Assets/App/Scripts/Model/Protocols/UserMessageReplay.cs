@@ -1,4 +1,4 @@
-//  | 评论
+//  | 留言回复
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectComment : SyncronisticData<Msg_ProjectComment> {
+    public partial class UserMessageReplay : SyncronisticData<Msg_UserMessageReplay> {
         #region 字段
         /// <summary>
         /// 
@@ -19,27 +19,19 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private UserInfoSimple _targetUserInfo;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string _comment;
-        /// <summary>
-        /// 
-        /// </summary>
-        private long _projectId;
-        /// <summary>
-        /// 
-        /// </summary>
         private long _createTime;
         /// <summary>
         /// 
         /// </summary>
-        private int _likeCount;
+        private string _content;
         /// <summary>
-        /// 
+        /// 回复他人
         /// </summary>
-        private bool _userLike;
+        private bool _relayOther;
+        /// <summary>
+        /// 回复对象
+        /// </summary>
+        private UserInfoSimple _targetUserInfo;
         #endregion
 
         #region 属性
@@ -66,36 +58,6 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public UserInfoSimple TargetUserInfo { 
-            get { return _targetUserInfo; }
-            set { if (_targetUserInfo != value) {
-                _targetUserInfo = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Comment { 
-            get { return _comment; }
-            set { if (_comment != value) {
-                _comment = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public long ProjectId { 
-            get { return _projectId; }
-            set { if (_projectId != value) {
-                _projectId = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {
@@ -106,27 +68,37 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public int LikeCount { 
-            get { return _likeCount; }
-            set { if (_likeCount != value) {
-                _likeCount = value;
+        public string Content { 
+            get { return _content; }
+            set { if (_content != value) {
+                _content = value;
                 SetDirty();
             }}
         }
         /// <summary>
-        /// 
+        /// 回复他人
         /// </summary>
-        public bool UserLike { 
-            get { return _userLike; }
-            set { if (_userLike != value) {
-                _userLike = value;
+        public bool RelayOther { 
+            get { return _relayOther; }
+            set { if (_relayOther != value) {
+                _relayOther = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 回复对象
+        /// </summary>
+        public UserInfoSimple TargetUserInfo { 
+            get { return _targetUserInfo; }
+            set { if (_targetUserInfo != value) {
+                _targetUserInfo = value;
                 SetDirty();
             }}
         }
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_ProjectComment msg)
+        public bool OnSync (Msg_UserMessageReplay msg)
         {
             if (null == msg) return false;
             _id = msg.Id;     
@@ -135,21 +107,19 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
+            _createTime = msg.CreateTime;     
+            _content = msg.Content;     
+            _relayOther = msg.RelayOther;     
             if (null == _targetUserInfo) {
                 _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
             } else {
                 _targetUserInfo.OnSyncFromParent(msg.TargetUserInfo);
             }
-            _comment = msg.Comment;     
-            _projectId = msg.ProjectId;     
-            _createTime = msg.CreateTime;     
-            _likeCount = msg.LikeCount;     
-            _userLike = msg.UserLike;     
             OnSyncPartial(msg);
             return true;
         }
 
-        public bool CopyMsgData (Msg_ProjectComment msg)
+        public bool CopyMsgData (Msg_UserMessageReplay msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
@@ -159,21 +129,19 @@ namespace GameA
                 }
                 _userInfo.CopyMsgData(msg.UserInfo);
             }
+            _createTime = msg.CreateTime;           
+            _content = msg.Content;           
+            _relayOther = msg.RelayOther;           
             if(null != msg.TargetUserInfo){
                 if (null == _targetUserInfo){
                     _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
                 }
                 _targetUserInfo.CopyMsgData(msg.TargetUserInfo);
             }
-            _comment = msg.Comment;           
-            _projectId = msg.ProjectId;           
-            _createTime = msg.CreateTime;           
-            _likeCount = msg.LikeCount;           
-            _userLike = msg.UserLike;           
             return true;
         } 
 
-        public bool DeepCopy (ProjectComment obj)
+        public bool DeepCopy (UserMessageReplay obj)
         {
             if (null == obj) return false;
             _id = obj.Id;           
@@ -183,33 +151,31 @@ namespace GameA
                 }
                 _userInfo.DeepCopy(obj.UserInfo);
             }
+            _createTime = obj.CreateTime;           
+            _content = obj.Content;           
+            _relayOther = obj.RelayOther;           
             if(null != obj.TargetUserInfo){
                 if (null == _targetUserInfo){
                     _targetUserInfo = new UserInfoSimple();
                 }
                 _targetUserInfo.DeepCopy(obj.TargetUserInfo);
             }
-            _comment = obj.Comment;           
-            _projectId = obj.ProjectId;           
-            _createTime = obj.CreateTime;           
-            _likeCount = obj.LikeCount;           
-            _userLike = obj.UserLike;           
             return true;
         }
 
-        public void OnSyncFromParent (Msg_ProjectComment msg) {
+        public void OnSyncFromParent (Msg_UserMessageReplay msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ProjectComment (Msg_ProjectComment msg) {
+        public UserMessageReplay (Msg_UserMessageReplay msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ProjectComment () { 
+        public UserMessageReplay () { 
             _userInfo = new UserInfoSimple();
             _targetUserInfo = new UserInfoSimple();
         }

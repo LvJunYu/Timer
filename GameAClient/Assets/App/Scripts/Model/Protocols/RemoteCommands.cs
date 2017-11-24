@@ -514,6 +514,92 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPublishUserMessage {
+            get { return _isRequstingPublishUserMessage; }
+        }
+        private static bool _isRequstingPublishUserMessage = false;
+        /// <summary>
+		/// 发布留言
+		/// </summary>
+		/// <param name="userId">用户ID</param>
+		/// <param name="content">内容</param>
+        public static void PublishUserMessage (
+            long userId,
+            string content,
+            Action<Msg_SC_CMD_PublishUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPublishUserMessage) {
+                return;
+            }
+            _isRequstingPublishUserMessage = true;
+            Msg_CS_CMD_PublishUserMessage msg = new Msg_CS_CMD_PublishUserMessage();
+            // 发布留言
+            msg.UserId = userId;
+            msg.Content = content;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishUserMessage>(
+                SoyHttpApiPath.PublishUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPublishUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPublishUserMessage = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReplyUserMessage {
+            get { return _isRequstingReplyUserMessage; }
+        }
+        private static bool _isRequstingReplyUserMessage = false;
+        /// <summary>
+		/// 回复留言
+		/// </summary>
+		/// <param name="userMessageId">留言ID</param>
+		/// <param name="content">内容</param>
+		/// <param name="replyOther">是否回复他人</param>
+		/// <param name="targetReplyId">回复的回复ID</param>
+        public static void ReplyUserMessage (
+            long userMessageId,
+            string content,
+            bool replyOther,
+            long targetReplyId,
+            Action<Msg_SC_CMD_ReplyUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReplyUserMessage) {
+                return;
+            }
+            _isRequstingReplyUserMessage = true;
+            Msg_CS_CMD_ReplyUserMessage msg = new Msg_CS_CMD_ReplyUserMessage();
+            // 回复留言
+            msg.UserMessageId = userMessageId;
+            msg.Content = content;
+            msg.ReplyOther = replyOther;
+            msg.TargetReplyId = targetReplyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReplyUserMessage>(
+                SoyHttpApiPath.ReplyUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReplyUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReplyUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReplyUserMessage = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateFollowState {
             get { return _isRequstingUpdateFollowState; }
         }
@@ -881,6 +967,46 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingPostWorldProjectComment = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateWorldProjectCommentLike {
+            get { return _isRequstingUpdateWorldProjectCommentLike; }
+        }
+        private static bool _isRequstingUpdateWorldProjectCommentLike = false;
+        /// <summary>
+		/// 修改评论赞
+		/// </summary>
+		/// <param name="commentId">关卡Id</param>
+		/// <param name="likeFlag"></param>
+        public static void UpdateWorldProjectCommentLike (
+            long commentId,
+            bool likeFlag,
+            Action<Msg_SC_CMD_UpdateWorldProjectCommentLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateWorldProjectCommentLike) {
+                return;
+            }
+            _isRequstingUpdateWorldProjectCommentLike = true;
+            Msg_CS_CMD_UpdateWorldProjectCommentLike msg = new Msg_CS_CMD_UpdateWorldProjectCommentLike();
+            // 修改评论赞
+            msg.CommentId = commentId;
+            msg.LikeFlag = likeFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectCommentLike>(
+                SoyHttpApiPath.UpdateWorldProjectCommentLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateWorldProjectCommentLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateWorldProjectCommentLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateWorldProjectCommentLike = false;
                 },
                 form
             );

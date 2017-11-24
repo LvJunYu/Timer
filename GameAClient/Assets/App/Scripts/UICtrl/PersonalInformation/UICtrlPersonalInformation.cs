@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -19,7 +20,8 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
-
+            _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
+            _cachedView.InputField.onEndEdit.AddListener(OnInputFieldEndEdit);
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
             upCtrlPersonalInfoBasicInfo.SetResScenary(ResScenary);
@@ -50,6 +52,12 @@ namespace GameA
             upCtrlPersonalInforRecords.SetMenu(EMenu.Records);
             upCtrlPersonalInforRecords.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Records] = upCtrlPersonalInforRecords;
+
+            var upCtrlPersonalInfoMessageBoard = new UPCtrlPersonalInfoMessageBoard();
+            upCtrlPersonalInfoMessageBoard.SetResScenary(ResScenary);
+            upCtrlPersonalInfoMessageBoard.SetMenu(EMenu.MessageBoard);
+            upCtrlPersonalInfoMessageBoard.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MessageBoard] = upCtrlPersonalInfoMessageBoard;
 
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
@@ -132,6 +140,18 @@ namespace GameA
             _cachedView.AvatarRawImage.texture =
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();
+        }
+
+        private void OnInputFieldEndEdit(string arg0)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OnSendBtn();
+            }
+        }
+
+        private void OnSendBtn()
+        {
         }
 
         private void Clear()
@@ -240,6 +260,7 @@ namespace GameA
             Publish,
             Collects,
             Records,
+            MessageBoard,
             Max
         }
     }

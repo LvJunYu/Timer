@@ -61,7 +61,6 @@ namespace GameA
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountLoginStateChanged);
         }
 
-
         public void LoadAppData(Action successCallback, Action<ENetResultCode> failedCallback)
         {
 			Request(0, ()=>{

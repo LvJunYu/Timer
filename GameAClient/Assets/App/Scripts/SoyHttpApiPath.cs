@@ -44,6 +44,14 @@ namespace SoyEngine
         public const string UpdateUserInfo = "/user/updateInfo";
         // 获取蓝钻数据
         public const string BlueVipData = "/user/getBlueVipData";
+        // 获取留言数据
+        public const string UserMessageData = "/user/getUserMessageData";
+        // 获取留言回复数据
+        public const string UserMessageReplyData = "/user/getUserMessageReplyData";
+        // 发布留言
+        public const string PublishUserMessage = "/user/publishUserMessage";
+        // 回复留言
+        public const string ReplyUserMessage = "/user/replayUserMessage";
         // 获取应用全局信息
         public const string AppData = "/appInfo/appData";
         // 社交关系统计
@@ -76,6 +84,8 @@ namespace SoyEngine
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
         // 提交世界关卡评论
         public const string PostWorldProjectComment = "/world/postProjectComment";
+        // 修改评论赞
+        public const string UpdateWorldProjectCommentLike = "/world/updateProjectCommentLike";
         // 修改关卡顶踩
         public const string UpdateWorldProjectLike = "/world/updateProjectLike";
         // 修改关卡收藏状态

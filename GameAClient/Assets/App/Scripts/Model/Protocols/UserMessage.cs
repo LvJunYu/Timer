@@ -1,4 +1,4 @@
-//  | 评论
+//  | 留言
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectComment : SyncronisticData<Msg_ProjectComment> {
+    public partial class UserMessage : SyncronisticData<Msg_UserMessage> {
         #region 字段
         /// <summary>
         /// 
@@ -19,27 +19,27 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private UserInfoSimple _targetUserInfo;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string _comment;
-        /// <summary>
-        /// 
-        /// </summary>
-        private long _projectId;
-        /// <summary>
-        /// 
-        /// </summary>
         private long _createTime;
         /// <summary>
         /// 
         /// </summary>
-        private int _likeCount;
+        private string _content;
+        /// <summary>
+        /// 点赞数
+        /// </summary>
+        private int _likeNum;
+        /// <summary>
+        /// 已点赞
+        /// </summary>
+        private bool _userLike;
         /// <summary>
         /// 
         /// </summary>
-        private bool _userLike;
+        private int _replayCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private UserMessageReplay _firstReplay;
         #endregion
 
         #region 属性
@@ -66,36 +66,6 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public UserInfoSimple TargetUserInfo { 
-            get { return _targetUserInfo; }
-            set { if (_targetUserInfo != value) {
-                _targetUserInfo = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Comment { 
-            get { return _comment; }
-            set { if (_comment != value) {
-                _comment = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public long ProjectId { 
-            get { return _projectId; }
-            set { if (_projectId != value) {
-                _projectId = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {
@@ -106,15 +76,25 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public int LikeCount { 
-            get { return _likeCount; }
-            set { if (_likeCount != value) {
-                _likeCount = value;
+        public string Content { 
+            get { return _content; }
+            set { if (_content != value) {
+                _content = value;
                 SetDirty();
             }}
         }
         /// <summary>
-        /// 
+        /// 点赞数
+        /// </summary>
+        public int LikeNum { 
+            get { return _likeNum; }
+            set { if (_likeNum != value) {
+                _likeNum = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 已点赞
         /// </summary>
         public bool UserLike { 
             get { return _userLike; }
@@ -123,10 +103,30 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ReplayCount { 
+            get { return _replayCount; }
+            set { if (_replayCount != value) {
+                _replayCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public UserMessageReplay FirstReplay { 
+            get { return _firstReplay; }
+            set { if (_firstReplay != value) {
+                _firstReplay = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_ProjectComment msg)
+        public bool OnSync (Msg_UserMessage msg)
         {
             if (null == msg) return false;
             _id = msg.Id;     
@@ -135,21 +135,21 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            if (null == _targetUserInfo) {
-                _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
-            } else {
-                _targetUserInfo.OnSyncFromParent(msg.TargetUserInfo);
-            }
-            _comment = msg.Comment;     
-            _projectId = msg.ProjectId;     
             _createTime = msg.CreateTime;     
-            _likeCount = msg.LikeCount;     
+            _content = msg.Content;     
+            _likeNum = msg.LikeNum;     
             _userLike = msg.UserLike;     
+            _replayCount = msg.ReplayCount;     
+            if (null == _firstReplay) {
+                _firstReplay = new UserMessageReplay(msg.FirstReplay);
+            } else {
+                _firstReplay.OnSyncFromParent(msg.FirstReplay);
+            }
             OnSyncPartial(msg);
             return true;
         }
 
-        public bool CopyMsgData (Msg_ProjectComment msg)
+        public bool CopyMsgData (Msg_UserMessage msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
@@ -159,21 +159,21 @@ namespace GameA
                 }
                 _userInfo.CopyMsgData(msg.UserInfo);
             }
-            if(null != msg.TargetUserInfo){
-                if (null == _targetUserInfo){
-                    _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
-                }
-                _targetUserInfo.CopyMsgData(msg.TargetUserInfo);
-            }
-            _comment = msg.Comment;           
-            _projectId = msg.ProjectId;           
             _createTime = msg.CreateTime;           
-            _likeCount = msg.LikeCount;           
+            _content = msg.Content;           
+            _likeNum = msg.LikeNum;           
             _userLike = msg.UserLike;           
+            _replayCount = msg.ReplayCount;           
+            if(null != msg.FirstReplay){
+                if (null == _firstReplay){
+                    _firstReplay = new UserMessageReplay(msg.FirstReplay);
+                }
+                _firstReplay.CopyMsgData(msg.FirstReplay);
+            }
             return true;
         } 
 
-        public bool DeepCopy (ProjectComment obj)
+        public bool DeepCopy (UserMessage obj)
         {
             if (null == obj) return false;
             _id = obj.Id;           
@@ -183,35 +183,35 @@ namespace GameA
                 }
                 _userInfo.DeepCopy(obj.UserInfo);
             }
-            if(null != obj.TargetUserInfo){
-                if (null == _targetUserInfo){
-                    _targetUserInfo = new UserInfoSimple();
-                }
-                _targetUserInfo.DeepCopy(obj.TargetUserInfo);
-            }
-            _comment = obj.Comment;           
-            _projectId = obj.ProjectId;           
             _createTime = obj.CreateTime;           
-            _likeCount = obj.LikeCount;           
+            _content = obj.Content;           
+            _likeNum = obj.LikeNum;           
             _userLike = obj.UserLike;           
+            _replayCount = obj.ReplayCount;           
+            if(null != obj.FirstReplay){
+                if (null == _firstReplay){
+                    _firstReplay = new UserMessageReplay();
+                }
+                _firstReplay.DeepCopy(obj.FirstReplay);
+            }
             return true;
         }
 
-        public void OnSyncFromParent (Msg_ProjectComment msg) {
+        public void OnSyncFromParent (Msg_UserMessage msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ProjectComment (Msg_ProjectComment msg) {
+        public UserMessage (Msg_UserMessage msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ProjectComment () { 
+        public UserMessage () { 
             _userInfo = new UserInfoSimple();
-            _targetUserInfo = new UserInfoSimple();
+            _firstReplay = new UserMessageReplay();
         }
         #endregion
     }
