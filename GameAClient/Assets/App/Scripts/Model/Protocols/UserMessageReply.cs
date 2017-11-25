@@ -6,14 +6,18 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserMessageReplay : SyncronisticData<Msg_UserMessageReplay> {
+    public partial class UserMessageReply : SyncronisticData<Msg_UserMessageReply> {
         #region 字段
         /// <summary>
         /// 
         /// </summary>
         private long _id;
         /// <summary>
-        /// 
+        /// 所在留言ID
+        /// </summary>
+        private long _messageId;
+        /// <summary>
+        /// 发送者信息
         /// </summary>
         private UserInfoSimple _userInfo;
         /// <summary>
@@ -25,11 +29,11 @@ namespace GameA
         /// </summary>
         private string _content;
         /// <summary>
-        /// 回复他人
+        /// 是否回复他人
         /// </summary>
         private bool _relayOther;
         /// <summary>
-        /// 回复对象
+        /// 回复对象信息
         /// </summary>
         private UserInfoSimple _targetUserInfo;
         #endregion
@@ -46,7 +50,17 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 所在留言ID
+        /// </summary>
+        public long MessageId { 
+            get { return _messageId; }
+            set { if (_messageId != value) {
+                _messageId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 发送者信息
         /// </summary>
         public UserInfoSimple UserInfo { 
             get { return _userInfo; }
@@ -76,7 +90,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 回复他人
+        /// 是否回复他人
         /// </summary>
         public bool RelayOther { 
             get { return _relayOther; }
@@ -86,7 +100,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 回复对象
+        /// 回复对象信息
         /// </summary>
         public UserInfoSimple TargetUserInfo { 
             get { return _targetUserInfo; }
@@ -98,10 +112,11 @@ namespace GameA
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_UserMessageReplay msg)
+        public bool OnSync (Msg_UserMessageReply msg)
         {
             if (null == msg) return false;
             _id = msg.Id;     
+            _messageId = msg.MessageId;     
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
@@ -119,10 +134,11 @@ namespace GameA
             return true;
         }
 
-        public bool CopyMsgData (Msg_UserMessageReplay msg)
+        public bool CopyMsgData (Msg_UserMessageReply msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
+            _messageId = msg.MessageId;           
             if(null != msg.UserInfo){
                 if (null == _userInfo){
                     _userInfo = new UserInfoSimple(msg.UserInfo);
@@ -141,10 +157,11 @@ namespace GameA
             return true;
         } 
 
-        public bool DeepCopy (UserMessageReplay obj)
+        public bool DeepCopy (UserMessageReply obj)
         {
             if (null == obj) return false;
             _id = obj.Id;           
+            _messageId = obj.MessageId;           
             if(null != obj.UserInfo){
                 if (null == _userInfo){
                     _userInfo = new UserInfoSimple();
@@ -163,19 +180,19 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_UserMessageReplay msg) {
+        public void OnSyncFromParent (Msg_UserMessageReply msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserMessageReplay (Msg_UserMessageReplay msg) {
+        public UserMessageReply (Msg_UserMessageReply msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserMessageReplay () { 
+        public UserMessageReply () { 
             _userInfo = new UserInfoSimple();
             _targetUserInfo = new UserInfoSimple();
         }

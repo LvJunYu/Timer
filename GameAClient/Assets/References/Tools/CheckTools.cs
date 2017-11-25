@@ -173,5 +173,23 @@ namespace SoyEngine
             }
             return ECheckProjectSumaryResult.Success;
         }
+        
+        public enum ECheckMessageResult {
+            None, Success, TooLong, IllegalCharacter
+        }
+        public static ECheckMessageResult CheckMessage(string content)
+        {
+            if(string.IsNullOrEmpty(content)) {
+                return ECheckMessageResult.None;
+            }
+            if(content.Length > SoyConstDefine.MaxProjectCommentLength) {
+                return ECheckMessageResult.TooLong;
+            }
+            //中文英文字母下划线减号
+//            if(!Regex.IsMatch(content, "^[\\w\\d\\s\\,\\.\\!\\?\\，\\。\\！\\？\u4E00-\u9FFF_-]+$")) {
+//                return ECheckProjectSumaryResult.IllegalCharacter;
+//            }
+            return ECheckMessageResult.Success;
+        }
     }
 }

@@ -285,6 +285,19 @@ namespace GameA
             }
         }
 
+        public static void ShowCheckMessageRes(CheckTools.ECheckMessageResult testRes)
+        {
+            if (testRes == CheckTools.ECheckMessageResult.Success) return;
+            if (testRes == CheckTools.ECheckMessageResult.TooLong)
+            {
+                ShowPopupDialog("内容太长");
+            }
+            else
+            {
+                ShowPopupDialog("格式错误");
+            }
+        }
+        
         public override T OpenUI<T>(object value = null)
         {
             if (UIRoot == null) return null;
@@ -384,6 +397,7 @@ namespace GameA
                 Param = param;
             }
         }
+
     }
 
     /// <summary>

@@ -11,10 +11,11 @@ namespace GameA
         private long _lastUserId = -1;
         private EMenu _curMenu = EMenu.None;
         private const string _numFormat = "({0})";
-        private const string _maxShow = "99+";
-        private const string _maxShowLong = "999+";
+        private const string _maxShow = "(99+)";
+        private const string _maxShowLong = "(999+)";
         private UPCtrlPersonalInfoBase _curMenuCtrl;
         private UPCtrlPersonalInfoBase[] _menuCtrlArray;
+        public int MessageCount;
 
         protected override void OnViewCreated()
         {
@@ -23,8 +24,6 @@ namespace GameA
             _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.BlockBtn.onClick.AddListener(OnBlockBtn);
-            _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
-            _cachedView.InputField.onEndEdit.AddListener(OnInputFieldEndEdit);
             _menuCtrlArray = new UPCtrlPersonalInfoBase[(int) EMenu.Max];
             var upCtrlPersonalInfoBasicInfo = new UPCtrlPersonalInfoBasicInfo();
             upCtrlPersonalInfoBasicInfo.SetResScenary(ResScenary);
@@ -97,6 +96,8 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
             RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
+            RegisterEvent(EMessengerType.OnMessageBoardElementSizeChanged, OnMessageBoardElementSizeChanged);
+            RegisterEvent<long, UserMessageReply>(EMessengerType.OnReplyMessage, OnReplyMessage);
         }
 
         protected override void OnOpen(object parameter)
@@ -146,16 +147,17 @@ namespace GameA
             RefreshBtns();
         }
 
-        private void OnInputFieldEndEdit(string arg0)
+        private void OnReplyMessage(long messageId, UserMessageReply reply)
         {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            if (_curMenu == EMenu.MessageBoard)
             {
-                OnSendBtn();
+                ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnReplyMessage(messageId, reply);
             }
         }
 
-        private void OnSendBtn()
+        private void OnMessageBoardElementSizeChanged()
         {
+            _cachedView.MessageTableDataScroller.RefreshAllSizes();
         }
 
         private void Clear()
@@ -171,18 +173,26 @@ namespace GameA
         {
             if (_isOpen && user == UserInfoDetail)
             {
-                int count = UserInfoDetail.MessageCount;
-                _cachedView.MessageNum.SetActiveEx(count > 0);
-                _cachedView.MessageSelectedNum.SetActiveEx(count > 0);
-                if (count > 0)
-                {
-                    _cachedView.MessageNum.text = count < 100 ? string.Format(_numFormat, count):_maxShow;
-                    _cachedView.MessageSelectedNum.text = count < 1000 ? string.Format(_numFormat, count):_maxShowLong;
-                }
                 if (_curMenu == EMenu.BasicInfo)
                 {
                     _curMenuCtrl.RefreshView();
                 }
+//                int count = UserInfoDetail.MessageCount;
+                MessageCount = Random.Range(6, 30);
+                RefreshMessageNum(MessageCount);
+            }
+        }
+
+        public void RefreshMessageNum(int count)
+        {
+            _cachedView.MessageNum.SetActiveEx(count > 0);
+            _cachedView.MessageSelectedNum.SetActiveEx(count > 0);
+            if (count > 0)
+            {
+                _cachedView.MessageNum.text =
+                    count < 100 ? string.Format(_numFormat, count) : _maxShow;
+                _cachedView.MessageSelectedNum.text =
+                    count < 1000 ? string.Format(_numFormat, count) : _maxShowLong;
             }
         }
 

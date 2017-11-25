@@ -35,11 +35,11 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private int _replayCount;
+        private int _replyCount;
         /// <summary>
         /// 
         /// </summary>
-        private UserMessageReplay _firstReplay;
+        private UserMessageReply _firstReply;
         #endregion
 
         #region 属性
@@ -106,20 +106,20 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public int ReplayCount { 
-            get { return _replayCount; }
-            set { if (_replayCount != value) {
-                _replayCount = value;
+        public int ReplyCount { 
+            get { return _replyCount; }
+            set { if (_replyCount != value) {
+                _replyCount = value;
                 SetDirty();
             }}
         }
         /// <summary>
         /// 
         /// </summary>
-        public UserMessageReplay FirstReplay { 
-            get { return _firstReplay; }
-            set { if (_firstReplay != value) {
-                _firstReplay = value;
+        public UserMessageReply FirstReply { 
+            get { return _firstReply; }
+            set { if (_firstReply != value) {
+                _firstReply = value;
                 SetDirty();
             }}
         }
@@ -139,11 +139,11 @@ namespace GameA
             _content = msg.Content;     
             _likeNum = msg.LikeNum;     
             _userLike = msg.UserLike;     
-            _replayCount = msg.ReplayCount;     
-            if (null == _firstReplay) {
-                _firstReplay = new UserMessageReplay(msg.FirstReplay);
+            _replyCount = msg.ReplyCount;     
+            if (null == _firstReply) {
+                _firstReply = new UserMessageReply(msg.FirstReply);
             } else {
-                _firstReplay.OnSyncFromParent(msg.FirstReplay);
+                _firstReply.OnSyncFromParent(msg.FirstReply);
             }
             OnSyncPartial(msg);
             return true;
@@ -163,12 +163,12 @@ namespace GameA
             _content = msg.Content;           
             _likeNum = msg.LikeNum;           
             _userLike = msg.UserLike;           
-            _replayCount = msg.ReplayCount;           
-            if(null != msg.FirstReplay){
-                if (null == _firstReplay){
-                    _firstReplay = new UserMessageReplay(msg.FirstReplay);
+            _replyCount = msg.ReplyCount;           
+            if(null != msg.FirstReply){
+                if (null == _firstReply){
+                    _firstReply = new UserMessageReply(msg.FirstReply);
                 }
-                _firstReplay.CopyMsgData(msg.FirstReplay);
+                _firstReply.CopyMsgData(msg.FirstReply);
             }
             return true;
         } 
@@ -187,12 +187,12 @@ namespace GameA
             _content = obj.Content;           
             _likeNum = obj.LikeNum;           
             _userLike = obj.UserLike;           
-            _replayCount = obj.ReplayCount;           
-            if(null != obj.FirstReplay){
-                if (null == _firstReplay){
-                    _firstReplay = new UserMessageReplay();
+            _replyCount = obj.ReplyCount;           
+            if(null != obj.FirstReply){
+                if (null == _firstReply){
+                    _firstReply = new UserMessageReply();
                 }
-                _firstReplay.DeepCopy(obj.FirstReplay);
+                _firstReply.DeepCopy(obj.FirstReply);
             }
             return true;
         }
@@ -211,7 +211,7 @@ namespace GameA
 
         public UserMessage () { 
             _userInfo = new UserInfoSimple();
-            _firstReplay = new UserMessageReplay();
+            _firstReply = new UserMessageReply();
         }
         #endregion
     }

@@ -51,7 +51,7 @@ namespace SoyEngine
         // 发布留言
         public const string PublishUserMessage = "/user/publishUserMessage";
         // 回复留言
-        public const string ReplyUserMessage = "/user/replayUserMessage";
+        public const string ReplyUserMessage = "/user/replyUserMessage";
         // 获取应用全局信息
         public const string AppData = "/appInfo/appData";
         // 社交关系统计

@@ -20,7 +20,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private List<UserMessageReplay> _dataList;
+        private List<UserMessageReply> _dataList;
 
         // cs fields----------------------------------
         /// <summary>
@@ -62,7 +62,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public List<UserMessageReplay> DataList { 
+        public List<UserMessageReply> DataList { 
             get { return _dataList; }
             set { if (_dataList != value) {
                 _dataList = value;
@@ -160,9 +160,9 @@ namespace GameA
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
             _updateTime = msg.UpdateTime;           
-            _dataList = new List<UserMessageReplay>();
+            _dataList = new List<UserMessageReply>();
             for (int i = 0; i < msg.DataList.Count; i++) {
-                _dataList.Add(new UserMessageReplay(msg.DataList[i]));
+                _dataList.Add(new UserMessageReply(msg.DataList[i]));
             }
             OnSyncPartial(msg);
             return true;
@@ -174,11 +174,11 @@ namespace GameA
             _resultCode = msg.ResultCode;           
             _updateTime = msg.UpdateTime;           
             if (null ==  _dataList) {
-                _dataList = new List<UserMessageReplay>();
+                _dataList = new List<UserMessageReply>();
             }
             _dataList.Clear();
             for (int i = 0; i < msg.DataList.Count; i++) {
-                _dataList.Add(new UserMessageReplay(msg.DataList[i]));
+                _dataList.Add(new UserMessageReply(msg.DataList[i]));
             }
             return true;
         } 
@@ -190,7 +190,7 @@ namespace GameA
             _updateTime = obj.UpdateTime;           
             if (null ==  obj.DataList) return false;
             if (null ==  _dataList) {
-                _dataList = new List<UserMessageReplay>();
+                _dataList = new List<UserMessageReply>();
             }
             _dataList.Clear();
             for (int i = 0; i < obj.DataList.Count; i++){
@@ -212,7 +212,7 @@ namespace GameA
         }
 
         public UserMessageReplyData () { 
-            _dataList = new List<UserMessageReplay>();
+            _dataList = new List<UserMessageReply>();
             OnCreate();
         }
         #endregion

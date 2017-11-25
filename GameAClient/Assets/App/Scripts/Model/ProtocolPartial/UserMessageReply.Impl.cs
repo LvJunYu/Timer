@@ -1,14 +1,14 @@
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine.Networking;
 
 namespace GameA
 {
-    public partial class UserMessage
+    public partial class UserMessageReply
     {
         private UserInfoDetail _userInfoDetail;
-        private UserMessageReplyData _replyList = new UserMessageReplyData();
+
+        private UserInfoDetail _targetUserInfoDetail;
 
         public UserInfoDetail UserInfoDetail
         {
@@ -16,15 +16,17 @@ namespace GameA
             set { _userInfoDetail = value; } //测试用
         }
 
-        public UserMessageReplyData ReplyList
+        public UserInfoDetail TargetUserInfoDetail
         {
-            get { return _replyList; }
+            get { return _targetUserInfoDetail; }
+            set { _targetUserInfoDetail = value; } //测试用
         }
 
-        protected override void OnSyncPartial(Msg_UserMessage msg)
+        protected override void OnSyncPartial(Msg_UserMessageReply msg)
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
+            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
         }
 
         public void Reply(string content, Action successCallback = null, Action failedCallback = null)
@@ -32,7 +34,7 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyUserMessage(_id, content, false, 0, res =>
+                RemoteCommands.ReplyUserMessage(_messageId, content, true, _userInfo.UserId, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
@@ -64,14 +66,6 @@ namespace GameA
                     failedCallback.Invoke();
                 }
             }
-        }
-
-        public void LocalAddReply(UserMessageReply reply)
-        {
-            _replyCount++;
-            _firstReply = reply;
-            _replyList.AllList.Add(reply);
-            _replyList.AllList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
         }
     }
 }

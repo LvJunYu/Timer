@@ -10,7 +10,7 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// 留言数据
+        /// 
         /// </summary>
         private int _resultCode;
         /// <summary>
@@ -40,7 +40,7 @@ namespace GameA
         #region 属性
         // sc properties----------------------------------
         /// <summary>
-        /// 留言数据
+        /// 
         /// </summary>
         public int ResultCode { 
             get { return _resultCode; }
