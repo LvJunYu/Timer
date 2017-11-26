@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA
 {
@@ -10,7 +9,8 @@ namespace GameA
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>, ICheckOverlay
     {
         public static string EmptyStr = "-";
-        public static string CountFormat = "({0})";
+        public const string _countFormat = "({0})";
+        private const string _maxShow = "(999+)";
         public Project Project;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
@@ -18,13 +18,10 @@ namespace GameA
         private bool _collected;
         private float _srollRectHeight;
         private float _contentHeight;
-        private UPCtrlProjectComment _upCtrlProjectComment;
-        private UPCtrlProjectRecentRecord _upCtrlProjectRecentRecord;
-        private bool _pannelDown;
-        private bool _commentUp;
-        private float _pannelDownTimer;
-        private float _commentUpTimer;
-        private const float _scrollSwitchDelay = 0.4f;
+        private EMenu _curMenu = EMenu.None;
+        private UPCtrlProjectDetailBase _curMenuCtrl;
+        private UPCtrlProjectDetailBase[] _menuCtrlArray;
+        private long _lastProjectId;
 
         protected override void OnViewCreated()
         {
@@ -34,43 +31,67 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteTogValueChanged);
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtn);
-            _cachedView.RecordsBtn.onClick.AddListener(OnRecordsBtn);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
 
-            _upCtrlProjectComment = new UPCtrlProjectComment();
-            _upCtrlProjectComment.Set(ResScenary);
-            _upCtrlProjectComment.Init(this, _cachedView);
+            _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
+            var upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
+            upCtrlProjectRecentRecord.SetResScenary(ResScenary);
+            upCtrlProjectRecentRecord.SetMenu(EMenu.Recent);
+            upCtrlProjectRecentRecord.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Recent] = upCtrlProjectRecentRecord;
 
-            _upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
-            _upCtrlProjectRecentRecord.Set(ResScenary);
-            _upCtrlProjectRecentRecord.Init(this, _cachedView);
+            var upCtrlProjectComment = new UPCtrlProjectComment();
+            upCtrlProjectComment.SetResScenary(ResScenary);
+            upCtrlProjectComment.SetMenu(EMenu.Comment);
+            upCtrlProjectComment.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Comment] = upCtrlProjectComment;
+
+            var upCtrlProjectRankRecord = new UPCtrlProjectRankRecord();
+            upCtrlProjectRankRecord.SetResScenary(ResScenary);
+            upCtrlProjectRankRecord.SetMenu(EMenu.Rank);
+            upCtrlProjectRankRecord.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Rank] = upCtrlProjectRankRecord;
+
+            for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
+            {
+                var index = i;
+                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
+                    b => ClickMenu(index, b));
+                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
+                {
+                    _menuCtrlArray[i].Close();
+                }
+            }
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             Project = parameter as Project;
-            _upCtrlProjectComment.Open();
-            _upCtrlProjectRecentRecord.Open();
-            _srollRectHeight = _cachedView.ScrollRect.rectTransform().rect.height;
-            _contentHeight = _cachedView.ScrollRect.content.rect.height;
-            _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
-            _commentUp = true;
-            _pannelDown = false;
-            if (Project != null)
+            if (Project == null)
             {
-                Project.Request(Project.ProjectId, null, null);
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                return;
             }
+            Project.Request(Project.ProjectId, null, null);
             RefreshView();
+            if (Project.ProjectId != _lastProjectId)
+            {
+                _curMenu = EMenu.Recent;
+                _lastProjectId = Project.ProjectId;
+            }
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
         protected override void OnClose()
         {
-            _upCtrlProjectComment.Close();
-            _upCtrlProjectRecentRecord.Close();
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
             Clear();
             base.OnClose();
         }
@@ -95,47 +116,60 @@ namespace GameA
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
-        public override void OnUpdate()
+        protected override void OnDestroy()
         {
-            base.OnUpdate();
-            if (_cachedView.ScrollRect.content.anchoredPosition.y >= _contentHeight - _srollRectHeight - 0.2f)
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
-                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = _upCtrlProjectComment.HasComment;
-                _pannelDownTimer += Time.deltaTime;
-                if (_pannelDownTimer > _scrollSwitchDelay)
+                if (_menuCtrlArray[i] != null)
                 {
-                    _pannelDown = true;
+                    _menuCtrlArray[i].OnDestroy();
                 }
             }
-            else
-            {
-                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = false;
-                _pannelDownTimer = 0;
-                _pannelDown = false;
-            }
-            _cachedView.CommentTableScroller.ScorllWheelDownOff = !_pannelDown;
-
-            if (_cachedView.CommentTableScroller.ContentPosition.y <= 0.2f)
-            {
-                _cachedView.CommentTableScroller.ScorllWheelUpOff = true;
-                _commentUpTimer += Time.deltaTime;
-                if (_commentUpTimer > _scrollSwitchDelay)
-                {
-                    _commentUp = true;
-                }
-            }
-            else
-            {
-                _cachedView.CommentTableScroller.ScorllWheelUpOff = false;
-                _commentUpTimer = 0;
-                _commentUp = false;
-            }
-            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !_commentUp && _cachedView.CommentTableScroller.MouseIn;
-            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff |=
-                _cachedView.RecordGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
-            _cachedView.MouseScrollWheelTool.ScorllWheelDownOff |=
-                _cachedView.RecordGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
+            _curMenuCtrl = null;
+            base.OnDestroy();
         }
+
+//        public override void OnUpdate()
+//        {
+//            base.OnUpdate();
+//            if (_cachedView.ScrollRect.content.anchoredPosition.y >= _contentHeight - _srollRectHeight - 0.2f)
+//            {
+//                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = _upCtrlProjectComment.HasComment;
+//                _pannelDownTimer += Time.deltaTime;
+//                if (_pannelDownTimer > _scrollSwitchDelay)
+//                {
+//                    _pannelDown = true;
+//                }
+//            }
+//            else
+//            {
+//                _cachedView.MouseScrollWheelTool.ScorllWheelDownOff = false;
+//                _pannelDownTimer = 0;
+//                _pannelDown = false;
+//            }
+//            _cachedView.CommentTableScroller.ScorllWheelDownOff = !_pannelDown;
+//
+//            if (_cachedView.CommentTableScroller.ContentPosition.y <= 0.2f)
+//            {
+//                _cachedView.CommentTableScroller.ScorllWheelUpOff = true;
+//                _commentUpTimer += Time.deltaTime;
+//                if (_commentUpTimer > _scrollSwitchDelay)
+//                {
+//                    _commentUp = true;
+//                }
+//            }
+//            else
+//            {
+//                _cachedView.CommentTableScroller.ScorllWheelUpOff = false;
+//                _commentUpTimer = 0;
+//                _commentUp = false;
+//            }
+//            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff = !_commentUp && _cachedView.CommentTableScroller.MouseIn;
+//            _cachedView.MouseScrollWheelTool.ScorllWheelUpOff |=
+//                _cachedView.RecentGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
+//            _cachedView.MouseScrollWheelTool.ScorllWheelDownOff |=
+//                _cachedView.RecentGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
+//        }
 
         public bool CheckPlayed(string content)
         {
@@ -184,6 +218,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
                 GameATools.FormatServerDateString(Project.CreateTime));
             RefreshBtns();
+            RefreshCommentCount(0);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
@@ -210,7 +245,21 @@ namespace GameA
             _onlyChangeView = false;
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
-                string.Format(CountFormat, Project.LikeCount + Project.UnlikeCount));
+                string.Format(_countFormat, Project.LikeCount + Project.UnlikeCount));
+        }
+
+        private void RefreshCommentCount(int count)
+        {
+            if (count == 0)
+            {
+                _cachedView.CommentCount.SetActiveEx(false);
+                _cachedView.CommentSelectedCount.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.CommentCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
+                _cachedView.CommentSelectedCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
+            }
         }
 
         private void OnBadTogValueChanged(bool value)
@@ -330,11 +379,6 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailShare>(Project);
         }
 
-        private void OnRecordsBtn()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailRecords>(Project);
-        }
-
         private void OnPlayBtnClick()
         {
             if (Project == null)
@@ -377,19 +421,24 @@ namespace GameA
             if (_isOpen && Project != null && Project.ProjectId == projectId)
             {
                 RefreshView();
-                _upCtrlProjectComment.OnChangeHandler(projectId);
-                _upCtrlProjectRecentRecord.OnChangeHandler(projectId);
+                if (_curMenuCtrl != null)
+                {
+                    _curMenuCtrl.OnChangeHandler(projectId);
+                }
             }
         }
 
         private void Clear()
         {
-            _upCtrlProjectRecentRecord.Clear();
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                _menuCtrlArray[i].Clear();
+            }
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = false;
             _cachedView.BadTog.isOn = false;
             _onlyChangeView = false;
-            Project = null;
+//            Project = null;
         }
 
         private void OnCloseBtn()
@@ -402,8 +451,10 @@ namespace GameA
             if (_isOpen && Project != null)
             {
                 Project.Request();
-                _upCtrlProjectComment.OnChangeToApp();
-                _upCtrlProjectRecentRecord.OnChangeToApp();
+                if (_curMenuCtrl != null)
+                {
+                    _curMenuCtrl.OnChangeToApp();
+                }
             }
         }
 
@@ -416,12 +467,38 @@ namespace GameA
             }
         }
 
+        private void ChangeMenu(EMenu menu)
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            _curMenu = menu;
+            var inx = (int) _curMenu;
+            if (inx < _menuCtrlArray.Length)
+            {
+                _curMenuCtrl = _menuCtrlArray[inx];
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Open();
+            }
+        }
+
+        private void ClickMenu(int selectInx, bool open)
+        {
+            if (open)
+            {
+                ChangeMenu((EMenu) selectInx);
+            }
+        }
+
         public enum EMenu
         {
             None = -1,
             Recent,
-            Rank,
             Comment,
+            Rank,
             Max
         }
     }

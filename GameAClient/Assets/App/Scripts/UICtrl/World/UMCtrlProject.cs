@@ -66,13 +66,14 @@ namespace GameA
                 Unload();
                 return;
             }
-            _cachedView.DownloadObj.SetActive(!_emptyProject && _efunc == EFunc.Editing &&
+            _cachedView.PublishedObj.SetActiveEx(false);
+            _cachedView.DownloadObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
                                               _wrapper.Content.ParentId != 0);
-            _cachedView.OriginalObj.SetActive(!_emptyProject && _efunc == EFunc.Editing &&
+            _cachedView.OriginalObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
                                               _wrapper.Content.ParentId == 0);
-            _cachedView.BottomObj.SetActive(_efunc == EFunc.Published);
-            _cachedView.EditImg.SetActive(!_emptyProject && _efunc == EFunc.Editing);
-            _cachedView.NewEditObj.SetActive(_emptyProject);
+            _cachedView.BottomObj.SetActiveEx(_efunc == EFunc.Published);
+            _cachedView.EditImg.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing);
+            _cachedView.NewEditObj.SetActiveEx(_emptyProject);
             if (_emptyProject)
             {
                 DictionaryTools.SetContentText(_cachedView.Title, _newProject);

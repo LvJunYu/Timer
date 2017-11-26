@@ -4,24 +4,17 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlProjectRecentRecord : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>,
-        IOnChangeHandler<long>
+    public class UPCtrlProjectRecentRecord : UPCtrlProjectDetailBase
     {
         private const int _pageSize = 10;
-        protected EResScenary _resScenary;
         private WorldProjectRecentRecordList _data;
         private List<Record> _dataList;
         private List<CardDataRendererWrapper<Record>> _contentList = new List<CardDataRendererWrapper<Record>>();
 
-        public bool HasComment
-        {
-            get { return _contentList.Count > 0; }
-        }
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.RecordGridDataScroller.Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.RecentGridDataScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void Open()
@@ -31,7 +24,7 @@ namespace GameA
             RefreshView();
         }
 
-        private void RequestData(bool append = false)
+        protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;
             _data = _mainCtrl.Project.ProjectRecentRecordList;
@@ -50,19 +43,19 @@ namespace GameA
             }, code => { });
         }
 
-        private void RefreshView()
+        protected override void RefreshView()
         {
             if (_mainCtrl.Project == null)
             {
 //                _cachedView.RecordGridDataScroller.OnViewportSizeChanged();
-                _cachedView.RecordGridDataScroller.SetEmpty();
+                _cachedView.RecentGridDataScroller.SetEmpty();
                 return;
             }
 //            _cachedView.DescTitle.SetActiveEx(!string.IsNullOrEmpty(_mainCtrl.Project.Summary));
-            _cachedView.RecordGridDataScroller.OnViewportSizeChanged();
+            _cachedView.RecentGridDataScroller.OnViewportSizeChanged();
             if (_dataList == null)
             {
-                _cachedView.RecordGridDataScroller.SetEmpty();
+                _cachedView.RecentGridDataScroller.SetEmpty();
             }
             else
             {
@@ -73,7 +66,7 @@ namespace GameA
                     CardDataRendererWrapper<Record> w = new CardDataRendererWrapper<Record>(_dataList[i], OnItemClick);
                     _contentList.Add(w);
                 }
-                _cachedView.RecordGridDataScroller.SetItemCount(_contentList.Count);
+                _cachedView.RecentGridDataScroller.SetItemCount(_contentList.Count);
             }
         }
 
@@ -130,29 +123,11 @@ namespace GameA
             }
         }
 
-        public void OnChangeHandler(long val)
-        {
-            if (_isOpen)
-            {
-                RefreshView();
-            }
-        }
-
-        public void OnChangeToApp()
-        {
-            RequestData();
-        }
-
-        public void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
-        }
-
-        public void Clear()
+        public override void Clear()
         {
             _dataList = null;
             _contentList.Clear();
-            _cachedView.RecordGridDataScroller.ContentPosition = Vector2.zero;
+            _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
         }
     }
 }

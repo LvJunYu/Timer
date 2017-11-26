@@ -4,18 +4,12 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlProjectComment : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>, IOnChangeHandler<long>
+    public class UPCtrlProjectComment : UPCtrlProjectDetailBase
     {
         private const int _pageSize = 10;
         private List<ProjectComment> _contentList;
         private WorldProjectCommentList _data;
         private bool _isPostComment;
-        private EResScenary _resScenary;
-
-        public bool HasComment
-        {
-            get { return _contentList != null && _contentList.Count > 0; }
-        }
 
         protected override void OnViewCreated()
         {
@@ -47,7 +41,7 @@ namespace GameA
             }
         }
 
-        private void RequestData(bool append = false)
+        protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;
             _data = _mainCtrl.Project.CommentList;
@@ -66,25 +60,21 @@ namespace GameA
             }, code => { });
         }
 
-        private void RefreshView()
+        protected override void RefreshView()
         {
             if (_mainCtrl.Project == null || _contentList == null)
             {
                 _cachedView.CommentTableScroller.SetEmpty();
-                DictionaryTools.SetContentText(_cachedView.CommentCountTxt,
-                    string.Format(UICtrlProjectDetail.CountFormat, 0));
             }
             else
             {
                 _cachedView.CommentTableScroller.SetItemCount(_contentList.Count);
-                DictionaryTools.SetContentText(_cachedView.CommentCountTxt,
-                    string.Format(UICtrlProjectDetail.CountFormat, _contentList.Count));
             }
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlWorldProjectComment();
+            var item = new UMCtrlProjectComment();
             item.Init(parent, _resScenary);
             return item;
         }
@@ -140,22 +130,9 @@ namespace GameA
             });
         }
 
-        public void OnChangeHandler(long val)
+        public override void Clear()
         {
-            if (_isOpen)
-            {
-                RefreshView();
-            }
-        }
-
-        public void OnChangeToApp()
-        {
-            RequestData();
-        }
-
-        public void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
+            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
         }
     }
 }

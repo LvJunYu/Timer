@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlProjectDetailRecords : UICtrlAnimationBase<UIViewProjectDetailRecords>, ICheckOverlay
+    public class UPCtrlProjectRankRecord : UPCtrlProjectDetailBase
     {
         private const int _pageSize = 10;
-        private Project _project;
         private WorldProjectRecordRankList _data;
         private List<RecordRankHolder> _dataList;
 
@@ -18,52 +16,26 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.GridDataScroller.Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.RankGridDataScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
-        protected override void OnOpen(object parameter)
+        public override void Open()
         {
-            base.OnOpen(parameter);
-            _project = parameter as Project;
-            if (_project == null)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailRecords>();
-                return;
-            }
+            base.Open();
             RequestData();
             RefreshView();
         }
 
-        protected override void OnClose()
+        protected override void RequestData(bool append = false)
         {
-            _dataList = null;
-            _contentList.Clear();
-            base.OnClose();
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.FrontUI2;
-        }
-
-        private void RequestData(bool append = false)
-        {
-            if (_project == null) return;
-            _data = _project.ProjectRecordRankList;
+            if (_mainCtrl.Project == null) return;
+            _data = _mainCtrl.Project.ProjectRecordRankList;
             int startInx = 0;
             if (append)
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(_project.ProjectId, startInx, _pageSize, () =>
+            _data.Request(_mainCtrl.Project.ProjectId, startInx, _pageSize, () =>
             {
                 _dataList = _data.AllList;
                 if (_isOpen)
@@ -73,11 +45,11 @@ namespace GameA
             }, code => { });
         }
 
-        private void RefreshView()
+        protected override void RefreshView()
         {
-            if (_project == null || _dataList == null)
+            if (_mainCtrl.Project == null || _dataList == null)
             {
-                _cachedView.GridDataScroller.SetEmpty();
+                _cachedView.RankGridDataScroller.SetEmpty();
                 return;
             }
             _contentList.Clear();
@@ -89,18 +61,18 @@ namespace GameA
                     new CardDataRendererWrapper<RecordRankHolder>(r, OnItemClick);
                 _contentList.Add(w);
             }
-            _cachedView.GridDataScroller.SetItemCount(_contentList.Count);
+            _cachedView.RankGridDataScroller.SetItemCount(_contentList.Count);
         }
 
         private void OnItemClick(CardDataRendererWrapper<RecordRankHolder> item)
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求播放录像");
-            _project.PrepareRes(() =>
+            _mainCtrl.Project.PrepareRes(() =>
             {
                 item.Content.Record.RequestPlay(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayRecord(_project, item.Content.Record);
+                    GameManager.Instance.RequestPlayRecord(_mainCtrl.Project, item.Content.Record);
                     SocialApp.Instance.ChangeToGame();
                 }, error =>
                 {
@@ -117,7 +89,7 @@ namespace GameA
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldRecordRank();
-            item.Init(parent, ResScenary);
+            item.Init(parent, _resScenary);
             return item;
         }
 
@@ -145,9 +117,11 @@ namespace GameA
             }
         }
 
-        private void OnCloseBtn()
+        public override void Clear()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailRecords>();
+            _dataList = null;
+            _contentList.Clear();
+            _cachedView.RankGridDataScroller.ContentPosition = Vector2.zero;
         }
     }
 }

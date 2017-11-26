@@ -9,17 +9,17 @@ namespace GameA
     public class UMCtrlPersonalInfoMessage : UMCtrlBase<UMViewPersonalInfoMessage>, IDataItemRenderer
     {
         public static Action OpenInputCallBack;
-        private static string _contentFormat = "<color=orange>{0}</color>:{1}";
-        private static string _totalFormat = "共{0}条回复";
-        private static string _moreFormat = "更多{0}条回复";
-        private const int pageSize = 5;
+        protected static string _contentFormat = "<color=orange>{0}</color>:{1}";
+        protected static string _totalFormat = "共{0}条回复";
+        protected static string _moreFormat = "更多{0}条回复";
+        protected const int pageSize = 5;
         private UserMessage _message;
-        private UMCtrlPersonalInfoReplyMessage _firstReplay;
+        protected UMCtrlPersonalInfoReplyMessage _firstReplay;
         protected EResScenary _resScenary;
-        private bool _unfold;
-        private bool _openPublishDock;
-        private List<UMCtrlPersonalInfoReplyMessage> _umCache = new List<UMCtrlPersonalInfoReplyMessage>(8);
-        private List<UserMessageReply> _dataList;
+        protected bool _unfold;
+        protected bool _openPublishDock;
+        protected List<UMCtrlPersonalInfoReplyMessage> _umCache = new List<UMCtrlPersonalInfoReplyMessage>(8);
+        protected List<UserMessageReply> _dataList;
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -67,7 +67,7 @@ namespace GameA
             RefreshView();
         }
 
-        private void RequestData(bool append = false)
+        protected virtual void RequestData(bool append = false)
         {
             if (_message == null) return;
             if (_message.ReplyList.IsEnd) return;
@@ -84,7 +84,7 @@ namespace GameA
 //            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
         }
 
-        private void RefreshView()
+        protected virtual void RefreshView()
         {
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_message.LikeNum > 0);
@@ -101,7 +101,7 @@ namespace GameA
             Canvas.ForceUpdateCanvases();
         }
 
-        private void RefreshReplyDock(bool Broadcast = false)
+        protected void RefreshReplyDock(bool Broadcast = false)
         {
             _cachedView.ReplayDock.SetActive(_message.ReplyCount > 0);
             if (_message.ReplyCount > 0)
@@ -153,7 +153,7 @@ namespace GameA
             }
         }
 
-        private UMCtrlPersonalInfoReplyMessage GetItem()
+        protected UMCtrlPersonalInfoReplyMessage GetItem()
         {
             var item = _umCache.Find(p => !p.IsShow);
             if (item == null)
@@ -169,23 +169,23 @@ namespace GameA
             return item;
         }
 
-        private void ClearCache()
+        protected void ClearCache()
         {
             _umCache.ForEach(p => p.Hide());
         }
 
-        private void OnMoreBtn()
+        protected void OnMoreBtn()
         {
             RequestData(_unfold);
         }
 
-        private void OnFoldBtn()
+        protected void OnFoldBtn()
         {
             _dataList.Clear();
             RefreshReplyDock(true);
         }
 
-        private void TempData()
+        protected void TempData()
         {
             if (_dataList.Count == _message.ReplyCount) return;
             for (int i = 0; i < pageSize; i++)
@@ -211,7 +211,7 @@ namespace GameA
             RefreshReplyDock(true);
         }
 
-        private void OnSendBtn()
+        protected void OnSendBtn()
         {
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
@@ -229,7 +229,7 @@ namespace GameA
             SetPublishDock(false);
         }
 
-        private void OnInputEndEdit(string arg0)
+        protected void OnInputEndEdit(string arg0)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
@@ -237,12 +237,12 @@ namespace GameA
             }
         }
 
-        private void OnReplayBtn()
+        protected void OnReplayBtn()
         {
             SetPublishDock(!_openPublishDock);
         }
 
-        private void OnPraiseBtn()
+        protected void OnPraiseBtn()
         {
             if (_message.UserLike)
             {
@@ -256,7 +256,7 @@ namespace GameA
             RefreshView();
         }
 
-        private void OnHeadBtn()
+        protected void OnHeadBtn()
         {
             if (_message != null)
             {
@@ -264,7 +264,7 @@ namespace GameA
             }
         }
 
-        private void SetPublishDock(bool value)
+        protected void SetPublishDock(bool value)
         {
             if (_message == null) return;
             _openPublishDock = value;
