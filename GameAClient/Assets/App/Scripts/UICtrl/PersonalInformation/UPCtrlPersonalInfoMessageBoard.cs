@@ -143,6 +143,7 @@ namespace GameA
         {
             base.Clear();
             _dataList = null;
+            _cachedView.MessageTableDataScroller.ContentPosition = Vector2.zero;
         }
 
         public void OnReplyMessage(long messageId, UserMessageReply reply)

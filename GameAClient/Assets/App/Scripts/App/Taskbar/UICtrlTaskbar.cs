@@ -84,8 +84,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            //为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
-//            _cachedView.Account.onClick.AddListener(Account);
+//            _cachedView.Account.onClick.AddListener(Account);//为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
             _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);

@@ -9,11 +9,12 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
         private UPCtrlWorkShopProjectBase[] _menuCtrlArray;
-        private bool _pushGoldEnergyStyle;
+        private bool _pushGoldEnergyStyle;  
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.UiMouseStayHit.SetResScenary(ResScenary);
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
             _menuCtrlArray = new UPCtrlWorkShopProjectBase[(int) EMenu.Max];
 

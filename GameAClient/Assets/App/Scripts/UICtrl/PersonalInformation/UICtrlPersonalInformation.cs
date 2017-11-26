@@ -112,6 +112,9 @@ namespace GameA
             UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);
+            //测试
+            MessageCount = Random.Range(6, 30);
+            RefreshMessageNum(MessageCount);
             RefreshView();
             if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
@@ -178,8 +181,7 @@ namespace GameA
                     _curMenuCtrl.RefreshView();
                 }
 //                int count = UserInfoDetail.MessageCount;
-                MessageCount = Random.Range(6, 30);
-                RefreshMessageNum(MessageCount);
+//                RefreshMessageNum(count);
             }
         }
 
