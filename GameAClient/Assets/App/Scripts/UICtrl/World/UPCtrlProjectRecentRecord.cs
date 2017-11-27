@@ -24,6 +24,12 @@ namespace GameA
             RefreshView();
         }
 
+        public override void Close()
+        {
+            _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
+            base.Close();
+        }
+
         protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;

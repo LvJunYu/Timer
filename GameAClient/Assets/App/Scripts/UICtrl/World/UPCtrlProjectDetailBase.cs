@@ -24,8 +24,9 @@ namespace GameA
 
         protected abstract void RefreshView();
 
-        public void OnChangeToApp()
+        public virtual void OnChangeToApp()
         {
+            Clear();
             RequestData();
         }
 

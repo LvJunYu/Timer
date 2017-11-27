@@ -889,6 +889,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingMatchShadowBattle {
+            get { return _isRequstingMatchShadowBattle; }
+        }
+        private static bool _isRequstingMatchShadowBattle = false;
+        /// <summary>
+		/// 匹配乱入对决
+		/// </summary>
+		/// <param name="userId">用户Id</param>
+        public static void MatchShadowBattle (
+            long userId,
+            Action<Msg_SC_CMD_MatchShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMatchShadowBattle) {
+                return;
+            }
+            _isRequstingMatchShadowBattle = true;
+            Msg_CS_CMD_MatchShadowBattle msg = new Msg_CS_CMD_MatchShadowBattle();
+            // 匹配乱入对决
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MatchShadowBattle>(
+                SoyHttpApiPath.MatchShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMatchShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MatchShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMatchShadowBattle = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingRequestHelpShadowBattle {
             get { return _isRequstingRequestHelpShadowBattle; }
         }

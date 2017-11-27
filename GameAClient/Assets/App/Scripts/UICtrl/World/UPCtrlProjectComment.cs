@@ -26,8 +26,7 @@ namespace GameA
         public override void Close()
         {
             _contentList = null;
-            _cachedView.CommentInput.text = string.Empty;
-            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
+            Clear();
             base.Close();
         }
 
@@ -105,6 +104,8 @@ namespace GameA
         
         public override void Clear()
         {
+            _cachedView.CommentInput.text = string.Empty;
+            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
         }
 
     }
