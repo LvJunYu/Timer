@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
@@ -22,6 +23,7 @@ namespace GameA
         private UPCtrlProjectDetailBase _curMenuCtrl;
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private long _lastProjectId;
+        private bool _isPostComment;
 
         protected override void OnViewCreated()
         {
@@ -35,6 +37,8 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
+            _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
+            _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
 
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
             var upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
@@ -220,7 +224,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
                 GameATools.FormatServerDateString(Project.CreateTime));
             RefreshBtns();
-            RefreshCommentCount(0);
+            RefreshCommentCount(Project.TotalCommentCount);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
@@ -252,12 +256,9 @@ namespace GameA
 
         private void RefreshCommentCount(int count)
         {
-            if (count == 0)
-            {
-                _cachedView.CommentCount.SetActiveEx(false);
-                _cachedView.CommentSelectedCount.SetActiveEx(false);
-            }
-            else
+            _cachedView.CommentCount.SetActiveEx(count > 0);
+            _cachedView.CommentSelectedCount.SetActiveEx(count > 0);
+            if (count > 0)
             {
                 _cachedView.CommentCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
                 _cachedView.CommentSelectedCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
@@ -320,6 +321,47 @@ namespace GameA
                 Project.UpdateLike(EProjectLikeState.PLS_AllRight,
                     () => { Project.Request(); });
             }
+        }
+
+        private void OnCommentInputEndEdit(string arg0)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                OnPostCommentBtn();
+            }
+        }
+
+        private void OnPostCommentBtn()
+        {
+            if (Project == null || Project.ProjectUserData == null) return;
+            if (!CheckPlayed("玩过才能评论哦~~现在进入关卡吗？"))
+            {
+                return;
+            }
+            if (_isPostComment)
+            {
+                return;
+            }
+            if (string.IsNullOrEmpty(_cachedView.CommentInput.text))
+            {
+                return;
+            }
+            _isPostComment = true;
+            Project.SendComment(_cachedView.CommentInput.text, flag =>
+            {
+                _isPostComment = false;
+                if (flag)
+                {
+                    _cachedView.CommentInput.text = string.Empty;
+                    _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
+                    if (_curMenu != EMenu.Comment)
+                    {
+                        _curMenu = EMenu.Comment;
+                        _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+                    }
+                    Project.Request();
+                }
+            });
         }
 
         private void OnHeadBtn()

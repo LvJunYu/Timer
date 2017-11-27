@@ -9,13 +9,10 @@ namespace GameA
         private const int _pageSize = 10;
         private List<ProjectComment> _contentList;
         private WorldProjectCommentList _data;
-        private bool _isPostComment;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
-            _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
             _cachedView.CommentTableScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
@@ -30,15 +27,8 @@ namespace GameA
         {
             _contentList = null;
             _cachedView.CommentInput.text = string.Empty;
+            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
             base.Close();
-        }
-
-        private void OnCommentInputEndEdit(string arg0)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                OnPostCommentBtn();
-            }
         }
 
         protected override void RequestData(bool append = false)
@@ -103,33 +93,6 @@ namespace GameA
             }
         }
 
-        private void OnPostCommentBtn()
-        {
-            if (_mainCtrl.Project == null || _mainCtrl.Project.ProjectUserData == null) return;
-            if (!_mainCtrl.CheckPlayed("玩过才能评论哦~~现在进入关卡吗？"))
-            {
-                return;
-            }
-            if (_isPostComment)
-            {
-                return;
-            }
-            if (string.IsNullOrEmpty(_cachedView.CommentInput.text))
-            {
-                return;
-            }
-            _isPostComment = true;
-            _mainCtrl.Project.SendComment(_cachedView.CommentInput.text, flag =>
-            {
-                _isPostComment = false;
-                if (flag)
-                {
-                    _cachedView.CommentInput.text = string.Empty;
-                    _mainCtrl.Project.Request();
-                }
-            });
-        }
-
         public void OnReplyProjectComment(long commentId, ProjectCommentReply reply)
         {
             var comment = _contentList.Find(p => p.Id == commentId);
@@ -142,7 +105,6 @@ namespace GameA
         
         public override void Clear()
         {
-            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
         }
 
     }
