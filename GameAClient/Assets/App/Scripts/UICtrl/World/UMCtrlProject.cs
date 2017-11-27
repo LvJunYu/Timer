@@ -5,13 +5,12 @@ namespace GameA
 {
     public class UMCtrlProject : UMCtrlBase<UMViewProject>, IDataItemRenderer
     {
-        private EFunc _efunc;
+        private ECurUI _eCurUI;
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
         public int Index { get; set; }
         private static string _newProject = "创建新关卡";
         private static string _countFormat = "({0})";
-        private bool _emptyProject;
 
         public RectTransform Transform
         {
@@ -54,8 +53,6 @@ namespace GameA
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
-                _emptyProject = _wrapper.Content != null && _efunc == EFunc.Editing &&
-                                _wrapper.Content == Project.EmptyProject;
             }
             RefreshView();
         }
@@ -67,15 +64,17 @@ namespace GameA
                 Unload();
                 return;
             }
+            bool emptyProject = _wrapper.Content == Project.EmptyProject;
             _cachedView.PublishedObj.SetActiveEx(false);
-            _cachedView.DownloadObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
+            _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
+            _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject &&
                                                 _wrapper.Content.ParentId != 0);
-            _cachedView.OriginalObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
+            _cachedView.OriginalObj.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject &&
                                                 _wrapper.Content.ParentId == 0);
-            _cachedView.BottomObj.SetActiveEx(_efunc == EFunc.Published);
-            _cachedView.EditImg.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing);
-            _cachedView.NewEditObj.SetActiveEx(_emptyProject);
-            if (_emptyProject)
+            _cachedView.BottomObj.SetActiveEx(_eCurUI != ECurUI.Editing);
+            _cachedView.EditImg.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject);
+            _cachedView.NewEditObj.SetActiveEx(_eCurUI == ECurUI.Editing && emptyProject);
+            if (emptyProject)
             {
                 DictionaryTools.SetContentText(_cachedView.Title, _newProject);
             }
@@ -94,9 +93,9 @@ namespace GameA
             }
         }
 
-        public void SetMode(EFunc eFunc)
+        public void SetCurUI(ECurUI eCurUI)
         {
-            _efunc = eFunc;
+            _eCurUI = eCurUI;
         }
 
         public void Unload()
@@ -104,10 +103,19 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
         }
 
-        public enum EFunc
+        public enum ECurUI
         {
-            Published,
+            None,
             Editing,
+            Published,
+            Recommend,
+            MaxScore,
+            NewestProject,
+            Follows,
+            UserFavorite,
+            UserPlayHistory,
+            RankList,
+            Search,
         }
     }
 }

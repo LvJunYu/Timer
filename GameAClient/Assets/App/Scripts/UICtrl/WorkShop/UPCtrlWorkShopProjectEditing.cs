@@ -58,7 +58,7 @@ namespace GameA
         protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
-            item.SetMode(UMCtrlProject.EFunc.Editing);
+            item.SetCurUI(UMCtrlProject.ECurUI.Editing);
             item.Init(parent, _resScenary);
             return item;
         }

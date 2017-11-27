@@ -73,12 +73,7 @@ namespace GameA
             }
         }
 
-        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
-        {
-            var item = new UMCtrlProject();
-            item.Init(parent, _resScenary);
-            return item;
-        }
+        protected abstract IDataItemRenderer GetItemRenderer(RectTransform parent);
 
         protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
         {

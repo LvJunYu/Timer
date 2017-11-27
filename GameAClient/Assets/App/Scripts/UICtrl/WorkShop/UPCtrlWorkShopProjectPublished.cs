@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -46,6 +47,14 @@ namespace GameA
                     }
                 }
             }
+        }
+        
+        protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlProject();
+            item.SetCurUI(UMCtrlProject.ECurUI.Published);
+            item.Init(parent, _resScenary);
+            return item;
         }
     }
 }

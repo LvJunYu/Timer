@@ -28,8 +28,6 @@ namespace GameA
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
         private readonly MatchUserData _matchUserData = new MatchUserData();
-        // 乱入对战相关数据
-        private readonly MatchShadowBattleData _matchShadowBattleData = new MatchShadowBattleData();
         // 增益道具
         private readonly UserProp _userProp = new UserProp();
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
@@ -130,12 +128,6 @@ namespace GameA
                 return _matchUserData;
             }
         }
-        
-        public MatchShadowBattleData MatchShadowBattleData
-        {
-            get { return _matchShadowBattleData; }
-        }
-
 
         public PersonalProjectList PersonalProjectList
         {

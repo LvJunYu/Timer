@@ -6,7 +6,6 @@ namespace GameA
     public class UICtrlShadowBattle : UICtrlResManagedBase<UIViewShadowBattle>
     {
         private USCtrlGameFinishReward[] _rewardCtrl;
-        private MatchShadowBattleData _data;
 
         protected override void OnViewCreated()
         {
@@ -24,7 +23,6 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _data = LocalUser.Instance.MatchShadowBattleData;
             RefreshView();
         }
 
@@ -41,7 +39,6 @@ namespace GameA
 
         private void RefreshView()
         {
-            if (_data == null) return;
 //            UpdateReward(_data);
         }
 

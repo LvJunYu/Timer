@@ -174,6 +174,7 @@ namespace GameA
             if (_sarchUmCtrlProject == null)
             {
                 _sarchUmCtrlProject = new UMCtrlProject();
+                _sarchUmCtrlProject.SetCurUI(UMCtrlProject.ECurUI.Search);
                 _sarchUmCtrlProject.Init(_cachedView.SearchPannelRtf, ResScenary);
             }
             CardDataRendererWrapper<Project> w =

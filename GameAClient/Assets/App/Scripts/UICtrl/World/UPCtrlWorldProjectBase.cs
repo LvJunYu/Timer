@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace GameA
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
             new Dictionary<long, CardDataRendererWrapper<Project>>();
 
+        protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
         protected bool _hasRequested;
@@ -29,6 +31,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _eCurUi = GetUMCurUI(_menu);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
@@ -68,6 +71,7 @@ namespace GameA
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
+            item.SetCurUI(_eCurUi);
             item.Init(parent, _resScenary);
             return item;
         }
@@ -111,6 +115,29 @@ namespace GameA
             _dict.Clear();
             _projectList = null;
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+        }
+
+        private UMCtrlProject.ECurUI GetUMCurUI(UICtrlWorld.EMenu menu)
+        {
+            switch (menu)
+            {
+                case UICtrlWorld.EMenu.Recommend:
+                    return UMCtrlProject.ECurUI.Recommend;
+                case UICtrlWorld.EMenu.MaxScore:
+                    return UMCtrlProject.ECurUI.MaxScore;
+                case UICtrlWorld.EMenu.NewestProject:
+                    return UMCtrlProject.ECurUI.NewestProject;
+                case UICtrlWorld.EMenu.Follows:
+                    return UMCtrlProject.ECurUI.Follows;
+                case UICtrlWorld.EMenu.UserFavorite:
+                    return UMCtrlProject.ECurUI.UserFavorite;
+                case UICtrlWorld.EMenu.UserPlayHistory:
+                    return UMCtrlProject.ECurUI.UserPlayHistory;
+                case UICtrlWorld.EMenu.RankList:
+                    return UMCtrlProject.ECurUI.RankList;
+                default:
+                    return UMCtrlProject.ECurUI.None;
+            }
         }
     }
 }
