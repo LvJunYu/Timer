@@ -23,7 +23,7 @@ namespace GameA
 
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
-        private bool _battleAvailable;
+        private bool _battleAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
