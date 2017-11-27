@@ -10,6 +10,7 @@ namespace GameA
         private int _index;
         public int Index { get; set; }
         private static string _newProject = "创建新关卡";
+        private static string _countFormat = "({0})";
         private bool _emptyProject;
 
         public RectTransform Transform
@@ -68,9 +69,9 @@ namespace GameA
             }
             _cachedView.PublishedObj.SetActiveEx(false);
             _cachedView.DownloadObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
-                                              _wrapper.Content.ParentId != 0);
+                                                _wrapper.Content.ParentId != 0);
             _cachedView.OriginalObj.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing &&
-                                              _wrapper.Content.ParentId == 0);
+                                                _wrapper.Content.ParentId == 0);
             _cachedView.BottomObj.SetActiveEx(_efunc == EFunc.Published);
             _cachedView.EditImg.SetActiveEx(!_emptyProject && _efunc == EFunc.Editing);
             _cachedView.NewEditObj.SetActiveEx(_emptyProject);
@@ -85,6 +86,9 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
                 DictionaryTools.SetContentText(_cachedView.Title, p.Name);
                 DictionaryTools.SetContentText(_cachedView.PraiseScoreTxt, p.ScoreFormat);
+                _cachedView.TotalTxt.SetActiveEx(p.TotalCount > 0);
+                DictionaryTools.SetContentText(_cachedView.TotalTxt, string.Format(_countFormat, p.TotalCount));
+                DictionaryTools.SetContentText(_cachedView.AuthorTxt, p.UserInfo.NickName);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
             }

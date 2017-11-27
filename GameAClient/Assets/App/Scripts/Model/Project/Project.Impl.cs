@@ -96,6 +96,18 @@ namespace GameA
             }
         }
 
+        public int TotalCount
+        {
+            get
+            {
+                if (_extendReady)
+                {
+                    return _extendData.UnlikeCount + _extendData.LikeCount;
+                }
+                return 0;
+            }
+        }
+
         public int FavoriteCount
         {
             get
