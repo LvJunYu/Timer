@@ -167,7 +167,8 @@ namespace GameA
         public static readonly int OnQQRewardGetChangee = SoyEngine.EMessengerType.NextId++;
 
         //留言板
-        public static readonly int OnMessageBoardElementSizeChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnReplyMessage = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnPublishDockActiveChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnReplyUserMessage = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnReplyProjectComment = SoyEngine.EMessengerType.NextId++;
     }
 }

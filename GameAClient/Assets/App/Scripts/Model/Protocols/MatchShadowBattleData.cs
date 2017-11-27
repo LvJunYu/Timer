@@ -10,7 +10,7 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// ECachedDataState
+        /// EMatchShadowBattleDataCode
         /// </summary>
         private int _resultCode;
         /// <summary>
@@ -20,11 +20,15 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private Record _record;
+        private long _token;
         /// <summary>
         /// 
         /// </summary>
-        private Reward _reward;
+        private byte[] _deadPos;
+        /// <summary>
+        /// 乱入对决
+        /// </summary>
+        private ShadowBattleData _shadowBattleData;
 
         // cs fields----------------------------------
         /// <summary>
@@ -36,7 +40,7 @@ namespace GameA
         #region 属性
         // sc properties----------------------------------
         /// <summary>
-        /// ECachedDataState
+        /// EMatchShadowBattleDataCode
         /// </summary>
         public int ResultCode { 
             get { return _resultCode; }
@@ -58,20 +62,30 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public Record Record { 
-            get { return _record; }
-            set { if (_record != value) {
-                _record = value;
+        public long Token { 
+            get { return _token; }
+            set { if (_token != value) {
+                _token = value;
                 SetDirty();
             }}
         }
         /// <summary>
         /// 
         /// </summary>
-        public Reward Reward { 
-            get { return _reward; }
-            set { if (_reward != value) {
-                _reward = value;
+        public byte[] DeadPos { 
+            get { return _deadPos; }
+            set { if (_deadPos != value) {
+                _deadPos = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 乱入对决
+        /// </summary>
+        public ShadowBattleData ShadowBattleData { 
+            get { return _shadowBattleData; }
+            set { if (_shadowBattleData != value) {
+                _shadowBattleData = value;
                 SetDirty();
             }}
         }
@@ -90,10 +104,7 @@ namespace GameA
                 if (null != _project && _project.IsDirty) {
                     return true;
                 }
-                if (null != _record && _record.IsDirty) {
-                    return true;
-                }
-                if (null != _reward && _reward.IsDirty) {
+                if (null != _shadowBattleData && _shadowBattleData.IsDirty) {
                     return true;
                 }
                 return base.IsDirty;
@@ -142,15 +153,12 @@ namespace GameA
             } else {
                 _project.OnSyncFromParent(msg.Project);
             }
-            if (null == _record) {
-                _record = new Record(msg.Record);
+            _token = msg.Token;           
+            _deadPos = msg.DeadPos;           
+            if (null == _shadowBattleData) {
+                _shadowBattleData = new ShadowBattleData(msg.ShadowBattleData);
             } else {
-                _record.OnSyncFromParent(msg.Record);
-            }
-            if (null == _reward) {
-                _reward = new Reward(msg.Reward);
-            } else {
-                _reward.OnSyncFromParent(msg.Reward);
+                _shadowBattleData.OnSyncFromParent(msg.ShadowBattleData);
             }
             OnSyncPartial(msg);
             return true;
@@ -166,17 +174,13 @@ namespace GameA
                 }
                 _project.CopyMsgData(msg.Project);
             }
-            if(null != msg.Record){
-                if (null == _record){
-                    _record = new Record(msg.Record);
+            _token = msg.Token;           
+            _deadPos = msg.DeadPos;           
+            if(null != msg.ShadowBattleData){
+                if (null == _shadowBattleData){
+                    _shadowBattleData = new ShadowBattleData(msg.ShadowBattleData);
                 }
-                _record.CopyMsgData(msg.Record);
-            }
-            if(null != msg.Reward){
-                if (null == _reward){
-                    _reward = new Reward(msg.Reward);
-                }
-                _reward.CopyMsgData(msg.Reward);
+                _shadowBattleData.CopyMsgData(msg.ShadowBattleData);
             }
             return true;
         } 
@@ -191,17 +195,13 @@ namespace GameA
                 }
                 _project.DeepCopy(obj.Project);
             }
-            if(null != obj.Record){
-                if (null == _record){
-                    _record = new Record();
+            _token = obj.Token;           
+            _deadPos = obj.DeadPos;           
+            if(null != obj.ShadowBattleData){
+                if (null == _shadowBattleData){
+                    _shadowBattleData = new ShadowBattleData();
                 }
-                _record.DeepCopy(obj.Record);
-            }
-            if(null != obj.Reward){
-                if (null == _reward){
-                    _reward = new Reward();
-                }
-                _reward.DeepCopy(obj.Reward);
+                _shadowBattleData.DeepCopy(obj.ShadowBattleData);
             }
             return true;
         }
@@ -220,8 +220,7 @@ namespace GameA
 
         public MatchShadowBattleData () { 
             _project = new Project();
-            _record = new Record();
-            _reward = new Reward();
+            _shadowBattleData = new ShadowBattleData();
             OnCreate();
         }
         #endregion

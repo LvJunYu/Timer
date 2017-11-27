@@ -40,6 +40,14 @@ namespace GameA
         /// 
         /// </summary>
         private bool _userLike;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _replyCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private ProjectCommentReply _firstReply;
         #endregion
 
         #region 属性
@@ -123,6 +131,26 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ReplyCount { 
+            get { return _replyCount; }
+            set { if (_replyCount != value) {
+                _replyCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public ProjectCommentReply FirstReply { 
+            get { return _firstReply; }
+            set { if (_firstReply != value) {
+                _firstReply = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -145,6 +173,12 @@ namespace GameA
             _createTime = msg.CreateTime;     
             _likeCount = msg.LikeCount;     
             _userLike = msg.UserLike;     
+            _replyCount = msg.ReplyCount;     
+            if (null == _firstReply) {
+                _firstReply = new ProjectCommentReply(msg.FirstReply);
+            } else {
+                _firstReply.OnSyncFromParent(msg.FirstReply);
+            }
             OnSyncPartial(msg);
             return true;
         }
@@ -170,6 +204,13 @@ namespace GameA
             _createTime = msg.CreateTime;           
             _likeCount = msg.LikeCount;           
             _userLike = msg.UserLike;           
+            _replyCount = msg.ReplyCount;           
+            if(null != msg.FirstReply){
+                if (null == _firstReply){
+                    _firstReply = new ProjectCommentReply(msg.FirstReply);
+                }
+                _firstReply.CopyMsgData(msg.FirstReply);
+            }
             return true;
         } 
 
@@ -194,6 +235,13 @@ namespace GameA
             _createTime = obj.CreateTime;           
             _likeCount = obj.LikeCount;           
             _userLike = obj.UserLike;           
+            _replyCount = obj.ReplyCount;           
+            if(null != obj.FirstReply){
+                if (null == _firstReply){
+                    _firstReply = new ProjectCommentReply();
+                }
+                _firstReply.DeepCopy(obj.FirstReply);
+            }
             return true;
         }
 
@@ -212,6 +260,7 @@ namespace GameA
         public ProjectComment () { 
             _userInfo = new UserInfoSimple();
             _targetUserInfo = new UserInfoSimple();
+            _firstReply = new ProjectCommentReply();
         }
         #endregion
     }

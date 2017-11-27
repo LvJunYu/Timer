@@ -889,6 +889,83 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingRequestHelpShadowBattle {
+            get { return _isRequstingRequestHelpShadowBattle; }
+        }
+        private static bool _isRequstingRequestHelpShadowBattle = false;
+        /// <summary>
+		/// 乱入对决请求帮战
+		/// </summary>
+		/// <param name="shadowBattleId">Id</param>
+		/// <param name="targetUserId"></param>
+        public static void RequestHelpShadowBattle (
+            long shadowBattleId,
+            long targetUserId,
+            Action<Msg_SC_CMD_RequestHelpShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingRequestHelpShadowBattle) {
+                return;
+            }
+            _isRequstingRequestHelpShadowBattle = true;
+            Msg_CS_CMD_RequestHelpShadowBattle msg = new Msg_CS_CMD_RequestHelpShadowBattle();
+            // 乱入对决请求帮战
+            msg.ShadowBattleId = shadowBattleId;
+            msg.TargetUserId = targetUserId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_RequestHelpShadowBattle>(
+                SoyHttpApiPath.RequestHelpShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingRequestHelpShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "RequestHelpShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingRequestHelpShadowBattle = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingGiveUpShadowBattle {
+            get { return _isRequstingGiveUpShadowBattle; }
+        }
+        private static bool _isRequstingGiveUpShadowBattle = false;
+        /// <summary>
+		/// 放弃乱入对决
+		/// </summary>
+		/// <param name="id">Id</param>
+        public static void GiveUpShadowBattle (
+            long id,
+            Action<Msg_SC_CMD_GiveUpShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingGiveUpShadowBattle) {
+                return;
+            }
+            _isRequstingGiveUpShadowBattle = true;
+            Msg_CS_CMD_GiveUpShadowBattle msg = new Msg_CS_CMD_GiveUpShadowBattle();
+            // 放弃乱入对决
+            msg.Id = id;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GiveUpShadowBattle>(
+                SoyHttpApiPath.GiveUpShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingGiveUpShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GiveUpShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingGiveUpShadowBattle = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCommitWorldProjectResult {
             get { return _isRequstingCommitWorldProjectResult; }
         }
@@ -924,6 +1001,52 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingCommitWorldProjectResult = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReplyProjectComment {
+            get { return _isRequstingReplyProjectComment; }
+        }
+        private static bool _isRequstingReplyProjectComment = false;
+        /// <summary>
+		/// 回复关卡评论
+		/// </summary>
+		/// <param name="commentId"></param>
+		/// <param name="content">内容</param>
+		/// <param name="replyOther">是否回复他人</param>
+		/// <param name="targetReplyId">回复的回复ID</param>
+        public static void ReplyProjectComment (
+            long commentId,
+            string content,
+            bool replyOther,
+            long targetReplyId,
+            Action<Msg_SC_CMD_ReplyProjectComment> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReplyProjectComment) {
+                return;
+            }
+            _isRequstingReplyProjectComment = true;
+            Msg_CS_CMD_ReplyProjectComment msg = new Msg_CS_CMD_ReplyProjectComment();
+            // 回复关卡评论
+            msg.CommentId = commentId;
+            msg.Content = content;
+            msg.ReplyOther = replyOther;
+            msg.TargetReplyId = targetReplyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReplyProjectComment>(
+                SoyHttpApiPath.ReplyProjectComment, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReplyProjectComment = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReplyProjectComment", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReplyProjectComment = false;
                 },
                 form
             );

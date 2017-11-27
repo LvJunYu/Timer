@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlPersonalInfoReplyMessage : UMCtrlBase<UMViewPersonalInfoReplyMessage>, IDataItemRenderer
+    public class UMCtrlPersonalInfoReplyMessage : UMCtrlBase<UMViewPersonalInfoReplyMessage>, IDataItemRenderer, IUMPool
     {
-        private static string _contentFormat = "<color=orange>{0}</color>:{1}";
-        private static string _contentReplyFormat = "<color=orange>{0}</color>回复<color=orange>{1}</color>:{2}";
+        protected static string _contentFormat = "<color=orange>{0}</color>:{1}";
+        protected static string _contentReplyFormat = "<color=orange>{0}</color>回复<color=orange>{1}</color>:{2}";
         private UserMessageReply _reply;
-        private bool _openPublishDock;
+        protected bool _openPublishDock;
         public bool IsShow { get; private set; }
         public int Index { get; set; }
 
@@ -18,7 +18,7 @@ namespace GameA
             get { return _cachedView.Trans; }
         }
 
-        public object Data
+        public virtual object Data
         {
             get { return _reply; }
         }
@@ -27,12 +27,12 @@ namespace GameA
         {
             base.OnViewCreated();
             IsShow = true;
-            _cachedView.ReplayBtn.onClick.AddListener(OnReplayBtn);
+            _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
         }
 
-        public void Set(object obj)
+        public virtual void Set(object obj)
         {
             _reply = obj as UserMessageReply;
             if (_reply == null)
@@ -44,7 +44,7 @@ namespace GameA
             RefreshView();
         }
 
-        public void RefreshView()
+        protected virtual void RefreshView()
         {
             _cachedView.PublishDock.SetActive(_openPublishDock);
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;
@@ -63,7 +63,7 @@ namespace GameA
             Canvas.ForceUpdateCanvases();
         }
 
-        private void OnInputEndEdit(string arg0)
+        protected virtual void OnInputEndEdit(string arg0)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
@@ -71,7 +71,7 @@ namespace GameA
             }
         }
 
-        private void OnSendBtn()
+        protected virtual void OnSendBtn()
         {
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
@@ -85,23 +85,22 @@ namespace GameA
                 reply.RelayOther = true;
                 reply.UserInfoDetail = LocalUser.Instance.User;
                 reply.TargetUserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyMessage, reply.MessageId, reply);
+                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, reply.MessageId, reply);
             }
             SetPublishDock(false);
         }
 
-        private void OnReplayBtn()
+        protected virtual void OnReplyBtn()
         {
             SetPublishDock(!_openPublishDock);
         }
 
-        private void SetPublishDock(bool value)
+        protected virtual void SetPublishDock(bool value)
         {
-            if (_reply == null) return;
             _openPublishDock = value;
             _cachedView.PublishDock.SetActive(_openPublishDock);
             Canvas.ForceUpdateCanvases();
-            Messenger.Broadcast(EMessengerType.OnMessageBoardElementSizeChanged);
+            Messenger.Broadcast(EMessengerType.OnPublishDockActiveChanged);
             if (_openPublishDock)
             {
                 if (UMCtrlPersonalInfoMessage.OpenInputCallBack != null)
@@ -131,13 +130,18 @@ namespace GameA
         public void Hide()
         {
             IsShow = false;
-            _cachedView.SetActiveEx(false);
+            _cachedView.Trans.anchoredPosition = new Vector2(100000, 0);
         }
 
         public void Show()
         {
             IsShow = true;
-            _cachedView.SetActiveEx(true);
+            _cachedView.Trans.anchoredPosition = Vector2.zero;
+        }
+
+        public void SetParent(RectTransform rectTransform)
+        {
+            _cachedView.Trans.SetParent(rectTransform);
         }
     }
 }

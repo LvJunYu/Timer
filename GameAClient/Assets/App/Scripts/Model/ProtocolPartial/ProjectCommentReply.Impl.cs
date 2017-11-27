@@ -1,10 +1,10 @@
 using System;
-using SoyEngine;
 using SoyEngine.Proto;
+using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserMessageReply
+    public partial class ProjectCommentReply
     {
         private UserInfoDetail _userInfoDetail;
 
@@ -22,7 +22,7 @@ namespace GameA
             set { _targetUserInfoDetail = value; } //测试用
         }
 
-        protected override void OnSyncPartial(Msg_UserMessageReply msg)
+        protected override void OnSyncPartial(Msg_ProjectCommentReply msg)
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
@@ -34,7 +34,7 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyUserMessage(_messageId, content, true, _id, res =>
+                RemoteCommands.ReplyProjectComment(_commentId, content, true, _id, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {

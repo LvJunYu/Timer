@@ -78,10 +78,20 @@ namespace SoyEngine
         public const string UserPublishedWorldProjectList = "/world/getUserPublishedProjectList";
         // Msg_CS_CMD_PlayWorldProject
         public const string PlayWorldProject = "/world/playProject";
+        // 匹配乱入对决
+        public const string MatchShadowBattleData = "/world/matchShadowBattleData";
+        // 乱入对决请求帮战
+        public const string RequestHelpShadowBattle = "/world/requestHelpShadowBattle";
+        // 放弃乱入对决
+        public const string GiveUpShadowBattle = "/world/giveUpShadowBattle";
         // 提交过关世界关卡数据
         public const string CommitWorldProjectResult = "/world/commitProjectResult";
         // 获取世界关卡评论列表
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
+        // 获取关卡评论回复
+        public const string ProjectCommentReplyData = "/user/getProjectCommentReplyData";
+        // 回复关卡评论
+        public const string ReplyProjectComment = "/user/replyProjectComment";
         // 提交世界关卡评论
         public const string PostWorldProjectComment = "/world/postProjectComment";
         // 修改评论赞
@@ -116,8 +126,6 @@ namespace SoyEngine
         public const string WorldFollowedUserProjectList = "/world/getFollowedUserProjectList";
         // 排行榜
         public const string WorldRankList = "/world/getRankList";
-        // 匹配乱入对决
-        public const string MatchShadowBattleData = "/world/matchShadowBattleData";
         // 搜索关卡
         public const string SearchWorldProject = "/world/searchProject";
         // 录像

@@ -272,7 +272,6 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
-
                     PrepareRes(() =>
                     {
                         if (successCallback != null)

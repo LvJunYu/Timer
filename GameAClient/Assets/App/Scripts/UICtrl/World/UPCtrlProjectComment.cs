@@ -130,9 +130,20 @@ namespace GameA
             });
         }
 
+        public void OnReplyProjectComment(long commentId, ProjectCommentReply reply)
+        {
+            var comment = _contentList.Find(p => p.Id == commentId);
+            if (comment != null)
+            {
+                comment.LocalAddReply(reply);
+                _cachedView.CommentTableScroller.RefreshCurrent();
+            }
+        }
+        
         public override void Clear()
         {
             _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
         }
+
     }
 }

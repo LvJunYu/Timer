@@ -96,8 +96,8 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
             RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
-            RegisterEvent(EMessengerType.OnMessageBoardElementSizeChanged, OnMessageBoardElementSizeChanged);
-            RegisterEvent<long, UserMessageReply>(EMessengerType.OnReplyMessage, OnReplyMessage);
+            RegisterEvent(EMessengerType.OnPublishDockActiveChanged, OnMessageBoardElementSizeChanged);
+            RegisterEvent<long, UserMessageReply>(EMessengerType.OnReplyUserMessage, OnReplyMessage);
         }
 
         protected override void OnOpen(object parameter)
@@ -160,7 +160,10 @@ namespace GameA
 
         private void OnMessageBoardElementSizeChanged()
         {
-            _cachedView.MessageTableDataScroller.RefreshAllSizes();
+            if (_isOpen && _curMenu == EMenu.MessageBoard)
+            {
+                _cachedView.MessageTableDataScroller.RefreshAllSizes();
+            }
         }
 
         private void Clear()

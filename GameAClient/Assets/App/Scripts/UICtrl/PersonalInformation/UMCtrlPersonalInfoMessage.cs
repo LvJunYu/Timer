@@ -12,14 +12,14 @@ namespace GameA
         protected static string _contentFormat = "<color=orange>{0}</color>:{1}";
         protected static string _totalFormat = "共{0}条回复";
         protected static string _moreFormat = "更多{0}条回复";
-        protected const int pageSize = 5;
-        private UserMessage _message;
-        protected UMCtrlPersonalInfoReplyMessage _firstReplay;
         protected EResScenary _resScenary;
         protected bool _unfold;
         protected bool _openPublishDock;
-        protected List<UMCtrlPersonalInfoReplyMessage> _umCache = new List<UMCtrlPersonalInfoReplyMessage>(8);
-        protected List<UserMessageReply> _dataList;
+        private const int pageSize = 5;
+        private UserMessage _message;
+        private UMCtrlPersonalInfoReplyMessage _firstReplay;
+        private List<UserMessageReply> _dataList;
+        private List<UMCtrlPersonalInfoReplyMessage> _umCache = new List<UMCtrlPersonalInfoReplyMessage>(8);
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -27,7 +27,7 @@ namespace GameA
             get { return _cachedView.Trans; }
         }
 
-        public object Data
+        public virtual object Data
         {
             get { return _message; }
         }
@@ -44,16 +44,21 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.PraiseBtn.onClick.AddListener(OnPraiseBtn);
-            _cachedView.ReplayBtn.onClick.AddListener(OnReplayBtn);
+            _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
             _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.MoreBtn.onClick.AddListener(OnMoreBtn);
             _cachedView.FoldBtn.onClick.AddListener(OnFoldBtn);
+            InitFirstUM();
+        }
+
+        protected virtual void InitFirstUM()
+        {
             _firstReplay = new UMCtrlPersonalInfoReplyMessage();
             _firstReplay.Init(_cachedView.FirstReplyRtf, _resScenary);
         }
 
-        public void Set(object obj)
+        public virtual void Set(object obj)
         {
             _message = obj as UserMessage;
             if (_message == null)
@@ -101,7 +106,7 @@ namespace GameA
             Canvas.ForceUpdateCanvases();
         }
 
-        protected void RefreshReplyDock(bool Broadcast = false)
+        protected virtual void RefreshReplyDock(bool Broadcast = false)
         {
             _cachedView.ReplayDock.SetActive(_message.ReplyCount > 0);
             if (_message.ReplyCount > 0)
@@ -115,7 +120,7 @@ namespace GameA
                 }
                 if (_dataList.Count == 0)
                 {
-                    ClearCache();
+                    ClearItem();
                     _cachedView.MoreTxt.text = string.Format(_totalFormat, _message.ReplyCount);
                     _cachedView.MoreBtn.SetActiveEx(true);
                 }
@@ -129,63 +134,45 @@ namespace GameA
                     }
                     _cachedView.MoreTxt.text = string.Format(_moreFormat, remainCount);
                     _cachedView.MoreBtn.SetActiveEx(remainCount > 0);
+                    ClearItem();
                     for (int i = 0; i < _dataList.Count; i++)
                     {
-                        if (i < _umCache.Count)
-                        {
-                            if (!_umCache[i].IsShow)
-                            {
-                                _umCache[i].Show();
-                            }
-                            _umCache[i].Set(_dataList[i]);
-                        }
-                        else
-                        {
-                            GetItem().Set(_dataList[i]);
-                        }
+                        GetItem().Set(_dataList[i]);
                     }
                 }
             }
             Canvas.ForceUpdateCanvases();
             if (Broadcast)
             {
-                Messenger.Broadcast(EMessengerType.OnMessageBoardElementSizeChanged);
+                Messenger.Broadcast(EMessengerType.OnPublishDockActiveChanged);
             }
         }
 
-        protected UMCtrlPersonalInfoReplyMessage GetItem()
+        private UMCtrlPersonalInfoReplyMessage GetItem()
         {
-            var item = _umCache.Find(p => !p.IsShow);
-            if (item == null)
-            {
-                item = new UMCtrlPersonalInfoReplyMessage();
-                item.Init(_cachedView.ReplayRtf, _resScenary);
-                _umCache.Add(item);
-            }
-            else
-            {
-                item.Show();
-            }
+            var item = UMPoolManager.Instance.Get<UMCtrlPersonalInfoReplyMessage>(_cachedView.ReplayRtf, _resScenary);
+            _umCache.Add(item);
             return item;
         }
 
-        protected void ClearCache()
+        private void ClearItem()
         {
-            _umCache.ForEach(p => p.Hide());
+            _umCache.ForEach(p => UMPoolManager.Instance.Free(p));
+            _umCache.Clear();
         }
 
-        protected void OnMoreBtn()
+        protected virtual void OnMoreBtn()
         {
             RequestData(_unfold);
         }
 
-        protected void OnFoldBtn()
+        protected virtual void OnFoldBtn()
         {
             _dataList.Clear();
             RefreshReplyDock(true);
         }
 
-        protected void TempData()
+        protected virtual void TempData()
         {
             if (_dataList.Count == _message.ReplyCount) return;
             for (int i = 0; i < pageSize; i++)
@@ -211,7 +198,7 @@ namespace GameA
             RefreshReplyDock(true);
         }
 
-        protected void OnSendBtn()
+        protected virtual void OnSendBtn()
         {
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
@@ -224,12 +211,12 @@ namespace GameA
                 reply.MessageId = _message.Id;
                 reply.RelayOther = false;
                 reply.UserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyMessage, _message.Id, reply);
+                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _message.Id, reply);
             }
             SetPublishDock(false);
         }
 
-        protected void OnInputEndEdit(string arg0)
+        protected virtual void OnInputEndEdit(string arg0)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
@@ -237,12 +224,12 @@ namespace GameA
             }
         }
 
-        protected void OnReplayBtn()
+        protected virtual void OnReplyBtn()
         {
             SetPublishDock(!_openPublishDock);
         }
 
-        protected void OnPraiseBtn()
+        protected virtual void OnPraiseBtn()
         {
             if (_message.UserLike)
             {
@@ -256,7 +243,7 @@ namespace GameA
             RefreshView();
         }
 
-        protected void OnHeadBtn()
+        protected virtual void OnHeadBtn()
         {
             if (_message != null)
             {
@@ -264,13 +251,12 @@ namespace GameA
             }
         }
 
-        protected void SetPublishDock(bool value)
+        protected virtual void SetPublishDock(bool value)
         {
-            if (_message == null) return;
             _openPublishDock = value;
             _cachedView.PublishDock.SetActive(_openPublishDock);
             Canvas.ForceUpdateCanvases();
-            Messenger.Broadcast(EMessengerType.OnMessageBoardElementSizeChanged);
+            Messenger.Broadcast(EMessengerType.OnPublishDockActiveChanged);
             if (_openPublishDock)
             {
                 if (OpenInputCallBack != null)
@@ -292,13 +278,12 @@ namespace GameA
             _cachedView.HeadBtn.onClick.RemoveAllListeners();
             _cachedView.PraiseBtn.onClick.RemoveAllListeners();
             _cachedView.ReplayBtn.onClick.RemoveAllListeners();
-            _umCache.ForEach(p => p.Destroy());
             base.OnDestroy();
         }
 
-        public void Unload()
+        public virtual void Unload()
         {
-            ClearCache();
+            ClearItem();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultIconTexture);
         }
     }

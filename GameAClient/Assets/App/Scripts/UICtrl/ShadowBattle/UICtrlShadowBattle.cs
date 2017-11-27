@@ -42,7 +42,7 @@ namespace GameA
         private void RefreshView()
         {
             if (_data == null) return;
-            UpdateReward(_data.Reward);
+//            UpdateReward(_data);
         }
 
         private void OnCancelBtn()

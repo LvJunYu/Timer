@@ -114,6 +114,8 @@ namespace GameA
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToApp);
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
+            RegisterEvent(EMessengerType.OnPublishDockActiveChanged, OnMessageBoardElementSizeChanged);
+            RegisterEvent<long, ProjectCommentReply>(EMessengerType.OnReplyProjectComment, OnReplyProjectComment);
         }
 
         protected override void OnDestroy()
@@ -425,6 +427,22 @@ namespace GameA
                 {
                     _curMenuCtrl.OnChangeHandler(projectId);
                 }
+            }
+        }
+
+        private void OnMessageBoardElementSizeChanged()
+        {
+            if (_isOpen && _curMenu == EMenu.Comment)
+            {
+                _cachedView.CommentTableScroller.RefreshAllSizes();
+            }
+        }
+
+        private void OnReplyProjectComment(long commentId, ProjectCommentReply reply)
+        {
+            if (_curMenu == EMenu.Comment)
+            {
+                ((UPCtrlProjectComment) _curMenuCtrl).OnReplyProjectComment(commentId, reply);
             }
         }
 
