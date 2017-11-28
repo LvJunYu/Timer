@@ -12,7 +12,7 @@ namespace GameA.Game
         protected static ShadowUnit _instance;
         private static string Victory = "Victory";
         protected ShadowData _shadowData;
-        protected Color _color = Color.white;
+        protected Color _color = new Color(0.57f, 0.57f, 0.57f, 1);
         protected SkeletonAnimation _skeletonAnimation;
         protected int _deadFrame;
         protected int _onPortalFrame;
@@ -58,6 +58,16 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            var value = base.InstantiateView();
+            if (value)
+            {
+                _view.SetRendererColor(_color);
+            }
+            return value;
+        }
+
         public void SetShadowData(ShadowData shadowData, int aHeadFrame = 0)
         {
             _shadowData = shadowData;
@@ -67,6 +77,10 @@ namespace GameA.Game
         internal override void Reset()
         {
             base.Reset();
+            if (_view != null)
+            {
+                _view.SetRendererColor(_color);
+            }
             SkeletonAnimation.Reset();
             ClearData();
         }
