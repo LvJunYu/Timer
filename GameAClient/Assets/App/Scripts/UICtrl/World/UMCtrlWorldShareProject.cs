@@ -5,7 +5,7 @@ namespace GameA
 {
     public class UMCtrlWorldShareProject : UMCtrlBase<UMViewWorldShareProject>, IDataItemRenderer
     {
-        private CardDataRendererWrapper<UserInfoDetail> _wrapper;
+        protected CardDataRendererWrapper<UserInfoDetail> _wrapper;
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -25,7 +25,7 @@ namespace GameA
             _cachedView.SelectTog.onValueChanged.AddListener(OnSelectTogValueChanged);
         }
 
-        private void OnSelectTogValueChanged(bool value)
+        protected void OnSelectTogValueChanged(bool value)
         {
             if (_wrapper != null)
             {
@@ -41,12 +41,10 @@ namespace GameA
             base.OnDestroy();
         }
 
-        private void OnHeadBtn()
+        protected virtual void OnHeadBtn()
         {
             if (_wrapper != null)
             {
-//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailShare>();
-//                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content);
             }
         }

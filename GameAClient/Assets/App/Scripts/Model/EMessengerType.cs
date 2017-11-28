@@ -170,5 +170,9 @@ namespace GameA
         public static readonly int OnPublishDockActiveChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnReplyUserMessage = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnReplyProjectComment = SoyEngine.EMessengerType.NextId++;
+        
+        //乱入
+        public static readonly int OnShadowBattleStart = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnShadowBattleFriendHelp = SoyEngine.EMessengerType.NextId++;
     }
 }

@@ -53,7 +53,10 @@ namespace GameA
             }
             else
             {
-                SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project.Request();
+                if (SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project != null)
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project.Request();
+                }
             }
             SocialGUIManager.Instance.CloseUI<UICtrlWorldProjectComment>();
         }

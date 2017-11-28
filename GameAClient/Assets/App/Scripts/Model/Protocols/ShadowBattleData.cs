@@ -1,4 +1,4 @@
-//  | 匹配乱入对决数据
+// 匹配乱入对决 | 匹配乱入对决
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,8 +6,9 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ShadowBattleData : SyncronisticData<Msg_ShadowBattleData> {
+    public partial class ShadowBattleData : SyncronisticData<Msg_SC_DAT_ShadowBattleData> {
         #region 字段
+        // sc fields----------------------------------
         /// <summary>
         /// 乱入对决Id
         /// </summary>
@@ -24,9 +25,16 @@ namespace GameA
         /// 原始挑战者
         /// </summary>
         private UserInfoSimple _originPlayer;
+
+        // cs fields----------------------------------
+        /// <summary>
+        /// BattleId
+        /// </summary>
+        private long _cs_id;
         #endregion
 
         #region 属性
+        // sc properties----------------------------------
         /// <summary>
         /// 乱入对决Id
         /// </summary>
@@ -67,13 +75,68 @@ namespace GameA
                 SetDirty();
             }}
         }
+        
+        // cs properties----------------------------------
+        /// <summary>
+        /// BattleId
+        /// </summary>
+        public long CS_Id { 
+            get { return _cs_id; }
+            set { _cs_id = value; }
+        }
+
+        public override bool IsDirty {
+            get {
+                if (null != _record && _record.IsDirty) {
+                    return true;
+                }
+                if (null != _reward && _reward.IsDirty) {
+                    return true;
+                }
+                if (null != _originPlayer && _originPlayer.IsDirty) {
+                    return true;
+                }
+                return base.IsDirty;
+            }
+        }
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_ShadowBattleData msg)
+        /// <summary>
+		/// 匹配乱入对决
+		/// </summary>
+		/// <param name="id">BattleId.</param>
+        public void Request (
+            long id,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            if (_isRequesting) {
+                if (_cs_id != id) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_id = id;
+                OnRequest (successCallback, failedCallback);
+
+                Msg_CS_DAT_ShadowBattleData msg = new Msg_CS_DAT_ShadowBattleData();
+                msg.Id = id;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_ShadowBattleData>(
+                    SoyHttpApiPath.ShadowBattleData, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
+        }
+
+        public bool OnSync (Msg_SC_DAT_ShadowBattleData msg)
         {
             if (null == msg) return false;
-            _id = msg.Id;     
+            _id = msg.Id;           
             if (null == _record) {
                 _record = new Record(msg.Record);
             } else {
@@ -92,8 +155,8 @@ namespace GameA
             OnSyncPartial(msg);
             return true;
         }
-
-        public bool CopyMsgData (Msg_ShadowBattleData msg)
+        
+        public bool CopyMsgData (Msg_SC_DAT_ShadowBattleData msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
@@ -143,13 +206,13 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_ShadowBattleData msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_ShadowBattleData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ShadowBattleData (Msg_ShadowBattleData msg) {
+        public ShadowBattleData (Msg_SC_DAT_ShadowBattleData msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
@@ -159,6 +222,7 @@ namespace GameA
             _record = new Record();
             _reward = new Reward();
             _originPlayer = new UserInfoSimple();
+            OnCreate();
         }
         #endregion
     }

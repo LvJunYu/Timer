@@ -1,11 +1,14 @@
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlShadowBattle : UICtrlResManagedBase<UIViewShadowBattle>
     {
+        private Msg_SC_CMD_MatchShadowBattle _matchShadowBattle;
         private USCtrlGameFinishReward[] _rewardCtrl;
+        private Reward _reward;
 
         protected override void OnViewCreated()
         {
@@ -23,6 +26,12 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _matchShadowBattle = parameter as Msg_SC_CMD_MatchShadowBattle;
+            if (null == _matchShadowBattle)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
+                return;
+            }
             RefreshView();
         }
 
@@ -39,7 +48,15 @@ namespace GameA
 
         private void RefreshView()
         {
-//            UpdateReward(_data);
+            var user = _matchShadowBattle.Project.UserInfo;
+            _cachedView.NickName.text = user.NickName;
+            _cachedView.MaleIcon.SetActiveEx(user.Sex == ESex.S_Male);
+            _cachedView.FemaleIcon.SetActiveEx(user.Sex == ESex.S_Female);
+            _cachedView.AdvLevel.text = user.LevelData.PlayerLevel.ToString();
+            _cachedView.CreatorLevel.text = user.LevelData.CreatorLevel.ToString();
+            _cachedView.Score.text = _matchShadowBattle.PlayProjectData.ShadowBattleData.Record.Score.ToString();
+            _reward = new Reward(_matchShadowBattle.PlayProjectData.ShadowBattleData.Reward);
+            UpdateReward(_reward);
         }
 
         private void OnCancelBtn()
@@ -49,6 +66,24 @@ namespace GameA
 
         private void OnPlayBtn()
         {
+            if (null == _matchShadowBattle) return;
+            Record record = new Record(_matchShadowBattle.PlayProjectData.ShadowBattleData.Record);
+            Project project = new Project(_matchShadowBattle.Project);
+            long battleId = _matchShadowBattle.PlayProjectData.ShadowBattleData.Id;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
+            project.RequestPlayShadowBattle(battleId, record, () =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                GameManager.Instance.RequestPlayShadowBattle(project, record);
+                Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, battleId);
+                Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart, _reward);
+                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
+                SocialApp.Instance.ChangeToGame();
+            }, () =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("进入关卡失败");
+            });
         }
 
         private void UpdateReward(Reward reward)

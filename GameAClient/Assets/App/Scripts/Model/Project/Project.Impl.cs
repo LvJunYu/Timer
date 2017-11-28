@@ -314,11 +314,32 @@ namespace GameA
             });
         }
 
-        public void RequestPlayShadowBattle(Record record, Action successCallback, Action failedCallback)
+        public void RequestPlayShadowBattle(long battleId, Record record, Action successCallback, Action failedCallback)
         {
             record.PrepareRecord(() =>
             {
-                RequestPlay(successCallback, code =>
+                RemoteCommands.MatchShadowBattle(battleId, msg =>
+                {
+                    _commitToken = msg.PlayProjectData.Token;
+                    _deadPos = msg.PlayProjectData.DeadPos;
+                    if (_projectUserData != null)
+                    {
+                        _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+                    }
+                    PrepareRes(() =>
+                    {
+                        if (successCallback != null)
+                        {
+                            successCallback.Invoke();
+                        }
+                    }, () =>
+                    {
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke();
+                        }
+                    });
+                }, code =>
                 {
                     if (failedCallback != null)
                     {

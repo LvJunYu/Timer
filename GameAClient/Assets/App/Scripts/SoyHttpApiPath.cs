@@ -79,7 +79,9 @@ namespace SoyEngine
         // Msg_CS_CMD_PlayWorldProject
         public const string PlayWorldProject = "/world/playProject";
         // 匹配乱入对决
-        public const string MatchShadowBattle = "/world/matchShadowBattleData";
+        public const string MatchShadowBattle = "/world/matchShadowBattle";
+        // 匹配乱入对决
+        public const string ShadowBattleData = "/world/getShadowBattleData";
         // 乱入对决请求帮战
         public const string RequestHelpShadowBattle = "/world/requestHelpShadowBattle";
         // 放弃乱入对决

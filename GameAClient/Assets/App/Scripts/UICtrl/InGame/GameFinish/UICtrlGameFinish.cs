@@ -36,6 +36,7 @@ namespace GameA
         private int _curMarkStarValue;
         private USCtrlGameFinishReward[] _rewardCtrl;
         private Record _friendRecord;
+        private Reward _battleReward;
         private FriendRecordData _friendRecordData = new FriendRecordData();
 
         protected override void InitGroupId()
@@ -53,6 +54,7 @@ namespace GameA
             _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
             _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
             _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.FriendHelpBtn.onClick.AddListener(OnFriendHelpBtn);
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -84,10 +86,35 @@ namespace GameA
             base.OnClose();
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnShadowBattleFriendHelp, OnShadowBattleFriendHelp);
+            RegisterEvent<Reward>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
+        }
+
+        private void OnShadowBattleFriendHelp()
+        {
+            if (_isOpen)
+            {
+                OnReturnBtn();
+            }
+        }
+
         public override void OnUpdate()
         {
             base.OnUpdate();
             _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
+        }
+
+        private void OnShadowBattleStart(Reward reward)
+        {
+            _battleReward = reward;
+        }
+
+        private void OnFriendHelpBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleFriendHelp>();
         }
 
         private void OnPlayRecordBtn()
@@ -329,7 +356,7 @@ namespace GameA
                     _cachedView.ExpBarObj.SetActive(true);
                     _cachedView.PlayRecordObj.SetActive(false);
                     //Todo 更新奖励
-                    //UpdateReward ();
+                    UpdateReward(_battleReward);
 
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();

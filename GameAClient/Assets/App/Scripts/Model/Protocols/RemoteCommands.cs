@@ -896,9 +896,9 @@ namespace GameA
         /// <summary>
 		/// 匹配乱入对决
 		/// </summary>
-		/// <param name="userId">用户Id</param>
+		/// <param name="id">BattleId</param>
         public static void MatchShadowBattle (
-            long userId,
+            long id,
             Action<Msg_SC_CMD_MatchShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -908,7 +908,7 @@ namespace GameA
             _isRequstingMatchShadowBattle = true;
             Msg_CS_CMD_MatchShadowBattle msg = new Msg_CS_CMD_MatchShadowBattle();
             // 匹配乱入对决
-            msg.UserId = userId;
+            msg.Id = id;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MatchShadowBattle>(
                 SoyHttpApiPath.MatchShadowBattle, msg, ret => {
                     if (successCallback != null) {
