@@ -20,10 +20,11 @@ namespace GameA.Game
         protected GM2DRecordData _gm2drecordData;
         public ShadowData ShadowData = new ShadowData();
         public ShadowData ShadowDataPlayed;
+        protected bool _playShadowData;
 
         public virtual bool PlayShadowData
         {
-            get { return false; }
+            get { return _playShadowData; }
         }
 
         public virtual bool SaveShadowData
@@ -63,6 +64,7 @@ namespace GameA.Game
             _startType = startType;
             _coroutineProxy = coroutineProxy;
             _run = true;
+            _playShadowData = false;
             return true;
         }
 

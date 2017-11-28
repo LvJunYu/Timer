@@ -11,6 +11,8 @@ namespace GameA.Game
     {
         protected UICtrlGameFinish.EShowState _successType;
         protected UICtrlGameFinish.EShowState _failType;
+        private bool _firstStart;
+        private long _shadowBattleId;
 
         public override bool SaveShadowData
         {
@@ -24,9 +26,28 @@ namespace GameA.Game
             {
                 return false;
             }
-            _gameSituation = EGameSituation.World;
-            _successType = UICtrlGameFinish.EShowState.Win;
-            _failType = UICtrlGameFinish.EShowState.Lose;
+            if (param != null)
+            {
+                _playShadowData = true;
+                _firstStart = true;
+                _gameSituation = EGameSituation.ShadowBattle;
+                _successType = UICtrlGameFinish.EShowState.ShadowBattleWin;
+                _failType = UICtrlGameFinish.EShowState.ShadowBattleLose;
+                ShadowDataPlayed = null;
+                var msg = param as Msg_SC_DAT_ShadowBattleData;
+                _record = new Record(msg.Record);
+                _shadowBattleId = msg.Id;
+                if (InitRecord() && _gm2drecordData.ShadowData != null)
+                {
+                    ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
+                }
+            }
+            else
+            {
+                _gameSituation = EGameSituation.World;
+                _successType = UICtrlGameFinish.EShowState.Win;
+                _failType = UICtrlGameFinish.EShowState.Lose;
+            }
             return true;
         }
 
@@ -142,7 +163,7 @@ namespace GameA.Game
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
         {
             base.QuitGame(successCB, failureCB, forceQuitWhenFailed);
-            if (_project.ProjectUserData.PlayCount == 0)
+            if (!_playShadowData && _project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorldProjectComment>(_project);
             }
@@ -150,15 +171,32 @@ namespace GameA.Game
 
         public override bool Restart(Action<bool> successCb, Action failedCb)
         {
-            _project.RequestPlay(() =>
+            if (_playShadowData)
             {
-                GameRun.Instance.RePlay();
-                OnGameStart();
-                if (successCb != null)
+                _project.RequestPlayShadowBattle(_shadowBattleId, () =>
                 {
-                    successCb.Invoke(true);
-                }
-            }, code => failedCb());
+                    GameRun.Instance.RePlay();
+                    _firstStart = false;
+                    OnGameStart();
+                    if (successCb != null)
+                    {
+                        successCb.Invoke(true);
+                    }
+                }, failedCb);
+            }
+            else
+            {
+                _project.RequestPlay(() =>
+                {
+                    GameRun.Instance.RePlay();
+                    _firstStart = false;
+                    OnGameStart();
+                    if (successCb != null)
+                    {
+                        successCb.Invoke(true);
+                    }
+                }, code => failedCb());
+            }
             return true;
         }
 
@@ -198,6 +236,10 @@ namespace GameA.Game
             yield return null;
             _run = true;
             GameRun.Instance.Playing();
+            if (_playShadowData && _firstStart)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleSurprise>();
+            }
         }
     }
 }

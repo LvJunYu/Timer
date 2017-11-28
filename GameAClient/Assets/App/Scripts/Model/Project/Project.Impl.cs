@@ -9,6 +9,7 @@ using System;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -263,6 +264,8 @@ namespace GameA
             }
         }
 
+        public Msg_SC_DAT_ShadowBattleData ShadowBattleParam { get; private set; }
+
         #endregion 属性
 
         #region 方法
@@ -284,19 +287,56 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
-                    PrepareRes(() =>
+                    //判断是否是乱入对决
+                    if (ret.ShadowBattleData != null)
                     {
-                        if (successCallback != null)
+                        Record record = new Record(ret.ShadowBattleData.Record);
+                        record.PrepareRecord(() =>
                         {
-                            successCallback.Invoke();
-                        }
-                    }, () =>
+                            PrepareRes(() =>
+                            {
+                                ShadowBattleParam = ret.ShadowBattleData;
+                                Messenger<Msg_SC_DAT_ShadowBattleData>.Broadcast(EMessengerType.OnShadowBattleStart,
+                                    ret.ShadowBattleData);
+                                Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, ret.ShadowBattleData.Id);
+                                Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart,
+                                    new Reward(ret.ShadowBattleData.Reward));
+                                if (successCallback != null)
+                                {
+                                    successCallback.Invoke();
+                                }
+                                ShadowBattleParam = null;
+                            }, () =>
+                            {
+                                if (failedCallback != null)
+                                {
+                                    failedCallback.Invoke(ENetResultCode.NR_None);
+                                }
+                            });
+                        }, () =>
+                        {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(ENetResultCode.NR_None);
+                            }
+                        });
+                    }
+                    else
                     {
-                        if (failedCallback != null)
+                        PrepareRes(() =>
                         {
-                            failedCallback.Invoke(ENetResultCode.NR_None);
-                        }
-                    });
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }, () =>
+                        {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(ENetResultCode.NR_None);
+                            }
+                        });
+                    }
                 }
                 else
                 {
@@ -314,11 +354,12 @@ namespace GameA
             });
         }
 
-        public void RequestPlayShadowBattle(long battleId, Record record, Action successCallback, Action failedCallback)
+        public void RequestPlayShadowBattle(long battleId, Action successCallback, Action failedCallback)
         {
-            record.PrepareRecord(() =>
+            RemoteCommands.MatchShadowBattle(battleId, msg =>
             {
-                RemoteCommands.MatchShadowBattle(battleId, msg =>
+                var record = new Record(msg.PlayProjectData.ShadowBattleData.Record);
+                record.PrepareRecord(() =>
                 {
                     _commitToken = msg.PlayProjectData.Token;
                     _deadPos = msg.PlayProjectData.DeadPos;
@@ -328,10 +369,15 @@ namespace GameA
                     }
                     PrepareRes(() =>
                     {
+                        ShadowBattleParam = msg.PlayProjectData.ShadowBattleData;
+                        Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, battleId);
+                        Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart,
+                            new Reward(msg.PlayProjectData.ShadowBattleData.Reward));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
                         }
+                        ShadowBattleParam = null;
                     }, () =>
                     {
                         if (failedCallback != null)
@@ -339,14 +385,14 @@ namespace GameA
                             failedCallback.Invoke();
                         }
                     });
-                }, code =>
+                }, failedCallback);
+            }, code =>
+            {
+                if (failedCallback != null)
                 {
-                    if (failedCallback != null)
-                    {
-                        failedCallback.Invoke();
-                    }
-                });
-            }, failedCallback);
+                    failedCallback.Invoke();
+                }
+            });
         }
 
         public byte[] GetData()

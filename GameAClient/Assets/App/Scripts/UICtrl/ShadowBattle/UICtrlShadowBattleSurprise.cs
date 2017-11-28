@@ -1,20 +1,23 @@
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
+using System.Collections;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlShadowBattle : UICtrlResManagedBase<UIViewShadowBattle>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlShadowBattleSurprise : UICtrlResManagedBase<UIViewShadowBattle>
     {
-        private Msg_SC_CMD_MatchShadowBattle _matchShadowBattle;
+        private Msg_SC_DAT_ShadowBattleData _shadowBattleData;
         private USCtrlGameFinishReward[] _rewardCtrl;
         private Reward _reward;
+        private int _curCountDown;
+        private bool _openGamePlaying;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
-            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -26,63 +29,78 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _matchShadowBattle = parameter as Msg_SC_CMD_MatchShadowBattle;
-            if (null == _matchShadowBattle)
+            if (null == _shadowBattleData)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
+                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleSurprise>();
                 return;
             }
+            _openGamePlaying = false;
+            if (GM2DGame.Instance != null)
+            {
+                if (GameRun.Instance.IsPlaying)
+                {
+                    _openGamePlaying = true;
+                    GM2DGame.Instance.Pause();
+                }
+            }
             RefreshView();
+            _curCountDown = 3;
+            CoroutineProxy.Instance.StartCoroutine(CountDown());
         }
 
         protected override void OnClose()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserHead, _cachedView.DefaultHeadTexture);
+            if (GM2DGame.Instance != null && _openGamePlaying)
+            {
+                GM2DGame.Instance.Continue();
+                _openGamePlaying = false;
+            }
             base.OnClose();
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<Msg_SC_DAT_ShadowBattleData>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
+        }
+
+        private void OnShadowBattleStart(Msg_SC_DAT_ShadowBattleData shadowBattleData)
+        {
+            _shadowBattleData = shadowBattleData;
         }
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainPopUpUI;
+            _groupId = (int) EUIGroupType.PopUpDialog;
+        }
+
+        private IEnumerator CountDown()
+        {
+            _cachedView.CountDownTxt.text = _curCountDown.ToString();
+            while (_curCountDown > 0)
+            {
+                yield return new WaitForSeconds(1);
+                _curCountDown--;
+                _cachedView.CountDownTxt.text = _curCountDown.ToString();
+            }
+            _shadowBattleData = null;
+            SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleSurprise>();
         }
 
         private void RefreshView()
         {
-            var user = _matchShadowBattle.Project.UserInfo;
+            var user = _shadowBattleData.Record.UserInfo;
             _cachedView.NickName.text = user.NickName;
             _cachedView.MaleIcon.SetActiveEx(user.Sex == ESex.S_Male);
             _cachedView.FemaleIcon.SetActiveEx(user.Sex == ESex.S_Female);
             _cachedView.AdvLevel.text = user.LevelData.PlayerLevel.ToString();
             _cachedView.CreatorLevel.text = user.LevelData.CreatorLevel.ToString();
-            _cachedView.Score.text = _matchShadowBattle.PlayProjectData.ShadowBattleData.Record.Score.ToString();
-            _reward = new Reward(_matchShadowBattle.PlayProjectData.ShadowBattleData.Reward);
+            _cachedView.Score.text = _shadowBattleData.Record.Score.ToString();
+            _reward = new Reward(_shadowBattleData.Reward);
             UpdateReward(_reward);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHead, user.HeadImgUrl,
                 _cachedView.DefaultHeadTexture);
-        }
-
-        private void OnCancelBtn()
-        {
-            SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
-        }
-
-        private void OnPlayBtn()
-        {
-            if (null == _matchShadowBattle) return;
-            Project project = new Project(_matchShadowBattle.Project);
-            long battleId = _matchShadowBattle.PlayProjectData.ShadowBattleData.Id;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
-            project.RequestPlayShadowBattle(battleId, () =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattle>();
-                GameManager.Instance.RequestPlay(project);
-                SocialApp.Instance.ChangeToGame();
-            }, () =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("进入关卡失败");
-            });
         }
 
         private void UpdateReward(Reward reward)

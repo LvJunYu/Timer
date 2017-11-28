@@ -110,9 +110,9 @@ namespace GameA.Game
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
                     break;
-                case GameManager.EStartType.ShadowBattlePlay:
-                    _gameMode = new GameModeShadowBattlePlay();
-                    break;
+//                case GameManager.EStartType.ShadowBattlePlay:
+//                    _gameMode = new GameModeShadowBattlePlay();
+//                    break;
                 case GameManager.EStartType.WorkshopCreate:
                     _gameMode = new GameModeWorkshopEdit();
                     break;

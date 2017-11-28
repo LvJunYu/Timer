@@ -295,12 +295,12 @@ namespace GameA.Game
 
                     if (value)
                     {
-                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-                        {
-                            _runState = ESceneState.Fail;
-                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                        }
-                        else
+//                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
+//                        {
+//                            _runState = ESceneState.Fail;
+//                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
+//                        }
+//                        else
                         {
                             _runState = ESceneState.Win;
                             Messenger.Broadcast(EMessengerType.GameFinishSuccess);
@@ -386,7 +386,7 @@ namespace GameA.Game
         }
 
         //判断乱入胜利条件
-        private bool CheckShadowWin()
+        public bool CheckShadowWin()
         {
             int score = GetScore(true);
             int shadowScore = GM2DGame.Instance.GameMode.Record.Score;
@@ -401,13 +401,13 @@ namespace GameA.Game
             {
                 return;
             }
-            if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-            {
-                _runState = ESceneState.Fail;
-                Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                LogHelper.Debug("Lose");
-            }
-            else
+//            if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
+//            {
+//                _runState = ESceneState.Fail;
+//                Messenger.Broadcast(EMessengerType.GameFinishFailed);
+//                LogHelper.Debug("Lose");
+//            }
+//            else
             {
                 _runState = ESceneState.Win;
                 Messenger.Broadcast(EMessengerType.GameFinishSuccess);

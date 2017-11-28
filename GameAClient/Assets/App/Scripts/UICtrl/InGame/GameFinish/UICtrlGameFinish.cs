@@ -35,8 +35,8 @@ namespace GameA
         private readonly List<UIParticleItem> _particleList = new List<UIParticleItem>();
         private int _curMarkStarValue;
         private USCtrlGameFinishReward[] _rewardCtrl;
+        private Reward _shadowBattleReward;
         private Record _friendRecord;
-        private Reward _battleReward;
         private FriendRecordData _friendRecordData = new FriendRecordData();
 
         protected override void InitGroupId()
@@ -109,7 +109,7 @@ namespace GameA
 
         private void OnShadowBattleStart(Reward reward)
         {
-            _battleReward = reward;
+            _shadowBattleReward = reward;
         }
 
         private void OnFriendHelpBtn()
@@ -352,12 +352,16 @@ namespace GameA
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.text =
                         _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
-                    _cachedView.RewardObj.SetActive(true);
-                    _cachedView.ExpBarObj.SetActive(true);
+                    bool winShadow = PlayMode.Instance.SceneState.CheckShadowWin();
+                    _cachedView.RetryShadowBattleBtn.SetActiveEx(!winShadow);
+                    _cachedView.FriendHelpObj.SetActive(!winShadow);
+                    _cachedView.RewardObj.SetActive(winShadow);
+                    _cachedView.ExpBarObj.SetActive(winShadow);
                     _cachedView.PlayRecordObj.SetActive(false);
-                    //Todo 更新奖励
-                    UpdateReward(_battleReward);
-
+                    if (winShadow)
+                    {
+                        UpdateReward(_shadowBattleReward);
+                    }
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;

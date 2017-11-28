@@ -107,16 +107,16 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorldPlay);
+            return RequestStartGame(project, EStartType.WorldPlay, project.ShadowBattleParam);
         }
-        
-        public bool RequestPlayShadowBattle(Project project, Record record)
-        {
-            _projectList.Clear();
-            _projectList.Add(project);
-            _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.ShadowBattlePlay, record);
-        }
+
+//        public bool RequestPlayShadowBattle(Project project, Record record)
+//        {
+//            _projectList.Clear();
+//            _projectList.Add(project);
+//            _curProjectInx = 0;
+//            return RequestStartGame(project, EStartType.WorldPlay, record);
+//        }
 
         public bool RequestPlayAdvNormal(Project project, SituationAdventureParam param)
         {
@@ -236,7 +236,7 @@ namespace GameA
             AdventureBonusPlay,
             MultiCooperationPlay,
             MultiBattlePlay,
-            ShadowBattlePlay,
+//            ShadowBattlePlay,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)
