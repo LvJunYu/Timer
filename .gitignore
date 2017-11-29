@@ -52,3 +52,6 @@ Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launch
 Tools/Project/MicroClientEx/Debug
 Tools/Project/MicroClientEx/Release
 *.VC.db
+Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/obj
+Tools/Project/JoyGameBuildVersionTool/.idea
+Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/bin
