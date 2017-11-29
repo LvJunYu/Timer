@@ -56,6 +56,7 @@ namespace GameA
 
         protected override void RefreshView()
         {
+            _cachedView.ReplayBtn.SetActiveEx(false);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
             UserInfoSimple user = _comment.UserInfoDetail.UserInfoSimple;
@@ -150,13 +151,6 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_comment.UserInfoDetail);
             }
-        }
-
-        protected override void OnDestroy()
-        {
-            _cachedView.HeadBtn.onClick.RemoveAllListeners();
-            _cachedView.PraiseBtn.onClick.RemoveAllListeners();
-            _cachedView.ReplayBtn.onClick.RemoveAllListeners();
         }
 
         private UMCtrlProjectReplyComment GetItem()

@@ -60,12 +60,17 @@ namespace GameA.Game
 
         internal override bool InstantiateView()
         {
-            var value = base.InstantiateView();
-            if (value)
+            if (!base.InstantiateView())
             {
-                _view.SetRendererColor(_color);
+                return false;
             }
-            return value;
+            _view.SetRendererColor(_color);
+            CreatePlayerName();
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
+            return true;
         }
 
         public void SetShadowData(ShadowData shadowData, int aHeadFrame = 0)
@@ -80,6 +85,10 @@ namespace GameA.Game
             if (_view != null)
             {
                 _view.SetRendererColor(_color);
+                if (_playerNameInGame != null)
+                {
+                    _playerNameInGame.SetNameActive(true);
+                }
             }
             SkeletonAnimation.Reset();
             ClearData();
@@ -168,6 +177,10 @@ namespace GameA.Game
         public void EnterPortal(int frame)
         {
             _onPortalFrame = frame;
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(false);
+            }
         }
 
         public void OutPortal()
@@ -176,6 +189,10 @@ namespace GameA.Game
             _onPortalFrame = 0;
             _animation.Reset();
             _view.SetRendererColor(_color);
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
         }
 
         private void ClearData()
@@ -197,6 +214,14 @@ namespace GameA.Game
             if (SkeletonAnimation != null)
             {
                 SkeletonAnimation.Update(deltaTime);
+            }
+        }
+
+        public void SetName(string name)
+        {
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetName(name);
             }
         }
     }

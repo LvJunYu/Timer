@@ -11,9 +11,14 @@ namespace GameA.Game
     {
         protected UICtrlGameFinish.EShowState _successType;
         protected UICtrlGameFinish.EShowState _failType;
-        private bool _firstStart;
-        private long _battleId;
+        private Msg_SC_DAT_ShadowBattleData _shadowBattleData;
         private EShadowBattleType _eShadowBattleType;
+        private bool _firstStart;
+
+        public string ShadowName
+        {
+            get { return _shadowBattleData.Record.UserInfo.NickName; }
+        }
 
         public EShadowBattleType ShadowBattleType
         {
@@ -40,15 +45,14 @@ namespace GameA.Game
                 _successType = UICtrlGameFinish.EShowState.ShadowBattleWin;
                 _failType = UICtrlGameFinish.EShowState.ShadowBattleLose;
                 ShadowDataPlayed = null;
-                var shadowBattleData = param as Msg_SC_DAT_ShadowBattleData;
-                _battleId = shadowBattleData.Id;
-                _record = new Record(shadowBattleData.Record);
+                _shadowBattleData = param as Msg_SC_DAT_ShadowBattleData;
+                _record = new Record(_shadowBattleData.Record);
                 if (InitRecord() && _gm2drecordData.ShadowData != null)
                 {
                     ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
                 }
-                if (shadowBattleData.OriginPlayer != null &&
-                    shadowBattleData.OriginPlayer.UserId != LocalUser.Instance.UserGuid)
+                if (_shadowBattleData.OriginPlayer != null &&
+                    _shadowBattleData.OriginPlayer.UserId != LocalUser.Instance.UserGuid)
                 {
                     _eShadowBattleType = EShadowBattleType.FriendHelp;
                 }
@@ -194,7 +198,7 @@ namespace GameA.Game
         {
             if (_playShadowData)
             {
-                _project.RequestPlayShadowBattle(_battleId, () =>
+                _project.RequestPlayShadowBattle(_shadowBattleData.Id, () =>
                 {
                     GameRun.Instance.RePlay();
                     _firstStart = false;

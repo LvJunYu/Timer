@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 0660 0661
 
@@ -52,6 +54,7 @@ namespace GameA.Game
 
         protected int _maxHp;
         protected int _hp;
+        protected PlayerNameInGame _playerNameInGame;
 
         #endregion
 
@@ -173,6 +176,19 @@ namespace GameA.Game
         public AnimationSystem Animation
         {
             get { return _animation; }
+        }
+
+        public void CreatePlayerName()
+        {
+            if (null != _playerNameInGame) return;
+            GameObject playerName =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "PlayerNameInGame")) as
+                    GameObject;
+            if (null != playerName)
+            {
+                _playerNameInGame = playerName.GetComponent<PlayerNameInGame>();
+                CommonTools.SetParent(playerName.transform, _trans);
+            }
         }
 
         [SerializeField] protected int _dieTime;
@@ -1484,6 +1500,11 @@ namespace GameA.Game
 
         internal virtual void OnObjectDestroy()
         {
+            if (_playerNameInGame != null)
+            {
+                Object.Destroy(_playerNameInGame.gameObject);
+                _playerNameInGame = null;
+            }
             _view = null;
             _viewExtras = null;
             FreeEffect(_withEffect);
@@ -1709,5 +1730,6 @@ namespace GameA.Game
         {
             return other.ColliderGrid.YMin <= grid.YMax && other.ColliderGrid.YMax >= grid.YMin;
         }
+        
     }
 }

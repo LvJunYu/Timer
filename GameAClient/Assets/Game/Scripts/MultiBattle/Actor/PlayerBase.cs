@@ -84,10 +84,19 @@ namespace GameA.Game
         protected override bool OnInit()
         {
             Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            Messenger.AddListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
             return base.OnInit();
         }
-        
+
         private void OnChangeToAppMode()
+        {
+            if (_view != null)
+            {
+                _view.SetDamageShaderValue("Value", 0);
+            }
+        }
+
+        private void OnApplicationQuit()
         {
             if (_view != null)
             {
@@ -494,6 +503,7 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             Messenger.RemoveListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            Messenger.RemoveListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();

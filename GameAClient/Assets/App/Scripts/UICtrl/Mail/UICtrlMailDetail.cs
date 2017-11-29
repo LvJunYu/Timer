@@ -182,8 +182,7 @@ namespace GameA
                         {
                             _mail.ReceiptedFlag = true;
                             _mail.AttachItemList.AddToLocal();
-                            Messenger.Broadcast(EMessengerType.OnMailListChanged);
-                            SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                            OnDeleteBtn();
                         }
                         , code => { SocialGUIManager.ShowPopupDialog("领取奖励失败。"); }
                     );

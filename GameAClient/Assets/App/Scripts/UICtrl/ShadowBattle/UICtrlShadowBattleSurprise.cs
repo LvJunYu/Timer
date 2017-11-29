@@ -14,6 +14,7 @@ namespace GameA
         protected Reward _reward;
         protected int _curCountDown;
         protected bool _openGamePlaying;
+        protected const int _waitTime = 4;
 
         protected override void OnViewCreated()
         {
@@ -44,7 +45,7 @@ namespace GameA
                 }
             }
             RefreshView();
-            _curCountDown = 3;
+            _curCountDown = _waitTime;
             CoroutineProxy.Instance.StartCoroutine(CountDown());
         }
 

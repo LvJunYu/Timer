@@ -1,19 +1,10 @@
-﻿using System.Collections;
-using System;
-using SoyEngine.Proto;
-using System.Collections.Generic;
-using System.Net;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
 {
     public class StatusBar : MonoBehaviour
     {
-//        public int TestCurrent = 100;
-//        public int TestMax = 100;
-//        public int TestMPGrids = 10;
-
         void Awake()
         {
             _trans = transform;
@@ -28,24 +19,6 @@ namespace GameA.Game
         void Update()
         {
             _trans.rotation = Quaternion.identity;
-//            if (Input.GetKeyDown(KeyCode.H))
-//            {
-//                TestCurrent -= UnityEngine.Random.Range(5, 10);
-//                SetHP(EHPModifyCase.Hit, TestCurrent, TestMax);
-//            }
-//            if (Input.GetKeyDown(KeyCode.J))
-//            {
-//                TestCurrent += UnityEngine.Random.Range(5, 10);
-//                SetHP(EHPModifyCase.Heal, TestCurrent, TestMax);
-//            }
-//            if (Input.GetKeyDown(KeyCode.G))
-//            {
-//                SetMPGrids(TestMPGrids);
-//            }
-//            if (Input.GetKeyDown(KeyCode.M))
-//            {
-//                SetMP(TestCurrent, TestMax);
-//            }
             switch (_hpState)
             {
                 case EHPShowState.Normal:
@@ -59,7 +32,7 @@ namespace GameA.Game
                         HPBeforeHitTrans.gameObject.SetActive(false);
                     }
                     break;
-                case EHPShowState.beingHeal:
+                case EHPShowState.BeingHeal:
                     HPAfterHealRenderer.color = new Color(0f, 1f, 0f, _stateTimer / s_healingTime);
                     _stateTimer -= Time.deltaTime;
                     if (_stateTimer < 0)
@@ -70,8 +43,6 @@ namespace GameA.Game
                     break;
             }
         }
-
-        #region fields
 
         /// <summary>
         /// 被攻击状态显示持续时间
@@ -106,10 +77,6 @@ namespace GameA.Game
 
         [SerializeField] private float _stateTimer;
 
-        #endregion
-
-        #region properties
-
         private float HpPerccentage
         {
             set
@@ -118,10 +85,6 @@ namespace GameA.Game
                 CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
             }
         }
-
-        #endregion
-
-        #region methods
 
         public void SetHPActive(bool value)
         {
@@ -149,22 +112,20 @@ namespace GameA.Game
                     break;
                 case EHPModifyCase.Heal:
                     _stateTimer = s_healingTime;
-                    if (EHPShowState.beingHeal != _hpState)
+                    if (EHPShowState.BeingHeal != _hpState)
                     {
-                        _hpState = EHPShowState.beingHeal;
+                        _hpState = EHPShowState.BeingHeal;
                         HPAfterHealTrans.gameObject.SetActive(true);
                         HPBeforeHitTrans.gameObject.SetActive(false);
                         HPAfterHealRenderer.color = Color.green;
                     }
                     float healingPercentage = current / (float) max - _hpPerccentage;
                     // 因为healing是放在current下的子物体，所以缩放要除以父物体的缩放
-                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / (float) current, 1, 1);
+                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / current, 1, 1);
                     break;
             }
             HpPerccentage = current / (float) max;
         }
-
-        #endregion
     }
 
     /// <summary>
@@ -174,7 +135,7 @@ namespace GameA.Game
     {
         Normal, // 正常
         BeingHit, // 被攻击中
-        beingHeal, // 被治疗中
+        BeingHeal, // 被治疗中
     }
 
     /// <summary>
