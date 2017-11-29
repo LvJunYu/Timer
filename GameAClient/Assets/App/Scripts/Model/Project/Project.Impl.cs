@@ -296,8 +296,8 @@ namespace GameA
                             PrepareRes(() =>
                             {
                                 ShadowBattleParam = ret.ShadowBattleData;
-                                Messenger<Msg_SC_DAT_ShadowBattleData>.Broadcast(EMessengerType.OnShadowBattleStart,
-                                    ret.ShadowBattleData);
+                                Messenger<ShadowBattleData>.Broadcast(EMessengerType.OnShadowBattleStart,
+                                    new ShadowBattleData(ret.ShadowBattleData));
                                 Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, ret.ShadowBattleData.Id);
                                 Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart,
                                     new Reward(ret.ShadowBattleData.Reward));

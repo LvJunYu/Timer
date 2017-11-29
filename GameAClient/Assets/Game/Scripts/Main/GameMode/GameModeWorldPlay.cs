@@ -178,7 +178,6 @@ namespace GameA.Game
                 PlayMode.Instance.SceneState.CheckShadowWin())
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
-                Messenger.Broadcast(EMessengerType.OnMailListChanged);
             }
         }
 

@@ -48,7 +48,7 @@ namespace GameA
 
         private void RefreshView()
         {
-            var user = _matchShadowBattle.Project.UserInfo;
+            var user = new UserInfoSimple(_matchShadowBattle.Project.UserInfo);
             _cachedView.NickName.text = user.NickName;
             _cachedView.MaleIcon.SetActiveEx(user.Sex == ESex.S_Male);
             _cachedView.FemaleIcon.SetActiveEx(user.Sex == ESex.S_Female);
@@ -59,6 +59,8 @@ namespace GameA
             UpdateReward(_reward);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHead, user.HeadImgUrl,
                 _cachedView.DefaultHeadTexture);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void OnCancelBtn()

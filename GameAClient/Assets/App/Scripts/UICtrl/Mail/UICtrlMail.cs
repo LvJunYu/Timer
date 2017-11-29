@@ -1,5 +1,4 @@
-﻿
-namespace GameA
+﻿namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlMail : UICtrlAnimationBase<UIViewMail>
@@ -83,6 +82,7 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnMailListChanged, OnMailListChanged);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
         }
 
         protected override void SetPartAnimations()
@@ -97,9 +97,20 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainUI;
         }
 
+        private void OnChangeToAppMode()
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.OnMailListChanged();
+            }
+        }
+
         private void OnMailListChanged()
         {
-            _curMenuCtrl.OnMailListChanged();
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.OnMailListChanged();
+            }
         }
 
         private void OnCloseBtn()

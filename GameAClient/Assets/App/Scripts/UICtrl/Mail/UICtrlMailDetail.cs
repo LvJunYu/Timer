@@ -101,8 +101,7 @@ namespace GameA
                     code =>
                     {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
-                        SocialGUIManager.ShowPopupDialog("请求关卡数据失败。");
+                        SocialGUIManager.ShowPopupDialog("请求关卡数据失败");
                     });
             }
             else if (_mail.FuncType == EMailFuncType.MFT_Reward)
@@ -124,8 +123,7 @@ namespace GameA
                     code =>
                     {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
-                        SocialGUIManager.ShowPopupDialog("请求关卡数据失败。");
+                        SocialGUIManager.ShowPopupDialog("请求关卡数据失败");
                     });
             }
         }

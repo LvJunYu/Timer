@@ -9,7 +9,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlShadowBattleSurprise : UICtrlResManagedBase<UIViewShadowBattle>
     {
-        protected Msg_SC_DAT_ShadowBattleData _shadowBattleData;
+        protected ShadowBattleData _shadowBattleData;
         protected USCtrlGameFinishReward[] _rewardCtrl;
         protected Reward _reward;
         protected int _curCountDown;
@@ -62,10 +62,10 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<Msg_SC_DAT_ShadowBattleData>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
+            RegisterEvent<ShadowBattleData>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
         }
 
-        protected void OnShadowBattleStart(Msg_SC_DAT_ShadowBattleData shadowBattleData)
+        protected void OnShadowBattleStart(ShadowBattleData shadowBattleData)
         {
             _shadowBattleData = shadowBattleData;
         }
@@ -97,10 +97,12 @@ namespace GameA
             _cachedView.AdvLevel.text = user.LevelData.PlayerLevel.ToString();
             _cachedView.CreatorLevel.text = user.LevelData.CreatorLevel.ToString();
             _cachedView.Score.text = _shadowBattleData.Record.Score.ToString();
-            _reward = new Reward(_shadowBattleData.Reward);
+            _reward = _shadowBattleData.Reward;
             UpdateReward(_reward);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHead, user.HeadImgUrl,
                 _cachedView.DefaultHeadTexture);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         protected virtual void UpdateReward(Reward reward)
