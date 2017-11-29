@@ -6,6 +6,7 @@
 
 #include "stdafx.h"
 #include "webbrowser2.h"
+#include <..\src\occimpl.h>
 #include "CustomControlSite.h"
 
 /////////////////////////////////////////////////////////////////////////////

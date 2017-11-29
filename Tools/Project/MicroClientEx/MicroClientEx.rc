@@ -120,15 +120,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "MicroClientEx Microsoft 基础类应用程序\0"
-            VALUE "FileVersion", "2, 1, 0, 1\0"
-            VALUE "InternalName", "MicroClientEx\0"
-            VALUE "LegalCopyright", "版权所有 (C) 2013\0"
+            VALUE "FileDescription", "冒险与创造启动器\0"
+            VALUE "FileVersion", "0.1.0.9\0"
+            VALUE "InternalName", "JoyGame_Launcher\0"
+            VALUE "LegalCopyright", "北京匠游科技有限公司 版权所有 (C) 2017\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "MicroClientEx.EXE\0"
+            VALUE "OriginalFilename", "JoyGame_Launcher.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "MicroClientEx 应用程序\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "ProductVersion", "0.1.0.9\0"
             VALUE "SpecialBuild", "\0"
         END
     END

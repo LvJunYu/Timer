@@ -14,6 +14,7 @@
 #include "MicroClientLang.h"
 
 #include "LogUtil.h"
+#include<stdio.h> 
 
 #include <Shlwapi.h>
 
@@ -32,7 +33,7 @@ const CString cfInfo = "Info";
 const CString cfVersion = "Version";
 const CString cfVroot = "Vroot";
 const CString cfDownurl = "Downurl";
-
+const CString cfZip = ".dat";
 //验证的AUTH与SIGN字符串记录
 static CString authUrl = "";
 
@@ -117,6 +118,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 			break;
 		}
 	}
+	starturl = "file://c:/Temp/index.html";
 	// TODO: Add extra initialization here
 // 	CString testurl = "www.t4game.com/auth=aaa&sign=bbb&channel=&ser=fff&version=eee";
 // 	CString testaddurl = FindurlParam(testurl,"channel","&");
@@ -152,13 +154,15 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	closeBtn->InitButton(1190,197,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
 	miniBtn = new PngBtn();
 	miniBtn->InitButton(1166,182,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
+	startBtn = new PngBtn();
+	startBtn->InitButton(1190,597,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
 
 	progressBarMain = new ProgressBar();
-	progressBarMain->InitPogressBar(320,548,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
+	progressBarMain->InitPogressBar(580,623,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
 	progressBarMain->InitOffset(0,0,0,1,0,0);
 	
 	progressBarVice = new ProgressBar();
-	progressBarVice->InitPogressBar(320,558,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
+	progressBarVice->InitPogressBar(580,633,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
 	progressBarVice->InitOffset(0,0,0,1,0,0);
 	
 	container = new ContainerDialog();
@@ -178,11 +182,11 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		greenflag = 1;
 	}
 
-	GetServerVision();
+	//GetServerVision();
 	//container->m_WebBrowser.Navigate2(starturl);
 	
 	//container->m_WebBrowser.Navigate("http://172.18.1.79", NULL, NULL, NULL, NULL);
-	container->m_WebBrowser.Navigate(starturl, NULL, NULL, NULL, NULL);
+	container->m_WebBrowser.Navigate("www.baidu.com", NULL, NULL, NULL, NULL);
 	//ntainer->m_WebBrowser.SetWindowPos( NULL,0,0,671,404,NULL);
 	container->m_WebBrowser.MoveWindow(0,0,671,404);
 	container->ShowWindow(SW_HIDE);
@@ -213,7 +217,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	*p = '\0';
 	
 	m_strLocalPath = szNewConfigFile;
-	m_strLocalPath = m_strLocalPath + "ShenYouJi\\";
+	m_strLocalPath = m_strLocalPath + "JoyGame\\";
 	//AfxMessageBox(m_strLocalPath);
 	
 
@@ -315,21 +319,24 @@ void CMicroClientExDlg::RePaintWindow()
 	
 	graph.DrawImage(miniBtn->GetCurrentState(), miniBtn -> pos_x, miniBtn -> pos_y,miniBtn->width, miniBtn->height);
 	graph.DrawImage(closeBtn->GetCurrentState(),closeBtn->pos_x, closeBtn->pos_y,closeBtn->width,closeBtn->height);
-	//graph.DrawImage(progressBarMain->progressFill,progressBarMain->pos_x + progressBarMain->processOffset.content_offset_X,progressBarMain->pos_y + progressBarMain->processOffset.content_offset_Y, (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content),progressBarMain->processImagRect.height_content);
-	//graph.DrawImage(progressBarVice->progressFill,progressBarVice->pos_x + progressBarVice->processOffset.content_offset_X,progressBarVice->pos_y + progressBarVice->processOffset.content_offset_Y, (int)(loading_procgrss_vice* progressBarMain->processImagRect.width_content),progressBarVice->processImagRect.height_content);
+	graph.DrawImage(startBtn->GetCurrentState(),startBtn->pos_x, startBtn->pos_y,startBtn->width,startBtn->height);
+
+	graph.DrawImage(progressBarMain->progressFill,progressBarMain->pos_x + progressBarMain->processOffset.content_offset_X,progressBarMain->pos_y + progressBarMain->processOffset.content_offset_Y, (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content),progressBarMain->processImagRect.height_content);
+	graph.DrawImage(progressBarVice->progressFill,progressBarVice->pos_x + progressBarVice->processOffset.content_offset_X,progressBarVice->pos_y + progressBarVice->processOffset.content_offset_Y, (int)(loading_procgrss_vice* progressBarMain->processImagRect.width_content),progressBarVice->processImagRect.height_content);
 	
+
 	StringFormat stringformat;
 	
 	SolidBrush myBrush(Color(255,255,255,255)); // 白色 不透明
 	FontFamily famali(L"宋体");
 	Font myFont(&famali,10);
 	
-// 	if(!downloadFlag)
-// 	{
-// 		
-// 		WCHAR * info_text = ConverIntToString((int)(loading_procgrss_main*100),downloadplanflg);
-// 		graph.DrawString(info_text,GetInfoLenght(info_text),&myFont,PointF(500,530),&stringformat,&myBrush);
-// 	}
+ 	if(!downloadFlag)
+ 	{
+ 		
+ 		//WCHAR * info_text = ConverIntToString((int)(loading_procgrss_main*100),downloadplanflg);
+ 		//graph.DrawString(info_text,GetInfoLenght(info_text),&myFont,PointF(500,530),&stringformat,&myBrush);
+ 	}
 	
 	SIZE sizeWindow={m_BakWidth,m_BakHeight};
 	POINT ptSrc={0,0};
@@ -429,6 +436,8 @@ void CMicroClientExDlg::InvokeCallWebClient(CString url)//用于判断是否js微端
 	if (!callbyjs)
 	{
 		container->m_WebBrowser.MoveWindow(10,50,600,300);
+
+		
 		IvockeDownload((LPVOID)NULL);
 		
 		container->ModifyInitRunDialog();
@@ -441,6 +450,7 @@ void CMicroClientExDlg::InvokeCallWebClient(CString url)//用于判断是否js微端
 
 UINT CMicroClientExDlg::SendInfo(LPVOID lpParam)
 {
+	return 0;
 	//获得统计页面地址，长度<10则基本不可能OK，遂不发送统计，针对内网服务
 	CString url = GetConfigValue(CString(CONFIG), cfInfo);
 	if (url.GetLength() <= 10)
@@ -468,7 +478,60 @@ UINT CMicroClientExDlg::SendInfo(LPVOID lpParam)
 UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 {	
 	//确定能进游戏后，启动统计线程，发送微端统计给服务器，BYMM。
-	AfxBeginThread(SendInfo,(LPVOID)NULL,THREAD_PRIORITY_NORMAL,0,0,NULL);
+	//AfxBeginThread(SendInfo,(LPVOID)NULL,THREAD_PRIORITY_NORMAL,0,0,NULL);
+	loading_procgrss_main = 0;
+	loading_procgrss_vice = 0;
+
+	singleFileCount = 1;
+	
+	bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath + CONFIG,true);
+
+	while(!bDownloadFlag)
+	{
+		if(singleFileCount++ == MAX_DOWNLOAD_TIMES)
+		{
+			memset(szLogBuf,'\0',BUF_SIZE);
+			sprintf(szLogBuf,"Download File Failed: %s",vroot + CONFIG);
+			WriteLog(szLogBuf);
+			AfxMessageBox("请检查网络是否连接");
+			exit(-1);
+		}
+		bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath +CONFIG,true);
+	}
+	vector<CString> files;
+	vector<CString> md5s;
+	ReadXmlFile(m_strLocalPath + CONFIG,files,md5s);
+	
+	for(int i = 0; i < files.size();++i)
+	{
+		CString filePath = m_strLocalPath + files[i];
+		WIN32_FIND_DATA  FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(filePath, &FindFileData);
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			CString localMd5 = CMD5Checksum::GetMD5(filePath);
+			if(localMd5 != md5s[i])
+				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+
+			//localMd5 = CMD5Checksum::GetMD5(filePath);
+			//while(localMd5 != md5s[i])
+				//bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+		}
+		else
+		{
+			bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+
+			//CString localMd5 = CMD5Checksum::GetMD5(filePath);
+			//while(localMd5 != md5s[i])
+			//	bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+		}
+		loading_procgrss_main=((float)i + 1) / files.size();
+	}
+	AfxMessageBox("ok");
+
+	loading_procgrss_main = 1;
+	loading_procgrss_vice = 1;
 	return 1;
 }
 
@@ -480,7 +543,7 @@ void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileCon
 		fileContainer.clear();
 		md5Container.clear();
 		TiXmlDocument *myDocument = new TiXmlDocument();
-
+		
 		myDocument->Parse(bufferXML,0,TIXML_DEFAULT_ENCODING);
 		TiXmlElement * pChild = myDocument->FirstChildElement();
 	
@@ -490,7 +553,7 @@ void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileCon
 		}
 		else if( ! pChild->NoChildren() )
 		{
-			
+		
 			TiXmlElement *pFirst = pChild->FirstChildElement();
 			
 			while ( NULL != pFirst )
@@ -549,6 +612,12 @@ void CMicroClientExDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		::SendMessage(container->GetSafeHwnd(),WM_SYSCOMMAND,SC_MINIMIZE,NULL);
 		btnDownflag = TRUE;
 	}
+	if(startBtn->CalculatePressDown(point.x,point.y))
+	{
+		AfxBeginThread(IvockeDownload,(LPVOID)NULL,THREAD_PRIORITY_NORMAL,0,0,NULL);
+		//IvockeDownload((LPVOID)NULL);
+	}
+	
 	if(btnDownflag == FALSE)
 	{
 		::SendMessage(GetSafeHwnd(),WM_SYSCOMMAND,0xF012,0); 
@@ -613,7 +682,7 @@ BOOL CMicroClientExDlg::PreTranslateMessage(MSG* pMsg)
 	{
 		return false;
 	}
-
+	RePaintWindow();
 	return CDialog::PreTranslateMessage(pMsg);
 }
 
@@ -924,7 +993,10 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 				FlushFileBuffers(hFile);
 				CloseHandle(hFile); 
 
-				zipFilesContainer.push_back(strFileLocalFullPath);
+				//zipFilesContainer.push_back(strFileLocalFullPath);
+				CString dest = strFileLocalFullPath.Left(strFileLocalFullPath.GetLength()-4);
+				UnCompressFile(dest,strFileLocalFullPath);
+				//TODO
 			}
 			else
 			{
@@ -967,4 +1039,62 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 	return bReturn; 
 } 
 
+int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
+{  
+    char uSorceBuffer[102400] = { 0 };  //解压缩文件时的源buffer  
+    FILE* fp3;  //打开欲解压文件的文件指针  
+    FILE* fp4;  //创建解压文件的文件指针  
+    int err;  
+    //errno_t err; //错误变量的定义  
+                 //打开欲解压的文件  
+    //err = fopen_s(&fp3, SrcName, "r+b");  
+    fp3 = fopen(SrcName, "r+b");  
+    //if (err)  
+    //{  
+        //printf("文件打开失败! \n");  
+        //return 1;  
+    //}  
+  
+    //获取欲解压文件的大小  
+    long ucur = ftell(fp3);  
+    fseek(fp3, 0L, SEEK_END);  
+    long ufileLength = ftell(fp3);  
+    fseek(fp3, ucur, SEEK_SET);  
+  
+  
+    //读取文件到buffer  
+    fread(uSorceBuffer, ufileLength, 1, fp3);  
+    fclose(fp3);  
+  
+    uLongf uDestBufferLen = 1024000;//此处长度需要足够大以容纳解压缩后数据  
+    char* uDestBuffer = (char*)::calloc((uInt)uDestBufferLen, 1);  
+    //解压缩buffer中的数据  
+    err = uncompress((Bytef*)uDestBuffer, (uLongf*)&uDestBufferLen, (Bytef*)uSorceBuffer, (uLongf)ufileLength);  
+  
+    if (err != Z_OK)  
+    {  
+        //cout << "解压缩失败：" << err << endl;  
+        return 1;  
+    }  
+  
+    //创建一个文件用来写入解压缩后的数据  
+    //err = fopen_s(&fp4, DestName, "wb");  
+    fp4 = fopen(DestName, "wb");  
+    //if (err)  
+    //{  
+        //printf("解压缩文件创建失败! \n");  
+        //return 1;  
+    //}  
+  
+    printf("写入数据... \n");  
+    fwrite(uDestBuffer, uDestBufferLen, 1, fp4);  
+    fclose(fp4);  
+    return 0;  
+}
 
+
+void CMicroClientExDlg::UnzipFile(CString strFilePath, CString strTempPath)
+{
+    int nReturnValue;
+
+}

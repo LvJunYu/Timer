@@ -3,7 +3,7 @@
 
 #include "ImpIDispatch.h"
 #include <mshtmhst.h>
-#include <OCCIMPL.H>
+//#include <..\src\occimpl.h>
 
 class CCustomControlSite : public COleControlSite
 {

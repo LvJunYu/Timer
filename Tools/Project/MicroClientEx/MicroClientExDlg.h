@@ -32,6 +32,7 @@ public:
 	ContainerDialog *container;
 	PngBtn *closeBtn;
 	PngBtn *miniBtn;
+	PngBtn *startBtn;
 	ProgressBar *progressBarVice;
 	ProgressBar *progressBarMain;
 	HINSTANCE hFuncInst ;
@@ -50,7 +51,7 @@ public:
 	//static void CMicroClientExDlg::OnMerge();
 	static bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString & strFileLocalFullPath,bool record = FALSE);//存放到本地的路径 
 	static void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileContainer,vector<CString> &md5Container);	
-	//static void CMicroClientExDlg::UnCompressFile(CString strFilePath,CString desFilePath);
+	static int CMicroClientExDlg::UnCompressFile(CString strFilePath,CString desFilePath);
 	//static UINT CMicroClientExDlg::IvockeDownloadThread1(LPVOID lpParam);
 	static BOOL GetIniConfigParam(char* keyName, char* retBuf, int size,char* szPath);
 	//static BOOL CheckMd5Num(LPVOID lpparam);//校验md5码
@@ -59,7 +60,7 @@ public:
 	static CString ReadSerXml(CString key);
 	CString FindurlParam(CString url,CString urlparam,CString urlparamsign);//查找js抛的参数
 	void GetServerVision();
-	
+	static void CMicroClientExDlg::UnzipFile(CString strFilePath, CString strTempPath);
 	
 
 	

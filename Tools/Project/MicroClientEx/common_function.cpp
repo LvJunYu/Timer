@@ -9,7 +9,7 @@
 #include "MicroClientExDlg.h"
 
 #include <WINSOCK2.H>
-#include "iphlpapi.h"
+#include <IPHlpApi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
 
 CString GetConfigValue(CString& szFileName, CString key)

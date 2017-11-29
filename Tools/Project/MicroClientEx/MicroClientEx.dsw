@@ -15,42 +15,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "MicroClientInstaller"=..\..\INSTALLER\MicroClientInstaller\MicroClientInstaller.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "killcrash"=..\..\killcrash\killcrash.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "uninst"=..\..\uninst\uninst.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Global:
 
 Package=<5>

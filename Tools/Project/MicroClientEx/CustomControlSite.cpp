@@ -3,6 +3,7 @@
 #define AFX_DATA AFX_DATA_IMPORT
 #include "MicroClientEx.h"
 
+#include <..\src\occimpl.h>
 #undef AFX_DATA
 #define AFX_DATA AFX_DATA_EXPORT
 #include "CustomControlSite.h"

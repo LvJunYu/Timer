@@ -45,7 +45,7 @@ CMicroClientExApp theApp;
 
 BOOL CMicroClientExApp::InitInstance()
 {
-	const char* UNIQUE_NAME = "SYJ_Installer.exe";
+	const char* UNIQUE_NAME = "JoyGame_Launcher.exe";
 	HANDLE hMutex = CreateMutex(NULL,NULL,UNIQUE_NAME);
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
 	{
