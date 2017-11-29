@@ -99,7 +99,17 @@ namespace GameA
 
         private void OnItemClick(CardDataRendererWrapper<UserInfoDetail> item)
         {
-            _selectFriendId = item.Content.UserInfoSimple.UserId;
+            if (item.IsSelected)
+            {
+                _selectFriendId = item.Content.UserInfoSimple.UserId;
+            }
+            else
+            {
+                if (_selectFriendId == item.Content.UserInfoSimple.UserId)
+                {
+                    _selectFriendId = -1;
+                }
+            }
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)

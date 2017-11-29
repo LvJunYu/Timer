@@ -14,13 +14,18 @@ namespace GameA
         private const string _receive = "接 受";
         private const string _check = "查 看";
         private const string _get = "领 取";
-        private const string _titleFormat = "<color=orange>{0}</color>给您分享了一个关卡";
-        private const string _contentFormat = "<color=orange>{0}</color>给您分享了一个很有意思的关卡：{1}";
+        private const string _haveGot = "已领取";
+        private static string _titleProjectShareFormat = "<color=orange>{0}</color>给您分享了一个关卡";
+        private static string _titleShadowBattleFormat = "<color=orange>{0}</color>邀请您帮忙出战乱入决斗";
+        private static string _titleHelpSuccessFormat = "<color=orange>{0}</color>帮您出战乱入对决获得胜利";
+        private static string _contentProjectShareFormat = "<color=orange>{0}</color>给您分享了一个很有意思的关卡~";
+        private static string _contentShadowBattleFormat = "<color=orange>{0}</color>邀请您帮忙出战乱入对决，获胜可以获得奖励哦~";
+        private static string _contentHelpSuccessFormat = "<color=orange>{0}</color>帮您出战乱入对决获得胜利，请领取您的奖励吧~";
         private Mail _mail;
         private List<long> _idList = new List<long>();
-        private Reward _reward = new Reward();
         private USCtrlGameFinishReward[] _rewardCtrl;
         private Project _project;
+        private ShadowBattleData _shadowBattleData;
 
         protected override void OnViewCreated()
         {
@@ -29,6 +34,7 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             _cachedView.ProjectBtn.onClick.AddListener(OnOKBtn);
+            _cachedView.ShadowBattleBtn.onClick.AddListener(OnOKBtn);
             _rewardCtrl = new USCtrlGameFinishReward[_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -49,6 +55,8 @@ namespace GameA
             if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.ProjectRawImage,
+                    _cachedView.DefaltTexture);
+                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.ShadowBattleRawImage,
                     _cachedView.DefaltTexture);
             }
             base.OnClose();
@@ -77,6 +85,8 @@ namespace GameA
 
         private void RefreshPannel()
         {
+            _cachedView.Title.text = GetMailTile(_mail);
+            _cachedView.Content.text = GetMailDesc(_mail);
             if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在读取关卡数据");
@@ -85,8 +95,6 @@ namespace GameA
                     () =>
                     {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        _cachedView.Title.text = GetMailTile();
-                        _cachedView.Content.text = GetMailDesc();
                         ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectRawImage, _project.IconPath,
                             _cachedView.DefaltTexture);
                     },
@@ -99,34 +107,61 @@ namespace GameA
             }
             else if (_mail.FuncType == EMailFuncType.MFT_Reward)
             {
-                _cachedView.Title.text = GetMailTile();
-                _cachedView.Content.text = GetMailDesc();
-                _reward = _mail.AttachItemList;
-                UpdateReward(_reward);
+                UpdateReward(_mail.AttachItemList);
             }
-            else
+            else if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
             {
-                _cachedView.Title.text = GetMailTile();
-                _cachedView.Content.text = GetMailDesc();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在读取关卡数据");
+                _shadowBattleData = new ShadowBattleData();
+                _shadowBattleData.Request(_mail.ContentId,
+                    () =>
+                    {
+                        _project = _shadowBattleData.Record.ProjectData;
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        ImageResourceManager.Instance.SetDynamicImage(_cachedView.ShadowBattleRawImage,
+                            _project.IconPath, _cachedView.DefaltTexture);
+                    },
+                    code =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                        SocialGUIManager.ShowPopupDialog("请求关卡数据失败。");
+                    });
             }
         }
 
-        private string GetMailTile()
+        public static string GetMailTile(Mail mail)
         {
-            if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
+            if (mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
-                return string.Format(_titleFormat, _mail.UserInfoDetail.UserInfoSimple.NickName);
+                return string.Format(_titleProjectShareFormat, mail.UserInfo.NickName);
             }
-            return _mail.Title;
+            if (mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
+            {
+                return string.Format(_titleShadowBattleFormat, mail.UserInfo.NickName);
+            }
+            if (mail.FuncType == EMailFuncType.MFT_Reward)
+            {
+                return string.Format(_titleHelpSuccessFormat, mail.UserInfo.NickName);
+            }
+            return mail.Title;
         }
 
-        private string GetMailDesc()
+        public static string GetMailDesc(Mail mail)
         {
-            if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
+            if (mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
-                return string.Format(_contentFormat, _mail.UserInfoDetail.UserInfoSimple.NickName, _project.ShortId);
+                return string.Format(_contentProjectShareFormat, mail.UserInfoDetail.UserInfoSimple.NickName);
             }
-            return _mail.Content;
+            if (mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
+            {
+                return string.Format(_contentShadowBattleFormat, mail.UserInfoDetail.UserInfoSimple.NickName);
+            }
+            if (mail.FuncType == EMailFuncType.MFT_Reward)
+            {
+                return string.Format(_contentHelpSuccessFormat, mail.UserInfoDetail.UserInfoSimple.NickName);
+            }
+            return mail.Content;
         }
 
         private void OnCloseBtn()
@@ -138,17 +173,30 @@ namespace GameA
         {
             if (_mail.FuncType == EMailFuncType.MFT_Reward)
             {
-                RemoteCommands.ReceiptMailAttach(EReceiptMailAttachTargetType.ERMATT_List, _idList, _mail.MailType,
-                    ret =>
-                    {
-                        _mail.ReceiptedFlag = false;
-                        SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
-                    }
-                    , code => { SocialGUIManager.ShowPopupDialog("领取奖励失败。"); }
-                );
+                if (_mail.ReceiptedFlag)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                }
+                else
+                {
+                    RemoteCommands.ReceiptMailAttach(EReceiptMailAttachTargetType.ERMATT_List, _idList, _mail.MailType,
+                        ret =>
+                        {
+                            _mail.ReceiptedFlag = true;
+                            _mail.AttachItemList.AddToLocal();
+                            Messenger.Broadcast(EMessengerType.OnMailListChanged);
+                            SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                        }
+                        , code => { SocialGUIManager.ShowPopupDialog("领取奖励失败。"); }
+                    );
+                }
             }
             else if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
             {
+                if (_project != null)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_project);
+                }
             }
             else if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
@@ -184,6 +232,10 @@ namespace GameA
         {
             if (_mail.FuncType == EMailFuncType.MFT_Reward)
             {
+                if (_mail.ReceiptedFlag)
+                {
+                    return _haveGot;
+                }
                 return _get;
             }
             if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
@@ -204,8 +256,7 @@ namespace GameA
                 int i = 0;
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
-                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), RewardInfo(reward.ItemList[i])
-                    );
+                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString());
                 }
                 for (; i < _rewardCtrl.Length; i++)
                 {
@@ -221,32 +272,32 @@ namespace GameA
             }
         }
 
-        private string RewardInfo(RewardItem rewardItem)
-        {
-            switch (rewardItem.Type)
-            {
-                //8E6F54FF F0954AFF
-                //"<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_Gold:
-                    return "<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_Diamond:
-                    return "<color=#8E6F54FF>" + "钻石" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_PlayerExp:
-                    return "<color=#8E6F54FF>" + "冒险经验" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_CreatorExp:
-                    return "<color=#8E6F54FF>" + "工匠经验" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_FashionCoupon:
-                    return "<color=#8E6F54FF>" + "时装券" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_RaffleTicket:
-                    return "<color=#8E6F54FF>" + "抽奖券" + "</color>" + rewardItem.Count;
-                case (int) ERewardType.RT_RandomReformUnit:
-                    return "<color=#8E6F54FF>" + "地块" + "</color>" + rewardItem.Count;
-                //case (int)ERewardType.RT_RandomReformUnit:
-                //    return string.Format("地块{0}", rewardItem.Count);
-                default:
-                    return rewardItem.Count.ToString();
-            }
-        }
+//        private string RewardInfo(RewardItem rewardItem)
+//        {
+//            switch (rewardItem.Type)
+//            {
+//                //8E6F54FF F0954AFF
+//                //"<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_Gold:
+//                    return "<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_Diamond:
+//                    return "<color=#8E6F54FF>" + "钻石" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_PlayerExp:
+//                    return "<color=#8E6F54FF>" + "冒险经验" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_CreatorExp:
+//                    return "<color=#8E6F54FF>" + "工匠经验" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_FashionCoupon:
+//                    return "<color=#8E6F54FF>" + "时装券" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_RaffleTicket:
+//                    return "<color=#8E6F54FF>" + "抽奖券" + "</color>" + rewardItem.Count;
+//                case (int) ERewardType.RT_RandomReformUnit:
+//                    return "<color=#8E6F54FF>" + "地块" + "</color>" + rewardItem.Count;
+//                //case (int)ERewardType.RT_RandomReformUnit:
+//                //    return string.Format("地块{0}", rewardItem.Count);
+//                default:
+//                    return rewardItem.Count.ToString();
+//            }
+//        }
 
         private string GetUITitle()
         {

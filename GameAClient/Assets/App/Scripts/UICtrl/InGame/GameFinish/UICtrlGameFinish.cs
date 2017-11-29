@@ -303,7 +303,7 @@ namespace GameA
         {
             _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
-            _cachedView.FriendHelpObj.SetActive(_showState == EShowState.ShadowBattleLose);
+            _cachedView.ShadowBattleFailObj.SetActive(_showState == EShowState.ShadowBattleLose);
             switch (_showState)
             {
                 case EShowState.Win:
@@ -353,14 +353,25 @@ namespace GameA
                     _cachedView.ScoreOutLine.text =
                         _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     bool winShadow = PlayMode.Instance.SceneState.CheckShadowWin();
+                    var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                    bool friendHelp = gameMode.ShadowBattleType == EShadowBattleType.FriendHelp;
+                    _cachedView.FriendHelpBtn.SetActiveEx(!friendHelp);
+                    _cachedView.FriendHelpTxt.SetActiveEx(!friendHelp);
+                    _cachedView.ShadowBattleFailObj.SetActive(!winShadow);
                     _cachedView.RetryShadowBattleBtn.SetActiveEx(!winShadow);
-                    _cachedView.FriendHelpObj.SetActive(!winShadow);
                     _cachedView.RewardObj.SetActive(winShadow);
                     _cachedView.ExpBarObj.SetActive(winShadow);
                     _cachedView.PlayRecordObj.SetActive(false);
                     if (winShadow)
                     {
-                        UpdateReward(_shadowBattleReward);
+                        if (friendHelp)
+                        {
+                            UpdateReward(_shadowBattleReward, 0.5f);
+                        }
+                        else
+                        {
+                            UpdateReward(_shadowBattleReward);
+                        }
                     }
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
@@ -377,6 +388,9 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
+                    var gameMode2 = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                    _cachedView.FriendHelpBtn.SetActiveEx(gameMode2.ShadowBattleType == EShadowBattleType.Normal);
+                    _cachedView.FriendHelpTxt.SetActiveEx(gameMode2.ShadowBattleType == EShadowBattleType.Normal);
                     _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
@@ -570,14 +584,14 @@ namespace GameA
                 }, code => { LogHelper.Error("FriendRecordData request fail, code = {0}", code); });
         }
 
-        private void UpdateReward(Reward reward)
+        private void UpdateReward(Reward reward, float percent = 1)
         {
             if (null != reward && reward.IsInited)
             {
                 int i = 0;
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
-                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString()
+                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(),((int)(reward.ItemList[i].Count * percent)).ToString()
                     );
                 }
                 for (; i < _rewardCtrl.Length; i++)

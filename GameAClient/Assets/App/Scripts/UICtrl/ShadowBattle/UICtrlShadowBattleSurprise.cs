@@ -9,11 +9,11 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlShadowBattleSurprise : UICtrlResManagedBase<UIViewShadowBattle>
     {
-        private Msg_SC_DAT_ShadowBattleData _shadowBattleData;
-        private USCtrlGameFinishReward[] _rewardCtrl;
-        private Reward _reward;
-        private int _curCountDown;
-        private bool _openGamePlaying;
+        protected Msg_SC_DAT_ShadowBattleData _shadowBattleData;
+        protected USCtrlGameFinishReward[] _rewardCtrl;
+        protected Reward _reward;
+        protected int _curCountDown;
+        protected bool _openGamePlaying;
 
         protected override void OnViewCreated()
         {
@@ -31,7 +31,7 @@ namespace GameA
             base.OnOpen(parameter);
             if (null == _shadowBattleData)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleSurprise>();
+                Close();
                 return;
             }
             _openGamePlaying = false;
@@ -65,7 +65,7 @@ namespace GameA
             RegisterEvent<Msg_SC_DAT_ShadowBattleData>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
         }
 
-        private void OnShadowBattleStart(Msg_SC_DAT_ShadowBattleData shadowBattleData)
+        protected void OnShadowBattleStart(Msg_SC_DAT_ShadowBattleData shadowBattleData)
         {
             _shadowBattleData = shadowBattleData;
         }
@@ -75,7 +75,7 @@ namespace GameA
             _groupId = (int) EUIGroupType.PopUpDialog;
         }
 
-        private IEnumerator CountDown()
+        protected virtual IEnumerator CountDown()
         {
             _cachedView.CountDownTxt.text = _curCountDown.ToString();
             while (_curCountDown > 0)
@@ -88,7 +88,7 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleSurprise>();
         }
 
-        private void RefreshView()
+        protected void RefreshView()
         {
             var user = _shadowBattleData.Record.UserInfo;
             _cachedView.NickName.text = user.NickName;
@@ -103,7 +103,7 @@ namespace GameA
                 _cachedView.DefaultHeadTexture);
         }
 
-        private void UpdateReward(Reward reward)
+        protected virtual void UpdateReward(Reward reward)
         {
             if (null != reward && reward.IsInited)
             {

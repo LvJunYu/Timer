@@ -12,7 +12,13 @@ namespace GameA.Game
         protected UICtrlGameFinish.EShowState _successType;
         protected UICtrlGameFinish.EShowState _failType;
         private bool _firstStart;
-        private long _shadowBattleId;
+        private long _battleId;
+        private EShadowBattleType _eShadowBattleType;
+
+        public EShadowBattleType ShadowBattleType
+        {
+            get { return _eShadowBattleType; }
+        }
 
         public override bool SaveShadowData
         {
@@ -34,12 +40,21 @@ namespace GameA.Game
                 _successType = UICtrlGameFinish.EShowState.ShadowBattleWin;
                 _failType = UICtrlGameFinish.EShowState.ShadowBattleLose;
                 ShadowDataPlayed = null;
-                var msg = param as Msg_SC_DAT_ShadowBattleData;
-                _record = new Record(msg.Record);
-                _shadowBattleId = msg.Id;
+                var shadowBattleData = param as Msg_SC_DAT_ShadowBattleData;
+                _battleId = shadowBattleData.Id;
+                _record = new Record(shadowBattleData.Record);
                 if (InitRecord() && _gm2drecordData.ShadowData != null)
                 {
                     ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
+                }
+                if (shadowBattleData.OriginPlayer != null &&
+                    shadowBattleData.OriginPlayer.UserId != LocalUser.Instance.UserGuid)
+                {
+                    _eShadowBattleType = EShadowBattleType.FriendHelp;
+                }
+                else
+                {
+                    _eShadowBattleType = EShadowBattleType.Normal;
                 }
             }
             else
@@ -158,6 +173,13 @@ namespace GameA.Game
                         });
                 });
             });
+            //乱入对决好友帮战胜利的处理
+            if (_playShadowData && _eShadowBattleType == EShadowBattleType.FriendHelp &&
+                PlayMode.Instance.SceneState.CheckShadowWin())
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+                Messenger.Broadcast(EMessengerType.OnMailListChanged);
+            }
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
@@ -173,7 +195,7 @@ namespace GameA.Game
         {
             if (_playShadowData)
             {
-                _project.RequestPlayShadowBattle(_shadowBattleId, () =>
+                _project.RequestPlayShadowBattle(_battleId, () =>
                 {
                     GameRun.Instance.RePlay();
                     _firstStart = false;
@@ -238,8 +260,21 @@ namespace GameA.Game
             GameRun.Instance.Playing();
             if (_playShadowData && _firstStart)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleSurprise>();
+                if (ShadowBattleType == EShadowBattleType.FriendHelp)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleHelp>();
+                }
+                else
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleSurprise>();
+                }
             }
         }
+    }
+
+    public enum EShadowBattleType
+    {
+        Normal,
+        FriendHelp
     }
 }
