@@ -19,7 +19,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.AddFriendsBtn.onClick.AddListener(OnAddFriendsBtn);
+            _cachedView.AddFriendsBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.CancelBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.GridDataScroller.Set(OnItemRefresh, GetItemRenderer);
