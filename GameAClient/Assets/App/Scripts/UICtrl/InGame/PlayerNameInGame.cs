@@ -11,13 +11,9 @@ namespace GameA.Game
         void Awake()
         {
             _trans = transform;
+            _trans.rotation = Quaternion.identity;
             TextMesh.GetComponent<Renderer>().sortingOrder = (int) ESortingOrder.DragingItem;
             SetNameActive(false);
-        }
-
-        void Update()
-        {
-            _trans.rotation = Quaternion.identity;
         }
 
         public void SetName(string name)

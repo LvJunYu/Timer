@@ -100,6 +100,7 @@ namespace GameA
             base.Clear();
             _unload = true;
             _cachedView.GridDataScrollers[(int) _menu - 1].RefreshCurrent();
+            _cachedView.GridDataScrollers[(int) _menu - 1].ContentPosition = Vector2.zero;
             _projectList = null;
             _contentList.Clear();
             _dict.Clear();

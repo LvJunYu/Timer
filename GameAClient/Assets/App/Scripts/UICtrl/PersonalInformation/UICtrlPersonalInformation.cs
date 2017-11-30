@@ -113,8 +113,8 @@ namespace GameA
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);
             //测试
-            MessageCount = Random.Range(6, 30);
-            RefreshMessageNum(MessageCount);
+//            MessageCount = Random.Range(6, 30);
+//            RefreshMessageNum(MessageCount);
             RefreshView();
             if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
@@ -168,7 +168,6 @@ namespace GameA
 
         private void Clear()
         {
-//            UserInfoDetail = null;
             for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
                 _menuCtrlArray[i].Clear();

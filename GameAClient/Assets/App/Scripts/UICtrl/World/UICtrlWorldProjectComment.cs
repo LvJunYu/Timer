@@ -31,7 +31,7 @@ namespace GameA
 
         protected override void OnClose()
         {
-            _cachedView.CommentInput.text = string.Empty;
+            Clear();
             base.OnClose();
         }
 
@@ -98,6 +98,7 @@ namespace GameA
 
         private void Clear()
         {
+            _cachedView.CommentInput.text = string.Empty;
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = false;
             _cachedView.BadTog.isOn = false;
