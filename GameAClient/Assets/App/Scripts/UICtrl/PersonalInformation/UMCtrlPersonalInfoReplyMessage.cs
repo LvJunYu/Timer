@@ -6,8 +6,8 @@ namespace GameA
 {
     public class UMCtrlPersonalInfoReplyMessage : UMCtrlBase<UMViewPersonalInfoReplyMessage>, IDataItemRenderer, IUMPool
     {
-        protected static string _contentFormat = "<color=orange>{0}</color>:{1}";
-        protected static string _contentReplyFormat = "<color=orange>{0}</color>回复<color=orange>{1}</color>:{2}";
+        protected static string _contentFormat = "<color=orange>{0}</color>: {1}";
+        protected static string _contentReplyFormat = "<color=orange>{0}</color>回复<color=orange>{1}</color>: {2}";
         private UserMessageReply _reply;
         protected bool _openPublishDock;
         public bool IsShow { get; private set; }

@@ -157,13 +157,20 @@ namespace GameA.Game
         private void Fade(int startFram, float speed)
         {
             float a = _color.a * (1f - (_logicFrame - startFram) * speed);
-            if (a < 0) a = 0;
+            if (a < 0)
+            {
+                a = 0;
+            }
             _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
         }
 
         public void Dead(int frame)
         {
             _deadFrame = frame;
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(false);
+            }
         }
 
         public void Revive()
@@ -172,6 +179,10 @@ namespace GameA.Game
             _deadFrame = 0;
             _animation.Reset();
             _view.SetRendererColor(_color);
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
         }
 
         public void EnterPortal(int frame)

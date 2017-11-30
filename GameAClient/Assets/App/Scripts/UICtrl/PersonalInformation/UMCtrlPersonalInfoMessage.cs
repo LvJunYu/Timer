@@ -9,7 +9,7 @@ namespace GameA
     public class UMCtrlPersonalInfoMessage : UMCtrlBase<UMViewPersonalInfoMessage>, IDataItemRenderer
     {
         public static Action OpenInputCallBack;
-        protected static string _contentFormat = "<color=orange>{0}</color>:{1}";
+        protected static string _contentFormat = "<color=orange>{0}</color>: {1}";
         protected static string _totalFormat = "共{0}条回复";
         protected static string _moreFormat = "更多{0}条回复";
         protected EResScenary _resScenary;

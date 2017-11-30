@@ -27,7 +27,10 @@ namespace GameA.Game
 
         public void SetNameActive(bool value)
         {
-            Root.SetActive(value);
+            if (Root.activeSelf != value)
+            {
+                Root.SetActive(value);
+            }
         }
     }
 }

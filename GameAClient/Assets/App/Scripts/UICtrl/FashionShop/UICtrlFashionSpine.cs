@@ -5,10 +5,6 @@ using SoyEngine;
 using SoyEngine.Proto;
 using Spine.Unity;
 using UnityEngine;
-using AnimationState = Spine.AnimationState;
-
-//using SoyEngine;
-
 
 namespace GameA
 {
@@ -19,7 +15,8 @@ namespace GameA
         private RenderCamera _renderCamera;
         private int _timer;
         private const int IntervalTime = 10 * ConstDefineGM2D.FixedFrameCount;
-        private bool _buttonEnable = true;
+        private bool _justTouch;
+//        private bool _buttonEnable = true;
 
         public Texture AvatarRenderTexture
         {
@@ -72,8 +69,8 @@ namespace GameA
         {
             _timer = 1;
             base.OnViewCreated();
-            _cachedView.AvatarBtn.enabled = _buttonEnable;
-            _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
+            _cachedView.DownBtn.onClick.AddListener(OnDownBtn);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
                 JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
@@ -130,7 +127,6 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainFrame;
         }
 
-
         public override void OnUpdate()
         {
             base.OnUpdate();
@@ -152,20 +148,40 @@ namespace GameA
                 }
             }
         }
-        
-        private void OnAvatarBtn()
+
+        private void OnHeadBtn()
         {
-//            _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle3", false);
-//            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+            if (_justTouch) return;
+            _justTouch = true;
+            _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle2", false).Complete +=
+                (state, index, count) =>
+                {
+                    _justTouch = false;
+                    _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
+                };
+            _timer = IntervalTime;
+        }
+
+        private void OnDownBtn()
+        {
+            if (_justTouch) return;
+            _justTouch = true;
+            _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle3", false).Complete +=
+                (state, index, count) =>
+                {
+                    _justTouch = false;
+                    _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
+                };
+            _timer = IntervalTime;
         }
 
         public void Set(bool ifUsable)
         {
-            _buttonEnable = ifUsable;
-            if (_isViewCreated)
-            {
-                _cachedView.AvatarBtn.enabled = _buttonEnable;
-            }
+//            _buttonEnable = ifUsable;
+//            if (_isViewCreated)
+//            {
+//                _cachedView.DownBtn.enabled = _buttonEnable;
+//            }
         }
     }
 }
