@@ -304,6 +304,7 @@ namespace GameA
             _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.ShadowBattleFailObj.SetActive(_showState == EShowState.ShadowBattleLose);
+            _cachedView.ShadowBattleWinObj.SetActive(_showState == EShowState.ShadowBattleWin);
             switch (_showState)
             {
                 case EShowState.Win:
@@ -358,9 +359,10 @@ namespace GameA
                     _cachedView.FriendHelpBtn.SetActiveEx(!friendHelp);
                     _cachedView.FriendHelpTxt.SetActiveEx(!friendHelp);
                     _cachedView.ShadowBattleFailObj.SetActive(!winShadow);
+                    _cachedView.ShadowBattleWinObj.SetActive(winShadow);
                     _cachedView.RetryShadowBattleBtn.SetActiveEx(!winShadow);
                     _cachedView.RewardObj.SetActive(winShadow);
-                    _cachedView.ExpBarObj.SetActive(winShadow);
+                    _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
                     if (winShadow)
                     {
