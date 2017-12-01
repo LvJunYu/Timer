@@ -24,7 +24,6 @@ public:
 	ContainerDialog(CWnd* pParent = NULL);   // standard constructor
 	BOOL m_change_flag;
 	BOOL m_fullscreen;
-	void ModifyInitRunDialog();//初始化运行窗口
 	void ReSize();
 
 	// Dialog Data
@@ -58,11 +57,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(ContainerDialog)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnCBLButtonClicked(WPARAM, LPARAM);
 	afx_msg void OnMenuitemFullscr();
 	afx_msg void OnMenuitemClean();

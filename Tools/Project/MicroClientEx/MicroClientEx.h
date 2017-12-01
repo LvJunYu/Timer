@@ -25,7 +25,6 @@
 #define MSGWEBFULLSRC  (WM_USER + 132)
 #define MSGRESTORE  (WM_USER + 140)
 #define LOGINWINDOW 0
-#define RUNWINDOW 1
 
 static int windowsflag = 0;
 

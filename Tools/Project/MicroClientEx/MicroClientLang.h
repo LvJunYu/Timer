@@ -2,7 +2,7 @@
 #define MICROCLIENTLANG_H
 
 
-const CString syjlangstr0 = "西游修真传";
+const CString syjlangstr0 = "冒险与创造";
 const CString syjlangstr1 = "当前下载进度";
 const CString syjlangstr2 = "正在解压缩";
 const CString syjlangstr3 = "正在进行MD5码校验";
@@ -19,7 +19,7 @@ const CString syjlangstr13 = "清理成功！";
 const CString syjlangstr14 = "清理报告";
 const CString syjlangstr15 = "窗口不存在！";
 const CString syjlangstr16 = "无效的DC,或窗口不存在";
-const CString syjlangstr17 = "西游修真传登陆器";
+const CString syjlangstr17 = "冒险与创造启动器";
 const CString syjlangstr18 = "解压出配置文件失败";
 const CString syjlangstr19 = "读取WORKPATH失败";
 const CString syjlangstr20 = "读取SHORTCUT_NAME失败";

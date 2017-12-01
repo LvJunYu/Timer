@@ -12,6 +12,7 @@
 #include "Tlhelp32.h"
 #include "HttpClient.h"
 #include "MicroClientLang.h"
+#include "Define.h"
 
 #include "LogUtil.h"
 #include<stdio.h> 
@@ -101,7 +102,10 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	ModifyStyleEx(WS_EX_APPWINDOW,WS_EX_TOOLWINDOW);
+	//ModifyStyleEx(WS_EX_APPWINDOW,WS_EX_TOOLWINDOW);
+	ModifyStyleEx(0,WS_EX_APPWINDOW);
+	
+	this->SetWindowText(syjlangstr17);
 	
 	//接受命令行参数
 	int argc = 0;
@@ -141,7 +145,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	m_Blend.BlendFlags=0; //nothingelseisspecial...
 	m_Blend.AlphaFormat=1; //...
 	m_Blend.SourceConstantAlpha=255;//AC_SRC_ALPHA
-	bgImage = Gdiplus::Image::FromFile(L"res\\bg.png");
+	bgImage = Gdiplus::Image::FromFile(RES_IMG_BG);
 	if(!bgImage)
 	{
 		WriteLog("load bg.png failed.");
@@ -151,11 +155,11 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	MoveWindow(430,125,m_BakWidth,m_BakHeight);
 
 	closeBtn = new PngBtn();
-	closeBtn->InitButton(1190,197,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
+	closeBtn->InitButton(1030,20,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
 	miniBtn = new PngBtn();
-	miniBtn->InitButton(1166,182,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
+	miniBtn->InitButton(990,20,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
 	startBtn = new PngBtn();
-	startBtn->InitButton(1190,597,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
+	startBtn->InitButton(940,420,START_NORMAL_STATE,START_OVER_STATE,START_ACTIVE_STATE);
 
 	progressBarMain = new ProgressBar();
 	progressBarMain->InitPogressBar(580,623,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
@@ -165,14 +169,12 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	progressBarVice->InitPogressBar(580,633,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
 	progressBarVice->InitOffset(0,0,0,1,0,0);
 	
-	container = new ContainerDialog();
-	container->Create(IDD_DIALOG_WEBBROWSER,this);
+	//container = new ContainerDialog();
+	//container->Create(IDD_DIALOG_WEBBROWSER,this);
 
 
 	readyToUse = TRUE;
 
-	//container->MoveWindow(700,360,650,390); 
-	container->MoveWindow(526,214,650,380); 
 	if (starturl == "")
 	{
 		starturl = GetConfigValue(CString(CONFIG), cfUrl);
@@ -185,11 +187,11 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	//GetServerVision();
 	//container->m_WebBrowser.Navigate2(starturl);
 	
-	//container->m_WebBrowser.Navigate("http://172.18.1.79", NULL, NULL, NULL, NULL);
-	container->m_WebBrowser.Navigate("www.baidu.com", NULL, NULL, NULL, NULL);
+	//container->m_WebBrowser.Navigate("www.baidu.com", NULL, NULL, NULL, NULL);
 	//ntainer->m_WebBrowser.SetWindowPos( NULL,0,0,671,404,NULL);
-	container->m_WebBrowser.MoveWindow(0,0,671,404);
-	container->ShowWindow(SW_HIDE);
+	//container->m_WebBrowser.MoveWindow(0,0, 800,430);
+	//container->MoveWindow(240, 80, 800, 430);
+	//container->ShowWindow(SW_HIDE);
 	RePaintWindow();
 
 	//任务栏右键菜单
@@ -198,9 +200,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	//不同分辨率桌面居中显示
 	CWnd::CenterWindow(); 
 
-	this->SetWindowText(syjlangstr0);
-
-	ModifyStyle(WS_CAPTION,0);//去掉窗体的标题栏
+	//ModifyStyle(WS_CAPTION,0);//去掉窗体的标题栏
 
 	//复制配置文件，读取参数
 
@@ -362,7 +362,9 @@ void CMicroClientExDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	
-	if(closeBtn->CalculateState(point.x,point.y) || miniBtn->CalculateState(point.x,point.y))Invalidate();
+	if(closeBtn->CalculateState(point.x, point.y)
+		|| miniBtn->CalculateState(point.x, point.y)
+		|| startBtn->CalculateState(point.x, point.y))Invalidate();
 	CDialog::OnMouseMove(nFlags, point);	
 }
 
@@ -434,13 +436,9 @@ void CMicroClientExDlg::InvokeCallGameThread(CString url)//
 void CMicroClientExDlg::InvokeCallWebClient(CString url)//用于判断是否js微端
 {
 	if (!callbyjs)
-	{
-		container->m_WebBrowser.MoveWindow(10,50,600,300);
-
-		
+	{	
 		IvockeDownload((LPVOID)NULL);
 		
-		container->ModifyInitRunDialog();
 		ShowWindow(SW_HIDE);
 		//container->ShowWindow(SW_HIDE);
 		callbyjs = true;
@@ -483,8 +481,6 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	loading_procgrss_vice = 0;
 
 	singleFileCount = 1;
-	
-	bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath + CONFIG,true);
 
 	while(!bDownloadFlag)
 	{
@@ -512,19 +508,19 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		{
 			CString localMd5 = CMD5Checksum::GetMD5(filePath);
 			if(localMd5 != md5s[i])
-				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip, false);
 
-			//localMd5 = CMD5Checksum::GetMD5(filePath);
-			//while(localMd5 != md5s[i])
-				//bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+			localMd5 = CMD5Checksum::GetMD5(filePath);
+			while(localMd5 != md5s[i])
+				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
 		}
 		else
 		{
-			bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+			bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip, false);
 
-			//CString localMd5 = CMD5Checksum::GetMD5(filePath);
-			//while(localMd5 != md5s[i])
-			//	bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+			CString localMd5 = CMD5Checksum::GetMD5(filePath);
+			while(localMd5 != md5s[i])
+				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
 		}
 		loading_procgrss_main=((float)i + 1) / files.size();
 	}
@@ -607,9 +603,9 @@ void CMicroClientExDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	if(miniBtn->CalculatePressDown(point.x,point.y))
 	{
-		//this->ShowWindow(SW_MINIMIZE);
-		this->ShowWindow(SW_HIDE);
-		::SendMessage(container->GetSafeHwnd(),WM_SYSCOMMAND,SC_MINIMIZE,NULL);
+		this->ShowWindow(SW_MINIMIZE);
+		//this->ShowWindow(SW_HIDE);
+		//::SendMessage(container->GetSafeHwnd(),WM_SYSCOMMAND,SC_MINIMIZE,NULL);
 		btnDownflag = TRUE;
 	}
 	if(startBtn->CalculatePressDown(point.x,point.y))
@@ -632,7 +628,7 @@ void CMicroClientExDlg::OnMove(int x, int y)
 	{
 		//::SetWindowPos(container->GetSafeHwnd(),NULL,x+250,y+122,0,0,SWP_NOSIZE);
 		//::SetWindowPos(container->GetSafeHwnd(),NULL,x+250,y+122,0,0,SWP_NOACTIVATE|SWP_NOSIZE);
-		::SendMessage(container->GetSafeHwnd(),MSGCOUNTERMOVE,x,y);
+		//::SendMessage(container->GetSafeHwnd(),MSGCOUNTERMOVE,x,y);
 	}
 	// TODO: Add your message handler code here
 }
@@ -661,9 +657,9 @@ BOOL CMicroClientExDlg::PreTranslateMessage(MSG* pMsg)
 	{
 
 		
-		if (container->GetSafeHwnd())
+		//if (container->GetSafeHwnd())
 		{
-			::SendMessage(container->GetSafeHwnd(),MSGWEBREFRESH,0,0);
+			//::SendMessage(container->GetSafeHwnd(),MSGWEBREFRESH,0,0);
  		}		
 		return TRUE;
  	}
@@ -671,9 +667,9 @@ BOOL CMicroClientExDlg::PreTranslateMessage(MSG* pMsg)
 	if (pMsg->message == WM_KEYDOWN && GetAsyncKeyState(VK_F11)<0)
 	{
 		
-		if (container->GetSafeHwnd())
+		//if (container->GetSafeHwnd())
 		{
-			::SendMessage(container->GetSafeHwnd(),MSGWEBFULLSRC,0,0);
+			//::SendMessage(container->GetSafeHwnd(),MSGWEBFULLSRC,0,0);
  		}		
 		return TRUE;
 	}
@@ -996,7 +992,6 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 				//zipFilesContainer.push_back(strFileLocalFullPath);
 				CString dest = strFileLocalFullPath.Left(strFileLocalFullPath.GetLength()-4);
 				UnCompressFile(dest,strFileLocalFullPath);
-				//TODO
 			}
 			else
 			{
@@ -1040,8 +1035,9 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 } 
 
 int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
-{  
-    char uSorceBuffer[102400] = { 0 };  //解压缩文件时的源buffer  
+{
+	char* uSourceBuffer = new char[20 * 1024 *1024];
+	char* uDestBuffer = new char[20 * 1024 *1024];
     FILE* fp3;  //打开欲解压文件的文件指针  
     FILE* fp4;  //创建解压文件的文件指针  
     int err;  
@@ -1049,11 +1045,11 @@ int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
                  //打开欲解压的文件  
     //err = fopen_s(&fp3, SrcName, "r+b");  
     fp3 = fopen(SrcName, "r+b");  
-    //if (err)  
-    //{  
-        //printf("文件打开失败! \n");  
-        //return 1;  
-    //}  
+    if (fp3==NULL)  
+    {  
+        printf("文件打开失败! \n");  
+        return 1;  
+    }  
   
     //获取欲解压文件的大小  
     long ucur = ftell(fp3);  
@@ -1061,15 +1057,13 @@ int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
     long ufileLength = ftell(fp3);  
     fseek(fp3, ucur, SEEK_SET);  
   
-  
     //读取文件到buffer  
-    fread(uSorceBuffer, ufileLength, 1, fp3);  
+    fread(uSourceBuffer, ufileLength, 1, fp3);
     fclose(fp3);  
   
-    uLongf uDestBufferLen = 1024000;//此处长度需要足够大以容纳解压缩后数据  
-    char* uDestBuffer = (char*)::calloc((uInt)uDestBufferLen, 1);  
+    uLongf uDestBufferLen = 20 * 1024 *1024;//此处长度需要足够大以容纳解压缩后数据  
     //解压缩buffer中的数据  
-    err = uncompress((Bytef*)uDestBuffer, (uLongf*)&uDestBufferLen, (Bytef*)uSorceBuffer, (uLongf)ufileLength);  
+    err = uncompress((Bytef*)uDestBuffer, (uLongf*)&uDestBufferLen, (Bytef*)uSourceBuffer, (uLongf)ufileLength);  
   
     if (err != Z_OK)  
     {  
@@ -1080,21 +1074,16 @@ int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
     //创建一个文件用来写入解压缩后的数据  
     //err = fopen_s(&fp4, DestName, "wb");  
     fp4 = fopen(DestName, "wb");  
-    //if (err)  
-    //{  
-        //printf("解压缩文件创建失败! \n");  
-        //return 1;  
-    //}  
+    if (fp4==NULL)  
+    {  
+        printf("解压缩文件创建失败! \n");  
+        return 1;  
+    }  
   
     printf("写入数据... \n");  
     fwrite(uDestBuffer, uDestBufferLen, 1, fp4);  
-    fclose(fp4);  
+    fclose(fp4);
+	delete[] uSourceBuffer;
+	delete[] uDestBuffer;
     return 0;  
-}
-
-
-void CMicroClientExDlg::UnzipFile(CString strFilePath, CString strTempPath)
-{
-    int nReturnValue;
-
 }
