@@ -5,13 +5,7 @@
 ** Summary : ConstDefineGM2D
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
 using SoyEngine;
-using Spine;
-using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
 
 namespace GameA.Game
 {

@@ -5,9 +5,6 @@
 ** Summary : Lazer
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -114,7 +111,7 @@ namespace GameA.Game
                 _gridCheck.Clear();
                 return;
             }
-            _distance = ConstDefineGM2D.MaxMapDistance;
+            _distance =  _tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
             if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)

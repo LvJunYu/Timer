@@ -161,6 +161,11 @@ namespace GameA.Game
 		[ColumnMapping("ActiveState")]
 		public int ActiveState;
 		/// <summary>
+        /// 有效范围
+        /// </summary>
+		[ColumnMapping("ValidRange")]
+		public int ValidRange;
+		/// <summary>
         /// 装载
         /// </summary>
 		[ColumnMapping("ChildState")]

@@ -5,9 +5,6 @@
 ** Summary : AlertLazer
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using NewResourceSolution;
@@ -147,7 +144,7 @@ namespace GameA.Game
             _timer++;
             if (_shoot)
             {
-                _distance = ConstDefineGM2D.MaxMapDistance;
+                _distance =  _tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
                 var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
                 {
@@ -273,7 +270,7 @@ namespace GameA.Game
         public LazerEffect(UnitBase lazerUnit, string path)
         {
             CreateMesh();
-            Texture texture = null;
+            Texture texture;
             if (!JoyResManager.Instance.TryGetTexture(path, out texture))
             {
                 LogHelper.Error("TryGetTextureByName Failed {0}", path);
@@ -308,7 +305,7 @@ namespace GameA.Game
         {
             if (_trans != null)
             {
-                UnityEngine.Object.Destroy(_trans.gameObject);
+                Object.Destroy(_trans.gameObject);
                 _trans = null;
             }
             _renderer = null;
