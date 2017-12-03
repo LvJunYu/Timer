@@ -92,7 +92,9 @@ namespace GameA.Game
             if (MapConfig.UseAOI)
             {
                 InitRegions(regionTilesCount);
-                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+                _interestArea = new InterestArea(ConstDefineGM2D.RegionTileSize * 1.5f ,
+                    ConstDefineGM2D.RegionTileSize * 2.5f, this);
+//                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
             }
             _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
             for (int i = 0; i < _pathGrid.GetLength(0); i++)

@@ -294,7 +294,7 @@ namespace GameA.Game
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
                     return false;
                 }
-                if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
+                if (unitDesc.Id != MapConfig.TerrainItemId && count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前剩余{0}个", count));
                     return false;
