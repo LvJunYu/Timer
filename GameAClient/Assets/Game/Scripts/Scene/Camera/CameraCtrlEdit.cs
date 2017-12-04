@@ -93,11 +93,16 @@ namespace GameA.Game
                 orthoSize = validMapRect.width / sWHRatio / 2;
                 pos = new Vector3(validMapRect.center.x,
                     validMapRect.yMin + validMapRect.width / sWHRatio / 2);
-                
             }
             else
             {//地图比屏幕宽 全显地图左侧
                 pos = new Vector3(validMapRect.xMin + orthoSize * GM2DGame.Instance.GameScreenAspectRatio, validMapRect.center.y);
+            }
+            // size超过最大时，左下显示
+            if (orthoSize > ConstDefineGM2D.CameraOrthoSizeMaxValue)
+            {
+                float maxSize = ConstDefineGM2D.CameraOrthoSizeMaxValue;
+                pos = new Vector3(validMapRect.xMin + maxSize * GM2DGame.Instance.GameScreenAspectRatio, validMapRect.yMin + maxSize);
             }
             //往左移动一个x遮罩的宽度
             pos.x -= orthoSize * 2 * sWHRatio * ConstDefineGM2D.CameraMoveOutUISizeX / uiResolution.x;
