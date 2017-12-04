@@ -46,7 +46,7 @@ namespace GameA.Game
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
-        protected bool _isDisposed = false;
+        protected bool _isDisposed;
         
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
@@ -563,6 +563,7 @@ namespace GameA.Game
         /// </summary>
         /// <param name="tableUnit"></param>
         /// <param name="unitDesc"></param>
+        /// <param name="dynamicCollider"></param>
         /// <returns></returns>
 //        internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
 //        {
@@ -580,7 +581,6 @@ namespace GameA.Game
 //            SetFacingDir(_moveDirection, true);
 //            return true;
 //        }
-
         internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc, SceneNode dynamicCollider)
         {
             _isDisposed = false;

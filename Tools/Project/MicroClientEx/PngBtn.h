@@ -10,12 +10,15 @@
 /////////////////////////////////////////////////////////////////////////////
 // PngBtn dialog
 
-#define CLOSE_NORMAL_STATE	L"res\\ui_exit_01.png"
-#define CLOSE_ACTIVE_STATE	L"res\\ui_exit_03.png"
-#define CLOSE_OVER_STATE	L"res\\ui_exit_02.png"
-#define MINI_NORMAL_STATE	L"res\\ui_mini_01.png"
-#define MINI_ACTIVE_STATE	L"res\\ui_mini_03.png"
-#define MINI_OVER_STATE		L"res\\ui_mini_02.png"
+#define CLOSE_NORMAL_STATE	L"res\\launcher_btn_close.png"
+#define CLOSE_ACTIVE_STATE	L"res\\launcher_btn_close_p.png"
+#define CLOSE_OVER_STATE	L"res\\launcher_btn_close_h.png"
+#define MINI_NORMAL_STATE	L"res\\btn_minimize.png"
+#define MINI_ACTIVE_STATE	L"res\\btn_minimize_p.png"
+#define MINI_OVER_STATE		L"res\\btn_minimize_h.png"
+#define START_NORMAL_STATE	L"res\\btn_start.png"
+#define START_ACTIVE_STATE	L"res\\btn_start_p.png"
+#define START_OVER_STATE	L"res\\btn_start_h.png"
 
 
 

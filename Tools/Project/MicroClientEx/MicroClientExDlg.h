@@ -60,7 +60,6 @@ public:
 	static CString ReadSerXml(CString key);
 	CString FindurlParam(CString url,CString urlparam,CString urlparamsign);//查找js抛的参数
 	void GetServerVision();
-	static void CMicroClientExDlg::UnzipFile(CString strFilePath, CString strTempPath);
 	
 
 	

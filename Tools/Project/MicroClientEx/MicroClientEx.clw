@@ -15,9 +15,9 @@ ResourceCount=4
 Resource1=IDR_MAINFRAME
 Class3=PngBtn
 Class4=ProgressBar
-Resource2=IDD_DIALOG_WEBBROWSER
+Resource2=IDD_MICROCLIENTEX_DIALOG
 Class5=ContainerDialog
-Resource3=IDD_MICROCLIENTEX_DIALOG
+Resource3=IDD_DIALOG_WEBBROWSER
 Resource4=IDR_MENU1
 
 [CLS:CMicroClientExApp]

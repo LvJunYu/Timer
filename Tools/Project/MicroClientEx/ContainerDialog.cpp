@@ -83,8 +83,6 @@ BOOL ContainerDialog::OnInitDialog()
 	ModifyStyleEx(0,WS_EX_APPWINDOW);
 	ModifyStyle(WS_BORDER,NULL);
 	
-//	CString m_strShenyoujidengluqiText;
-//	m_strShenyoujidengluqiText.LoadString(IDS_SHENYOUJI);
 	this->SetWindowText(syjlangstr17);
 	
 	if (windowsflag == LOGINWINDOW)
@@ -102,124 +100,10 @@ BOOL ContainerDialog::OnInitDialog()
 			FreeLibrary(hInst); 
 		} 
 	}
-	else if (windowsflag == RUNWINDOW)
-	{
-		//AfxMessageBox("----------------------------");
-		ModifyInitRunDialog();
-	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
-
-void ContainerDialog::ModifyInitRunDialog()
-{
-// 	CString str;
-// 	str.Format("%d",windowsflag);
-// 	AfxMessageBox(str);
-	windowsflag = RUNWINDOW;
-	
-	
-	
-	//ModifyStyle(WS_CAPTION,0);//去掉窗体的标题栏
-	//::SetWindowPos(this->GetSafeHwnd(),HWND_NOTOPMOST,0,0,0,0,NULL);
-	ModifyStyle(NULL,WS_BORDER);
-	//创建任务栏标题
-	
-
-
-
-	m_HotKey.SetRules(HKCOMB_C,HOTKEYF_CONTROL);
-	m_HotKey.SetHotKey(VK_F8,NULL);//,HOTKEYF_CONTROL);
-	WORD virtualcode,modifiers;
-	m_HotKey.GetHotKey(virtualcode,modifiers);
-	if (!RegisterHotKey(this->GetSafeHwnd(),100,modifiers,virtualcode))
-	{
-		//MessageBox("热键冲突");
-	}
-	
-	m_cbExtra1.Init(m_hWnd);
-	// 设置标题栏上的原来的按钮（最大化、最小化和关闭）保留的数目
-	m_cbExtra1.SetNumOfDefaultButtons(5);
-	// 设置位图的透明颜色
-	COLORREF crTransparent = RGB(255,0,255);
-	m_cbExtra1.SetTransparentColor(crTransparent);
-	// 鼠标选中一个位按钮后该按钮的位图
-	m_cbExtra1.SetSelectionBitmap((HBITMAP)LoadImage(AfxGetInstanceHandle(),
-								MAKEINTRESOURCE(IDB_REFRESH_DOWN),//(IDB_BITMAP5),
-								IMAGE_BITMAP,
-								0,
-								0,
-								LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR)); 
-	// 鼠标移动到一个位图后，该按钮的位图
-	HBITMAP hMouseOverBitmap = (HBITMAP)LoadImage(AfxGetInstanceHandle(),
-								MAKEINTRESOURCE(IDB_REFRESH_HOT),//(IDB_BITMAP4),
-								IMAGE_BITMAP,
-								0,
-								0,
-								LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR);
-	// 设置位图1
-	HBITMAP hCaption2Bitmap = (HBITMAP)LoadImage(AfxGetInstanceHandle(),
-								MAKEINTRESOURCE(IDB_REFRESH_NOR),//(IDB_BITMAP2),
-								IMAGE_BITMAP,
-								0,
-								0,
-								LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR);
-
-	HBITMAP hCaption2BitmapHilite = CCaptionButton::CombineBitmaps(hCaption2Bitmap,hMouseOverBitmap,crTransparent);
-
-	//m_cbExtra1.AddButton(1,hCaption2BitmapHilite,hCaption2Bitmap,"刷新");
-	m_cbExtra1.AddButton(1,hCaption2BitmapHilite,hCaption2Bitmap,(LPSTR)(LPCTSTR)syjlangstr26);
-	
-	
-	m_cbExtra2.Init(m_hWnd);
-	// 设置标题栏上的原来的按钮（最大化、最小化和关闭）保留的数目
-	m_cbExtra2.SetNumOfDefaultButtons(7);
-	// 设置位图的透明颜色
-//	COLORREF crTransparent = RGB(255,0,255);
-	m_cbExtra2.SetTransparentColor(crTransparent);
-	// 鼠标选中一个位按钮后该按钮的位图
-	m_cbExtra2.SetSelectionBitmap((HBITMAP)LoadImage(AfxGetInstanceHandle(),
-		MAKEINTRESOURCE(IDB_FUNCTION_DOWN),//(IDB_BITMAP5),
-		IMAGE_BITMAP,
-		0,
-		0,
-		LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR)); 
-	// 鼠标移动到一个位图后，该按钮的位图
-	HBITMAP hMouseOverBitmap1 = (HBITMAP)LoadImage(AfxGetInstanceHandle(),
-		MAKEINTRESOURCE(IDB_FUNCTION_HOT),//(IDB_BITMAP4),
-		IMAGE_BITMAP,
-		0,
-		0,
-		LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR);
-	// 设置位图2
-	HBITMAP hCaption3Bitmap = (HBITMAP)LoadImage(AfxGetInstanceHandle(),
-								MAKEINTRESOURCE(IDB_FUNCTION_NOR),//(IDB_BITMAP1),
-								IMAGE_BITMAP,
-								0,
-								0,
-								LR_LOADMAP3DCOLORS|LR_DEFAULTCOLOR);
-
-	HBITMAP hCaption3BitmapHilite = CCaptionButton::CombineBitmaps(hCaption3Bitmap,hMouseOverBitmap1,crTransparent);
-
-
-	// 利用上面的定义创建标题栏上的按钮，包括按钮的ID号，鼠标经过时的
-	// 变换位图，鼠标选择时的变换位图和提示文字。
-	//m_cbExtra2.AddButton(2,hCaption3BitmapHilite,hCaption3Bitmap,"更多");
-	m_cbExtra2.AddButton(2,hCaption3BitmapHilite,hCaption3Bitmap,(LPSTR)(LPCTSTR)syjlangstr30);
-	
-
-	m_change_flag=TRUE;
-	MoveWindow(0,0,1024,768); 
-
-		//不同分辨率桌面居中显示
-	CWnd::CenterWindow(); 
-
-	OnMenuitemFullscr();
-	ReSize();
-
-}
-
 
 BOOL ContainerDialog::PreTranslateMessage(MSG* pMsg) 
 {
@@ -298,24 +182,6 @@ BEGIN_EVENTSINK_MAP(ContainerDialog, CDialog)
 	//}}AFX_EVENTSINK_MAP
 END_EVENTSINK_MAP()
 
-void ContainerDialog::OnSize(UINT nType, int cx, int cy) 
-{
-	CDialog::OnSize(nType, cx, cy);
-	
-	// TODO: Add your message handler code here
-	if (windowsflag == RUNWINDOW)
-	{
-		if (m_change_flag)//如果确定oninitdlg已经调用完毕.
-		{
-			ReSize();
-			
-		}
-		
-		Invalidate();//使整个窗口客户区无效。窗口客户区无效意味着需要重绘
-	}
-	
-}
-
 void ContainerDialog::ReSize()
 {
 	CRect rect;   
@@ -345,73 +211,8 @@ LRESULT ContainerDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	if(!IsWindow(m_hWnd))													
 		return lrst; 
 
-	if((message == WM_NCPAINT || message == WM_NCACTIVATE ||
-		message == WM_NOTIFY || message == WM_MOVE || message==WM_PAINT) && windowsflag == RUNWINDOW)	//截获消息
-	{ 
-		CDC *pWinDC = GetDC();		
-		CRect rect;
-		GetClientRect(&rect);
-		ClientToScreen(&rect);
-		if(pWinDC != NULL)
-		{	
-			m_drawApe.DrawBorder(pWinDC,RGB(100,100,100),-1,1,-1,-1);			//绘制边框 
-			m_drawApe.DrawTitleBar(pWinDC,RGB(0,0,0),RGB(120,120,120));		//绘制标题栏
-			m_drawApe.DrawIcon(pWinDC,IDR_MAINFRAME,5);							//绘制图标
-			m_drawApe.DrawTitle(pWinDC,"  " + syjlangstr0,30);						//绘制标题
-			//m_drawApe.DrawTitle(pWinDC,"  神游记",30);						//绘制标题
-			m_drawApe.DrawSystemBtn(pWinDC,IDB_CLOSE_NOR,IDB_MAX_NOR,IDB_RESTORE_NOR,
-				IDB_MIN_NOR); //系统按钮
-
-			//m_cbExtra.RedrawButtons();
-			m_cbExtra1.RedrawButtons();
-			m_cbExtra2.RedrawButtons();
-		} 
-		ReleaseDC(pWinDC); 
-
-	} 
 	return lrst;
 	//return CDialog::DefWindowProc(message, wParam, lParam);
-}
-
-void ContainerDialog::OnNcLButtonDblClk(UINT nHitTest, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-	/*截获非客户区双击消息，发送大化与恢复消息*/
-	if(!m_drawApe.InterceptMessage(WM_NCLBUTTONDBLCLK,this->GetSafeHwnd(),point))
-		CDialog::OnNcLButtonDblClk(nHitTest, point);
-}
-
-void ContainerDialog::OnNcLButtonDown(UINT nHitTest, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-
-	if(!m_drawApe.InterceptMessage(WM_NCLBUTTONDOWN,this->GetSafeHwnd(),point,
-		IDB_CLOSE_DOWN,IDB_MAX_DOWN,IDB_RESTORE_DOWN,IDB_MIN_DOWN))
-	{
-		
-		CDialog::OnNcLButtonDown(nHitTest, point);
-	}
-}
-
-void ContainerDialog::OnNcLButtonUp(UINT nHitTest, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-	if(!m_drawApe.InterceptMessage(WM_NCLBUTTONUP,this->GetSafeHwnd(),point))
-		CDialog::OnNcLButtonUp(nHitTest, point);
-}
-
-void ContainerDialog::OnNcMouseMove(UINT nHitTest, CPoint point) 
-{
-	// TODO: Add your message handler code here and/or call default
-	
-	if(!m_drawApe.InterceptMessage(WM_NCMOUSEMOVE,this->GetSafeHwnd(),point,
-		IDB_CLOSE_HOT,IDB_MAX_HOT,IDB_RESTORE_HOT,IDB_MIN_HOT))
-	{
-		
-		CDialog::OnNcMouseMove(nHitTest, point);
-	}
 }
 
 
@@ -542,8 +343,7 @@ LRESULT ContainerDialog::OnAcceptMove(WPARAM w, LPARAM l)
 {
 	int x = w;
 	int y = l;
-	//MoveWindow(x+526,y+214,650,380);
-	MoveWindow(x+525,y+213,650,380);
+	MoveWindow(x+240,y+80,800,430);
 	return 0;
 }
 
@@ -576,30 +376,6 @@ void ContainerDialog::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 
-	// TODO: Add your message handler code here
-	if (windowsflag == RUNWINDOW)
-	{
-		
-		CDC *pWinDC = GetDC();
-		CRect rect;
-		GetClientRect(&rect);
-		ClientToScreen(&rect);
-		if(pWinDC != NULL)
-		{	
-			m_drawApe.DrawBorder(pWinDC,RGB(100,100,100),-1,1,-1,-1);			//绘制边框 
-			m_drawApe.DrawTitleBar(pWinDC,RGB(0,0,0),RGB(120,120,120));		//绘制标题栏
-			m_drawApe.DrawIcon(pWinDC,IDR_MAINFRAME,5);							//绘制图标
-			//m_drawApe.DrawTitle(pWinDC,"  神游记",30);						//绘制标题
-			m_drawApe.DrawTitle(pWinDC,"  " + syjlangstr0,30);						//绘制标题	
-			m_drawApe.DrawSystemBtn(pWinDC,IDB_CLOSE_NOR,IDB_MAX_NOR,IDB_RESTORE_NOR,
-				IDB_MIN_NOR); //系统按钮
-			
-			
-			m_cbExtra1.RedrawButtons();
-			m_cbExtra2.RedrawButtons();
-		} 
-		ReleaseDC(pWinDC); 
-	}
 	// Do not call CDialog::OnPaint() for painting messages
 }
 
@@ -749,10 +525,6 @@ void ContainerDialog::OnSysCommand(UINT nID, LPARAM lParam)
 			
 		}
 	}
-	else if (windowsflag == RUNWINDOW)
-	{
-		
-	}	
 	CDialog::OnSysCommand(nID, lParam);
 }
 

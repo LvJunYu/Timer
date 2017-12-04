@@ -50,7 +50,6 @@ BEGIN
     "LANGUAGE 4, 2\r\n"
     "#pragma code_page(936)\r\n"
     "#endif //_WIN32\r\n"
-    "#include ""res\\MicroClientEx.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -66,7 +65,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MicroClientEx.ico"
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\launcher.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -194,24 +193,6 @@ END
 // Bitmap
 //
 
-IDB_CLOSE_DOWN          BITMAP  DISCARDABLE     "res\\closebtn_down.bmp"
-IDB_CLOSE_HOT           BITMAP  DISCARDABLE     "res\\closebtn_hot.bmp"
-IDB_CLOSE_NOR           BITMAP  DISCARDABLE     "res\\closebtn_normal.bmp"
-IDB_MAX_DOWN            BITMAP  DISCARDABLE     "res\\maxbtn_down.bmp"
-IDB_MAX_HOT             BITMAP  DISCARDABLE     "res\\maxbtn_hot.bmp"
-IDB_MAX_NOR             BITMAP  DISCARDABLE     "res\\maxbtn_normal.bmp"
-IDB_MIN_DOWN            BITMAP  DISCARDABLE     "res\\minbtn_down.bmp"
-IDB_MIN_HOT             BITMAP  DISCARDABLE     "res\\minbtn_hot.bmp"
-IDB_MIN_NOR             BITMAP  DISCARDABLE     "res\\minbtn_normal.bmp"
-IDB_RESTORE_DOWN        BITMAP  DISCARDABLE     "res\\restorebtn_down.bmp"
-IDB_RESTORE_HOT         BITMAP  DISCARDABLE     "res\\restorebtn_hot.bmp"
-IDB_RESTORE_NOR         BITMAP  DISCARDABLE     "res\\restorebtn_nor.bmp"
-IDB_FUNCTION_DOWN       BITMAP  DISCARDABLE     "res\\功能_down.bmp"
-IDB_FUNCTION_HOT        BITMAP  DISCARDABLE     "res\\功能_hot.bmp"
-IDB_FUNCTION_NOR        BITMAP  DISCARDABLE     "res\\功能_normal.bmp"
-IDB_REFRESH_DOWN        BITMAP  DISCARDABLE     "res\\刷新_down.bmp"
-IDB_REFRESH_HOT         BITMAP  DISCARDABLE     "res\\刷新_hot.bmp"
-IDB_REFRESH_NOR         BITMAP  DISCARDABLE     "res\\刷新_normal.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -248,7 +229,6 @@ END
 LANGUAGE 4, 2
 #pragma code_page(936)
 #endif //_WIN32
-#include "res\MicroClientEx.rc2"  // non-Microsoft Visual C++ edited resources
 #include "l.chs\afxres.rc"          // Standard components
 #endif
 

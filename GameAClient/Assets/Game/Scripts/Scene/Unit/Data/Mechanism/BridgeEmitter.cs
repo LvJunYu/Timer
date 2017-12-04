@@ -5,11 +5,8 @@
 ** Summary : BridgeEmitter
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -55,7 +52,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_switchTrigger==null || _switchTrigger.Trigger != EActiveState.Active)
+            if (_switchTrigger == null || _switchTrigger.Trigger != EActiveState.Active)
             {
                 if (_curCreatingQueue != null)
                 {
@@ -76,7 +73,7 @@ namespace GameA.Game
                         break;
                     }
                 }
-                if (!blocked)
+                if (!blocked && CheckValidRange())
                 {
                     var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
                     if (unit != null)
@@ -111,6 +108,11 @@ namespace GameA.Game
                     }
                 }
             }
+        }
+
+        private bool CheckValidRange()
+        {
+            return _curCreatingQueue == null || _curCreatingQueue.Count < _tableUnit.ValidRange;
         }
 
         private static void FreeQueue(Queue<UnitBase> queue)

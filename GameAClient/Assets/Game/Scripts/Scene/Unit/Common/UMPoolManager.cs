@@ -58,6 +58,8 @@ namespace GameA
             {
                 value.ForEach(p => p.Destroy());
             }
+            _cacheDic.Clear();
+            _instance = null;
         }
     }
 

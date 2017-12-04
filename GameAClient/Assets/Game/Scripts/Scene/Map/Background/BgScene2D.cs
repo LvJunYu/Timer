@@ -85,9 +85,14 @@ namespace GameA.Game
             return MoveRatio[depth - 1];
         }
 
-        public int GetMaxDepthCount(int depth)
+        private int GetMaxDepthCount(int depth)
         {
-            return MaxDepthCount[depth - 1];
+            int increase = (int) (_followRect.width / 60 + _followRect.height / 30);
+            if (increase == 0)
+            {
+                increase = 1;
+            }
+            return MaxDepthCount[depth - 1] * increase;
         }
 
         public Rect GetRect(int depth)
@@ -107,12 +112,12 @@ namespace GameA.Game
             base.OnInit();
             var validMapTileRect = DataScene2D.Instance.ValidMapRect;
             _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
-            validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x,
-                validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
+//            validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x,
+//                validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
             var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
             _basePos = validMapRect.center;
             _followRect = validMapRect;
-            _followRect.size = GM2DTools.TileToWorld(ConstDefineGM2D.DefaultValidMapRectSize);
+//            _followRect.size = GM2DTools.TileToWorld(ConstDefineGM2D.DefaultValidMapRectSize);
             _followRect.width += 10;
             _followRect.height += 4; //地图编辑黑边有渐变 防止走光
             _followRect.center = _basePos;
@@ -129,7 +134,6 @@ namespace GameA.Game
                 _parents[i] = new GameObject(((EBgDepth) i).ToString()).transform;
                 _parents[i].parent = _parent;
             }
-
             var bgs = TableManager.Instance.Table_BackgroundDic;
             foreach (Table_Background bg in bgs.Values)
             {
@@ -172,6 +176,7 @@ namespace GameA.Game
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
+                    bgItem.SetBaseFollowPos(pos);
                     bgItem.ResetPos();
                     bgItem.Update(pos);
                 }
@@ -194,6 +199,10 @@ namespace GameA.Game
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
+                    if (GameRun.Instance.LogicFrameCnt == 0)
+                    {
+                        bgItem.SetBaseFollowPos(pos);
+                    }
                     bgItem.Update(pos);
                 }
             }
@@ -253,8 +262,8 @@ namespace GameA.Game
             bgNode = NodeFactory.GetBgNode((ushort) tableBg.Id, grid, tableBg.Depth, scale);
             SceneNode node;
             //藤蔓可以重叠
-            if (tableBg.Depth != 4 &&
-                SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this, tableBg.Depth, tableBg.Depth))
+            if (!IsCirrus(tableBg.Depth) && SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this,
+                    tableBg.Depth, tableBg.Depth))
             {
                 return false;
             }
@@ -354,7 +363,7 @@ namespace GameA.Game
                     break;
                 //背景
                 case EBgDepth.Depth14:
-                    min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin);
+                    min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin - GM2DTools.WorldToTile(2f));
                     break;
             }
             grid = new Grid2D(min.x, min.y, min.x + size.x - 1, min.y + size.y - 1);
@@ -416,6 +425,11 @@ namespace GameA.Game
                     bgItem.Trans.gameObject.SetActive(value);
                 }
             }
+        }
+
+        private bool IsCirrus(int depth)
+        {
+            return depth == 4;
         }
 
 //        private bool DeleteView(SceneNode node)

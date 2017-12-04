@@ -123,8 +123,9 @@ namespace GameA.Game
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
-            return node.Id == SwitchTriggerPressId &&
-                   (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
+            return node.Id == SwitchTriggerPressId;
+            //去掉rotation的判断，使激光旋转时也可以触发开关
+//            &&(node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
         public static bool IsLaserDamage(int layer)

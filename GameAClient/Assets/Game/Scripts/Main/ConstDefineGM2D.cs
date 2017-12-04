@@ -5,13 +5,7 @@
 ** Summary : ConstDefineGM2D
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
 using SoyEngine;
-using Spine;
-using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
 
 namespace GameA.Game
 {
@@ -27,8 +21,8 @@ namespace GameA.Game
         /// <summary>
         /// 8+16 = 24
         /// </summary>
-        //public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
-        public static IntVec2 RegionTileSize = new IntVec2(120, 120) * ServerTileScale;
+        public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
+//        public static IntVec2 RegionTileSize = new IntVec2(120, 120) * ServerTileScale;
         //小于RegionTileSize 16 大于半屏幕格子数6.5*2=13
         public static IntVec2 HalfMaxScreenSize = new IntVec2(26,13) * ServerTileScale / 2;
 

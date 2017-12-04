@@ -5,9 +5,6 @@
 ** Summary : GridCheck
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     public struct GridCheck
