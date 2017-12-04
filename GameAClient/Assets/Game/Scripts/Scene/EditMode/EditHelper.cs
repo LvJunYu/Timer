@@ -17,9 +17,12 @@ namespace GameA.Game
         /// 关卡中只能存在一个的物体的索引
         /// </summary>
         private static readonly Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
+
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
-        
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
+
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
+            ;
+
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
         public static Dictionary<int, int> UnitIndexCount
@@ -43,7 +46,7 @@ namespace GameA.Game
                     break;
             }
         }
-        
+
         public static bool TryGetUnitDesc(Vector2 mouseWorldPos, EEditorLayer editorLayer, out UnitDesc unitDesc)
         {
             unitDesc = new UnitDesc();
@@ -58,7 +61,7 @@ namespace GameA.Game
             }
             return true;
         }
-        
+
         public static bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
         {
             unitDesc = GetUnitDefaultData(unitId).UnitDesc;
@@ -77,7 +80,7 @@ namespace GameA.Game
             unitDesc.Scale = Vector2.one;
             return true;
         }
-        
+
 
         public static int GetUnitCnt(int unitId)
         {
@@ -160,7 +163,7 @@ namespace GameA.Game
         {
             _unitDefaultDataDict.AddOrReplace(unitEditData.UnitDesc.Id, unitEditData);
         }
-        
+
         public static UnitEditData GetUnitDefaultData(int id)
         {
             UnitEditData data;
@@ -215,7 +218,7 @@ namespace GameA.Game
                 unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
-        
+
             if (UnitDefine.IsMonster(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
@@ -228,7 +231,7 @@ namespace GameA.Game
         {
             return (mask & 1 << val) != 0;
         }
-        
+
         public static void Clear()
         {
             _replaceUnits.Clear();
@@ -251,7 +254,8 @@ namespace GameA.Game
                     IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
                     IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
                     var min = new IntVec2(unitDesc.Guid.x / size.x * size.x, unitDesc.Guid.y / size.y * size.y);
-                    var grid = new Grid2D(min.x, min.y, Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
+                    var grid = new Grid2D(min.x, min.y, Mathf.Min(mapSize.x, min.x + size.x - 1),
+                        Mathf.Min(mapSize.y, min.y + size.y - 1));
                     var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.MonsterLayer);
                     if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
                     {
@@ -265,9 +269,24 @@ namespace GameA.Game
                 if (tableUnit.EPairType > 0)
                 {
                     PairUnit pairUnit;
-                    if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
+                    if (PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
                     {
-                        Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
+                        if (tableUnit.EPairType == EPairType.PortalDoor)
+                        {
+
+                            int maxDistance = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
+                            if (pairUnit.UnitA != UnitDesc.zero && !CheckDistance(pairUnit.UnitA, unitDesc, maxDistance)||
+                                pairUnit.UnitB != UnitDesc.zero && !CheckDistance(pairUnit.UnitB, unitDesc, maxDistance))
+                            {
+                                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("传送门的间距不能超过{0}个格子哦~", tableUnit.ValidRange));
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Messenger<string>.Broadcast(EMessengerType.GameLog,
+                            string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
                         return false;
                     }
                 }
@@ -276,11 +295,12 @@ namespace GameA.Game
             {
                 if (UnitDefine.IsPlant(tableUnit.Id))
                 {
-                    var downGuid = unitDesc.GetDownPos((int)EUnitDepth.Earth);
+                    var downGuid = unitDesc.GetDownPos((int) EUnitDepth.Earth);
                     UnitBase downUnit;
                     if (!TryGetUnit(downGuid, out downUnit) || !UnitDefine.IsEarth(downUnit.Id))
                     {
-                        Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
+                        Messenger<string>.Broadcast(EMessengerType.GameLog,
+                            string.Format("{0}只可种植在泥土上~", tableUnit.Name));
                         return false;
                     }
                 }
@@ -291,10 +311,11 @@ namespace GameA.Game
                 _unitIndexCount.TryGetValue(unitDesc.Id, out count);
                 if (tableUnit.Count > 0 && count >= tableUnit.Count)
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
+                    Messenger<string>.Broadcast(EMessengerType.GameLog,
+                        string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
                     return false;
                 }
-                if (unitDesc.Id != MapConfig.TerrainItemId && count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
+                if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前剩余{0}个", count));
                     return false;
@@ -385,7 +406,7 @@ namespace GameA.Game
                 return (dir - 4) * 2 + 1;
             }
         }
-        
+
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
         {
             Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
@@ -404,6 +425,13 @@ namespace GameA.Game
             unitBase.Trans.localPosition = GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.localScale = Vector3.one;
             return helperParentObj;
+        }
+        
+        private static bool CheckDistance(UnitDesc pairUnitUnitB, UnitDesc unitDesc, int maxDistance)
+        {
+            if (Mathf.Abs(pairUnitUnitB.Guid.x - unitDesc.Guid.x) > maxDistance) return false;
+            if (Mathf.Abs(pairUnitUnitB.Guid.y - unitDesc.Guid.y) > maxDistance) return false;
+            return true;
         }
     }
 }

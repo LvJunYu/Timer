@@ -442,7 +442,7 @@ namespace GameA.Game
                                 continue;
                             }
                             InstantiateView(unitObject, tableUnit);
-                            Interest(unitObject, true);
+                            SetUnitInterest(unitObject, true);
                         }
                         else
                         {
@@ -451,7 +451,7 @@ namespace GameA.Game
                                 continue;
                             }
                             DestroyView(unitObject);
-                            Interest(unitObject, false);
+                            SetUnitInterest(unitObject, false);
                         }
                     }
                 }
@@ -485,7 +485,7 @@ namespace GameA.Game
                         continue;
                     }
                     InstantiateView(unitObject, tableUnit, node);
-                    Interest(unitObject, true);
+                    SetUnitInterest(unitObject, true);
                 }
                 else
                 {
@@ -494,21 +494,17 @@ namespace GameA.Game
                         continue;
                     }
                     DestroyView(unitObject);
-                    Interest(unitObject, false);
+                    SetUnitInterest(unitObject, false);
                 }
             }
         }
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            //if (tableUnit.EUnitType == EUnitType.Monster || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
-            //{
-            //    return false;
-            //}
-            return true;
+            return tableUnit.EUnitType != EUnitType.Hero;
         }
 
-        private void Interest(UnitDesc unitDesc, bool value)
+        private void SetUnitInterest(UnitDesc unitDesc, bool value)
         {
             UnitBase unit;
             if (_units.TryGetValue(unitDesc.Guid, out unit))

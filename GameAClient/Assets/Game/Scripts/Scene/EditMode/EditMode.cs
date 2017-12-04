@@ -525,8 +525,6 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.Move.Instance);
         }
 
-
-
         public void DeleteSwitchConnection(int idx)
         {
             if (IsInState(EditModeState.Switch.Instance))
@@ -664,10 +662,8 @@ namespace GameA.Game
 
         #endregion
 
-
         #region PrivateMethod
 
-        
         /// <summary>
         /// 初始化地图边框和特效蒙黑
         /// </summary>
@@ -702,7 +698,6 @@ namespace GameA.Game
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetCameraMaskSortOrder((int) ESortingOrder.Mask);
         }
-
         
         private void OnSuccess()
         {

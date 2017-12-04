@@ -5,10 +5,7 @@
 ** Summary : Portal
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using Spine.Unity;
 
 namespace GameA.Game
 {
