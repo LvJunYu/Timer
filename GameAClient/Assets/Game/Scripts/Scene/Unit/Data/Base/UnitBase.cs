@@ -32,6 +32,8 @@ namespace GameA.Game
 
         protected bool _isFreezed;
 
+        protected bool _isInterest = true;
+
         [SerializeField] protected int _life;
 
         protected Table_Unit _tableUnit;
@@ -522,6 +524,12 @@ namespace GameA.Game
         public string AssetPath
         {
             get { return _assetPath; }
+        }
+
+        public bool IsInterest
+        {
+            get { return _isInterest; }
+            set { _isInterest = value; }
         }
 
         public virtual bool UseMagic()

@@ -442,6 +442,7 @@ namespace GameA.Game
                                 continue;
                             }
                             InstantiateView(unitObject, tableUnit);
+                            Interest(unitObject, true);
                         }
                         else
                         {
@@ -450,6 +451,7 @@ namespace GameA.Game
                                 continue;
                             }
                             DestroyView(unitObject);
+                            Interest(unitObject, false);
                         }
                     }
                 }
@@ -483,6 +485,7 @@ namespace GameA.Game
                         continue;
                     }
                     InstantiateView(unitObject, tableUnit, node);
+                    Interest(unitObject, true);
                 }
                 else
                 {
@@ -491,6 +494,7 @@ namespace GameA.Game
                         continue;
                     }
                     DestroyView(unitObject);
+                    Interest(unitObject, false);
                 }
             }
         }
@@ -502,6 +506,19 @@ namespace GameA.Game
             //    return false;
             //}
             return true;
+        }
+
+        private void Interest(UnitDesc unitDesc, bool value)
+        {
+            UnitBase unit;
+            if (_units.TryGetValue(unitDesc.Guid, out unit))
+            {
+                unit.IsInterest = value;
+            }
+            else
+            {
+                LogHelper.Warning("InstantiateView Failed, {0}", unitDesc);
+            }
         }
 
         #endregion

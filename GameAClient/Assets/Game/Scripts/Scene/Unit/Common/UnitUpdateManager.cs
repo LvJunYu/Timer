@@ -5,19 +5,14 @@
 ** Summary : UnitUpdateManager
 ***********************************************************************/
 
-using SoyEngine;
-using UnityEngine;
-
 namespace GameA.Game
 {
     public class UnitUpdateManager
     {
-        public const int MaxUpdateDistance = 50 * JoyConfig.ServerTileScale;
-
         public void UpdateLogic(float deltaTime)
         {
             var mainUnit = PlayMode.Instance.MainPlayer;
-            var mainPos = mainUnit.CurPos;
+            
             var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
             var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
             var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
@@ -25,14 +20,14 @@ namespace GameA.Game
 
             for (int i = 0; i < allSwitchUnits.Count; i++)
             {
-                if (CheckDistance(allSwitchUnits[i].CurPos, mainPos))
+                if (allSwitchUnits[i].IsInterest)
                 {
                     allSwitchUnits[i].UpdateLogic();
                 }
             }
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
-                if (CheckDistance(allMagicUnits[i].CurPos, mainPos))
+                if (allMagicUnits[i].IsInterest)
                 {
                     allMagicUnits[i].UpdateLogic();
                 }
@@ -40,7 +35,7 @@ namespace GameA.Game
 
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (CheckDistance(allOtherUnits[i].CurPos, mainPos))
+                if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CheckStart();
                 }
@@ -53,28 +48,28 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                if (CheckDistance(allOtherUnits[i].CurPos, mainPos))
+                if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].UpdateLogic();
                 }
             }
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
-                if (CheckDistance(allBulletUnits[i].CurPos, mainPos))
+                if (allBulletUnits[i].IsInterest)
                 {
                     allBulletUnits[i].UpdateLogic();
                 }
             }
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
-                if (CheckDistance(allMagicUnits[i].CurPos, mainPos))
+                if (allMagicUnits[i].IsInterest)
                 {
                     allMagicUnits[i].UpdateView(deltaTime);
                 }
             }
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (CheckDistance(allOtherUnits[i].CurPos, mainPos))
+                if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CalculateExtraDeltaPos();
                 }
@@ -90,7 +85,7 @@ namespace GameA.Game
                         {
                             continue;
                         }
-                        if (CheckDistance(allOtherUnits[i].CurPos, mainPos))
+                        if (allOtherUnits[i].IsInterest)
                         {
                             allOtherUnits[i].UpdateView(deltaTime);
                         }
@@ -105,7 +100,7 @@ namespace GameA.Game
                         {
                             continue;
                         }
-                        if (CheckDistance(allOtherUnits[i].CurPos, mainPos))
+                        if (allOtherUnits[i].IsInterest)
                         {
                             allOtherUnits[i].UpdateView(deltaTime);
                         }
@@ -114,18 +109,19 @@ namespace GameA.Game
             }
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
-                if (CheckDistance(allBulletUnits[i].CurPos, mainPos))
+                if (allBulletUnits[i].IsInterest)
                 {
                     allBulletUnits[i].UpdateView(deltaTime);
                 }
             }
         }
-
-        private bool CheckDistance(IntVec2 curPos, IntVec2 mainPos)
-        {
-            if (Mathf.Abs(curPos.x - mainPos.x) > MaxUpdateDistance) return false;
-            if (Mathf.Abs(curPos.y - mainPos.y) > MaxUpdateDistance) return false;
-            return true;
-        }
+        
+//        public const int MaxUpdateDistance = 40 * JoyConfig.ServerTileScale;
+//        private bool CheckDistance(IntVec2 curPos, IntVec2 mainPos)
+//        {
+//            if (Mathf.Abs(curPos.x - mainPos.x) > MaxUpdateDistance) return false;
+//            if (Mathf.Abs(curPos.y - mainPos.y) > MaxUpdateDistance) return false;
+//            return true;
+//        }
     }
 }

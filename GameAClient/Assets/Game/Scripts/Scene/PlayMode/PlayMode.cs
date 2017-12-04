@@ -174,7 +174,7 @@ namespace GameA.Game
                 _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            ColliderScene2D.Instance.UpdateLogic(_focusPos);
+//            ColliderScene2D.Instance.UpdateLogic(_focusPos);
             if (_mainPlayer != null && _unitUpdateManager != null)
             {
                 _unitUpdateManager.UpdateLogic(deltaTime);
