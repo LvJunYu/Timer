@@ -1,8 +1,11 @@
+#pragma once
+
 //通用方法 By KydYu
 #include "tinystr.h"
 #include "tinyxml.h"
 #include <wininet.h>
 #include <vector>
+#include <io.h>
 using namespace std;
 #pragma comment(lib,"wininet.lib")
 
@@ -36,3 +39,11 @@ CString GetInfoUrlFromConfigFile(CString& szFileName);
 
 //获取服务器版本
 static void ReadSerXml(CString& szFileName,CString key);
+
+void CreateDirs(CString& path);
+
+void DeleteDirs(CString& path);
+
+void GetFiles(CString& path, vector<CString>& files);
+
+int split(const string& str, vector<string>& ret_, string sep);

@@ -6,11 +6,11 @@
 #include "tinyxml.h"
 #include <map>
 #include "common_function.h"
-#include "MicroClientExDlg.h"
 
 #include <WINSOCK2.H>
-#include <IPHlpApi.h>
-#pragma comment(lib, "IPHLPAPI.lib")
+
+//#include <IPHlpApi.h>
+//#pragma comment(lib, "IPHLPAPI.lib")
 
 CString GetConfigValue(CString& szFileName, CString key)
 {
@@ -35,6 +35,7 @@ CString GetConfigValue(CString& szFileName, CString key)
 /**
  * GetAdaptersAddresses()，适用于winxp以上，IPV4/6。
  */
+/*
 bool GAAVersion(CString& macOut)
 {
 	bool ret = false;
@@ -85,10 +86,12 @@ bool GAAVersion(CString& macOut)
 	free(paAddr);
 	return ret;
 }
+*/
 
 /**
  * GetAdaptersInfo()，适用于win2000以上，IPV4。
  */
+/*
 bool GAIVersion(CString& macOut)
 {
 	bool ret = false;
@@ -160,6 +163,7 @@ CString GetMyMacAddr()
 	}
 	return realMac;
 }
+*/
 
 //获取配置文件ROOT-游戏程序地址
 CString GetConfigFile(CString& szFileName)
@@ -303,3 +307,115 @@ float GetProgressNum(int lenghtTotal,int lengthSigle,int count)
 {
 	return (1.0*lengthSigle*count/lenghtTotal);
 }
+
+
+void CreateDirs(CString& path)
+{
+	CString temp = path;
+	for(int i = 0 ; i < temp.GetLength();++i)
+	{
+		if(temp[i] == '\\')
+		{
+			//创建文件目录
+			CreateDirectory(temp.Left(i),NULL);
+		}	
+	}
+}
+
+void DeleteDirs(CString& path)
+{
+    //文件句柄  
+    long hFile = 0;  
+    //文件信息  
+    struct _finddata_t fileinfo;
+	CString filePattern = path + "*";
+    if((hFile = _findfirst((LPTSTR)(LPCTSTR)filePattern, &fileinfo)) !=  -1)  
+    {
+        do
+        {
+            //如果是目录,迭代之
+            //如果不是,加入列表
+            if((fileinfo.attrib &  _A_SUBDIR))  
+            {
+				CString subPath = path + fileinfo.name + "\\";
+                if(strcmp(fileinfo.name,".") != 0 && strcmp(fileinfo.name,"..") != 0)
+				{
+                    DeleteDirs(subPath);
+				}
+            }
+            else
+            {
+				CString fileFullName = path + fileinfo.name;
+				DeleteFile(fileFullName);
+            }
+        }while(_findnext(hFile, &fileinfo)  == 0);
+        _findclose(hFile);
+		RemoveDirectory(path);
+    }
+}
+
+void GetFiles(CString& path, vector<CString>& files)
+{
+    //文件句柄  
+    long hFile = 0;
+    //文件信息
+    struct _finddata_t fileinfo;
+	CString filePattern = path + "*";
+    if((hFile = _findfirst((LPTSTR)(LPCTSTR)filePattern, &fileinfo)) !=  -1)  
+    {
+        do  
+        {
+            //如果是目录,迭代之
+            //如果不是,加入列表
+            if((fileinfo.attrib &  _A_SUBDIR))  
+            {
+				CString subPath = path + fileinfo.name + "\\";
+                if(strcmp(fileinfo.name,".") != 0 && strcmp(fileinfo.name,"..") != 0)
+				{
+                    GetFiles(subPath, files); 
+				}
+            }
+            else  
+            {
+				CString fileFullName = path + fileinfo.name;
+                files.push_back(fileFullName);  
+            }  
+        }while(_findnext(hFile, &fileinfo)  == 0);
+        _findclose(hFile);
+    }
+}
+
+int split(const string& str, vector<string>& ret_, string sep = ",")
+{
+	if (str.empty())
+	{
+		return 0;
+	}
+
+	std::string tmp;
+	std::string::size_type pos_begin = str.find_first_not_of(sep);
+	std::string::size_type comma_pos = 0;
+
+	while (pos_begin != std::string::npos)
+	{
+		comma_pos = str.find(sep, pos_begin);
+		if (comma_pos != std::string::npos)
+		{
+			tmp = str.substr(pos_begin, comma_pos - pos_begin);
+			pos_begin = comma_pos + sep.length();
+		}
+		else
+		{
+			tmp = str.substr(pos_begin);
+			pos_begin = comma_pos;
+		}
+
+		if (!tmp.empty())
+		{
+			ret_.push_back(tmp);
+			//tmp.clear();
+		}
+	}
+	return 0;
+}
+

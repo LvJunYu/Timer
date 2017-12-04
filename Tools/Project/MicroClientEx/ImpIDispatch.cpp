@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "ImpIDispatch.h"
-
-#include "MicroClientEx.h"
 #include "MicroClientExDlg.h"
 
 #ifdef _DEBUG
@@ -346,3 +344,4 @@ STDMETHODIMP CImpIDispatch::Invoke(
 	
 	return S_OK;
 }
+

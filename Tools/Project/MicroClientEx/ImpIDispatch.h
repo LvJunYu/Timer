@@ -1,6 +1,8 @@
 #ifndef _IMPIDISPATCH_H_
 #define _IMPIDISPATCH_H_
 
+#include "MicroClientEx.h"
+
 class CImpIDispatch : public IDispatch
 {
 protected:

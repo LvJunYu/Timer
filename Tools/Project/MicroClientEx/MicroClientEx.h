@@ -1,5 +1,6 @@
 // MicroClientEx.h : main header file for the MICROCLIENTEX application
 //
+#pragma once
 
 #if !defined(AFX_MICROCLIENTEX_H__EAA441C5_1782_4B50_92E4_B6F2CCA113B4__INCLUDED_)
 #define AFX_MICROCLIENTEX_H__EAA441C5_1782_4B50_92E4_B6F2CCA113B4__INCLUDED_
