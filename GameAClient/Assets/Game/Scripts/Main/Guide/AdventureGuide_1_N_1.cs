@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using SoyEngine;
+using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
@@ -7,10 +9,13 @@ namespace GameA.Game
     {
         private UICtrlUIGuideBubble _uiCtrlUIGuideBubble;
         private UICtrlGameBottomTip _uiCtrlGameBottomTip;
-        
+
         private UMCtrlUIGuideBubble _moveGuideBubble;
         private bool _moveGuideFinish;
-
+        private bool _inJumpGuide;
+        private bool _inJumpMoveGuide;
+        private bool _inJumpDoubleGuide;
+        private const float _waitToShowTime = 0.5f;
         private UMCtrlUIGuideBubble _jumpGuideBubble;
 
         public override void Init()
@@ -40,7 +45,8 @@ namespace GameA.Game
                     if (inputUI.IsViewCreated)
                     {
                         _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
+                            inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
+                            EDirectionType.Down,
                             "长按这里移动");
                     }
                 }
@@ -67,29 +73,36 @@ namespace GameA.Game
                 _moveGuideFinish = true;
             }
         }
-        
+
         private void JumpGuide(bool flag)
         {
             if (flag)
             {
-                if (Application.isMobilePlatform)
-                {
-                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
-                    if (inputUI.IsViewCreated)
+                _inJumpGuide = true;
+                CoroutineProxy.Instance.StartCoroutine(
+                    CoroutineProxy.RunWaitForSeconds(_waitToShowTime, () =>
                     {
-                        _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
-                            "长按这里跳跃");
-                    }
-                }
-                else
-                {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 跳跃",
-                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
-                }
+                        if (!_inJumpGuide) return;
+                        if (Application.isMobilePlatform)
+                        {
+                            var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                            if (inputUI.IsViewCreated)
+                            {
+                                _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                                    inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
+                                    "长按这里跳跃");
+                            }
+                        }
+                        else
+                        {
+                            _uiCtrlGameBottomTip.ShowTip(string.Format("长按 ‘{0}’键 跳跃",
+                                CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
+                        }
+                    }));
             }
             else
             {
+                _inJumpGuide = false;
                 if (Application.isMobilePlatform)
                 {
                     if (_jumpGuideBubble != null)
@@ -104,31 +117,36 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         private void JumpMoveGuide(bool flag)
         {
+            _inJumpMoveGuide = flag;
             if (flag)
             {
-                if (Application.isMobilePlatform)
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_waitToShowTime, () =>
                 {
-                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
-                    if (inputUI.IsViewCreated)
+                    if (!_inJumpMoveGuide) return;
+                    if (Application.isMobilePlatform)
                     {
-                        _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
-                            "长按这里跳跃");
-                        _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
-                            EDirectionType.Down,
-                            "长按这里向前");
+                        var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                        if (inputUI.IsViewCreated)
+                        {
+                            _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                                inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
+                                "长按这里跳跃");
+                            _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                                inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
+                                EDirectionType.Down,
+                                "长按这里向前");
+                        }
                     }
-                }
-                else
-                {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("同时长按‘{0}’键移动和‘{1}’键跳跃可以向前跳跃",
-                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
-                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
-                }
+                    else
+                    {
+                        _uiCtrlGameBottomTip.ShowTip(string.Format("同时长按‘{0}’键移动和‘{1}’键跳跃可以向前跳跃",
+                            CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
+                            CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
+                    }
+                }));
             }
             else
             {
@@ -151,31 +169,36 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         private void JumpDoubleGuide(bool flag)
         {
+            _inJumpDoubleGuide = flag;
             if (flag)
             {
-                if (Application.isMobilePlatform)
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_waitToShowTime, () =>
                 {
-                    var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
-                    if (inputUI.IsViewCreated)
+                    if (!_inJumpDoubleGuide) return;
+                    if (Application.isMobilePlatform)
                     {
-                        _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
-                            "按两下跳跃");
-                        _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
-                            inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
-                            EDirectionType.Down,
-                            "长按这里向前");
+                        var inputUI = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                        if (inputUI.IsViewCreated)
+                        {
+                            _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                                inputUI.CachedViewGame.JumpBtn.rectTransform(), EDirectionType.Down,
+                                "按两下跳跃");
+                            _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                                inputUI.CachedViewGame.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(),
+                                EDirectionType.Down,
+                                "长按这里向前");
+                        }
                     }
-                }
-                else
-                {
-                    _uiCtrlGameBottomTip.ShowTip(string.Format("长按‘{0}’键移动同时按两次‘{1}’键跳跃可以向前二连跳",
-                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
-                        CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
-                }
+                    else
+                    {
+                        _uiCtrlGameBottomTip.ShowTip(string.Format("长按‘{0}’键移动同时按两次‘{1}’键跳跃可以向前二连跳",
+                            CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagHorizontal),
+                            CrossPlatformInputManager.GetButtonPositiveKey(InputManager.TagJump)));
+                    }
+                }));
             }
             else
             {

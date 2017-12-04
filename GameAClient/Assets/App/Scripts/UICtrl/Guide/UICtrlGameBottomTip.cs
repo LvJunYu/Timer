@@ -7,15 +7,6 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlGameBottomTip : UICtrlInGameAnimationBase<UIViewGameBottomTip>
     {
-        #region 常量与字段
-        #endregion
-
-        #region 属性
-
-        #endregion
-
-        #region 方法
-
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameTip;
@@ -42,6 +33,5 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlGameBottomTip>();
         }
-        #endregion
     }
 }
