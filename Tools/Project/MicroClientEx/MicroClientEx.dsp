@@ -79,7 +79,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/JoyGame_Launcher.exe" /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/JoyGame_Launcher.exe" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 
@@ -100,6 +101,16 @@ SOURCE=.\common_function.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\CompressStream.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\CompressStreamBuf.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
 SOURCE=.\ContainerDialog.cpp
 # End Source File
 # Begin Source File
@@ -112,6 +123,16 @@ SOURCE=.\CustomControlSite.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DecompressStream.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\DecompressStreamBuf.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
 SOURCE=.\DrawAppearance.cpp
 # End Source File
 # Begin Source File
@@ -121,6 +142,15 @@ SOURCE=.\HttpClient.cpp
 # Begin Source File
 
 SOURCE=.\ImpIDispatch.cpp
+
+!IF  "$(CFG)" == "MicroClientEx - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "MicroClientEx - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -149,6 +179,11 @@ SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\StreamException.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
 SOURCE=.\tinystr.cpp
 # End Source File
 # Begin Source File
@@ -167,6 +202,16 @@ SOURCE=.\tinyxmlparser.cpp
 
 SOURCE=.\webbrowser2.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\ZlibStream.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\ZlibStreamBuf.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -177,7 +222,19 @@ SOURCE=.\CaptionButton.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ClientProcMsgObject_i.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common_function.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CompressStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CompressStreamBuf.h
 # End Source File
 # Begin Source File
 
@@ -190,6 +247,14 @@ SOURCE=.\CountChecksum.h
 # Begin Source File
 
 SOURCE=.\CustomControlSite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DecompressStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DecompressStreamBuf.h
 # End Source File
 # Begin Source File
 
@@ -249,6 +314,10 @@ SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\StreamException.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\targetver.h
 # End Source File
 # Begin Source File
@@ -270,6 +339,14 @@ SOURCE=.\zconf.h
 # Begin Source File
 
 SOURCE=.\zlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ZlibStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ZlibStreamBuf.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

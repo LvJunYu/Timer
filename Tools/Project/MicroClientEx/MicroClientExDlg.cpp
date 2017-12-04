@@ -12,12 +12,15 @@
 #include "Tlhelp32.h"
 #include "HttpClient.h"
 #include "MicroClientLang.h"
-#include "Define.h"
+#include <fstream>
+#include "DecompressStream.h"
 
 #include "LogUtil.h"
-#include<stdio.h> 
+#include <stdio.h> 
+#include <afxcoll.h>
 
 #include <Shlwapi.h>
+using namespace std;
 
 #pragma comment(lib,"Shlwapi.lib")
 #pragma comment(lib,"zlib.lib")
@@ -53,6 +56,14 @@ const int BUF_SIZE = 256;
 char szLogBuf[BUF_SIZE] = {0}; //日志缓冲区
 CString starturl;//外部传入
 int greenflag = 0;//是否绿色版0否1是
+bool hasStart = false;
+
+const TCHAR* szDllPath = _T("\\QQGameProcMsgHelper.dll");
+const char* szCreateClientObjFunc = "CreateClientProcMsgObject";
+const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
+
+typedef IClientProcMsgObject* (*CreateObjFunc)();
+typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -90,6 +101,11 @@ BEGIN_MESSAGE_MAP(CMicroClientExDlg, CDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+void Quit()
+{
+	exit(-1);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CMicroClientExDlg message handlers
 
@@ -108,27 +124,92 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	this->SetWindowText(syjlangstr17);
 	
 	//接受命令行参数
-	int argc = 0;
+	int argc = __argc;
 
-	LPWSTR *argv = ::CommandLineToArgvW(::GetCommandLineW(),&argc);
-
-	for (int i = 0; i < argc; i++)
+	if (argc != 2)
 	{
-		CString msg = argv[i];
-		if (msg == "-url")
+		Quit();
+	}
+	LPTSTR lpCmdLine = __argv[1];
+	//第一步：初步检查命令行是否符合要求：非空
+	if (NULL == lpCmdLine || _tcslen(lpCmdLine) == 0)
+	{
+		/*
+		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
+		*/
+		//::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
+		Quit();
+	}
+	m_strCmdline = lpCmdLine;
+
+	//第二步：解析命令行，先用,号分隔字符串，再用等号分隔
+	std::vector<std::string> vecPara;
+	std::string cmdLine = (std::string)lpCmdLine;
+	split(cmdLine, vecPara, ",");
+
+	typedef std::pair<std::string, std::string> CommandValuePair;
+	std::vector<CommandValuePair> vecKey2Data;
+
+	for (unsigned int i = 0; i < vecPara.size(); ++i)
+	{
+		std::vector<std::string> vecTmp;
+		split(vecPara[i], vecTmp, "=");
+		if (vecTmp.size() == 2)
 		{
-			starturl = argv[i+1];
-			//AfxMessageBox(starturl);
-			break;
+			vecKey2Data.push_back(CommandValuePair(vecTmp[0], vecTmp[1]));
 		}
 	}
-	starturl = "file://c:/Temp/index.html";
+	//--命令行参数解析完毕
+
+	//--开始判断参数是否是指定格式的
+	BOOL bHaveID = FALSE;
+	BOOL bHaveKey = FALSE;
+	BOOL bHaveProcPara = FALSE;
+
+	for (i = 0; i < vecKey2Data.size(); ++i)
+	{
+		if (vecKey2Data[i].first.compare("ID") == 0 && !vecKey2Data[i].second.empty())
+		{
+			bHaveID = TRUE;
+			m_strOpenId = vecKey2Data[i].second;
+			continue;
+		}
+
+		if (vecKey2Data[i].first.compare("Key") == 0 && !vecKey2Data[i].second.empty())
+		{
+			bHaveKey = TRUE;
+			m_strOpenKey = vecKey2Data[i].second;
+			continue;
+		}
+
+		if (vecKey2Data[i].first.compare("PROCPARA") == 0 && !vecKey2Data[i].second.empty())
+		{
+			bHaveProcPara = TRUE;
+			m_strProcPara = vecKey2Data[i].second;
+			continue;
+		}
+	}
+
+	if (!bHaveID || !bHaveKey || !bHaveProcPara)
+	{
+		/*
+		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
+		*/
+		//::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
+		Quit();
+	}
+	//--不符合要求，缺少数据，则直接退出主程序
+
+	m_launcher = this;
+	m_launcher->ConncetPipe();
+
+//	starturl = "file://c:/Temp/index.html";
 	// TODO: Add extra initialization here
 // 	CString testurl = "www.t4game.com/auth=aaa&sign=bbb&channel=&ser=fff&version=eee";
 // 	CString testaddurl = FindurlParam(testurl,"channel","&");
 // 	AfxMessageBox(testaddurl);
 
-	hFuncInst = LoadLibrary("User32.DLL"); 
+	hFuncInst = ::LoadLibrary("User32.DLL"); 
 	BOOL bRet=FALSE;
 	if(hFuncInst) 
 		UpdateLayeredWindow=(MYFUNC)GetProcAddress(hFuncInst, "UpdateLayeredWindow");
@@ -204,7 +285,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 
 	//复制配置文件，读取参数
 
-	char szConfigFile[MAX_PATH] = "C:\\config.ini";
+	//char szConfigFile[MAX_PATH] = "C:\\config.ini";
 	
 	char szNewConfigFile[MAX_PATH] = {'\0'};
 	GetModuleFileName(NULL,szNewConfigFile,MAX_PATH);
@@ -216,11 +297,16 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	}
 	*p = '\0';
 	
+	m_strLocalRootPath = szNewConfigFile;
+	
 	m_strLocalPath = szNewConfigFile;
-	m_strLocalPath = m_strLocalPath + "JoyGame\\";
+	m_strLocalPath = m_strLocalPath + "Game\\";
+	
+	m_strTempPath = szNewConfigFile;
+	m_strTempPath = m_strTempPath + "Download\\";
 	//AfxMessageBox(m_strLocalPath);
 	
-
+/*
 	if (greenflag == 0)
 	{
 		strcat(szNewConfigFile,"\\gameconfig.ini");
@@ -241,6 +327,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		}
 		
 	}
+	*/
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -306,7 +393,7 @@ void CMicroClientExDlg::RePaintWindow()
 					Point(0, m_BakHeight)
 					};
 	
-	Status status = graph.DrawImage(bgImage, points, 3); 
+	Status status = graph.DrawImage(bgImage, points, 3);
 
 // 	CString str;
 // 
@@ -482,65 +569,115 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 
 	singleFileCount = 1;
 
-	while(!bDownloadFlag)
-	{
-		if(singleFileCount++ == MAX_DOWNLOAD_TIMES)
-		{
-			memset(szLogBuf,'\0',BUF_SIZE);
-			sprintf(szLogBuf,"Download File Failed: %s",vroot + CONFIG);
-			WriteLog(szLogBuf);
-			AfxMessageBox("请检查网络是否连接");
-			exit(-1);
-		}
-		bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath +CONFIG,true);
-	}
-	vector<CString> files;
-	vector<CString> md5s;
-	ReadXmlFile(m_strLocalPath + CONFIG,files,md5s);
 	
-	for(int i = 0; i < files.size();++i)
+	if (CheckNeedUpdate())
 	{
-		CString filePath = m_strLocalPath + files[i];
-		WIN32_FIND_DATA  FindFileData;
-		HANDLE hFind;
-		hFind = FindFirstFile(filePath, &FindFileData);
-		if (hFind != INVALID_HANDLE_VALUE)
+		bDownloadFlag = false;
+		while(!bDownloadFlag)
 		{
-			CString localMd5 = CMD5Checksum::GetMD5(filePath);
-			if(localMd5 != md5s[i])
-				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip, false);
-
-			localMd5 = CMD5Checksum::GetMD5(filePath);
-			while(localMd5 != md5s[i])
-				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+			if(singleFileCount++ == MAX_DOWNLOAD_TIMES)
+			{
+				memset(szLogBuf,'\0',BUF_SIZE);
+				sprintf(szLogBuf,"Download File Failed: %s", root + m_serversion + "/" + MANIFEST +cfZip);
+				WriteLog(szLogBuf);
+				AfxMessageBox("请检查网络是否连接");
+				exit(-1);
+			}
+			bDownloadFlag = Download(root + m_serversion + "/" + MANIFEST +cfZip, true, m_strLocalPath + MANIFEST, true, m_strTempPath + MANIFEST + cfZip);
 		}
-		else
+
+		vector<CString> localFiles;
+		GetFiles(m_strLocalPath, localFiles);
+		CMapStringToOb* localFilesMap = new CMapStringToOb(1024);
+		int pathStartPos = m_strLocalPath.GetLength();
+		CString ignorePath = "JoyGame_Data\\JoyYou\\";
+		for (int i=0; i<localFiles.size(); i++)
 		{
-			bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip, false);
-
-			CString localMd5 = CMD5Checksum::GetMD5(filePath);
-			while(localMd5 != md5s[i])
-				bDownloadFlag = Download(vroot + files[i] + cfZip,filePath + cfZip,false);
+			CString fullPathName = localFiles[i];
+			CString filePathName = fullPathName.Mid(pathStartPos);
+			if (filePathName.Left(ignorePath.GetLength()) == ignorePath)
+			{
+				continue;
+			}
+			localFilesMap->SetAt(filePathName, NULL);
 		}
-		loading_procgrss_main=((float)i + 1) / files.size();
+		
+		vector<CString> files;
+		vector<CString> md5s;
+		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, files, md5s);
+		int MaxRetryCount = 3;
+		for(i = 0; i < files.size();++i)
+		{
+			CString filePath = m_strLocalPath + files[i];
+			CString fileTempPath = m_strTempPath + files[i] + cfZip;
+			CString fileUrl = root + m_serversion + "/" + files[i] + cfZip;
+			localFilesMap->RemoveKey(files[i]);
+			fileUrl.Replace('\\', '/');
+			WIN32_FIND_DATA  FindFileData;
+			HANDLE hFind;
+			hFind = FindFirstFile(filePath, &FindFileData);
+			bDownloadFlag = hFind != INVALID_HANDLE_VALUE;
+			int tryCount = 0;
+			for	(;tryCount<MaxRetryCount;tryCount++) {
+				if(bDownloadFlag)
+				{
+					CString localMd5 = CMD5Checksum::GetMD5(filePath);
+					if(localMd5 == md5s[i])
+					{
+						cout<<fileUrl+" success";
+						break;
+					}
+				}
+				bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
+			}
+			if(tryCount >= MaxRetryCount)
+			{
+				memset(szLogBuf,'\0',BUF_SIZE);
+				sprintf(szLogBuf,"Download File Failed: %s", fileUrl);
+				WriteLog(szLogBuf);
+				AfxMessageBox("请检查网络是否连接");
+				exit(-1);
+			}
+			loading_procgrss_main=((float)i + 1) / files.size();
+		}
+		CopyFile(m_strTempPath + CONFIG, CString(CONFIG), FALSE);
+		
+		CString key;
+		CObject* obj;
+		for (POSITION pos = localFilesMap->GetStartPosition(); pos != NULL;)
+		{
+			localFilesMap->GetNextAssoc(pos, key, (CObject*&)obj);
+			CString fileToDelete = m_strLocalPath + key;
+			DeleteFile(fileToDelete);
+		}
+		delete localFilesMap;
+		DeleteDirs(m_strTempPath);
 	}
-	AfxMessageBox("ok");
-
+	//AfxMessageBox("ok");
+	m_launcher->StartGame();
 	loading_procgrss_main = 1;
 	loading_procgrss_vice = 1;
 	return 1;
 }
 
-//读取XML文件(内存中读取)
+//读取XML文件
 void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileContainer,vector<CString> &md5Container)
 {
 	try
 	{
 		fileContainer.clear();
 		md5Container.clear();
-		TiXmlDocument *myDocument = new TiXmlDocument();
 		
-		myDocument->Parse(bufferXML,0,TIXML_DEFAULT_ENCODING);
+		TiXmlDocument *myDocument = new TiXmlDocument(szFileName);
+		myDocument->LoadFile();
+		if(myDocument->Error())
+		{
+			return;
+		}
+
+		//TiXmlDocument *myDocument = new TiXmlDocument();
+		//myDocument->Parse(bufferXML,0,TIXML_DEFAULT_ENCODING);
+
 		TiXmlElement * pChild = myDocument->FirstChildElement();
 	
 		if ( pChild->NoChildren() )
@@ -608,10 +745,11 @@ void CMicroClientExDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		//::SendMessage(container->GetSafeHwnd(),WM_SYSCOMMAND,SC_MINIMIZE,NULL);
 		btnDownflag = TRUE;
 	}
-	if(startBtn->CalculatePressDown(point.x,point.y))
+	if(!hasStart && startBtn->CalculatePressDown(point.x,point.y))
 	{
 		AfxBeginThread(IvockeDownload,(LPVOID)NULL,THREAD_PRIORITY_NORMAL,0,0,NULL);
 		//IvockeDownload((LPVOID)NULL);
+		hasStart = true;
 	}
 	
 	if(btnDownflag == FALSE)
@@ -810,86 +948,10 @@ BOOL CMicroClientExDlg::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 
-void CMicroClientExDlg::GetServerVision()
-{
-	if (greenflag == 0)
-	{
-		//下载版本校验文件
-		if (vroot != "")
-		{
-			singleFileCount = 1;
-			bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath + CONFIG,TRUE);
-			while(!bDownloadFlag)
-			{
-				if(singleFileCount++ == MAX_DOWNLOAD_TIMES)
-				{
-					memset(szLogBuf,'\0',BUF_SIZE);
-					sprintf(szLogBuf,"Download File Failed: %s",vroot + CONFIG);
-					WriteLog(szLogBuf);
-					AfxMessageBox(syjlangstr5);
-					exit(-1);
-				}
-				bDownloadFlag = Download(vroot + CONFIG,m_strLocalPath +CONFIG,TRUE);
-			}
-			CString m_serversion = ReadSerXml(cfVersion);
-			CString m_localversion = GetConfigValue(CString(CONFIG),cfVersion);
-			int serversion[VERSIONNUM];
-			int localversion[VERSIONNUM];
-			
-			if (m_serversion == "" && m_localversion == "")
-			{
-				memset(szLogBuf,'\0',BUF_SIZE);
-				sprintf(szLogBuf,syjlangstr6);
-				WriteLog(szLogBuf);
-			}
-			else if (m_serversion == "")
-			{
-				memset(szLogBuf,'\0',BUF_SIZE);
-				sprintf(szLogBuf,syjlangstr7);
-				WriteLog(szLogBuf);
-			}
-			else if (m_localversion == "")
-			{
-				memset(szLogBuf,'\0',BUF_SIZE);
-				sprintf(szLogBuf,syjlangstr8);
-				WriteLog(szLogBuf);
-			}
-			else
-			{		
-				memset(localversion,0,VERSIONNUM);
-				AnalyVersion(m_localversion,localversion);
-				memset(serversion,0,VERSIONNUM);
-				AnalyVersion(m_serversion,serversion);
-				
-				if (localversion[0] != serversion[0])
-				{
-					AfxMessageBox(syjlangstr9);
-					CString m_downloadurl = GetConfigValue(CString(CONFIG),cfDownurl);
-					ShellExecute(NULL,"open",m_downloadurl,NULL,NULL,SW_SHOWNORMAL);
-					exit(-1);
-				}
-				else
-				{
-					if (localversion[1] != serversion[1])
-					{
-						if(AfxMessageBox(syjlangstr10,MB_YESNO) == IDYES)
-						{				
-							CString m_downloadurl = GetConfigValue(CString(CONFIG),cfDownurl);
-							ShellExecute(NULL,"open",m_downloadurl,NULL,NULL,SW_SHOWNORMAL);
-							exit(-1);
-						}
-					}
-				}
-			}
-		}
-	}
 
-}
-
-bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString & strFileLocalFullPath,bool record)//存放到本地的路径 
+bool CMicroClientExDlg::Download(const CString& strFileURLInServer, bool record, const CString & strFileLocalFullPath, bool uncompress, const CString& tempPath)//存放到本地的路径 
 { 
-	ASSERT(strFileURLInServer != ""); 
-	ASSERT(strFileLocalFullPath != ""); 
+	ASSERT(strFileURLInServer != "");
 	CInternetSession session; 
 	CHttpConnection* pHttpConnection = NULL; 
 	CHttpFile* pHttpFile = NULL; 
@@ -901,7 +963,7 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 	session.SetOption(INTERNET_OPTION_CONNECT_TIMEOUT, nTimeOut); //重试之间的等待延时 
 	session.SetOption(INTERNET_OPTION_DATA_RECEIVE_TIMEOUT,nTimeOut);
 	session.SetOption(INTERNET_OPTION_DATA_SEND_TIMEOUT,nTimeOut);
-	session.SetOption(INTERNET_OPTION_CONNECT_RETRIES, 5); //重试次数 
+	session.SetOption(INTERNET_OPTION_CONNECT_RETRIES, 5); //重试次数
 	char* pszBuffer = NULL; 
 	char szLogBuf[256] = {0};
 
@@ -916,22 +978,23 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 			return false; 
 		}
 		DWORD dwStateCode; 
-		pHttpFile->QueryInfoStatusCode(dwStateCode); 
+		pHttpFile->QueryInfoStatusCode(dwStateCode);
 		if(dwStateCode == HTTP_STATUS_OK) 
 		{ 
-			CString temp = strFileLocalFullPath;
-			for(int i = 0 ; i < temp.GetLength();++i)
+			CString writePath;
+			if (uncompress)
 			{
-				if(temp[i] == '\\')
-				{
-					//创建文件目录
-					CreateDirectory(temp.Left(i),NULL);
-				}	
+				writePath = tempPath;
 			}
-			HANDLE hFile;
-			if (!record)
+			else
 			{
-				hFile = CreateFile(strFileLocalFullPath, GENERIC_WRITE, 
+				writePath = strFileLocalFullPath;
+			}
+			CreateDirs(writePath);
+			HANDLE hFile;
+			if (record)
+			{
+				hFile = CreateFile(writePath, GENERIC_WRITE, 
 					FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 
 					NULL); //创建本地文件 
 				if(hFile == INVALID_HANDLE_VALUE) 
@@ -941,7 +1004,7 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 					session.Close(); 
 
 					memset(szLogBuf,'\0',256);
-					sprintf(szLogBuf,"CreateFile %s Failed.",strFileLocalFullPath);
+					sprintf(szLogBuf,"CreateFile %s Failed.", writePath);
 					WriteLog(szLogBuf);
 					return false; 
 				} 
@@ -977,21 +1040,26 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 				nRead = pHttpFile->Read(pszBuffer, BUFFER_LENGTH); 
 			} 
 		
-			if (!record)
+			if (record)
 			{
 				if(!WriteFile(hFile, pszBufferAll, dwFileSize, &dwWrite, NULL)) //写到本地文件
 				{
 					memset(szLogBuf,'\0',256);
-					sprintf(szLogBuf,"WriteFile %s Failed.",strFileLocalFullPath);
+					sprintf(szLogBuf,"WriteFile %s Failed.", writePath);
 					WriteLog(szLogBuf);
 					return false;
 				}
 				FlushFileBuffers(hFile);
 				CloseHandle(hFile); 
 
-				//zipFilesContainer.push_back(strFileLocalFullPath);
-				CString dest = strFileLocalFullPath.Left(strFileLocalFullPath.GetLength()-4);
-				UnCompressFile(dest,strFileLocalFullPath);
+				if (uncompress)
+				{
+					CString dest = strFileLocalFullPath;
+					if(!UnCompressFile(dest, writePath))
+					{
+						return false;
+					}
+				}
 			}
 			else
 			{
@@ -999,8 +1067,8 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 				memcpy(bufferXML,pszBufferAll,dwFileSize);
 			}
 			loading_procgrss_vice = 1;
-			delete[]pszBufferAll; 
-			delete[]pszBuffer; 
+			delete[] pszBufferAll;
+			delete[] pszBuffer;
 			pszBuffer = NULL; 
 			pszBufferAll = NULL;
 			bReturn = true; 
@@ -1015,6 +1083,9 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 	} 
 	catch(...) 
 	{ 
+		memset(szLogBuf,'\0',256);
+		sprintf(szLogBuf,"Download %s Failed. exception",strFileLocalFullPath);
+		WriteLog(szLogBuf);
 	} 
 	if(pszBuffer != NULL) 
 	{ 
@@ -1034,6 +1105,96 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer,const CString
 	return bReturn; 
 } 
 
+bool CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
+{
+	CreateDirs(DestName);
+    //char buff[4096];
+	ofstream destS(DestName, ios::out|ios::trunc|ios::binary);
+	if(!destS.is_open())
+	{
+		return false;
+	}
+	DecompressStream dds(destS);
+	ifstream srcS(SrcName, ios::in|ios::binary);
+	if(!srcS.is_open())
+	{
+		dds.close();
+		return false;
+	}
+	/*
+    int n=0;
+    while(!srcS.eof())//没有到文件末尾
+    {
+        srcS.read(buff,4096);
+        n=int(srcS.gcount());//实际读取数
+        dds.write(buff,n);
+    }
+	*/
+	dds<<srcS.rdbuf();
+	dds.close();
+	srcS.close();
+	return true;
+}
+
+bool CMicroClientExDlg::CheckNeedUpdate()
+{
+	bDownloadFlag = false;
+	while(!bDownloadFlag)
+	{
+		if(singleFileCount++ == MAX_DOWNLOAD_TIMES)
+		{
+			memset(szLogBuf,'\0',BUF_SIZE);
+			sprintf(szLogBuf,"Download File Failed: %s",vroot);
+			WriteLog(szLogBuf);
+			AfxMessageBox("请检查网络是否连接");
+			exit(-1);
+		}
+		bDownloadFlag = Download(vroot, true, m_strTempPath + CONFIG, false, "");
+	}
+
+	m_serversion = GetConfigValue(m_strTempPath + CONFIG, cfVersion);
+	CString m_localversion = GetConfigValue(CString(CONFIG), cfVersion);
+	int serversion[VERSIONNUM];
+	int localversion[VERSIONNUM];
+	
+	if (m_serversion == "")
+	{
+		memset(szLogBuf,'\0',BUF_SIZE);
+		sprintf(szLogBuf,syjlangstr7);
+		WriteLog(szLogBuf);
+		AfxMessageBox("读取版本信息失败");
+		exit(-1);
+	}
+	else if (m_localversion == "")
+	{
+		memset(szLogBuf,'\0',BUF_SIZE);
+		sprintf(szLogBuf,syjlangstr8);
+		WriteLog(szLogBuf);
+		AfxMessageBox("读取版本信息失败");
+		exit(-1);
+	}
+	else
+	{
+		memset(localversion,0,VERSIONNUM);
+		AnalyVersion(m_localversion,localversion);
+		memset(serversion,0,VERSIONNUM);
+		AnalyVersion(m_serversion,serversion);
+		for (int i=0; i<VERSIONNUM; i++)
+		{
+			if(serversion[i]>localversion[i])
+			{
+				return true;
+			}
+			else if (serversion[i]<localversion[i])
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+/*
 int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
 {
 	char* uSourceBuffer = new char[20 * 1024 *1024];
@@ -1086,4 +1247,283 @@ int CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
 	delete[] uSourceBuffer;
 	delete[] uDestBuffer;
     return 0;  
+}
+*/
+
+BOOL CMicroClientExDlg::LoadLibrary()
+{
+	// 读取 REG_SZ 类型键值的代码
+
+	HKEY  hKey = NULL;
+	DWORD dwSize = 0;
+	DWORD dwDataType = 0;
+	char* lpValue = NULL;
+	LPCTSTR const lpValueName = _T("HallDirectory");
+
+	LONG lRet = ::RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+		_T("Software\\Tencent\\QQGame\\SYS"),
+		0,
+		KEY_QUERY_VALUE,
+		&hKey);
+	if (ERROR_SUCCESS != lRet)
+	{
+		//::MessageBox(NULL, "注册表读取失败，程序退出!", "退出提示", MB_OK);
+		Quit();
+		return FALSE;
+	}
+	// Call once RegQueryValueEx to retrieve the necessary buffer size
+	::RegQueryValueEx(hKey,
+		lpValueName,
+		0,
+		&dwDataType,
+		(LPBYTE)lpValue,  // NULL
+		&dwSize); // will contain the data size
+
+	// Alloc the buffer
+	lpValue = new char[dwSize + 1];
+	lpValue[dwSize] = '\0';
+
+	// Call twice RegQueryValueEx to get the value
+	lRet = ::RegQueryValueEx(hKey,
+		lpValueName,
+		0,
+		&dwDataType,
+		(LPBYTE)lpValue,
+		&dwSize);
+	::RegCloseKey(hKey);
+	if (ERROR_SUCCESS != lRet)
+	{
+		//::MessageBox(NULL, "注册表读取失败，程序退出!", "退出提示", MB_OK);
+		Quit();
+		return FALSE;
+	}
+	
+
+	//取到程序的当前路径
+	char szPath[MAX_PATH] = { 0 };
+	//把dll路径变成绝对路径
+	std::string strDllPath = lpValue;
+	strDllPath += szDllPath;
+	m_hModule = ::LoadLibrary(strDllPath.c_str());
+
+	delete[] lpValue;
+	if (m_hModule)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+IClientProcMsgObject* CMicroClientExDlg::CreateObj()
+{
+	IClientProcMsgObject* pServerObj = NULL;
+	CreateObjFunc pCreateObjFunc = NULL;
+
+	pCreateObjFunc = (CreateObjFunc)::GetProcAddress(m_hModule, szCreateClientObjFunc);
+
+	if (NULL == pCreateObjFunc)
+	{
+		return pServerObj;
+	}
+
+	pServerObj = pCreateObjFunc();
+	return pServerObj;
+}
+
+void CMicroClientExDlg::ReleaseObj(IClientProcMsgObject* pObj)
+{
+	ReleaseObjFunc pReleaseObjFunc = NULL;
+
+	pReleaseObjFunc = (ReleaseObjFunc)::GetProcAddress(m_hModule, szReleaseClientObjFunc);
+
+	if (NULL == pReleaseObjFunc)
+	{
+		return;
+	}
+
+	pReleaseObjFunc(pObj);
+	return;
+}
+
+void CMicroClientExDlg::ConncetPipe()
+{
+	if (!LoadLibrary())
+	{
+		return;
+	}
+
+	std::string strShowMsg = "Begin connect:";
+	strShowMsg += m_strProcPara;
+	ShowMsg(strShowMsg.c_str());
+
+	//创建对象
+	m_pProcMsgObj = CreateObj();
+	if (m_pProcMsgObj == NULL)
+	{
+		return;
+	}
+
+	m_pProcMsgObj->Initialize();
+	m_pProcMsgObj->AddEventHandler(this);
+	BOOL bSucc = m_pProcMsgObj->Connect(m_strProcPara.c_str());
+	if (!bSucc)
+	{
+		ShowMsg("ConnectFailed");
+		/*
+		连接失败，请直接退出游戏，未连接上时，大厅会认为游戏未启动，所以请直接退出
+		MessageBox只是为了Demo演示，别真弹出来，悄悄退出就好啦，退出功能请开发商根据自己的情况实现
+		*/
+		//::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
+		Quit();
+	}
+}
+
+void CMicroClientExDlg::Release()
+{
+	if (NULL != m_pProcMsgObj)
+	{
+		m_pProcMsgObj->RemoveEventHandler(this);
+		m_pProcMsgObj->Disconnect();
+		m_pProcMsgObj = NULL;
+	}
+}
+
+void CMicroClientExDlg::OnConnectSucc(IClientProcMsgObject* pClientProcMsgObj)
+{
+	ShowMsg("Connect Succ");
+}
+
+void CMicroClientExDlg::OnConnectFailed(IClientProcMsgObject* pClientProcMsgObj, DWORD dwErrorCode)
+{
+	ShowMsg("ConnectFailed");
+	/*
+	连接失败，请直接退出游戏，未连接上时，大厅会认为游戏未启动，所以请直接退出
+	MessageBox只是为了Demo演示，别真弹出来，悄悄退出就好啦，退出功能请开发商根据自己的情况实现
+	*/
+	//::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
+	PostQuitMessage(0);
+}
+
+void CMicroClientExDlg::OnConnectionDestroyed(IClientProcMsgObject* pClientProcMsgObj)
+{
+	ShowMsg("ConnectDestroy");
+}
+
+void CMicroClientExDlg::OnReceiveMsg(IClientProcMsgObject* pClientProcMsgObj, long lRecvLen, const BYTE* pRecvBuf)
+{
+	PROCMSG_DATA stProcMsgData = { 0 };
+
+	int nTotalLen = 0;
+	int nCopyLen = 0;
+
+	nCopyLen = sizeof(stProcMsgData.nCommandID);
+	memcpy(&stProcMsgData.nCommandID, pRecvBuf, nCopyLen);
+	nTotalLen += nCopyLen;
+
+	nCopyLen = sizeof(stProcMsgData.nDataLen);
+	memcpy(&stProcMsgData.nDataLen, pRecvBuf + nTotalLen, nCopyLen);
+	nTotalLen += nCopyLen;
+
+	nCopyLen = stProcMsgData.nDataLen;
+	memcpy(stProcMsgData.abyData, pRecvBuf + nTotalLen, nCopyLen);
+
+	switch (stProcMsgData.nCommandID)
+	{
+	case SC_WND_BRINGTOP:
+	{
+							ShowMsg("Receive msg SC_WND_BRINGTOP\n");
+	}
+		break;
+	case SC_HALL_CMDPARA:
+	{
+							std::string strMsg = "Receive msg SC_HALL_CMDPARA ：";
+							strMsg += (char*)stProcMsgData.abyData;
+							ShowMsg(strMsg.c_str());
+	}
+		break;
+	case SC_RESPONSE_NEWCONN:
+	{
+								//收到新的管道信息，再启动一个进程
+								char szConnName[MAX_CONNECTION_NAME_SIZE] = { 0 };
+								memcpy(szConnName, stProcMsgData.abyData, stProcMsgData.nDataLen);
+
+								//再启动一个进程，将启动参数传给它
+								ReStartApp(szConnName);
+
+								m_pProcMsgObj->Disconnect();
+								Quit();
+	}
+		break;
+	case SC_RESPONSE_NEWCONN_RUFUSE:
+	{
+									   ShowMsg("Receive msg  SC_RESPONSE_NEWCONN_RUFUSE，拒绝新连接");
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+/*
+这里模拟再次打开这个测试程序，如果接入方有用这个消息的需要，请按自己实际的需求来实现代码
+*/
+void CMicroClientExDlg::ReStartApp(LPCSTR lpszProc)
+{
+	//启动游戏
+	STARTUPINFOA siStartupInfo = { 0 };
+	siStartupInfo.cb = sizeof(siStartupInfo);
+	PROCESS_INFORMATION stProcessInformation = { 0 };
+
+	std::string strProc;
+	std::string::size_type posProc = m_strCmdline.find("PROCPARA=") + 9;
+
+	std::string strStartPara = m_strCmdline.substr(0, posProc);
+	strStartPara += lpszProc;
+
+	TCHAR szCmdLine[1024] = { 0 };
+	std::string strCmdline = "Game\\JoyGame.exe";
+	strCmdline += " ";
+	strCmdline += strStartPara;
+
+	CreateProcessA(NULL, (LPSTR)strCmdline.c_str(), NULL, NULL, FALSE
+		, CREATE_NEW_CONSOLE, NULL, NULL, &siStartupInfo, &stProcessInformation);
+}
+
+void CMicroClientExDlg::SendMsgToGame(IClientProcMsgObject* pProcMsgObj, PROCMSG_DATA* pProcMsgData)
+{
+	if (NULL == pProcMsgData || NULL == pProcMsgObj)
+	{
+		_ASSERT(FALSE);
+		return;
+	}
+	if (!pProcMsgObj->IsConnected())
+	{
+		ShowMsg("pipe is not connected");
+	}
+
+	int nBufLen = pProcMsgData->nDataLen + sizeof(pProcMsgData->nCommandID) + sizeof(pProcMsgData->nDataLen);
+	DWORD dwRet = pProcMsgObj->SendMessage(nBufLen, (BYTE*)pProcMsgData);
+
+	if (dwRet)
+	{
+		std::string strMsg = "SendMsgtoGame error :";
+		char szErr[10] = { 0 };
+		itoa(dwRet, szErr, 10);
+		strMsg += szErr;
+		ShowMsg(strMsg.c_str());
+	}
+}
+
+void CMicroClientExDlg::ShowMsg(LPCTSTR lpszMsg)
+{
+}
+
+void CMicroClientExDlg::StartGame()
+{
+	PROCMSG_DATA stProcMsgData = { 0 };
+	stProcMsgData.nCommandID = CS_REQ_NEWCONNECTION;
+	SendMsgToGame(m_pProcMsgObj, &stProcMsgData);
 }

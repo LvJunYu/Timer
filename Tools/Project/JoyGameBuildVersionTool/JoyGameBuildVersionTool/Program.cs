@@ -43,9 +43,8 @@ namespace JoyGameBuildVersionTool
                         }
                     }
                 }
-                datFileInfo.MD5 = MD5Utils.Encrypt(File.ReadAllBytes(targetFileName));
             }
-            using (var os = File.CreateText(outputPath+"version/" +version+"/config.xml"))
+            using (var os = File.CreateText(outputPath+"version/" +version+"/manifest.xml.raw"))
             {
                 os.WriteLine("<root>");
                 foreach (var datFileInfo in _fileInfoList)
@@ -65,6 +64,19 @@ namespace JoyGameBuildVersionTool
                 }
                 os.WriteLine("</root>");
             }
+            
+            using (ZOutputStream zOutputStream = new ZOutputStream(File.Create(outputPath+"version/" +version+"/manifest.xml.dat"), zlibConst.Z_DEFAULT_COMPRESSION))
+            {
+                using (var fi = File.OpenRead(outputPath+"version/" +version+"/manifest.xml.raw"))
+                {
+                    int len;
+                    while ((len = fi.Read(writeBuffer, 0, writeBuffer.Length))>0)
+                    {
+                        zOutputStream.Write(writeBuffer, 0, len);
+                    }
+                }
+            }
+            File.Delete(outputPath+"version/" +version+"/manifest.xml.raw");
         }
         private class DatFileInfo
         {
