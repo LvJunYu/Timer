@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
@@ -52,8 +51,7 @@ namespace GameA.Game
         protected static string Run = "Run";
         protected static string Attack = "Attack";
         
-        private static EInputType[] _skillInputs = new EInputType[3]
-            {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
+        private static EInputType[] _skillInputs = {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
