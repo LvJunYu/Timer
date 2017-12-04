@@ -77,7 +77,6 @@ namespace GameA.Game
             _orthoSizeSpringbackEffect.Update();
         }
         
-        
         private void InitEditorCameraStartParam()
         {
             Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
@@ -102,7 +101,7 @@ namespace GameA.Game
             if (orthoSize > ConstDefineGM2D.CameraOrthoSizeMaxValue)
             {
                 float maxSize = ConstDefineGM2D.CameraOrthoSizeMaxValue;
-                pos = new Vector3(validMapRect.xMin + maxSize * GM2DGame.Instance.GameScreenAspectRatio, validMapRect.yMin + maxSize);
+                pos = new Vector3(validMapRect.xMin + maxSize, validMapRect.yMin + maxSize);
             }
             //往左移动一个x遮罩的宽度
             pos.x -= orthoSize * 2 * sWHRatio * ConstDefineGM2D.CameraMoveOutUISizeX / uiResolution.x;

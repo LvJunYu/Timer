@@ -31,7 +31,11 @@ namespace GameA.Game
         {
             get { return _trans; }
         }
-        public int Depth{get { return _tableBg.Depth; }}
+
+        public int Depth
+        {
+            get { return _tableBg.Depth; }
+        }
 
         public virtual bool Init(Table_Background table, SceneNode node)
         {
@@ -44,7 +48,14 @@ namespace GameA.Game
             {
                 zDepth -= 850;
             }
-            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
+            _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
+            //背景居中
+            if (table.Depth == 14)
+            {
+                int offset = size.x / ConstDefineGM2D.ServerTileScale - (int)BgScene2D.Instance.GetRect(table.Depth).width;
+                _basePos += new Vector3(-offset/2, 0, 0);
+            }
+            _curPos = _basePos;
             GameObject go;
             if (!TryCreateObject(out go))
             {
