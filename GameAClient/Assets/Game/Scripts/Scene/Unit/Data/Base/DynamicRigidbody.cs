@@ -413,6 +413,15 @@ namespace GameA.Game
         {
         }
 
+        public override void UpdateAdvancedData(UnitAdvance unitAdvanced)
+        {
+            base.UpdateAdvancedData(unitAdvanced);
+            if (unitAdvanced.MaxSpeedX > 0)
+            {
+                _maxSpeedX = unitAdvanced.MaxSpeedX;
+            }
+        }
+
         private IntVec2 _lastPos;
         public override void UpdateView(float deltaTime)
         {

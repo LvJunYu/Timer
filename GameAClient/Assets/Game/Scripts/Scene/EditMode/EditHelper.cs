@@ -218,11 +218,15 @@ namespace GameA.Game
                 unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
-
             if (UnitDefine.IsMonster(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
+            }
+            if (table.CanEdit(EEditType.Attribute))
+            {
+                unitEditData.UnitExtra.UnitAdvance.MaxHp = table.Hp;
+                unitEditData.UnitExtra.UnitAdvance.MaxSpeedX = table.MaxSpeed;
             }
             return unitEditData;
         }

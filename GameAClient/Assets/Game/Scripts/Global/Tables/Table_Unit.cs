@@ -41,6 +41,11 @@ namespace GameA.Game
 		[ColumnMapping("Hp")]
 		public int Hp;
 		/// <summary>
+        /// 最大速度
+        /// </summary>
+		[ColumnMapping("MaxSpeed")]
+		public int MaxSpeed;
+		/// <summary>
         /// 类别
         /// </summary>
 		[ColumnMapping("UnitType")]

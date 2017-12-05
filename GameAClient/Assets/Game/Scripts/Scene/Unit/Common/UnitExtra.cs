@@ -27,6 +27,7 @@ namespace GameA.Game
         TimeInterval,
         Text,
         Style,
+        Attribute,
         Max,
     }
     
@@ -35,20 +36,15 @@ namespace GameA.Game
     public struct UnitExtra : IEquatable<UnitExtra>
     {
         public static UnitExtra zero;
-        
+        public UnitAdvance UnitAdvance;
         public EMoveDirection MoveDirection;
-        
         public byte Active;
-        
         public ushort ChildId;
         public byte ChildRotation;
-        
         public byte RotateMode;
         public byte RotateValue;
-        
         public ushort TimeDelay;
         public ushort TimeInterval;
-
         public string Msg;
 
         public bool IsDynamic()
@@ -63,7 +59,7 @@ namespace GameA.Game
                    ChildId == other.ChildId && ChildRotation == other.ChildRotation && 
                    RotateMode == other.RotateMode && RotateValue == other.RotateValue && 
                    TimeDelay == other.TimeDelay && TimeInterval == other.TimeInterval && 
-                   Msg == other.Msg;
+                   Msg == other.Msg && UnitAdvance == other.UnitAdvance;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)

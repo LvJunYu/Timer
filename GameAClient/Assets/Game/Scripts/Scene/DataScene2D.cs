@@ -19,28 +19,30 @@ namespace GameA.Game
         #region 常量与字段
 
         private static DataScene2D _instance;
-        [SerializeField]
-        private static Vector3 _startPos;
-        [SerializeField]
-        private Grid2D _mapGrid;
-        [SerializeField]
-        private IntRect _validMapRect;
+        [SerializeField] private static Vector3 _startPos;
+        [SerializeField] private Grid2D _mapGrid;
+        [SerializeField] private IntRect _validMapRect;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
+        protected UnitAdvance _monsterAdvance;
+        protected UnitAdvance _playerAdvance;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
-		/// <summary>
-		/// 删除修改的物体堆栈
-		/// </summary>
-		private List<ModifyData> _removedUnits = new List<ModifyData>();
-		/// <summary>
-		/// 改动修改的物体堆栈
-		/// </summary>
-		private List<ModifyData> _modifiedUnits = new List<ModifyData> ();
-		/// <summary>
-		/// 添加修改的物体堆栈
-		/// </summary>
-		private List<ModifyData> _addedUnits = new List<ModifyData>();
+
+        /// <summary>
+        /// 删除修改的物体堆栈
+        /// </summary>
+        private List<ModifyData> _removedUnits = new List<ModifyData>();
+
+        /// <summary>
+        /// 改动修改的物体堆栈
+        /// </summary>
+        private List<ModifyData> _modifiedUnits = new List<ModifyData>();
+
+        /// <summary>
+        /// 添加修改的物体堆栈
+        /// </summary>
+        private List<ModifyData> _addedUnits = new List<ModifyData>();
 
         #endregion
 
@@ -76,23 +78,31 @@ namespace GameA.Game
             get { return _unitExtras; }
         }
 
-		public List<ModifyData> RemovedUnits {
-			get {
-				return _removedUnits;
-			}
-		}
+        public UnitAdvance PlayerAdvance
+        {
+            get { return _playerAdvance; }
+        }
 
-		public List<ModifyData> ModifiedUnits {
-			get {
-				return _modifiedUnits;
-			}
-		}
+        public UnitAdvance MonsterAdvance
+        {
+            get { return _monsterAdvance; }
+        }
 
-		public List<ModifyData> AddedUnits {
-			get {
-				return _addedUnits;
-			}
-		}
+        public List<ModifyData> RemovedUnits
+        {
+            get { return _removedUnits; }
+        }
+
+        public List<ModifyData> ModifiedUnits
+        {
+            get { return _modifiedUnits; }
+        }
+
+        public List<ModifyData> AddedUnits
+        {
+            get { return _addedUnits; }
+        }
+
         #endregion
 
         #region 方法
@@ -103,14 +113,15 @@ namespace GameA.Game
             _mapGrid = new Grid2D(0, 0, ConstDefineGM2D.MapTileSize.x - 1, ConstDefineGM2D.MapTileSize.y - 1);
             var worldPos = GM2DTools.TileToWorld(new IntVec2(_mapGrid.XMin, _mapGrid.YMin));
             _startPos = new Vector2(worldPos.x, worldPos.y);
-            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, ConstDefineGM2D.DefaultValidMapRectSize + ConstDefineGM2D.MapStartPos - IntVec2.one);
+            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos,
+                ConstDefineGM2D.DefaultValidMapRectSize + ConstDefineGM2D.MapStartPos - IntVec2.one);
         }
 
         /// <summary>
         /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
         /// </summary>
         /// <param name="size"></param>
-        public void SetDefaultMapSize (IntVec2 size)
+        public void SetDefaultMapSize(IntVec2 size)
         {
             _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
         }
@@ -133,17 +144,20 @@ namespace GameA.Game
 
         public bool IsInTileMap(IntVec2 tile)
         {
-            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y && tile.y <= _validMapRect.Max.y);
+            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
+                    tile.y <= _validMapRect.Max.y);
         }
 
         public bool IsInTileMap(IntVec3 tile)
         {
-            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y && tile.y <= _validMapRect.Max.y);
+            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
+                    tile.y <= _validMapRect.Max.y);
         }
 
         public bool IsInTileMap(Grid2D grid)
         {
-            return (grid.XMin >= _validMapRect.Min.x && grid.XMax <= _validMapRect.Max.x && grid.YMin >= _validMapRect.Min.y && grid.YMax<= _validMapRect.Max.y);
+            return (grid.XMin >= _validMapRect.Min.x && grid.XMax <= _validMapRect.Max.x &&
+                    grid.YMin >= _validMapRect.Min.y && grid.YMax <= _validMapRect.Max.y);
         }
 
         internal IntVec3 GetTileIndex(Vector3 worldPos, int id, byte rotation = 0)
@@ -154,15 +168,16 @@ namespace GameA.Game
                 LogHelper.Error("WorldPosToTileIndex failed,{0}", id);
                 return IntVec3.zero;
             }
-            var tile = GM2DTools.WorldToTile(worldPos - GM2DTools.TileToWorld(tableUnit.GetDataSize(0, Vector2.one)) * 0.5f - _startPos);
+            var tile = GM2DTools.WorldToTile(
+                worldPos - GM2DTools.TileToWorld(tableUnit.GetDataSize(0, Vector2.one)) * 0.5f - _startPos);
             //>4的按照一个大格子（4小格）对其摆放。
             var size = tableUnit.GetDataSize(rotation, Vector2.one);
             int x = size.x > ConstDefineGM2D.ServerTileScale
-                ? (int)(tile.x * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
-                : (int)((float)tile.x / size.x + 0.5f) * size.x;
+                ? (int) (tile.x * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
+                : (int) ((float) tile.x / size.x + 0.5f) * size.x;
             int y = size.y > ConstDefineGM2D.ServerTileScale
-                ? (int)(tile.y * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
-                : (int)((float)tile.y / size.y + 0.5f) * size.y;
+                ? (int) (tile.y * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
+                : (int) ((float) tile.y / size.y + 0.5f) * size.y;
 
             return new IntVec3(x, y, UnitManager.GetDepth(tableUnit));
         }
@@ -206,7 +221,7 @@ namespace GameA.Game
             return true;
         }
 
-        #region ExtraData
+        #region ExtraData&Advanced
 
         public bool TryGetUnitExtra(IntVec3 guid, out UnitExtra unitExtra)
         {
@@ -218,6 +233,11 @@ namespace GameA.Game
             UnitExtra unitExtra;
             TryGetUnitExtra(guid, out unitExtra);
             return unitExtra;
+        }
+
+        public UnitAdvance GetUnitAdvance(IntVec3 guid)
+        {
+            return GetUnitExtra(guid).UnitAdvance;
         }
 
         public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra, EditRecordBatch editRecordBatch = null)
@@ -269,9 +289,19 @@ namespace GameA.Game
                 // 更新unit
                 if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
                 {
-                    unit.UpdateExtraData ();
+                    unit.UpdateExtraData();
                 }
             }
+        }
+
+        public void ProcessMonsterExtra(UnitAdvance unitAdvance)
+        {
+            _monsterAdvance = unitAdvance;
+        }
+
+        public void ProcessPlayerExtra(UnitAdvance unitAdvance)
+        {
+            _playerAdvance = unitAdvance;
         }
 
         public void DeleteUnitExtra(IntVec3 guid)
@@ -281,10 +311,10 @@ namespace GameA.Game
                 _unitExtras.Remove(guid);
             }
         }
-
         #endregion
 
         #region Switch
+
         /// <summary>
         /// 查找开关控制的Unit
         /// </summary>
@@ -450,7 +480,7 @@ namespace GameA.Game
                             if (units[i] == oldUnitDesc.Guid)
                             {
                                 units[i] = newUnitDesc.Guid;
-                                
+
                                 Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                                     switchGuid, oldUnitDesc.Guid, false);
                                 Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
@@ -491,22 +521,26 @@ namespace GameA.Game
 
         private static readonly List<UnitDesc> _cachedUnitObjects = new List<UnitDesc>();
 
-        internal static bool PointCast(IntVec2 point, out SceneNode sceneNode,int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
+        internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, Instance, minDepth, maxDepth);
         }
 
-        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, Instance, minDepth, maxDepth, excludeNode);
         }
 
-        internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth, excludeNode);
         }
 
-        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
+        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc,
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             Grid2D outValue;
             if (!TryGetGridByUnitObject(unitDesc, out outValue))
@@ -530,7 +564,8 @@ namespace GameA.Game
             return true;
         }
 
-        public static List<UnitDesc> GridCastAllReturnUnits(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        public static List<UnitDesc> GridCastAllReturnUnits(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             _cachedUnitObjects.Clear();
             var nodes = GridCastAll(grid2D, layerMask, minDepth, maxDepth, excludeNode);
@@ -580,6 +615,7 @@ namespace GameA.Game
             UnitDesc = unitDesc;
             UnitExtra = unitExtra;
         }
+
         public static bool operator ==(UnitEditData a, UnitEditData other)
         {
             return (a.UnitDesc == other.UnitDesc) && (a.UnitExtra == other.UnitExtra);
@@ -590,49 +626,56 @@ namespace GameA.Game
             return !(a == other);
         }
 
-        public bool Equals (UnitEditData other)
+        public bool Equals(UnitEditData other)
         {
             return (UnitDesc == other.UnitDesc) && (UnitExtra == other.UnitExtra);
         }
     }
 
-    
-	public struct ModifyData {
-		public UnitEditData OrigUnit;
-		public UnitEditData ModifiedUnit;
-		public ModifyData (UnitEditData orig, UnitEditData modified) {
-			OrigUnit = orig;
-			ModifiedUnit = modified;
-		}
+
+    public struct ModifyData
+    {
+        public UnitEditData OrigUnit;
+        public UnitEditData ModifiedUnit;
+
+        public ModifyData(UnitEditData orig, UnitEditData modified)
+        {
+            OrigUnit = orig;
+            ModifiedUnit = modified;
+        }
+
         // 从地图文件方序列化出来的构造函数
-        public ModifyData (ModifyItemData modifyItemData) {
-            OrigUnit = new UnitEditData ();
-            ModifiedUnit = new UnitEditData ();
-            if (DataScene2D.Instance == null) {
-                LogHelper.Error ("Instantiate modifyData failed, datascene2d not exist");
+        public ModifyData(ModifyItemData modifyItemData)
+        {
+            OrigUnit = new UnitEditData();
+            ModifiedUnit = new UnitEditData();
+            if (DataScene2D.Instance == null)
+            {
+                LogHelper.Error("Instantiate modifyData failed, datascene2d not exist");
                 return;
             }
-            Table_Unit table = TableManager.Instance.GetUnit (modifyItemData.OrigData.Id);
-            if (null == table) {
-                LogHelper.Error ("ParseModifyData error, unit with invalid id {0}", modifyItemData.OrigData.Id);
+            Table_Unit table = TableManager.Instance.GetUnit(modifyItemData.OrigData.Id);
+            if (null == table)
+            {
+                LogHelper.Error("ParseModifyData error, unit with invalid id {0}", modifyItemData.OrigData.Id);
                 return;
             }
-            int depth = UnitManager.GetDepth (table);
-            UnitDesc origDesc = new UnitDesc (
+            int depth = UnitManager.GetDepth(table);
+            UnitDesc origDesc = new UnitDesc(
                 modifyItemData.OrigData.Id,
                 new IntVec3(modifyItemData.OrigData.XMin, modifyItemData.OrigData.YMin, depth),
-                (byte)modifyItemData.OrigData.Rotation,
-                new Vector2(modifyItemData.OrigData.Scale== null ? 1 : modifyItemData.OrigData.Scale.X,
-                    modifyItemData.OrigData.Scale==null ? 1 : modifyItemData.OrigData.Scale.Y)
+                (byte) modifyItemData.OrigData.Rotation,
+                new Vector2(modifyItemData.OrigData.Scale == null ? 1 : modifyItemData.OrigData.Scale.X,
+                    modifyItemData.OrigData.Scale == null ? 1 : modifyItemData.OrigData.Scale.Y)
             );
-            UnitExtra origExtra = new UnitExtra ();
-            origExtra.MoveDirection = (EMoveDirection)modifyItemData.OrigExtra.MoveDirection;
+            UnitExtra origExtra = new UnitExtra();
+            origExtra.MoveDirection = (EMoveDirection) modifyItemData.OrigExtra.MoveDirection;
             origExtra.Active = (byte) modifyItemData.OrigExtra.Active;
             origExtra.ChildId = (ushort) modifyItemData.OrigExtra.ChildId;
             origExtra.ChildRotation = (byte) modifyItemData.OrigExtra.ChildRotation;
             origExtra.RotateMode = (byte) modifyItemData.OrigExtra.RotateMode;
             origExtra.RotateValue = (byte) modifyItemData.OrigExtra.RotateValue;
-            origExtra.TimeDelay =  (ushort) modifyItemData.OrigExtra.TimeDelay;
+            origExtra.TimeDelay = (ushort) modifyItemData.OrigExtra.TimeDelay;
             origExtra.TimeInterval = (ushort) modifyItemData.OrigExtra.TimeInterval;
 
             OrigUnit = new UnitEditData(origDesc, origExtra);
@@ -644,28 +687,29 @@ namespace GameA.Game
                     modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.Y)
             );
             UnitExtra modifiedExtra;
-            DataScene2D.Instance.TryGetUnitExtra (modifiedDesc.Guid, out modifiedExtra);
-            ModifiedUnit = new UnitEditData (modifiedDesc, modifiedExtra);
+            DataScene2D.Instance.TryGetUnitExtra(modifiedDesc.Guid, out modifiedExtra);
+            ModifiedUnit = new UnitEditData(modifiedDesc, modifiedExtra);
         }
 
-        public ModifyItemData ToModifyItemData () {
-            ModifyItemData mid = new ModifyItemData ();
-            mid.OrigData = new MapRect2D ();
+        public ModifyItemData ToModifyItemData()
+        {
+            ModifyItemData mid = new ModifyItemData();
+            mid.OrigData = new MapRect2D();
             mid.OrigData.Id = OrigUnit.UnitDesc.Id;
             mid.OrigData.Rotation = OrigUnit.UnitDesc.Rotation;
-            mid.OrigData.Scale = new Vec2Proto ();
+            mid.OrigData.Scale = new Vec2Proto();
             mid.OrigData.Scale.X = OrigUnit.UnitDesc.Scale.x;
             mid.OrigData.Scale.Y = OrigUnit.UnitDesc.Scale.y;
             mid.OrigData.XMin = OrigUnit.UnitDesc.Guid.x;
             mid.OrigData.XMax = OrigUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
             mid.OrigData.YMin = OrigUnit.UnitDesc.Guid.y;
             mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
-            mid.OrigExtra = GM2DTools.ToProto (OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
+            mid.OrigExtra = GM2DTools.ToProto(OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
 
-            mid.ModifiedData = new MapRect2D ();
+            mid.ModifiedData = new MapRect2D();
             mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
             mid.ModifiedData.Rotation = ModifiedUnit.UnitDesc.Rotation;
-            mid.ModifiedData.Scale = new Vec2Proto ();
+            mid.ModifiedData.Scale = new Vec2Proto();
             mid.ModifiedData.Scale.X = ModifiedUnit.UnitDesc.Scale.x;
             mid.ModifiedData.Scale.Y = ModifiedUnit.UnitDesc.Scale.y;
             mid.ModifiedData.XMin = ModifiedUnit.UnitDesc.Guid.x;
@@ -675,5 +719,5 @@ namespace GameA.Game
 
             return mid;
         }
-	}
+    }
 }

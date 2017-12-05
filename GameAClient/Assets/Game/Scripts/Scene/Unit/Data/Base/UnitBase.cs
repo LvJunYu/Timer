@@ -888,6 +888,15 @@ namespace GameA.Game
             {
                 _moveDirection = EMoveDirection.Right;
             }
+            UpdateAdvancedData(unitExtra.UnitAdvance);
+        }
+
+        public virtual void UpdateAdvancedData(UnitAdvance unitAdvanced)
+        {
+            if (unitAdvanced.MaxHp > 0)
+            {
+                _maxHp = unitAdvanced.MaxHp;
+            }
         }
 
         public bool Equals(UnitBase other)
