@@ -350,7 +350,6 @@ namespace GameA.Game
             {
                 return false;
             }
-
             if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
@@ -385,7 +384,10 @@ namespace GameA.Game
             return true;
         }
 
-        //判断乱入胜利条件
+        /// <summary>
+        /// 判断乱入胜利条件
+        /// </summary>
+        /// <returns></returns>
         public bool CheckShadowWin()
         {
             int score = GetScore(true);

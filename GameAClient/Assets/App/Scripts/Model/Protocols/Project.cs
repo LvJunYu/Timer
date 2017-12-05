@@ -133,6 +133,10 @@ namespace GameA
         /// 继承的关卡ID
         /// </summary>
         private long _parentId;
+        /// <summary>
+        /// 联机信息
+        /// </summary>
+        private NetBattleData _netData;
 
         // cs fields----------------------------------
         /// <summary>
@@ -453,6 +457,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 联机信息
+        /// </summary>
+        public NetBattleData NetData { 
+            get { return _netData; }
+            set { if (_netData != value) {
+                _netData = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -472,6 +486,9 @@ namespace GameA
                     return true;
                 }
                 if (null != _projectUserData && _projectUserData.IsDirty) {
+                    return true;
+                }
+                if (null != _netData && _netData.IsDirty) {
                     return true;
                 }
                 return base.IsDirty;
@@ -557,6 +574,11 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            if (null == _netData) {
+                _netData = new NetBattleData(msg.NetData);
+            } else {
+                _netData.OnSyncFromParent(msg.NetData);
+            }
             OnSyncPartial(msg);
             return true;
         }
@@ -610,6 +632,12 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            if(null != msg.NetData){
+                if (null == _netData){
+                    _netData = new NetBattleData(msg.NetData);
+                }
+                _netData.CopyMsgData(msg.NetData);
+            }
             return true;
         } 
 
@@ -662,6 +690,12 @@ namespace GameA
             _updateTime = obj.UpdateTime;           
             _publishTime = obj.PublishTime;           
             _parentId = obj.ParentId;           
+            if(null != obj.NetData){
+                if (null == _netData){
+                    _netData = new NetBattleData();
+                }
+                _netData.DeepCopy(obj.NetData);
+            }
             return true;
         }
 
@@ -681,6 +715,7 @@ namespace GameA
             _userInfo = new UserInfoSimple();
             _extendData = new ProjectExtend();
             _projectUserData = new ProjectUserData();
+            _netData = new NetBattleData();
             OnCreate();
         }
         #endregion

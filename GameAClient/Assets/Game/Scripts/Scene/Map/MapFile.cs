@@ -54,13 +54,7 @@ namespace GameA.Game
         {
             _mapProcess = 0f;
             var timer = new GameTimer();
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                //初始化地图胜利条件
-                EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-            }
-            var rectData = mapData.Data;
-
+            
             var childList = mapData.UnitExtraInfos;
             if (childList != null)
             {
@@ -70,6 +64,7 @@ namespace GameA.Game
                     AddAttrTo(GM2DTools.ToEngine(item.Guid), item);
                 }
             }
+            
             var pairUnits = new Dictionary<IntVec3, PairUnitData>();
             var pairUnitDatas = mapData.PairUnitDatas;
             if (pairUnitDatas != null)
@@ -94,6 +89,7 @@ namespace GameA.Game
             //计算总数
             int num = 0;
             int totalCount = 0;
+            var rectData = mapData.Data;
             for (int i = 0; i < rectData.Count; i++)
             {
                 var tableUnit = UnitManager.Instance.GetTableUnit(rectData[i].Id);

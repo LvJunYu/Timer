@@ -224,8 +224,6 @@ namespace GameA.Game
                 MapDirty = false;
             }
         }
-	    
-	    
 
         public override bool Restart(Action<bool> successCb, Action failedCb)
         {

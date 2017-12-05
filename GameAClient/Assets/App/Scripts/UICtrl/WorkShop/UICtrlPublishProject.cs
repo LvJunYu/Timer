@@ -221,6 +221,7 @@ namespace GameA
                 null,
                 _project.TimeLimit,
                 _project.WinCondition,
+                null,
                 () =>
                 {
                     _needSave = false;

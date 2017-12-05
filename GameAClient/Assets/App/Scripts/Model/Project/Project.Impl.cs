@@ -427,6 +427,7 @@ namespace GameA
             byte[] recordBytes,
             int timeLimit,
             int winCondition,
+            NetBattleData netBattleData,
             Action successCallback,
             Action<EProjectOperateResult> failedCallback)
         {

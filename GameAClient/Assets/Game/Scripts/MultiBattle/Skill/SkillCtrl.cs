@@ -5,8 +5,6 @@
 ** Summary : SkillCtrl
 ***********************************************************************/
 
-using System.Linq;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game

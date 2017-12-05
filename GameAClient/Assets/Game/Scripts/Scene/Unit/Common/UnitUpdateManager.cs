@@ -115,13 +115,5 @@ namespace GameA.Game
                 }
             }
         }
-        
-//        public const int MaxUpdateDistance = 40 * JoyConfig.ServerTileScale;
-//        private bool CheckDistance(IntVec2 curPos, IntVec2 mainPos)
-//        {
-//            if (Mathf.Abs(curPos.x - mainPos.x) > MaxUpdateDistance) return false;
-//            if (Mathf.Abs(curPos.y - mainPos.y) > MaxUpdateDistance) return false;
-//            return true;
-//        }
     }
 }

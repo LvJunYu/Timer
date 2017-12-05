@@ -160,6 +160,7 @@ namespace GameA.Game
                         RecordBytes,
                         EditMode.Instance.MapStatistics.TimeLimit,
                         EditMode.Instance.MapStatistics.MsgWinCondition,
+                        null,
                         () =>
                         {
                             NeedSave = false;
@@ -204,7 +205,6 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-
             if (Application.isEditor)
             {
                 if (_mode == EMode.EditTest)
@@ -255,7 +255,6 @@ namespace GameA.Game
             }
             return record;
         }
-
 
         public void HandleHandbook(string triggerName, bool active)
         {

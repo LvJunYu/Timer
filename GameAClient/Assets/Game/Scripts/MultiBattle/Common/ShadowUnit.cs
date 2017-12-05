@@ -73,6 +73,11 @@ namespace GameA.Game
             return true;
         }
 
+        /// <summary>
+        /// aHeadFrame影子提前出场的帧数
+        /// </summary>
+        /// <param name="shadowData"></param>
+        /// <param name="aHeadFrame"></param>
         public void SetShadowData(ShadowData shadowData, int aHeadFrame = 0)
         {
             _shadowData = shadowData;

@@ -274,9 +274,9 @@ namespace GameA.Game
                         if (tableUnit.EPairType == EPairType.PortalDoor)
                         {
 
-                            int maxDistance = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
-                            if (pairUnit.UnitA != UnitDesc.zero && !CheckDistance(pairUnit.UnitA, unitDesc, maxDistance)||
-                                pairUnit.UnitB != UnitDesc.zero && !CheckDistance(pairUnit.UnitB, unitDesc, maxDistance))
+                            int validTileRange = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
+                            if (pairUnit.UnitA != UnitDesc.zero && !InValidRange(pairUnit.UnitA, unitDesc, validTileRange)||
+                                pairUnit.UnitB != UnitDesc.zero && !InValidRange(pairUnit.UnitB, unitDesc, validTileRange))
                             {
                                 Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("传送门的间距不能超过{0}个格子哦~", tableUnit.ValidRange));
                                 return false;
@@ -427,10 +427,10 @@ namespace GameA.Game
             return helperParentObj;
         }
         
-        private static bool CheckDistance(UnitDesc pairUnitUnitB, UnitDesc unitDesc, int maxDistance)
+        private static bool InValidRange(UnitDesc pairUnitUnitB, UnitDesc unitDesc, int validRange)
         {
-            if (Mathf.Abs(pairUnitUnitB.Guid.x - unitDesc.Guid.x) > maxDistance) return false;
-            if (Mathf.Abs(pairUnitUnitB.Guid.y - unitDesc.Guid.y) > maxDistance) return false;
+            if (Mathf.Abs(pairUnitUnitB.Guid.x - unitDesc.Guid.x) > validRange) return false;
+            if (Mathf.Abs(pairUnitUnitB.Guid.y - unitDesc.Guid.y) > validRange) return false;
             return true;
         }
     }

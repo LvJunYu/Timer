@@ -32,7 +32,7 @@ namespace GameA.Game
 
         public static IntVec2 DefaultValidMapRectSize = new IntVec2(60, 30) * ServerTileScale;
         public static IntVec2 DefaultChangedTileSize = new IntVec2(10, 10) * ServerTileScale;
-        public static IntVec2 MapTileSize = new IntVec2(450, 450) * ServerTileScale;
+        public static IntVec2 MapTileSize = new IntVec2(500, 500) * ServerTileScale;
         public const int MaxMapDistance = 400 * ServerTileScale;
 
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;

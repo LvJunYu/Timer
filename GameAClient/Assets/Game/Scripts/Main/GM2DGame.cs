@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 游戏所属情景 世界 冒险 匹配 对战
+    /// 游戏所属情景 世界 冒险 匹配 对战 乱斗 联机
     /// </summary>
     public enum EGameSituation
     {
@@ -24,6 +24,7 @@ namespace GameA.Game
         Match,
         Battle,
         ShadowBattle,
+        Net
     }
 
     /// <summary>

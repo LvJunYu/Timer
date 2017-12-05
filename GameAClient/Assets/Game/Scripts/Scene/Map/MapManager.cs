@@ -217,6 +217,10 @@ namespace GameA.Game
 
         public void OnSetMapDataSuccess(GM2DMapData mapData)
         {
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.InitWithMapData(mapData);
+            }
             PlayMode.Instance.SceneState.Init(mapData);
             DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
             GenerateMap(mapData.BgRandomSeed);
@@ -309,8 +313,8 @@ namespace GameA.Game
         public void OnDrawGizmos()
         {
             ColliderScene2D.Instance.OnDrawGizmos();
-            //DataScene2D.Instance.OnDrawGizmos();
-            //BgScene2D.Instance.OnDrawGizmos();
+//            DataScene2D.Instance.OnDrawGizmos();
+//            BgScene2D.Instance.OnDrawGizmos();
         }
 
         private void GenerateBg(int randomSeed)
