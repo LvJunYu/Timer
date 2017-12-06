@@ -15,15 +15,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            _gameSituation = EGameSituation.Net;
+            _gameSituation = EGameSituation.NetBattle;
             return true;
         }
 
-        public void SetNetBattleType(ENetBattleType eNetBattleType)
-        {
-            _project.NetData.NetBattleType = eNetBattleType;
-        }
-        
         public override void OnGameStart()
         {
             base.OnGameStart();
@@ -32,10 +27,12 @@ namespace GameA.Game
 
         public override void OnGameFailed()
         {
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Lose);
         }
 
         public override void OnGameSuccess()
         {
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Win);
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
@@ -121,16 +118,16 @@ namespace GameA.Game
                         IconBytes,
                         passFlag,
                         true,
-                        _recordUsedTime,
-                        _recordScore,
-                        _recordScoreItemCount,
-                        _recordKillMonsterCount,
-                        _recordLeftTime,
-                        _recordLeftLife,
-                        RecordBytes,
-                        EditMode.Instance.MapStatistics.TimeLimit,
-                        EditMode.Instance.MapStatistics.MsgWinCondition,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
                         null,
+                        0,
+                        0,
+                        EditMode.Instance.MapStatistics.NetBattleData,
                         () =>
                         {
                             NeedSave = false;
@@ -142,6 +139,11 @@ namespace GameA.Game
                         }, failedCallback);
                 });
             });
+        }
+
+        public override bool CheckCanPublish(bool showPrompt = false)
+        {
+            return true;
         }
     }
 }

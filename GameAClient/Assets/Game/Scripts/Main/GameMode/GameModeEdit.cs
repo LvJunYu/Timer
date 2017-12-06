@@ -400,7 +400,7 @@ namespace GameA.Game
 			return t2.EncodeToJPG(90);
 		}
 
-		public bool CheckCanPublish(bool showPrompt = false)
+		public virtual bool CheckCanPublish(bool showPrompt = false)
 		{
 			if (LocalUser.Instance.User.RoleType == (int) EAccountRoleType.AcRT_Admin)
 			{

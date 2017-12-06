@@ -24,7 +24,7 @@ namespace GameA.Game
         Match,
         Battle,
         ShadowBattle,
-        Net
+        NetBattle
     }
 
     /// <summary>
@@ -111,14 +111,14 @@ namespace GameA.Game
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
                     break;
-//                case GameManager.EStartType.ShadowBattlePlay:
-//                    _gameMode = new GameModeShadowBattlePlay();
-//                    break;
                 case GameManager.EStartType.WorkshopCreate:
                     _gameMode = new GameModeWorkshopEdit();
                     break;
-                case GameManager.EStartType.WorkshopEdit:
+                case GameManager.EStartType.WorkshopEditStandalone:
                     _gameMode = new GameModeWorkshopEdit();
+                    break;
+                case GameManager.EStartType.WorkshopEditMultiBattle:
+                    _gameMode = new GameModeNetEdit();
                     break;
                 case GameManager.EStartType.WorldPlayRecord:
                     _gameMode = new GameModeWorldPlayRecord();

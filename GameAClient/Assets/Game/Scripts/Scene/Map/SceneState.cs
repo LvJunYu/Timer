@@ -201,11 +201,12 @@ namespace GameA.Game
             total += _monsterKilled * 200;
             return total;
         }
+        
+        public void Init(Project project)
+        {
+            _mapStatistics.InitWithProject(project);
+        }
 
-        /// <summary>
-        ///     �༭ģʽ�µ�����
-        /// </summary>
-        /// <param name="mapStatistics"></param>
         public void Init(MapStatistics mapStatistics)
         {
             _mapStatistics = mapStatistics;

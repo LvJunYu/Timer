@@ -91,9 +91,17 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorkshopEdit);
+            return RequestStartGame(project, EStartType.WorkshopEditStandalone);
         }
-
+        
+        public bool RequestEditMultiBattle(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.WorkshopEditMultiBattle);
+        }
+        
         public bool RequestModify(Project project)
         {
             _projectList.Clear();
@@ -224,7 +232,8 @@ namespace GameA
         {
             None,
             WorkshopCreate,
-            WorkshopEdit,
+            WorkshopEditStandalone,
+            WorkshopEditMultiBattle,
             WorldPlay,
             WorldPlayRecord,
 
