@@ -418,6 +418,7 @@ namespace GameA
             else
             {
                 _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
+                _editData.UnitExtra.UpdateFromChildId();
             }
             var totalCount =_tableUnit.ChildState.Length;
             var da = 360f / totalCount; 
@@ -572,6 +573,7 @@ namespace GameA
         private void OnPayloadMenuClick(int inx)
         {
             _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
+            _editData.UnitExtra.UpdateFromChildId();
             RefreshPayloadMenu();
         }
 

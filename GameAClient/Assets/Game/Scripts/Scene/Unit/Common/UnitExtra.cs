@@ -16,6 +16,7 @@ namespace GameA.Game
     public enum EEditType
     {
         None = -1,
+
         /// <summary>
         /// 存在Node里面。
         /// </summary>
@@ -33,7 +34,7 @@ namespace GameA.Game
         Drop,
         Max,
     }
-    
+
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct UnitExtra : IEquatable<UnitExtra>
@@ -53,11 +54,15 @@ namespace GameA.Game
         public int Damage;
         public int MaxSpeedX;
         public List<int> Drops;
-        public int AttackDistance;
+        public int AttackRange;
         public int ViewRange;
         public int JumpAbility;
         public int BulletCount;
-
+        public int CastRange;
+        public List<int> KnockbackForces;
+        public List<int> AddStates;
+        public int CastSpeed;
+        
         public bool IsDynamic()
         {
             return MoveDirection != EMoveDirection.None;
@@ -76,10 +81,14 @@ namespace GameA.Game
                    Damage == other.Damage &&
                    MaxSpeedX == other.MaxSpeedX &&
                    Drops == other.Drops &&
-                   AttackDistance == other.AttackDistance &&
+                   AttackRange == other.AttackRange &&
                    ViewRange == other.ViewRange &&
                    JumpAbility == other.JumpAbility &&
-                   BulletCount == other.BulletCount;
+                   BulletCount == other.BulletCount &&
+                   CastRange == other.CastRange &&
+                   KnockbackForces == other.KnockbackForces &&
+                   CastSpeed == other.CastSpeed &&
+                   AddStates == other.AddStates;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
@@ -90,6 +99,47 @@ namespace GameA.Game
         public static bool operator !=(UnitExtra a, UnitExtra other)
         {
             return !(a == other);
+        }
+
+        public void UpdateFromChildId()
+        {
+            int skillId = TableManager.Instance.GetEquipment(ChildId).SkillId;
+            var skill = TableManager.Instance.GetSkill(skillId);
+            Damage = skill.Damage;
+            TimeInterval = (ushort) skill.CDTime;
+            BulletCount = skill.BulletCount;
+            CastRange = skill.CastRange;
+            CastSpeed = skill.ProjectileSpeed;
+            if (KnockbackForces == null)
+            {
+                KnockbackForces = new List<int>(2);
+            }
+            else
+            {
+                KnockbackForces.Clear();
+            }
+            if (skill.KnockbackForces != null)
+            {
+                for (int i = 0; i < skill.KnockbackForces.Length; i++)
+                {
+                    KnockbackForces.Add(skill.KnockbackForces[i]);
+                }
+            }
+            if (AddStates == null)
+            {
+                AddStates = new List<int>(2);
+            }
+            else
+            {
+                AddStates.Clear();
+            }
+            if (skill.AddStates != null)
+            {
+                for (int i = 0; i < skill.AddStates.Length; i++)
+                {
+                    AddStates.Add(skill.AddStates[i]);
+                }
+            }
         }
     }
 }

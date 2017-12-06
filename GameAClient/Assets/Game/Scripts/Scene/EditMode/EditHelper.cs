@@ -20,7 +20,8 @@ namespace GameA.Game
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
+            ;
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
@@ -197,15 +198,8 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Child))
             {
                 unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
-                var equip = TableManager.Instance.GetEquipment(table.ChildState[0]);
-                int skillId = equip.SkillId;
-                if (UnitDefine.IsMonster(id))
-                {
-                    skillId = equip.MonsterSkillId;
-                }
-                var skill = TableManager.Instance.GetSkill(skillId);
-                unitEditData.UnitExtra.Damage = skill.Damage;
-                unitEditData.UnitExtra.BulletCount = skill.BulletCount;
+                unitEditData.UnitExtra.UpdateFromChildId();
+                
             }
             if (table.CanEdit(EEditType.Direction))
             {
@@ -237,11 +231,34 @@ namespace GameA.Game
             }
             if (table.CanEdit(EEditType.Skill))
             {
-                unitEditData.UnitExtra.Damage = TableManager.Instance.GetSkill(table.SkillId).Damage;
+                var skill = TableManager.Instance.GetSkill(table.SkillId);
+                if (skill.EffectValues != null && skill.EffectValues.Length > 0)
+                {
+                    unitEditData.UnitExtra.AttackRange = skill.EffectValues[0];
+                }
+                unitEditData.UnitExtra.BulletCount = skill.BulletCount;
+                unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
+                unitEditData.UnitExtra.Damage = skill.Damage;
+                unitEditData.UnitExtra.KnockbackForces = new List<int>(2);
+                if (skill.KnockbackForces != null)
+                {
+                    for (int i = 0; i < skill.KnockbackForces.Length; i++)
+                    {
+                        unitEditData.UnitExtra.KnockbackForces.Add(skill.KnockbackForces[i]);
+                    }
+                }
+                unitEditData.UnitExtra.AddStates = new List<int>(2);
+                if (skill.AddStates != null)
+                {
+                    for (int i = 0; i < skill.AddStates.Length; i++)
+                    {
+                        unitEditData.UnitExtra.AddStates.Add(skill.AddStates[i]);
+                    }
+                }
             }
             //todo 临时
-            unitEditData.UnitExtra.Drops = new List<int>();
-            unitEditData.UnitExtra.Drops.Add(6003);
+//            unitEditData.UnitExtra.Drops = new List<int>(2);
+//            unitEditData.UnitExtra.Drops.Add(6003);
             return unitEditData;
         }
 

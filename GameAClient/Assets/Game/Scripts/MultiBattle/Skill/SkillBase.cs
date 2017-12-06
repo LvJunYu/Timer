@@ -27,6 +27,9 @@ namespace GameA.Game
         protected int _chargeTime;
         protected int _singTime;
         protected int _projectileSpeed;
+        protected int _attackRange;
+        protected int[] _knockbackForces;
+        protected int[] _addStates;
 
         /// <summary>
         /// 攻击距离
@@ -93,37 +96,86 @@ namespace GameA.Game
                 return;
             }
             _epaintType = (EPaintType) _tableSkill.PaintType;
-            SetTimerCD(0);
-            _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
-            _castRange = TableConvert.GetRange(_tableSkill.CastRange);
-            _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
-            _damage = _tableSkill.Damage;
-            _totalBulletCount = _tableSkill.BulletCount;
+            SetDataFromExtra(_owner.GetUnitExtra());
+            SetTimerCD(0);
             _currentBulletCount = _totalBulletCount;
             SetBullet(_totalBulletCount);
             _timerCD = 0;
             _timerCharge = 0;
             _timerSing = 0;
             _targetType = GetHitLayer();
-            SetDataFromExtra();
         }
 
-        private void SetDataFromExtra()
+        private void SetDataFromExtra(UnitExtra extra)
         {
-            var extra = _owner.GetUnitExtra();
-            if (extra.TimeInterval != 0)
+            if (extra.TimeInterval > 0)
             {
-                _cdTime = extra.TimeInterval;
+                _cdTime = TableConvert.GetTime(extra.TimeInterval);
             }
-            if (extra.Damage != 0)
+            else
+            {
+                _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
+            }
+            if (extra.Damage > 0)
             {
                 _damage = extra.Damage;
             }
-            if (extra.AttackDistance != 0)
+            else
             {
-                _castRange = extra.AttackDistance;
+                _damage = _tableSkill.Damage;
+            }
+            if (extra.AttackRange > 0)
+            {
+                _attackRange = extra.AttackRange;
+            }
+            else
+            {
+                if (_tableSkill.EffectValues != null && _tableSkill.EffectValues.Length > 0)
+                {
+                    _attackRange = _tableSkill.EffectValues[0];
+                }
+            }
+            if (extra.CastRange > 0)
+            {
+                _castRange = TableConvert.GetRange(extra.CastRange);
+            }
+            else
+            {
+                _castRange = TableConvert.GetRange(_tableSkill.CastRange);
+            }
+            if (extra.CastSpeed > 0)
+            {
+                _projectileSpeed = TableConvert.GetSpeed(extra.CastSpeed);
+            }
+            else
+            {
+                _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            }
+            if (extra.BulletCount > 0)
+            {
+                _totalBulletCount = extra.BulletCount;
+            }
+            else
+            {
+                _totalBulletCount = _tableSkill.BulletCount;
+            }
+            if (extra.KnockbackForces != null && extra.KnockbackForces.Count > 0)
+            {
+                _knockbackForces = extra.KnockbackForces.ToArray();
+            }
+            else
+            {
+                _knockbackForces = _tableSkill.KnockbackForces;
+            }
+            if (extra.AddStates != null && extra.AddStates.Count > 0)
+            {
+                _addStates = extra.AddStates.ToArray();
+            }
+            else
+            {
+                _addStates = _tableSkill.AddStates;
             }
         }
 
@@ -397,31 +449,30 @@ namespace GameA.Game
             //击退
             if (!unit.IsInvincible)
             {
-                var forces = _tableSkill.KnockbackForces;
-                if (forces.Length == 2)
+                if (_knockbackForces.Length == 2)
                 {
                     unit.Speed = IntVec2.zero;
                     unit.CurBanInputTime = 10;
                     if (direction.x > 0)
                     {
-                        unit.ExtraSpeed.x = forces[0];
+                        unit.ExtraSpeed.x = _knockbackForces[0];
                     }
                     else if (direction.x < 0)
                     {
-                        unit.ExtraSpeed.x = -forces[0];
+                        unit.ExtraSpeed.x = -_knockbackForces[0];
                     }
                     if (direction.y > 0)
                     {
-                        unit.ExtraSpeed.y = forces[1];
+                        unit.ExtraSpeed.y = _knockbackForces[1];
                     }
                     else if (direction.y < 0)
                     {
-                        unit.ExtraSpeed.y = -forces[1];
+                        unit.ExtraSpeed.y = -_knockbackForces[1];
                     }
                 }
             }
             //触发状态
-            unit.AddStates(_tableSkill.AddStates);
+            unit.AddStates(_addStates);
             unit.RemoveStates(_tableSkill.RemoveStates);
             unit.OnHpChanged(-_damage);
         }
@@ -440,12 +491,12 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_attackRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_attackRange);
                     var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1,
                         centerPos.y + _radius - 1);
                     return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
@@ -453,7 +504,7 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_attackRange);
                     var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
@@ -471,7 +522,7 @@ namespace GameA.Game
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_attackRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }
@@ -687,11 +738,6 @@ namespace GameA.Game
                 }
                     break;
             }
-        }
-
-        public void SetDamageValue(int damage)
-        {
-            _damage = damage;
         }
     }
 }

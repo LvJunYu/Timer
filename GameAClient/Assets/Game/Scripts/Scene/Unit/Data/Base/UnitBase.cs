@@ -776,10 +776,10 @@ namespace GameA.Game
         {
             _envState = 0;
             ClearRunTime();
-            if (_tableUnit.Hp > 0)
-            {
-                _maxHp = _tableUnit.Hp;
-            }
+//            if (_tableUnit.Hp > 0)
+//            {
+//                _maxHp = _tableUnit.Hp;
+//            }
             _hp = _maxHp;
             _wingCount = 0;
             _speedStateRatio = 1;
@@ -891,6 +891,13 @@ namespace GameA.Game
             if (unitExtra.MaxHp > 0)
             {
                 _maxHp = unitExtra.MaxHp;
+            }
+            else
+            {
+                if (_tableUnit.Hp > 0)
+                {
+                    _maxHp = _tableUnit.Hp;
+                }
             }
             return unitExtra;
         }

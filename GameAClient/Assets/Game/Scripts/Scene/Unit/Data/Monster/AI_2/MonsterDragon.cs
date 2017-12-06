@@ -48,7 +48,7 @@ namespace GameA.Game
                 return false;
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
-            _skillCtrl.SetSkill(tableEquipment.MonsterSkillId);
+            _skillCtrl.SetSkill(tableEquipment.SkillId);
             return true;
         }
 

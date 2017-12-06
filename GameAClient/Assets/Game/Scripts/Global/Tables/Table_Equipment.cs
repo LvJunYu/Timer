@@ -41,11 +41,6 @@ namespace GameA.Game
 		[ColumnMapping("SkillId")]
 		public int SkillId;
 		/// <summary>
-        /// 怪物技能Id
-        /// </summary>
-		[ColumnMapping("MonsterSkillId")]
-		public int MonsterSkillId;
-		/// <summary>
         /// 稀有度
         /// </summary>
 		[ColumnMapping("Rarity")]

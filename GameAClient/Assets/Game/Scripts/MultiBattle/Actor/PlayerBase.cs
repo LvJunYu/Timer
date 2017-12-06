@@ -182,7 +182,7 @@ namespace GameA.Game
 
         private void CalculateMaxHp()
         {
-            _maxHp = _tableUnit.Hp;
+//            _maxHp = _tableUnit.Hp;
             for (int i = 0; i < _tableEquipments.Length; i++)
             {
                 var tableEquip = _tableEquipments[i];

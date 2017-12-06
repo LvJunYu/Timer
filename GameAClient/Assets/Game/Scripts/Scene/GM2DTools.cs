@@ -417,7 +417,11 @@ namespace GameA.Game
             res.Life = data.MaxHp;
             res.AttackPower = data.Damage;
             res.MoveSpeed = data.MaxSpeedX;
-            res.Drops.Clear();
+            res.AttackDistance = data.AttackRange;
+            res.ViewRange = data.ViewRange;
+            res.BulletCount = data.BulletCount;
+            res.CastRange = data.CastRange;
+            res.CastSpeed = data.CastSpeed;
             if (data.Drops != null)
             {
                 for (int i = 0; i < data.Drops.Count; i++)
@@ -425,9 +429,20 @@ namespace GameA.Game
                     res.Drops.Add(data.Drops[i]);
                 }
             }
-            res.AttackDistance = data.AttackDistance;
-            res.ViewRange = data.ViewRange;
-            res.BulletCount = data.BulletCount;
+            if (data.KnockbackForces != null)
+            {
+                for (int i = 0; i < data.KnockbackForces.Count; i++)
+                {
+                    res.KnockbackForces.Add(data.KnockbackForces[i]);
+                }
+            }
+            if (data.AddStates != null)
+            {
+                for (int i = 0; i < data.AddStates.Count; i++)
+                {
+                    res.AddStates.Add(data.AddStates[i]);
+                }
+            }
             return res;
         }
         
@@ -450,9 +465,13 @@ namespace GameA.Game
             unitExtra.Damage = data.AttackPower;
             unitExtra.MaxSpeedX = data.MoveSpeed;
             unitExtra.Drops = data.Drops;
-            unitExtra.AttackDistance = data.AttackDistance;
+            unitExtra.AttackRange = data.AttackDistance;
             unitExtra.ViewRange = data.ViewRange;
             unitExtra.BulletCount = data.BulletCount;
+            unitExtra.CastRange = data.CastRange;
+            unitExtra.CastSpeed = data.CastSpeed;
+            unitExtra.KnockbackForces = data.KnockbackForces;
+            unitExtra.AddStates = data.AddStates;
             return unitExtra;
         }
 
