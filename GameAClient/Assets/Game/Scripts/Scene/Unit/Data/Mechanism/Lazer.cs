@@ -17,10 +17,10 @@ namespace GameA.Game
 
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
-        
+
         protected Vector3 _direction;
         protected int _distance;
-        
+
         protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
@@ -40,13 +40,13 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
-        public override void UpdateExtraData()
+
+        public override UnitExtra UpdateExtraData()
         {
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            var unitExtra = base.UpdateExtraData();
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
-            base.UpdateExtraData();
+            return unitExtra;
         }
 
         internal override bool InstantiateView()
@@ -111,7 +111,7 @@ namespace GameA.Game
                 _gridCheck.Clear();
                 return;
             }
-            _distance =  _tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
+            _distance = _tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
             if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
@@ -124,11 +124,13 @@ namespace GameA.Game
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
-                if (!Util.IsFloatEqual(_angle, _endAngle) )
+                if (!Util.IsFloatEqual(_angle, _endAngle))
                 {
                     if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                     {
-                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise
+                            ? ERotateMode.Anticlockwise
+                            : ERotateMode.Clockwise;
                     }
                 }
                 _direction = GM2DTools.GetDirection(_curAngle);

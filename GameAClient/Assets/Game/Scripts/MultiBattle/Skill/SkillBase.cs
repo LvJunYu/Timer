@@ -107,6 +107,24 @@ namespace GameA.Game
             _timerCharge = 0;
             _timerSing = 0;
             _targetType = GetHitLayer();
+            SetDataFromExtra();
+        }
+
+        private void SetDataFromExtra()
+        {
+            var extra = _owner.GetUnitExtra();
+            if (extra.TimeInterval != 0)
+            {
+                _cdTime = extra.TimeInterval;
+            }
+            if (extra.Damage != 0)
+            {
+                _damage = extra.Damage;
+            }
+            if (extra.AttackDistance != 0)
+            {
+                _castRange = extra.AttackDistance;
+            }
         }
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
@@ -669,6 +687,11 @@ namespace GameA.Game
                 }
                     break;
             }
+        }
+
+        public void SetDamageValue(int damage)
+        {
+            _damage = damage;
         }
     }
 }

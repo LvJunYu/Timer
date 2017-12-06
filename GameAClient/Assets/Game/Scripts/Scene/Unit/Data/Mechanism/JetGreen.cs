@@ -5,19 +5,14 @@
 ** Summary : JetGreen
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using UnityEngine;
-
 namespace GameA.Game
 {
     [Unit(Id = 5015, Type = typeof(JetGreen))]
     public class JetGreen : JetBase
     {
-        protected override void SetValue()
+        protected override void SetSkillValue()
         {
-            _skillCtrl.CurrentSkills[0].SetValue(_timeInterval,  TableConvert.GetRange(300));
+            _skillCtrl.CurrentSkills[0].SetValue(_attackInterval,  TableConvert.GetRange(300));
         }
     }
 }

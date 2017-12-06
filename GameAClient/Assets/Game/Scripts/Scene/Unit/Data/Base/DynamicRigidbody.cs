@@ -8,24 +8,25 @@ namespace GameA.Game
     {
         protected int _maxSpeedX;
         protected int _curMaxSpeedX;
-        
+
         protected float _speedRatio;
         protected int _motorAcc;
-        
+
         protected InputBase _input;
-        
+
         // 跳跃等级
-        [SerializeField]
-        protected int _jumpLevel;
+        [SerializeField] protected int _jumpLevel;
+
         // 跳跃状态
         [SerializeField] protected EJumpState _jumpState;
 
-        [SerializeField]
-        protected EClimbState _eClimbState;
+        [SerializeField] protected EClimbState _eClimbState;
+
         // 攀墙跳
-        [SerializeField]
-        protected bool _climbJump;
+        [SerializeField] protected bool _climbJump;
+
         protected int _stepY;
+
         /// <summary>
         /// 起跳的动画时间
         /// </summary>
@@ -45,7 +46,7 @@ namespace GameA.Game
         {
             get { return _eClimbState != EClimbState.None; }
         }
-        
+
         protected override bool IsClimbingVertical
         {
             get { return _eClimbState == EClimbState.Left || _eClimbState == EClimbState.Right; }
@@ -55,7 +56,7 @@ namespace GameA.Game
         {
             get { return _input; }
         }
-        
+
         public int CurMaxSpeedX
         {
             get { return _curMaxSpeedX; }
@@ -71,7 +72,7 @@ namespace GameA.Game
             _climbJump = false;
             _stepY = 0;
         }
-        
+
         public void Setup(InputBase inputBase)
         {
             _input = inputBase;
@@ -135,7 +136,7 @@ namespace GameA.Game
             _curMaxSpeedX = 0;
             if (_eActiveState == EActiveState.Active)
             {
-                _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
+                _curMaxSpeedX = (int) (_maxSpeedX * _speedRatio * _speedStateRatio);
                 AfterCheckGround();
             }
             CalculateMotor();
@@ -200,7 +201,7 @@ namespace GameA.Game
                 SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
             }
         }
-        
+
         protected virtual void CheckClimb()
         {
             switch (_eClimbState)
@@ -227,29 +228,29 @@ namespace GameA.Game
                         SetClimbState(EClimbState.None);
                     }
                     break;
-                 case EClimbState.Up:
-                     if (CheckUpClimbFloor())
-                     {
-                         if (_input.GetKeyApplied(EInputType.Right))
-                         {
-                             if (!CheckUpClimbFloor(_curMaxSpeedX))
-                             {
-                                 _motorAcc = 0;
-                             }
-                         }
-                         else if (_input.GetKeyApplied(EInputType.Left))
-                         {
-                             if (!CheckUpClimbFloor(-_curMaxSpeedX))
-                             {
-                                 _motorAcc = 0;
-                             }
-                         }
-                     }
-                     else
-                     {
-                         SetClimbState(EClimbState.None);
-                     }
-                     break;
+                case EClimbState.Up:
+                    if (CheckUpClimbFloor())
+                    {
+                        if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            if (!CheckUpClimbFloor(_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            if (!CheckUpClimbFloor(-_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SetClimbState(EClimbState.None);
+                    }
+                    break;
             }
             if (_eClimbState != EClimbState.None)
             {
@@ -304,7 +305,7 @@ namespace GameA.Game
                             {
                                 if (CheckRightClimbFloor(-_curMaxSpeedX))
                                 {
-                                    SpeedY = - _curMaxSpeedX;
+                                    SpeedY = -_curMaxSpeedX;
                                 }
                                 if (_grounded)
                                 {
@@ -333,7 +334,7 @@ namespace GameA.Game
                 SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
             }
         }
-        
+
         public override void SetClimbState(EClimbState eClimbState)
         {
             _eClimbState = eClimbState;
@@ -350,7 +351,7 @@ namespace GameA.Game
             }
 //            LogHelper.Debug(_eClimbState.ToString());
         }
-        
+
         protected virtual void OnJump()
         {
         }
@@ -379,7 +380,7 @@ namespace GameA.Game
                 _speedRatio *= SpeedInIceRatio;
             }
         }
-        
+
         protected virtual void AfterCheckGround()
         {
         }
@@ -403,7 +404,7 @@ namespace GameA.Game
                 }
             }
         }
-   
+
         public virtual bool IsHoldingBox()
         {
             return false;
@@ -413,16 +414,18 @@ namespace GameA.Game
         {
         }
 
-        public override void UpdateAdvancedData(UnitAdvance unitAdvanced)
+        public override UnitExtra UpdateExtraData()
         {
-            base.UpdateAdvancedData(unitAdvanced);
-            if (unitAdvanced.MaxSpeedX > 0)
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0)
             {
-                _maxSpeedX = unitAdvanced.MaxSpeedX;
+                _maxSpeedX = unitExtra.MaxSpeedX;
             }
+            return unitExtra;
         }
 
         private IntVec2 _lastPos;
+
         public override void UpdateView(float deltaTime)
         {
             if (_isAlive)
@@ -430,14 +433,14 @@ namespace GameA.Game
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
-                _lastPos =  _curPos = GetPos(_colliderPos);
+                _lastPos = _curPos = GetPos(_colliderPos);
                 if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                 {
                     GM2DGame.Instance.GameMode.ShadowData.RecordPos(_curPos);
                 }
                 UpdateTransPos();
             }
-            else if(GameRun.Instance.IsPlaying)
+            else if (GameRun.Instance.IsPlaying)
             {
                 if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                 {

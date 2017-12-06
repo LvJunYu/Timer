@@ -171,6 +171,11 @@ namespace GameA.Game
 		[ColumnMapping("ValidRange")]
 		public int ValidRange;
 		/// <summary>
+        /// 
+        /// </summary>
+		[ColumnMapping("SkillId")]
+		public int SkillId;
+		/// <summary>
         /// 装载
         /// </summary>
 		[ColumnMapping("ChildState")]

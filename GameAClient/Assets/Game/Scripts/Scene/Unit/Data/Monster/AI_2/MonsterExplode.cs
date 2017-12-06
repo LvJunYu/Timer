@@ -27,7 +27,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.SetSkill(103);
+            _skillCtrl.SetSkill(_tableUnit.SkillId);
             base.OnPlay();
         }
 

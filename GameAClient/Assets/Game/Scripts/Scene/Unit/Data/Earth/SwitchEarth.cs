@@ -47,11 +47,12 @@ namespace GameA.Game
             }
         }
 
-        public override void UpdateExtraData()
+        public override UnitExtra UpdateExtraData()
         {
-            base.UpdateExtraData();
+            var extra = base.UpdateExtraData();
             _curActiveState = _eActiveState;
             UpdateActiveState();
+            return extra;
         }
 
         internal override bool InstantiateView()
@@ -62,13 +63,14 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
+                _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth",
+                    _trans.position + new Vector3(0, -0.6f, 0));
                 _effect.Trans.parent = _trans;
                 UpdateActiveState();
             }
             return true;
         }
-        
+
         private void UpdateActiveState()
         {
             if (_view != null)

@@ -199,6 +199,15 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Child))
             {
                 unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
+                var equip = TableManager.Instance.GetEquipment(table.ChildState[0]);
+                int skillId = equip.SkillId;
+                if (UnitDefine.IsMonster(id))
+                {
+                    skillId = equip.MonsterSkillId;
+                }
+                var skill = TableManager.Instance.GetSkill(skillId);
+                unitEditData.UnitExtra.Damage = skill.Damage;
+                unitEditData.UnitExtra.BulletCount = skill.BulletCount;
             }
             if (table.CanEdit(EEditType.Direction))
             {
@@ -225,8 +234,12 @@ namespace GameA.Game
             }
             if (table.CanEdit(EEditType.Attribute))
             {
-                unitEditData.UnitExtra.UnitAdvance.MaxHp = table.Hp;
-                unitEditData.UnitExtra.UnitAdvance.MaxSpeedX = table.MaxSpeed;
+                unitEditData.UnitExtra.MaxHp = table.Hp;
+                unitEditData.UnitExtra.MaxSpeedX = table.MaxSpeed;
+            }
+            if (table.CanEdit(EEditType.Skill))
+            {
+                unitEditData.UnitExtra.Damage = TableManager.Instance.GetSkill(table.SkillId).Damage;
             }
             return unitEditData;
         }
@@ -277,12 +290,14 @@ namespace GameA.Game
                     {
                         if (tableUnit.EPairType == EPairType.PortalDoor)
                         {
-
                             int validTileRange = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
-                            if (pairUnit.UnitA != UnitDesc.zero && !InValidRange(pairUnit.UnitA, unitDesc, validTileRange)||
-                                pairUnit.UnitB != UnitDesc.zero && !InValidRange(pairUnit.UnitB, unitDesc, validTileRange))
+                            if (pairUnit.UnitA != UnitDesc.zero &&
+                                !InValidRange(pairUnit.UnitA, unitDesc, validTileRange) ||
+                                pairUnit.UnitB != UnitDesc.zero &&
+                                !InValidRange(pairUnit.UnitB, unitDesc, validTileRange))
                             {
-                                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("传送门的间距不能超过{0}个格子哦~", tableUnit.ValidRange));
+                                Messenger<string>.Broadcast(EMessengerType.GameLog,
+                                    string.Format("传送门的间距不能超过{0}个格子哦~", tableUnit.ValidRange));
                                 return false;
                             }
                         }
@@ -430,7 +445,7 @@ namespace GameA.Game
             unitBase.Trans.localScale = Vector3.one;
             return helperParentObj;
         }
-        
+
         private static bool InValidRange(UnitDesc pairUnitUnitB, UnitDesc unitDesc, int validRange)
         {
             if (Mathf.Abs(pairUnitUnitB.Guid.x - unitDesc.Guid.x) > validRange) return false;

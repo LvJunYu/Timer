@@ -403,7 +403,6 @@ namespace GameA.Game
         {
             var res = new UnitExtraKeyValuePair();
             res.Guid = ToProto(index);
-            res.AdvancedData = ToProto(data.UnitAdvance);
             res.MoveDirection = (byte)data.MoveDirection;
             res.Active = data.Active;
             res.ChildId = data.ChildId;
@@ -413,21 +412,15 @@ namespace GameA.Game
             res.TimeDelay = data.TimeDelay;
             res.TimeInterval = data.TimeInterval;
             res.Msg = data.Msg;
-            return res;
-        }
-        
-        public static UnitAdvancedData ToProto(UnitAdvance data)
-        {
-            var res = new UnitAdvancedData();
             res.JumpAbility = data.JumpAbility;
             res.TeamId = data.TeamId;
             res.Life = data.MaxHp;
-            res.AttackPower = data.AttackPower;
+            res.AttackPower = data.Damage;
             res.MoveSpeed = data.MaxSpeedX;
             res.Drops = data.Drops;
             res.AttackDistance = data.AttackDistance;
-            res.AttackInterval = data.AttackInterval;
             res.ViewRange = data.ViewRange;
+            res.BulletCount = data.BulletCount;
             return res;
         }
         
@@ -444,24 +437,16 @@ namespace GameA.Game
             unitExtra.TimeDelay = (ushort) data.TimeDelay;
             unitExtra.TimeInterval = (ushort) data.TimeInterval;
             unitExtra.Msg = data.Msg;
-            unitExtra.UnitAdvance = ToEngine(data.AdvancedData);
+            unitExtra.JumpAbility = data.JumpAbility;
+            unitExtra.TeamId = data.TeamId;
+            unitExtra.MaxHp = data.Life;
+            unitExtra.Damage = data.AttackPower;
+            unitExtra.MaxSpeedX = data.MoveSpeed;
+            unitExtra.Drops = data.Drops;
+            unitExtra.AttackDistance = data.AttackDistance;
+            unitExtra.ViewRange = data.ViewRange;
+            unitExtra.BulletCount = data.BulletCount;
             return unitExtra;
-        }
-
-        public static UnitAdvance ToEngine(UnitAdvancedData data)
-        {
-            if(null == data) return UnitAdvance.zero;
-            var unitAdvanced = new UnitAdvance();
-            unitAdvanced.TeamId = data.TeamId;
-            unitAdvanced.MaxHp = data.Life;
-            unitAdvanced.AttackPower = data.AttackPower;
-            unitAdvanced.MaxSpeedX = data.MoveSpeed;
-            unitAdvanced.Drops = data.Drops;
-            unitAdvanced.AttackDistance = data.AttackDistance;
-            unitAdvanced.AttackInterval = data.AttackInterval;
-            unitAdvanced.ViewRange = data.ViewRange;
-            unitAdvanced.JumpAbility = data.JumpAbility;
-            return unitAdvanced;
         }
 
         public static IntVec3Proto ToProto(IntVec3 value)

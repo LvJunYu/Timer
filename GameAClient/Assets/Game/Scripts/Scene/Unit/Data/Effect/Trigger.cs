@@ -1,6 +1,4 @@
-﻿using NewResourceSolution;
-using SoyEngine;
-using UnityEngine;
+﻿using SoyEngine;
 
 namespace GameA.Game
 {
@@ -41,20 +39,22 @@ namespace GameA.Game
             }
         }
 
-        public override void UpdateExtraData()
+        public override UnitExtra UpdateExtraData()
         {
-            base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData();
             _eActiveState = EActiveState.Deactive;
             _triggerName = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
+            return unitExtra;
         }
-        
+
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
             //发送事件
             if (!string.IsNullOrEmpty(_triggerName))
             {
-                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName, _eActiveState == EActiveState.Active);
+                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName,
+                    _eActiveState == EActiveState.Active);
             }
         }
     }

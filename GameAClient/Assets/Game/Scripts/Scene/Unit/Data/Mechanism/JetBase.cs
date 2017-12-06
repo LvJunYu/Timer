@@ -23,8 +23,8 @@ namespace GameA.Game
         protected float _endAngle;
         protected float _curAngle;
         protected int _timeDelay;
-        protected int _timeInterval;
-        
+        protected int _attackInterval;
+
         public override bool CanControlledBySwitch
         {
             get { return true; }
@@ -45,17 +45,17 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
-        public override void UpdateExtraData()
+
+        public override UnitExtra UpdateExtraData()
         {
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            var unitExtra = base.UpdateExtraData();
             _weaponId = unitExtra.ChildId;
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
-            _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
-            _timeInterval = Math.Max(25, _timeInterval);
-            base.UpdateExtraData();
+            _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            _attackInterval = Math.Max(25, _attackInterval);
+            return unitExtra;
         }
 
         internal override bool InstantiateView()
@@ -91,7 +91,7 @@ namespace GameA.Game
             FreeEffect(_efffectWeapon);
             _efffectWeapon = null;
         }
-        
+
         public override bool SetWeapon(int id)
         {
             if (id == 0)
@@ -117,12 +117,8 @@ namespace GameA.Game
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
             _skillCtrl.SetSkill(tableEquipment.MonsterSkillId);
-            SetValue();
+            SetSkillValue();
             return true;
-        }
-
-        protected virtual void SetValue()
-        {
         }
 
         public override void UpdateLogic()
@@ -152,11 +148,13 @@ namespace GameA.Game
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
-                if (!Util.IsFloatEqual(_angle, _endAngle) )
+                if (!Util.IsFloatEqual(_angle, _endAngle))
                 {
                     if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                     {
-                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise
+                            ? ERotateMode.Anticlockwise
+                            : ERotateMode.Clockwise;
                     }
                 }
                 if (_trans != null)

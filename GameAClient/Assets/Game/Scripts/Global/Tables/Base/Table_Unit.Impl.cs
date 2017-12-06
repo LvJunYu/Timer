@@ -115,6 +115,8 @@ namespace GameA.Game
                     return Id == 4001;
                 case EEditType.Attribute:
                     return UnitDefine.IsMonster(Id) || UnitDefine.IsMain(Id);
+                case EEditType.Skill:
+                    return SkillId > 0;
             }
             return false;
         }

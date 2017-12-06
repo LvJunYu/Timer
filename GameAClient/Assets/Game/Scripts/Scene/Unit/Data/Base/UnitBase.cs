@@ -875,9 +875,9 @@ namespace GameA.Game
         /// <summary>
         /// 更新额外信息e
         /// </summary>
-        public virtual void UpdateExtraData()
+        public virtual UnitExtra UpdateExtraData()
         {
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            var unitExtra = GetUnitExtra();
             _moveDirection = unitExtra.MoveDirection;
             _eActiveState = (EActiveState)unitExtra.Active;
             if (_eActiveState == EActiveState.None)
@@ -888,15 +888,20 @@ namespace GameA.Game
             {
                 _moveDirection = EMoveDirection.Right;
             }
-            UpdateAdvancedData(unitExtra.UnitAdvance);
+            if (unitExtra.MaxHp > 0)
+            {
+                _maxHp = unitExtra.MaxHp;
+            }
+            return unitExtra;
         }
 
-        public virtual void UpdateAdvancedData(UnitAdvance unitAdvanced)
+        public virtual UnitExtra GetUnitExtra()
         {
-            if (unitAdvanced.MaxHp > 0)
-            {
-                _maxHp = unitAdvanced.MaxHp;
-            }
+            return DataScene2D.Instance.GetUnitExtra(_guid);
+        }
+
+        protected virtual void SetSkillValue()
+        {
         }
 
         public bool Equals(UnitBase other)

@@ -153,6 +153,15 @@ namespace GameA.Game
             }
         }
 
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+//            _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+//            _attackInterval = Math.Max(25, _attackInterval);
+//            _attackPower = unitExtra.AttackPower;
+            return unitExtra;
+        }
+
         protected override void CaculateGravity()
         {
             if (IsInState(EEnvState.Clay) && _isClayOnWall)

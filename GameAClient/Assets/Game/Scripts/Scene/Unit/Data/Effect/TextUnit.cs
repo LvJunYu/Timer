@@ -9,12 +9,12 @@ namespace GameA.Game
     {
         private int _timer;
         private TextMesh _textMesh;
-        
+
         public override bool CanControlledBySwitch
         {
             get { return true; }
         }
-        
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -24,14 +24,14 @@ namespace GameA.Game
             SetSortingOrderFrontest();
             return true;
         }
-        
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
             {
                 return false;
             }
-            var go = Object.Instantiate (JoyResManager.Instance.GetPrefab(EResType.ModelPrefab, 
+            var go = Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ModelPrefab,
                 ConstDefineGM2D.TextBillboardPrefabName)) as GameObject;
             if (go != null)
             {
@@ -70,10 +70,11 @@ namespace GameA.Game
             ShowHide(false);
         }
 
-        public override void UpdateExtraData()
+        public override UnitExtra UpdateExtraData()
         {
-            base.UpdateExtraData();
+            var extra = base.UpdateExtraData();
             _eActiveState = EActiveState.Deactive;
+            return extra;
         }
 
         internal override void OnObjectDestroy()

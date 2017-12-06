@@ -23,8 +23,8 @@ namespace GameA.Game
         [SerializeField] private Grid2D _mapGrid;
         [SerializeField] private IntRect _validMapRect;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
-        protected UnitAdvance _monsterAdvance;
-        protected UnitAdvance _playerAdvance;
+        protected UnitExtra _monsterExtra;
+        protected UnitExtra _playerExtra;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
@@ -78,14 +78,14 @@ namespace GameA.Game
             get { return _unitExtras; }
         }
 
-        public UnitAdvance PlayerAdvance
+        public UnitExtra PlayerExtra
         {
-            get { return _playerAdvance; }
+            get { return _playerExtra; }
         }
 
-        public UnitAdvance MonsterAdvance
+        public UnitExtra MonsterExtra
         {
-            get { return _monsterAdvance; }
+            get { return _monsterExtra; }
         }
 
         public List<ModifyData> RemovedUnits
@@ -235,11 +235,6 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public UnitAdvance GetUnitAdvance(IntVec3 guid)
-        {
-            return GetUnitExtra(guid).UnitAdvance;
-        }
-
         public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra, EditRecordBatch editRecordBatch = null)
         {
             UnitBase unit;
@@ -294,14 +289,14 @@ namespace GameA.Game
             }
         }
 
-        public void ProcessMonsterExtra(UnitAdvance unitAdvance)
+        public void ProcessMonsterExtra(UnitExtra unitExtra)
         {
-            _monsterAdvance = unitAdvance;
+            _monsterExtra = unitExtra;
         }
 
-        public void ProcessPlayerExtra(UnitAdvance unitAdvance)
+        public void ProcessPlayerExtra(UnitExtra unitExtra)
         {
-            _playerAdvance = unitAdvance;
+            _playerExtra = unitExtra;
         }
 
         public void DeleteUnitExtra(IntVec3 guid)

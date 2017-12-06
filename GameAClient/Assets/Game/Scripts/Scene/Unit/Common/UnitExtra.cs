@@ -28,6 +28,7 @@ namespace GameA.Game
         Text,
         Style,
         Attribute,
+        Skill,
         Max,
     }
     
@@ -36,7 +37,6 @@ namespace GameA.Game
     public struct UnitExtra : IEquatable<UnitExtra>
     {
         public static UnitExtra zero;
-        public UnitAdvance UnitAdvance;
         public EMoveDirection MoveDirection;
         public byte Active;
         public ushort ChildId;
@@ -46,7 +46,17 @@ namespace GameA.Game
         public ushort TimeDelay;
         public ushort TimeInterval;
         public string Msg;
+        public int TeamId;
+        public int MaxHp;
+        public int Damage;
+        public int MaxSpeedX;
+        public int Drops;
+        public int AttackDistance;
+        public int ViewRange;
+        public int JumpAbility;
+        public int BulletCount;
 
+        
         public bool IsDynamic()
         {
             return MoveDirection != EMoveDirection.None;
@@ -54,12 +64,21 @@ namespace GameA.Game
 
         public bool Equals(UnitExtra other)
         {
-            return MoveDirection == other.MoveDirection && 
+            return MoveDirection == other.MoveDirection &&
                    Active == other.Active &&
-                   ChildId == other.ChildId && ChildRotation == other.ChildRotation && 
-                   RotateMode == other.RotateMode && RotateValue == other.RotateValue && 
-                   TimeDelay == other.TimeDelay && TimeInterval == other.TimeInterval && 
-                   Msg == other.Msg && UnitAdvance == other.UnitAdvance;
+                   ChildId == other.ChildId && ChildRotation == other.ChildRotation &&
+                   RotateMode == other.RotateMode && RotateValue == other.RotateValue &&
+                   TimeDelay == other.TimeDelay && TimeInterval == other.TimeInterval &&
+                   Msg == other.Msg &&
+                   TeamId == other.TeamId &&
+                   MaxHp == other.MaxHp &&
+                   Damage == other.Damage &&
+                   MaxSpeedX == other.MaxSpeedX &&
+                   Drops == other.Drops &&
+                   AttackDistance == other.AttackDistance &&
+                   ViewRange == other.ViewRange &&
+                   JumpAbility == other.JumpAbility &&
+                   BulletCount == other.BulletCount;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
