@@ -48,8 +48,26 @@ namespace GameA.Game
                 return false;
             }
             //AI 最大速度>=50. 碰撞高度<=520
-            _maxSpeedX = 50;
+//            _maxSpeedX = 50;
             return true;
+        }
+
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == -1)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 50;
+            }
+            return unitExtra;
         }
 
         protected override void Clear()

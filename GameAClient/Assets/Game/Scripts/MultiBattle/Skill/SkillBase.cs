@@ -84,7 +84,7 @@ namespace GameA.Game
             get { return _eWeaponInputType; }
         }
 
-        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType)
+        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType, UnitExtra unitExtra)
         {
             _eWeaponInputType = eWeaponInputType;
             _owner = ower;
@@ -98,7 +98,14 @@ namespace GameA.Game
             _epaintType = (EPaintType) _tableSkill.PaintType;
             _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
-            SetDataFromExtra(_owner.GetUnitExtra());
+            if (_owner.IsPlayer)
+            {
+                SetDataFromExtra(unitExtra);
+            }
+            else
+            {
+                SetDataFromExtra(_owner.GetUnitExtra());
+            }
             SetTimerCD(0);
             _currentBulletCount = _totalBulletCount;
             SetBullet(_totalBulletCount);

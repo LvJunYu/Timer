@@ -94,7 +94,7 @@ namespace GameA.Game
                 if (_timer == 0)
                 {
                     _timer = UnitDefine.EnergyTimer;
-                    other.SetWeapon(_weaponId);
+                    other.SetWeapon(_weaponId, GetUnitExtra());
                 }
             }
             return base.OnUpHit(other, ref y, checkOnly);

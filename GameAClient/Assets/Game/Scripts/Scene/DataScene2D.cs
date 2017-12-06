@@ -23,7 +23,6 @@ namespace GameA.Game
         [SerializeField] private Grid2D _mapGrid;
         [SerializeField] private IntRect _validMapRect;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
-        protected UnitExtra _monsterExtra;
         protected UnitExtra _playerExtra;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
@@ -81,11 +80,6 @@ namespace GameA.Game
         public UnitExtra PlayerExtra
         {
             get { return _playerExtra; }
-        }
-
-        public UnitExtra MonsterExtra
-        {
-            get { return _monsterExtra; }
         }
 
         public List<ModifyData> RemovedUnits
@@ -287,11 +281,6 @@ namespace GameA.Game
                     unit.UpdateExtraData();
                 }
             }
-        }
-
-        public void ProcessMonsterExtra(UnitExtra unitExtra)
-        {
-            _monsterExtra = unitExtra;
         }
 
         public void ProcessPlayerExtra(UnitExtra unitExtra)

@@ -55,7 +55,6 @@ namespace GameA.Game
             var timer = new GameTimer();
 
             DataScene2D.Instance.ProcessPlayerExtra(GM2DTools.ToEngine(mapData.PlayerUnitExtra));
-            DataScene2D.Instance.ProcessMonsterExtra(GM2DTools.ToEngine(mapData.MonsterUnitExtra));
 
             var childList = mapData.UnitExtraInfos;
             if (childList != null)
@@ -233,7 +232,6 @@ namespace GameA.Game
                 gm2DMapData.Data.Add(GM2DTools.ToProto(nodes[i]));
             }
             gm2DMapData.PlayerUnitExtra = GM2DTools.ToProto(IntVec3.zero, DataScene2D.Instance.PlayerExtra);
-            gm2DMapData.MonsterUnitExtra = GM2DTools.ToProto(IntVec3.zero, DataScene2D.Instance.MonsterExtra);
             using (var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator())
             {
                 while (enumerator.MoveNext())

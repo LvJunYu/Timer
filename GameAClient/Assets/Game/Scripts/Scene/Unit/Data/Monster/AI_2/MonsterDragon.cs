@@ -35,7 +35,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool SetWeapon(int id)
+        public override bool SetWeapon(int id, UnitExtra unitExtra = default(UnitExtra))
         {
             if (id == 0)
             {

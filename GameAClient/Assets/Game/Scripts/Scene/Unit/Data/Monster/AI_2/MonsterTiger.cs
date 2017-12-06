@@ -28,11 +28,29 @@ namespace GameA.Game
             {
                 return false;
             }
-            _maxSpeedX = 50;
+//            _maxSpeedX = 50;
             _intelligenc = 0; //智商为0，每次犯傻必回头，作为巡逻
             return true;
         }
-
+        
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == -1)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 50;
+            }
+            return unitExtra;
+        }
+        
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)

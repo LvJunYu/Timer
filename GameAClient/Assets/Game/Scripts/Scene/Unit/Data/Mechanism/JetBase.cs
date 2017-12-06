@@ -92,7 +92,7 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override bool SetWeapon(int id)
+        public override bool SetWeapon(int id, UnitExtra unitExtra = default(UnitExtra))
         {
             if (id == 0)
             {

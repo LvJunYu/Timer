@@ -119,11 +119,38 @@ namespace GameA.Game
             _dieTime = 0;
             _box = null;
             ClearView();
-            _maxSpeedX = BattleDefine.MaxSpeedX;
+//            _maxSpeedX = BattleDefine.MaxSpeedX;
             _lastSlot = -1;
         }
-
-        public override bool SetWeapon(int weaponId)
+        
+        public override UnitExtra UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            var unitExtra = DataScene2D.Instance.PlayerExtra;
+            if (unitExtra.MaxHp > 0)
+            {
+                _maxHp = unitExtra.MaxHp;
+            }
+            else
+            {
+                _maxHp = _tableUnit.Hp;
+            }
+            if (unitExtra.MaxSpeedX > 0)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if(unitExtra.MaxSpeedX == -1)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = BattleDefine.MaxSpeedX;
+            }
+            return unitExtra;
+        }
+        
+        public override bool SetWeapon(int weaponId, UnitExtra unitExtra = default(UnitExtra))
         {
             var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
             if (tableEquipment == null)
@@ -150,7 +177,7 @@ namespace GameA.Game
                     _lastSlot = -1;
                 }
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot))
+            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra))
             {
                 return false;
             }

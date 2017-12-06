@@ -63,7 +63,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _maxSpeedX = 40;
+//            _maxSpeedX = 40;
             return true;
         }
 
@@ -164,9 +164,18 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-//            _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
-//            _attackInterval = Math.Max(25, _attackInterval);
-//            _attackPower = unitExtra.AttackPower;
+            if (unitExtra.MaxSpeedX > 0)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == -1)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 40;
+            }
             return unitExtra;
         }
 

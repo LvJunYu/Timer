@@ -414,16 +414,6 @@ namespace GameA.Game
         {
         }
 
-        public override UnitExtra UpdateExtraData()
-        {
-            var unitExtra = base.UpdateExtraData();
-            if (unitExtra.MaxSpeedX > 0)
-            {
-                _maxSpeedX = unitExtra.MaxSpeedX;
-            }
-            return unitExtra;
-        }
-
         private IntVec2 _lastPos;
 
         public override void UpdateView(float deltaTime)
