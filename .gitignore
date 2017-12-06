@@ -55,3 +55,4 @@ Tools/Project/MicroClientEx/Release
 Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/obj
 Tools/Project/JoyGameBuildVersionTool/.idea
 Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/bin
+*.suo

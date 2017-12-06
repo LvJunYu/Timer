@@ -42,7 +42,7 @@ const CString cfZip = ".dat";
 static CString authUrl = "";
 
 int totalNum;
-float loadedNum;
+int loadedNum;
 vector<CString> fileContainer;
 vector<CString> md5Container;
 vector<CString> zipFilesContainer;
@@ -64,6 +64,7 @@ const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
 
 typedef IClientProcMsgObject* (*CreateObjFunc)();
 typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
+WCHAR szInfo[32];
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -126,6 +127,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	//接受命令行参数
 	int argc = __argc;
 
+#ifndef _DEBUG
 	if (argc != 2)
 	{
 		Quit();
@@ -202,6 +204,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 
 	m_launcher = this;
 	m_launcher->ConncetPipe();
+#endif
 
 //	starturl = "file://c:/Temp/index.html";
 	// TODO: Add extra initialization here
@@ -236,19 +239,19 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	MoveWindow(430,125,m_BakWidth,m_BakHeight);
 
 	closeBtn = new PngBtn();
-	closeBtn->InitButton(1030,20,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
-	miniBtn = new PngBtn();
-	miniBtn->InitButton(990,20,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
-	startBtn = new PngBtn();
-	startBtn->InitButton(940,420,START_NORMAL_STATE,START_OVER_STATE,START_ACTIVE_STATE);
+	closeBtn->InitButton(750, 40,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
+	//miniBtn = new PngBtn();
+	//miniBtn->InitButton(990,20,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
+	//startBtn = new PngBtn();
+	//startBtn->InitButton(940,420,START_NORMAL_STATE,START_OVER_STATE,START_ACTIVE_STATE);
 
 	progressBarMain = new ProgressBar();
-	progressBarMain->InitPogressBar(580,623,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
+	progressBarMain->InitPogressBar(150,400,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
 	progressBarMain->InitOffset(0,0,0,1,0,0);
 	
-	progressBarVice = new ProgressBar();
-	progressBarVice->InitPogressBar(580,633,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
-	progressBarVice->InitOffset(0,0,0,1,0,0);
+	//progressBarVice = new ProgressBar();
+	//progressBarVice->InitPogressBar(580,633,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
+	//progressBarVice->InitOffset(0,0,0,1,0,0);
 	
 	//container = new ContainerDialog();
 	//container->Create(IDD_DIALOG_WEBBROWSER,this);
@@ -329,6 +332,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	}
 	*/
 
+	AfxBeginThread(IvockeDownload,(LPVOID)NULL,THREAD_PRIORITY_NORMAL,0,0,NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -404,14 +408,17 @@ void CMicroClientExDlg::RePaintWindow()
 // 		AfxMessageBox(str);
 // 	}
 	
-	graph.DrawImage(miniBtn->GetCurrentState(), miniBtn -> pos_x, miniBtn -> pos_y,miniBtn->width, miniBtn->height);
+	//graph.DrawImage(miniBtn->GetCurrentState(), miniBtn -> pos_x, miniBtn -> pos_y,miniBtn->width, miniBtn->height);
 	graph.DrawImage(closeBtn->GetCurrentState(),closeBtn->pos_x, closeBtn->pos_y,closeBtn->width,closeBtn->height);
-	graph.DrawImage(startBtn->GetCurrentState(),startBtn->pos_x, startBtn->pos_y,startBtn->width,startBtn->height);
+	//graph.DrawImage(startBtn->GetCurrentState(),startBtn->pos_x, startBtn->pos_y,startBtn->width,startBtn->height);
 
-	graph.DrawImage(progressBarMain->progressFill,progressBarMain->pos_x + progressBarMain->processOffset.content_offset_X,progressBarMain->pos_y + progressBarMain->processOffset.content_offset_Y, (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content),progressBarMain->processImagRect.height_content);
-	graph.DrawImage(progressBarVice->progressFill,progressBarVice->pos_x + progressBarVice->processOffset.content_offset_X,progressBarVice->pos_y + progressBarVice->processOffset.content_offset_Y, (int)(loading_procgrss_vice* progressBarMain->processImagRect.width_content),progressBarVice->processImagRect.height_content);
+	graph.DrawImage(progressBarMain->progressFill, progressBarMain->pos_x + progressBarMain->processOffset.content_offset_X, progressBarMain->pos_y + progressBarMain->processOffset.content_offset_Y, 0, 0, (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content),progressBarMain->processImagRect.height_content, UnitPixel);
+	int offsetKnobX = -21;
+	int offsetKnobY = -10;
+	graph.DrawImage(progressBarMain->progressKnob, progressBarMain->pos_x + offsetKnobX + (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content), progressBarMain->pos_y + offsetKnobY, 0, 0, progressBarMain->processImagRect.width_knob,progressBarMain->processImagRect.height_knob, UnitPixel);
+	//graph.DrawImage(progressBarVice->progressFill,progressBarVice->pos_x + progressBarVice->processOffset.content_offset_X,progressBarVice->pos_y + progressBarVice->processOffset.content_offset_Y, (int)(loading_procgrss_vice* progressBarMain->processImagRect.width_content),progressBarVice->processImagRect.height_content);
 	
-
+/*
 	StringFormat stringformat;
 	
 	SolidBrush myBrush(Color(255,255,255,255)); // 白色 不透明
@@ -421,9 +428,38 @@ void CMicroClientExDlg::RePaintWindow()
  	if(!downloadFlag)
  	{
  		
- 		//WCHAR * info_text = ConverIntToString((int)(loading_procgrss_main*100),downloadplanflg);
+ 		WCHAR * info_text = ConverIntToString((int)(loading_procgrss_main*100),downloadplanflg);
  		//graph.DrawString(info_text,GetInfoLenght(info_text),&myFont,PointF(500,530),&stringformat,&myBrush);
  	}
+	*/
+	
+	graph.SetSmoothingMode(SmoothingModeAntiAlias);
+	graph.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    
+	GraphicsPath myPath;
+
+	WCHAR * pszbuf = new WCHAR[10];
+	swprintf(pszbuf,L"%d/%d\0", loadedNum, totalNum);
+
+    FontFamily fontFamily(L"黑体");
+    int emSize = 20;
+    StringFormat strformat;
+	
+	myPath.AddString(pszbuf, wcslen(pszbuf), &fontFamily,
+		FontStyleRegular, emSize, Point(760, 400), &strformat);
+    Pen pen(Color(64,64,64), 3);
+	graph.DrawPath(&pen, &myPath);
+	SolidBrush brush(Color(255,255,255));
+	graph.FillPath(&brush, &myPath);
+
+	GraphicsPath myPath2;
+	int centerX = 460;
+	int len = wcslen(szInfo);
+	myPath2.AddString(szInfo, wcslen(szInfo), &fontFamily,
+		FontStyleRegular, emSize, Point(centerX - emSize * len/2, 440), &strformat);
+	graph.DrawPath(&pen, &myPath2);
+	graph.FillPath(&brush, &myPath2);
+	
 	
 	SIZE sizeWindow={m_BakWidth,m_BakHeight};
 	POINT ptSrc={0,0};
@@ -449,9 +485,9 @@ void CMicroClientExDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	
-	if(closeBtn->CalculateState(point.x, point.y)
+	if(closeBtn->CalculateState(point.x, point.y)/*
 		|| miniBtn->CalculateState(point.x, point.y)
-		|| startBtn->CalculateState(point.x, point.y))Invalidate();
+		|| startBtn->CalculateState(point.x, point.y)*/)Invalidate();
 	CDialog::OnMouseMove(nFlags, point);	
 }
 
@@ -568,10 +604,12 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	loading_procgrss_vice = 0;
 
 	singleFileCount = 1;
-
+	
+	swprintf(szInfo, L"%s", L"正在获取最新版本信息");
 	
 	if (CheckNeedUpdate())
 	{
+		swprintf(szInfo, L"%s", L"正在获取更新文件列表");
 		bDownloadFlag = false;
 		while(!bDownloadFlag)
 		{
@@ -602,6 +640,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 			localFilesMap->SetAt(filePathName, NULL);
 		}
 		
+		swprintf(szInfo, L"%s", L"正在下载文件");
 		vector<CString> files;
 		vector<CString> md5s;
 		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, files, md5s);
@@ -654,6 +693,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		DeleteDirs(m_strTempPath);
 	}
 	//AfxMessageBox("ok");
+	swprintf(szInfo, L"%s", L"正在启动游戏");
 	m_launcher->StartGame();
 	loading_procgrss_main = 1;
 	loading_procgrss_vice = 1;
@@ -738,6 +778,7 @@ void CMicroClientExDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		this->OnOK();
 		btnDownflag = TRUE;
 	}
+	/*
 	if(miniBtn->CalculatePressDown(point.x,point.y))
 	{
 		this->ShowWindow(SW_MINIMIZE);
@@ -751,7 +792,7 @@ void CMicroClientExDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		//IvockeDownload((LPVOID)NULL);
 		hasStart = true;
 	}
-	
+	*/
 	if(btnDownflag == FALSE)
 	{
 		::SendMessage(GetSafeHwnd(),WM_SYSCOMMAND,0xF012,0); 
@@ -1523,6 +1564,9 @@ void CMicroClientExDlg::ShowMsg(LPCTSTR lpszMsg)
 
 void CMicroClientExDlg::StartGame()
 {
+#ifdef _DEBUG
+	return;
+#endif
 	PROCMSG_DATA stProcMsgData = { 0 };
 	stProcMsgData.nCommandID = CS_REQ_NEWCONNECTION;
 	SendMsgToGame(m_pProcMsgObj, &stProcMsgData);
