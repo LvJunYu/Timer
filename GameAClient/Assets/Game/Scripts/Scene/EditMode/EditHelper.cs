@@ -20,8 +20,7 @@ namespace GameA.Game
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
-            ;
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
@@ -80,7 +79,6 @@ namespace GameA.Game
             unitDesc.Scale = Vector2.one;
             return true;
         }
-
 
         public static int GetUnitCnt(int unitId)
         {
@@ -241,6 +239,9 @@ namespace GameA.Game
             {
                 unitEditData.UnitExtra.Damage = TableManager.Instance.GetSkill(table.SkillId).Damage;
             }
+            //todo 临时
+            unitEditData.UnitExtra.Drops = new List<int>();
+            unitEditData.UnitExtra.Drops.Add(6003);
             return unitEditData;
         }
 

@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 #pragma warning disable 0660 0661
@@ -29,6 +30,7 @@ namespace GameA.Game
         Style,
         Attribute,
         Skill,
+        Drop,
         Max,
     }
     
@@ -50,13 +52,12 @@ namespace GameA.Game
         public int MaxHp;
         public int Damage;
         public int MaxSpeedX;
-        public int Drops;
+        public List<int> Drops;
         public int AttackDistance;
         public int ViewRange;
         public int JumpAbility;
         public int BulletCount;
 
-        
         public bool IsDynamic()
         {
             return MoveDirection != EMoveDirection.None;

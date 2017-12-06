@@ -51,13 +51,6 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnPlay()
-        {
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.SetSkill(104);
-            base.OnPlay();
-        }
-
         public override void StartSkill()
         {
             if (_animation != null && !_animation.IsPlaying(Attack, 1))

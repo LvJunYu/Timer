@@ -417,7 +417,14 @@ namespace GameA.Game
             res.Life = data.MaxHp;
             res.AttackPower = data.Damage;
             res.MoveSpeed = data.MaxSpeedX;
-            res.Drops = data.Drops;
+            res.Drops.Clear();
+            if (data.Drops != null)
+            {
+                for (int i = 0; i < data.Drops.Count; i++)
+                {
+                    res.Drops.Add(data.Drops[i]);
+                }
+            }
             res.AttackDistance = data.AttackDistance;
             res.ViewRange = data.ViewRange;
             res.BulletCount = data.BulletCount;

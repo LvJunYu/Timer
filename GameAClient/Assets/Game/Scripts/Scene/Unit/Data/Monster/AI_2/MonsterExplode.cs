@@ -24,13 +24,6 @@ namespace GameA.Game
             return true;
         }
 
-        internal override void OnPlay()
-        {
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.SetSkill(_tableUnit.SkillId);
-            base.OnPlay();
-        }
-
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (unit.IsMain)

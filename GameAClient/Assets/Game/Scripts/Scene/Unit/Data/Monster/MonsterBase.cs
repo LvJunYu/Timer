@@ -6,8 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -77,6 +75,16 @@ namespace GameA.Game
             }
             CreateStatusBar();
             return true;
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (_tableUnit.SkillId > 0)
+            {
+                _skillCtrl = new SkillCtrl(this);
+                _skillCtrl.SetSkill(_tableUnit.SkillId);
+            }
         }
 
         protected override void Clear()
@@ -288,6 +296,20 @@ namespace GameA.Game
         {
             base.OnDead();
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            var drops = GetUnitExtra().Drops;
+            base.OnObjectDestroy();
+            if (GameRun.Instance.IsPlaying)
+            {
+                if (drops != null && drops.Count > 0)
+                {
+                    PlayMode.Instance.CreateRuntimeUnit(drops[0], _curPos);
+                    PlayMode.Instance.CreateRuntimeUnit(drops[1], _curPos);
+                }
+            }
         }
 
         protected void SetInput(EInputType eInputType, bool value)
