@@ -8,6 +8,11 @@ namespace GameA.Game
 {
     public class GameModeNetEdit : GameModeEdit
     {
+        public override bool IsMulti
+        {
+            get { return true; }
+        }
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {

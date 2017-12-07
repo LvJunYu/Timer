@@ -117,7 +117,7 @@ namespace GameA
         public void SetPlatform(EPlatform ePlatform)
         {
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
-            _cachedView.PcPannel.SetActive(ePlatform == EPlatform.Standalone);
+            _cachedView.PcPannel.SetActive(ePlatform == EPlatform.PC);
         }
 
         public void SetSkillBtnVisible(int slot, bool visible)

@@ -50,7 +50,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             UpdateSettingItem();
-            if (CrossPlatformInputManager.Platform == EPlatform.Standalone)
+            if (CrossPlatformInputManager.Platform == EPlatform.PC)
             {
                 _upCtrlGameSettingInputKeys.Open();
             }
@@ -95,12 +95,12 @@ namespace GameA
         private void SetPlatform(EPlatform ePlatform)
         {
             _cachedView.MobilePanel.SetActive(ePlatform == EPlatform.Moblie);
-            _cachedView.PCPanel.SetActive(ePlatform == EPlatform.Standalone);
+            _cachedView.PCPanel.SetActive(ePlatform == EPlatform.PC);
             _showShadow = new USCtrlGameSettingItem();
             _showRoute = new USCtrlGameSettingItem();
             _playBGMusic = new USCtrlGameSettingItem();
             _playSoundsEffects = new USCtrlGameSettingItem();
-            if (ePlatform == EPlatform.Standalone)
+            if (ePlatform == EPlatform.PC)
             {
                 _upCtrlGameSettingInputKeys = new UPCtrlGameSettingInputKeys();
                 _upCtrlGameSettingInputKeys.Init(this, _cachedView);

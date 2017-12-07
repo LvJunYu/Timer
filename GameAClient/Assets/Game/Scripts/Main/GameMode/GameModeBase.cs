@@ -22,6 +22,11 @@ namespace GameA.Game
         public ShadowData ShadowDataPlayed;
         protected bool _playShadowData;
 
+        public virtual bool IsMulti
+        {
+            get { return false; }
+        }
+
         public virtual bool PlayShadowData
         {
             get { return _playShadowData; }

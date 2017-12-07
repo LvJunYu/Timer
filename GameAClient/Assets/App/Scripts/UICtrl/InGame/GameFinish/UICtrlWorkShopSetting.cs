@@ -30,6 +30,8 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
             _cachedView.Toggle01.onValueChanged.AddListener(Toggle01OnValueChanged);
             _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
+            _cachedView.Toggle03.onValueChanged.AddListener(Toggle03OnValueChanged);
+            _cachedView.Toggle04.onValueChanged.AddListener(Toggle04OnValueChanged);
 
             _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
             _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
@@ -134,6 +136,22 @@ namespace GameA
             CurCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
             CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
+       
+        private void Toggle04OnValueChanged(bool arg0)
+        {
+            if (arg0)
+            {
+                
+            }
+        }
+
+        private void Toggle03OnValueChanged(bool arg0)
+        {
+            if (arg0)
+            {
+                
+            }
+        }
 
         private void Toggle02OnValueChanged(bool arg0)
         {
@@ -182,7 +200,7 @@ namespace GameA
         private void OnExitBtn()
         {
             //如果在测试状态，则先退出测试状态
-            if (_curMode == UICtrlEdit.EMode.EditTest)
+            if (_curMode == UICtrlEdit.EMode.EditTest || _curMode == UICtrlEdit.EMode.MultiEditTest)
             {
                 GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                 if (null != gameModeEdit)
@@ -200,8 +218,8 @@ namespace GameA
         private void SetPlatform(EPlatform ePlatform)
         {
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
-            _cachedView.PCPannel.SetActive(ePlatform == EPlatform.Standalone);
-            if (ePlatform == EPlatform.Standalone)
+            _cachedView.PCPannel.SetActive(ePlatform == EPlatform.PC);
+            if (ePlatform == EPlatform.PC)
             {
                 _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "关卡设置";
                 _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "常规设置";

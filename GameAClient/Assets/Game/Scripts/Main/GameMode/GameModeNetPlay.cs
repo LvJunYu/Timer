@@ -19,6 +19,11 @@ namespace GameA.Game
         protected Queue<Msg_RC_FrameInputData> _serverInputFrameQueue = new Queue<Msg_RC_FrameInputData>(128);
         protected float _frameLeftTime;
         
+        public override bool IsMulti
+        {
+            get { return true; }
+        }
+
         public override bool Stop()
         {
             if (!base.Stop())
