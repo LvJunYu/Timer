@@ -8,33 +8,15 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SoyEngine;
 
 #pragma warning disable 0660 0661
 
 namespace GameA.Game
 {
-    public enum EEditType
-    {
-        None = -1,
-
-        /// <summary>
-        /// 存在Node里面。
-        /// </summary>
-        Direction,
-        MoveDirection,
-        Active,
-        Child,
-        Rotate,
-        TimeDelay,
-        TimeInterval,
-        Text,
-        Style,
-        Attribute,
-        Skill,
-        Drop,
-        Max,
-    }
-
+    /// <summary>
+    /// 这个类不要加引用类型，赋值时会引用同一个对象
+    /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct UnitExtra : IEquatable<UnitExtra>
@@ -49,20 +31,20 @@ namespace GameA.Game
         public ushort TimeDelay;
         public ushort TimeInterval;
         public string Msg;
-        public int TeamId;
+        public byte TeamId;
         public int MaxHp;
         public int Damage;
-        public int MaxSpeedX;
-        public List<int> Drops;
-        public int AttackRange;
-        public int ViewRange;
-        public int JumpAbility;
-        public int BulletCount;
-        public int CastRange;
-        public List<int> KnockbackForces;
-        public List<int> AddStates;
-        public int CastSpeed;
-        
+        public ushort MaxSpeedX;
+        public MultiParam Drops;
+        public ushort AttackRange;
+        public ushort ViewRange;
+        public ushort JumpAbility;
+        public ushort BulletCount;
+        public ushort CastRange;
+        public MultiParam KnockbackForces;
+        public MultiParam AddStates;
+        public ushort CastSpeed;
+
         public bool IsDynamic()
         {
             return MoveDirection != EMoveDirection.None;
@@ -107,39 +89,119 @@ namespace GameA.Game
             var skill = TableManager.Instance.GetSkill(skillId);
             Damage = skill.Damage;
             TimeInterval = (ushort) skill.CDTime;
-            BulletCount = skill.BulletCount;
-            CastRange = skill.CastRange;
-            CastSpeed = skill.ProjectileSpeed;
-            if (KnockbackForces == null)
-            {
-                KnockbackForces = new List<int>(2);
-            }
-            else
-            {
-                KnockbackForces.Clear();
-            }
+            BulletCount = (ushort) skill.BulletCount;
+            CastRange = (ushort) skill.CastRange;
+            CastSpeed = (ushort) skill.ProjectileSpeed;
             if (skill.KnockbackForces != null)
             {
-                for (int i = 0; i < skill.KnockbackForces.Length; i++)
-                {
-                    KnockbackForces.Add(skill.KnockbackForces[i]);
-                }
-            }
-            if (AddStates == null)
-            {
-                AddStates = new List<int>(2);
-            }
-            else
-            {
-                AddStates.Clear();
+                KnockbackForces.Set(skill.KnockbackForces);
             }
             if (skill.AddStates != null)
             {
-                for (int i = 0; i < skill.AddStates.Length; i++)
+                AddStates.Set(skill.AddStates);
+            }
+        }
+    }
+
+    public struct MultiParam : IEquatable<MultiParam>
+    {
+        public bool HasSet;
+        public ushort Param0;
+        public ushort Param1;
+        public ushort Param2;
+        public ushort Param3;
+
+        public bool Equals(MultiParam other)
+        {
+            return Param0 == other.Param0 &&
+                   Param1 == other.Param1 &&
+                   Param2 == other.Param2 &&
+                   Param3 == other.Param3;
+        }
+
+        public static bool operator ==(MultiParam a, MultiParam other)
+        {
+            return a.Equals(other);
+        }
+
+        public static bool operator !=(MultiParam a, MultiParam other)
+        {
+            return !(a == other);
+        }
+
+        public void Set(int[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasSet = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (i == 0)
                 {
-                    AddStates.Add(skill.AddStates[i]);
+                    Param1 = (ushort) list[0];
+                }
+                else if (i == 1)
+                {
+                    Param1 = (ushort) list[1];
+                }
+                else if (i == 2)
+                {
+                    Param2 = (ushort) list[2];
+                }
+                else if (i == 3)
+                {
+                    Param3 = (ushort) list[3];
+                }
+                else
+                {
+                    LogHelper.Error("list's length is bigger than param count");
+                    return;
                 }
             }
         }
+
+        public List<int> ToList()
+        {
+            List<int> list = new List<int>();
+            if (!HasSet) return list;
+            if (Param0 != 0)
+            {
+                list.Add(Param0);
+            }
+            if (Param1 != 0)
+            {
+                list.Add(Param1);
+            }
+            if (Param2 != 0)
+            {
+                list.Add(Param2);
+            }
+            if (Param3 != 0)
+            {
+                list.Add(Param3);
+            }
+            return list;
+        }
+    }
+
+    public enum EEditType
+    {
+        None = -1,
+
+        /// <summary>
+        /// 存在Node里面。
+        /// </summary>
+        Direction,
+        MoveDirection,
+        Active,
+        Child,
+        Rotate,
+        TimeDelay,
+        TimeInterval,
+        Text,
+        Style,
+        Attribute,
+        Skill,
+        Drop,
+        Max,
     }
 }

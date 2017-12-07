@@ -52,7 +52,6 @@ namespace GameA
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
 
-
         public void OnDestroyObject()
         {
         }
@@ -141,7 +140,6 @@ namespace GameA
             OnItem();
         }
 
-
         private void OnItem()
         {
             if (_selected)
@@ -214,7 +212,6 @@ namespace GameA
             }
             _cachedView.Number.gameObject.SetActive(true);
         }
-
 
         private void OnSelectedItemChanged(ushort id)
         {

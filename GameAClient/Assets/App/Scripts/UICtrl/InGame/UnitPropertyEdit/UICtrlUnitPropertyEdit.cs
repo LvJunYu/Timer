@@ -556,7 +556,6 @@ namespace GameA
             _cachedView.TextInput.text = _originData.UnitExtra.Msg;
             _cachedView.TextInput.characterLimit = MessageStringCountMax;
         }
-        
 
         private void OnActiveMenuClick(int inx)
         {
@@ -572,8 +571,11 @@ namespace GameA
 
         private void OnPayloadMenuClick(int inx)
         {
-            _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
-            _editData.UnitExtra.UpdateFromChildId();
+            if (_editData.UnitExtra.ChildId != _tableUnit.ChildState[inx])
+            {
+                _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
+                _editData.UnitExtra.UpdateFromChildId();
+            }
             RefreshPayloadMenu();
         }
 

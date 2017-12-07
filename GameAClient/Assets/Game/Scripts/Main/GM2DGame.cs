@@ -111,8 +111,11 @@ namespace GameA.Game
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
                     break;
-                case GameManager.EStartType.WorkshopCreate:
+                case GameManager.EStartType.WorkshopStandaloneCreate:
                     _gameMode = new GameModeWorkshopEdit();
+                    break;
+                case GameManager.EStartType.WorkshopMultiCreate:
+                    _gameMode = new GameModeNetEdit();
                     break;
                 case GameManager.EStartType.WorkshopEditStandalone:
                     _gameMode = new GameModeWorkshopEdit();

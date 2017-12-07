@@ -199,7 +199,6 @@ namespace GameA.Game
             {
                 unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
                 unitEditData.UnitExtra.UpdateFromChildId();
-                
             }
             if (table.CanEdit(EEditType.Direction))
             {
@@ -227,34 +226,20 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Attribute))
             {
                 unitEditData.UnitExtra.MaxHp = table.Hp;
-                unitEditData.UnitExtra.MaxSpeedX = table.MaxSpeed;
+                unitEditData.UnitExtra.MaxSpeedX = (ushort)table.MaxSpeed;
             }
             if (table.CanEdit(EEditType.Skill))
             {
                 var skill = TableManager.Instance.GetSkill(table.SkillId);
                 if (skill.EffectValues != null && skill.EffectValues.Length > 0)
                 {
-                    unitEditData.UnitExtra.AttackRange = skill.EffectValues[0];
+                    unitEditData.UnitExtra.AttackRange = (ushort)skill.EffectValues[0];
                 }
-                unitEditData.UnitExtra.BulletCount = skill.BulletCount;
+                unitEditData.UnitExtra.BulletCount = (ushort)skill.BulletCount;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = skill.Damage;
-                unitEditData.UnitExtra.KnockbackForces = new List<int>(2);
-                if (skill.KnockbackForces != null)
-                {
-                    for (int i = 0; i < skill.KnockbackForces.Length; i++)
-                    {
-                        unitEditData.UnitExtra.KnockbackForces.Add(skill.KnockbackForces[i]);
-                    }
-                }
-                unitEditData.UnitExtra.AddStates = new List<int>(2);
-                if (skill.AddStates != null)
-                {
-                    for (int i = 0; i < skill.AddStates.Length; i++)
-                    {
-                        unitEditData.UnitExtra.AddStates.Add(skill.AddStates[i]);
-                    }
-                }
+                unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces); 
+                unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }
             //todo 临时
 //            unitEditData.UnitExtra.Drops = new List<int>(2);

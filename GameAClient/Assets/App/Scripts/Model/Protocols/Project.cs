@@ -134,6 +134,10 @@ namespace GameA
         /// </summary>
         private long _parentId;
         /// <summary>
+        /// 是否多人关卡
+        /// </summary>
+        private bool _isMulti;
+        /// <summary>
         /// 联机信息
         /// </summary>
         private NetBattleData _netData;
@@ -458,6 +462,16 @@ namespace GameA
             }}
         }
         /// <summary>
+        /// 是否多人关卡
+        /// </summary>
+        public bool IsMulti { 
+            get { return _isMulti; }
+            set { if (_isMulti != value) {
+                _isMulti = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
         /// 联机信息
         /// </summary>
         public NetBattleData NetData { 
@@ -574,6 +588,7 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            _isMulti = msg.IsMulti;           
             if (null == _netData) {
                 _netData = new NetBattleData(msg.NetData);
             } else {
@@ -632,6 +647,7 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            _isMulti = msg.IsMulti;           
             if(null != msg.NetData){
                 if (null == _netData){
                     _netData = new NetBattleData(msg.NetData);
@@ -690,6 +706,7 @@ namespace GameA
             _updateTime = obj.UpdateTime;           
             _publishTime = obj.PublishTime;           
             _parentId = obj.ParentId;           
+            _isMulti = obj.IsMulti;           
             if(null != obj.NetData){
                 if (null == _netData){
                     _netData = new NetBattleData();

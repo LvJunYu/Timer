@@ -17,17 +17,18 @@ namespace GameA.Game
 {
     public static class GM2DTools
     {
-        private static int _runtimeCreatedUnitDepth = (int)EUnitDepth.Max;
+        private static int _runtimeCreatedUnitDepth = (int) EUnitDepth.Max;
 
-	    public static float PixelsPerTile
-	    {
-		    get
-		    {
-			    return (1f * GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount * ConstDefineGM2D.ClientTileScale);
-			}
-	    }
-		
-		public static int GetRuntimeCreatedUnitDepth()
+        public static float PixelsPerTile
+        {
+            get
+            {
+                return (1f * GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount *
+                        ConstDefineGM2D.ClientTileScale);
+            }
+        }
+
+        public static int GetRuntimeCreatedUnitDepth()
         {
             return _runtimeCreatedUnitDepth++;
         }
@@ -62,14 +63,15 @@ namespace GameA.Game
                 case 1:
                     return validRect.Max.x - point.x + 1;
                 case 2:
-                    return point.y - validRect.Min.y +1;
+                    return point.y - validRect.Min.y + 1;
                 case 3:
                     return point.x - validRect.Min.x + 1;
             }
             return 1;
         }
 
-        public static void GetBorderPoint(Grid2D grid, EDirectionType direction, ref IntVec2 pointA, ref IntVec2 pointB, int num = 0)
+        public static void GetBorderPoint(Grid2D grid, EDirectionType direction, ref IntVec2 pointA, ref IntVec2 pointB,
+            int num = 0)
         {
             switch (direction)
             {
@@ -92,7 +94,8 @@ namespace GameA.Game
             }
         }
 
-        public static void GetBorderPoint(Grid2D grid, EMoveDirection eMoveDirection, ref IntVec2 pointA, ref IntVec2 pointB)
+        public static void GetBorderPoint(Grid2D grid, EMoveDirection eMoveDirection, ref IntVec2 pointA,
+            ref IntVec2 pointB)
         {
             switch (eMoveDirection)
             {
@@ -119,42 +122,47 @@ namespace GameA.Game
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             var size = tableUnit.GetColliderSize(0, Vector2.one);
-            var centerPos = new IntVec2(colliderGrid.XMax + colliderGrid.XMin + 1, colliderGrid.YMax + colliderGrid.YMin + 1)/2;
-            switch ((EDirectionType)direction)
+            var centerPos = new IntVec2(colliderGrid.XMax + colliderGrid.XMin + 1,
+                                colliderGrid.YMax + colliderGrid.YMin + 1) / 2;
+            switch ((EDirectionType) direction)
             {
                 case EDirectionType.Right:
-                    return new Grid2D(colliderGrid.XMax + 1, centerPos.y - size.y / 2, colliderGrid.XMax + size.x, centerPos.y + size.y / 2 - 1);
+                    return new Grid2D(colliderGrid.XMax + 1, centerPos.y - size.y / 2, colliderGrid.XMax + size.x,
+                        centerPos.y + size.y / 2 - 1);
                 case EDirectionType.Left:
-                    return new Grid2D(colliderGrid.XMin - size.x, centerPos.y - size.y / 2, colliderGrid.XMin - 1, centerPos.y + size.y / 2 - 1);
+                    return new Grid2D(colliderGrid.XMin - size.x, centerPos.y - size.y / 2, colliderGrid.XMin - 1,
+                        centerPos.y + size.y / 2 - 1);
                 case EDirectionType.Up:
-                    return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMax + 1, centerPos.x + size.x / 2 - 1, colliderGrid.YMax + size.y);
+                    return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMax + 1, centerPos.x + size.x / 2 - 1,
+                        colliderGrid.YMax + size.y);
                 case EDirectionType.Down:
-                    return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMin - size.y, centerPos.x + size.x / 2 - 1, colliderGrid.YMin - 1);
+                    return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMin - size.y,
+                        centerPos.x + size.x / 2 - 1, colliderGrid.YMin - 1);
             }
             return Grid2D.zero;
         }
 
-		/// <summary>
-		/// 从匠游世界坐标转为Unity世界坐标
-		/// </summary>
-		/// <returns>The position.</returns>
-		/// <param name="pos">Position.</param>
+        /// <summary>
+        /// 从匠游世界坐标转为Unity世界坐标
+        /// </summary>
+        /// <returns>The position.</returns>
+        /// <param name="pos">Position.</param>
         public static Vector3 GetPos(IntVec2 pos)
         {
 //            var mapWidth = (int)(MapConfig.PermitMapSize.x * ConstDefineGM2D.ClientTileScale);
-			float z = (pos.x + pos.y) * 0.00078125f;
-            return TileToWorld(pos)  - Vector3.forward * z;
+            float z = (pos.x + pos.y) * 0.00078125f;
+            return TileToWorld(pos) - Vector3.forward * z;
         }
 
-		/// <summary>
-		/// 从世界坐标转为带z轴排序的世界坐标
-		/// </summary>
-		/// <returns>The position.</returns>
-		/// <param name="pos">Position.</param>
+        /// <summary>
+        /// 从世界坐标转为带z轴排序的世界坐标
+        /// </summary>
+        /// <returns>The position.</returns>
+        /// <param name="pos">Position.</param>
         public static Vector3 GetPos(Vector2 pos)
         {
 //            var mapWidth = (int)(MapConfig.PermitMapSize.x * ConstDefineGM2D.ClientTileScale);
-			float z = (pos.x + pos.y) * 0.00078125f;
+            float z = (pos.x + pos.y) * 0.00078125f;
             return new Vector3(pos.x, pos.y, -z);
         }
 
@@ -204,12 +212,13 @@ namespace GameA.Game
             return skeleton.state.Data.skeletonData.FindAnimation(aniName);
         }
 
-        public static TrackEntry SetAnimation(SkeletonAnimation skeleton, int trackIndex, String animationName, bool loop)
+        public static TrackEntry SetAnimation(SkeletonAnimation skeleton, int trackIndex, String animationName,
+            bool loop)
         {
             var animation = GetAnimation(skeleton, animationName);
             if (animation == null)
             {
-                LogHelper.Error("GetAnimation Failed,{0} | {1}",skeleton, animationName);
+                LogHelper.Error("GetAnimation Failed,{0} | {1}", skeleton, animationName);
                 return null;
             }
             return skeleton.state.SetAnimation(trackIndex, animation, loop);
@@ -249,8 +258,8 @@ namespace GameA.Game
         public static void DrawGrids(Vector3 origin, Vector2 mapSize, Vector2 tileSize, Color gridColor)
         {
             //Handles.color = gridColor;
-            int hCount = (int)mapSize.x;
-            int vCount = (int)mapSize.y;
+            int hCount = (int) mapSize.x;
+            int vCount = (int) mapSize.y;
 
             float hLineLength = hCount * tileSize.x;
             float vLineLength = vCount * tileSize.y;
@@ -284,14 +293,14 @@ namespace GameA.Game
             return end - start;
         }
 
-	    public static IntVec2 ScreenToIntVec2(Vector2 mousePos)
-	    {
+        public static IntVec2 ScreenToIntVec2(Vector2 mousePos)
+        {
             Vector2 mouseWorldPos = ScreenToWorldPoint(mousePos);
             IntVec2 mouseTile = WorldToTile(mouseWorldPos);
-		    return mouseTile;
-	    }
+            return mouseTile;
+        }
 
-		public static Vector2 WorldToScreenPoint(Vector2 worldPosition)
+        public static Vector2 WorldToScreenPoint(Vector2 worldPosition)
         {
             return CameraManager.Instance.RendererCamera.WorldToScreenPoint(worldPosition);
         }
@@ -306,8 +315,10 @@ namespace GameA.Game
         public static IntVec2 ScreenToTileByServerTile(Vector2 pixel)
         {
             pixel -= Vector2.one * ConstDefineGM2D.ClientTileScale * 0.5f;
-            var x = Mathf.FloorToInt(pixel.x / (PixelsPerTile * ConstDefineGM2D.ServerTileScale)) * ConstDefineGM2D.ServerTileScale;
-            var y = Mathf.FloorToInt(pixel.y / (PixelsPerTile * ConstDefineGM2D.ServerTileScale)) * ConstDefineGM2D.ServerTileScale;
+            var x = Mathf.FloorToInt(pixel.x / (PixelsPerTile * ConstDefineGM2D.ServerTileScale)) *
+                    ConstDefineGM2D.ServerTileScale;
+            var y = Mathf.FloorToInt(pixel.y / (PixelsPerTile * ConstDefineGM2D.ServerTileScale)) *
+                    ConstDefineGM2D.ServerTileScale;
             return new IntVec2(x, y);
         }
 
@@ -351,7 +362,7 @@ namespace GameA.Game
             Vector2 max = TileToWorld(tileRect.Max + IntVec2.one);
             return new Rect(min, max - min);
         }
-        
+
         public static IntRect WorldRectToTileRect(Rect rect)
         {
             return new IntRect(WorldToTile(rect.min), WorldToTile(rect.max));
@@ -403,7 +414,7 @@ namespace GameA.Game
         {
             var res = new UnitExtraKeyValuePair();
             res.Guid = ToProto(index);
-            res.MoveDirection = (byte)data.MoveDirection;
+            res.MoveDirection = (byte) data.MoveDirection;
             res.Active = data.Active;
             res.ChildId = data.ChildId;
             res.ChildRotation = data.ChildRotation;
@@ -422,33 +433,15 @@ namespace GameA.Game
             res.BulletCount = data.BulletCount;
             res.CastRange = data.CastRange;
             res.CastSpeed = data.CastSpeed;
-            if (data.Drops != null)
-            {
-                for (int i = 0; i < data.Drops.Count; i++)
-                {
-                    res.Drops.Add(data.Drops[i]);
-                }
-            }
-            if (data.KnockbackForces != null)
-            {
-                for (int i = 0; i < data.KnockbackForces.Count; i++)
-                {
-                    res.KnockbackForces.Add(data.KnockbackForces[i]);
-                }
-            }
-            if (data.AddStates != null)
-            {
-                for (int i = 0; i < data.AddStates.Count; i++)
-                {
-                    res.AddStates.Add(data.AddStates[i]);
-                }
-            }
+            res.Drops.AddRange(data.Drops.ToList());
+            res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
+            res.AddStates.AddRange(data.AddStates.ToList());
             return res;
         }
-        
+
         public static UnitExtra ToEngine(UnitExtraKeyValuePair data)
         {
-            if(null == data) return UnitExtra.zero;
+            if (null == data) return UnitExtra.zero;
             var unitExtra = new UnitExtra();
             unitExtra.MoveDirection = (EMoveDirection) data.MoveDirection;
             unitExtra.Active = (byte) data.Active;
@@ -459,19 +452,19 @@ namespace GameA.Game
             unitExtra.TimeDelay = (ushort) data.TimeDelay;
             unitExtra.TimeInterval = (ushort) data.TimeInterval;
             unitExtra.Msg = data.Msg;
-            unitExtra.JumpAbility = data.JumpAbility;
-            unitExtra.TeamId = data.TeamId;
+            unitExtra.JumpAbility = (ushort) data.JumpAbility;
+            unitExtra.TeamId = (byte) data.TeamId;
             unitExtra.MaxHp = data.Life;
             unitExtra.Damage = data.AttackPower;
-            unitExtra.MaxSpeedX = data.MoveSpeed;
-            unitExtra.Drops = data.Drops;
-            unitExtra.AttackRange = data.AttackDistance;
-            unitExtra.ViewRange = data.ViewRange;
-            unitExtra.BulletCount = data.BulletCount;
-            unitExtra.CastRange = data.CastRange;
-            unitExtra.CastSpeed = data.CastSpeed;
-            unitExtra.KnockbackForces = data.KnockbackForces;
-            unitExtra.AddStates = data.AddStates;
+            unitExtra.MaxSpeedX = (ushort) data.MoveSpeed;
+            unitExtra.Drops.Set(data.Drops.ToArray());
+            unitExtra.AttackRange = (ushort) data.AttackDistance;
+            unitExtra.ViewRange = (ushort) data.ViewRange;
+            unitExtra.BulletCount = (ushort) data.BulletCount;
+            unitExtra.CastRange = (ushort) data.CastRange;
+            unitExtra.CastSpeed = (ushort) data.CastSpeed;
+            unitExtra.KnockbackForces.Set(data.KnockbackForces.ToArray());
+            unitExtra.AddStates.Set(data.AddStates.ToArray());
             return unitExtra;
         }
 
@@ -483,7 +476,7 @@ namespace GameA.Game
             guid.Z = value.z;
             return guid;
         }
-        
+
         public static IntVec2Proto ToProto(IntVec2 value)
         {
             var v2 = new IntVec2Proto();
@@ -513,26 +506,26 @@ namespace GameA.Game
         }
 
         public static IntVec3 ToEngine(IntVec3Proto guid)
-	    {
-		    return new IntVec3(guid.X, guid.Y, guid.Z);
-	    }
-        
+        {
+            return new IntVec3(guid.X, guid.Y, guid.Z);
+        }
+
         public static IntVec2 ToEngine(IntVec2Proto guid)
         {
             return new IntVec2(guid.X, guid.Y);
         }
-        
+
         public static ShadowData.AnimRec ToEngine(RecAnimData value)
         {
             var r = new ShadowData.AnimRec();
             r.FrameIdx = value.FrameIdx;
-            r.NameIdx = (byte)value.NameIdx;
-            r.TimeScale = (byte)value.TimeScale;
-            r.TrackIdx = (byte)value.TrackIdx;
+            r.NameIdx = (byte) value.NameIdx;
+            r.TimeScale = (byte) value.TimeScale;
+            r.TrackIdx = (byte) value.TrackIdx;
             r.Loop = value.Loop;
             return r;
         }
-        
+
         internal static IntRect ToEngine(IntRectProto intRect)
         {
             return new IntRect(intRect.Min.X, intRect.Min.Y, intRect.Max.X, intRect.Max.Y);
@@ -542,8 +535,8 @@ namespace GameA.Game
         {
             return new IntRectProto
             {
-                Min = new IntVec2Proto{ X = intRect.Min.x, Y = intRect.Min.y },
-                Max = new IntVec2Proto { X = intRect.Max.x, Y = intRect.Max.y }
+                Min = new IntVec2Proto {X = intRect.Min.x, Y = intRect.Min.y},
+                Max = new IntVec2Proto {X = intRect.Max.x, Y = intRect.Max.y}
             };
         }
 
@@ -557,7 +550,9 @@ namespace GameA.Game
         public static Grid2D IntersectWith(IntVec2 one, SceneNode node, Table_Unit tableUnit, bool byData = true)
         {
             var other = node.Grid;
-            IntVec2 size = byData ? tableUnit.GetDataSize(node.Rotation, node.Scale) : tableUnit.GetColliderSize(node.Rotation, node.Scale);
+            IntVec2 size = byData
+                ? tableUnit.GetDataSize(node.Rotation, node.Scale)
+                : tableUnit.GetColliderSize(node.Rotation, node.Scale);
             Grid2D grid;
             grid.XMin = other.XMin + (one.x - other.XMin) / size.x * size.x;
             grid.YMin = other.YMin + (one.y - other.YMin) / size.y * size.y;
@@ -569,7 +564,9 @@ namespace GameA.Game
         public static Grid2D IntersectWith(Grid2D one, SceneNode node, Table_Unit tableUnit, bool byData = true)
         {
             var other = node.Grid;
-            IntVec2 size = byData ? tableUnit.GetDataSize(node.Rotation, node.Scale) : tableUnit.GetColliderSize(node.Rotation, node.Scale);
+            IntVec2 size = byData
+                ? tableUnit.GetDataSize(node.Rotation, node.Scale)
+                : tableUnit.GetColliderSize(node.Rotation, node.Scale);
             Grid2D grid = one.IntersectWith(other);
             if (grid.Equals(other))
             {
@@ -598,30 +595,30 @@ namespace GameA.Game
             return grid;
         }
 
-	    public static bool TryGetUnitObject(Vector3 mouseWorldPos, EEditorLayer editorLayer, out UnitDesc unitDesc)
-	    {
-			unitDesc = new UnitDesc();
-			var tile = WorldToTile(mouseWorldPos);
-			SceneNode targetNode;
-	        float minDepth, maxDepth;
-		    EditHelper.GetMinMaxDepth(editorLayer, out minDepth, out maxDepth);
-			if (!DataScene2D.PointCast(tile, out targetNode, JoyPhysics2D.LayMaskAll, minDepth, maxDepth))
-			{
-				return false;
-			}
-			unitDesc.Id = targetNode.Id;
+        public static bool TryGetUnitObject(Vector3 mouseWorldPos, EEditorLayer editorLayer, out UnitDesc unitDesc)
+        {
+            unitDesc = new UnitDesc();
+            var tile = WorldToTile(mouseWorldPos);
+            SceneNode targetNode;
+            float minDepth, maxDepth;
+            EditHelper.GetMinMaxDepth(editorLayer, out minDepth, out maxDepth);
+            if (!DataScene2D.PointCast(tile, out targetNode, JoyPhysics2D.LayMaskAll, minDepth, maxDepth))
+            {
+                return false;
+            }
+            unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
-	        unitDesc.Scale = targetNode.Scale;
-			var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-			if (tableUnit == null)
-			{
-				LogHelper.Error("WorldPosToTileIndex failed,{0}", unitDesc.Id);
-				return false;
-			}
-			var grid = IntersectWith(tile, targetNode, tableUnit);
-			unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
-			return true;
-		}
+            unitDesc.Scale = targetNode.Scale;
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            if (tableUnit == null)
+            {
+                LogHelper.Error("WorldPosToTileIndex failed,{0}", unitDesc.Id);
+                return false;
+            }
+            var grid = IntersectWith(tile, targetNode, tableUnit);
+            unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
+            return true;
+        }
 
         /// <summary>
         ///     编辑关卡时候调用
@@ -652,7 +649,7 @@ namespace GameA.Game
             unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
             return true;
         }
-        
+
         internal static bool TryGetUnitObject(IntVec2 tile, SceneNode colliderNode, out UnitDesc unitDesc)
         {
             unitDesc = new UnitDesc();
@@ -677,7 +674,8 @@ namespace GameA.Game
             else
             {
                 var grid = IntersectWith(tile, colliderNode, tableUnit, false);
-                unitDesc.Guid = tableUnit.ColliderToRenderer(new IntVec3(grid.XMin, grid.YMin, colliderNode.Depth), colliderNode.Rotation);
+                unitDesc.Guid = tableUnit.ColliderToRenderer(new IntVec3(grid.XMin, grid.YMin, colliderNode.Depth),
+                    colliderNode.Rotation);
             }
             return true;
         }
@@ -711,61 +709,61 @@ namespace GameA.Game
             switch (anchor)
             {
                 case EAnchore.UpLeft:
-                    {
-                        offsetInWorld.x = modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.Left:
-                    {
-                        offsetInWorld.x = modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.DownLeft:
-                    {
-                        offsetInWorld.x = modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = modelSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.Up:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.Center:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.Down:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = modelSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.UpRight:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y - modelSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.Right:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = dataSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = dataSizeInWorld.y * 0.5f;
+                    break;
+                }
                 case EAnchore.DownRight:
-                    {
-                        offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
-                        offsetInWorld.y = modelSizeInWorld.y * 0.5f;
-                        break;
-                    }
+                {
+                    offsetInWorld.x = dataSizeInWorld.x - modelSizeInWorld.x * 0.5f;
+                    offsetInWorld.y = modelSizeInWorld.y * 0.5f;
+                    break;
+                }
             }
-			if (tableUnit.EGeneratedType == EGeneratedType.Spine && !UnitDefine.IsBullet(tableUnit.Id))
+            if (tableUnit.EGeneratedType == EGeneratedType.Spine && !UnitDefine.IsBullet(tableUnit.Id))
             {
                 offsetInWorld.y -= modelSizeInWorld.y * 0.5f;
             }
@@ -781,19 +779,19 @@ namespace GameA.Game
         {
             return new Grid2D(rect.Min.x, rect.Min.y, rect.Max.x, rect.Max.y);
         }
-        
+
         public static Vector2 GetDirection(float angle)
         {
             var rad = angle * Mathf.Deg2Rad;
             return new Vector2((float) Math.Sin(rad), (float) Math.Cos(rad));
         }
-        
+
         public static float GetAngle(int rotation)
         {
             float euler = rotation >= (int) EDirectionType.RightUp ? (rotation - 3) * 90 - 45 : rotation * 90;
             return euler;
         }
-        
+
         public static bool GetRotation8(int angle, out byte rotation)
         {
             if (angle % 90 == 0)
@@ -809,7 +807,7 @@ namespace GameA.Game
             rotation = 0;
             return false;
         }
-        
+
         public static bool GetRotation4(int angle, out byte rotation)
         {
             if (angle % 90 == 0)

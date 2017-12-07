@@ -75,7 +75,7 @@ namespace GameA.Game
             public bool CheckCanModifyErase(UnitDesc unitDesc)
             {
                 // 检查是否是不能删除的特殊物体
-                if (unitDesc.Id == UnitDefine.PlayerTableId)
+                if (UnitDefine.IsMain(unitDesc.Id))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除主角");
                     return false;

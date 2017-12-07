@@ -10,6 +10,24 @@ namespace GameA
         private static int[] HorizontalSizes = {20, 30, 40, 50, 60};
         private static int[] VerticalSizes = {10, 20, 30};
         private IntVec2 _selectedIdx;
+        private bool _multi;
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
+            _cachedView.StandaloneTog.onValueChanged.AddListener(OnStandaloneTogValueChanged);
+            for (int y = 0; y < VerticalSizes.Length; y++)
+            {
+                for (int x = 0; x < HorizontalSizes.Length; x++)
+                {
+                    int xx = x;
+                    int yy = y;
+                    _cachedView.Btns[x * VerticalSizes.Length + y].onClick.AddListener(() => { OnClickXY(xx, yy); });
+                }
+            }
+        }
 
         protected override void OnOpen(object parameter)
         {
@@ -22,6 +40,8 @@ namespace GameA
         protected override void OnClose()
         {
             _cachedView.Max.isOn = false;
+            _cachedView.StandaloneTog.isOn = true;
+            _cachedView.MultiTog.isOn = false;
             base.OnClose();
         }
 
@@ -30,22 +50,6 @@ namespace GameA
             base.SetPartAnimations();
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.transform, EAnimationType.Fade);
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
-            for (int y = 0; y < VerticalSizes.Length; y++)
-            {
-                for (int x = 0; x < HorizontalSizes.Length; x++)
-                {
-                    int xx = x;
-                    int yy = y;
-                    _cachedView.Btns[x * VerticalSizes.Length + y].onClick.AddListener(() => { OnClickXY(xx, yy); });
-                }
-            }
         }
 
         protected override void InitGroupId()
@@ -113,6 +117,11 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlSetProjectSize>();
         }
 
+        private void OnStandaloneTogValueChanged(bool value)
+        {
+            _multi = !value;
+        }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlSetProjectSize>();
@@ -136,7 +145,14 @@ namespace GameA
         {
             Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
-            GameManager.Instance.RequestCreate(project);
+            if (_multi)
+            {
+                GameManager.Instance.RequestCreateMulti(project);
+            }
+            else
+            {
+                GameManager.Instance.RequestCreate(project);
+            }
             SocialApp.Instance.ChangeToGame();
         }
     }

@@ -80,16 +80,15 @@ namespace GameA.Game
             switch (eGameInitType)
             {
                 case GameManager.EStartType.WorkshopEditStandalone:
-                    InitEdit(project, eGameInitType);
-                    break;
                 case GameManager.EStartType.WorkshopEditMultiBattle:
                     InitEdit(project, eGameInitType);
                     break;
                 case GameManager.EStartType.ModifyEdit:
                     InitModifyEdit(project, eGameInitType);
                     break;
-                case GameManager.EStartType.WorkshopCreate:
-                    InitCreate();
+                case GameManager.EStartType.WorkshopStandaloneCreate:
+                case GameManager.EStartType.WorkshopMultiCreate:
+                    InitCreate(eGameInitType);
                     break;
                 default:
                     InitPlay(project, eGameInitType);
@@ -221,11 +220,15 @@ namespace GameA.Game
             }
         }
 
-        private void InitCreate()
+        private void InitCreate(GameManager.EStartType startType)
         {
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
             CreateDefaultScene();
             GenerateMap(0);
+            if (startType == GameManager.EStartType.WorkshopMultiCreate)
+            {
+                EditMode.Instance.MapStatistics.CreateDefaltNetData();
+            }
         }
 
         public void OnSetMapDataSuccess(GM2DMapData mapData)

@@ -168,7 +168,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            else if (unitExtra.MaxSpeedX == -1)
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }
@@ -313,10 +313,9 @@ namespace GameA.Game
             base.OnObjectDestroy();
             if (GameRun.Instance.IsPlaying)
             {
-                if (drops != null && drops.Count > 0)
+                if (drops.HasSet)
                 {
-                    PlayMode.Instance.CreateRuntimeUnit(drops[0], _curPos);
-                    PlayMode.Instance.CreateRuntimeUnit(drops[1], _curPos);
+                    PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
                 }
             }
         }

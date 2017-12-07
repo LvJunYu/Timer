@@ -168,17 +168,17 @@ namespace GameA.Game
             {
                 _totalBulletCount = _tableSkill.BulletCount;
             }
-            if (extra.KnockbackForces != null && extra.KnockbackForces.Count > 0)
+            if (extra.KnockbackForces.HasSet)
             {
-                _knockbackForces = extra.KnockbackForces.ToArray();
+                _knockbackForces = extra.KnockbackForces.ToList().ToArray();
             }
             else
             {
                 _knockbackForces = _tableSkill.KnockbackForces;
             }
-            if (extra.AddStates != null && extra.AddStates.Count > 0)
+            if (extra.AddStates.HasSet)
             {
-                _addStates = extra.AddStates.ToArray();
+                _addStates = extra.AddStates.ToList().ToArray();
             }
             else
             {
@@ -453,8 +453,9 @@ namespace GameA.Game
             {
                 return;
             }
+            var canHarm = _owner.CanHarm(unit);
             //击退
-            if (!unit.IsInvincible)
+            if (canHarm && !unit.IsInvincible)
             {
                 if (_knockbackForces.Length == 2)
                 {
@@ -479,9 +480,12 @@ namespace GameA.Game
                 }
             }
             //触发状态
-            unit.AddStates(_addStates);
+            if (canHarm)
+            {
+                unit.AddStates(_addStates);
+                unit.OnHpChanged(-_damage);
+            }
             unit.RemoveStates(_tableSkill.RemoveStates);
-            unit.OnHpChanged(-_damage);
         }
 
         protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)

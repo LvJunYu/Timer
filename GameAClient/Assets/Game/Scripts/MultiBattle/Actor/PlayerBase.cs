@@ -15,11 +15,10 @@ namespace GameA.Game
 {
     public class PlayerBase : ActorBase
     {
-        #region Data
-
         protected Gun _gun;
 
         protected long _playerId;
+        protected UnitExtra _playerUnitExtra;
 
         [SerializeField] protected IntVec2 _revivePos;
 
@@ -34,6 +33,11 @@ namespace GameA.Game
         public long PlayerId
         {
             get { return _playerId; }
+        }
+
+        public override int TeamId
+        {
+            get { return _playerUnitExtra.TeamId; }
         }
 
         public override SkillCtrl SkillCtrl
@@ -122,7 +126,7 @@ namespace GameA.Game
 //            _maxSpeedX = BattleDefine.MaxSpeedX;
             _lastSlot = -1;
         }
-        
+
         public override UnitExtra UpdateExtraData()
         {
             base.UpdateExtraData();
@@ -139,7 +143,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            else if(unitExtra.MaxSpeedX == -1)
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }
@@ -149,7 +153,7 @@ namespace GameA.Game
             }
             return unitExtra;
         }
-        
+
         public override bool SetWeapon(int weaponId, UnitExtra unitExtra = default(UnitExtra))
         {
             var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
@@ -491,10 +495,6 @@ namespace GameA.Game
 
         #endregion
 
-        #endregion
-
-        #region View
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -818,6 +818,9 @@ namespace GameA.Game
             return "Victory";
         }
 
-        #endregion
+        public void SetValue(UnitExtra unitExtra)
+        {
+            _playerUnitExtra = unitExtra;
+        }
     }
 }

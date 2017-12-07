@@ -190,7 +190,7 @@ namespace GameA.Game
 
         private bool CheckHit(int id)
         {
-            if (_skill.EPaintType != EPaintType.None && UnitDefine.IsMain(id))
+            if (_skill.EPaintType != EPaintType.None && UnitDefine.IsPlayer(id))
             {
                 return false;
             }

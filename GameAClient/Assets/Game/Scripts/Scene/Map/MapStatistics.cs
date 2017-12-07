@@ -158,6 +158,7 @@ namespace GameA.Game
             get { return _netBattleData.TimeLimit; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.TimeLimit != value)
                 {
                     _netBattleData.TimeLimit = value;
@@ -171,6 +172,7 @@ namespace GameA.Game
             get { return _netBattleData.PlayerCount; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.PlayerCount != value)
                 {
                     _netBattleData.PlayerCount = value;
@@ -184,6 +186,7 @@ namespace GameA.Game
             get { return _netBattleData.LifeCount; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.LifeCount != value)
                 {
                     _netBattleData.LifeCount = value;
@@ -197,6 +200,7 @@ namespace GameA.Game
             get { return _netBattleData.ReviveTime; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.ReviveTime != value)
                 {
                     _netBattleData.ReviveTime = value;
@@ -210,6 +214,7 @@ namespace GameA.Game
             get { return _netBattleData.ReviveInvincibleTime; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.ReviveInvincibleTime != value)
                 {
                     _netBattleData.ReviveInvincibleTime = value;
@@ -223,6 +228,7 @@ namespace GameA.Game
             get { return _netBattleData.ReviveType; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.ReviveType != value)
                 {
                     _netBattleData.ReviveType = value;
@@ -236,6 +242,7 @@ namespace GameA.Game
             get { return _netBattleData.WinScore; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.WinScore != value)
                 {
                     _netBattleData.WinScore = value;
@@ -249,6 +256,7 @@ namespace GameA.Game
             get { return _netBattleData.ArriveScore; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.WinScore != value)
                 {
                     _netBattleData.ArriveScore = value;
@@ -262,6 +270,7 @@ namespace GameA.Game
             get { return _netBattleData.CollectGemScore; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.CollectGemScore != value)
                 {
                     _netBattleData.CollectGemScore = value;
@@ -275,6 +284,7 @@ namespace GameA.Game
             get { return _netBattleData.KillMonsterScore; }
             set
             {
+                if (_netBattleData == null) return;
                 if (_netBattleData.KillMonsterScore != value)
                 {
                     _netBattleData.KillMonsterScore = value;
@@ -288,6 +298,10 @@ namespace GameA.Game
             get { return _netBattleData.KillPlayerScore; }
             set
             {
+                if (_netBattleData == null)
+                {
+                    return;
+                }
                 if (_netBattleData.KillPlayerScore != value)
                 {
                     _netBattleData.KillPlayerScore = value;
@@ -333,6 +347,12 @@ namespace GameA.Game
             _netBattleData = project.NetData;
         }
 
+        public void CreateDefaltNetData()
+        {
+            _netBattleData = new NetBattleData();
+            //todo 设置默认值
+        }
+        
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
             if (eWinCondition == EWinCondition.WC_TimeLimit)
@@ -387,22 +407,31 @@ namespace GameA.Game
 
         public bool CanHarmType(EHarmType eHarmType)
         {
-            return (1 << (int) eHarmType & _netBattleData.WinCondition) != 0;
+            if (_netBattleData == null)
+            {
+                return true;
+            }
+            return (1 << (int) eHarmType & _netBattleData.HarmType) != 0;
         }
 
         public void SetHarmType(EHarmType eHarmType, bool value)
         {
+            if (_netBattleData == null)
+            {
+                return;
+            }
             if (CanHarmType(eHarmType) == value) return;
             NeedSave = true;
             if (value)
             {
-                _netBattleData.WinCondition |= 1 << (int) eHarmType;
+                _netBattleData.HarmType |= 1 << (int) eHarmType;
             }
             else
             {
-                _netBattleData.WinCondition &= ~(1 << (int) eHarmType);
+                _netBattleData.HarmType &= ~(1 << (int) eHarmType);
             }
         }
+
     }
 
     public enum EHarmType

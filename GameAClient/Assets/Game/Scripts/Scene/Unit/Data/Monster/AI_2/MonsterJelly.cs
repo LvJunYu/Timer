@@ -1,7 +1,4 @@
-﻿using System.Security.Permissions;
-using SoyEngine;
-
-namespace GameA.Game
+﻿namespace GameA.Game
 {
     [Unit(Id = 2004, Type = typeof(MonsterJelly))]
     public class MonsterJelly : MonsterAI_2
@@ -28,7 +25,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            else if (unitExtra.MaxSpeedX == -1)
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }

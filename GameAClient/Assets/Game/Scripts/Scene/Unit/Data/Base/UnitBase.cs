@@ -44,12 +44,12 @@ namespace GameA.Game
 
         [SerializeField] protected bool _isAlive;
         protected bool _canCross;
-        
+
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
         protected bool _isDisposed;
-        
+
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
         protected bool _hasSwitchRectOnce;
@@ -62,7 +62,7 @@ namespace GameA.Game
 
         #region motor
 
-        protected  int _wingCount;
+        protected int _wingCount;
 
         protected int _envState;
 
@@ -73,7 +73,7 @@ namespace GameA.Game
         [SerializeField] public IntVec2 ExtraSpeed;
 
         protected IntVec2 _deltaImpactPos;
-        
+
         [SerializeField] protected bool _grounded;
         [SerializeField] protected bool _lastGrounded = true;
 
@@ -123,7 +123,7 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Trans; }
         }
-        
+
         public int WingCount
         {
             get { return _wingCount; }
@@ -149,12 +149,12 @@ namespace GameA.Game
         {
             get { return EDieType.None; }
         }
-        
+
         protected virtual bool IsClimbing
         {
             get { return false; }
         }
-        
+
         protected virtual bool IsClimbingVertical
         {
             get { return false; }
@@ -169,7 +169,7 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Animation; }
         }
-        
+
         public IntVec2 DeltaImpactPos
         {
             get { return _deltaImpactPos; }
@@ -231,7 +231,11 @@ namespace GameA.Game
 
         public bool CanAttack
         {
-            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice);
+            }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -316,10 +320,7 @@ namespace GameA.Game
         public int SpeedY
         {
             get { return _speed.y; }
-            set
-            {
-                _speed.y = value;
-            }
+            set { _speed.y = value; }
         }
 
         public IntVec2 Speed
@@ -446,13 +447,13 @@ namespace GameA.Game
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
             }
         }
-        
+
         public IntVec2 CenterPos
         {
             get
             {
                 IntVec2 dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x / 2 , _curPos.y+ dataSize.y / 2 );
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y + dataSize.y / 2);
             }
             set
             {
@@ -460,13 +461,13 @@ namespace GameA.Game
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y / 2);
             }
         }
-        
+
         public IntVec2 CenterUpFloorPos
         {
             get
             {
                 IntVec2 dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y + 1);
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y + dataSize.y + 1);
             }
             set
             {
@@ -495,12 +496,12 @@ namespace GameA.Game
         {
             get { return false; }
         }
-        
+
         public virtual bool IsShadow
         {
             get { return false; }
         }
-        
+
         public virtual bool IsPlayer
         {
             get { return false; }
@@ -509,6 +510,11 @@ namespace GameA.Game
         public virtual bool IsMonster
         {
             get { return _isMonster; }
+        }
+
+        public virtual int TeamId
+        {
+            get { return GetUnitExtra().TeamId; }
         }
 
         public ELayerType ELayerType
@@ -657,7 +663,7 @@ namespace GameA.Game
 
         internal virtual bool InstantiateView()
         {
-            if (!UnitManager.Instance.TryGetUnitView(this,false, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
@@ -680,11 +686,13 @@ namespace GameA.Game
                     CommonTools.SetParent(_viewExtras[i].Trans, _trans);
                     if (UnitDefine.IsPlant(Id))
                     {
-                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                        _viewExtras[i].Trans.localPosition =
+                            new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
                     }
                     else if (UnitDefine.IsRevive(Id))
                     {
-                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetBackground - _viewZOffset);
+                        _viewExtras[i].Trans.localPosition =
+                            new Vector3(0, 0, UnitDefine.ZOffsetBackground - _viewZOffset);
                     }
                     else
                     {
@@ -700,7 +708,7 @@ namespace GameA.Game
             }
             if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
             {
-                _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName , _trans);
+                _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName, _trans);
                 if (_withEffect != null)
                 {
                     _withEffect.Play();
@@ -736,7 +744,8 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, GM2DTools.TileToWorld(CenterPos, _trans.position.z));
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName,
+                    GM2DTools.TileToWorld(CenterPos, _trans.position.z));
             }
         }
 
@@ -851,15 +860,15 @@ namespace GameA.Game
         internal virtual void InLazer()
         {
         }
-        
+
         internal virtual void InSaw()
         {
         }
-        
+
         internal virtual void InFan(UnitBase fanUnit, IntVec2 force)
         {
         }
-        
+
         internal virtual void OutFan(UnitBase fanUnit)
         {
         }
@@ -879,7 +888,7 @@ namespace GameA.Game
         {
             var unitExtra = GetUnitExtra();
             _moveDirection = unitExtra.MoveDirection;
-            _eActiveState = (EActiveState)unitExtra.Active;
+            _eActiveState = (EActiveState) unitExtra.Active;
             if (_eActiveState == EActiveState.None)
             {
                 _eActiveState = EActiveState.Active;
@@ -990,9 +999,10 @@ namespace GameA.Game
             }
             else if (_deltaPos.y != 0 || IsClimbingVertical)
             {
-                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
+                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
                 z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f,
-                GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f);
+                    GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f);
             }
             if (UnitDefine.IsJet(Id))
             {
@@ -1158,17 +1168,19 @@ namespace GameA.Game
             return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
-        
+
         public bool CheckRightClimbFloor(int deltaPosY = 0)
         {
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
+                    CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1180,29 +1192,33 @@ namespace GameA.Game
         {
             var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) && CheckLeftFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
+                    CheckLeftFloor(unit))
                 {
                     return true;
                 }
             }
             return false;
         }
-        
+
         public bool CheckUpClimbFloor(int deltaPosX = 0)
         {
             var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) && CheckUpFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
+                    CheckUpFloor(unit))
                 {
                     return true;
                 }
@@ -1220,7 +1236,7 @@ namespace GameA.Game
             return _colliderGrid.YMin - 1 == unit.ColliderGrid.YMax && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
                    _colliderGrid.XMin <= unit.ColliderGrid.XMax;
         }
-        
+
         public bool CheckUpFloor(UnitBase unit)
         {
             return _colliderGrid.YMax + 1 == unit.ColliderGrid.YMin && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
@@ -1468,13 +1484,14 @@ namespace GameA.Game
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection )
+            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection)
             {
                 return;
             }
             EMoveDirection lastMoveDirection = _moveDirection;
             _moveDirection = eMoveDirection;
-            if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor||IsShadow) && Id != UnitDefine.MonsterJellyId)
+            if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor || IsShadow) &&
+                Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _moveDirection != EMoveDirection.Right
@@ -1482,7 +1499,7 @@ namespace GameA.Game
                     : new Vector3(euler.x, 0, euler.z);
                 if (lastMoveDirection != _moveDirection && GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                 {
-                     GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
+                    GM2DGame.Instance.GameMode.ShadowData.RecordDirChange(eMoveDirection);
                 }
             }
         }
@@ -1501,7 +1518,7 @@ namespace GameA.Game
         {
             _viewZOffset = UnitDefine.ZOffsetBackground;
         }
-        
+
         protected void SetSortingOrderFrontest()
         {
             _viewZOffset = UnitDefine.ZOffsetFrontest;
@@ -1511,12 +1528,12 @@ namespace GameA.Game
         {
             _viewZOffset = UnitDefine.ZOffsetBack;
         }
-        
+
         protected void SetSortingOrderFront()
         {
             _viewZOffset = UnitDefine.ZOffsetFront;
         }
-        
+
         protected void SetSortingOrderNormal()
         {
             _viewZOffset = 0;
@@ -1576,7 +1593,7 @@ namespace GameA.Game
             }
             return true;
         }
-        
+
         internal bool OnSwitchRectStart(SwitchRect switchRect)
         {
             if (_switchRectUnits.Contains(switchRect))
@@ -1603,7 +1620,7 @@ namespace GameA.Game
             }
             return true;
         }
-        
+
         internal void OnSwitchRectOnce()
         {
             if (_hasSwitchRectOnce)
@@ -1627,7 +1644,7 @@ namespace GameA.Game
                 OnActiveStateChanged();
             }
         }
-        
+
         protected virtual void OnActiveStateChanged()
         {
             _withEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
@@ -1688,7 +1705,7 @@ namespace GameA.Game
         public virtual void RemoveAllDebuffs()
         {
         }
-        
+
         public virtual bool TryGetState(EStateType stateType, out State state)
         {
             state = null;
@@ -1697,12 +1714,12 @@ namespace GameA.Game
 
         public void AddEnvState(EEnvState eEnvState)
         {
-            _envState |= 1 << (int)eEnvState;
+            _envState |= 1 << (int) eEnvState;
         }
 
         public void RemoveEnvState(EEnvState eEnvState)
         {
-            _envState &= ~(1 << (int)eEnvState);
+            _envState &= ~(1 << (int) eEnvState);
         }
 
         public bool IsInState(EEnvState eEnvState)
@@ -1714,11 +1731,11 @@ namespace GameA.Game
         {
             return true;
         }
-        
+
         public virtual void OnSkillCast()
         {
         }
-        
+
         public virtual void StartSkill()
         {
         }
@@ -1732,11 +1749,11 @@ namespace GameA.Game
         public virtual void SetStepOnClay()
         {
         }
-        
+
         public virtual void SetStepOnIce()
         {
         }
-        
+
         protected void SetCross(bool value)
         {
             _canCross = value;
@@ -1754,11 +1771,38 @@ namespace GameA.Game
         {
             return other.ColliderGrid.XMin <= grid.XMax && other.ColliderGrid.XMax >= grid.XMin;
         }
-        
+
         public virtual bool IntersectY(UnitBase other, Grid2D grid)
         {
             return other.ColliderGrid.YMin <= grid.YMax && other.ColliderGrid.YMax >= grid.YMin;
         }
-        
+
+        public bool IsSameTeam(int teamId)
+        {
+            return teamId != 0 && TeamId != 0 && teamId == TeamId;
+        }
+
+        public bool CanHarm(UnitBase unit)
+        {
+            if (IsPlayer)
+            {
+                if (unit.IsPlayer)
+                {
+                    return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfPlayer) && IsSameTeam(unit.TeamId) ||
+                           PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyPlayer) && !IsSameTeam(unit.TeamId);
+                }
+                if (unit.IsMonster)
+                {
+                    return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfMonster) && IsSameTeam(unit.TeamId) ||
+                           PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
+                }
+                return true;
+            }
+            if (IsMonster)
+            {
+                return !IsSameTeam(unit.TeamId);
+            }
+            return true;
+        }
     }
 }

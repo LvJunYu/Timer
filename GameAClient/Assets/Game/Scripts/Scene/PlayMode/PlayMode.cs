@@ -65,7 +65,7 @@ namespace GameA.Game
         {
             get { return _gameFailedTime; }
         }
-        
+
         public SceneState SceneState
         {
             get { return _sceneState; }
@@ -418,8 +418,6 @@ namespace GameA.Game
             _sceneState.MonsterKilled++;
         }
 
-        #region State
-
         public bool CheckPlayerValid(bool run = true)
         {
             var spawnDatas = DataScene2D.Instance.SpawnDatas;
@@ -433,39 +431,51 @@ namespace GameA.Game
             }
             if (run)
             {
-                for (int i = 0; i < spawnDatas.Count; i++)
+                var users = PlayerManager.Instance.UserDataList;
+                if (users == null)
                 {
-                    var spawnData = spawnDatas[i];
-                    if (i == 0)
+                    var player = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as PlayerBase;
+                    player.SetValue(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                    PlayerManager.Instance.Add(player);
+                    //乱入对决，创建影子Unit
+                    if (GM2DGame.Instance.GameMode.PlayShadowData &&
+                        GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                     {
-                        //TODO 临时 测试多人
-                        if (PlayerManager.Instance.UserDataList == null)
+                        var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].GetUpPos()) as ShadowUnit;
+                        shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
+                        shadowUnit.SetName(gameMode.ShadowName);
+                    }
+                }
+                else
+                {
+                    if (users.Count == 0)
+                    {
+                        LogHelper.Error("users's count is zero, create player failed.");
+                        return false;
+                    }
+                    if (users.Count > spawnDatas.Count)
+                    {
+                        LogHelper.Error("spawns's count is less than users's count, create player failed.");
+                        return false;
+                    }
+                    for (int j = 0; j < users.Count; j++)
+                    {
+                        int id;
+                        if (j == 0)
                         {
-                            PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                            id = UnitDefine.MainPlayerId;
                         }
                         else
                         {
-                            for (int j = 0; j < PlayerManager.Instance.UserDataList.Count; j++)
-                            {
-                                PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
-                            }
+                            id = UnitDefine.OtherPlayerId;
                         }
-                        //创建影子Unit
-                        if (GM2DGame.Instance.GameMode.PlayShadowData &&
-                            GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
-                        {
-                            var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
-                            var shadowUnit = CreateRuntimeUnit(65535, spawnData.GetUpPos()) as ShadowUnit;
-                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
-                            shadowUnit.SetName(gameMode.ShadowName);
-                        }
-                        _mainPlayer = PlayerManager.Instance.MainPlayer;
-                    }
-                    else
-                    {
-//                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
+                        var player = CreateRuntimeUnit(id, spawnDatas[0].GetUpPos()) as PlayerBase;
+                        player.SetValue(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                        PlayerManager.Instance.Add(player);
                     }
                 }
+                _mainPlayer = PlayerManager.Instance.MainPlayer;
             }
             return true;
         }
@@ -595,8 +605,6 @@ namespace GameA.Game
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);
             return followPos;
         }
-
-        #endregion
 
         public bool AddTrap(int trapId, IntVec2 centerPos)
         {

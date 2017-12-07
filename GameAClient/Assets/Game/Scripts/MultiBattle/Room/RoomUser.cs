@@ -5,8 +5,6 @@
 ** Summary : RoomUser
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
 

@@ -40,7 +40,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            else if (unitExtra.MaxSpeedX == -1)
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }

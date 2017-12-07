@@ -5,10 +5,7 @@
 ** Summary : MonsterAI
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
@@ -59,7 +56,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            else if (unitExtra.MaxSpeedX == -1)
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }

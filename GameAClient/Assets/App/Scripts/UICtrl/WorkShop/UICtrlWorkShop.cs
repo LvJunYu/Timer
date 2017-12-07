@@ -14,7 +14,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.UiMouseStayHit.SetResScenary(ResScenary);
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
             _menuCtrlArray = new UPCtrlWorkShopProjectBase[(int) EMenu.Max];
 

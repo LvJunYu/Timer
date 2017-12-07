@@ -83,7 +83,16 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorkshopCreate);
+            return RequestStartGame(project, EStartType.WorkshopStandaloneCreate);
+        }
+
+        
+        public bool RequestCreateMulti(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.WorkshopMultiCreate);
         }
 
         public bool RequestEdit(Project project)
@@ -231,7 +240,8 @@ namespace GameA
         public enum EStartType
         {
             None,
-            WorkshopCreate,
+            WorkshopStandaloneCreate,
+            WorkshopMultiCreate,
             WorkshopEditStandalone,
             WorkshopEditMultiBattle,
             WorldPlay,

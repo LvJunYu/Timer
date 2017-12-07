@@ -201,7 +201,7 @@ namespace GameA.Game
             total += _monsterKilled * 200;
             return total;
         }
-        
+
         public void Init(Project project)
         {
             _mapStatistics.InitWithProject(project);
@@ -441,6 +441,11 @@ namespace GameA.Game
         private bool CheckWinTimeLimit()
         {
             return HasWinCondition(EWinCondition.WC_TimeLimit) && _gameTimer >= RunTimeTimeLimit;
+        }
+
+        public bool CanHarmType(EHarmType eHarmType)
+        {
+            return _mapStatistics.CanHarmType(eHarmType);
         }
     }
 }

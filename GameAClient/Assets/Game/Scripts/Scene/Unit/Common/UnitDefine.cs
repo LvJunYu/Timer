@@ -5,8 +5,6 @@
 ** Summary : UnitDefine
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 
@@ -31,7 +29,8 @@ namespace GameA.Game
         public const int FanRange = 30;
         public const int FanForce = 20;
 
-        public const int PlayerTableId = 1002;
+        public const int MainPlayerId = 1002;
+        public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
@@ -50,6 +49,7 @@ namespace GameA.Game
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
+        public const int ShadowId = 65535;
 
         public static bool IsSpawn(int id)
         {
@@ -57,6 +57,11 @@ namespace GameA.Game
         }
 
         public static bool IsMain(int id)
+        {
+            return id == MainPlayerId;
+        }
+
+        public static bool IsPlayer(int id)
         {
             return id < 2000 && id > 1001;
         }
@@ -113,7 +118,7 @@ namespace GameA.Game
 
         public static bool IsShadow(int id)
         {
-            return id == 65535 || id == 65534;
+            return id == ShadowId || id == 65534;
         }
 
         public static bool IsAirWall(int id)
@@ -142,7 +147,7 @@ namespace GameA.Game
 
         public static bool IsPaintBlock(Table_Unit tableUnit)
         {
-            if (IsMain(tableUnit.Id))
+            if (IsPlayer(tableUnit.Id))
             {
                 return false;
             }

@@ -53,7 +53,14 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(project, "作品加载中");
             project.PrepareRes(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);
-                GameManager.Instance.RequestEdit(project);
+                if (project.IsMulti)
+                {
+                    GameManager.Instance.RequestEditMultiBattle(project);
+                }
+                else
+                {
+                    GameManager.Instance.RequestEdit(project);
+                }
 //                MatrixProjectTools.SetProjectVersion(project);
                 SocialApp.Instance.ChangeToGame();
             }, ()=>{
