@@ -49,6 +49,7 @@ namespace GameA
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.MoreBtn.onClick.AddListener(OnMoreBtn);
             _cachedView.FoldBtn.onClick.AddListener(OnFoldBtn);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
             InitFirstUM();
         }
 

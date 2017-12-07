@@ -13,11 +13,13 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnExitBtnClick);
             _cachedView.CreateRoomBtn.onClick.AddListener(OnCreateBtnClick);
             _cachedView.JoinRoomBtn.onClick.AddListener(OnJoinBtnClick);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.ProjectIdInput);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.RoomIdInput);
         }
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
 
         private void OnExitBtnClick()
@@ -52,10 +54,10 @@ namespace GameA
             }, () =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("创建房间失败");   
+                SocialGUIManager.ShowPopupDialog("创建房间失败");
             });
         }
-        
+
         private void OnJoinBtnClick()
         {
             long roomId = 0;
@@ -70,7 +72,7 @@ namespace GameA
             }, () =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("加入房间失败");   
+                SocialGUIManager.ShowPopupDialog("加入房间失败");
             });
         }
     }

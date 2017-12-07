@@ -9,18 +9,19 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlBindingPhone : UICtrlGenericBase<UIViewBindingPhone>
     {
-
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             InitUIEvent();
+            InitInputFieldCheck();
             LoginLogicUtil.Init();
         }
+
 
         protected override void OnOpen(object parameter)
         {
@@ -59,7 +60,7 @@ namespace GameA
             }
             bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
-            if(!verificationCheckResult)
+            if (!verificationCheckResult)
             {
                 return;
             }
@@ -72,7 +73,8 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "账号绑定中");
 
             LocalUser.Instance.Account.BindingPhone(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
-                ret => {
+                ret =>
+                {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     Close();
                     SocialApp.Instance.LoginSucceed();
@@ -96,9 +98,8 @@ namespace GameA
             }
             RemoteCommands.GetVerificationCode(phoneNum, EAccountIdentifyType.AIT_Phone, EVerifyCodeType.VCT_Bind,
                 ret => { }, null
-                );
+            );
             CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
-
         }
 
         private void InitUIEvent()
@@ -107,8 +108,16 @@ namespace GameA
             _cachedView.ConfirmBtn.onClick.AddListener(OnConfirmBtnClick);
             _cachedView.CloseBtn.onClick.AddListener(Close);
         }
- 
+
+        private void InitInputFieldCheck()
+        {
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Phone);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Pwd);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SmsCode);
+        }
+
         #region uievent 
+
         private void OnGetSMSCodeButtonClick()
         {
             OnSmsCode();
@@ -118,7 +127,7 @@ namespace GameA
         {
             OnBindingPhone();
         }
-        #endregion
 
+        #endregion
     }
 }

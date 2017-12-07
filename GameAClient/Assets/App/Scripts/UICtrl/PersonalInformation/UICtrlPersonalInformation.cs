@@ -71,6 +71,9 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.NameInputField);
         }
 
         protected override void OnDestroy()

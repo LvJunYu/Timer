@@ -30,6 +30,7 @@ namespace GameA
             _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
         }
 
         public virtual void Set(object obj)

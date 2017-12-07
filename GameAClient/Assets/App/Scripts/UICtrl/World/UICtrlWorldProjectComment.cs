@@ -7,6 +7,7 @@ namespace GameA
     {
         private Project _project;
         private bool _onlyChangeView;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -15,6 +16,7 @@ namespace GameA
             _cachedView.CancelBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.CommentInput);
         }
 
         protected override void OnOpen(object parameter)

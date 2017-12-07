@@ -47,6 +47,10 @@ namespace GameA
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
             SetPlatform(CrossPlatformInputManager.Platform);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField_2);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInputField_2);
         }
 
         protected override void OnOpen(object parameter)

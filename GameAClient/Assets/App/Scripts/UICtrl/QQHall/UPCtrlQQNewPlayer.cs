@@ -26,7 +26,6 @@ namespace GameA
             base.Open();
             _isOpen = true;
             ReqestData();
-            ReferView();
         }
 
         private void ReqestData()
@@ -40,10 +39,7 @@ namespace GameA
                         ReferView();
                     }
                 },
-                code =>
-                {
-                    
-                });
+                code => { ReferView(); });
         }
 
         private void ReferView()
@@ -65,11 +61,12 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
             Messenger.Broadcast(EMessengerType.OnQQRewardGetChangee);
         }
+
         private void OnClotion()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlLittleLoading>();
             RemoteCommands.ReceiveQQGameReward(EQQGamePrivilegeType.QGPT_Hall,
-                EQQGamePrivilegeSubType.QGPST_Beginner, 0, EQQGameBlueVipType.QGBVT_All, 
+                EQQGamePrivilegeSubType.QGPST_Beginner, 0, EQQGameBlueVipType.QGBVT_All,
                 msg =>
                 {
                     if (msg.ResultCode == (int) EExecuteCommandCode.ECC_Success)
@@ -80,11 +77,7 @@ namespace GameA
                     }
                     SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
                 },
-                code =>
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();  
-                });
-            
+                code => { SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>(); });
         }
 
         private void Init()

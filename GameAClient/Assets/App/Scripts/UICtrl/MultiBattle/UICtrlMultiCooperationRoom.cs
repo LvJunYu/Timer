@@ -5,7 +5,7 @@ using SoyEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlMultiCooperationRoom: UICtrlGenericBase<UIViewMultiCooperationRoom>
+    public class UICtrlMultiCooperationRoom : UICtrlGenericBase<UIViewMultiCooperationRoom>
     {
         protected override void OnOpen(object parameter)
         {
@@ -88,6 +88,7 @@ namespace GameA
             _cachedView.CancelBtn.onClick.AddListener(OnCancelReadyBtnClick);
             _cachedView.StartBtn.onClick.AddListener(OnStartBattleBtnClick);
             _cachedView.ExitBtn.onClick.AddListener(OnExitRoomBtnClick);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.RoomIdText);
         }
 
         private void OnReadyBtnClick()
@@ -163,10 +164,10 @@ namespace GameA
             }
             RefreshView();
         }
-        
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
     }
 }

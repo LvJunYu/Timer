@@ -53,6 +53,7 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.InptField);
         }
 
         protected override void OnOpen(object parameter)

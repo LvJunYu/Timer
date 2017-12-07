@@ -165,6 +165,7 @@ namespace GameA
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
+            BadWordManger.Instance.Init();
         }
 
         public void LoginSucceed()

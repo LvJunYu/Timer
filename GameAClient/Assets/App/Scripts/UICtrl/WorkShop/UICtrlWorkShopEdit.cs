@@ -30,6 +30,8 @@ namespace GameA
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
             _cachedView.TitleInput.onEndEdit.AddListener(msg => OnConfirmTitleBtn());
             _cachedView.DescInput.onEndEdit.AddListener(msg => OnConfirmDescBtn());
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInput);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInput);
         }
 
         protected override void InitEventListener()
