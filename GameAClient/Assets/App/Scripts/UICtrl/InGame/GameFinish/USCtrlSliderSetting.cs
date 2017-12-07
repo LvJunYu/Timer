@@ -8,7 +8,6 @@ namespace GameA
     {
         private int _min;
         private int _max;
-        private int _duration;
         private int _cur;
         private Action<int> _callBack;
         private string _numFormat;
@@ -31,29 +30,27 @@ namespace GameA
             _min = min;
             _max = max;
             _callBack = callBack;
-            _duration = _max - _min;
             _cachedView.Slider.minValue = _min;
             _cachedView.Slider.maxValue = _max;
             _numFormat = numFormat;
         }
 
-        public void Set(int cur)
+        public void SetCur(int cur)
         {
             cur = Mathf.Clamp(cur, _min, _max);
-            if (cur == _cur) return;
             _cur = cur;
-            _cachedView.Slider.value = (cur - _min) / (float) _duration;
+            _cachedView.Slider.value = _cur;
             _cachedView.Num.text = string.Format(_numFormat, _cur);
         }
 
         private void OnRightBtn()
         {
-            Set(++_cur);
+            SetCur(++_cur);
         }
 
         private void OnLeftBtn()
         {
-            Set(--_cur);
+            SetCur(--_cur);
         }
 
         private void OnSliderValueChanged(float value)
@@ -61,7 +58,7 @@ namespace GameA
             var cur = (int) value;
             if (cur == _cur) return;
             _cur = cur;
-            _cachedView.Num.text = cur.ToString();
+            _cachedView.Num.text = string.Format(_numFormat, _cur);
             if (_callBack != null)
             {
                 _callBack.Invoke((int) value);

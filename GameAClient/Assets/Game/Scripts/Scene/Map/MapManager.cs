@@ -119,7 +119,7 @@ namespace GameA.Game
             }
             if (startType == GameManager.EStartType.MultiBattlePlay)
             {
-                PlayMode.Instance.SceneState.Init(project);
+                PlayMode.Instance.SceneState.InitMultiBattleData(project);
             }
             _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
@@ -147,8 +147,8 @@ namespace GameA.Game
             }
             if (startType == GameManager.EStartType.WorkshopEditMultiBattle)
             {
-                EditMode.Instance.MapStatistics.InitWithProject(project);
-                PlayMode.Instance.SceneState.Init(project);
+                EditMode.Instance.MapStatistics.InitMultiBattleData(project);
+                PlayMode.Instance.SceneState.InitMultiBattleData(project);
             }
             //if (mapData.UserGUID != LocalUser.Instance.UserGuid)
             //{

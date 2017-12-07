@@ -35,7 +35,7 @@ namespace GameA.Game
             get { return _playerId; }
         }
 
-        public override int TeamId
+        public override byte TeamId
         {
             get { return _playerUnitExtra.TeamId; }
         }
@@ -821,6 +821,11 @@ namespace GameA.Game
         public void SetValue(UnitExtra unitExtra)
         {
             _playerUnitExtra = unitExtra;
+        }
+        
+        public override UnitExtra GetUnitExtra()
+        {
+            return _playerUnitExtra;
         }
     }
 }

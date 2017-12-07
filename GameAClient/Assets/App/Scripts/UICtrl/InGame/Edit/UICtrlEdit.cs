@@ -113,6 +113,7 @@ namespace GameA
             switch (mode)
             {
                 case EMode.Edit:
+                case EMode.MultiEdit:
                     _cachedView.Erase.gameObject.SetActive(false);
                     _cachedView.EraseSelected.gameObject.SetActive(false);
                     _cachedView.Redo.gameObject.SetActive(true);
@@ -134,6 +135,7 @@ namespace GameA
                     _cachedView.Home.gameObject.SetActive(true);
                     break;
                 case EMode.EditTest:
+                case EMode.MultiEditTest:
                     _cachedView.Erase.gameObject.SetActive(false);
                     _cachedView.EraseSelected.gameObject.SetActive(false);
                     _cachedView.Redo.gameObject.SetActive(false);

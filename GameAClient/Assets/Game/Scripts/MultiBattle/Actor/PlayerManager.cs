@@ -77,6 +77,7 @@ namespace GameA.Game
             {
                 _mainPlayer = player as MainPlayer;
             }
+            TeamManager.Instance.AddPlayer(player);
         }
 
         public void Dispose()

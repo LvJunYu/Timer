@@ -512,7 +512,7 @@ namespace GameA.Game
             get { return _isMonster; }
         }
 
-        public virtual int TeamId
+        public virtual byte TeamId
         {
             get { return GetUnitExtra().TeamId; }
         }

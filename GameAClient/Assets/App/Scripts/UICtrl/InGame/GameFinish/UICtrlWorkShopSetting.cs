@@ -12,15 +12,26 @@ namespace GameA
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
-        private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
+
         private UPCtrlWorkShopLevelSetting _upCtrlWorkShopLevelSetting;
+        private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
+
+        private UPCtrlWorkShopNetBattleBasic _upCtrlWorkShopNetBattleBasic;
+        private UPCtrlWorkShopNetBattleWinCondition _upCtrlWorkShopNetBattleWinCondition;
+        private UPCtrlWorkShopNetBattlePlayerSetting _upCtrlWorkShopNetBattlePlayerSetting;
+        
         private UICtrlEdit.EMode _curMode;
         private bool _openGamePlaying;
-        private GameModeEdit _gameModeWorkshopEdit;
         private string _originalTitle;
         private string _originalDesc;
+        private EPlatform _curPlatform;
         public Project CurProject;
         public FinishCondition CurCondition;
+
+        public bool IsMulti
+        {
+            get { return _curMode == UICtrlEdit.EMode.MultiEdit || _curMode == UICtrlEdit.EMode.MultiEditTest; }
+        }
 
         protected override void OnViewCreated()
         {
@@ -32,36 +43,55 @@ namespace GameA
             _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
             _cachedView.Toggle03.onValueChanged.AddListener(Toggle03OnValueChanged);
             _cachedView.Toggle04.onValueChanged.AddListener(Toggle04OnValueChanged);
-
-            _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
-            _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
-            _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
-            _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
             _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
-
-            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
-            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
-            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
-            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
             _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
             _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
+            
+            _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
+            _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
+            _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
+            _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
+            
+            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
+            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
+            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
+            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
+            
+            _upCtrlWorkShopNetBattleBasic = new UPCtrlWorkShopNetBattleBasic();
+            _upCtrlWorkShopNetBattleBasic.Init(this, _cachedView);
+            _upCtrlWorkShopNetBattleWinCondition = new UPCtrlWorkShopNetBattleWinCondition();
+            _upCtrlWorkShopNetBattleWinCondition.Init(this, _cachedView);
+            _upCtrlWorkShopNetBattlePlayerSetting = new UPCtrlWorkShopNetBattlePlayerSetting();
+            _upCtrlWorkShopNetBattlePlayerSetting.Init(this, _cachedView);
+            
             SetPlatform(CrossPlatformInputManager.Platform);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField_2);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField_3);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInputField_2);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInputField_3);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             _curMode = (UICtrlEdit.EMode) parameter;
-            if (GM2DGame.Instance != null) _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (_gameModeWorkshopEdit != null)
-                CurProject = _gameModeWorkshopEdit.Project;
+            var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (gameModeWorkshopEdit != null)
+            {
+                CurProject = gameModeWorkshopEdit.Project;
+            }
+            else
+            {
+                LogHelper.Error("GM2DGame.Instance.GameMode is null");
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
+                return;
+            }
+            UpdateToggles();
             _originalTitle = CurProject.Name;
             _originalDesc = CurProject.Summary;
             UpdateFinishCondition();
@@ -136,12 +166,19 @@ namespace GameA
             CurCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
             CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
-       
+
         private void Toggle04OnValueChanged(bool arg0)
         {
             if (arg0)
             {
-                
+                if (IsMulti)
+                {
+                    _upCtrlWorkShopNetBattleBasic.Close();
+                    _upCtrlWorkShopNetBattleWinCondition.Close();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
+                    _upCtrlWorkShopCommonSetting.Open();
+                    _upCtrlWorkShopLevelSetting.Close();
+                }
             }
         }
 
@@ -149,7 +186,14 @@ namespace GameA
         {
             if (arg0)
             {
-                
+                if (IsMulti)
+                {
+                    _upCtrlWorkShopNetBattleBasic.Close();
+                    _upCtrlWorkShopNetBattleWinCondition.Close();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Open();
+                    _upCtrlWorkShopCommonSetting.Close();
+                    _upCtrlWorkShopLevelSetting.Close();
+                }
             }
         }
 
@@ -157,7 +201,16 @@ namespace GameA
         {
             if (arg0)
             {
-                if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
+                if (IsMulti)
+                {
+                    _upCtrlWorkShopNetBattleBasic.Close();
+                    _upCtrlWorkShopNetBattleWinCondition.Open();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
+                    _upCtrlWorkShopCommonSetting.Close();
+                    _upCtrlWorkShopLevelSetting.Close();
+                    return;
+                }
+                if (_curPlatform == EPlatform.Moblie)
                 {
                     _upCtrlWorkShopWinConditionSetting.Open();
                     _upCtrlWorkShopBasicSetting.Close();
@@ -166,6 +219,11 @@ namespace GameA
                 {
                     _upCtrlWorkShopCommonSetting.Open();
                     _upCtrlWorkShopLevelSetting.Close();
+                    
+                    _upCtrlWorkShopNetBattleBasic.Close();
+                    _upCtrlWorkShopNetBattleWinCondition.Close();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
+                    _upCtrlWorkShopCommonSetting.Close();
                 }
             }
         }
@@ -174,7 +232,16 @@ namespace GameA
         {
             if (arg0)
             {
-                if (CrossPlatformInputManager.Platform == EPlatform.Moblie)
+                if (IsMulti)
+                {
+                    _upCtrlWorkShopNetBattleBasic.Open();
+                    _upCtrlWorkShopNetBattleWinCondition.Close();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
+                    _upCtrlWorkShopCommonSetting.Close();
+                    _upCtrlWorkShopLevelSetting.Close();
+                    return;
+                }
+                if (_curPlatform == EPlatform.Moblie)
                 {
                     _upCtrlWorkShopBasicSetting.Open();
                     _upCtrlWorkShopWinConditionSetting.Close();
@@ -182,6 +249,11 @@ namespace GameA
                 else
                 {
                     _upCtrlWorkShopLevelSetting.Open();
+                    _upCtrlWorkShopCommonSetting.Close();
+                    
+                    _upCtrlWorkShopNetBattleBasic.Close();
+                    _upCtrlWorkShopNetBattleWinCondition.Close();
+                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
                     _upCtrlWorkShopCommonSetting.Close();
                 }
             }
@@ -215,20 +287,39 @@ namespace GameA
             );
         }
 
-        private void SetPlatform(EPlatform ePlatform)
+        private void UpdateToggles()
         {
-            _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
-            _cachedView.PCPannel.SetActive(ePlatform == EPlatform.PC);
-            if (ePlatform == EPlatform.PC)
+            if (IsMulti)
             {
-                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "关卡设置";
-                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "常规设置";
+                _cachedView.Toggle03.SetActiveEx(true);
+                _cachedView.Toggle04.SetActiveEx(true);
+                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "基础设置";
+                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
+                _cachedView.Tap3Txt.text = _cachedView.Tap3Txt_2.text = "角色设置";
+                _cachedView.Tap4Txt.text = _cachedView.Tap4Txt_2.text = "按键设置";
             }
             else
             {
-                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "常规设置";
-                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
+                _cachedView.Toggle03.SetActiveEx(false);
+                _cachedView.Toggle04.SetActiveEx(false);
+                if (_curPlatform == EPlatform.PC)
+                {
+                    _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "关卡设置";
+                    _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "常规设置";
+                }
+                else
+                {
+                    _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "常规设置";
+                    _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
+                }
             }
+        }
+
+        private void SetPlatform(EPlatform ePlatform)
+        {
+            _curPlatform = ePlatform;
+            _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
+            _cachedView.PCPannel.SetActive(ePlatform == EPlatform.PC);
         }
 
         private void OnGetInputKeyCode(KeyCode keyCode)
@@ -257,9 +348,9 @@ namespace GameA
                 if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
                 {
                     _originalDesc = CurProject.Summary = content;
-                    _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                    if (_gameModeWorkshopEdit != null)
-                        _gameModeWorkshopEdit.NeedSave = true;
+                    var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (gameModeWorkshopEdit != null)
+                        gameModeWorkshopEdit.NeedSave = true;
                     Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
@@ -277,9 +368,9 @@ namespace GameA
                 if (testRes == CheckTools.ECheckProjectNameResult.Success)
                 {
                     _originalTitle = CurProject.Name = content;
-                    _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                    if (_gameModeWorkshopEdit != null)
-                        _gameModeWorkshopEdit.NeedSave = true;
+                    var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (gameModeWorkshopEdit != null)
+                        gameModeWorkshopEdit.NeedSave = true;
                     Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
@@ -292,12 +383,12 @@ namespace GameA
         public void OnPublishBtn()
         {
             if (null == CurProject) return;
-            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (null == _gameModeWorkshopEdit) return;
-            if (_gameModeWorkshopEdit.NeedSave)
+            var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null == gameModeWorkshopEdit) return;
+            if (gameModeWorkshopEdit.NeedSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
-                _gameModeWorkshopEdit.Save(() =>
+                gameModeWorkshopEdit.Save(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(CurProject);
@@ -315,16 +406,11 @@ namespace GameA
 
         public void OnTestBtn()
         {
-            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (null != _gameModeWorkshopEdit)
+            var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null != gameModeEdit)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
-                GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                if (null != gameModeEdit)
-                {
-                    gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
-                }
-//                _gameModeWorkshopEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+                gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
             }
         }
     }

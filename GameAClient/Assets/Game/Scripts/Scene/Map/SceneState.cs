@@ -33,6 +33,11 @@ namespace GameA.Game
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
+        public bool IsMulti
+        {
+            get { return _mapStatistics.IsMulti; }
+        }
+
         public bool IsMainPlayerCreated
         {
             get { return _mapStatistics.SpawnCount > 0; }
@@ -202,9 +207,9 @@ namespace GameA.Game
             return total;
         }
 
-        public void Init(Project project)
+        public void InitMultiBattleData(Project project)
         {
-            _mapStatistics.InitWithProject(project);
+            _mapStatistics.InitMultiBattleData(project);
         }
 
         public void Init(MapStatistics mapStatistics)
@@ -446,6 +451,10 @@ namespace GameA.Game
         public bool CanHarmType(EHarmType eHarmType)
         {
             return _mapStatistics.CanHarmType(eHarmType);
+        }
+
+        public void CheckNetBattleWin(int score)
+        {
         }
     }
 }

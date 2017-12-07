@@ -78,7 +78,8 @@ namespace GameA.Game
             PlayMode.Instance.Dispose();
             MapManager.Instance.Dispose();
             PlayerManager.Instance.Dispose();
-
+            TeamManager.Instance.Dispose();
+            
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();
             PoolFactory<SpriteUnit>.Clear();

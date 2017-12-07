@@ -310,6 +310,8 @@ namespace GameA.Game
             }
         }
 
+        public bool IsMulti { get; private set; }
+
         public MapStatistics()
         {
             _winCondition = 1 << (int) EWinCondition.WC_Arrive | 1 << (int) EWinCondition.WC_TimeLimit;
@@ -342,17 +344,19 @@ namespace GameA.Game
             _levelFinishCount = levelData.FinishCount;
         }
 
-        public void InitWithProject(Project project)
+        public void InitMultiBattleData(Project project)
         {
             _netBattleData = project.NetData;
+            IsMulti = true;
         }
 
         public void CreateDefaltNetData()
         {
             _netBattleData = new NetBattleData();
+            IsMulti = true;
             //todo 设置默认值
         }
-        
+
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
             if (eWinCondition == EWinCondition.WC_TimeLimit)
@@ -431,7 +435,6 @@ namespace GameA.Game
                 _netBattleData.HarmType &= ~(1 << (int) eHarmType);
             }
         }
-
     }
 
     public enum EHarmType
