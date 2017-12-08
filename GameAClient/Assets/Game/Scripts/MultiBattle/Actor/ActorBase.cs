@@ -29,7 +29,7 @@ namespace GameA.Game
         None,
         Trap,
         Monster,
-        Drowned//淹死
+        Drowned //淹死
     }
 
     public enum EClayOnWallDirection
@@ -50,7 +50,7 @@ namespace GameA.Game
         protected static string Idle = "Idle";
         protected static string Run = "Run";
         protected static string Attack = "Attack";
-        
+
         private static EInputType[] _skillInputs = {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
         protected List<State> _currentStates = new List<State>();
@@ -69,6 +69,9 @@ namespace GameA.Game
         private int _hpStayTimer;
 
         protected StatusBar _statusBar;
+        protected int _jumpAbility;
+        protected int _injuredReduce;
+        protected int _curIncrease;
 
         public override EDieType EDieType
         {
@@ -269,7 +272,7 @@ namespace GameA.Game
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    SpeedY = _onClay ? 120 : 165;
+                    SpeedY = _onClay ? 120 : _jumpAbility;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
@@ -286,7 +289,7 @@ namespace GameA.Game
                         else
                         {
                             _jumpLevel = 1;
-                            SpeedY = 165;
+                            SpeedY = _jumpAbility;
                             _jumpState = EJumpState.Jump2;
                         }
                         ExtraSpeed.y = 0;
@@ -655,7 +658,6 @@ namespace GameA.Game
                 default:
                     return Death;
             }
-
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -692,6 +694,11 @@ namespace GameA.Game
                         _statusBar.SetHPActive(true);
                     }
                 }
+                hpChanged = (int) (hpChanged * (1 - _injuredReduce / (float) 100));
+            }
+            else
+            {
+                hpChanged = (int) (hpChanged * (1 + _curIncrease / (float) 100));
             }
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);

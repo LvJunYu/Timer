@@ -46,6 +46,11 @@ namespace GameA.Game
 		[ColumnMapping("MaxSpeed")]
 		public int MaxSpeed;
 		/// <summary>
+        /// 弹跳
+        /// </summary>
+		[ColumnMapping("JumpAblity")]
+		public int JumpAblity;
+		/// <summary>
         /// 类别
         /// </summary>
 		[ColumnMapping("UnitType")]

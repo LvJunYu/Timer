@@ -128,6 +128,8 @@ namespace GameA.Game
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
+            PlayerManager.Instance.Reset();
+            TeamManager.Instance.Reset();
             _sceneState.Reset();
 
             for (int i = 0; i < _traps.Count; i++)

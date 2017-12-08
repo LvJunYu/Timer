@@ -17,18 +17,19 @@ namespace GameA
             _cachedView.SureBtn_3.onClick.AddListener(OnSureBtn);
             _cachedView.TitleInputField_3.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
             _cachedView.DescInputField_3.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
+            _cachedView.InfiniteLifeTog.onValueChanged.AddListener(OnInfiniteLifeTog);
             _usPlayerCountSetting = new USCtrlSliderSetting();
-            _usPlayerCountSetting.Init(_cachedView.PlayerCountSetting);
             _usLifeCountSetting = new USCtrlSliderSetting();
-            _usLifeCountSetting.Init(_cachedView.LifeCountSetting);
             _usReviveTimeSetting = new USCtrlSliderSetting();
-            _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting = new USCtrlSliderSetting();
+            _usPlayerCountSetting.Init(_cachedView.PlayerCountSetting);
+            _usLifeCountSetting.Init(_cachedView.LifeCountSetting);
+            _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting.Init(_cachedView.ReviveProtectTimeSetting);
             _usPlayerCountSetting.Set(1, 6, OnPlayerCountChanged);
-            _usLifeCountSetting.Set(0, 50, OnLifeCountChanged);
-            _usReviveTimeSetting.Set(0, 10, OnReviveTimeChanged, "{0}秒");
-            _usReviveProtectTimeSetting.Set(0, 5, OnReviveProtectTimeChanged, "{0}秒");
+            _usLifeCountSetting.Set(0, 30, OnLifeCountChanged, 5);
+            _usReviveTimeSetting.Set(0, 10, OnReviveTimeChanged, 1, "{0}秒");
+            _usReviveProtectTimeSetting.Set(0, 5, OnReviveProtectTimeChanged, 1, "{0}秒");
         }
 
         private void RefreshView()
@@ -42,9 +43,24 @@ namespace GameA
             _usReviveProtectTimeSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleReviveInvincibleTime);
         }
 
+        private void OnInfiniteLifeTog(bool arg0)
+        {
+            if (arg0)
+            {
+                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = -1;
+            }
+            else
+            {
+                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = _usLifeCountSetting.Cur;
+            }
+        }
+
         private void OnPlayerCountChanged(int value)
         {
-            EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value;
+            if (!_cachedView.InfiniteLifeTog.isOn)
+            {
+                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value;
+            }
         }
 
         private void OnLifeCountChanged(int value)

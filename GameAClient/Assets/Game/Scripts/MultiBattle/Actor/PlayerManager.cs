@@ -80,6 +80,11 @@ namespace GameA.Game
             TeamManager.Instance.AddPlayer(player);
         }
 
+        public void Reset()
+        {
+            _playerList.Clear();
+        }
+
         public void Dispose()
         {
             _playerList.Clear();

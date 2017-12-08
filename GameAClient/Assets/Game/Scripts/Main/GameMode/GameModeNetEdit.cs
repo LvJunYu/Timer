@@ -132,6 +132,7 @@ namespace GameA.Game
                         null,
                         0,
                         0,
+                        true,
                         EditMode.Instance.MapStatistics.NetBattleData,
                         () =>
                         {

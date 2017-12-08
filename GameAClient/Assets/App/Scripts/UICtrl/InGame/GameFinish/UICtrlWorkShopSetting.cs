@@ -96,6 +96,7 @@ namespace GameA
             _originalDesc = CurProject.Summary;
             UpdateFinishCondition();
             //默认显示关卡页面
+            _upCtrlWorkShopNetBattlePlayerSetting.HasChanged = false;
             _cachedView.Toggle01.isOn = true;
             Toggle01OnValueChanged(true);
             _openGamePlaying = false;
@@ -112,6 +113,7 @@ namespace GameA
         protected override void OnClose()
         {
             _upCtrlWorkShopCommonSetting.Close();
+            _upCtrlWorkShopNetBattlePlayerSetting.Save();
             GameSettingData.Instance.Save();
             if (PlayMode.Instance == null)
             {
@@ -223,7 +225,6 @@ namespace GameA
                     _upCtrlWorkShopNetBattleBasic.Close();
                     _upCtrlWorkShopNetBattleWinCondition.Close();
                     _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                    _upCtrlWorkShopCommonSetting.Close();
                 }
             }
         }
@@ -254,7 +255,6 @@ namespace GameA
                     _upCtrlWorkShopNetBattleBasic.Close();
                     _upCtrlWorkShopNetBattleWinCondition.Close();
                     _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                    _upCtrlWorkShopCommonSetting.Close();
                 }
             }
         }

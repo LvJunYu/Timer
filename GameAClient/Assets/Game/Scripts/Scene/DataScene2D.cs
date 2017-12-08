@@ -23,7 +23,7 @@ namespace GameA.Game
         [SerializeField] private Grid2D _mapGrid;
         [SerializeField] private IntRect _validMapRect;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
-        protected UnitExtra _playerExtra;
+        private UnitExtra _playerExtra;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
@@ -77,11 +77,6 @@ namespace GameA.Game
             get { return _unitExtras; }
         }
 
-        public UnitExtra PlayerExtra
-        {
-            get { return _playerExtra; }
-        }
-
         public List<ModifyData> RemovedUnits
         {
             get { return _removedUnits; }
@@ -95,6 +90,11 @@ namespace GameA.Game
         public List<ModifyData> AddedUnits
         {
             get { return _addedUnits; }
+        }
+
+        public UnitExtra PlayerExtra
+        {
+            get { return _playerExtra; }
         }
 
         #endregion
@@ -283,7 +283,7 @@ namespace GameA.Game
             }
         }
 
-        public void ProcessPlayerExtra(UnitExtra unitExtra)
+        public void SetPlayerExtra(UnitExtra unitExtra)
         {
             _playerExtra = unitExtra;
         }
@@ -295,6 +295,7 @@ namespace GameA.Game
                 _unitExtras.Remove(guid);
             }
         }
+
         #endregion
 
         #region Switch
@@ -585,6 +586,42 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public void SetPlayerCommonValue<T>(string fieldName, T value) where T : IEquatable<T>
+        {
+            var field = typeof(UnitExtra).GetField(fieldName);
+            T original = (T) field.GetValue(_playerExtra);
+            if (original.Equals(value)) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (((T) field.GetValue(unitExtra)).Equals(original))
+                    {
+                        object unitExtraObj = unitExtra;
+                        field.SetValue(unitExtraObj, value);
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, (UnitExtra) unitExtraObj);
+                    }
+                }
+            }
+            object playerExtraObj = _playerExtra;
+            field.SetValue(playerExtraObj, value);
+            _playerExtra = (UnitExtra) playerExtraObj;
+        }
+
+        public void InitDefaultPlayerUnitExtra()
+        {
+            var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
+            var unitExtra = new UnitExtra();
+            unitExtra.MaxHp = table.Hp;
+            unitExtra.MaxSpeedX = (ushort)table.MaxSpeed;
+            unitExtra.JumpAbility = (ushort)table.JumpAblity;
+            unitExtra.InjuredReduce = 0;
+            unitExtra.CureIncrease = 0;
+            SetPlayerExtra(unitExtra);
+        }
     }
 
 #pragma warning disable 0660 0661

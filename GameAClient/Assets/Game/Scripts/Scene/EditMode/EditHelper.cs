@@ -241,7 +241,10 @@ namespace GameA.Game
                 unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces); 
                 unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }
-            //todo 临时
+            if (UnitDefine.IsSpawn(id))
+            {
+                unitEditData.UnitExtra = DataScene2D.Instance.PlayerExtra;
+            }
 //            unitEditData.UnitExtra.Drops = new List<int>(2);
 //            unitEditData.UnitExtra.Drops.Add(6003);
             return unitEditData;

@@ -148,6 +148,7 @@ namespace GameA
                 null,
                 _project.TimeLimit,
                 _project.WinCondition,
+                _project.IsMulti,
                 null,
                 () =>
                 {

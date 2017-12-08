@@ -88,7 +88,7 @@ namespace GameA.Game
                     break;
                 case GameManager.EStartType.WorkshopStandaloneCreate:
                 case GameManager.EStartType.WorkshopMultiCreate:
-                    InitCreate(eGameInitType);
+                    InitCreate(project, eGameInitType);
                     break;
                 default:
                     InitPlay(project, eGameInitType);
@@ -220,15 +220,17 @@ namespace GameA.Game
             }
         }
 
-        private void InitCreate(GameManager.EStartType startType)
+        private void InitCreate(Project project, GameManager.EStartType startType)
         {
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
-            CreateDefaultScene();
-            GenerateMap(0);
             if (startType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                EditMode.Instance.MapStatistics.CreateDefaltNetData();
+                EditMode.Instance.MapStatistics.CreateDefaltNetData(project);
+                //在生成出生点之前，生成玩家通用属性
+                DataScene2D.Instance.InitDefaultPlayerUnitExtra(); 
             }
+            CreateDefaultScene();
+            GenerateMap(0);
         }
 
         public void OnSetMapDataSuccess(GM2DMapData mapData)

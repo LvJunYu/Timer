@@ -18,7 +18,7 @@ namespace GameA.Game
         protected Gun _gun;
 
         protected long _playerId;
-        protected UnitExtra _playerUnitExtra;
+        protected UnitExtra _unitExtra;
 
         [SerializeField] protected IntVec2 _revivePos;
 
@@ -37,7 +37,7 @@ namespace GameA.Game
 
         public override byte TeamId
         {
-            get { return _playerUnitExtra.TeamId; }
+            get { return _unitExtra.TeamId; }
         }
 
         public override SkillCtrl SkillCtrl
@@ -130,20 +130,21 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             base.UpdateExtraData();
-            var unitExtra = DataScene2D.Instance.PlayerExtra;
-            if (unitExtra.MaxHp > 0)
+            //玩家的UnitExtra来自复活点的Extra
+            if (_unitExtra.MaxHp > 0)
             {
-                _maxHp = unitExtra.MaxHp;
+                _maxHp = _unitExtra.MaxHp;
             }
             else
             {
                 _maxHp = _tableUnit.Hp;
             }
-            if (unitExtra.MaxSpeedX > 0)
+            _hp = _maxHp;
+            if (_unitExtra.MaxSpeedX > 0)
             {
-                _maxSpeedX = unitExtra.MaxSpeedX;
+                _maxSpeedX = _unitExtra.MaxSpeedX;
             }
-            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            else if (_unitExtra.MaxSpeedX == ushort.MaxValue)
             {
                 _maxSpeedX = 0;
             }
@@ -151,7 +152,17 @@ namespace GameA.Game
             {
                 _maxSpeedX = BattleDefine.MaxSpeedX;
             }
-            return unitExtra;
+            if (_unitExtra.JumpAbility > 0)
+            {
+                _jumpAbility = _unitExtra.JumpAbility;
+            }
+            else
+            {
+                _jumpAbility = _tableUnit.JumpAblity;
+            }
+            _injuredReduce = _unitExtra.InjuredReduce;
+            _curIncrease = _unitExtra.CureIncrease;
+            return _unitExtra;
         }
 
         public override bool SetWeapon(int weaponId, UnitExtra unitExtra = default(UnitExtra))
@@ -820,12 +831,13 @@ namespace GameA.Game
 
         public void SetValue(UnitExtra unitExtra)
         {
-            _playerUnitExtra = unitExtra;
+            _unitExtra = unitExtra;
+            UpdateExtraData();
         }
         
         public override UnitExtra GetUnitExtra()
         {
-            return _playerUnitExtra;
+            return _unitExtra;
         }
     }
 }

@@ -433,6 +433,8 @@ namespace GameA.Game
             res.BulletCount = data.BulletCount;
             res.CastRange = data.CastRange;
             res.CastSpeed = data.CastSpeed;
+            res.InjuredReduce = data.InjuredReduce;
+            res.CureIncrease = data.CureIncrease;
             res.Drops.AddRange(data.Drops.ToList());
             res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
             res.AddStates.AddRange(data.AddStates.ToList());
@@ -463,6 +465,8 @@ namespace GameA.Game
             unitExtra.BulletCount = (ushort) data.BulletCount;
             unitExtra.CastRange = (ushort) data.CastRange;
             unitExtra.CastSpeed = (ushort) data.CastSpeed;
+            unitExtra.InjuredReduce = (byte) data.InjuredReduce;
+            unitExtra.CureIncrease = (ushort) data.CureIncrease;
             unitExtra.KnockbackForces.Set(data.KnockbackForces.ToArray());
             unitExtra.AddStates.Set(data.AddStates.ToArray());
             return unitExtra;

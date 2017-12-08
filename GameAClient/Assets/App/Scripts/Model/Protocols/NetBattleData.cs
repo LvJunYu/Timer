@@ -64,6 +64,10 @@ namespace GameA
         /// 击杀玩家得分
         /// </summary>
         private int _killPlayerScore;
+        /// <summary>
+        /// 达到得分获胜
+        /// </summary>
+        private bool _scoreWinCondition;
         #endregion
 
         #region 属性
@@ -207,6 +211,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 达到得分获胜
+        /// </summary>
+        public bool ScoreWinCondition { 
+            get { return _scoreWinCondition; }
+            set { if (_scoreWinCondition != value) {
+                _scoreWinCondition = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -227,6 +241,7 @@ namespace GameA
             _collectGemScore = msg.CollectGemScore;     
             _killMonsterScore = msg.KillMonsterScore;     
             _killPlayerScore = msg.KillPlayerScore;     
+            _scoreWinCondition = msg.ScoreWinCondition;     
             OnSyncPartial(msg);
             return true;
         }
@@ -248,6 +263,7 @@ namespace GameA
             _collectGemScore = msg.CollectGemScore;           
             _killMonsterScore = msg.KillMonsterScore;           
             _killPlayerScore = msg.KillPlayerScore;           
+            _scoreWinCondition = msg.ScoreWinCondition;           
             return true;
         } 
 
@@ -268,6 +284,7 @@ namespace GameA
             _collectGemScore = obj.CollectGemScore;           
             _killMonsterScore = obj.KillMonsterScore;           
             _killPlayerScore = obj.KillPlayerScore;           
+            _scoreWinCondition = obj.ScoreWinCondition;           
             return true;
         }
 

@@ -309,6 +309,23 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public bool NetBattleScoreWinCondition
+        {
+            get { return _netBattleData.ScoreWinCondition; }
+            set
+            {
+                if (_netBattleData == null)
+                {
+                    return;
+                }
+                if (_netBattleData.ScoreWinCondition != value)
+                {
+                    _netBattleData.ScoreWinCondition = value;
+                    NeedSave = true;
+                }
+            }
+        }
 
         public bool IsMulti { get; private set; }
 
@@ -350,11 +367,25 @@ namespace GameA.Game
             IsMulti = true;
         }
 
-        public void CreateDefaltNetData()
+        public void CreateDefaltNetData(Project project)
         {
-            _netBattleData = new NetBattleData();
             IsMulti = true;
-            //todo 设置默认值
+            _netBattleData = new NetBattleData();
+            _netBattleData.ProjectId = project.ProjectId;
+            _netBattleData.HarmType = 0;
+            _netBattleData.TimeLimit = 120;
+            _netBattleData.PlayerCount = 6;
+            _netBattleData.LifeCount = 3;
+            _netBattleData.ReviveTime = 0;
+            _netBattleData.ReviveInvincibleTime = 0;
+            _netBattleData.ReviveType = 0;
+            _netBattleData.WinCondition = 100;
+            _netBattleData.WinScore = 100;
+            _netBattleData.ArriveScore = 100;
+            _netBattleData.CollectGemScore = 10;
+            _netBattleData.KillMonsterScore = 10;
+            _netBattleData.KillPlayerScore = 20;
+            _netBattleData.ScoreWinCondition = false;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)

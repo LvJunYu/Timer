@@ -1379,6 +1379,8 @@ namespace GameA
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
+		/// <param name="isMulti">是否多人关卡</param>
+		/// <param name="netData">联机信息</param>
         public static void CreateProject (
             string name,
             string summary,
@@ -1389,6 +1391,8 @@ namespace GameA
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
+            bool isMulti,
+            Msg_NetBattleData netData,
             Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1407,6 +1411,8 @@ namespace GameA
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
+            msg.IsMulti = isMulti;
+            msg.NetData = netData;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
                 SoyHttpApiPath.CreateProject, msg, ret => {
                     if (successCallback != null) {
@@ -1441,6 +1447,7 @@ namespace GameA
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
+		/// <param name="netData">联机信息</param>
         public static void UpdateProject (
             long projectId,
             string name,
@@ -1452,6 +1459,7 @@ namespace GameA
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
+            Msg_NetBattleData netData,
             Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1471,6 +1479,7 @@ namespace GameA
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
+            msg.NetData = netData;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
                 SoyHttpApiPath.UpdateProject, msg, ret => {
                     if (successCallback != null) {

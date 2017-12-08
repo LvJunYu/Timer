@@ -55,6 +55,12 @@ namespace GameA.Game
             }
             return score;
         }
+
+        public void Reset()
+        {
+            _scoreDic.Clear();
+            _playerDic.Clear();
+        }
         
         public void Dispose()
         {

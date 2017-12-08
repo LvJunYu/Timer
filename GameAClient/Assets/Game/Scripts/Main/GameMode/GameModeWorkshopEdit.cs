@@ -160,6 +160,7 @@ namespace GameA.Game
                         RecordBytes,
                         EditMode.Instance.MapStatistics.TimeLimit,
                         EditMode.Instance.MapStatistics.MsgWinCondition,
+                        _project.IsMulti,
                         null,
                         () =>
                         {

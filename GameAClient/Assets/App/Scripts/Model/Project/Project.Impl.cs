@@ -427,6 +427,7 @@ namespace GameA
             byte[] recordBytes,
             int timeLimit,
             int winCondition,
+            bool isMulti,
             NetBattleData netBattleData,
             Action successCallback,
             Action<EProjectOperateResult> failedCallback)
@@ -486,6 +487,8 @@ namespace GameA
                     timeLimit,
                     winCondition,
                     GetMsgProjectUploadParam(),
+                    isMulti,
+                    ToMsg(netBattleData),
                     msg =>
                     {
                         if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
@@ -533,6 +536,7 @@ namespace GameA
                     winCondition,
                     // 如果是在工坊界面修改关卡的信息，就不必传附加参数
                     null == dataBytes ? null : GetMsgProjectUploadParam(),
+                    ToMsg(netBattleData),
                     msg =>
                     {
                         if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
@@ -570,6 +574,28 @@ namespace GameA
                     form
                 );
             }
+        }
+
+        private Msg_NetBattleData ToMsg(NetBattleData netBattleData)
+        {
+            if (netBattleData == null) return null;
+            var msg = new Msg_NetBattleData();
+            msg.ProjectId = netBattleData.ProjectId;
+            msg.HarmType = netBattleData.HarmType;
+            msg.TimeLimit = netBattleData.TimeLimit;
+            msg.PlayerCount = netBattleData.PlayerCount;
+            msg.LifeCount = netBattleData.LifeCount;
+            msg.ReviveTime = netBattleData.ReviveTime;
+            msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
+            msg.ReviveType = netBattleData.ReviveType;
+            msg.WinCondition = netBattleData.WinCondition;
+            msg.WinScore = netBattleData.WinScore;
+            msg.ArriveScore = netBattleData.ArriveScore;
+            msg.CollectGemScore = netBattleData.CollectGemScore;
+            msg.KillMonsterScore = netBattleData.KillMonsterScore;
+            msg.KillPlayerScore = netBattleData.KillPlayerScore;
+            msg.ScoreWinCondition = netBattleData.ScoreWinCondition;
+            return msg;
         }
 
         public void Delete()

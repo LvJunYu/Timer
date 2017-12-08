@@ -11,6 +11,12 @@ namespace GameA
         private int _cur;
         private Action<int> _callBack;
         private string _numFormat;
+        private int _delta;
+
+        public int Cur
+        {
+            get { return _cur; }
+        }
 
         protected override void OnViewCreated()
         {
@@ -20,15 +26,17 @@ namespace GameA
             _cachedView.Slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
-        public void Set(int min, int max, Action<int> callBack, string numFormat = "{0}")
+        public void Set(int min, int max, Action<int> callBack, int delta = 1, string numFormat = "{0}")
         {
             if (min >= max)
             {
                 LogHelper.Error("min is equal or bigger than max");
                 return;
             }
+            if (delta < 1) delta = 1;
             _min = min;
             _max = max;
+            _delta = delta;
             _callBack = callBack;
             _cachedView.Slider.minValue = _min;
             _cachedView.Slider.maxValue = _max;
@@ -45,12 +53,12 @@ namespace GameA
 
         private void OnRightBtn()
         {
-            SetCur(++_cur);
+            SetCur((_cur / _delta + 1) * _delta);
         }
 
         private void OnLeftBtn()
         {
-            SetCur(--_cur);
+            SetCur((_cur - 1) / _delta * _delta);
         }
 
         private void OnSliderValueChanged(float value)
@@ -58,7 +66,10 @@ namespace GameA
             var cur = (int) value;
             if (cur == _cur) return;
             _cur = cur;
-            _cachedView.Num.text = string.Format(_numFormat, _cur);
+            if (_numFormat != null)
+            {
+                _cachedView.Num.text = string.Format(_numFormat, _cur);
+            }
             if (_callBack != null)
             {
                 _callBack.Invoke((int) value);

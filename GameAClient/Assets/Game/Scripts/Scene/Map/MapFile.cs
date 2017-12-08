@@ -53,8 +53,8 @@ namespace GameA.Game
         {
             _mapProcess = 0f;
             var timer = new GameTimer();
-
-            DataScene2D.Instance.ProcessPlayerExtra(GM2DTools.ToEngine(mapData.PlayerUnitExtra));
+            //先读取获得玩家通用属性
+            DataScene2D.Instance.SetPlayerExtra(GM2DTools.ToEngine(mapData.PlayerUnitExtra));
 
             var childList = mapData.UnitExtraInfos;
             if (childList != null)

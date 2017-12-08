@@ -15,7 +15,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 这个类不要加引用类型，赋值时会引用同一个对象
+    /// 这个类不要加引用类型，方便赋值（引用类型赋值时共用一个对象）
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -32,6 +32,7 @@ namespace GameA.Game
         public ushort TimeInterval;
         public string Msg;
         public byte TeamId;
+        ///下面别改字段名，DataScene2D里通过反射赋值
         public int MaxHp;
         public int Damage;
         public ushort MaxSpeedX;
@@ -44,6 +45,8 @@ namespace GameA.Game
         public MultiParam KnockbackForces;
         public MultiParam AddStates;
         public ushort CastSpeed;
+        public byte InjuredReduce;
+        public ushort CureIncrease;
 
         public bool IsDynamic()
         {
@@ -69,8 +72,10 @@ namespace GameA.Game
                    BulletCount == other.BulletCount &&
                    CastRange == other.CastRange &&
                    KnockbackForces == other.KnockbackForces &&
+                   AddStates == other.AddStates &&
                    CastSpeed == other.CastSpeed &&
-                   AddStates == other.AddStates;
+                   InjuredReduce == other.InjuredReduce &&
+                   CureIncrease == other.CureIncrease;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
