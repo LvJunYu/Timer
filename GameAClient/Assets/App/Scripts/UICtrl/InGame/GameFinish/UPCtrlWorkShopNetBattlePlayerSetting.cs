@@ -39,12 +39,11 @@ namespace GameA
         {
             if (!_isOpen) return;
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
-            _usMaxHpSetting.SetCur(table.Hp);
-            _usJumpAbilitySetting.SetCur(table.JumpAblity);
-            _usMoveSpeedSetting.SetCur(table.MaxSpeed);
-            _usInjuredReduceSetting.SetCur(0);
-            _usCureIncreaseSetting.SetCur(0);
-            HasChanged = true;
+            _usMaxHpSetting.SetCur(table.Hp, false);
+            _usJumpAbilitySetting.SetCur(table.JumpAblity, false);
+            _usMoveSpeedSetting.SetCur(table.MaxSpeed, false);
+            _usInjuredReduceSetting.SetCur(0, false);
+            _usCureIncreaseSetting.SetCur(0, false);
         }
 
         public override void Open()

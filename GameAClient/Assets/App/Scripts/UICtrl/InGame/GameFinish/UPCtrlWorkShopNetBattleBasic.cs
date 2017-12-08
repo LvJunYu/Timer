@@ -27,9 +27,9 @@ namespace GameA
             _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting.Init(_cachedView.ReviveProtectTimeSetting);
             _usPlayerCountSetting.Set(1, 6, OnPlayerCountChanged);
-            _usLifeCountSetting.Set(0, 30, OnLifeCountChanged, 5);
+            _usLifeCountSetting.Set(1, 20, OnLifeCountChanged, 5);
             _usReviveTimeSetting.Set(0, 10, OnReviveTimeChanged, 1, "{0}秒");
-            _usReviveProtectTimeSetting.Set(0, 5, OnReviveProtectTimeChanged, 1, "{0}秒");
+            _usReviveProtectTimeSetting.Set(0, 10, OnReviveProtectTimeChanged, 1, "{0}秒");
         }
 
         private void RefreshView()

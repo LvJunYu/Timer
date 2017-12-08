@@ -43,22 +43,26 @@ namespace GameA
             _numFormat = numFormat;
         }
 
-        public void SetCur(int cur)
+        public void SetCur(int cur, bool Init = true)
         {
             cur = Mathf.Clamp(cur, _min, _max);
-            _cur = cur;
-            _cachedView.Slider.value = _cur;
+            //若是初始化，则只改变Slider.value，不走回调
+            if (Init)
+            {
+                _cur = cur;
+            }
+            _cachedView.Slider.value = cur;
             _cachedView.Num.text = string.Format(_numFormat, _cur);
         }
 
         private void OnRightBtn()
         {
-            SetCur((_cur / _delta + 1) * _delta);
+            SetCur((_cur / _delta + 1) * _delta, false);
         }
 
         private void OnLeftBtn()
         {
-            SetCur((_cur - 1) / _delta * _delta);
+            SetCur((_cur - 1) / _delta * _delta, false);
         }
 
         private void OnSliderValueChanged(float value)
