@@ -153,6 +153,20 @@ namespace GameA.Game
             get { return _netBattleData; }
         }
 
+        public int NetBattleTimeWinCondition
+        {
+            get { return _netBattleData.TimeWinCondition; }
+            set
+            {
+                if (_netBattleData == null) return;
+                if (_netBattleData.TimeWinCondition != value)
+                {
+                    _netBattleData.TimeWinCondition = value;
+                    NeedSave = true;
+                }
+            }
+        }
+
         public int NetBattleTimeLimit
         {
             get { return _netBattleData.TimeLimit; }
@@ -309,7 +323,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public bool NetBattleScoreWinCondition
         {
             get { return _netBattleData.ScoreWinCondition; }
@@ -322,6 +336,23 @@ namespace GameA.Game
                 if (_netBattleData.ScoreWinCondition != value)
                 {
                     _netBattleData.ScoreWinCondition = value;
+                    NeedSave = true;
+                }
+            }
+        }
+
+        public bool InfiniteLife
+        {
+            get { return _netBattleData.InfiniteLife; }
+            set
+            {
+                if (_netBattleData == null)
+                {
+                    return;
+                }
+                if (_netBattleData.InfiniteLife != value)
+                {
+                    _netBattleData.InfiniteLife = value;
                     NeedSave = true;
                 }
             }
@@ -372,20 +403,22 @@ namespace GameA.Game
             IsMulti = true;
             _netBattleData = new NetBattleData();
             _netBattleData.ProjectId = project.ProjectId;
-            _netBattleData.HarmType = 0;
+            SetHarmType(EHarmType.EnemyMonster, true, true);
+            SetHarmType(EHarmType.EnemyPlayer, true, true);
             _netBattleData.TimeLimit = 120;
             _netBattleData.PlayerCount = 6;
             _netBattleData.LifeCount = 3;
             _netBattleData.ReviveTime = 0;
             _netBattleData.ReviveInvincibleTime = 0;
             _netBattleData.ReviveType = 0;
-            _netBattleData.WinCondition = 100;
+            _netBattleData.TimeWinCondition = 0;
             _netBattleData.WinScore = 100;
             _netBattleData.ArriveScore = 100;
             _netBattleData.CollectGemScore = 10;
             _netBattleData.KillMonsterScore = 10;
             _netBattleData.KillPlayerScore = 20;
             _netBattleData.ScoreWinCondition = false;
+            _netBattleData.InfiniteLife = false;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)
@@ -449,14 +482,17 @@ namespace GameA.Game
             return (1 << (int) eHarmType & _netBattleData.HarmType) != 0;
         }
 
-        public void SetHarmType(EHarmType eHarmType, bool value)
+        public void SetHarmType(EHarmType eHarmType, bool value, bool Init = false)
         {
             if (_netBattleData == null)
             {
                 return;
             }
             if (CanHarmType(eHarmType) == value) return;
-            NeedSave = true;
+            if (!Init)
+            {
+                NeedSave = true;
+            }
             if (value)
             {
                 _netBattleData.HarmType |= 1 << (int) eHarmType;
@@ -470,10 +506,10 @@ namespace GameA.Game
 
     public enum EHarmType
     {
-        SelfPlayer,
+        EnemyMonster,
         EnemyPlayer,
         SelfMonster,
-        EnemyMonster
+        SelfPlayer,
     }
 
     public enum EReviveType

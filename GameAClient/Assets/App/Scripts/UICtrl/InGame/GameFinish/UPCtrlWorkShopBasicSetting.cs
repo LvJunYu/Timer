@@ -11,10 +11,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.TestBtn.onClick.AddListener(_mainCtrl.OnTestBtn);
-            _cachedView.PublishBtn.onClick.AddListener(_mainCtrl.OnPublishBtn);
-            _cachedView.TitleInputField.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
-            _cachedView.DescInputField.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
             _playBGMusic = new USCtrlGameSettingItem();
             _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
             _playSoundsEffects = new USCtrlGameSettingItem();

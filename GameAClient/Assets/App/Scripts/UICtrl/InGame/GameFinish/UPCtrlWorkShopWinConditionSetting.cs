@@ -1,5 +1,4 @@
-﻿using GameA.Game;
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA
@@ -13,7 +12,6 @@ namespace GameA
         {
             base.OnViewCreated();
             InitUI();
-            _cachedView.SureBtn.onClick.AddListener(OnButtonEnsureClick);
         }
 
         public override void Open()
@@ -35,18 +33,7 @@ namespace GameA
             UpdateLifeItem();
         }
 
-        private void OnButtonEnsureClick()
-        {
-            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
-            {
-                EditMode.Instance.MapStatistics.SetWinCondition(i, _mainCtrl.CurCondition.SettingValue[(int) i]);
-            }
-            EditMode.Instance.MapStatistics.TimeLimit = _mainCtrl.CurCondition.TimeLimit;
-            EditMode.Instance.MapStatistics.LifeCount = _mainCtrl.CurCondition.LifeCount;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
-        }
-
-        private void OnLifeItemButtonClick(int lifeId)
+        public void OnLifeItemButtonClick(int lifeId)
         {
             if (_mainCtrl.CurCondition.LifeCount == lifeId)
             {

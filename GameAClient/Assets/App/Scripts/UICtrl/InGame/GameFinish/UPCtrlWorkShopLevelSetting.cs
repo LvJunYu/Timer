@@ -10,13 +10,6 @@ namespace GameA
         {
             base.OnViewCreated();
             InitUI();
-            _cachedView.SureBtn_2.onClick.AddListener(OnButtonEnsureClick);
-            _cachedView.SureBtn_3.onClick.AddListener(OnButtonEnsureClick);
-
-            _cachedView.TestBtn_2.onClick.AddListener(_mainCtrl.OnTestBtn);
-            _cachedView.PublishBtn_2.onClick.AddListener(_mainCtrl.OnPublishBtn);
-            _cachedView.TitleInputField_2.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
-            _cachedView.DescInputField_2.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
         }
 
         private void UpdateBtns()
@@ -60,20 +53,8 @@ namespace GameA
             UpdateBtns();
             UpdateInfo();
         }
-
-        private void OnButtonEnsureClick()
-        {
-            if (_mainCtrl.IsMulti) return;
-            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
-            {
-                EditMode.Instance.MapStatistics.SetWinCondition(i, _mainCtrl.CurCondition.SettingValue[(int) i]);
-            }
-            EditMode.Instance.MapStatistics.TimeLimit = _mainCtrl.CurCondition.TimeLimit;
-            EditMode.Instance.MapStatistics.LifeCount = _mainCtrl.CurCondition.LifeCount;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
-        }
-
-        private void OnLifeItemButtonClick(int lifeId)
+        
+        public void OnLifeItemButtonClick(int lifeId)
         {
             if (_mainCtrl.CurCondition.LifeCount == lifeId)
             {

@@ -12,12 +12,11 @@ namespace GameA
         private USCtrlSliderSetting _usKillPlayerScoreSetting;
         private USCtrlSliderSetting _usWinScoreSetting;
         private USCtrlGameSettingItem _usScoreConditionSetting;
+        private bool _onlyChangeView;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.SureBtn_2.onClick.AddListener(OnSureBtn);
-            _cachedView.SureBtn_3.onClick.AddListener(OnSureBtn);
             _usTimeLimitSetting = new USCtrlSliderSetting();
             _usArriveScoreSetting = new USCtrlSliderSetting();
             _usCollectGemScoreSetting = new USCtrlSliderSetting();
@@ -38,6 +37,18 @@ namespace GameA
             _usWinScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleWinScore = value, 10);
             _usScoreConditionSetting = new USCtrlGameSettingItem();
             _usScoreConditionSetting.Init(_cachedView.ScoreConditionSetting);
+
+            for (int i = 0; i < _cachedView.WinConditionTogs.Length; i++)
+            {
+                var inx = i;
+                _cachedView.WinConditionTogs[i].onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        EditMode.Instance.MapStatistics.NetBattleTimeWinCondition = inx;
+                    }
+                });
+            }
         }
 
         public override void Open()
@@ -55,13 +66,12 @@ namespace GameA
             _cachedView.NetBattleWinConditionPannel.SetActiveEx(false);
         }
 
-        private void OnSureBtn()
-        {
-            if (!_mainCtrl.IsMulti) return;
-        }
-
         public void RefeshView()
         {
+            for (int i = 0; i < _cachedView.WinConditionTogs.Length; i++)
+            {
+                _cachedView.WinConditionTogs[i].isOn = EditMode.Instance.MapStatistics.NetBattleTimeWinCondition == i;
+            }
             _usScoreConditionSetting.SetData(EditMode.Instance.MapStatistics.NetBattleScoreWinCondition, value =>
             {
                 EditMode.Instance.MapStatistics.NetBattleScoreWinCondition = value;

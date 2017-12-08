@@ -588,13 +588,14 @@ namespace GameA
             msg.ReviveTime = netBattleData.ReviveTime;
             msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
             msg.ReviveType = netBattleData.ReviveType;
-            msg.WinCondition = netBattleData.WinCondition;
+            msg.TimeWinCondition = netBattleData.TimeWinCondition;
             msg.WinScore = netBattleData.WinScore;
             msg.ArriveScore = netBattleData.ArriveScore;
             msg.CollectGemScore = netBattleData.CollectGemScore;
             msg.KillMonsterScore = netBattleData.KillMonsterScore;
             msg.KillPlayerScore = netBattleData.KillPlayerScore;
             msg.ScoreWinCondition = netBattleData.ScoreWinCondition;
+            msg.InfiniteLife = netBattleData.InfiniteLife;
             return msg;
         }
 

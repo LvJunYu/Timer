@@ -41,9 +41,9 @@ namespace GameA
         /// </summary>
         private int _reviveType;
         /// <summary>
-        /// 胜利条件
+        /// 时间胜利条件
         /// </summary>
-        private int _winCondition;
+        private int _timeWinCondition;
         /// <summary>
         /// 胜利所需分数
         /// </summary>
@@ -68,6 +68,10 @@ namespace GameA
         /// 达到得分获胜
         /// </summary>
         private bool _scoreWinCondition;
+        /// <summary>
+        /// 无限生命
+        /// </summary>
+        private bool _infiniteLife;
         #endregion
 
         #region 属性
@@ -152,12 +156,12 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 胜利条件
+        /// 时间胜利条件
         /// </summary>
-        public int WinCondition { 
-            get { return _winCondition; }
-            set { if (_winCondition != value) {
-                _winCondition = value;
+        public int TimeWinCondition { 
+            get { return _timeWinCondition; }
+            set { if (_timeWinCondition != value) {
+                _timeWinCondition = value;
                 SetDirty();
             }}
         }
@@ -221,6 +225,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 无限生命
+        /// </summary>
+        public bool InfiniteLife { 
+            get { return _infiniteLife; }
+            set { if (_infiniteLife != value) {
+                _infiniteLife = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -235,13 +249,14 @@ namespace GameA
             _reviveTime = msg.ReviveTime;     
             _reviveInvincibleTime = msg.ReviveInvincibleTime;     
             _reviveType = msg.ReviveType;     
-            _winCondition = msg.WinCondition;     
+            _timeWinCondition = msg.TimeWinCondition;     
             _winScore = msg.WinScore;     
             _arriveScore = msg.ArriveScore;     
             _collectGemScore = msg.CollectGemScore;     
             _killMonsterScore = msg.KillMonsterScore;     
             _killPlayerScore = msg.KillPlayerScore;     
             _scoreWinCondition = msg.ScoreWinCondition;     
+            _infiniteLife = msg.InfiniteLife;     
             OnSyncPartial(msg);
             return true;
         }
@@ -257,13 +272,14 @@ namespace GameA
             _reviveTime = msg.ReviveTime;           
             _reviveInvincibleTime = msg.ReviveInvincibleTime;           
             _reviveType = msg.ReviveType;           
-            _winCondition = msg.WinCondition;           
+            _timeWinCondition = msg.TimeWinCondition;           
             _winScore = msg.WinScore;           
             _arriveScore = msg.ArriveScore;           
             _collectGemScore = msg.CollectGemScore;           
             _killMonsterScore = msg.KillMonsterScore;           
             _killPlayerScore = msg.KillPlayerScore;           
             _scoreWinCondition = msg.ScoreWinCondition;           
+            _infiniteLife = msg.InfiniteLife;           
             return true;
         } 
 
@@ -278,13 +294,14 @@ namespace GameA
             _reviveTime = obj.ReviveTime;           
             _reviveInvincibleTime = obj.ReviveInvincibleTime;           
             _reviveType = obj.ReviveType;           
-            _winCondition = obj.WinCondition;           
+            _timeWinCondition = obj.TimeWinCondition;           
             _winScore = obj.WinScore;           
             _arriveScore = obj.ArriveScore;           
             _collectGemScore = obj.CollectGemScore;           
             _killMonsterScore = obj.KillMonsterScore;           
             _killPlayerScore = obj.KillPlayerScore;           
             _scoreWinCondition = obj.ScoreWinCondition;           
+            _infiniteLife = obj.InfiniteLife;           
             return true;
         }
 

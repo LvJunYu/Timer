@@ -13,18 +13,20 @@ namespace GameA
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
 
-        private UPCtrlWorkShopLevelSetting _upCtrlWorkShopLevelSetting;
-        private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
-
         private UPCtrlWorkShopNetBattleBasic _upCtrlWorkShopNetBattleBasic;
         private UPCtrlWorkShopNetBattleWinCondition _upCtrlWorkShopNetBattleWinCondition;
         private UPCtrlWorkShopNetBattlePlayerSetting _upCtrlWorkShopNetBattlePlayerSetting;
-        
+        private UPCtrlWorkShopLevelSetting _upCtrlWorkShopLevelSetting;
+        private UPCtrlWorkShopCommonSetting _upCtrlWorkShopCommonSetting;
+
+        private EMenu _curMenu = EMenu.None;
+        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curMenuCtrl;
+        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting>[] _menuCtrlArray;
+
         private UICtrlEdit.EMode _curMode;
         private bool _openGamePlaying;
         private string _originalTitle;
         private string _originalDesc;
-        private EPlatform _curPlatform;
         public Project CurProject;
         public FinishCondition CurCondition;
 
@@ -36,37 +38,67 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            InitFinishCondition();
+            InitWinCondition();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
             _cachedView.Toggle01.onValueChanged.AddListener(Toggle01OnValueChanged);
             _cachedView.Toggle02.onValueChanged.AddListener(Toggle02OnValueChanged);
-            _cachedView.Toggle03.onValueChanged.AddListener(Toggle03OnValueChanged);
-            _cachedView.Toggle04.onValueChanged.AddListener(Toggle04OnValueChanged);
+            _cachedView.ExitBtn.onClick.AddListener(OnRetunToAppBtn);
+            _cachedView.ExitBtn_2.onClick.AddListener(OnRetunToAppBtn);
+            _cachedView.ExitBtn_3.onClick.AddListener(OnRetunToAppBtn);
             _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
             _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
-            _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
-            _cachedView.ExitBtn_3.onClick.AddListener(OnExitBtn);
-            
+            _cachedView.SureBtn.onClick.AddListener(SaveWinCondition);
+            _cachedView.SureBtn_2.onClick.AddListener(SaveWinCondition);
+            _cachedView.SureBtn_3.onClick.AddListener(SaveWinCondition);
+            _cachedView.TestBtn.onClick.AddListener(OnTestBtn);
+            _cachedView.TestBtn_2.onClick.AddListener(OnTestBtn);
+            _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
+            _cachedView.PublishBtn_2.onClick.AddListener(OnPublishBtn);
+            _cachedView.TitleInputField.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.TitleInputField_2.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.TitleInputField_3.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.DescInputField.onEndEdit.AddListener(OnDescEndEdit);
+            _cachedView.DescInputField_2.onEndEdit.AddListener(OnDescEndEdit);
+            _cachedView.DescInputField_3.onEndEdit.AddListener(OnDescEndEdit);
+
             _upCtrlWorkShopBasicSetting = new UPCtrlWorkShopBasicSetting();
             _upCtrlWorkShopBasicSetting.Init(this, _cachedView);
             _upCtrlWorkShopWinConditionSetting = new UPCtrlWorkShopWinConditionSetting();
             _upCtrlWorkShopWinConditionSetting.Init(this, _cachedView);
-            
-            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
-            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
-            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
-            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
-            
+            _menuCtrlArray = new UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting>[(int) EMenu.Max];
             _upCtrlWorkShopNetBattleBasic = new UPCtrlWorkShopNetBattleBasic();
             _upCtrlWorkShopNetBattleBasic.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MultiBasic] = _upCtrlWorkShopNetBattleBasic;
             _upCtrlWorkShopNetBattleWinCondition = new UPCtrlWorkShopNetBattleWinCondition();
             _upCtrlWorkShopNetBattleWinCondition.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MultiWinCondition] = _upCtrlWorkShopNetBattleWinCondition;
             _upCtrlWorkShopNetBattlePlayerSetting = new UPCtrlWorkShopNetBattlePlayerSetting();
             _upCtrlWorkShopNetBattlePlayerSetting.Init(this, _cachedView);
-            
+            _menuCtrlArray[(int) EMenu.MultiPlayerSetting] = _upCtrlWorkShopNetBattlePlayerSetting;
+            _upCtrlWorkShopLevelSetting = new UPCtrlWorkShopLevelSetting();
+            _upCtrlWorkShopLevelSetting.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.StandaloneLevelSetting] = _upCtrlWorkShopLevelSetting;
+            _upCtrlWorkShopCommonSetting = new UPCtrlWorkShopCommonSetting();
+            _upCtrlWorkShopCommonSetting.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.CommonSetting] = _upCtrlWorkShopCommonSetting;
+            for (int i = 0; i < _cachedView.Togs.Length; i++)
+            {
+                var inx = i;
+                _cachedView.Togs[i].onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        ChangeMenu((EMenu) inx);
+                    }
+                });
+                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
+                {
+                    _menuCtrlArray[i].Close();
+                }
+            }
+
             SetPlatform(CrossPlatformInputManager.Platform);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField_2);
@@ -91,14 +123,9 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
                 return;
             }
-            UpdateToggles();
-            _originalTitle = CurProject.Name;
-            _originalDesc = CurProject.Summary;
-            UpdateFinishCondition();
-            //默认显示关卡页面
-            _upCtrlWorkShopNetBattlePlayerSetting.HasChanged = false;
-            _cachedView.Toggle01.isOn = true;
-            Toggle01OnValueChanged(true);
+            RefreshWinCondition();
+            RefreshView();
+            //游戏暂停
             _openGamePlaying = false;
             if (GM2DGame.Instance != null)
             {
@@ -112,9 +139,12 @@ namespace GameA
 
         protected override void OnClose()
         {
-            _upCtrlWorkShopCommonSetting.Close();
-            _upCtrlWorkShopNetBattlePlayerSetting.Save();
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
             GameSettingData.Instance.Save();
+            base.OnClose();
             if (PlayMode.Instance == null)
             {
                 return;
@@ -125,17 +155,17 @@ namespace GameA
                 _openGamePlaying = false;
             }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
-            base.OnClose();
         }
 
         protected override void OnDestroy()
         {
             _upCtrlWorkShopBasicSetting.OnDestroy();
             _upCtrlWorkShopWinConditionSetting.OnDestroy();
-            _upCtrlWorkShopCommonSetting.OnDestroy();
-            _upCtrlWorkShopLevelSetting.OnDestroy();
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                _menuCtrlArray[i].OnDestroy();
+            }
             CurProject = null;
-            CurCondition = null;
             base.OnDestroy();
         }
 
@@ -150,7 +180,7 @@ namespace GameA
             _groupId = (int) EUIGroupType.AppGameUI;
         }
 
-        private void InitFinishCondition()
+        private void InitWinCondition()
         {
             if (null == CurCondition)
             {
@@ -159,7 +189,7 @@ namespace GameA
             }
         }
 
-        private void UpdateFinishCondition()
+        private void RefreshWinCondition()
         {
             for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
@@ -169,63 +199,12 @@ namespace GameA
             CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
 
-        private void Toggle04OnValueChanged(bool arg0)
-        {
-            if (arg0)
-            {
-                if (IsMulti)
-                {
-                    _upCtrlWorkShopNetBattleBasic.Close();
-                    _upCtrlWorkShopNetBattleWinCondition.Close();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                    _upCtrlWorkShopCommonSetting.Open();
-                    _upCtrlWorkShopLevelSetting.Close();
-                }
-            }
-        }
-
-        private void Toggle03OnValueChanged(bool arg0)
-        {
-            if (arg0)
-            {
-                if (IsMulti)
-                {
-                    _upCtrlWorkShopNetBattleBasic.Close();
-                    _upCtrlWorkShopNetBattleWinCondition.Close();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Open();
-                    _upCtrlWorkShopCommonSetting.Close();
-                    _upCtrlWorkShopLevelSetting.Close();
-                }
-            }
-        }
-
         private void Toggle02OnValueChanged(bool arg0)
         {
             if (arg0)
             {
-                if (IsMulti)
-                {
-                    _upCtrlWorkShopNetBattleBasic.Close();
-                    _upCtrlWorkShopNetBattleWinCondition.Open();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                    _upCtrlWorkShopCommonSetting.Close();
-                    _upCtrlWorkShopLevelSetting.Close();
-                    return;
-                }
-                if (_curPlatform == EPlatform.Moblie)
-                {
-                    _upCtrlWorkShopWinConditionSetting.Open();
-                    _upCtrlWorkShopBasicSetting.Close();
-                }
-                else
-                {
-                    _upCtrlWorkShopCommonSetting.Open();
-                    _upCtrlWorkShopLevelSetting.Close();
-                    
-                    _upCtrlWorkShopNetBattleBasic.Close();
-                    _upCtrlWorkShopNetBattleWinCondition.Close();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                }
+                _upCtrlWorkShopWinConditionSetting.Open();
+                _upCtrlWorkShopBasicSetting.Close();
             }
         }
 
@@ -233,29 +212,8 @@ namespace GameA
         {
             if (arg0)
             {
-                if (IsMulti)
-                {
-                    _upCtrlWorkShopNetBattleBasic.Open();
-                    _upCtrlWorkShopNetBattleWinCondition.Close();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                    _upCtrlWorkShopCommonSetting.Close();
-                    _upCtrlWorkShopLevelSetting.Close();
-                    return;
-                }
-                if (_curPlatform == EPlatform.Moblie)
-                {
-                    _upCtrlWorkShopBasicSetting.Open();
-                    _upCtrlWorkShopWinConditionSetting.Close();
-                }
-                else
-                {
-                    _upCtrlWorkShopLevelSetting.Open();
-                    _upCtrlWorkShopCommonSetting.Close();
-                    
-                    _upCtrlWorkShopNetBattleBasic.Close();
-                    _upCtrlWorkShopNetBattleWinCondition.Close();
-                    _upCtrlWorkShopNetBattlePlayerSetting.Close();
-                }
+                _upCtrlWorkShopBasicSetting.Open();
+                _upCtrlWorkShopWinConditionSetting.Close();
             }
         }
 
@@ -269,7 +227,7 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
         }
 
-        private void OnExitBtn()
+        private void OnRetunToAppBtn()
         {
             //如果在测试状态，则先退出测试状态
             if (_curMode == UICtrlEdit.EMode.EditTest || _curMode == UICtrlEdit.EMode.MultiEditTest)
@@ -287,39 +245,47 @@ namespace GameA
             );
         }
 
-        private void UpdateToggles()
+        private void RefreshView()
         {
+            _cachedView.Togs[(int) EMenu.MultiBasic].SetActiveEx(IsMulti);
+            _cachedView.Togs[(int) EMenu.MultiWinCondition].SetActiveEx(IsMulti);
+            _cachedView.Togs[(int) EMenu.MultiPlayerSetting].SetActiveEx(IsMulti);
+            _cachedView.Togs[(int) EMenu.StandaloneLevelSetting].SetActiveEx(!IsMulti);
+//            UpdateFinishCondition();
             if (IsMulti)
             {
-                _cachedView.Toggle03.SetActiveEx(true);
-                _cachedView.Toggle04.SetActiveEx(true);
-                _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "基础设置";
-                _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
-                _cachedView.Tap3Txt.text = _cachedView.Tap3Txt_2.text = "角色设置";
-                _cachedView.Tap4Txt.text = _cachedView.Tap4Txt_2.text = "按键设置";
+                _curMenu = EMenu.MultiBasic;
             }
             else
             {
-                _cachedView.Toggle03.SetActiveEx(false);
-                _cachedView.Toggle04.SetActiveEx(false);
-                if (_curPlatform == EPlatform.PC)
-                {
-                    _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "关卡设置";
-                    _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "常规设置";
-                }
-                else
-                {
-                    _cachedView.Tap1Txt.text = _cachedView.Tap1Txt_2.text = "常规设置";
-                    _cachedView.Tap2Txt.text = _cachedView.Tap2Txt_2.text = "胜利条件";
-                }
+                _curMenu = EMenu.StandaloneLevelSetting;
             }
+            _cachedView.Togs[(int)_curMenu].isOn = true;
+            ChangeMenu(_curMenu);
         }
 
         private void SetPlatform(EPlatform ePlatform)
         {
-            _curPlatform = ePlatform;
             _cachedView.MobilePannel.SetActive(ePlatform == EPlatform.Moblie);
             _cachedView.PCPannel.SetActive(ePlatform == EPlatform.PC);
+        }
+
+        private void ChangeMenu(EMenu menu)
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+            _curMenu = menu;
+            var inx = (int) _curMenu;
+            if (inx < _menuCtrlArray.Length)
+            {
+                _curMenuCtrl = _menuCtrlArray[inx];
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Open();
+            }
         }
 
         private void OnGetInputKeyCode(KeyCode keyCode)
@@ -342,12 +308,12 @@ namespace GameA
 
         public void OnDescEndEdit(string content)
         {
-            if (content != _originalDesc && CurProject != null)
+            if (content != CurProject.Summary)
             {
                 var testRes = CheckTools.CheckProjectDesc(content);
                 if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
                 {
-                    _originalDesc = CurProject.Summary = content;
+                    CurProject.Summary = content;
                     var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                     if (gameModeWorkshopEdit != null)
                         gameModeWorkshopEdit.NeedSave = true;
@@ -362,12 +328,12 @@ namespace GameA
 
         public void OnTitleEndEdit(string content)
         {
-            if (content != _originalTitle && CurProject != null)
+            if (content != CurProject.Name)
             {
                 var testRes = CheckTools.CheckProjectName(content);
                 if (testRes == CheckTools.ECheckProjectNameResult.Success)
                 {
-                    _originalTitle = CurProject.Name = content;
+                    CurProject.Name = content;
                     var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                     if (gameModeWorkshopEdit != null)
                         gameModeWorkshopEdit.NeedSave = true;
@@ -412,6 +378,29 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
                 gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
             }
+        }
+        
+        public void SaveWinCondition()
+        {
+            if (IsMulti) return;
+            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
+            {
+                EditMode.Instance.MapStatistics.SetWinCondition(i, CurCondition.SettingValue[(int) i]);
+            }
+            EditMode.Instance.MapStatistics.TimeLimit = CurCondition.TimeLimit;
+            EditMode.Instance.MapStatistics.LifeCount = CurCondition.LifeCount;
+            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
+        }
+
+        public enum EMenu
+        {
+            None = -1,
+            MultiBasic,
+            MultiWinCondition,
+            MultiPlayerSetting,
+            StandaloneLevelSetting,
+            CommonSetting,
+            Max
         }
     }
 }

@@ -13,11 +13,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.SureBtn_2.onClick.AddListener(OnSureBtn);
-            _cachedView.SureBtn_3.onClick.AddListener(OnSureBtn);
-            _cachedView.TitleInputField_3.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
-            _cachedView.DescInputField_3.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
-            _cachedView.InfiniteLifeTog.onValueChanged.AddListener(OnInfiniteLifeTog);
             _usPlayerCountSetting = new USCtrlSliderSetting();
             _usLifeCountSetting = new USCtrlSliderSetting();
             _usReviveTimeSetting = new USCtrlSliderSetting();
@@ -26,10 +21,36 @@ namespace GameA
             _usLifeCountSetting.Init(_cachedView.LifeCountSetting);
             _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting.Init(_cachedView.ReviveProtectTimeSetting);
-            _usPlayerCountSetting.Set(1, 6, OnPlayerCountChanged);
-            _usLifeCountSetting.Set(1, 20, OnLifeCountChanged, 5);
-            _usReviveTimeSetting.Set(0, 10, OnReviveTimeChanged, 1, "{0}秒");
-            _usReviveProtectTimeSetting.Set(0, 10, OnReviveProtectTimeChanged, 1, "{0}秒");
+            _usPlayerCountSetting.Set(1, 6, value => EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value);
+            _usLifeCountSetting.Set(1, 20, value => EditMode.Instance.MapStatistics.NetBattleLifeCount = value, 5);
+            _usReviveTimeSetting.Set(0, 10, value => EditMode.Instance.MapStatistics.NetBattleReviveTime = value, 1,
+                "{0}秒");
+            _usReviveProtectTimeSetting.Set(0, 10,
+                value => EditMode.Instance.MapStatistics.NetBattleReviveInvincibleTime = value, 1, "{0}秒");
+
+            _cachedView.InfiniteLifeTog.onValueChanged.AddListener(
+                b => EditMode.Instance.MapStatistics.InfiniteLife = b);
+            //复活方式
+            for (int i = 0; i < _cachedView.ReviveTypeTogs.Length; i++)
+            {
+                var inx = i;
+                _cachedView.ReviveTypeTogs[i].onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        EditMode.Instance.MapStatistics.NetBattleReviveType = inx;
+                    }
+                });
+            }
+            //伤害类型
+            for (int i = 0; i < _cachedView.HarmTypeTogs.Length; i++)
+            {
+                var inde = i;
+                _cachedView.HarmTypeTogs[i].onValueChanged.AddListener(value =>
+                {
+                    EditMode.Instance.MapStatistics.SetHarmType((EHarmType) inde, value);
+                });
+            }
         }
 
         private void RefreshView()
@@ -37,50 +58,19 @@ namespace GameA
             _cachedView.TitleInputField_3.text = _mainCtrl.CurProject.Name;
             _cachedView.DescInputField_3.text = _mainCtrl.CurProject.Summary;
 
+            _cachedView.InfiniteLifeTog.isOn = EditMode.Instance.MapStatistics.InfiniteLife;
+            for (int i = 0; i < _cachedView.ReviveTypeTogs.Length; i++)
+            {
+                _cachedView.ReviveTypeTogs[i].isOn = EditMode.Instance.MapStatistics.NetBattleReviveType == i;
+            }
+            for (int i = 0; i < _cachedView.HarmTypeTogs.Length; i++)
+            {
+                _cachedView.HarmTypeTogs[i].isOn = EditMode.Instance.MapStatistics.CanHarmType((EHarmType) i);
+            }
             _usPlayerCountSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount);
             _usLifeCountSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleLifeCount);
             _usReviveTimeSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleReviveTime);
             _usReviveProtectTimeSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleReviveInvincibleTime);
-        }
-
-        private void OnInfiniteLifeTog(bool arg0)
-        {
-            if (arg0)
-            {
-                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = -1;
-            }
-            else
-            {
-                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = _usLifeCountSetting.Cur;
-            }
-        }
-
-        private void OnPlayerCountChanged(int value)
-        {
-            if (!_cachedView.InfiniteLifeTog.isOn)
-            {
-                EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value;
-            }
-        }
-
-        private void OnLifeCountChanged(int value)
-        {
-            EditMode.Instance.MapStatistics.NetBattleLifeCount = value;
-        }
-
-        private void OnReviveTimeChanged(int value)
-        {
-            EditMode.Instance.MapStatistics.NetBattleReviveTime = value;
-        }
-
-        private void OnReviveProtectTimeChanged(int value)
-        {
-            EditMode.Instance.MapStatistics.NetBattleReviveInvincibleTime = value;
-        }
-
-        private void OnSureBtn()
-        {
-            if (!_mainCtrl.IsMulti) return;
         }
 
         public override void Open()

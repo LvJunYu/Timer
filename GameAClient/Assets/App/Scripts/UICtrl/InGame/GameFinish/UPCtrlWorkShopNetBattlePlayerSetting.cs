@@ -15,7 +15,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-//            _cachedView.SureBtn_2.onClick.AddListener(Save);
             _cachedView.RestoreDefaultBtn.onClick.AddListener(OnRestoreDefaultBtn);
 
             _usMaxHpSetting = new USCtrlSliderSetting();
@@ -29,8 +28,8 @@ namespace GameA
             _usInjuredReduceSetting.Init(_cachedView.InjuredReduceSetting);
             _usCureIncreaseSetting.Init(_cachedView.CureIncreaseSetting);
             _usMaxHpSetting.Set(1, 2000, value => HasChanged = true, 100);
-            _usJumpAbilitySetting.Set(100, 300, value => HasChanged = true, 10);
-            _usMoveSpeedSetting.Set(20, 100, value => HasChanged = true, 10);
+            _usJumpAbilitySetting.Set(100, 260, value => HasChanged = true, 10);
+            _usMoveSpeedSetting.Set(20, 120, value => HasChanged = true, 10);
             _usInjuredReduceSetting.Set(0, 100, value => HasChanged = true, 10, "{0}%");
             _usCureIncreaseSetting.Set(0, 500, value => HasChanged = true, 10, "{0}%");
         }
@@ -65,13 +64,16 @@ namespace GameA
 
         public void Save()
         {
-            if (!_mainCtrl.IsMulti || !HasChanged) return;
-            DataScene2D.Instance.SetPlayerCommonValue("MaxHp", _usMaxHpSetting.Cur);
-            DataScene2D.Instance.SetPlayerCommonValue("JumpAbility", (ushort) _usJumpAbilitySetting.Cur);
-            DataScene2D.Instance.SetPlayerCommonValue("MaxSpeedX", (ushort) _usMoveSpeedSetting.Cur);
-            DataScene2D.Instance.SetPlayerCommonValue("InjuredReduce", (byte) _usInjuredReduceSetting.Cur);
-            DataScene2D.Instance.SetPlayerCommonValue("CureIncrease", (ushort) _usCureIncreaseSetting.Cur);
-            HasChanged = false;
+            if (!_mainCtrl.IsMulti) return;
+            if (HasChanged)
+            {
+                DataScene2D.Instance.SetPlayerCommonValue("MaxHp", _usMaxHpSetting.Cur);
+                DataScene2D.Instance.SetPlayerCommonValue("JumpAbility", (ushort) _usJumpAbilitySetting.Cur);
+                DataScene2D.Instance.SetPlayerCommonValue("MaxSpeedX", (ushort) _usMoveSpeedSetting.Cur);
+                DataScene2D.Instance.SetPlayerCommonValue("InjuredReduce", (byte) _usInjuredReduceSetting.Cur);
+                DataScene2D.Instance.SetPlayerCommonValue("CureIncrease", (ushort) _usCureIncreaseSetting.Cur);
+                HasChanged = false;
+            }
         }
 
         public void RefreshView()
