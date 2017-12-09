@@ -207,9 +207,9 @@ namespace GameA.Game
             return total;
         }
 
-        public void InitMultiBattleData(Project project)
+        public void InitMultiBattleData(NetBattleData netBattleData)
         {
-            _mapStatistics.InitMultiBattleData(project);
+            _mapStatistics.InitMultiBattleData(netBattleData);
         }
 
         public void Init(MapStatistics mapStatistics)

@@ -11,8 +11,6 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlUnitPropertyEdit : UICtrlInGameAnimationBase<UIViewUnitPropertyEdit>
     {
-        #region 常量与字段
-
         private const float MenuPosRadius = 295;
         private const float MenuOptionsPosRadius = 180;
         private const float RotateEndOptionsPosRadius = 195;
@@ -33,16 +31,10 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _rotateEndMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
+        private USCtrlUnitPropertyEditButton[] _campMenuList;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
-        #endregion
-        
-        #region 属性
-
-        #endregion
-
-        #region 方法
 
         protected override void InitGroupId()
         {
@@ -53,12 +45,12 @@ namespace GameA
         {
             const float tweenTime = 0.2f;
 
-            var openTweenerPos = DOTween.To(()=> _posTweenFactor, v =>
+            var openTweenerPos = DOTween.To(() => _posTweenFactor, v =>
             {
                 _posTweenFactor = v;
                 _cachedView.ContentDock.anchoredPosition = Vector2.Lerp(_startPos, Vector2.zero, v);
             }, 1f, tweenTime).SetEase(Ease.OutBack);
-            var closeTweenerPos = DOTween.To(()=> _posTweenFactor, v =>
+            var closeTweenerPos = DOTween.To(() => _posTweenFactor, v =>
             {
                 _posTweenFactor = v;
                 _cachedView.ContentDock.anchoredPosition = Vector2.Lerp(_startPos, Vector2.zero, v);
@@ -84,7 +76,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
-            
+
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -93,6 +85,7 @@ namespace GameA
             _rootArray[(int) EEditType.TimeDelay] = _cachedView.TriggerDelayDock;
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
             _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
+            _rootArray[(int) EEditType.Camp] = _cachedView.CampDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -106,7 +99,8 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeDelay].Init(_cachedView.TimeDelayMenu);
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
-            
+            _menuButtonArray[(int) EEditType.Camp].Init(_cachedView.CampMenu);
+
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
                 var t = type;
@@ -114,9 +108,9 @@ namespace GameA
                 {
                     continue;
                 }
-                _menuButtonArray[(int) type].AddClickListener(()=>OnEditTypeMenuClick(t));
+                _menuButtonArray[(int) type].AddClickListener(() => OnEditTypeMenuClick(t));
             }
-            
+
             var list = _cachedView.ActiveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _activeMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -125,7 +119,7 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _activeMenuList[i] = button;
-                _activeMenuList[i].AddClickListener(()=>OnActiveMenuClick(inx));
+                _activeMenuList[i].AddClickListener(() => OnActiveMenuClick(inx));
             }
             list = _cachedView.ForwardDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _forwardMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -135,19 +129,19 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _forwardMenuList[i] = button;
-                _forwardMenuList[i].AddClickListener(()=>OnForwardMenuClick(inx));
-                
+                _forwardMenuList[i].AddClickListener(() => OnForwardMenuClick(inx));
+
                 if (i < 4)
                 {
-                    button.SetPosAngle(90*i, MenuOptionsPosRadius);
-                    button.SetFgImageAngle(90*i);
-                    button.SetBgImageAngle(90*i);
+                    button.SetPosAngle(90 * i, MenuOptionsPosRadius);
+                    button.SetFgImageAngle(90 * i);
+                    button.SetBgImageAngle(90 * i);
                 }
                 else
                 {
-                    button.SetPosAngle(45 + 90 * (i-4), MenuOptionsPosRadius);
-                    button.SetFgImageAngle(45 + 90 * (i-4));
-                    button.SetBgImageAngle(45 + 90 * (i-4));
+                    button.SetPosAngle(45 + 90 * (i - 4), MenuOptionsPosRadius);
+                    button.SetFgImageAngle(45 + 90 * (i - 4));
+                    button.SetBgImageAngle(45 + 90 * (i - 4));
                 }
             }
             list = _cachedView.PayloadDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
@@ -158,7 +152,7 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _payloadMenuList[i] = button;
-                _payloadMenuList[i].AddClickListener(()=>OnPayloadMenuClick(inx));
+                _payloadMenuList[i].AddClickListener(() => OnPayloadMenuClick(inx));
             }
             list = _cachedView.MoveDirectionDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _moveDirectionMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -168,10 +162,9 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _moveDirectionMenuList[i] = button;
-                _moveDirectionMenuList[i].AddClickListener(()=>OnMoveDirectionMenuClick(inx));
+                _moveDirectionMenuList[i].AddClickListener(() => OnMoveDirectionMenuClick(inx));
                 if (i == 0)
                 {
-                    
                 }
                 else if (i < 5)
                 {
@@ -188,7 +181,7 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _rotateMenuList[i] = button;
-                _rotateMenuList[i].AddClickListener(()=>OnRotateMenuClick(inx));
+                _rotateMenuList[i].AddClickListener(() => OnRotateMenuClick(inx));
             }
             list = _cachedView.RotateEndDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateEndMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -198,14 +191,14 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _rotateEndMenuList[i] = button;
-                _rotateEndMenuList[i].AddClickListener(()=>OnRotateEndMenuClick(inx));
+                _rotateEndMenuList[i].AddClickListener(() => OnRotateEndMenuClick(inx));
                 if (i < 4)
                 {
                     button.SetPosAngle(90 * i, RotateEndOptionsPosRadius);
                 }
                 else
                 {
-                    button.SetPosAngle(45 + 90 * (i-4), RotateEndOptionsPosRadius);
+                    button.SetPosAngle(45 + 90 * (i - 4), RotateEndOptionsPosRadius);
                 }
             }
             list = _cachedView.TriggerDelayDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
@@ -217,10 +210,10 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _triggerDelayMenuList[i] = button;
-                _triggerDelayMenuList[i].AddClickListener(()=>OnTriggerDelayMenuClick(inx));
+                _triggerDelayMenuList[i].AddClickListener(() => OnTriggerDelayMenuClick(inx));
                 _triggerDelayMenuList[i].SetText((i * 0.5f).ToString("F1"));
-                button.SetPosAngle(da*i, MenuOptionsPosRadius);
-                button.SetBgImageAngle(da*i);
+                button.SetPosAngle(da * i, MenuOptionsPosRadius);
+                button.SetBgImageAngle(da * i);
             }
             list = _cachedView.TriggerIntervalDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerIntervalMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -231,12 +224,11 @@ namespace GameA
                 var button = new USCtrlUnitPropertyEditButton();
                 button.Init(list[i]);
                 _triggerIntervalMenuList[i] = button;
-                _triggerIntervalMenuList[i].AddClickListener(()=>OnTriggerIntervalMenuClick(inx));
+                _triggerIntervalMenuList[i].AddClickListener(() => OnTriggerIntervalMenuClick(inx));
                 _triggerIntervalMenuList[i].SetText((i * 0.5f).ToString("F1"));
-                button.SetPosAngle(da*i, MenuOptionsPosRadius);
-                button.SetBgImageAngle(da*i);
+                button.SetPosAngle(da * i, MenuOptionsPosRadius);
+                button.SetBgImageAngle(da * i);
             }
-
             _optionRotateArrowList = _cachedView.RotateArrowDock.GetComponentsInChildren<Image>();
             _menuRotateArrowList = _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows
                 .GetComponentsInChildren<Image>();
@@ -249,8 +241,26 @@ namespace GameA
                 var rad = arrowBaseAngle + arrowDeltaAngle * i;
                 arrow.rectTransform.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * OptionArrowRadius;
                 arrow.rectTransform.localEulerAngles = new Vector3(0, 0, -45 * i);
-                menuArrow.rectTransform.anchoredPosition = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * MenuArrowRadius;
+                menuArrow.rectTransform.anchoredPosition =
+                    new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * MenuArrowRadius;
                 menuArrow.rectTransform.localEulerAngles = new Vector3(0, 0, -45 * i);
+            }
+
+            list = _cachedView.CampDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _campMenuList = new USCtrlUnitPropertyEditButton[list.Length];
+            da = 360f / TeamManager.MaxTeamCount;
+            for (int i = 0; i < list.Length; i++)
+            {
+                var inx = i;
+                var button = new USCtrlUnitPropertyEditButton();
+                button.Init(list[i]);
+                _campMenuList[i] = button;
+                _campMenuList[i].AddClickListener(() => OnCampMenuClick(inx));
+                if (inx > 0 && inx < 8)
+                {
+                    button.SetPosAngle(da * i, MenuOptionsPosRadius);
+                    button.SetBgImageAngle(da * i);
+                }
             }
         }
 
@@ -272,6 +282,16 @@ namespace GameA
         private void RefreshView()
         {
             _validEditPropertyList.Clear();
+            if (_tableUnit.CanEdit(EEditType.Camp))
+            {
+                _validEditPropertyList.Add(EEditType.Camp);
+                _menuButtonArray[(int) EEditType.Camp].SetEnable(true);
+                RefreshCampMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
+            }
             if (_tableUnit.CanEdit(EEditType.Active))
             {
                 _validEditPropertyList.Add(EEditType.Active);
@@ -292,7 +312,7 @@ namespace GameA
                     _payloadMenuList[i]
                         .SetFgImage(JoyResManager.Instance.GetSprite(TableManager.Instance
                             .GetEquipment(_tableUnit.ChildState[i]).Icon));
-                    _payloadMenuList[i].SetPosAngle(da*i, MenuOptionsPosRadius);
+                    _payloadMenuList[i].SetPosAngle(da * i, MenuOptionsPosRadius);
                 }
                 RefreshPayloadMenu();
             }
@@ -384,6 +404,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.Active]
                 .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
         }
+
         private void RefreshForwardMenu()
         {
             var val = Mathf.Clamp(_editData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
@@ -401,12 +422,13 @@ namespace GameA
             }
             _menuButtonArray[(int) EEditType.Direction].View.FgImage.rectTransform.localEulerAngles =
                 _forwardMenuList[val].View.FgImage.rectTransform.localEulerAngles;
-            
+
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
                 RefreshRotateEndMenu();
             }
         }
+
         private void RefreshPayloadMenu()
         {
             var table = TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId);
@@ -420,8 +442,8 @@ namespace GameA
                 _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
                 _editData.UnitExtra.UpdateFromChildId();
             }
-            var totalCount =_tableUnit.ChildState.Length;
-            var da = 360f / totalCount; 
+            var totalCount = _tableUnit.ChildState.Length;
+            var da = 360f / totalCount;
             for (int i = 0; i < _payloadMenuList.Length; i++)
             {
                 if (i < _tableUnit.ChildState.Length)
@@ -438,6 +460,7 @@ namespace GameA
                 }
             }
         }
+
         private void RefreshMoveDirectionMenu()
         {
             var val = Mathf.Clamp((int) _editData.UnitExtra.MoveDirection, 0, _moveDirectionMenuList.Length - 1);
@@ -470,11 +493,12 @@ namespace GameA
             }
             var menuBtn = _menuButtonArray[(int) EEditType.MoveDirection];
             var optionBtn = _moveDirectionMenuList[val];
-            
+
             menuBtn.SetFgImage(optionBtn.View.FgImage.sprite);
             menuBtn.View.FgImage.SetNativeSize();
             menuBtn.View.FgImage.rectTransform.localEulerAngles = optionBtn.View.FgImage.rectTransform.localEulerAngles;
         }
+
         private void RefreshRotateModeMenu()
         {
             var val = Mathf.Clamp(_editData.UnitExtra.RotateMode, 0, _rotateMenuList.Length - 1);
@@ -484,6 +508,7 @@ namespace GameA
             }
             RefreshRotateEndMenu();
         }
+
         private void RefreshRotateEndMenu()
         {
             ERotateMode rotateMode = (ERotateMode) _editData.UnitExtra.RotateMode;
@@ -517,15 +542,15 @@ namespace GameA
                     new Vector3(0, 180, 0);
             }
             int count = (end + 7 - start) % 8 + 1;
-            
+
             for (int i = 0; i < _rotateEndMenuList.Length; i++)
             {
                 var btn = _rotateEndMenuList[i];
                 btn.SetBgImage(i == _editData.UnitDesc.Rotation ? forwardBg : normalBg);
                 btn.SetSelected(i == _editData.UnitExtra.RotateValue);
                 var inx = rotateMode == ERotateMode.Clockwise ? (start + i) % 8 : 7 - (start + i) % 8;
-                _optionRotateArrowList[inx].SetActiveEx(i<count);
-                _menuRotateArrowList[inx].SetActiveEx(i<count);
+                _optionRotateArrowList[inx].SetActiveEx(i < count);
+                _menuRotateArrowList[inx].SetActiveEx(i < count);
             }
             _cachedView.RotateViewImage.fillAmount = 1f * count / 8;
             _cachedView.RotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * start / 8);
@@ -533,6 +558,7 @@ namespace GameA
             menuRotateViewImage.fillAmount = 1f * count / 8;
             menuRotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * start / 8);
         }
+
         private void RefreshTriggerDelayMenu()
         {
             for (int i = 0; i < _triggerDelayMenuList.Length; i++)
@@ -542,6 +568,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeDelay]
                 .SetText2((_editData.UnitExtra.TimeDelay * 0.001f).ToString("F1"));
         }
+
         private void RefreshTriggerIntervalMenu()
         {
             for (int i = 0; i < _triggerIntervalMenuList.Length; i++)
@@ -551,6 +578,25 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeInterval]
                 .SetText2((_editData.UnitExtra.TimeInterval * 0.001f).ToString("F1"));
         }
+
+        private void RefreshCampMenu()
+        {
+            bool isMulti = EditMode.Instance.MapStatistics.IsMulti;
+            int val = 0;
+            if (isMulti)
+            {
+                val = Mathf.Clamp(_editData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
+            }
+            for (int i = 0; i < _campMenuList.Length; i++)
+            {
+                if (i > 1)
+                {
+                    _campMenuList[i].SetEnable(isMulti);
+                }
+                _campMenuList[i].SetSelected(i == val);
+            }
+        }
+
         private void RefreshTextDock()
         {
             _cachedView.TextInput.text = _originData.UnitExtra.Msg;
@@ -609,6 +655,12 @@ namespace GameA
             RefreshTriggerIntervalMenu();
         }
 
+        private void OnCampMenuClick(int inx)
+        {
+            _editData.UnitExtra.TeamId = (byte) inx;
+            RefreshCampMenu();
+        }
+
         private void OnCloseBtnClick()
         {
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -646,6 +698,5 @@ namespace GameA
                 _rootArray[(int) type].SetActiveEx(type == editType);
             }
         }
-        #endregion
     }
 }

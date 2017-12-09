@@ -313,7 +313,7 @@ namespace GameA.Game
             base.OnObjectDestroy();
             if (GameRun.Instance.IsPlaying)
             {
-                if (drops.HasSet)
+                if (drops.HasContent)
                 {
                     PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
                 }

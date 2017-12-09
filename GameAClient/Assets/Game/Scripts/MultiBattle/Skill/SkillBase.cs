@@ -168,7 +168,7 @@ namespace GameA.Game
             {
                 _totalBulletCount = _tableSkill.BulletCount;
             }
-            if (extra.KnockbackForces.HasSet)
+            if (extra.KnockbackForces.HasContent)
             {
                 _knockbackForces = extra.KnockbackForces.ToList().ToArray();
             }
@@ -176,7 +176,7 @@ namespace GameA.Game
             {
                 _knockbackForces = _tableSkill.KnockbackForces;
             }
-            if (extra.AddStates.HasSet)
+            if (extra.AddStates.HasContent)
             {
                 _addStates = extra.AddStates.ToList().ToArray();
             }

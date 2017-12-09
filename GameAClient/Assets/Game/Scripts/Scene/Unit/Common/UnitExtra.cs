@@ -15,7 +15,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 这个类不要加引用类型，方便赋值（引用类型赋值时共用一个对象）
+    /// 这个类不要加引用类型，方便赋值
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -32,19 +32,19 @@ namespace GameA.Game
         public ushort TimeInterval;
         public string Msg;
         public byte TeamId;
-        ///下面别改字段名，DataScene2D里通过反射赋值
-        public int MaxHp;
         public int Damage;
-        public ushort MaxSpeedX;
         public MultiParam Drops;
         public ushort AttackRange;
         public ushort ViewRange;
-        public ushort JumpAbility;
         public ushort BulletCount;
         public ushort CastRange;
         public MultiParam KnockbackForces;
         public MultiParam AddStates;
         public ushort CastSpeed;
+        ///下面别改字段名，DataScene2D里通过反射赋值
+        public int MaxHp;
+        public ushort MaxSpeedX;
+        public ushort JumpAbility;
         public byte InjuredReduce;
         public ushort CureIncrease;
 
@@ -110,7 +110,7 @@ namespace GameA.Game
 
     public struct MultiParam : IEquatable<MultiParam>
     {
-        public bool HasSet;
+        public bool HasContent;
         public ushort Param0;
         public ushort Param1;
         public ushort Param2;
@@ -137,7 +137,7 @@ namespace GameA.Game
         public void Set(int[] list)
         {
             if (list == null || list.Length == 0) return;
-            HasSet = true;
+            HasContent = true;
             for (int i = 0; i < list.Length; i++)
             {
                 if (i == 0)
@@ -167,7 +167,7 @@ namespace GameA.Game
         public List<int> ToList()
         {
             List<int> list = new List<int>();
-            if (!HasSet) return list;
+            if (!HasContent) return list;
             if (Param0 != 0)
             {
                 list.Add(Param0);
@@ -203,10 +203,8 @@ namespace GameA.Game
         TimeDelay,
         TimeInterval,
         Text,
+        Camp,
         Style,
-        Attribute,
-        Skill,
-        Drop,
         Max,
     }
 }

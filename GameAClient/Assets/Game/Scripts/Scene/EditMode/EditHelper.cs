@@ -223,30 +223,29 @@ namespace GameA.Game
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
             }
-            if (table.CanEdit(EEditType.Attribute))
+            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsSpawn(table.Id))
             {
                 unitEditData.UnitExtra.MaxHp = table.Hp;
-                unitEditData.UnitExtra.MaxSpeedX = (ushort)table.MaxSpeed;
+                unitEditData.UnitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
             }
-            if (table.CanEdit(EEditType.Skill))
+            if (table.SkillId > 0)
             {
                 var skill = TableManager.Instance.GetSkill(table.SkillId);
                 if (skill.EffectValues != null && skill.EffectValues.Length > 0)
                 {
-                    unitEditData.UnitExtra.AttackRange = (ushort)skill.EffectValues[0];
+                    unitEditData.UnitExtra.AttackRange = (ushort) skill.EffectValues[0];
                 }
-                unitEditData.UnitExtra.BulletCount = (ushort)skill.BulletCount;
+                unitEditData.UnitExtra.BulletCount = (ushort) skill.BulletCount;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = skill.Damage;
-                unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces); 
+                unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
                 unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }
             if (UnitDefine.IsSpawn(id))
             {
                 unitEditData.UnitExtra = DataScene2D.Instance.PlayerExtra;
+                unitEditData.UnitExtra.TeamId = 1;
             }
-//            unitEditData.UnitExtra.Drops = new List<int>(2);
-//            unitEditData.UnitExtra.Drops.Add(6003);
             return unitEditData;
         }
 

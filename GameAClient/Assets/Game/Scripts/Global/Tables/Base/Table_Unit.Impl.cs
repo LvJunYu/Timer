@@ -111,12 +111,10 @@ namespace GameA.Game
                     return TimeState != null;
                 case EEditType.Text:
                     return TextState > 0;
+                case EEditType.Camp:
+                    return UnitDefine.IsMonster(Id) || UnitDefine.IsSpawn(Id);
                 case EEditType.Style:
                     return Id == 4001;
-                case EEditType.Attribute:
-                    return UnitDefine.IsMonster(Id) || UnitDefine.IsPlayer(Id);
-                case EEditType.Skill:
-                    return SkillId > 0;
             }
             return false;
         }

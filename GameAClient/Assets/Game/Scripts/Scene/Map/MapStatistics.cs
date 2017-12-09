@@ -392,33 +392,33 @@ namespace GameA.Game
             _levelFinishCount = levelData.FinishCount;
         }
 
-        public void InitMultiBattleData(Project project)
+        public void InitMultiBattleData(NetBattleData netBattleData)
         {
-            _netBattleData = project.NetData;
+            _netBattleData = netBattleData;
             IsMulti = true;
         }
 
         public void CreateDefaltNetData(Project project)
         {
-            IsMulti = true;
-            _netBattleData = new NetBattleData();
-            _netBattleData.ProjectId = project.ProjectId;
+            var netBattleData = new NetBattleData();
+            netBattleData.ProjectId = project.ProjectId;
             SetHarmType(EHarmType.EnemyMonster, true, true);
             SetHarmType(EHarmType.EnemyPlayer, true, true);
-            _netBattleData.TimeLimit = 120;
-            _netBattleData.PlayerCount = 6;
-            _netBattleData.LifeCount = 3;
-            _netBattleData.ReviveTime = 0;
-            _netBattleData.ReviveInvincibleTime = 0;
-            _netBattleData.ReviveType = 0;
-            _netBattleData.TimeWinCondition = 0;
-            _netBattleData.WinScore = 100;
-            _netBattleData.ArriveScore = 100;
-            _netBattleData.CollectGemScore = 10;
-            _netBattleData.KillMonsterScore = 10;
-            _netBattleData.KillPlayerScore = 20;
-            _netBattleData.ScoreWinCondition = false;
-            _netBattleData.InfiniteLife = false;
+            netBattleData.TimeLimit = 120;
+            netBattleData.PlayerCount = 6;
+            netBattleData.LifeCount = 3;
+            netBattleData.ReviveTime = 0;
+            netBattleData.ReviveInvincibleTime = 0;
+            netBattleData.ReviveType = 0;
+            netBattleData.TimeWinCondition = 0;
+            netBattleData.WinScore = 100;
+            netBattleData.ArriveScore = 100;
+            netBattleData.CollectGemScore = 10;
+            netBattleData.KillMonsterScore = 10;
+            netBattleData.KillPlayerScore = 20;
+            netBattleData.ScoreWinCondition = false;
+            netBattleData.InfiniteLife = false;
+            InitMultiBattleData(netBattleData);
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)

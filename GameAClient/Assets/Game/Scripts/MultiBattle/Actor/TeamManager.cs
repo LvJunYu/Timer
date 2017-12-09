@@ -13,6 +13,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new TeamManager()); }
         }
 
+        public const int MaxTeamCount = 6;
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(6);
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(6);
         private byte _myTeamId;
