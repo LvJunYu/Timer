@@ -1,8 +1,9 @@
-﻿using UnityEngine.UI;
+﻿using SoyEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
-    public class UMCtrlPreinstallItem : UMCtrlBase<UMViewPreinstallItem>
+    public class USCtrlPreinstallItem : USCtrlBase<USViewPreinstallItem>
     {
         protected override void OnViewCreated()
         {
@@ -22,6 +23,11 @@ namespace GameA
         public void SetTogGroup(ToggleGroup toggleGroup)
         {
             _cachedView.Tog.group = toggleGroup;
+        }
+
+        public void SetEnable(bool value)
+        {
+            _cachedView.SetActiveEx(value);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
+        private USCtrlPreinstallItem[] _preinstallItems;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
@@ -76,6 +77,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            _cachedView.SavePreinstallBtn.onClick.AddListener(OnSavePreinstallBtn);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -262,6 +264,15 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
+
+            var items = _cachedView.PreinstallToggleGroup.GetComponentsInChildren<USViewPreinstallItem>();
+            _preinstallItems = new USCtrlPreinstallItem[items.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                _preinstallItems[i] = new USCtrlPreinstallItem();
+                _preinstallItems[i].Init(items[i]);
+                _preinstallItems[i].SetTogGroup(_cachedView.PreinstallToggleGroup);
+            }
         }
 
         protected override void OnOpen(object parameter)
@@ -392,6 +403,8 @@ namespace GameA
                 _menuButtonArray[(int) _validEditPropertyList[i]].SetPosAngle(angle, MenuPosRadius);
             }
             OnEditTypeMenuClick(_validEditPropertyList[0]);
+
+            RefreshPreinstalls();
         }
 
         private void RefreshAcitveMenu()
@@ -698,5 +711,18 @@ namespace GameA
                 _rootArray[(int) type].SetActiveEx(type == editType);
             }
         }
+        
+        private void RefreshPreinstalls()
+        {
+            for (int i = 0; i < _preinstallItems.Length; i++)
+            {
+                _preinstallItems[i].SetEnable(false);
+            }
+        }
+
+        private void OnSavePreinstallBtn()
+        {
+        }
+
     }
 }
