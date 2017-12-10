@@ -48,8 +48,8 @@ namespace GameA.Game
 		/// <summary>
         /// 弹跳
         /// </summary>
-		[ColumnMapping("JumpAblity")]
-		public int JumpAblity;
+		[ColumnMapping("JumpAbility")]
+		public int JumpAbility;
 		/// <summary>
         /// 类别
         /// </summary>

@@ -694,11 +694,11 @@ namespace GameA.Game
                         _statusBar.SetHPActive(true);
                     }
                 }
-                hpChanged = (int) (hpChanged * (1 - _injuredReduce / (float) 100));
+                hpChanged = (int) (hpChanged * TableConvert.GetInjuredReduce(_injuredReduce));
             }
             else
             {
-                hpChanged = (int) (hpChanged * (1 + _curIncrease / (float) 100));
+                hpChanged = (int) (hpChanged * TableConvert.GetCurIncrease(_curIncrease));
             }
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);

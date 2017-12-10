@@ -615,9 +615,9 @@ namespace GameA.Game
         {
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
             var unitExtra = new UnitExtra();
-            unitExtra.MaxHp = table.Hp;
+            unitExtra.MaxHp = (ushort) table.Hp;
             unitExtra.MaxSpeedX = (ushort)table.MaxSpeed;
-            unitExtra.JumpAbility = (ushort)table.JumpAblity;
+            unitExtra.JumpAbility = (ushort)table.JumpAbility;
             unitExtra.InjuredReduce = 0;
             unitExtra.CureIncrease = 0;
             SetPlayerExtra(unitExtra);

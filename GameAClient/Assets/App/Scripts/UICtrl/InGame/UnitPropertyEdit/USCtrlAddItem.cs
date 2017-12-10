@@ -71,5 +71,10 @@ namespace GameA
             Drops,
             States,
         }
+
+        public void SetEnable(bool value)
+        {
+            _cachedView.SetActiveEx(value);
+        }
     }
 }

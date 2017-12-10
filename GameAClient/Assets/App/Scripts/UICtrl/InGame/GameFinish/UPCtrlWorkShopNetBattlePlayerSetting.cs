@@ -27,11 +27,11 @@ namespace GameA
             _usMoveSpeedSetting.Init(_cachedView.MoveSpeedSetting);
             _usInjuredReduceSetting.Init(_cachedView.InjuredReduceSetting);
             _usCureIncreaseSetting.Init(_cachedView.CureIncreaseSetting);
-            _usMaxHpSetting.Set(1, 2000, value => HasChanged = true, 100);
-            _usJumpAbilitySetting.Set(100, 260, value => HasChanged = true, 10);
-            _usMoveSpeedSetting.Set(20, 120, value => HasChanged = true, 10);
-            _usInjuredReduceSetting.Set(0, 100, value => HasChanged = true, 10, "{0}%");
-            _usCureIncreaseSetting.Set(0, 500, value => HasChanged = true, 10, "{0}%");
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp, value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpAbilitySetting, EAdvanceAttribute.JumpAbility, value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMoveSpeedSetting, EAdvanceAttribute.MaxSpeedX, value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usInjuredReduceSetting, EAdvanceAttribute.InjuredReduce, value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usCureIncreaseSetting, EAdvanceAttribute.CureIncrease, value => HasChanged = true);
         }
 
         private void OnRestoreDefaultBtn()
@@ -39,7 +39,7 @@ namespace GameA
             if (!_isOpen) return;
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
             _usMaxHpSetting.SetCur(table.Hp, false);
-            _usJumpAbilitySetting.SetCur(table.JumpAblity, false);
+            _usJumpAbilitySetting.SetCur(table.JumpAbility, false);
             _usMoveSpeedSetting.SetCur(table.MaxSpeed, false);
             _usInjuredReduceSetting.SetCur(0, false);
             _usCureIncreaseSetting.SetCur(0, false);

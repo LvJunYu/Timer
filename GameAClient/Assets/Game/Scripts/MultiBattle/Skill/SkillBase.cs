@@ -27,7 +27,7 @@ namespace GameA.Game
         protected int _chargeTime;
         protected int _singTime;
         protected int _projectileSpeed;
-        protected int _attackRange;
+        protected int _effectRange;
         protected int[] _knockbackForces;
         protected int[] _addStates;
 
@@ -96,7 +96,6 @@ namespace GameA.Game
                 return;
             }
             _epaintType = (EPaintType) _tableSkill.PaintType;
-            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             if (_owner.IsPlayer)
             {
@@ -107,7 +106,6 @@ namespace GameA.Game
                 SetDataFromExtra(_owner.GetUnitExtra());
             }
             SetTimerCD(0);
-            _currentBulletCount = _totalBulletCount;
             SetBullet(_totalBulletCount);
             _timerCD = 0;
             _timerCharge = 0;
@@ -133,15 +131,15 @@ namespace GameA.Game
             {
                 _damage = _tableSkill.Damage;
             }
-            if (extra.AttackRange > 0)
+            if (extra.EffectRange > 0)
             {
-                _attackRange = extra.AttackRange;
+                _effectRange = extra.EffectRange;
             }
             else
             {
                 if (_tableSkill.EffectValues != null && _tableSkill.EffectValues.Length > 0)
                 {
-                    _attackRange = _tableSkill.EffectValues[0];
+                    _effectRange = _tableSkill.EffectValues[0];
                 }
             }
             if (extra.CastRange > 0)
@@ -152,13 +150,21 @@ namespace GameA.Game
             {
                 _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             }
-            if (extra.CastSpeed > 0)
+            if (extra.BulletSpeed > 0)
             {
-                _projectileSpeed = TableConvert.GetSpeed(extra.CastSpeed);
+                _projectileSpeed = TableConvert.GetSpeed(extra.BulletSpeed);
             }
             else
             {
                 _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            }
+            if (extra.ChargeTime > 0)
+            {
+                _chargeTime = TableConvert.GetTime(extra.ChargeTime);
+            }
+            else
+            {
+                _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             }
             if (extra.BulletCount > 0)
             {
@@ -502,12 +508,12 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                 {
-                    _radius = TableConvert.GetRange(_attackRange);
+                    _radius = TableConvert.GetRange(_effectRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
-                    _radius = TableConvert.GetRange(_attackRange);
+                    _radius = TableConvert.GetRange(_effectRange);
                     var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1,
                         centerPos.y + _radius - 1);
                     return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
@@ -515,7 +521,7 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_attackRange);
+                    _radius = TableConvert.GetRange(_effectRange);
                     var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
@@ -533,7 +539,7 @@ namespace GameA.Game
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_attackRange);
+                    _radius = TableConvert.GetRange(_effectRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }

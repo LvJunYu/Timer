@@ -32,17 +32,20 @@ namespace GameA.Game
         public ushort TimeInterval;
         public string Msg;
         public byte TeamId;
-        public int Damage;
+        public ushort Damage;
         public MultiParam Drops;
-        public ushort AttackRange;
+        public ushort EffectRange; //技能作用范围
+        public ushort CastRange; //子弹射程
         public ushort ViewRange;
         public ushort BulletCount;
-        public ushort CastRange;
         public MultiParam KnockbackForces;
         public MultiParam AddStates;
-        public ushort CastSpeed;
+        public ushort BulletSpeed;
+        public ushort ChargeTime;
+
         ///下面别改字段名，DataScene2D里通过反射赋值
-        public int MaxHp;
+        public ushort MaxHp;
+
         public ushort MaxSpeedX;
         public ushort JumpAbility;
         public byte InjuredReduce;
@@ -66,14 +69,15 @@ namespace GameA.Game
                    Damage == other.Damage &&
                    MaxSpeedX == other.MaxSpeedX &&
                    Drops == other.Drops &&
-                   AttackRange == other.AttackRange &&
+                   EffectRange == other.EffectRange &&
+                   CastRange == other.CastRange &&
                    ViewRange == other.ViewRange &&
                    JumpAbility == other.JumpAbility &&
                    BulletCount == other.BulletCount &&
-                   CastRange == other.CastRange &&
+                   ChargeTime == other.ChargeTime &&
                    KnockbackForces == other.KnockbackForces &&
                    AddStates == other.AddStates &&
-                   CastSpeed == other.CastSpeed &&
+                   BulletSpeed == other.BulletSpeed &&
                    InjuredReduce == other.InjuredReduce &&
                    CureIncrease == other.CureIncrease;
         }
@@ -92,11 +96,12 @@ namespace GameA.Game
         {
             int skillId = TableManager.Instance.GetEquipment(ChildId).SkillId;
             var skill = TableManager.Instance.GetSkill(skillId);
-            Damage = skill.Damage;
+            Damage = (ushort) skill.Damage;
             TimeInterval = (ushort) skill.CDTime;
             BulletCount = (ushort) skill.BulletCount;
             CastRange = (ushort) skill.CastRange;
-            CastSpeed = (ushort) skill.ProjectileSpeed;
+            ChargeTime = (ushort) skill.ChargeTime;
+            BulletSpeed = (ushort) skill.ProjectileSpeed;
             if (skill.KnockbackForces != null)
             {
                 KnockbackForces.Set(skill.KnockbackForces);
@@ -105,6 +110,171 @@ namespace GameA.Game
             {
                 AddStates.Set(skill.AddStates);
             }
+        }
+    }
+
+    public class UnitExtraHelper
+    {
+        private static int GetMin(EAdvanceAttribute eAdvanceAttribute)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                    return 100;
+                case EAdvanceAttribute.Damage:
+                    return 1;
+                case EAdvanceAttribute.EffectRange:
+                    return 5;
+                case EAdvanceAttribute.ViewRange:
+                    return 10;
+                case EAdvanceAttribute.BulletCount:
+                    return 1;
+                case EAdvanceAttribute.CastRange:
+                    return 20;
+                case EAdvanceAttribute.ChargeTime:
+                    return 500;
+                case EAdvanceAttribute.BulletSpeed:
+                    return 5;
+                case EAdvanceAttribute.MaxHp:
+                    return 1;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return 20;
+                case EAdvanceAttribute.JumpAbility:
+                    return 100;
+                case EAdvanceAttribute.InjuredReduce:
+                    return 0;
+                case EAdvanceAttribute.CureIncrease:
+                    return 0;
+            }
+            return 0;
+        }
+
+        private static int GetMax(EAdvanceAttribute eAdvanceAttribute)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                    return 5000;
+                case EAdvanceAttribute.Damage:
+                    return 1000;
+                case EAdvanceAttribute.EffectRange:
+                    return 50;
+                case EAdvanceAttribute.ViewRange:
+                    return 300;
+                case EAdvanceAttribute.BulletCount:
+                    return 99;
+                case EAdvanceAttribute.CastRange:
+                    return 300;
+                case EAdvanceAttribute.BulletSpeed:
+                    return 20;
+                case EAdvanceAttribute.ChargeTime:
+                    return 10000;
+                case EAdvanceAttribute.MaxHp:
+                    return 2000;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return 120;
+                case EAdvanceAttribute.JumpAbility:
+                    return 260;
+                case EAdvanceAttribute.InjuredReduce:
+                    return 100;
+                case EAdvanceAttribute.CureIncrease:
+                    return 500;
+            }
+            return 0;
+        }
+
+        private static int GetDelta(EAdvanceAttribute eAdvanceAttribute)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                    return 50;
+                case EAdvanceAttribute.Damage:
+                    return 20;
+                case EAdvanceAttribute.EffectRange:
+                    return 5;
+                case EAdvanceAttribute.ViewRange:
+                    return 10;
+                case EAdvanceAttribute.BulletCount:
+                    return 10;
+                case EAdvanceAttribute.CastRange:
+                    return 10;
+                case EAdvanceAttribute.BulletSpeed:
+                    return 2;
+                case EAdvanceAttribute.ChargeTime:
+                    return 500;
+                case EAdvanceAttribute.MaxHp:
+                    return 100;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return 10;
+                case EAdvanceAttribute.JumpAbility:
+                    return 10;
+                case EAdvanceAttribute.InjuredReduce:
+                    return 10;
+                case EAdvanceAttribute.CureIncrease:
+                    return 10;
+            }
+            return 0;
+        }
+
+        private static string GetFormat(EAdvanceAttribute eAdvanceAttribute)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.InjuredReduce:
+                case EAdvanceAttribute.CureIncrease:
+                    return "{0}%";
+            }
+            return "{0}";
+        }
+
+        public static void SetUSCtrlSliderSetting(USCtrlSliderSetting usCtrlSliderSetting,
+            EAdvanceAttribute eAdvanceAttribute, Action<int> callBack)
+        {
+            usCtrlSliderSetting.Set(GetMin(eAdvanceAttribute), GetMax(eAdvanceAttribute), callBack,
+                GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute));
+        }
+
+        public static bool CanEdit(EAdvanceAttribute eAdvanceAttribute, int id)
+        {
+            var table = TableManager.Instance.GetUnit(id);
+            if (table == null)
+            {
+                LogHelper.Error("cant get unit which id == {0}", id);
+                return false;
+            }
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                    return table.SkillId > 0 || table.ChildState != null;
+                case EAdvanceAttribute.Damage:
+                    return table.SkillId > 0 || table.ChildState != null;
+                case EAdvanceAttribute.Drops:
+                    return UnitDefine.IsMonster(id);
+                case EAdvanceAttribute.EffectRange:
+                    return table.SkillId > 0;
+                case EAdvanceAttribute.ViewRange:
+                    return false;
+                case EAdvanceAttribute.BulletSpeed:
+                case EAdvanceAttribute.CastRange:
+                    return table.ChildState != null;
+                case EAdvanceAttribute.BulletCount:
+                case EAdvanceAttribute.ChargeTime:
+                    return UnitDefine.IsEnergyPool(id);
+                case EAdvanceAttribute.AddStates:
+                    return table.SkillId > 0 || table.ChildState != null;
+                case EAdvanceAttribute.MaxHp:
+                    return table.Hp > 0;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return table.MaxSpeed > 0;
+                case EAdvanceAttribute.JumpAbility:
+                    return table.JumpAbility > 0;
+                case EAdvanceAttribute.InjuredReduce:
+                    return table.Hp > 0;
+                case EAdvanceAttribute.CureIncrease:
+                    return table.Hp > 0;
+            }
+            return false;
         }
     }
 
@@ -206,5 +376,25 @@ namespace GameA.Game
         Camp,
         Style,
         Max,
+    }
+
+    public enum EAdvanceAttribute
+    {
+        TimeInterval,
+        Damage,
+        Drops,
+        EffectRange,
+        ViewRange,
+        BulletCount,
+        CastRange,
+        AddStates,
+        BulletSpeed,
+        MaxHp,
+        MaxSpeedX,
+        JumpAbility,
+        ChargeTime,
+        InjuredReduce,
+        CureIncrease,
+        Max
     }
 }

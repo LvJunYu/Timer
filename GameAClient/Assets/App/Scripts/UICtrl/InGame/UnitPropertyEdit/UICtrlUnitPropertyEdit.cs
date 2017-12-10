@@ -17,9 +17,10 @@ namespace GameA
         private const float OptionArrowRadius = 190;
         private const float MenuArrowRadius = 18;
         public const int MessageStringCountMax = 45;
+        private UPCtrlUnitPropertyEditAdvance _upCtrlUnitPropertyEditAdvance;
         private UnitEditData _originData;
         private Table_Unit _tableUnit;
-        private UnitEditData _editData;
+        public UnitEditData EditData;
         private GameObject[] _rootArray = new GameObject[(int) EEditType.Max];
         private USCtrlUnitPropertyEditButton[] _menuButtonArray = new USCtrlUnitPropertyEditButton[(int) EEditType.Max];
         private readonly List<EEditType> _validEditPropertyList = new List<EEditType>();
@@ -36,6 +37,7 @@ namespace GameA
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
+        private EEditType _curEditType;
 
         protected override void InitGroupId()
         {
@@ -78,6 +80,8 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
             _cachedView.SavePreinstallBtn.onClick.AddListener(OnSavePreinstallBtn);
+            _upCtrlUnitPropertyEditAdvance = new UPCtrlUnitPropertyEditAdvance();
+            _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -281,11 +285,11 @@ namespace GameA
             _startPos = SocialGUIManager.ScreenToRectLocal(pos, _cachedView.Trans);
             base.OnOpen(parameter);
             _originData = (UnitEditData) parameter;
-            _editData = _originData;
+            EditData = _originData;
             _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
             if (UnitDefine.IsMonster(_tableUnit.Id))
             {
-                _editData.UnitDesc.Rotation = (byte) (_editData.UnitExtra.MoveDirection - 1);
+                EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
             RefreshView();
         }
@@ -293,16 +297,7 @@ namespace GameA
         private void RefreshView()
         {
             _validEditPropertyList.Clear();
-            if (_tableUnit.CanEdit(EEditType.Camp))
-            {
-                _validEditPropertyList.Add(EEditType.Camp);
-                _menuButtonArray[(int) EEditType.Camp].SetEnable(true);
-                RefreshCampMenu();
-            }
-            else
-            {
-                _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
-            }
+
             if (_tableUnit.CanEdit(EEditType.Active))
             {
                 _validEditPropertyList.Add(EEditType.Active);
@@ -330,6 +325,16 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.Child].SetEnable(false);
+            }
+            if (_tableUnit.CanEdit(EEditType.Camp))
+            {
+                _validEditPropertyList.Add(EEditType.Camp);
+                _menuButtonArray[(int) EEditType.Camp].SetEnable(true);
+                RefreshCampMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.Direction))
             {
@@ -392,7 +397,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
-            
+
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
             var baseAngle = 180 + totalAngle / 2 - menuAngle / 2;
@@ -402,14 +407,13 @@ namespace GameA
                 _menuButtonArray[(int) _validEditPropertyList[i]].SetBgImageAngle(angle - 180);
                 _menuButtonArray[(int) _validEditPropertyList[i]].SetPosAngle(angle, MenuPosRadius);
             }
-            OnEditTypeMenuClick(_validEditPropertyList[0]);
-
             RefreshPreinstalls();
+            OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
         private void RefreshAcitveMenu()
         {
-            var val = Mathf.Clamp(_editData.UnitExtra.Active - 1, 0, 1);
+            var val = Mathf.Clamp(EditData.UnitExtra.Active - 1, 0, 1);
             for (int i = 0; i < _activeMenuList.Length; i++)
             {
                 _activeMenuList[i].SetSelected(i == val);
@@ -420,7 +424,7 @@ namespace GameA
 
         private void RefreshForwardMenu()
         {
-            var val = Mathf.Clamp(_editData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
+            var val = Mathf.Clamp(EditData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
             for (byte i = 0; i < _forwardMenuList.Length; i++)
             {
                 if (EditHelper.CheckMask(i, _tableUnit.DirectionMask))
@@ -444,7 +448,7 @@ namespace GameA
 
         private void RefreshPayloadMenu()
         {
-            var table = TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId);
+            var table = TableManager.Instance.GetEquipment(EditData.UnitExtra.ChildId);
             if (table != null)
             {
                 _menuButtonArray[(int) EEditType.Child].SetFgImage(
@@ -452,8 +456,8 @@ namespace GameA
             }
             else
             {
-                _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
-                _editData.UnitExtra.UpdateFromChildId();
+                EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
+                EditData.UnitExtra.UpdateFromChildId();
             }
             var totalCount = _tableUnit.ChildState.Length;
             var da = 360f / totalCount;
@@ -464,7 +468,7 @@ namespace GameA
                     _payloadMenuList[i].SetEnable(true);
                     _payloadMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite(
                         TableManager.Instance.GetEquipment(_tableUnit.ChildState[i]).Icon));
-                    _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == _editData.UnitExtra.ChildId);
+                    _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == EditData.UnitExtra.ChildId);
                     _payloadMenuList[i].SetBgImageAngle(da * i);
                 }
                 else
@@ -476,7 +480,7 @@ namespace GameA
 
         private void RefreshMoveDirectionMenu()
         {
-            var val = Mathf.Clamp((int) _editData.UnitExtra.MoveDirection, 0, _moveDirectionMenuList.Length - 1);
+            var val = Mathf.Clamp((int) EditData.UnitExtra.MoveDirection, 0, _moveDirectionMenuList.Length - 1);
             var defaultVal = -1;
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
             {
@@ -514,7 +518,7 @@ namespace GameA
 
         private void RefreshRotateModeMenu()
         {
-            var val = Mathf.Clamp(_editData.UnitExtra.RotateMode, 0, _rotateMenuList.Length - 1);
+            var val = Mathf.Clamp(EditData.UnitExtra.RotateMode, 0, _rotateMenuList.Length - 1);
             for (int i = 0; i < _rotateMenuList.Length; i++)
             {
                 _rotateMenuList[i].SetSelected(i == val);
@@ -524,7 +528,7 @@ namespace GameA
 
         private void RefreshRotateEndMenu()
         {
-            ERotateMode rotateMode = (ERotateMode) _editData.UnitExtra.RotateMode;
+            ERotateMode rotateMode = (ERotateMode) EditData.UnitExtra.RotateMode;
             if (rotateMode == ERotateMode.None)
             {
                 _cachedView.RotateEndDock.SetActiveEx(false);
@@ -540,16 +544,16 @@ namespace GameA
             int start, end;
             if (rotateMode == ERotateMode.Clockwise)
             {
-                start = EditHelper.CalcDirectionVal(_editData.UnitDesc.Rotation);
-                end = EditHelper.CalcDirectionVal(_editData.UnitExtra.RotateValue);
+                start = EditHelper.CalcDirectionVal(EditData.UnitDesc.Rotation);
+                end = EditHelper.CalcDirectionVal(EditData.UnitExtra.RotateValue);
                 _cachedView.RotateArrowDock.transform.localEulerAngles = Vector3.zero;
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows.transform.localEulerAngles =
                     Vector3.zero;
             }
             else
             {
-                end = EditHelper.CalcDirectionVal(_editData.UnitDesc.Rotation);
-                start = EditHelper.CalcDirectionVal(_editData.UnitExtra.RotateValue);
+                end = EditHelper.CalcDirectionVal(EditData.UnitDesc.Rotation);
+                start = EditHelper.CalcDirectionVal(EditData.UnitExtra.RotateValue);
                 _cachedView.RotateArrowDock.transform.localEulerAngles = new Vector3(0, 180, 0);
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows.transform.localEulerAngles =
                     new Vector3(0, 180, 0);
@@ -559,8 +563,8 @@ namespace GameA
             for (int i = 0; i < _rotateEndMenuList.Length; i++)
             {
                 var btn = _rotateEndMenuList[i];
-                btn.SetBgImage(i == _editData.UnitDesc.Rotation ? forwardBg : normalBg);
-                btn.SetSelected(i == _editData.UnitExtra.RotateValue);
+                btn.SetBgImage(i == EditData.UnitDesc.Rotation ? forwardBg : normalBg);
+                btn.SetSelected(i == EditData.UnitExtra.RotateValue);
                 var inx = rotateMode == ERotateMode.Clockwise ? (start + i) % 8 : 7 - (start + i) % 8;
                 _optionRotateArrowList[inx].SetActiveEx(i < count);
                 _menuRotateArrowList[inx].SetActiveEx(i < count);
@@ -576,36 +580,27 @@ namespace GameA
         {
             for (int i = 0; i < _triggerDelayMenuList.Length; i++)
             {
-                _triggerDelayMenuList[i].SetSelected(i * 500 == _editData.UnitExtra.TimeDelay);
+                _triggerDelayMenuList[i].SetSelected(i * 500 == EditData.UnitExtra.TimeDelay);
             }
             _menuButtonArray[(int) EEditType.TimeDelay]
-                .SetText2((_editData.UnitExtra.TimeDelay * 0.001f).ToString("F1"));
+                .SetText2((EditData.UnitExtra.TimeDelay * 0.001f).ToString("F1"));
         }
 
         private void RefreshTriggerIntervalMenu()
         {
             for (int i = 0; i < _triggerIntervalMenuList.Length; i++)
             {
-                _triggerIntervalMenuList[i].SetSelected(i * 500 == _editData.UnitExtra.TimeInterval);
+                _triggerIntervalMenuList[i].SetSelected(i * 500 == EditData.UnitExtra.TimeInterval);
             }
             _menuButtonArray[(int) EEditType.TimeInterval]
-                .SetText2((_editData.UnitExtra.TimeInterval * 0.001f).ToString("F1"));
+                .SetText2((EditData.UnitExtra.TimeInterval * 0.001f).ToString("F1"));
         }
 
         private void RefreshCampMenu()
         {
-            bool isMulti = EditMode.Instance.MapStatistics.IsMulti;
-            int val = 0;
-            if (isMulti)
-            {
-                val = Mathf.Clamp(_editData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
-            }
+            var val = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
             for (int i = 0; i < _campMenuList.Length; i++)
             {
-                if (i > 1)
-                {
-                    _campMenuList[i].SetEnable(isMulti);
-                }
                 _campMenuList[i].SetSelected(i == val);
             }
         }
@@ -618,59 +613,61 @@ namespace GameA
 
         private void OnActiveMenuClick(int inx)
         {
-            _editData.UnitExtra.Active = (byte) (inx + 1);
+            EditData.UnitExtra.Active = (byte) (inx + 1);
             RefreshAcitveMenu();
         }
 
         private void OnForwardMenuClick(int inx)
         {
-            _editData.UnitDesc.Rotation = (byte) inx;
+            EditData.UnitDesc.Rotation = (byte) inx;
             RefreshForwardMenu();
         }
 
         private void OnPayloadMenuClick(int inx)
         {
-            if (_editData.UnitExtra.ChildId != _tableUnit.ChildState[inx])
+            if (EditData.UnitExtra.ChildId != _tableUnit.ChildState[inx])
             {
-                _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
-                _editData.UnitExtra.UpdateFromChildId();
+                EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
+                EditData.UnitExtra.UpdateFromChildId();
+                _upCtrlUnitPropertyEditAdvance.OnChildIdChanged();
             }
             RefreshPayloadMenu();
         }
 
         private void OnMoveDirectionMenuClick(int inx)
         {
-            _editData.UnitExtra.MoveDirection = (EMoveDirection) inx;
+            EditData.UnitExtra.MoveDirection = (EMoveDirection) inx;
             RefreshMoveDirectionMenu();
+            _upCtrlUnitPropertyEditAdvance.Close();
         }
 
         private void OnRotateMenuClick(int inx)
         {
-            _editData.UnitExtra.RotateMode = (byte) inx;
+            EditData.UnitExtra.RotateMode = (byte) inx;
             RefreshRotateModeMenu();
         }
 
         private void OnRotateEndMenuClick(int inx)
         {
-            _editData.UnitExtra.RotateValue = (byte) inx;
+            EditData.UnitExtra.RotateValue = (byte) inx;
             RefreshRotateEndMenu();
         }
 
         private void OnTriggerDelayMenuClick(int inx)
         {
-            _editData.UnitExtra.TimeDelay = (ushort) (inx * 500);
+            EditData.UnitExtra.TimeDelay = (ushort) (inx * 500);
             RefreshTriggerDelayMenu();
         }
 
         private void OnTriggerIntervalMenuClick(int inx)
         {
-            _editData.UnitExtra.TimeInterval = (ushort) (inx * 500);
+            EditData.UnitExtra.TimeInterval = (ushort) (inx * 500);
             RefreshTriggerIntervalMenu();
         }
 
         private void OnCampMenuClick(int inx)
         {
-            _editData.UnitExtra.TeamId = (byte) inx;
+            EditData.UnitExtra.TeamId = (byte) inx;
             RefreshCampMenu();
         }
 
@@ -682,25 +679,27 @@ namespace GameA
             }
             if (_tableUnit.CanEdit(EEditType.Text))
             {
-                if (_cachedView.TextInput.text != _editData.UnitExtra.Msg)
+                if (_cachedView.TextInput.text != EditData.UnitExtra.Msg)
                 {
-                    _editData.UnitExtra.Msg = _cachedView.TextInput.text;
+                    EditData.UnitExtra.Msg = _cachedView.TextInput.text;
                 }
             }
-            if (_originData != _editData)
+            if (_originData != EditData)
             {
                 if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
-                    _editData.UnitExtra.MoveDirection = (EMoveDirection) (_editData.UnitDesc.Rotation + 1);
-                    _editData.UnitDesc.Rotation = 0;
+                    EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
+                    EditData.UnitDesc.Rotation = 0;
                 }
-                EditHelper.CompleteEditUnitData(_originData, _editData);
+                EditHelper.CompleteEditUnitData(_originData, EditData);
             }
+            _upCtrlUnitPropertyEditAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
         private void OnEditTypeMenuClick(EEditType editType)
         {
+            _curEditType = editType;
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
                 if (!_menuButtonArray[(int) type].HasInited)
@@ -710,8 +709,39 @@ namespace GameA
                 _menuButtonArray[(int) type].SetSelected(type == editType);
                 _rootArray[(int) type].SetActiveEx(type == editType);
             }
+            if (editType == EEditType.Camp)
+            {
+                if (!_openSequence.IsPlaying())
+                {
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                }
+            }
+            else if (editType == EEditType.Child)
+            {
+                if (!_openSequence.IsPlaying())
+                {
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+                }
+            }
+            else
+            {
+                _upCtrlUnitPropertyEditAdvance.Close();
+            }
         }
-        
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            if (_curEditType == EEditType.Camp)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+            }
+            else if (_curEditType == EEditType.Child)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+            }
+        }
+
         private void RefreshPreinstalls()
         {
             for (int i = 0; i < _preinstallItems.Length; i++)
@@ -723,6 +753,5 @@ namespace GameA
         private void OnSavePreinstallBtn()
         {
         }
-
     }
 }

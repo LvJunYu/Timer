@@ -81,6 +81,11 @@ namespace GameA.Game
             return id == 5015 || id == 5016;
         }
 
+        public static bool IsEnergyPool(int id)
+        {
+            return id == 8001;
+        }
+
         public static bool IsSwitch(int id)
         {
             return id > 8101 && id <= 8200 || id == 9003;

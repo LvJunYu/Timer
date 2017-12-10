@@ -20,8 +20,7 @@ namespace GameA.Game
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
-            ;
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
@@ -225,7 +224,7 @@ namespace GameA.Game
             }
             if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsSpawn(table.Id))
             {
-                unitEditData.UnitExtra.MaxHp = table.Hp;
+                unitEditData.UnitExtra.MaxHp = (ushort) table.Hp;
                 unitEditData.UnitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
             }
             if (table.SkillId > 0)
@@ -233,11 +232,10 @@ namespace GameA.Game
                 var skill = TableManager.Instance.GetSkill(table.SkillId);
                 if (skill.EffectValues != null && skill.EffectValues.Length > 0)
                 {
-                    unitEditData.UnitExtra.AttackRange = (ushort) skill.EffectValues[0];
+                    unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
-                unitEditData.UnitExtra.BulletCount = (ushort) skill.BulletCount;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
-                unitEditData.UnitExtra.Damage = skill.Damage;
+                unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
                 unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
                 unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }

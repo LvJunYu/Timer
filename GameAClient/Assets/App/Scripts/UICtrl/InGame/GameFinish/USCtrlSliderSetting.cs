@@ -79,5 +79,10 @@ namespace GameA
                 _callBack.Invoke((int) value);
             }
         }
+
+        public void SetEnable(bool value)
+        {
+            _cachedView.SetActiveEx(value);
+        }
     }
 }

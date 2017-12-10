@@ -158,7 +158,7 @@ namespace GameA.Game
             }
             else
             {
-                _jumpAbility = _tableUnit.JumpAblity;
+                _jumpAbility = _tableUnit.JumpAbility;
             }
             _injuredReduce = _unitExtra.InjuredReduce;
             _curIncrease = _unitExtra.CureIncrease;

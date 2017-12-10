@@ -164,7 +164,7 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-            if (unitExtra.MaxSpeedX > 0)
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }

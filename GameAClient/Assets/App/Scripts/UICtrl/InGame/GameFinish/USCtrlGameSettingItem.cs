@@ -33,5 +33,10 @@ namespace GameA
             _cachedView.On.SetActiveEx(_isOn);
             _cachedView.Off.SetActiveEx(!_isOn);
         }
+
+        public void SetEnable(bool value)
+        {
+            _cachedView.SetActiveEx(value);
+        }
     }
 }
