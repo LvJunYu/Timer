@@ -43,11 +43,24 @@ namespace GameA
             _numFormat = numFormat;
         }
 
-        public void SetCur(int cur, bool Init = true)
+        public void SetCur(int cur, bool init = true, int min = -1)
         {
+            //用于更新最小值
+            if (min > -1)
+            {
+                if (min >= _max)
+                {
+                    LogHelper.Error("min is equal or bigger than max");
+                }
+                else
+                {
+                    _min = min;
+                    _cachedView.Slider.minValue = _min;
+                }
+            }
             cur = Mathf.Clamp(cur, _min, _max);
             //若是初始化，则只改变Slider.value，不走回调
-            if (Init)
+            if (init)
             {
                 _cur = cur;
             }

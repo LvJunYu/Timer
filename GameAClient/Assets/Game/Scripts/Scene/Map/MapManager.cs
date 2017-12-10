@@ -226,9 +226,9 @@ namespace GameA.Game
             if (startType == GameManager.EStartType.WorkshopMultiCreate)
             {
                 EditMode.Instance.MapStatistics.CreateDefaltNetData(project);
-                //在生成出生点之前，生成玩家通用属性
-                DataScene2D.Instance.InitDefaultPlayerUnitExtra(); 
             }
+            //在生成出生点之前，生成玩家通用属性
+            DataScene2D.Instance.InitDefaultPlayerUnitExtra(); 
             CreateDefaultScene();
             GenerateMap(0);
         }

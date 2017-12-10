@@ -72,7 +72,14 @@ namespace GameA
             UnitExtraHelper.SetUSCtrlSliderSetting(_usDamageSetting, EAdvanceAttribute.Damage,
                 value => _mainCtrl.EditData.UnitExtra.Damage = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usEffectRangeSetting, EAdvanceAttribute.EffectRange,
-                value => _mainCtrl.EditData.UnitExtra.EffectRange = (ushort) value);
+                value =>
+                {
+                    _mainCtrl.EditData.UnitExtra.EffectRange = (ushort) value;
+                    if (_curMenu == EMenu.ActorSetting)
+                    {
+                        _mainCtrl.EditData.UnitExtra.CastRange = (ushort) value;
+                    }
+                });
             UnitExtraHelper.SetUSCtrlSliderSetting(_usCastRangeSetting, EAdvanceAttribute.CastRange,
                 value => _mainCtrl.EditData.UnitExtra.CastRange = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usDamageIntervalSetting, EAdvanceAttribute.TimeInterval,
@@ -150,9 +157,11 @@ namespace GameA
             }
             _usMoveSpeedSetting.SetCur(maxSpeedX);
             _usDamageSetting.SetCur(_mainCtrl.EditData.UnitExtra.Damage);
-            _usEffectRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.EffectRange);
+            var minEffectRange = UnitExtraHelper.GetMin(EAdvanceAttribute.EffectRange, _curMenu);
+            _usEffectRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.EffectRange, true, minEffectRange);
             _usCastRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.CastRange);
-            _usDamageIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimeInterval);
+            var minAttackInterval = UnitExtraHelper.GetMin(EAdvanceAttribute.TimeInterval, _curMenu);
+            _usDamageIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimeInterval, true, minAttackInterval);
             _usBulletSpeedSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletSpeed);
             _usBulletCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletCount);
             _usChargeTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.ChargeTime);
@@ -173,7 +182,7 @@ namespace GameA
             _usDropsSetting.Set(_mainCtrl.EditData.UnitExtra.Drops, USCtrlAddItem.EItemType.Drops);
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
         }
-        
+
         public override void Close()
         {
             if (_openAnim)

@@ -115,6 +115,26 @@ namespace GameA.Game
 
     public class UnitExtraHelper
     {
+        public static int GetMin(EAdvanceAttribute eAdvanceAttribute, UPCtrlUnitPropertyEditAdvance.EMenu eMenu)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.EffectRange:
+                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
+                    {
+                        return 10;
+                    }
+                    return GetMin(eAdvanceAttribute);
+                case EAdvanceAttribute.TimeInterval:
+                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
+                    {
+                        return 800;
+                    }
+                    return GetMin(eAdvanceAttribute);
+            }
+            return GetMin(eAdvanceAttribute);
+        }
+
         private static int GetMin(EAdvanceAttribute eAdvanceAttribute)
         {
             switch (eAdvanceAttribute)
@@ -124,7 +144,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.Damage:
                     return 1;
                 case EAdvanceAttribute.EffectRange:
-                    return 5;
+                    return 10;
                 case EAdvanceAttribute.ViewRange:
                     return 10;
                 case EAdvanceAttribute.BulletCount:
@@ -310,26 +330,23 @@ namespace GameA.Game
             HasContent = true;
             for (int i = 0; i < list.Length; i++)
             {
-                if (i == 0)
+                switch (i)
                 {
-                    Param1 = (ushort) list[0];
-                }
-                else if (i == 1)
-                {
-                    Param1 = (ushort) list[1];
-                }
-                else if (i == 2)
-                {
-                    Param2 = (ushort) list[2];
-                }
-                else if (i == 3)
-                {
-                    Param3 = (ushort) list[3];
-                }
-                else
-                {
-                    LogHelper.Error("list's length is bigger than param count");
-                    return;
+                    case 0:
+                        Param0 = (ushort) list[0];
+                        break;
+                    case 1:
+                        Param1 = (ushort) list[1];
+                        break;
+                    case 2:
+                        Param2 = (ushort) list[2];
+                        break;
+                    case 3:
+                        Param3 = (ushort) list[3];
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
                 }
             }
         }

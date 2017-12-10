@@ -176,6 +176,14 @@ namespace GameA.Game
             {
                 _maxSpeedX = 40;
             }
+            if (unitExtra.CastRange > 0)
+            {
+                _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
+            }
+            else
+            {
+                _attackRange = IntVec2.one * TableConvert.GetRange(10);
+            }
             return unitExtra;
         }
 

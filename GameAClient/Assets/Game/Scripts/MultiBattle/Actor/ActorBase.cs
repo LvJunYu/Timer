@@ -70,6 +70,7 @@ namespace GameA.Game
 
         protected StatusBar _statusBar;
         protected int _jumpAbility;
+        protected IntVec2 _attackRange;
         protected int _injuredReduce;
         protected int _curIncrease;
 

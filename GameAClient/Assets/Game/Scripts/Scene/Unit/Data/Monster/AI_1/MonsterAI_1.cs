@@ -22,7 +22,6 @@ namespace GameA.Game
         }
         
         protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        protected static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 PathRange = new IntVec2(3, 2);
         protected const int MaxStuckFrames = 30;
         protected const int MaxReSeekFrames = 5;
@@ -284,7 +283,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
                 return false;
             }

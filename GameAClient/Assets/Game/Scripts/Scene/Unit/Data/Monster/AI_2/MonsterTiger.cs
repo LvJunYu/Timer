@@ -11,7 +11,6 @@ namespace GameA.Game
         private const int _brakeDec = 2; //刹车减速度
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private bool _hasTurnBack;
-        private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int _patrolTime = 70;
         private bool _justEnterBrake;
 
