@@ -146,6 +146,14 @@ namespace SoyEngine
         public const string PersonalProjectList = "/project/getPersonalList";
         // 获取预设列表
         public const string UnitPreinstallList = "/project/getUnitPreinstallList";
+        // 获取物体预设数据
+        public const string UnitPreinstall = "/project/getUnitPreinstall";
+        // 创建预设
+        public const string CreateUnitPreinstall = "/project/createUnitPreinstall";
+        // 更新预设
+        public const string UpdateUnitPreinstall = "/project/updateUnitPreinstall";
+        // 删除预设
+        public const string DeleteUnitPreinstall = "/project/deleteUnitPreinstall";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具

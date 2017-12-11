@@ -1534,6 +1534,120 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCreateUnitPreinstall {
+            get { return _isRequstingCreateUnitPreinstall; }
+        }
+        private static bool _isRequstingCreateUnitPreinstall = false;
+        /// <summary>
+		/// 创建预设
+		/// </summary>
+		/// <param name="unitPreinstall">预设数据</param>
+        public static void CreateUnitPreinstall (
+            Msg_CS_DAT_UnitPreinstall unitPreinstall,
+            Action<Msg_SC_CMD_CreateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateUnitPreinstall) {
+                return;
+            }
+            _isRequstingCreateUnitPreinstall = true;
+            Msg_CS_CMD_CreateUnitPreinstall msg = new Msg_CS_CMD_CreateUnitPreinstall();
+            // 创建预设
+            msg.UnitPreinstall = unitPreinstall;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateUnitPreinstall>(
+                SoyHttpApiPath.CreateUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateUnitPreinstall {
+            get { return _isRequstingUpdateUnitPreinstall; }
+        }
+        private static bool _isRequstingUpdateUnitPreinstall = false;
+        /// <summary>
+		/// 更新预设
+		/// </summary>
+		/// <param name="preinstallId">预设Id</param>
+		/// <param name="unitPreinstall">预设数据</param>
+        public static void UpdateUnitPreinstall (
+            long preinstallId,
+            Msg_CS_DAT_UnitPreinstall unitPreinstall,
+            Action<Msg_SC_CMD_UpdateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateUnitPreinstall) {
+                return;
+            }
+            _isRequstingUpdateUnitPreinstall = true;
+            Msg_CS_CMD_UpdateUnitPreinstall msg = new Msg_CS_CMD_UpdateUnitPreinstall();
+            // 更新预设
+            msg.PreinstallId = preinstallId;
+            msg.UnitPreinstall = unitPreinstall;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUnitPreinstall>(
+                SoyHttpApiPath.UpdateUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUnitPreinstall {
+            get { return _isRequstingDeleteUnitPreinstall; }
+        }
+        private static bool _isRequstingDeleteUnitPreinstall = false;
+        /// <summary>
+		/// 删除预设
+		/// </summary>
+		/// <param name="preinstallId">关卡Id</param>
+        public static void DeleteUnitPreinstall (
+            List<long> preinstallId,
+            Action<Msg_SC_CMD_DeleteUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUnitPreinstall) {
+                return;
+            }
+            _isRequstingDeleteUnitPreinstall = true;
+            Msg_CS_CMD_DeleteUnitPreinstall msg = new Msg_CS_CMD_DeleteUnitPreinstall();
+            // 删除预设
+            msg.PreinstallId.AddRange(preinstallId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUnitPreinstall>(
+                SoyHttpApiPath.DeleteUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUseProps {
             get { return _isRequstingUseProps; }
         }

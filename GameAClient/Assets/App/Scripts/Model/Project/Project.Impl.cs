@@ -9,7 +9,6 @@ using System;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -580,7 +579,6 @@ namespace GameA
         {
             if (netBattleData == null) return null;
             var msg = new Msg_NetBattleData();
-            msg.ProjectId = netBattleData.ProjectId;
             msg.HarmType = netBattleData.HarmType;
             msg.TimeLimit = netBattleData.TimeLimit;
             msg.PlayerCount = netBattleData.PlayerCount;

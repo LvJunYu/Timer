@@ -9,10 +9,6 @@ namespace GameA
     public partial class NetBattleData : SyncronisticData<Msg_NetBattleData> {
         #region 字段
         /// <summary>
-        /// 
-        /// </summary>
-        private long _projectId;
-        /// <summary>
         /// 可伤害目标类型
         /// </summary>
         private int _harmType;
@@ -75,16 +71,6 @@ namespace GameA
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 
-        /// </summary>
-        public long ProjectId { 
-            get { return _projectId; }
-            set { if (_projectId != value) {
-                _projectId = value;
-                SetDirty();
-            }}
-        }
         /// <summary>
         /// 可伤害目标类型
         /// </summary>
@@ -241,7 +227,6 @@ namespace GameA
         public bool OnSync (Msg_NetBattleData msg)
         {
             if (null == msg) return false;
-            _projectId = msg.ProjectId;     
             _harmType = msg.HarmType;     
             _timeLimit = msg.TimeLimit;     
             _playerCount = msg.PlayerCount;     
@@ -264,7 +249,6 @@ namespace GameA
         public bool CopyMsgData (Msg_NetBattleData msg)
         {
             if (null == msg) return false;
-            _projectId = msg.ProjectId;           
             _harmType = msg.HarmType;           
             _timeLimit = msg.TimeLimit;           
             _playerCount = msg.PlayerCount;           
@@ -286,7 +270,6 @@ namespace GameA
         public bool DeepCopy (NetBattleData obj)
         {
             if (null == obj) return false;
-            _projectId = obj.ProjectId;           
             _harmType = obj.HarmType;           
             _timeLimit = obj.TimeLimit;           
             _playerCount = obj.PlayerCount;           

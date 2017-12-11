@@ -208,7 +208,7 @@ namespace GameA.Game
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.TimeInterval:
-                    return 50;
+                    return 100;
                 case EAdvanceAttribute.Damage:
                     return 20;
                 case EAdvanceAttribute.EffectRange:

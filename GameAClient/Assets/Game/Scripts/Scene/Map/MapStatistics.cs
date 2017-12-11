@@ -401,7 +401,6 @@ namespace GameA.Game
         public void CreateDefaltNetData(Project project)
         {
             var netBattleData = new NetBattleData();
-            netBattleData.ProjectId = project.ProjectId;
             SetHarmType(EHarmType.EnemyMonster, true, true);
             SetHarmType(EHarmType.EnemyPlayer, true, true);
             netBattleData.TimeLimit = 120;

@@ -24,6 +24,7 @@ namespace GameA.Game
         protected float _curAngle;
         protected int _timeDelay;
         protected int _attackInterval;
+        protected int _castRange;
 
         public override bool CanControlledBySwitch
         {
@@ -45,6 +46,23 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
+        
+        protected override void SetSkillValue()
+        {
+            _skillCtrl.CurrentSkills[0].SetValue(_attackInterval, _castRange);
+            if (_attackInterval < 10)
+            {
+                _timeScale = 4;
+            }
+            else if (_attackInterval < 20)
+            {
+                _timeScale = 3;
+            }
+            else if (_attackInterval < 40)
+            {
+                _timeScale = 2;
+            }
+        }
 
         public override UnitExtra UpdateExtraData()
         {
@@ -54,7 +72,8 @@ namespace GameA.Game
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
-            _attackInterval = Math.Max(25, _attackInterval);
+//            _attackInterval = Math.Max(25, _attackInterval);
+            _castRange = TableConvert.GetRange(unitExtra.CastRange);
             return unitExtra;
         }
 

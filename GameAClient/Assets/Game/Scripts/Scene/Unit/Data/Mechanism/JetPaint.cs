@@ -10,10 +10,10 @@ namespace GameA.Game
     [Unit(Id = 5016, Type = typeof(JetPaint))]
     public class JetPaint : JetBase
     {
-        protected override void SetSkillValue()
-        {
-            _timeScale = 3;
-            _skillCtrl.CurrentSkills[0].SetValue(TableConvert.GetTime(150),  TableConvert.GetRange(300));
-        }
+//        protected override void SetSkillValue()
+//        {
+//            _timeScale = 3;
+//            _skillCtrl.CurrentSkills[0].SetValue(TableConvert.GetTime(150),  TableConvert.GetRange(300));
+//        }
     }
 }

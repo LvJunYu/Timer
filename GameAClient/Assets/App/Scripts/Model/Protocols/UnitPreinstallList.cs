@@ -12,7 +12,7 @@ namespace GameA
         /// <summary>
         /// 预设列表
         /// </summary>
-        private List<PreinstallData> _preinstallList;
+        private List<UnitPreinstall> _preinstallList;
 
         // cs fields----------------------------------
         /// <summary>
@@ -26,7 +26,7 @@ namespace GameA
         /// <summary>
         /// 预设列表
         /// </summary>
-        public List<PreinstallData> PreinstallList { 
+        public List<UnitPreinstall> PreinstallList { 
             get { return _preinstallList; }
             set { if (_preinstallList != value) {
                 _preinstallList = value;
@@ -92,9 +92,9 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_UnitPreinstallList msg)
         {
             if (null == msg) return false;
-            _preinstallList = new List<PreinstallData>();
+            _preinstallList = new List<UnitPreinstall>();
             for (int i = 0; i < msg.PreinstallList.Count; i++) {
-                _preinstallList.Add(new PreinstallData(msg.PreinstallList[i]));
+                _preinstallList.Add(new UnitPreinstall(msg.PreinstallList[i]));
             }
             OnSyncPartial(msg);
             return true;
@@ -104,11 +104,11 @@ namespace GameA
         {
             if (null == msg) return false;
             if (null ==  _preinstallList) {
-                _preinstallList = new List<PreinstallData>();
+                _preinstallList = new List<UnitPreinstall>();
             }
             _preinstallList.Clear();
             for (int i = 0; i < msg.PreinstallList.Count; i++) {
-                _preinstallList.Add(new PreinstallData(msg.PreinstallList[i]));
+                _preinstallList.Add(new UnitPreinstall(msg.PreinstallList[i]));
             }
             return true;
         } 
@@ -118,7 +118,7 @@ namespace GameA
             if (null == obj) return false;
             if (null ==  obj.PreinstallList) return false;
             if (null ==  _preinstallList) {
-                _preinstallList = new List<PreinstallData>();
+                _preinstallList = new List<UnitPreinstall>();
             }
             _preinstallList.Clear();
             for (int i = 0; i < obj.PreinstallList.Count; i++){
@@ -140,7 +140,7 @@ namespace GameA
         }
 
         public UnitPreinstallList () { 
-            _preinstallList = new List<PreinstallData>();
+            _preinstallList = new List<UnitPreinstall>();
             OnCreate();
         }
         #endregion

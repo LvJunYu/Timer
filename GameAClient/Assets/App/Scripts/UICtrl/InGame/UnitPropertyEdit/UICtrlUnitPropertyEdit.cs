@@ -387,7 +387,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeDelay].SetEnable(false);
             }
-            if (_tableUnit.CanEdit(EEditType.TimeInterval))
+            if (_tableUnit.CanEdit(EEditType.TimeInterval) && _tableUnit.ChildState == null)
             {
                 _validEditPropertyList.Add(EEditType.TimeInterval);
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(true);
