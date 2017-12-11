@@ -144,6 +144,8 @@ namespace SoyEngine
         public const string DeleteProject = "/project/delete";
         // 工坊关卡
         public const string PersonalProjectList = "/project/getPersonalList";
+        // 获取预设列表
+        public const string UnitPreinstallList = "/project/getUnitPreinstallList";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
