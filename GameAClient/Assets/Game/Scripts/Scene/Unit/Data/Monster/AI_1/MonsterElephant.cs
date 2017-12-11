@@ -5,11 +5,6 @@
 ** Summary : MonsterElephant
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using UnityEngine;
-
 namespace GameA.Game
 {
     [Unit(Id = 2002, Type = typeof(MonsterElephant))]

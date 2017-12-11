@@ -83,7 +83,7 @@ namespace GameA.Game
                 return;
             }
             Material[] materials;
-            //玩家只有一個，直接改shareMals，不頻繁創創建实例
+            //主玩家只有一個，直接改shareMals，不頻繁創創建实例
             if (_unit.IsMain)
             {
                 if (_damageShader == null)

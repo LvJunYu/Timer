@@ -229,7 +229,7 @@ namespace GameA.Game
             get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
         }
 
-        public bool CanAttack
+        public virtual bool CanAttack
         {
             get
             {
@@ -893,7 +893,7 @@ namespace GameA.Game
             {
                 _eActiveState = EActiveState.Active;
             }
-            if (IsMain || IsShadow)
+            if (IsPlayer || IsShadow)
             {
                 _moveDirection = EMoveDirection.Right;
             }
@@ -1285,7 +1285,7 @@ namespace GameA.Game
                     extraDeltaX = 0;
                 }
                 _extraDeltaPos = new IntVec2(extraDeltaX, extraDeltaY);
-                if (!_lastGrounded && IsMain && !IsClimbing)
+                if (!_lastGrounded && IsPlayer && !IsClimbing)
                 {
                     SpeedX -= extraDeltaX;
                 }
@@ -1800,6 +1800,10 @@ namespace GameA.Game
             }
             if (IsMonster)
             {
+                if (!unit.IsPlayer)
+                {
+                    return false;
+                }
                 return !IsSameTeam(unit.TeamId);
             }
             return true;

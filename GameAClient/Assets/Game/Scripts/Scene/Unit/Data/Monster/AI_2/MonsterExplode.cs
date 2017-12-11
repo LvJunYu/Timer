@@ -1,5 +1,4 @@
 ﻿using System;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -26,7 +25,7 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (unit.IsMain)
+            if (CanHarm(unit))
             {
                 OnDead();
                 return;
@@ -40,7 +39,7 @@ namespace GameA.Game
 
         public override void OnIntersect(UnitBase other)
         {
-            if (other.IsMain)
+            if (CanHarm(other))
             {
                 OnDead();
             }
@@ -68,15 +67,15 @@ namespace GameA.Game
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
                     EnvManager.MonsterViewLayer);
-                bool isMain = false;
+                bool target = false;
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
                     if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                     {
-                        if (unit.IsMain)
+                        if (CanHarm(unit))
                         {
-                            isMain = true;
+                            target = true;
                             if (_eMonsterState != EMonsterState.Chase)
                             {
                                 ChangeState(EMonsterState.Bang);
@@ -86,7 +85,7 @@ namespace GameA.Game
                         break;
                     }
                 }
-                if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
+                if ((units.Count == 0 || !target) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
                 {
                     ChangeState(EMonsterState.Run);
                 }

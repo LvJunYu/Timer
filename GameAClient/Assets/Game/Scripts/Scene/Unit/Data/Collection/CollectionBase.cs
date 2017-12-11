@@ -5,8 +5,6 @@
 ** Summary : CollectionBase
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using DG.Tweening;
 
 namespace GameA.Game
@@ -37,7 +35,7 @@ namespace GameA.Game
 
         public override void OnIntersect(UnitBase other)
         {
-            if (_isAlive && other.IsMain)
+            if (_isAlive && other.IsPlayer)
             {
                 OnTrigger(other);
             }

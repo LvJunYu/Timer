@@ -10,7 +10,7 @@ namespace GameA
         private USCtrlPreinstallItem[] _preinstallItems;
         private List<UnitPreinstall> _dataList;
         private int _curIndex;
-        public bool NeedSave;
+        public bool HasChanged;
 
         protected override void OnViewCreated()
         {
@@ -26,6 +26,7 @@ namespace GameA
                 _preinstallItems[i].Init(items[i]);
                 var inx = i;
                 _preinstallItems[i].AddListener(() => OnPreinstallBtn(inx));
+                _preinstallItems[i].AddInputEndEditListener(content => OnInputEndEdit(content, inx));
             }
         }
 
@@ -70,7 +71,7 @@ namespace GameA
         {
             if (_dataList != null && _dataList.Count == _preinstallItems.Length)
             {
-                SocialGUIManager.ShowPopupDialog("预设已满，是否替换掉第一个预设？", null,
+                SocialGUIManager.ShowPopupDialog("预设已满，是否删除第1个预设？", null,
                     new KeyValuePair<string, Action>("取消", null),
                     new KeyValuePair<string, Action>("确定", () => { DeletePreinstall(0, CreatePreinstall); }));
             }
@@ -84,7 +85,6 @@ namespace GameA
         {
             DeletePreinstall(_curIndex, () =>
             {
-                _dataList.RemoveAt(_curIndex);
                 _curIndex = -1;
                 RefreshView();
             });
@@ -100,8 +100,8 @@ namespace GameA
                 {
                     if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
                     {
-                        RequestData();
-                        NeedSave = false;
+                        _dataList[_curIndex] = new UnitPreinstall(unitMsg.UnitPreinstallData);
+                        HasChanged = false;
                     }
                     //todo
                 },
@@ -111,7 +111,7 @@ namespace GameA
         private void OnPreinstallBtn(int index)
         {
             if (_curIndex == index) return;
-            if (NeedSave)
+            if (HasChanged)
             {
                 SocialGUIManager.ShowPopupDialog("读取预设会丢失已有设定，确定要读取预设吗？", null,
                     new KeyValuePair<string, Action>("取消", null),
@@ -123,6 +123,17 @@ namespace GameA
             }
         }
 
+        private void OnInputEndEdit(string arg0,int index)
+        {
+            if (!string.IsNullOrEmpty(arg0) && arg0 != _dataList[index].PreinstallData.Name)
+            {
+                _dataList[index].PreinstallData.Name = arg0;
+                if (_curIndex == -1) return;
+                _dataList[_curIndex].Save();
+            }
+            _preinstallItems[index].SetText(arg0);
+        }
+
         private void CreatePreinstall()
         {
             var msg = _mainCtrl.EditData.UnitExtra.ToUnitPreInstall();
@@ -131,7 +142,7 @@ namespace GameA
             {
                 index = _dataList.Count;
             }
-            msg.Name = string.Format("预设 {0}", index);
+            msg.Name = string.Format("预设 {0}", index + 1);
             msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
             RemoteCommands.CreateUnitPreinstall(msg, unitMsg =>
                 {
@@ -143,7 +154,7 @@ namespace GameA
                         }
                         _dataList.Add(new UnitPreinstall(unitMsg.UnitPreinstallData));
                         _curIndex = _dataList.Count - 1;
-                        NeedSave = false;
+                        HasChanged = false;
                         RefreshView();
                     }
                     //todo
@@ -155,11 +166,12 @@ namespace GameA
         {
             if (index == -1) return;
             List<long> _deleteList = new List<long>(1);
-            _deleteList.Add(_dataList[_curIndex].PreinstallId);
+            _deleteList.Add(_dataList[index].PreinstallId);
             RemoteCommands.DeleteUnitPreinstall(_deleteList, unitMsg =>
             {
                 if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
                 {
+                    _dataList.RemoveAt(index);
                     if (successCallBack != null)
                     {
                         successCallBack.Invoke();
@@ -173,7 +185,7 @@ namespace GameA
         {
             _curIndex = index;
             _mainCtrl.EditData.UnitExtra.Set(_dataList[_curIndex].PreinstallData);
-            NeedSave = false;
+            HasChanged = false;
             RefreshView();
             Messenger.Broadcast(EMessengerType.OnPreinstallRead);
         }

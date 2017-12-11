@@ -5,8 +5,6 @@
 ** Summary : MonsterTree
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 

@@ -17,6 +17,7 @@ namespace GameA.Game
         protected EClayOnWallDirection _eClayOnWallDirection;
         protected IntVec2 _hitPos;
         protected bool _isClayOnWall;
+        protected UnitBase _attactTarget;
 
         public bool IsClayOnWall
         {
@@ -29,6 +30,27 @@ namespace GameA.Game
                     _hitPos = IntVec2.zero;
                 }
                 _isClayOnWall = value;
+            }
+        }
+
+        protected virtual UnitBase AttackTarget
+        {
+            get
+            {
+                if (_attactTarget == null || !_attactTarget.IsAlive)
+                {
+                    UpdateAttackTarget();//没有目标时返回自己
+                }
+                return _attactTarget;
+            }
+        }
+
+        public override bool CanAttack
+        {
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice) && AttackTarget.IsAlive && AttackTarget != this;
             }
         }
 
@@ -225,6 +247,10 @@ namespace GameA.Game
 
         protected virtual void UpdateMonsterAI()
         {
+            if (GameRun.Instance.LogicFrameCnt % 100 == 0)
+            {
+                UpdateAttackTarget();
+            }
         }
 
         protected virtual void OnFire()
@@ -331,6 +357,11 @@ namespace GameA.Game
         protected void SetInput(EInputType eInputType, bool value)
         {
             _input.CurAppliedInputKeyAry[(int) eInputType] = value;
+        }
+
+        protected virtual void UpdateAttackTarget()
+        {
+            _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
         }
     }
 }

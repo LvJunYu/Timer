@@ -10,6 +10,14 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
+        /// ECachedDataState
+        /// </summary>
+        private int _resultCode;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _updateTime;
+        /// <summary>
         /// 预设列表
         /// </summary>
         private List<UnitPreinstall> _preinstallList;
@@ -23,6 +31,26 @@ namespace GameA
 
         #region 属性
         // sc properties----------------------------------
+        /// <summary>
+        /// ECachedDataState
+        /// </summary>
+        public int ResultCode { 
+            get { return _resultCode; }
+            set { if (_resultCode != value) {
+                _resultCode = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long UpdateTime { 
+            get { return _updateTime; }
+            set { if (_updateTime != value) {
+                _updateTime = value;
+                SetDirty();
+            }}
+        }
         /// <summary>
         /// 预设列表
         /// </summary>
@@ -92,6 +120,8 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_UnitPreinstallList msg)
         {
             if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
             _preinstallList = new List<UnitPreinstall>();
             for (int i = 0; i < msg.PreinstallList.Count; i++) {
                 _preinstallList.Add(new UnitPreinstall(msg.PreinstallList[i]));
@@ -103,6 +133,8 @@ namespace GameA
         public bool CopyMsgData (Msg_SC_DAT_UnitPreinstallList msg)
         {
             if (null == msg) return false;
+            _resultCode = msg.ResultCode;           
+            _updateTime = msg.UpdateTime;           
             if (null ==  _preinstallList) {
                 _preinstallList = new List<UnitPreinstall>();
             }
@@ -116,6 +148,8 @@ namespace GameA
         public bool DeepCopy (UnitPreinstallList obj)
         {
             if (null == obj) return false;
+            _resultCode = obj.ResultCode;           
+            _updateTime = obj.UpdateTime;           
             if (null ==  obj.PreinstallList) return false;
             if (null ==  _preinstallList) {
                 _preinstallList = new List<UnitPreinstall>();

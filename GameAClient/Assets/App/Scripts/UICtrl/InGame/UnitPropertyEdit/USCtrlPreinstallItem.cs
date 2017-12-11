@@ -7,15 +7,9 @@ namespace GameA
     {
         private UnitPreinstall _data;
 
-        protected override void OnViewCreated()
+        public void AddInputEndEditListener(UnityAction<string> onEndEdit)
         {
-            base.OnViewCreated();
-            _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
-        }
-
-        private void OnInputEndEdit(string arg0)
-        {
-            
+            _cachedView.InputField.onEndEdit.AddListener(onEndEdit);
         }
 
         public void AddListener(UnityAction onBtn)
@@ -31,7 +25,12 @@ namespace GameA
         public void Set(UnitPreinstall data)
         {
             _data = data;
-            _cachedView.NameTxt.text = _cachedView.InputField.text = _data.PreinstallData.Name;
+            SetText(_data.PreinstallData.Name);
+        }
+
+        public void SetText(string content)
+        {
+            _cachedView.NameTxt.text = _cachedView.InputField.text = content;
         }
 
         public void SetSelected(bool value)

@@ -14,8 +14,9 @@ namespace GameA.Game
         }
 
         public const int MaxTeamCount = 6;
-        private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(6);
-        private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(6);
+        private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
+        private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount);
+        private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
         private byte _myTeamId;
 
         public void AddPlayer(PlayerBase player)
@@ -30,6 +31,7 @@ namespace GameA.Game
                 LogHelper.Error("player has been added to TeamManager");
                 return;
             }
+            _players.Add(player);
             _playerDic[teamId].Add(player.PlayerId);
             if (player.IsMain)
             {
@@ -50,7 +52,7 @@ namespace GameA.Game
         public int GetMyTeamScore()
         {
             int score;
-            if(!_scoreDic.TryGetValue(_myTeamId, out score))
+            if (!_scoreDic.TryGetValue(_myTeamId, out score))
             {
                 LogHelper.Error("cant find myTeamScore");
             }
@@ -59,15 +61,31 @@ namespace GameA.Game
 
         public void Reset()
         {
+            _players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
         }
-        
+
         public void Dispose()
         {
+            _players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
             _instance = null;
+        }
+
+        public UnitBase GetMonsterTarget(MonsterBase unit)
+        {
+            byte teamId = unit.TeamId;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                if (_players[i].TeamId == 0 || unit.TeamId == 0 || _players[i].TeamId != unit.TeamId)
+                {
+                    return _players[i];
+                }
+            }
+            //找不到目标时返回自己
+            return unit;
         }
     }
 }

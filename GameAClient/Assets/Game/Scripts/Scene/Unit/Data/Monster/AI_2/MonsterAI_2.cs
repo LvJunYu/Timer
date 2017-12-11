@@ -127,6 +127,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
+            base.UpdateMonsterAI();
             if (_timerBang > 0)
             {
                 _timerBang--;

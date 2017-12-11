@@ -31,7 +31,7 @@ namespace GameA.Game
             _intelligenc = 0; //智商为0，每次犯傻必回头，作为巡逻
             return true;
         }
-        
+
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
@@ -49,7 +49,7 @@ namespace GameA.Game
             }
             return unitExtra;
         }
-        
+
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
@@ -80,7 +80,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
             if (ConditionAttack(rel))
             {
                 if (_eMonsterState != EMonsterState.Attack)
@@ -126,7 +126,7 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                     {
-                        if (unit.IsMain)
+                        if (CanHarm(unit))
                         {
                             if (_eMonsterState != EMonsterState.Chase)
                             {
@@ -140,9 +140,9 @@ namespace GameA.Game
                 //检测刹车
                 if (_eMonsterState == EMonsterState.Chase && Mathf.Abs(SpeedX) > 0)
                 {
-                    if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                    if (CenterDownPos.x > AttackTarget.CenterDownPos.x &&
                         _moveDirection == EMoveDirection.Right ||
-                        CenterDownPos.x <= PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                        CenterDownPos.x <= AttackTarget.CenterDownPos.x &&
                         _moveDirection == EMoveDirection.Left)
                     {
                         ChangeState(EMonsterState.Brake);
@@ -158,7 +158,7 @@ namespace GameA.Game
 
         protected virtual bool ConditionAttack(IntVec2 rel)
         {
-            if (!CanAttack || !PlayMode.Instance.MainPlayer.IsAlive)
+            if (!CanAttack)
             {
                 return false;
             }
@@ -167,9 +167,9 @@ namespace GameA.Game
                 return false;
             }
             //若老虎背对玩家不会攻击
-            if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+            if (CenterDownPos.x > AttackTarget.CenterDownPos.x &&
                 _moveDirection == EMoveDirection.Right ||
-                CenterDownPos.x <= PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                CenterDownPos.x <= AttackTarget.CenterDownPos.x &&
                 _moveDirection == EMoveDirection.Left)
             {
                 return false;
@@ -216,7 +216,7 @@ namespace GameA.Game
             if (eMonsterState == EMonsterState.Brake)
             {
                 //玩家在左边
-                if (CenterDownPos.x >= PlayMode.Instance.MainPlayer.CenterDownPos.x)
+                if (CenterDownPos.x >= AttackTarget.CenterDownPos.x)
                 {
                     ChangeWay(EMoveDirection.Left);
                 }

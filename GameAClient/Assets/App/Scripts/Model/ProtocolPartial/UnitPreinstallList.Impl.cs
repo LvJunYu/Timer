@@ -29,6 +29,7 @@ namespace GameA
                 Request(unitId, () =>
                 {
                     _preinstallsCache = _preinstallList;
+                    _preinstallsCache.Sort((p, q) => p.CreateTime.CompareTo(q.CreateTime));
                     _cache.Add(unitId, _preinstallsCache);
                     if (successAction != null)
                     {

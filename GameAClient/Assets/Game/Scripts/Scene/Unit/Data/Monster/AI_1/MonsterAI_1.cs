@@ -87,13 +87,14 @@ namespace GameA.Game
         
         protected override void UpdateMonsterAI()
         {
+            base.UpdateMonsterAI();
             if (_thinkTimer > 0)
             {
                 _thinkTimer--;
             }
             ChangeState(EAIState.Idle);
-            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
-            if (PlayMode.Instance.MainPlayer.CanMove)
+            IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
+            if (AttackTarget.CanMove)
             {
                 if (ConditionAttack(rel))
                 {
@@ -164,9 +165,8 @@ namespace GameA.Game
                 }
             }
             _lastPos = _curPos;
-            
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
-            IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainPlayer.CurPos / ConstDefineGM2D.ServerTileScale;
+            IntVec2 distance = (_path[_path.Count - 1] - AttackTarget.CurPos) / ConstDefineGM2D.ServerTileScale;
             if (Mathf.Abs(distance.x) <= PathRange.x && Mathf.Abs(distance.y) <= PathRange.y)
             {
                 _reSeekTimer = 0;
@@ -328,8 +328,7 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _currentNodeId = 0;
-            var mainUnit = PlayMode.Instance.MainPlayer;
-            var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
+            var path = ColliderScene2D.Instance.FindPath(this, AttackTarget, 3);
             if (path != null && path.Count > 1)
             {
                 _currentNodeId = 1;

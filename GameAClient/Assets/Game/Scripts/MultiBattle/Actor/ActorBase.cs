@@ -394,7 +394,7 @@ namespace GameA.Game
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
         {
-            if (!IsMain)
+            if (!IsPlayer)
             {
                 return true;
             }
