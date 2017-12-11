@@ -208,7 +208,7 @@ namespace GameA.Game
             return true;
         }
 
-        public void OnRoomInfo(Msg_RC_RoomInfo ret)
+        public void OnRoomInfo(Msg_MC_RoomInfo ret)
         {
             _users.Clear();
             ret.Users.ForEach(msgUser =>

@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using SoyEngine;
+using SoyEngine.MasterServer;
 using SoyEngine.Proto;
 
 namespace GameA.Game
@@ -14,9 +15,10 @@ namespace GameA.Game
     {
         private static RoomManager _instance;
         private bool _run;
-        private RoomClient _roomClient = new RoomClient();
+        private RoomClient _roomClient;// = new RoomClient();
+        private MSClient _msClient = new MSClient();
         private Room _room = new Room();
-        private Msg_CR_CreateRoom _msgCreateRoom = new Msg_CR_CreateRoom();
+        private Msg_CM_CreateRoom _msgCreateRoom = new Msg_CM_CreateRoom();
 
         public static RoomManager Instance
         {
@@ -33,6 +35,11 @@ namespace GameA.Game
             get { return Instance._roomClient; }
         }
 
+        public static MSClient MsClient
+        {
+            get { return Instance._msClient; }
+        }
+
         public bool Init()
         {
             _run = false;
@@ -41,7 +48,13 @@ namespace GameA.Game
             {
                 address = "localhost";
             }
-            ConnectRS(address, 6000);
+//            ConnectRS(address, 6000);
+            var msAddress = SocialApp.Instance.MasterServerAddress;
+            if (string.IsNullOrEmpty(msAddress))
+            {
+                msAddress = "127.0.0.1";
+            }
+            ConnectMS(msAddress, 3001);
             _run = true;
             return true;
         }
@@ -52,13 +65,26 @@ namespace GameA.Game
             _roomClient.Connect(ip, port);
         }
 
+        public void ConnectMS(string ip, ushort port)
+        {
+            LogHelper.Debug("StartConnectMS: {0}, {1}", ip, port);
+            _msClient.Connect(ip, port);
+        }
+
         public void Update()
         {
             if (!_run)
             {
                 return;
             }
-            _roomClient.Update();
+            if (_roomClient != null)
+            {
+                _roomClient.Update();
+            }
+            if (_msClient != null)
+            {
+                _msClient.ProcessAllMsg();
+            }
         }
 
         private void SendToServer(object msg)
@@ -69,8 +95,27 @@ namespace GameA.Game
             }
         }
 
+        private void SendToMSServer(object msg)
+        {
+            LogHelper.Debug("MSClient IsConnected: {0}", _msClient.IsConnected());
+            if (_msClient != null && _msClient.IsConnected())
+            {
+                _msClient.Write(msg);
+            }
+        }
+
         #region Room Send
 
+        /// <summary>
+        /// 请求登陆服务器
+        /// </summary>
+        public void SendPlayerLoginMS()
+        {
+            var login = new Msg_CM_Login();
+            login.ClientVersion = GlobalVar.Instance.AppVersion;
+            login.UserId = LocalUser.Instance.UserGuid;
+            SendToMSServer(login);
+        }
         /// <summary>
         /// 请求登陆服务器
         /// </summary>
@@ -91,21 +136,21 @@ namespace GameA.Game
 
         public void SendRequestJoinRoom(long roomId)
         {
-            var msg = new Msg_CR_JoinRoom();
+            var msg = new Msg_CM_JoinRoom();
             msg.RoomGuid = roomId;
             SendToServer(msg);
         }
 
         public void SendRoomReadyInfo(bool flag)
         {
-            var msg = new Msg_CR_UserReadyInfo();
+            var msg = new Msg_CM_UserReadyInfo();
             msg.Flag = flag ? 1 : 0;
             SendToServer(msg);
         }
 
         public void SendRequestExitRoom(long roomGuid)
         {
-            var msg = new Msg_CR_UserExit();
+            var msg = new Msg_CM_UserExit();
             msg.Flag = 1;
             SendToServer(msg);
         }
@@ -114,7 +159,7 @@ namespace GameA.Game
 
         #region Room Receive
 
-        public void OnCreateRoomRet(Msg_RC_CreateRoomRet msg)
+        public void OnCreateRoomRet(Msg_MC_CreateRoomRet msg)
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
@@ -127,7 +172,7 @@ namespace GameA.Game
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
-        internal void OnJoinRoomRet(Msg_RC_JoinRoomRet msg)
+        internal void OnJoinRoomRet(Msg_MC_JoinRoomRet msg)
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
@@ -137,30 +182,30 @@ namespace GameA.Game
             _room.OnJoinSuccess();
         }
 
-        internal void OnRoomInfo(Msg_RC_RoomInfo msg)
+        internal void OnRoomInfo(Msg_MC_RoomInfo msg)
         {
             _room.OnRoomInfo(msg);
         }
 
-        internal void OnNewUserJoinRoom(Msg_RC_RoomUserEnter msg)
+        internal void OnNewUserJoinRoom(Msg_MC_RoomUserEnter msg)
         {
-            Msg_RC_RoomUserInfo msgUser = msg.UserInfo;
+            Msg_MC_RoomUserInfo msgUser = msg.UserInfo;
             var user = new RoomUser();
             user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
             _room.AddUser(user);
         }
 
-        internal void OnUserExit(Msg_RC_UserExit msg)
+        internal void OnUserExit(Msg_MC_UserExit msg)
         {
             _room.OnUserExit(msg.UserGuid, msg.HostUserGuid);
         }
 
-        internal void OnSelfExit(Msg_RC_UserExitRet msg)
+        internal void OnSelfExit(Msg_MC_UserExitRet msg)
         {
             _room.OnSelfExit(msg.Flag == 1);
         }
 
-        internal void OnUserReadyInfo(Msg_RC_UserReadyInfo msg)
+        internal void OnUserReadyInfo(Msg_MC_UserReadyInfo msg)
         {
             _room.OnUserReady(msg.UserGuid, msg.Flag == 1);
         }
