@@ -10,8 +10,21 @@ namespace GameA
         private int _max;
         private int _cur;
         private Action<int> _callBack;
-        private string _numFormat;
-        private int _delta;
+        private string _numFormat; //数字显示格式
+        private int _delta; //按钮的变化值
+        private int _convertValue; //显示内容的单位转换
+
+        private string CurNumString
+        {
+            get
+            {
+                if (_numFormat == null)
+                {
+                    return "0";
+                }
+                return string.Format(_numFormat, _cur / (float) _convertValue);
+            }
+        }
 
         public int Cur
         {
@@ -26,7 +39,8 @@ namespace GameA
             _cachedView.Slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
-        public void Set(int min, int max, Action<int> callBack, int delta = 1, string numFormat = "{0}")
+        public void Set(int min, int max, Action<int> callBack, int delta = 1, string numFormat = "{0}",
+            int convertValue = 1)
         {
             if (min >= max)
             {
@@ -37,6 +51,7 @@ namespace GameA
             _min = min;
             _max = max;
             _delta = delta;
+            _convertValue = convertValue;
             _callBack = callBack;
             _cachedView.Slider.minValue = _min;
             _cachedView.Slider.maxValue = _max;
@@ -65,7 +80,7 @@ namespace GameA
                 _cur = cur;
             }
             _cachedView.Slider.value = cur;
-            _cachedView.Num.text = string.Format(_numFormat, _cur);
+            _cachedView.Num.text = CurNumString;
         }
 
         private void OnRightBtn()
@@ -83,10 +98,7 @@ namespace GameA
             var cur = (int) value;
             if (cur == _cur) return;
             _cur = cur;
-            if (_numFormat != null)
-            {
-                _cachedView.Num.text = string.Format(_numFormat, _cur);
-            }
+            _cachedView.Num.text = CurNumString;
             if (_callBack != null)
             {
                 _callBack.Invoke((int) value);

@@ -244,15 +244,29 @@ namespace GameA.Game
                 case EAdvanceAttribute.InjuredReduce:
                 case EAdvanceAttribute.CureIncrease:
                     return "{0}%";
+                case EAdvanceAttribute.TimeInterval:
+                case EAdvanceAttribute.ChargeTime:
+                    return "{0:f1}秒";
             }
             return "{0}";
+        }
+
+        private static int GetConvertValue(EAdvanceAttribute eAdvanceAttribute)
+        {
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                case EAdvanceAttribute.ChargeTime:
+                    return 1000;
+            }
+            return 1;
         }
 
         public static void SetUSCtrlSliderSetting(USCtrlSliderSetting usCtrlSliderSetting,
             EAdvanceAttribute eAdvanceAttribute, Action<int> callBack)
         {
             usCtrlSliderSetting.Set(GetMin(eAdvanceAttribute), GetMax(eAdvanceAttribute), callBack,
-                GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute));
+                GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute), GetConvertValue(eAdvanceAttribute));
         }
 
         public static bool CanEdit(EAdvanceAttribute eAdvanceAttribute, int id)
