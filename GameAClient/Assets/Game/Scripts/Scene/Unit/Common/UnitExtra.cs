@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SoyEngine;
+using SoyEngine.Proto;
 
 #pragma warning disable 0660 0661
 
@@ -111,6 +112,66 @@ namespace GameA.Game
                 AddStates.Set(skill.AddStates);
             }
         }
+
+        public Msg_Preinstall ToUnitPreInstall()
+        {
+            var msg = new Msg_Preinstall();
+            msg.MoveDirection = (byte) MoveDirection;
+            msg.Active = Active;
+            msg.ChildId = ChildId;
+            msg.ChildRotation = ChildRotation;
+            msg.RotateMode = RotateMode;
+            msg.RotateValue = RotateValue;
+            msg.TimeDelay = TimeDelay;
+            msg.TimeInterval = TimeInterval;
+            msg.Msg = Msg;
+            msg.JumpAbility = JumpAbility;
+            msg.TeamId = TeamId;
+            msg.Life = MaxHp;
+            msg.AttackPower = Damage;
+            msg.MoveSpeed = MaxSpeedX;
+            msg.EffectRange = EffectRange;
+            msg.CastRange = CastRange;
+            msg.ViewRange = ViewRange;
+            msg.BulletCount = BulletCount;
+            msg.CastSpeed = BulletSpeed;
+            msg.ChargeTime = ChargeTime;
+            msg.InjuredReduce = InjuredReduce;
+            msg.CureIncrease = CureIncrease;
+            msg.Drops.AddRange(Drops.ToList());
+            msg.KnockbackForces.AddRange(KnockbackForces.ToList());
+            msg.AddStates.AddRange(AddStates.ToList());
+            return msg;
+        }
+
+        public void Set(Preinstall data)
+        {
+            MoveDirection = (EMoveDirection) data.MoveDirection;
+            Active = (byte) data.Active;
+            ChildId = (ushort) data.ChildId;
+            ChildRotation = (byte) data.ChildRotation;
+            RotateMode = (byte) data.RotateMode;
+            RotateValue = (byte) data.RotateValue;
+            TimeDelay = (ushort) data.TimeDelay;
+            TimeInterval = (ushort) data.TimeInterval;
+            Msg = data.Msg;
+            JumpAbility = (ushort) data.JumpAbility;
+            TeamId = (byte) data.TeamId;
+            MaxHp = (ushort) data.Life;
+            Damage = (ushort) data.AttackPower;
+            MaxSpeedX = (ushort) data.MoveSpeed;
+            Drops.Set(data.Drops.ToArray());
+            EffectRange = (ushort) data.EffectRange;
+            CastRange = (ushort) data.CastRange;
+            ViewRange = (ushort) data.ViewRange;
+            BulletCount = (ushort) data.BulletCount;
+            BulletSpeed = (ushort) data.CastSpeed;
+            ChargeTime = (ushort) data.ChargeTime;
+            InjuredReduce = (byte) data.InjuredReduce;
+            CureIncrease = (ushort) data.CureIncrease;
+            KnockbackForces.Set(data.KnockbackForces.ToArray());
+            AddStates.Set(data.AddStates.ToArray());
+        }
     }
 
     public class UnitExtraHelper
@@ -208,11 +269,11 @@ namespace GameA.Game
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.TimeInterval:
-                    return 100;
+                    return 1000;
                 case EAdvanceAttribute.Damage:
-                    return 20;
+                    return 100;
                 case EAdvanceAttribute.EffectRange:
-                    return 5;
+                    return 10;
                 case EAdvanceAttribute.ViewRange:
                     return 10;
                 case EAdvanceAttribute.BulletCount:
@@ -220,9 +281,9 @@ namespace GameA.Game
                 case EAdvanceAttribute.CastRange:
                     return 10;
                 case EAdvanceAttribute.BulletSpeed:
-                    return 2;
+                    return 5;
                 case EAdvanceAttribute.ChargeTime:
-                    return 500;
+                    return 1000;
                 case EAdvanceAttribute.MaxHp:
                     return 100;
                 case EAdvanceAttribute.MaxSpeedX:

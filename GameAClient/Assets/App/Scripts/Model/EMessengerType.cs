@@ -174,5 +174,8 @@ namespace GameA
         //乱入
         public static readonly int OnShadowBattleStart = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnShadowBattleFriendHelp = SoyEngine.EMessengerType.NextId++;
+        
+        //工坊编辑预设
+        public static readonly int OnPreinstallRead = SoyEngine.EMessengerType.NextId++;
     }
 }

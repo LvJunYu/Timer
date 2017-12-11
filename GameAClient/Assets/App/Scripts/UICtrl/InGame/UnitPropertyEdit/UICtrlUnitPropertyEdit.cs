@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -18,6 +19,7 @@ namespace GameA
         private const float MenuArrowRadius = 18;
         public const int MessageStringCountMax = 45;
         private UPCtrlUnitPropertyEditAdvance _upCtrlUnitPropertyEditAdvance;
+        private UPCtrlUnitPropertyEditPreinstall _upCtrlUnitPropertyEditPreinstall;
         private UnitEditData _originData;
         private Table_Unit _tableUnit;
         public UnitEditData EditData;
@@ -33,11 +35,16 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
-        private USCtrlPreinstallItem[] _preinstallItems;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
         private EEditType _curEditType;
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<int>(EMessengerType.OnPreinstallRead, OnPreinstallRead);
+        }
 
         protected override void InitGroupId()
         {
@@ -79,9 +86,10 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
-            _cachedView.SavePreinstallBtn.onClick.AddListener(OnSavePreinstallBtn);
             _upCtrlUnitPropertyEditAdvance = new UPCtrlUnitPropertyEditAdvance();
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
+            _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
+            _upCtrlUnitPropertyEditPreinstall.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -97,6 +105,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) type] = new USCtrlUnitPropertyEditButton();
             }
+
             _menuButtonArray[(int) EEditType.Active].Init(_cachedView.ActiveStateMenu);
             _menuButtonArray[(int) EEditType.Direction].Init(_cachedView.DirectionMenu);
             _menuButtonArray[(int) EEditType.Child].Init(_cachedView.PayloadMenu);
@@ -268,15 +277,6 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
-
-            var items = _cachedView.PreinstallToggleGroup.GetComponentsInChildren<USViewPreinstallItem>();
-            _preinstallItems = new USCtrlPreinstallItem[items.Length];
-            for (int i = 0; i < items.Length; i++)
-            {
-                _preinstallItems[i] = new USCtrlPreinstallItem();
-                _preinstallItems[i].Init(items[i]);
-                _preinstallItems[i].SetTogGroup(_cachedView.PreinstallToggleGroup);
-            }
         }
 
         protected override void OnOpen(object parameter)
@@ -292,6 +292,27 @@ namespace GameA
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
             RefreshView();
+            OnEditTypeMenuClick(_validEditPropertyList[0]);
+            _upCtrlUnitPropertyEditPreinstall.Open();
+        }
+
+        protected override void OnClose()
+        {
+            _upCtrlUnitPropertyEditPreinstall.Close();
+            base.OnClose();
+        }
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            if (_curEditType == EEditType.Camp)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+            }
+            else if (_curEditType == EEditType.Child)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+            }
         }
 
         private void RefreshView()
@@ -407,8 +428,6 @@ namespace GameA
                 _menuButtonArray[(int) _validEditPropertyList[i]].SetBgImageAngle(angle - 180);
                 _menuButtonArray[(int) _validEditPropertyList[i]].SetPosAngle(angle, MenuPosRadius);
             }
-            RefreshPreinstalls();
-            OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
         private void RefreshAcitveMenu()
@@ -729,29 +748,10 @@ namespace GameA
             }
         }
 
-        protected override void OnOpenAnimationComplete()
+        private void OnPreinstallRead(int index)
         {
-            base.OnOpenAnimationComplete();
-            if (_curEditType == EEditType.Camp)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-            }
-            else if (_curEditType == EEditType.Child)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
-            }
-        }
-
-        private void RefreshPreinstalls()
-        {
-            for (int i = 0; i < _preinstallItems.Length; i++)
-            {
-                _preinstallItems[i].SetEnable(false);
-            }
-        }
-
-        private void OnSavePreinstallBtn()
-        {
+            _upCtrlUnitPropertyEditPreinstall.OnPreinstallRead(index);
+            RefreshView();
         }
     }
 }

@@ -1541,9 +1541,9 @@ namespace GameA
         /// <summary>
 		/// 创建预设
 		/// </summary>
-		/// <param name="unitPreinstall">预设数据</param>
+		/// <param name="preinstall">预设数据</param>
         public static void CreateUnitPreinstall (
-            Msg_CS_DAT_UnitPreinstall unitPreinstall,
+            Msg_Preinstall preinstall,
             Action<Msg_SC_CMD_CreateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1553,7 +1553,7 @@ namespace GameA
             _isRequstingCreateUnitPreinstall = true;
             Msg_CS_CMD_CreateUnitPreinstall msg = new Msg_CS_CMD_CreateUnitPreinstall();
             // 创建预设
-            msg.UnitPreinstall = unitPreinstall;
+            msg.Preinstall = preinstall;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateUnitPreinstall>(
                 SoyHttpApiPath.CreateUnitPreinstall, msg, ret => {
                     if (successCallback != null) {
@@ -1579,10 +1579,10 @@ namespace GameA
 		/// 更新预设
 		/// </summary>
 		/// <param name="preinstallId">预设Id</param>
-		/// <param name="unitPreinstall">预设数据</param>
+		/// <param name="preinstall">预设数据</param>
         public static void UpdateUnitPreinstall (
             long preinstallId,
-            Msg_CS_DAT_UnitPreinstall unitPreinstall,
+            Msg_Preinstall preinstall,
             Action<Msg_SC_CMD_UpdateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1593,7 +1593,7 @@ namespace GameA
             Msg_CS_CMD_UpdateUnitPreinstall msg = new Msg_CS_CMD_UpdateUnitPreinstall();
             // 更新预设
             msg.PreinstallId = preinstallId;
-            msg.UnitPreinstall = unitPreinstall;
+            msg.Preinstall = preinstall;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUnitPreinstall>(
                 SoyHttpApiPath.UpdateUnitPreinstall, msg, ret => {
                     if (successCallback != null) {
@@ -1618,7 +1618,7 @@ namespace GameA
         /// <summary>
 		/// 删除预设
 		/// </summary>
-		/// <param name="preinstallId">关卡Id</param>
+		/// <param name="preinstallId">预设Id</param>
         public static void DeleteUnitPreinstall (
             List<long> preinstallId,
             Action<Msg_SC_CMD_DeleteUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
