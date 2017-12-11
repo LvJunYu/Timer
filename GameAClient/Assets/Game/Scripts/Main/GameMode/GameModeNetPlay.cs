@@ -124,9 +124,9 @@ namespace GameA.Game
         private void SendToServer(object msg)
         {
             var roomClient = RoomManager.RoomClient;
-            if (roomClient != null && roomClient.IsConnnected())
+            if (roomClient != null && roomClient.IsConnected())
             {
-                roomClient.Send(msg);
+                roomClient.Write(msg);
             }
         }
 

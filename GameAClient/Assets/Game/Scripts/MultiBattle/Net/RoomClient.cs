@@ -16,7 +16,7 @@ namespace GameA.Game
     /// <summary>
     /// 服务器需要取得并且分配好三个角色的出生位置
     /// </summary>
-    public class RoomClient : NetClient
+    public class RoomClient : JoyTCPClient
     {
         public RoomClient()
         {
@@ -32,18 +32,13 @@ namespace GameA.Game
             new GameObject().AddComponent<TestRoom>();
         }
 
-        protected override void OnClose()
-        {
-            LogHelper.Debug("RoomClient OnClose");
-        }
-
-        protected override void OnDisConnected()
+        protected override void OnDisconnected(int code = 0)
         {
             LogHelper.Debug("RoomClient OnDisConnected");
         }
     }
 
-    public class RoomClientHandler : Handler<object, NetLink>
+    public class RoomClientHandler : Handler<object, object>
     {
         private GameModeNetPlay _modeNetPlay;
 
@@ -58,7 +53,7 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
         }
 
-        private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, NetLink netLink)
+        private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
@@ -66,7 +61,7 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, NetLink netLink)
+        private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
@@ -74,7 +69,7 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, NetLink netLink)
+        private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
@@ -82,7 +77,7 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, NetLink netLink)
+        private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
@@ -90,7 +85,7 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, NetLink netLink)
+        private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
@@ -98,7 +93,7 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, NetLink netLink)
+        private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
             if (msg.ResultCode == ERLoginCode.ELC_Success)
             {

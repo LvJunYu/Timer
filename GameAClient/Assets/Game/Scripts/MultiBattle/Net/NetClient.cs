@@ -29,7 +29,7 @@ namespace SoyEngine
         protected string _serverIp;
         protected ushort _serverPort;
         protected ProtoSerializer _serializer;
-        protected IHandler<object, NetLink> _handler;
+        protected IHandler<object, object> _handler;
 
         public NetClient()
         {
@@ -38,14 +38,14 @@ namespace SoyEngine
             NetworkTransport.Init(gc);
         }
 
-        public NetClient(ProtoSerializer serializer, IHandler<object, NetLink> handler)
+        public NetClient(ProtoSerializer serializer, IHandler<object, object> handler)
             : this()
         {
             _serializer = serializer;
             _handler = handler;
         }
 
-        public bool IsConnnected()
+        public bool IsConnected()
         {
             return _eConnectState == EConnectState.Connected;
         }
@@ -68,7 +68,6 @@ namespace SoyEngine
 
         public virtual void Disconnect()
         {
-            OnClose();
             _eConnectState = EConnectState.Disconnected;
             if (_netLink != null)
             {
@@ -245,7 +244,7 @@ namespace SoyEngine
                         {
                             OnDisconnectError((NetworkError)error);
                         }
-                        OnDisConnected();
+                        OnDisconnected();
                         break;
                     case NetworkEventType.DataEvent:
                         if (error != (decimal)NetworkError.Ok)
@@ -302,9 +301,14 @@ namespace SoyEngine
             _readBuffer.Clear();
         }
 
-        public virtual bool Send(object msg)
+        public virtual bool Write(object msg)
         {
 //            LogHelper.Debug("Send -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
+            return SendByChannel(msg, 0);
+        }
+
+        public virtual bool Send(object msg)
+        {
             return SendByChannel(msg, 0);
         }
 
@@ -360,15 +364,11 @@ namespace SoyEngine
             LogHelper.Error("Client Disconnect Error:{0} ", error);
         }
 
-        protected virtual void OnClose()
-        {
-        }
-
         protected virtual void OnConnected()
         {
         }
 
-        protected virtual void OnDisConnected()
+        protected virtual void OnDisconnected(int code = 0)
         {
         }
 

@@ -15,7 +15,7 @@ namespace GameA.Game
     {
         private static RoomManager _instance;
         private bool _run;
-        private RoomClient _roomClient;// = new RoomClient();
+        private RoomClient _roomClient = new RoomClient();
         private MSClient _msClient = new MSClient();
         private Room _room = new Room();
         private Msg_CM_CreateRoom _msgCreateRoom = new Msg_CM_CreateRoom();
@@ -83,15 +83,15 @@ namespace GameA.Game
             }
             if (_msClient != null)
             {
-                _msClient.ProcessAllMsg();
+                _msClient.Update();
             }
         }
 
-        private void SendToServer(object msg)
+        private void SendToRSServer(object msg)
         {
-            if (_roomClient != null && _roomClient.IsConnnected())
+            if (_roomClient != null && _roomClient.IsConnected())
             {
-                _roomClient.Send(msg);
+                _roomClient.Write(msg);
             }
         }
 
@@ -124,35 +124,35 @@ namespace GameA.Game
             var login = new Msg_CR_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
             login.UserId = LocalUser.Instance.UserGuid;
-            SendToServer(login);
+            SendToRSServer(login);
         }
 
         public void SendRequestCreateRoom(EBattleType eBattleType, long projectGuid)
         {
             _msgCreateRoom.EBattleType = eBattleType;
             _msgCreateRoom.ProjectGuid = projectGuid;
-            SendToServer(_msgCreateRoom);
+            SendToRSServer(_msgCreateRoom);
         }
 
         public void SendRequestJoinRoom(long roomId)
         {
             var msg = new Msg_CM_JoinRoom();
             msg.RoomGuid = roomId;
-            SendToServer(msg);
+            SendToRSServer(msg);
         }
 
         public void SendRoomReadyInfo(bool flag)
         {
             var msg = new Msg_CM_UserReadyInfo();
             msg.Flag = flag ? 1 : 0;
-            SendToServer(msg);
+            SendToRSServer(msg);
         }
 
         public void SendRequestExitRoom(long roomGuid)
         {
             var msg = new Msg_CM_UserExit();
             msg.Flag = 1;
-            SendToServer(msg);
+            SendToRSServer(msg);
         }
 
         #endregion
