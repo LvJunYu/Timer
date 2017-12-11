@@ -45,6 +45,8 @@ namespace GameA
         private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
         //成就数据
         private readonly Achievement _achievement = new Achievement();
+        //预设数据
+        private readonly UnitPreinstallList _unitPreinstallList = new UnitPreinstallList();
         
         private readonly QQGameReward _qqGameReward = new QQGameReward();
 
@@ -196,6 +198,12 @@ namespace GameA
         {
             get { return _achievement; }
         }
+
+        public UnitPreinstallList UnitPreinstallList
+        {
+            get { return _unitPreinstallList; }
+        }
+
         #endregion
 
         #region 方法

@@ -1,30 +1,26 @@
 ﻿using SoyEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace GameA
 {
     public class USCtrlPreinstallItem : USCtrlBase<USViewPreinstallItem>
     {
         private UnitPreinstall _data;
-        private int _index;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Tog.onValueChanged.AddListener(OnTogValueChanged);
+            _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
         }
 
-        private void OnTogValueChanged(bool arg0)
+        private void OnInputEndEdit(string arg0)
         {
-            if (arg0)
-            {
-                Messenger<int>.Broadcast(EMessengerType.OnPreinstallRead, _index);
-            }
+            
         }
 
-        public void SetTogGroup(ToggleGroup toggleGroup)
+        public void AddListener(UnityAction onBtn)
         {
-            _cachedView.Tog.group = toggleGroup;
+            _cachedView.Btn.onClick.AddListener(onBtn);
         }
 
         public void SetEnable(bool value)
@@ -32,11 +28,15 @@ namespace GameA
             _cachedView.SetActiveEx(value);
         }
 
-        public void Set(UnitPreinstall data,int index)
+        public void Set(UnitPreinstall data)
         {
             _data = data;
-            _index = index;
-            _cachedView.NameTxt1.text = _cachedView.NameTxt2.text = _data.PreinstallData.Name;
+            _cachedView.NameTxt.text = _cachedView.InputField.text = _data.PreinstallData.Name;
+        }
+
+        public void SetSelected(bool value)
+        {
+            _cachedView.InputField.SetActiveEx(value);
         }
     }
 }

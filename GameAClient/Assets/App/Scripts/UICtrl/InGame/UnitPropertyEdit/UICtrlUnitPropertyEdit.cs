@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -43,7 +42,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<int>(EMessengerType.OnPreinstallRead, OnPreinstallRead);
+            RegisterEvent(EMessengerType.OnPreinstallRead, OnPreinstallRead);
         }
 
         protected override void InitGroupId()
@@ -748,9 +747,8 @@ namespace GameA
             }
         }
 
-        private void OnPreinstallRead(int index)
+        private void OnPreinstallRead()
         {
-            _upCtrlUnitPropertyEditPreinstall.OnPreinstallRead(index);
             RefreshView();
         }
     }
