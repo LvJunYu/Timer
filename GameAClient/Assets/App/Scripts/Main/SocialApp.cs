@@ -31,6 +31,7 @@ namespace GameA
         [SerializeField] private PublishChannel.EType _publishChannel = PublishChannel.EType.None;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
+        [SerializeField] private string _masterServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
         private float _startTime;
         private const float MinLoadingTime = 2f;
@@ -46,6 +47,11 @@ namespace GameA
         public string RoomServerAddress
         {
             get { return _roomServerAddress; }
+        }
+
+        public string MasterServerAddress
+        {
+            get { return _masterServerAddress; }
         }
 
         public static AddressConfig GetAppServerAddress()
@@ -206,6 +212,7 @@ namespace GameA
                 {
                     ReYunManager.Instance.Register();
                 }
+                RoomManager.Instance.Init();
             }, code =>
             {
                 if (GlobalVar.Instance.Env != EEnvironment.Production)
@@ -307,7 +314,7 @@ namespace GameA
             GameManager.Instance.Update();
             CompassManager.Instance.Update();
             ReYunManager.Instance.Update();
-//            RoomManager.Instance.Update();
+            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
