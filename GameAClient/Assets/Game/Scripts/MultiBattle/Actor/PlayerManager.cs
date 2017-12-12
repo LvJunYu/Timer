@@ -82,12 +82,20 @@ namespace GameA.Game
             }
             else
             {
-                player.Set(_userDataList[_playerList.Count]);
+                player.Set(_userDataList[roomInx]);
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
                     : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
             }
-            _playerList.Add(player);
+            if (roomInx<_playerList.Count)
+            {
+                _playerList[roomInx] = player;
+                
+            }
+            else
+            {
+                _playerList.Add(player);
+            }
             if (player.IsMain)
             {
                 if (_mainPlayer != null)

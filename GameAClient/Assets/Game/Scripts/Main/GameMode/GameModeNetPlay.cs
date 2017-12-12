@@ -180,6 +180,10 @@ namespace GameA.Game
             for (int i = 0; i < pm.PlayerList.Count; i++)
             {
                 PlayerBase playerBase = pm.PlayerList[i];
+                if (playerBase == null)
+                {
+                    continue;
+                }
                 Msg_RC_UserInputData userInputData =
                     frameData.UserInputDatas.Find(m => m.UserRoomInx == i);
                 if (userInputData == null)
