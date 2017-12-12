@@ -130,6 +130,11 @@ namespace GameA.Game
             if (origin.UnitDesc.Guid == DefaultUnitGuid)
             {
                 UpdateUnitDefaultData(editData);
+                //复活点阵营改变
+                if (UnitDefine.IsSpawn(origin.UnitDesc.Id) && editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
+                {
+                    Messenger.Broadcast(EMessengerType.OnTeamChanged);
+                }
                 Messenger<int>.Broadcast(EMessengerType.OnEditUnitDefaultDataChange, origin.UnitDesc.Id);
             }
             else
@@ -242,7 +247,7 @@ namespace GameA.Game
             if (UnitDefine.IsSpawn(id))
             {
                 unitEditData.UnitExtra = DataScene2D.Instance.PlayerExtra;
-                unitEditData.UnitExtra.TeamId = 1;
+                unitEditData.UnitExtra.TeamId = 0;
             }
             return unitEditData;
         }

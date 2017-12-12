@@ -5,14 +5,14 @@
 ** Summary : Spawn
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     [Unit(Id = 1001, Type = typeof(Spawn))]
     public class Spawn : BlockBase
     {
-        
+        protected override void InitAssetPath()
+        {
+            _assetPath = _tableUnit.Model.Replace("0", GetUnitExtra().TeamId.ToString());
+        }
     }
 }

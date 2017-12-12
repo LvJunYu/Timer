@@ -5,6 +5,7 @@
 ** Summary : UnitDefine
 ***********************************************************************/
 
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
@@ -29,6 +30,7 @@ namespace GameA.Game
         public const int FanRange = 30;
         public const int FanForce = 20;
 
+        public const int SpawnId = 1001;
         public const int MainPlayerId = 1002;
         public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
@@ -53,7 +55,7 @@ namespace GameA.Game
 
         public static bool IsSpawn(int id)
         {
-            return id == 1001;
+            return id == SpawnId;
         }
 
         public static bool IsMain(int id)
@@ -178,6 +180,14 @@ namespace GameA.Game
         public static bool CanTrigger(UnitBase unit)
         {
             return !IsBullet(unit.Id);
+        }
+    }
+
+    public class UnitHelper
+    {
+        public static Sprite GetSpawnSprite(int teamId)
+        {
+            return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
         }
     }
 }

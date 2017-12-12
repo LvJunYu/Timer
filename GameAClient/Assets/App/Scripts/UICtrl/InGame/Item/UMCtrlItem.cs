@@ -23,10 +23,20 @@ namespace GameA
         private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
         private UMCtrlUnitProperty _umCtrlUnitProperty;
         private bool _isShow;
-        
+
+        public bool IsShow
+        {
+            get { return _isShow; }
+        }
+
+        public int UnitId
+        {
+            get { return _table.Id; }
+        }
+
         public void Show()
         {
-            if (_isShow)
+            if (IsShow)
             {
                 return;
             }
@@ -36,11 +46,16 @@ namespace GameA
             Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSpawnSprite);
+                RefreshSpawnSprite();
+            }
         }
 
         public void Hide()
         {
-            if (!_isShow)
+            if (!IsShow)
             {
                 return;
             }
@@ -50,6 +65,10 @@ namespace GameA
             Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSpawnSprite);
+            }
         }
 
         public void OnDestroyObject()
@@ -211,6 +230,12 @@ namespace GameA
                 _cachedView.Number.text = number.ToString();
             }
             _cachedView.Number.gameObject.SetActive(true);
+        }
+
+        private void RefreshSpawnSprite()
+        {
+            var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
+            _cachedView.SpriteIcon.sprite = UnitHelper.GetSpawnSprite(define.UnitExtra.TeamId);
         }
 
         private void OnSelectedItemChanged(ushort id)

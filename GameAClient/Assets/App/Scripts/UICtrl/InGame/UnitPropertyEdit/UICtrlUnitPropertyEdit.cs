@@ -612,10 +612,11 @@ namespace GameA
 
         private void RefreshCampMenu()
         {
-            var val = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
+            var teamId = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
+            _menuButtonArray[(int) EEditType.Camp].SetFgImage(UnitHelper.GetSpawnSprite(teamId));
             for (int i = 0; i < _campMenuList.Length; i++)
             {
-                _campMenuList[i].SetSelected(i == val);
+                _campMenuList[i].SetSelected(i == teamId);
             }
         }
 
