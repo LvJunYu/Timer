@@ -56,6 +56,7 @@ namespace GameA.Game
         private GameObject _backgroundObject;
         private SlicedCameraMask _cameraMask;
         private EEditorLayer _lastEditorLayer = EEditorLayer.None;
+        public bool OpenUnitPropertyEdit;
         #endregion
 
         #region Property

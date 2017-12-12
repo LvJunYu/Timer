@@ -287,10 +287,12 @@ namespace GameA
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
             _upCtrlUnitPropertyEditPreinstall.Open();
+            EditMode.Instance.OpenUnitPropertyEdit = true;
         }
 
         protected override void OnClose()
         {
+            EditMode.Instance.OpenUnitPropertyEdit = false;
             _upCtrlUnitPropertyEditPreinstall.Close();
             base.OnClose();
         }
