@@ -10,15 +10,12 @@ namespace GameA.Game
 
         public static TeamManager Instance
         {
-            get { return _instance ?? new TeamManager(); }
+            get { return _instance ?? (_instance = new TeamManager()); }
         }
-
 
         public const int MaxTeamCount = 6;
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
-        private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount);
-
-        ///多人模式才会计算分数
+        private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
 
         private byte _myTeamId;
@@ -116,7 +113,7 @@ namespace GameA.Game
             int score;
             if (!_scoreDic.TryGetValue(MyTeamId, out score))
             {
-                LogHelper.Error("cant find myTeamScore");
+                _scoreDic.Add(MyTeamId, 0);
             }
             return score;
         }
