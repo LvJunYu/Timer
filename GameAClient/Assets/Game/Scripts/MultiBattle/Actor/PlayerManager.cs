@@ -100,7 +100,7 @@ namespace GameA.Game
             {
                 if (_mainPlayer != null)
                 {
-                    LogHelper.Error("add main player, but main player has existed, ");
+                    PlayMode.Instance.DestroyUnit(_mainPlayer);
                 }
                 _mainPlayer = player as MainPlayer;
             }
@@ -118,6 +118,12 @@ namespace GameA.Game
             _playerList.Clear();
             _mainPlayer = null;
             _instance = null;
+        }
+
+        public void AddGhost(MainPlayer playerBase)
+        {
+            playerBase.SetPos(new IntVec2(1,1));
+            _mainPlayer = playerBase;
         }
     }
 }

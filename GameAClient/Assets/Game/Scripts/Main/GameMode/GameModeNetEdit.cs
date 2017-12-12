@@ -116,33 +116,34 @@ namespace GameA.Game
                     }
                     bool passFlag = CheckCanPublish();
 
-                    _project.Save(
-                        _project.Name,
-                        _project.Summary,
-                        mapDataBytes,
-                        IconBytes,
-                        passFlag,
-                        true,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        null,
-                        0,
-                        0,
-                        true,
-                        EditMode.Instance.MapStatistics.NetBattleData,
-                        () =>
-                        {
-                            NeedSave = false;
-                            MapDirty = false;
-                            if (successCallback != null)
+                    if (EditMode.Instance.MapStatistics.NetBattleData != null)
+                        _project.Save(
+                            _project.Name,
+                            _project.Summary,
+                            mapDataBytes,
+                            IconBytes,
+                            passFlag,
+                            true,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            null,
+                            0,
+                            0,
+                            true,
+                            EditMode.Instance.MapStatistics.NetBattleData,
+                            () =>
                             {
-                                successCallback.Invoke();
-                            }
-                        }, failedCallback);
+                                NeedSave = false;
+                                MapDirty = false;
+                                if (successCallback != null)
+                                {
+                                    successCallback.Invoke();
+                                }
+                            }, failedCallback);
                 });
             });
         }

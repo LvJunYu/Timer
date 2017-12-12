@@ -27,9 +27,10 @@ namespace GameA.Game
 
         protected override void OnConnected()
         {
+            base.OnConnected();
             LogHelper.Debug("RoomClient OnConnected");
             RoomManager.Instance.SendPlayerLoginRS();
-            new GameObject().AddComponent<TestRoom>();
+//            new GameObject().AddComponent<TestRoom>();
         }
 
         protected override void OnDisconnected(int code = 0)
@@ -72,6 +73,7 @@ namespace GameA.Game
             {
                 LogHelper.Debug("Login RS Success");
                 var project = new Project();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在启动游戏");
                 project.Request(msg.RoomInfo.ProjectId,
                     () => project.RequestPlay(() =>
                         {

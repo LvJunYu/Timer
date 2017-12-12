@@ -60,6 +60,7 @@ namespace GameA.Game
             yield return null;
             _run = true;
             GameRun.Instance.Playing();
+            _ePhase = EPhase.Simulation;
         }
 
         public override void Update()

@@ -113,6 +113,7 @@ namespace GameA.Game
         {
             var login = new Msg_CM_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
+            login.Token = LocalUser.Instance.Account.Token;
 //            login.UserId = LocalUser.Instance.UserGuid;
             SendToMSServer(login);
         }
@@ -123,6 +124,7 @@ namespace GameA.Game
         {
             var login = new Msg_CR_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
+            login.Token = LocalUser.Instance.Account.Token;
 //            login.UserId = LocalUser.Instance.UserGuid;
             SendToRSServer(login);
         }

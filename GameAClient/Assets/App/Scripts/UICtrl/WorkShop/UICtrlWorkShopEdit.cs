@@ -182,7 +182,7 @@ namespace GameA
 
         private void OnOKBtn()
         {
-            if (_editState == EEditState.HasPassed)
+//            if (_editState == EEditState.HasPassed)
             {
                 OnPublish();
             }
@@ -190,16 +190,16 @@ namespace GameA
 //            {
 //                SocialGUIManager.ShowPopupDialog("关卡已经发布。继续编辑");
 //            }
-            else
-            {
-                OnEditBtn();
-            }
+//            else
+//            {
+//                OnEditBtn();
+//            }
         }
 
         private void OnPublish()
         {
             if (null == _project) return;
-            if (!_project.PassFlag)
+            if (!_project.IsMulti && !_project.PassFlag)
             {
                 SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关", null,
                     new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));

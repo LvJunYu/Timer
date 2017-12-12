@@ -454,11 +454,14 @@ namespace GameA.Game
                 else
                 {
                     //多人
-                    if (users.Count == 0)
-                    {
-                        LogHelper.Error("users's count is zero, create player failed.");
-                        return false;
-                    }
+                    var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
+                    mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                    PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
+//                    if (users.Count == 0)
+//                    {
+//                        LogHelper.Error("users's count is zero, create player failed.");
+//                        return false;
+//                    }
 //                    for (int j = 0; j < users.Count; j++)
 //                    {
 //                        if (users[j].Guid == LocalUser.Instance.UserGuid)
@@ -471,7 +474,6 @@ namespace GameA.Game
 //                        }
 //                    }
                 }
-                _mainPlayer = PlayerManager.Instance.MainPlayer;
             }
             return true;
         }
@@ -496,7 +498,10 @@ namespace GameA.Game
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
             player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
             PlayerManager.Instance.Add(player, roomInx);
-            return;
+            if (main)
+            {
+                _mainPlayer = PlayerManager.Instance.MainPlayer;
+            }
         }
 
         public bool StartEdit()

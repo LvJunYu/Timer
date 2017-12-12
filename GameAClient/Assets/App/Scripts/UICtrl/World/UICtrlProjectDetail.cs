@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -430,35 +431,22 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
-            //TODO 测试，请求排行榜第一的录像作为影子数据
-//            if (Project.ProjectRecordRankList.AllList.Count > 0)
-//            {
-//                Record record = Project.ProjectRecordRankList.AllList[0].Record;
-//                Project.RequestPlayShadowBattle(record, () =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    GameManager.Instance.RequestPlayShadowBattle(Project, record);
-//                    SocialApp.Instance.ChangeToGame();
-//                }, () =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-//                });
-//            }
-//            else
+            if (Project.IsMulti)
             {
-                Project.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlay(Project);
-                    SocialApp.Instance.ChangeToGame();
-                }, error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
+                RoomManager.Instance.SendRequestCreateRoom(Project.ProjectId);
+                return;
             }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
+            Project.RequestPlay(() =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                GameManager.Instance.RequestPlay(Project);
+                SocialApp.Instance.ChangeToGame();
+            }, error =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("进入关卡失败");
+            });
         }
 
         private void OnProjectDataChanged(long projectId)

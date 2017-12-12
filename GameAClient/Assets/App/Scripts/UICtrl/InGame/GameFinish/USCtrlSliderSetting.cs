@@ -50,11 +50,11 @@ namespace GameA
             if (delta < 1) delta = 1;
             _min = min;
             _max = max;
+            _cachedView.Slider.minValue = _min;
+            _cachedView.Slider.maxValue = _max;
             _delta = delta;
             _convertValue = convertValue;
             _callBack = callBack;
-            _cachedView.Slider.minValue = _min;
-            _cachedView.Slider.maxValue = _max;
             _numFormat = numFormat;
         }
 
