@@ -877,7 +877,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void OnHpChanged(int hpChanged)
+        public virtual void OnHpChanged(int hpChanged, UnitBase killer = null)
         {
         }
 
@@ -1690,7 +1690,7 @@ namespace GameA.Game
 
         #region  skill State
 
-        public virtual void AddStates(params int[] ids)
+        public virtual void AddStates(UnitBase sender, params int[] ids)
         {
         }
 

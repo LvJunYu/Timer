@@ -401,7 +401,8 @@ namespace GameA.Game
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
 
-        public override void AddStates(params int[] ids)
+        /// sender是状态的施与者，用于计算击杀
+        public override void AddStates(UnitBase sender, params int[] ids)
         {
             if (!_isAlive)
             {
@@ -437,7 +438,7 @@ namespace GameA.Game
                     RemoveStateByType((EStateType) tableState.StateType);
                 }
                 state = PoolFactory<State>.Get();
-                if (state.OnAttached(tableState, this))
+                if (state.OnAttached(tableState, this, sender))
                 {
                     OnAddState(state);
                     _currentStates.Add(state);
@@ -668,12 +669,12 @@ namespace GameA.Game
                 State state;
                 if (TryGetState(EStateType.Fire, out state))
                 {
-                    unit.AddStates(state.TableState.Id);
+                    unit.AddStates(state.Sender, state.TableState.Id);
                 }
             }
         }
 
-        public override void OnHpChanged(int hpChanged)
+        public override void OnHpChanged(int hpChanged, UnitBase killer = null)
         {
             if (!_isAlive || !PlayMode.Instance.SceneState.GameRunning)
             {
@@ -706,6 +707,17 @@ namespace GameA.Game
             if (_hp == 0)
             {
                 OnDead();
+                if (killer != null)
+                {
+                    if (IsMonster)
+                    {
+                        Messenger<UnitBase>.Broadcast(EMessengerType.OnMonsterDead, killer);
+                    }
+                    if (IsPlayer)
+                    {
+                        Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, killer);
+                    }
+                }
             }
             if (_statusBar != null)
             {
@@ -733,7 +745,7 @@ namespace GameA.Game
             }
         }
 
-        public void CreateStatusBar()
+        protected void CreateStatusBar()
         {
             if (null != _statusBar)
             {

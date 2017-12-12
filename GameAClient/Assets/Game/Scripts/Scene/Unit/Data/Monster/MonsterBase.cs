@@ -39,7 +39,7 @@ namespace GameA.Game
             {
                 if (_attactTarget == null || !_attactTarget.IsAlive)
                 {
-                    UpdateAttackTarget();//没有目标时返回自己
+                    UpdateAttackTarget(); //没有目标时返回自己
                 }
                 return _attactTarget;
             }
@@ -170,7 +170,7 @@ namespace GameA.Game
             IsClayOnWall = true;
             _hitPos = CenterPos;
             Speed = IntVec2.zero;
-            AddStates(41);
+            AddStates(null, 41);
         }
 
         public override void UpdateLogic()

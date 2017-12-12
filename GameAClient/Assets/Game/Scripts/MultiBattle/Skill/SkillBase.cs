@@ -488,8 +488,8 @@ namespace GameA.Game
             //触发状态
             if (canHarm)
             {
-                unit.AddStates(_addStates);
-                unit.OnHpChanged(-_damage);
+                unit.AddStates(_owner, _addStates);
+                unit.OnHpChanged(-_damage, _owner);
             }
             unit.RemoveStates(_tableSkill.RemoveStates);
         }

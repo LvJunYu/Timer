@@ -88,7 +88,7 @@ namespace GameA.Game
                     break;
                 case GameManager.EStartType.WorkshopStandaloneCreate:
                 case GameManager.EStartType.WorkshopMultiCreate:
-                    InitCreate(project, eGameInitType);
+                    InitCreate(eGameInitType);
                     break;
                 default:
                     InitPlay(project, eGameInitType);
@@ -220,7 +220,7 @@ namespace GameA.Game
             }
         }
 
-        private void InitCreate(Project project, GameManager.EStartType startType)
+        private void InitCreate(GameManager.EStartType startType)
         {
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
             if (startType == GameManager.EStartType.WorkshopMultiCreate)

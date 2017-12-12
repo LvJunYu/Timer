@@ -22,7 +22,7 @@ namespace GameA.Game
         {
             get { return _guid; }
         }
-        
+
         public void OnFree()
         {
             _tableTrap = null;
@@ -53,7 +53,7 @@ namespace GameA.Game
             _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableTrap.Particle, null);
             if (_effect != null)
             {
-                _effect.Trans.position = GM2DTools.TileToWorld(_centerPos,UnitDefine.ZOffsetEffectBackground);
+                _effect.Trans.position = GM2DTools.TileToWorld(_centerPos, UnitDefine.ZOffsetEffectBackground);
                 _effect.Play();
             }
             return true;
@@ -72,7 +72,7 @@ namespace GameA.Game
                 OnUnitEnter(unit);
                 if (unit.IsAlive)
                 {
-                    unit.AddStates(_tableTrap.TriggerStates);
+                    unit.AddStates(null, _tableTrap.TriggerStates);
                 }
             }
             for (int i = _trapingUnits.Count - 1; i >= 0; i--)
@@ -98,10 +98,10 @@ namespace GameA.Game
         {
             if (unit.IsAlive)
             {
-                unit.AddStates(_tableTrap.TriggerStates);
+                unit.AddStates(null, _tableTrap.TriggerStates);
             }
         }
-        
+
         protected void OnUnitExit(UnitBase unit)
         {
             unit.RemoveStates(_tableTrap.TriggerStates);

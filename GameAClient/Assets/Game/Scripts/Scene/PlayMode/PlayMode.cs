@@ -420,7 +420,7 @@ namespace GameA.Game
             _sceneState.MonsterKilled++;
         }
 
-        public bool CheckPlayerValid(bool run = true)
+        private bool CheckPlayerValid(bool run = true)
         {
             var spawnDatas = DataScene2D.Instance.SpawnDatas;
             if (spawnDatas.Count == 0)
@@ -444,8 +444,11 @@ namespace GameA.Game
                     {
                         var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
                         var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].GetUpPos()) as ShadowUnit;
-                        shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
-                        shadowUnit.SetName(gameMode.ShadowName);
+                        if (shadowUnit != null)
+                        {
+                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
+                            if (gameMode != null) shadowUnit.SetName(gameMode.ShadowName);
+                        }
                     }
                 }
                 else
@@ -473,7 +476,7 @@ namespace GameA.Game
             return true;
         }
 
-        ///basicNum 服务器随机的开始位置        
+        ///多人模式下，basicNum是服务器随机的初始位置序号        
         public void AddPlayer(int basicNum, bool main = true)
         {
             var spawnDatas = DataScene2D.Instance.SpawnDatas;

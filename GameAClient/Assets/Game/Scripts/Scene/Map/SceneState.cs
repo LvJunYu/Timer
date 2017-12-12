@@ -74,6 +74,10 @@ namespace GameA.Game
 //                    return _mapStatistics.TimeLimit * 10+60;
 //                }else
                 {
+                    if (IsMulti)
+                    {
+                        return _mapStatistics.NetBattleTimeLimit;
+                    }
                     return _mapStatistics.TimeLimit * 10;
                 }
             }
@@ -184,9 +188,33 @@ namespace GameA.Game
         {
             get
             {
+                if (IsMulti)
+                {
+                    return TeamManager.Instance.GetMyTeamScore();
+                }
                 // 总分 = 杀死怪物得分 + 拾取宝石得分 + 剩余时间得分 + 剩余生命
                 return GetScore();
             }
+        }
+
+        public int GemScore
+        {
+            get { return _mapStatistics.NetBattleCollectGemScore; }
+        }
+
+        public int KillMonsterScore
+        {
+            get { return _mapStatistics.NetBattleKillMonsterScore; }
+        }
+
+        public int KillPlayerScore
+        {
+            get { return _mapStatistics.NetBattleKillPlayerScore; }
+        }
+
+        public int ArriveScore
+        {
+            get { return _mapStatistics.NetBattleArriveScore; }
         }
 
         private int GetScore(bool forceCalculateAll = false)
@@ -291,14 +319,31 @@ namespace GameA.Game
                 SocialApp.Instance.ReturnToApp();
                 return;
             }
+            _gameTimer += deltaTime;
+            if (IsMulti && NetBattleTimeOver())
+            {
+                switch ((ENetBattleTimeResult)_mapStatistics.NetBattleTimeWinCondition)
+                {
+                    case ENetBattleTimeResult.Score:
+                        NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
+                        break;
+                    case ENetBattleTimeResult.AllWin:
+                        NetBattleWin(true);
+                        break;
+                    case ENetBattleTimeResult.AllFail:
+                        NetBattleWin(false);
+                        break;
+                    default:
+                        LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
+                        break;
+                }
+            }
             if (HasWinCondition(EWinCondition.WC_TimeLimit))
             {
-                _gameTimer += deltaTime;
                 if (CheckWinTimeLimit())
                 {
                     bool value = CheckWin();
                     _gameTimer = 0;
-
                     if (value)
                     {
 //                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
@@ -348,6 +393,7 @@ namespace GameA.Game
 
         private bool CheckWin(bool ignoreConditionArrived = false)
         {
+            if (IsMulti) return false;
             if (_runState != ESceneState.Run)
             {
                 return false;
@@ -409,18 +455,9 @@ namespace GameA.Game
             {
                 return;
             }
-//            if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-//            {
-//                _runState = ESceneState.Fail;
-//                Messenger.Broadcast(EMessengerType.GameFinishFailed);
-//                LogHelper.Debug("Lose");
-//            }
-//            else
-            {
-                _runState = ESceneState.Win;
-                Messenger.Broadcast(EMessengerType.GameFinishSuccess);
-                LogHelper.Debug("Win");
-            }
+            _runState = ESceneState.Win;
+            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+            LogHelper.Debug("Win");
         }
 
         private bool CheckWinCollectTreasure()
@@ -455,6 +492,31 @@ namespace GameA.Game
 
         public void CheckNetBattleWin(int score)
         {
+            if (!IsMulti) return;
+            if (_mapStatistics.NetBattleScoreWinCondition && score >= _mapStatistics.NetBattleWinScore)
+            {
+                NetBattleWin(true);
+            }
+        }
+
+        private bool NetBattleTimeOver()
+        {
+            return _gameTimer >= RunTimeTimeLimit;
+        }
+
+        private void NetBattleWin(bool win)
+        {
+            if (win)
+            {
+                _runState = ESceneState.Win;
+                Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+            }
+            else
+            {
+                _runState = ESceneState.Fail;
+                Messenger.Broadcast(EMessengerType.GameFinishFailed);
+            }
+            
         }
     }
 }

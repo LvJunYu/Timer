@@ -14,7 +14,7 @@ namespace GameA.Game
     public class Final : BlockBase
     {
         protected static Final _instance;
-        
+
         public static Vector3 Position
         {
             get
@@ -49,13 +49,17 @@ namespace GameA.Game
             }
             return true;
         }
-  
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsMain)
+            if (!checkOnly && other.IsPlayer)
             {
                 if (IntersectX(other, _colliderGrid.Shrink(319)))
                 {
+                    if (!PlayMode.Instance.SceneState.Arrived)
+                    {
+                        Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerArrive, other);
+                    }
                     PlayMode.Instance.SceneState.Arrived = true;
                 }
             }

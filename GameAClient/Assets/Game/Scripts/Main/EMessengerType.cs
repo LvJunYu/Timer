@@ -51,7 +51,8 @@ namespace GameA
         public static int GameFinishFailedShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
 
-        public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
+	    public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
+	    public static int OnPlayerDead = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;
 
@@ -59,6 +60,8 @@ namespace GameA
 		public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
+	    // 到达终点
+	    public static int OnPlayerArrive = SoyEngine.EMessengerType.NextId++;
         // 拾取了宝石
         public static int OnGemCollect = SoyEngine.EMessengerType.NextId++;
 	    // 拾取了一条命

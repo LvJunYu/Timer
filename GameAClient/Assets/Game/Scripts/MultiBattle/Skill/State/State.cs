@@ -10,6 +10,7 @@ namespace GameA.Game
         protected int _duration;
         protected int _intervalTime;
         protected UnitBase _target;
+        protected UnitBase _sender; //释放状态的对象，用于计算击杀，可能为null
         protected int _timer;
         protected int _effectOverlapCount;
         protected int _curDuration;
@@ -19,6 +20,11 @@ namespace GameA.Game
         public Table_State TableState
         {
             get { return _tableState; }
+        }
+
+        public UnitBase Sender
+        {
+            get { return _sender; }
         }
 
         public void OnFree()
@@ -32,6 +38,7 @@ namespace GameA.Game
             _duration = 0;
             _intervalTime = 0;
             _target = null;
+            _sender = null;
             _timer = 0;
             _effectOverlapCount = 0;
             _curDuration = 0;
@@ -40,11 +47,12 @@ namespace GameA.Game
             _effect = null;
         }
 
-        public virtual bool OnAttached(Table_State tableState, ActorBase target)
+        public virtual bool OnAttached(Table_State tableState, ActorBase target, UnitBase sender)
         {
             _run = true;
             _tableState = tableState;
             _target = target;
+            _sender = sender;
             if (_tableState.EffectTypes.Length != _tableState.EffectValues.Length ||
                 _tableState.EffectTypes.Length != _tableState.EffectIds.Length)
             {
@@ -77,7 +85,7 @@ namespace GameA.Game
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
                     case EEffectId.Hp:
-                        _target.OnHpChanged(value * (_effectOverlapCount + 1));
+                        _target.OnHpChanged(value * (_effectOverlapCount + 1), _sender);
                         break;
                     case EEffectId.Speed:
                         _target.SpeedStateRatio += (value * 0.01f) * (_effectOverlapCount + 1);

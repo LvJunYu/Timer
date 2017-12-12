@@ -511,6 +511,13 @@ namespace GameA.Game
         SelfPlayer,
     }
 
+    public enum ENetBattleTimeResult
+    {
+        Score,
+        AllWin,
+        AllFail
+    }
+
     public enum EReviveType
     {
         Original,
