@@ -119,7 +119,7 @@ namespace GameA.Game
             _successCallback = successCallback;
             _failCallback = failCallback;
             _eRoomState = ERoomState.RequestCreate;
-            RoomManager.Instance.SendRequestCreateRoom(eBattleType, projectId);
+            RoomManager.Instance.SendRequestCreateRoom(projectId);
         }
 
         public bool OnCreateSuccess(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA.Game
 {
@@ -19,7 +20,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new PlayerManager()); }
         }
 
-        private List<RoomUser> _userDataList;
+        private List<RoomUser> _userDataList = new List<RoomUser>(6);
         private List<PlayerBase> _playerList = new List<PlayerBase>(10);
         private MainPlayer _mainPlayer;
 
@@ -43,6 +44,14 @@ namespace GameA.Game
             _userDataList = users;
         }
 
+        public void JoinRoom(Msg_RC_RoomUserInfo msg)
+        {
+            var user = new RoomUser();
+            user.Init(msg.UserGuid, ""+msg.UserGuid, true);
+            _userDataList.Add(user);
+            _playerList.Add(null);
+        }
+
         public PlayerBase GetPlayerById(int id)
         {
             return _playerList.Find(p => p.Id == id);
@@ -57,7 +66,12 @@ namespace GameA.Game
             return _playerList[inx];
         }
 
-        public void Add(PlayerBase player)
+        public RoomUser GetRoomUserByInx(int inx)
+        {
+            return _userDataList[inx];
+        }
+
+        public void Add(PlayerBase player, int roomInx = 0)
         {
             if (_userDataList == null)
             {

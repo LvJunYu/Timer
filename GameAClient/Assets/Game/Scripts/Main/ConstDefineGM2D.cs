@@ -13,7 +13,8 @@ namespace GameA.Game
     {
         public const float ClientTileScale = JoyConfig.ClientTileScale;
         public const int ServerTileScale = JoyConfig.ServerTileScale;
-        public const float FixedDeltaTime = 0.02f;
+	    public const float FixedDeltaTime = 0.02f;
+	    public const float ServerFixedDeltaTime = 0.04f;
 	    public const int FixedFrameCount = 50;
         public const int FixedDeltaTile = (int)(FixedDeltaTime * ServerTileScale);
 	    public const float CameraOrthoSizeOnPlay = 5f;

@@ -459,17 +459,17 @@ namespace GameA.Game
                         LogHelper.Error("users's count is zero, create player failed.");
                         return false;
                     }
-                    for (int j = 0; j < users.Count; j++)
-                    {
-                        if (users[j].Guid == LocalUser.Instance.UserGuid)
-                        {
-                            AddPlayer(0);
-                        }
-                        else
-                        {
-                            AddPlayer(0, false);
-                        }
-                    }
+//                    for (int j = 0; j < users.Count; j++)
+//                    {
+//                        if (users[j].Guid == LocalUser.Instance.UserGuid)
+//                        {
+//                            AddPlayer(0);
+//                        }
+//                        else
+//                        {
+//                            AddPlayer(0, false);
+//                        }
+//                    }
                 }
                 _mainPlayer = PlayerManager.Instance.MainPlayer;
             }
@@ -477,7 +477,7 @@ namespace GameA.Game
         }
 
         ///多人模式下，basicNum是服务器随机的初始位置序号        
-        public void AddPlayer(int basicNum, bool main = true)
+        public void AddPlayer(int basicNum, bool main = true, int roomInx = 0)
         {
             var spawnDatas = DataScene2D.Instance.SpawnDatas;
             int spwanCount = spawnDatas.Count;
@@ -495,7 +495,8 @@ namespace GameA.Game
             }
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
             player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
-            PlayerManager.Instance.Add(player);
+            PlayerManager.Instance.Add(player, roomInx);
+            return;
         }
 
         public bool StartEdit()

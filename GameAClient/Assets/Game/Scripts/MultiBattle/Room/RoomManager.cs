@@ -127,11 +127,11 @@ namespace GameA.Game
             SendToRSServer(login);
         }
 
-        public void SendRequestCreateRoom(EBattleType eBattleType, long projectGuid)
+        public void SendRequestCreateRoom(long projectGuid)
         {
-//            _msgCreateRoom.EBattleType = eBattleType;
-//            _msgCreateRoom.ProjectGuid = projectGuid;
-            SendToRSServer(_msgCreateRoom);
+            _msgCreateRoom.ProjectId = projectGuid;
+            _msgCreateRoom.MaxUserCount = 6;
+            SendToMSServer(_msgCreateRoom);
         }
 
         public void SendRequestJoinRoom(long roomId)
@@ -166,9 +166,10 @@ namespace GameA.Game
                 _room.OnCreateFailed();
                 return;
             }
-            var user = new RoomUser();
-            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
+//            var user = new RoomUser();
+//            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
 //            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
+            _roomClient.Connect(msg.RSAddress, (ushort) msg.RSPort);
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
@@ -176,10 +177,11 @@ namespace GameA.Game
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
-                _room.OnJoinFailed();
+//                _room.OnJoinFailed();
                 return;
             }
-            _room.OnJoinSuccess();
+//            _room.OnJoinSuccess();
+            _roomClient.Connect(msg.RSAddress, (ushort) msg.RSPort);
         }
 
         internal void OnRoomInfo(Msg_MC_RoomInfo msg)

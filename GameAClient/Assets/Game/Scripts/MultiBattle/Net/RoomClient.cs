@@ -46,11 +46,16 @@ namespace GameA.Game
         {
             RegisterHandler<Msg_RC_LoginRet>(Msg_RC_LoginRet);
 
-            RegisterHandler<Msg_RC_UserEnterBattle>(Msg_RC_UserEnterBattle);
-            RegisterHandler<Msg_RC_BattleStart>(Msg_RC_BattleStart);
-            RegisterHandler<Msg_RC_InputDatas>(Msg_RC_InputDatas);
-            RegisterHandler<Msg_RC_UserExitBattle>(Msg_RC_UserExitBattle);
+            RegisterHandler<Msg_RC_FrameDataArray>(Msg_RC_FrameDataArray);
             RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
+        }
+
+        private void Msg_RC_FrameDataArray(Msg_RC_FrameDataArray msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnInputDatas(msg);
+            }
         }
 
         private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, object netLink)
@@ -61,43 +66,31 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, object netLink)
-        {
-            if (_modeNetPlay != null)
-            {
-                _modeNetPlay.OnUserExitBattle(msg);
-            }
-        }
-
-        private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, object netLink)
-        {
-            if (_modeNetPlay != null)
-            {
-                _modeNetPlay.OnInputDatas(msg);
-            }
-        }
-
-        private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, object netLink)
-        {
-            if (_modeNetPlay != null)
-            {
-                _modeNetPlay.OnBattleStart(msg);
-            }
-        }
-
-        private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, object netLink)
-        {
-            if (_modeNetPlay != null)
-            {
-                _modeNetPlay.OnUserEnterBattle(msg);
-            }
-        }
-
         private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
             if (msg.ResultCode == ERLoginCode.ELC_Success)
             {
                 LogHelper.Debug("Login RS Success");
+                var project = new Project();
+                project.Request(msg.RoomInfo.ProjectId,
+                    () => project.RequestPlay(() =>
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            GameManager.Instance.RequestPlayMultiBattle(project);
+                            SocialApp.Instance.ChangeToGame();
+                            _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                            _modeNetPlay.OnRoomInfo(msg.RoomInfo);
+                        },
+                        error =>
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                        }),
+                    error =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                    });
             }
             else
             {
