@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 
@@ -111,7 +112,7 @@ namespace GameA.Game
                 _frameLeftTime += Time.deltaTime;
                 while (_serverInputFrameQueue.Count > 0)
                 {
-                    var needFrameTime = 25f / (_serverInputFrameQueue.Count + 23) * ConstDefineGM2D.FixedDeltaTile;
+                    var needFrameTime = 25f / (_serverInputFrameQueue.Count + 23) * ConstDefineGM2D.FixedDeltaTime;
                     if (_frameLeftTime > needFrameTime)
                     {
                         _frameLeftTime -= needFrameTime;
@@ -304,6 +305,7 @@ namespace GameA.Game
         {
             _bornSeed = msg.BornSeed;
             _preServerFrameCount = msg.CurrentRoomFrameCount;
+            LogHelper.Info("RoomId: {0}", msg.RoomId);
         }
 
         #endregion

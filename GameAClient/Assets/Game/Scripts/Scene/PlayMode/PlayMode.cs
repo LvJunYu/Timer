@@ -457,6 +457,7 @@ namespace GameA.Game
                     var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
                     mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
                     PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
+                    _mainPlayer = PlayerManager.Instance.MainPlayer;
 //                    if (users.Count == 0)
 //                    {
 //                        LogHelper.Error("users's count is zero, create player failed.");
