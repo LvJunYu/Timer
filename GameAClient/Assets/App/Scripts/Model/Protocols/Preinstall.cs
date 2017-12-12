@@ -63,7 +63,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private int _life;
+        private int _maxHp;
         /// <summary>
         /// 
         /// </summary>
@@ -252,10 +252,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public int Life { 
-            get { return _life; }
-            set { if (_life != value) {
-                _life = value;
+        public int MaxHp { 
+            get { return _maxHp; }
+            set { if (_maxHp != value) {
+                _maxHp = value;
                 SetDirty();
             }}
         }
@@ -408,7 +408,7 @@ namespace GameA
             _msg = msg.Msg;     
             _jumpAbility = msg.JumpAbility;     
             _teamId = msg.TeamId;     
-            _life = msg.Life;     
+            _maxHp = msg.MaxHp;     
             _attackPower = msg.AttackPower;     
             _moveSpeed = msg.MoveSpeed;     
             _drops = msg.Drops;     
@@ -442,7 +442,7 @@ namespace GameA
             _msg = msg.Msg;           
             _jumpAbility = msg.JumpAbility;           
             _teamId = msg.TeamId;           
-            _life = msg.Life;           
+            _maxHp = msg.MaxHp;           
             _attackPower = msg.AttackPower;           
             _moveSpeed = msg.MoveSpeed;           
             _drops = msg.Drops;           
@@ -475,7 +475,7 @@ namespace GameA
             _msg = obj.Msg;           
             _jumpAbility = obj.JumpAbility;           
             _teamId = obj.TeamId;           
-            _life = obj.Life;           
+            _maxHp = obj.MaxHp;           
             _attackPower = obj.AttackPower;           
             _moveSpeed = obj.MoveSpeed;           
             _drops = obj.Drops;           

@@ -52,6 +52,7 @@ namespace GameA
         public void RefreshView()
         {
             _cachedView.PreinstallBtns.SetActive(_curIndex != -1);
+            _cachedView.CreatePreinstallBtn.SetActiveEx(_dataList == null || _dataList.Count < _preinstallItems.Length);
             for (int i = 0; i < _preinstallItems.Length; i++)
             {
                 if (_dataList != null && i < _dataList.Count)
@@ -101,7 +102,9 @@ namespace GameA
                     if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
                     {
                         _dataList[_curIndex] = new UnitPreinstall(unitMsg.UnitPreinstallData);
+                        _preinstallItems[_curIndex].Set(_dataList[_curIndex]);
                         HasChanged = false;
+                        SocialGUIManager.ShowPopupDialog("保存预设成功");
                     }
                     //todo
                 },
@@ -123,12 +126,11 @@ namespace GameA
             }
         }
 
-        private void OnInputEndEdit(string arg0,int index)
+        private void OnInputEndEdit(string arg0, int index)
         {
             if (!string.IsNullOrEmpty(arg0) && arg0 != _dataList[index].PreinstallData.Name)
             {
                 _dataList[index].PreinstallData.Name = arg0;
-                if (_curIndex == -1) return;
                 _dataList[_curIndex].Save();
             }
             _preinstallItems[index].SetText(arg0);
@@ -187,7 +189,7 @@ namespace GameA
             _mainCtrl.EditData.UnitExtra.Set(_dataList[_curIndex].PreinstallData);
             HasChanged = false;
             RefreshView();
-            Messenger.Broadcast(EMessengerType.OnPreinstallRead);
+            _mainCtrl.ReadPreinstall();
         }
     }
 }

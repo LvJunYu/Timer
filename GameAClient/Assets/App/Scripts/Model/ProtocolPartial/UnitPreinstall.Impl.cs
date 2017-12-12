@@ -1,10 +1,11 @@
+using System;
 using SoyEngine.Proto;
 
 namespace GameA
 {
     public partial class UnitPreinstall
     {
-        public void Save()
+        public void Save(Action successAction = null, Action failAction = null)
         {
             Msg_Preinstall msg = new Msg_Preinstall();
             msg.MoveDirection = PreinstallData.MoveDirection;
@@ -18,7 +19,7 @@ namespace GameA
             msg.Msg = PreinstallData.Msg;
             msg.JumpAbility = PreinstallData.JumpAbility;
             msg.TeamId = PreinstallData.TeamId;
-            msg.Life = PreinstallData.Life;
+            msg.MaxHp = PreinstallData.MaxHp;
             msg.AttackPower = PreinstallData.AttackPower;
             msg.MoveSpeed = PreinstallData.MoveSpeed;
             msg.EffectRange = PreinstallData.EffectRange;
@@ -29,23 +30,35 @@ namespace GameA
             msg.ChargeTime = PreinstallData.ChargeTime;
             msg.InjuredReduce = PreinstallData.InjuredReduce;
             msg.CureIncrease = PreinstallData.CureIncrease;
-//            msg.Drops= PreinstallData.Drops
-//            msg.KnockbackForces.AddRange(KnockbackForces.ToList());
-//            msg.AddStates.AddRange(AddStates.ToList());
-            
-//            msg.Name = PreinstallData.Name;
-//            msg.Name = _dataList[_curIndex].PreinstallData.Name;
-//            msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
-//            RemoteCommands.UpdateUnitPreinstall(_dataList[_curIndex].PreinstallId, msg, unitMsg =>
-//                {
-//                    if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
-//                    {
-//                        _dataList[_curIndex] = new UnitPreinstall(unitMsg.UnitPreinstallData);
-//                        HasChanged = false;
-//                    }
-//                    //todo
-//                },
-//                res => { SocialGUIManager.ShowPopupDialog("保存预设失败"); });
+            msg.Drops.AddRange(PreinstallData.Drops);
+            msg.KnockbackForces.AddRange(PreinstallData.KnockbackForces);
+            msg.AddStates.AddRange(PreinstallData.AddStates);
+            msg.Name = PreinstallData.Name;
+            msg.UnitId = PreinstallData.UnitId;
+            RemoteCommands.UpdateUnitPreinstall(PreinstallId, msg, unitMsg =>
+                {
+                    if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
+                    {
+                        if (successAction != null)
+                        {
+                            successAction.Invoke();
+                        }
+                    }
+                    else
+                    {
+                        if (failAction != null)
+                        {
+                            failAction.Invoke();
+                        }
+                    }
+                },
+                res =>
+                {
+                    if (failAction != null)
+                    {
+                        failAction.Invoke();
+                    }
+                });
         }
     }
 }

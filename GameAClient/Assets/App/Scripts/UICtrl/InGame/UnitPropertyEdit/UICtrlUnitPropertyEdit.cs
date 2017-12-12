@@ -39,12 +39,6 @@ namespace GameA
         private float _posTweenFactor;
         private EEditType _curEditType;
 
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent(EMessengerType.OnPreinstallRead, OnPreinstallRead);
-        }
-
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGamePopup;
@@ -747,9 +741,10 @@ namespace GameA
             }
         }
 
-        private void OnPreinstallRead()
+        public void ReadPreinstall()
         {
             RefreshView();
+            _upCtrlUnitPropertyEditAdvance.RefreshView();
         }
     }
 }

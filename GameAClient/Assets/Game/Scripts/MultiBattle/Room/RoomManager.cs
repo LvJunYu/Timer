@@ -113,7 +113,7 @@ namespace GameA.Game
         {
             var login = new Msg_CM_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
-            login.UserId = LocalUser.Instance.UserGuid;
+//            login.UserId = LocalUser.Instance.UserGuid;
             SendToMSServer(login);
         }
         /// <summary>
@@ -123,14 +123,14 @@ namespace GameA.Game
         {
             var login = new Msg_CR_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
-            login.UserId = LocalUser.Instance.UserGuid;
+//            login.UserId = LocalUser.Instance.UserGuid;
             SendToRSServer(login);
         }
 
         public void SendRequestCreateRoom(EBattleType eBattleType, long projectGuid)
         {
-            _msgCreateRoom.EBattleType = eBattleType;
-            _msgCreateRoom.ProjectGuid = projectGuid;
+//            _msgCreateRoom.EBattleType = eBattleType;
+//            _msgCreateRoom.ProjectGuid = projectGuid;
             SendToRSServer(_msgCreateRoom);
         }
 
@@ -168,7 +168,7 @@ namespace GameA.Game
             }
             var user = new RoomUser();
             user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
-            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
+//            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 

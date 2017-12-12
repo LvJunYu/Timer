@@ -127,7 +127,7 @@ namespace GameA.Game
             msg.Msg = Msg;
             msg.JumpAbility = JumpAbility;
             msg.TeamId = TeamId;
-            msg.Life = MaxHp;
+            msg.MaxHp = MaxHp;
             msg.AttackPower = Damage;
             msg.MoveSpeed = MaxSpeedX;
             msg.EffectRange = EffectRange;
@@ -157,7 +157,7 @@ namespace GameA.Game
             Msg = data.Msg;
             JumpAbility = (ushort) data.JumpAbility;
             TeamId = (byte) data.TeamId;
-            MaxHp = (ushort) data.Life;
+            MaxHp = (ushort) data.MaxHp;
             Damage = (ushort) data.AttackPower;
             MaxSpeedX = (ushort) data.MoveSpeed;
             Drops.Set(data.Drops.ToArray());

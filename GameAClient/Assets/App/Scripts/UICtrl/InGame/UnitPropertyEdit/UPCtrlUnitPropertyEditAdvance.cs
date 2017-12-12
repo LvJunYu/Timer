@@ -111,8 +111,9 @@ namespace GameA
             RefreshView();
         }
 
-        private void RefreshView()
+        public void RefreshView()
         {
+            if (!_isOpen) return;
             var id = _mainCtrl.EditData.UnitDesc.Id;
             var table = TableManager.Instance.GetUnit(id);
             _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&

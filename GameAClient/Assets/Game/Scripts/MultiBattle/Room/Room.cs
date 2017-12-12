@@ -217,7 +217,7 @@ namespace GameA.Game
                 user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
                 _users.Add(user);
             });
-            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
+//            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
             Messenger.Broadcast(EMessengerType.OnRoomInfoChanged);
         }
 
