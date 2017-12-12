@@ -110,7 +110,7 @@ namespace GameA
             Published,
             Recommend,
             MaxScore,
-            NewestProject,
+            AllNewestProject,
             Follows,
             UserFavorite,
             UserPlayHistory,

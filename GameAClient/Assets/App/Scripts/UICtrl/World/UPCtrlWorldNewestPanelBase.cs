@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectBase : UPCtrlWorldPanelBase
+    public abstract class UPCtrlWorldNewestPanelBase : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
     {
+        protected EResScenary _resScenary;
+        protected UPCtrlWorldNewest.EMenu _menu;
+        protected bool _unload;
         protected const int _pageSize = 21;
         protected List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
 
@@ -18,9 +20,18 @@ namespace GameA
         protected bool _isRequesting;
         protected bool _hasRequested;
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _eCurUi = GetUMCurUI(_menu);
+            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
+        }
+
         public override void Open()
         {
             base.Open();
+            _unload = false;
+            _cachedView.NewestPannels[(int) _menu].SetActiveEx(true);
             if (!_hasRequested)
             {
                 RequestData();
@@ -31,17 +42,15 @@ namespace GameA
         public override void Close()
         {
             _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            _cachedView.NewestPannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
 
-        protected override void OnViewCreated()
+        public virtual void RequestData(bool append = false)
         {
-            base.OnViewCreated();
-            _eCurUi = GetUMCurUI(_menu);
-            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
-        protected override void RefreshView()
+        protected virtual void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
@@ -73,7 +82,7 @@ namespace GameA
             }
             SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
         }
-
+        
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
@@ -82,7 +91,7 @@ namespace GameA
             return item;
         }
 
-        protected override void OnItemRefresh(IDataItemRenderer item, int inx)
+        protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
         {
             if (_unload)
             {
@@ -99,21 +108,26 @@ namespace GameA
             }
         }
 
-        public override void RequestData(bool append = false)
-        {
-        }
-
-        public override void OnChangeHandler(long val)
+        public virtual void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;
             if (_dict.TryGetValue(val, out w))
             {
                 w.BroadcastDataChanged();
             }
-//            RequestData();
         }
 
-        public override void Clear()
+        public void Set(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
+        }
+
+        public void SetMenu(UPCtrlWorldNewest.EMenu menu)
+        {
+            _menu = menu;
+        }
+
+        public virtual void Clear()
         {
             _hasRequested = false;
             _unload = true;
@@ -122,28 +136,18 @@ namespace GameA
             _projectList = null;
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
         }
-
-        private UMCtrlProject.ECurUI GetUMCurUI(UICtrlWorld.EMenu menu)
+        
+        private UMCtrlProject.ECurUI GetUMCurUI(UPCtrlWorldNewest.EMenu menu)
         {
             switch (menu)
             {
-                case UICtrlWorld.EMenu.Recommend:
-                    return UMCtrlProject.ECurUI.Recommend;
-//                case UICtrlWorld.EMenu.MaxScore:
-                    return UMCtrlProject.ECurUI.MaxScore;
-                case UICtrlWorld.EMenu.NewestProject:
+                case UPCtrlWorldNewest.EMenu.All:
                     return UMCtrlProject.ECurUI.AllNewestProject;
-//                case UICtrlWorld.EMenu.Follows:
+                case UPCtrlWorldNewest.EMenu.Follow:
                     return UMCtrlProject.ECurUI.Follows;
-                case UICtrlWorld.EMenu.UserFavorite:
-                    return UMCtrlProject.ECurUI.UserFavorite;
-//                case UICtrlWorld.EMenu.UserPlayHistory:
-                    return UMCtrlProject.ECurUI.UserPlayHistory;
-                case UICtrlWorld.EMenu.RankList:
-                    return UMCtrlProject.ECurUI.RankList;
-                default:
-                    return UMCtrlProject.ECurUI.None;
             }
+            return UMCtrlProject.ECurUI.None;
         }
+
     }
 }

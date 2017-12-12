@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    public class UPCtrlWorldFollowedUserProject : UPCtrlWorldProjectBase
+    public class UPCtrlWorldFollowedUserProject : UPCtrlWorldNewestPanelBase
     {
         private WorldFollowedUserProjectList _data;
 

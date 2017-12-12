@@ -29,6 +29,12 @@ namespace GameA
             _cachedView.RankTimeTapGroup.SelectIndex(_timeBucketCount - 1 - (int) ERankTimeBucket.RTB_Total, true);
         }
 
+        public override void Close()
+        {
+            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            base.Close();
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
