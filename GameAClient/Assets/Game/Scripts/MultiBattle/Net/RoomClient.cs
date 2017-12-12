@@ -6,10 +6,9 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -42,6 +41,7 @@ namespace GameA.Game
     public class RoomClientHandler : Handler<object, object>
     {
         private GameModeNetPlay _modeNetPlay;
+        private List<Action> _roomActionList = new List<Action>();
 
         protected override void InitHandler()
         {
@@ -57,6 +57,13 @@ namespace GameA.Game
             {
                 _modeNetPlay.OnInputDatas(msg);
             }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_FrameDataArray(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, object netLink)
@@ -64,6 +71,13 @@ namespace GameA.Game
             if (_modeNetPlay != null)
             {
                 _modeNetPlay.OnBattleClose(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_BattleClose(msg, netLink);
+                });
             }
         }
 
@@ -82,6 +96,10 @@ namespace GameA.Game
                             SocialApp.Instance.ChangeToGame();
                             _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
                             _modeNetPlay.OnRoomInfo(msg.RoomInfo);
+                            for (int i = 0; i < _roomActionList.Count; i++)
+                            {
+                                _roomActionList[i].Invoke();
+                            }
                         },
                         error =>
                         {

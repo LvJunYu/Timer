@@ -140,7 +140,7 @@ namespace GameA.Game
         {
             var msg = new Msg_CM_JoinRoom();
             msg.RoomGuid = roomId;
-            SendToRSServer(msg);
+            SendToMSServer(msg);
         }
 
         public void SendRoomReadyInfo(bool flag)

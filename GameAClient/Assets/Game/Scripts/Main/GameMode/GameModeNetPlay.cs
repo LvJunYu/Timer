@@ -66,6 +66,10 @@ namespace GameA.Game
 
         public override void Update()
         {
+            if (_ePhase == EPhase.None)
+            {
+                return;
+            }
             GameRun.Instance.Update();
             if (_ePhase == EPhase.Simulation)
             {
