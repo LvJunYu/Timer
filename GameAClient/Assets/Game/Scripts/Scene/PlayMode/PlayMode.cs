@@ -436,9 +436,8 @@ namespace GameA.Game
                 var users = PlayerManager.Instance.UserDataList;
                 if (users == null)
                 {
-                    var player = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as PlayerBase;
-                    player.SetValue(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
-                    PlayerManager.Instance.Add(player);
+                    //单人
+                    AddPlayer(0);
                     //乱入对决，创建影子Unit
                     if (GM2DGame.Instance.GameMode.PlayShadowData &&
                         GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
@@ -451,35 +450,49 @@ namespace GameA.Game
                 }
                 else
                 {
+                    //多人
                     if (users.Count == 0)
                     {
                         LogHelper.Error("users's count is zero, create player failed.");
                         return false;
                     }
-                    if (users.Count > spawnDatas.Count)
-                    {
-                        LogHelper.Error("spawns's count is less than users's count, create player failed.");
-                        return false;
-                    }
                     for (int j = 0; j < users.Count; j++)
                     {
-                        int id;
-                        if (j == 0)
+                        if (users[j].Guid == LocalUser.Instance.UserGuid)
                         {
-                            id = UnitDefine.MainPlayerId;
+                            AddPlayer(0);
                         }
                         else
                         {
-                            id = UnitDefine.OtherPlayerId;
+                            AddPlayer(0, false);
                         }
-                        var player = CreateRuntimeUnit(id, spawnDatas[0].GetUpPos()) as PlayerBase;
-                        player.SetValue(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
-                        PlayerManager.Instance.Add(player);
                     }
                 }
                 _mainPlayer = PlayerManager.Instance.MainPlayer;
             }
             return true;
+        }
+
+        ///basicNum 服务器随机的开始位置        
+        public void AddPlayer(int basicNum, bool main = true)
+        {
+            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            int spwanCount = spawnDatas.Count;
+            if (spwanCount == 0)
+            {
+                LogHelper.Error("can find a spwan!");
+                return;
+            }
+            int curPlayerCount = PlayerManager.Instance.PlayerList.Count;
+            basicNum = (basicNum + curPlayerCount) % spwanCount;
+            int id = UnitDefine.MainPlayerId;
+            if (!main)
+            {
+                id = UnitDefine.OtherPlayerId;
+            }
+            var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
+            player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
+            PlayerManager.Instance.Add(player);
         }
 
         public bool StartEdit()

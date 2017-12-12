@@ -96,6 +96,7 @@ namespace GameA.Game
                 return false;
             }
             CreateStatusBar();
+            _statusBar.SetHPActive(true);
             return true;
         }
 
@@ -117,7 +118,7 @@ namespace GameA.Game
             _fireTimer = 0;
             if (_statusBar != null)
             {
-                _statusBar.SetHPActive(false);
+                _statusBar.Reset();
             }
         }
 

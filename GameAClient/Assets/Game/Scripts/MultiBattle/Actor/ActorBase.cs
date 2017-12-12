@@ -687,14 +687,14 @@ namespace GameA.Game
                     return;
                 }
                 _damageFrame = BattleDefine.DamageDurationFrame;
-                if (_isMonster)
-                {
-                    _hpStayTimer = BattleDefine.HpStayTime;
-                    if (_statusBar != null)
-                    {
-                        _statusBar.SetHPActive(true);
-                    }
-                }
+//                if (_isMonster)
+//                {
+//                    _hpStayTimer = BattleDefine.HpStayTime;
+//                    if (_statusBar != null)
+//                    {
+//                        _statusBar.SetHPActive(true);
+//                    }
+//                }
                 hpChanged = (int) (hpChanged * TableConvert.GetInjuredReduce(_injuredReduce));
             }
             else
@@ -747,6 +747,7 @@ namespace GameA.Game
                 _statusBar = statusBarObj.GetComponent<StatusBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
+            _statusBar.SetOwner(this);
         }
     }
 }

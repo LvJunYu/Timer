@@ -19,6 +19,11 @@ namespace GameA.Game
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
         private byte _myTeamId;
 
+        public byte MyTeamId
+        {
+            get { return _myTeamId; }
+        }
+
         public void AddPlayer(PlayerBase player)
         {
             byte teamId = player.GetUnitExtra().TeamId;
@@ -52,7 +57,7 @@ namespace GameA.Game
         public int GetMyTeamScore()
         {
             int score;
-            if (!_scoreDic.TryGetValue(_myTeamId, out score))
+            if (!_scoreDic.TryGetValue(MyTeamId, out score))
             {
                 LogHelper.Error("cant find myTeamScore");
             }

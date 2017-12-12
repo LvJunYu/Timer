@@ -225,7 +225,7 @@ namespace GameA.Game
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
             if (startType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                EditMode.Instance.MapStatistics.CreateDefaltNetData(project);
+                EditMode.Instance.MapStatistics.CreateDefaltNetData();
             }
             //在生成出生点之前，生成玩家通用属性
             DataScene2D.Instance.InitDefaultPlayerUnitExtra(); 

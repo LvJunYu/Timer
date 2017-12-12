@@ -189,5 +189,27 @@ namespace GameA.Game
         {
             return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
         }
+
+        public static Color GetTeamColor(byte teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return Color.green;
+                case 1:
+                    return Color.red;
+                case 2:
+                    return new Color(1, 164 / (float) 255, 0);
+                case 3:
+                    return Color.yellow;
+                case 4:
+                    return new Color(0, 1, 200 / (float) 255);
+                case 5:
+                    return new Color(0, 110 / (float) 255, 1);
+                case 6:
+                    return Color.magenta;
+            }
+            return Color.green;
+        }
     }
 }

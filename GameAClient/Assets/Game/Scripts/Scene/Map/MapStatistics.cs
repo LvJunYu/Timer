@@ -398,26 +398,26 @@ namespace GameA.Game
             IsMulti = true;
         }
 
-        public void CreateDefaltNetData(Project project)
+        public void CreateDefaltNetData()
         {
-            var netBattleData = new NetBattleData();
+            _netBattleData = new NetBattleData();
             SetHarmType(EHarmType.EnemyMonster, true, true);
             SetHarmType(EHarmType.EnemyPlayer, true, true);
-            netBattleData.TimeLimit = 120;
-            netBattleData.PlayerCount = 6;
-            netBattleData.LifeCount = 3;
-            netBattleData.ReviveTime = 0;
-            netBattleData.ReviveInvincibleTime = 0;
-            netBattleData.ReviveType = 0;
-            netBattleData.TimeWinCondition = 0;
-            netBattleData.WinScore = 100;
-            netBattleData.ArriveScore = 100;
-            netBattleData.CollectGemScore = 10;
-            netBattleData.KillMonsterScore = 10;
-            netBattleData.KillPlayerScore = 20;
-            netBattleData.ScoreWinCondition = false;
-            netBattleData.InfiniteLife = false;
-            InitMultiBattleData(netBattleData);
+            _netBattleData.TimeLimit = 120;
+            _netBattleData.PlayerCount = 6;
+            _netBattleData.LifeCount = 3;
+            _netBattleData.ReviveTime = 0;
+            _netBattleData.ReviveInvincibleTime = 0;
+            _netBattleData.ReviveType = 0;
+            _netBattleData.TimeWinCondition = 0;
+            _netBattleData.WinScore = 100;
+            _netBattleData.ArriveScore = 100;
+            _netBattleData.CollectGemScore = 10;
+            _netBattleData.KillMonsterScore = 10;
+            _netBattleData.KillPlayerScore = 20;
+            _netBattleData.ScoreWinCondition = false;
+            _netBattleData.InfiniteLife = false;
+            IsMulti = true;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)

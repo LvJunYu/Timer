@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -75,6 +76,10 @@ namespace GameA.Game
             _playerList.Add(player);
             if (player.IsMain)
             {
+                if (_mainPlayer != null)
+                {
+                    LogHelper.Error("add main player, but main player has existed, ");
+                }
                 _mainPlayer = player as MainPlayer;
             }
             TeamManager.Instance.AddPlayer(player);
@@ -83,6 +88,7 @@ namespace GameA.Game
         public void Reset()
         {
             _playerList.Clear();
+            _mainPlayer = null;
         }
 
         public void Dispose()

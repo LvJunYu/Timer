@@ -58,6 +58,7 @@ namespace GameA.Game
         public GameObject HPRoot;
 
         public Transform CurrentHPTrans;
+        public SpriteRenderer CurrentHPRenderer;
         public Transform HPBeforeHitTrans;
         public SpriteRenderer HPBeforeHitRenderer;
         public Transform HPAfterHealTrans;
@@ -69,6 +70,7 @@ namespace GameA.Game
         private float _targetHeight;
 
         private float _hpPerccentage = 1;
+        private ActorBase _owner;
 
         /// <summary>
         /// 当前hp显示状态
@@ -89,6 +91,15 @@ namespace GameA.Game
         public void SetHPActive(bool value)
         {
             HPRoot.SetActiveEx(value);
+            if (value)
+            {
+                RefreshBarColor();
+            }
+        }
+
+        public void RefreshBarColor()
+        {
+            CurrentHPRenderer.color = UnitHelper.GetTeamColor(_owner.TeamId);
         }
 
         public void SetHP(EHPModifyCase modifyCase, int current, int max)
@@ -125,6 +136,20 @@ namespace GameA.Game
                     break;
             }
             HpPerccentage = current / (float) max;
+        }
+
+        public void SetOwner(ActorBase owner)
+        {
+            _owner = owner;
+        }
+
+        public void Reset()
+        {
+            if (_owner != null)
+            {
+                SetHP(EHPModifyCase.Set, _owner.MaxHp, _owner.MaxHp);
+                SetHPActive(true);
+            }
         }
     }
 

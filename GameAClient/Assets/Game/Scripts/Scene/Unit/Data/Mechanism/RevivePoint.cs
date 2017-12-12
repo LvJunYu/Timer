@@ -72,7 +72,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.IsMain)
+                if (other.IsPlayer)
                 {
                     if (!_trigger)
                     {

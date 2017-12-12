@@ -829,12 +829,20 @@ namespace GameA.Game
             return "Victory";
         }
 
-        public void SetValue(UnitExtra unitExtra)
+        public void SetUnitExtra(UnitExtra unitExtra)
         {
             _unitExtra = unitExtra;
             UpdateExtraData();
+            //下一帧刷新血条颜色
+//            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+//            {
+            if (_statusBar != null)
+            {
+                _statusBar.RefreshBarColor();
+            }
+//            }));
         }
-        
+
         public override UnitExtra GetUnitExtra()
         {
             return _unitExtra;
