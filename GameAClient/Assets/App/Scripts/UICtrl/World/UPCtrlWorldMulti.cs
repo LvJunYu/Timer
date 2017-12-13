@@ -48,7 +48,6 @@ namespace GameA
         {
             _roomList = RoomManager.Instance.RoomList;
             _cachedView.EmptyObj.SetActiveEx(_roomList.Count == 0);
-            _cachedView.MultiDetailPannel.SetActive(_contentList.Count != 0);
             _contentList.Clear();
             _dict.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _roomList.Count);
@@ -63,6 +62,7 @@ namespace GameA
                 }
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
+            _cachedView.MultiDetailPannel.SetActive(_contentList.Count != 0);
             if (_curSelectRoom == null && _contentList.Count > 0)
             {
                 _contentList[0].IsSelected = true;

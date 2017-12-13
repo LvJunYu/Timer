@@ -7,9 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -52,6 +50,11 @@ namespace GameA.Game
         {
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Effect);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Decoration);
 	        
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);

@@ -43,6 +43,13 @@ namespace GameA
             _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
             _cachedView.CreateBtn.onClick.AddListener(OnCreateBtn);
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
+            
+            var upCtrlProjectRoomList = new UPCtrlProjectRoomList();
+            upCtrlProjectRoomList.SetResScenary(ResScenary);
+            upCtrlProjectRoomList.SetMenu(EMenu.Room);
+            upCtrlProjectRoomList.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Room] = upCtrlProjectRoomList;
+            
             var upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
             upCtrlProjectRecentRecord.SetResScenary(ResScenary);
             upCtrlProjectRecentRecord.SetMenu(EMenu.Recent);
@@ -214,6 +221,9 @@ namespace GameA
                 SetNull();
                 return;
             }
+            _cachedView.MenuButtonAry[(int)EMenu.Room].SetActiveEx(IsMulti);
+            _cachedView.MenuButtonAry[(int)EMenu.Recent].SetActiveEx(!IsMulti);
+            _cachedView.MenuButtonAry[(int)EMenu.Rank].SetActiveEx(!IsMulti);
             _cachedView.StandalonePannel.SetActive(!IsMulti);
             _cachedView.MultiPannel.SetActive(IsMulti);
             _cachedView.CreateBtn.SetActiveEx(IsMulti);
@@ -553,6 +563,7 @@ namespace GameA
         public enum EMenu
         {
             None = -1,
+            Room,
             Recent,
             Comment,
             Rank,
