@@ -49,9 +49,9 @@ namespace GameA
             _cachedView.SureBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.SureBtn_2.onClick.AddListener(OnCloseBtn);
             _cachedView.SureBtn_3.onClick.AddListener(OnCloseBtn);
-            _cachedView.SureBtn.onClick.AddListener(SaveWinCondition);
-            _cachedView.SureBtn_2.onClick.AddListener(SaveWinCondition);
-            _cachedView.SureBtn_3.onClick.AddListener(SaveWinCondition);
+            _cachedView.SureBtn.onClick.AddListener(OnSure);
+            _cachedView.SureBtn_2.onClick.AddListener(OnSure);
+            _cachedView.SureBtn_3.onClick.AddListener(OnSure);
             _cachedView.TestBtn.onClick.AddListener(OnTestBtn);
             _cachedView.TestBtn_2.onClick.AddListener(OnTestBtn);
             _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
@@ -122,6 +122,16 @@ namespace GameA
                 LogHelper.Error("GM2DGame.Instance.GameMode is null");
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
                 return;
+            }
+            if (IsMulti)
+            {
+                _cachedView.SureBtn_2Txt.text = "发 布";
+                _cachedView.SureBtn_3Txt.text = "发 布";
+            }
+            else
+            {
+                _cachedView.SureBtn_2Txt.text = "确 定";
+                _cachedView.SureBtn_3Txt.text = "确 定";
             }
             RefreshWinCondition();
             RefreshView();
@@ -380,9 +390,15 @@ namespace GameA
             }
         }
         
-        public void SaveWinCondition()
+        public void OnSure()
         {
-            if (IsMulti) return;
+            //多人是发布
+            if (IsMulti)
+            {
+                OnPublishBtn();
+                return;
+            }
+            //单人保存胜利条件
             for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
                 EditMode.Instance.MapStatistics.SetWinCondition(i, CurCondition.SettingValue[(int) i]);

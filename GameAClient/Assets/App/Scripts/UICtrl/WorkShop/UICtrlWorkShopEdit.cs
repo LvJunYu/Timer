@@ -182,18 +182,18 @@ namespace GameA
 
         private void OnOKBtn()
         {
-//            if (_editState == EEditState.HasPassed)
+            if (_editState == EEditState.HasPassed)
             {
                 OnPublish();
             }
-//            else if (_editState == EEditState.HasPublished)
-//            {
-//                SocialGUIManager.ShowPopupDialog("关卡已经发布。继续编辑");
-//            }
-//            else
-//            {
-//                OnEditBtn();
-//            }
+            else if (_editState == EEditState.HasPublished)
+            {
+                SocialGUIManager.ShowPopupDialog("关卡已经发布。继续编辑");
+            }
+            else
+            {
+                OnEditBtn();
+            }
         }
 
         private void OnPublish()
