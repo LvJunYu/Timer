@@ -64,7 +64,21 @@ namespace GameA.Game
             }
             ConnectMS(msAddress, 3001);
             _run = true;
+            
+            Messenger.AddListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
             return true;
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (_roomClient != null)
+            {
+                _roomClient.Disconnect();
+            }
+            if (_msClient != null)
+            {
+                _msClient.Disconnect();
+            }
         }
 
         public void ConnectRS(string ip, ushort port)
