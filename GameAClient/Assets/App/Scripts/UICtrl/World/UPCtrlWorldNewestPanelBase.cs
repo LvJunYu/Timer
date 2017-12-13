@@ -17,14 +17,13 @@ namespace GameA
 
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
-        protected bool _isRequesting;
         protected bool _hasRequested;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _eCurUi = GetUMCurUI(_menu);
-            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.NewestGridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void Open()
@@ -32,6 +31,7 @@ namespace GameA
             base.Open();
             _unload = false;
             _cachedView.NewestPannels[(int) _menu].SetActiveEx(true);
+            _cachedView.NewestGridDataScrollers[(int) _menu].SetActiveEx(true);
             if (!_hasRequested)
             {
                 RequestData();
@@ -41,7 +41,7 @@ namespace GameA
 
         public override void Close()
         {
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            _cachedView.NewestGridDataScrollers[(int) _menu].RefreshCurrent();
             _cachedView.NewestPannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
@@ -57,7 +57,7 @@ namespace GameA
             _dict.Clear();
             if (_projectList == null)
             {
-                _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+                _cachedView.NewestGridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
@@ -71,7 +71,7 @@ namespace GameA
                     _dict.Add(_projectList[i].ProjectId, w);
                 }
             }
-            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
+            _cachedView.NewestGridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
         protected void OnItemClick(CardDataRendererWrapper<Project> item)
@@ -134,7 +134,7 @@ namespace GameA
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;
-            _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+            _cachedView.NewestGridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
         }
         
         private UMCtrlProject.ECurUI GetUMCurUI(UPCtrlWorldNewest.EMenu menu)

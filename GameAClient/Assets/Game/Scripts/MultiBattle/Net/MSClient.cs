@@ -41,6 +41,11 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_UserReadyInfo>(Msg_MC_UserReadyInfo);
             RegisterHandler<Msg_MC_WarnningHost>(Msg_MC_WarnningHost);
             RegisterHandler<Msg_MC_RoomOpen>(Msg_MC_RoomOpen);
+            RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomList);
+        }
+
+        private void Msg_MC_QueryRoomList(Msg_MC_QueryRoomList msg, object netlink)
+        {
         }
 
         private void Msg_MC_LoginRet(Msg_MC_LoginRet msg, object netlink)

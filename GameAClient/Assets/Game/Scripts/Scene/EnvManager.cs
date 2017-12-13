@@ -50,6 +50,10 @@ namespace GameA.Game
 
 		public void Init()
         {
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.RemotePlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.MainPlayer);
+	        
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Monster);

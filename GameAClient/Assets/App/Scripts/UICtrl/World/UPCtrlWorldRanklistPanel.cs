@@ -145,6 +145,7 @@ namespace GameA
 
         public override void Clear()
         {
+            base.Clear();
             _unload = true;
             _contentList.Clear();
             _projectList = null;

@@ -115,6 +115,7 @@ namespace GameA
 
         public override void Clear()
         {
+            base.Clear();
             _hasRequested = false;
             _unload = true;
             _contentList.Clear();
