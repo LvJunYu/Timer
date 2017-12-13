@@ -180,7 +180,7 @@ namespace GameA.Game
 //            var user = new RoomUser();
 //            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
 //            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
-            _roomClient.Connect(msg.RSAddress, (ushort) msg.RSPort);
+            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
@@ -192,7 +192,7 @@ namespace GameA.Game
                 return;
             }
 //            _room.OnJoinSuccess();
-            _roomClient.Connect(msg.RSAddress, (ushort) msg.RSPort);
+            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
         }
 
         internal void OnRoomInfo(Msg_MC_RoomInfo msg)

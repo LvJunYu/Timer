@@ -33,6 +33,7 @@ namespace GameA.Game
 
         public override bool Stop()
         {
+            RoomManager.RoomClient.Disconnect();
             if (!base.Stop())
             {
                 return false;
