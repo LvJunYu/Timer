@@ -336,7 +336,7 @@ namespace GameA.Game
             {
                 int count;
                 _unitIndexCount.TryGetValue(unitDesc.Id, out count);
-                if (tableUnit.Count > 0 && count >= tableUnit.Count)
+                if (GetTableUnit_Count(tableUnit) > 0 && count >= GetTableUnit_Count(tableUnit))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog,
                         string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
@@ -354,7 +354,7 @@ namespace GameA.Game
         public static void BeforeAddUnit(Table_Unit tableUnit)
         {
             //只有一个的自动删除
-            if (tableUnit.Count == 1)
+            if (GetTableUnit_Count(tableUnit) == 1)
             {
                 UnitDesc desc;
                 if (_replaceUnits.TryGetValue(tableUnit.Id, out desc))
@@ -369,7 +369,7 @@ namespace GameA.Game
 
         public static void AfterAddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool isInit = false)
         {
-            if (tableUnit.Count == 1)
+            if (GetTableUnit_Count(tableUnit) == 1)
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
             }
@@ -434,6 +434,19 @@ namespace GameA.Game
             }
         }
 
+        public static int GetTableUnit_Count(Table_Unit tableUnit)
+        {
+            if (!EditMode.Instance.MapStatistics.IsMulti)
+            {
+                return tableUnit.Count;
+            }
+            if (UnitDefine.IsSpawn(tableUnit.Id))
+            {
+                return 6;
+            }
+            return tableUnit.Count;
+        }
+
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
         {
             Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
@@ -460,5 +473,6 @@ namespace GameA.Game
             if (Mathf.Abs(pairUnitUnitB.Guid.y - unitDesc.Guid.y) > validRange) return false;
             return true;
         }
+        
     }
 }

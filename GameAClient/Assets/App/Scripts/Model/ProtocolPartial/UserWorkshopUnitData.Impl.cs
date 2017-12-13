@@ -1,6 +1,7 @@
 ﻿// 工坊可用地块数量 | Msg_CS_DAT_UserWorkshopUnitData
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine.Proto;
 using SoyEngine;
 
@@ -22,6 +23,10 @@ namespace GameA
 		public int GetUnitLimt(int unitId)
 		{
 			int limit;
+			if (UnitDefine.IsSpawn(unitId))
+			{
+				return EditHelper.GetTableUnit_Count(TableManager.Instance.GetUnit(unitId));
+			}
 			if (_unitLimitDic.TryGetValue(unitId, out limit))
 			{
 				return limit;
@@ -40,6 +45,5 @@ namespace GameA
 				}
 			}
 		}
-		
 	}
 }
