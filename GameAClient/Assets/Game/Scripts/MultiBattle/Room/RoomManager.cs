@@ -5,6 +5,7 @@
 ** Summary : RoomManager
 ***********************************************************************/
 
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.MasterServer;
 using SoyEngine.Proto;
@@ -19,6 +20,8 @@ namespace GameA.Game
         private MSClient _msClient = new MSClient();
         private Room _room = new Room();
         private Msg_CM_CreateRoom _msgCreateRoom = new Msg_CM_CreateRoom();
+        private List<RoomInfo> _roomList = new List<RoomInfo>();
+        public bool IsEnd;
 
         public static RoomManager Instance
         {
@@ -38,6 +41,11 @@ namespace GameA.Game
         public static MSClient MsClient
         {
             get { return Instance._msClient; }
+        }
+
+        public List<RoomInfo> RoomList
+        {
+            get { return _roomList; }
         }
 
         public bool Init()
@@ -117,6 +125,7 @@ namespace GameA.Game
 //            login.UserId = LocalUser.Instance.UserGuid;
             SendToMSServer(login);
         }
+
         /// <summary>
         /// 请求登陆服务器
         /// </summary>
@@ -225,5 +234,23 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public void RequestRoomList(bool append)
+        {
+            var data = new Msg_CM_QueryRoomList();
+            if (append)
+            {
+                if (_roomList.Count > 0)
+                {
+                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId;
+                }
+            }
+            else
+            {
+                _roomList.Clear();
+            }
+            data.MaxCount = UPCtrlWorldMulti.PageSize;
+            MsClient.Write(data);
+        }
     }
 }

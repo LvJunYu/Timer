@@ -26,7 +26,7 @@ namespace GameA
 
         public abstract void RequestData(bool append = false);
 
-        protected virtual void RefreshView()
+        public virtual void RefreshView()
         {
         }
 

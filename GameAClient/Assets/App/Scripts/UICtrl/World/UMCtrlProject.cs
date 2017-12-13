@@ -90,6 +90,8 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.AuthorTxt, p.UserInfo.NickName);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadRawImage, p.UserInfo.HeadImgUrl,
+                    _cachedView.DefaultCoverTexture);
             }
         }
 
@@ -101,6 +103,7 @@ namespace GameA
         public void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage, _cachedView.DefaultCoverTexture);
         }
 
         public enum ECurUI
@@ -116,6 +119,7 @@ namespace GameA
             UserPlayHistory,
             RankList,
             Search,
+            Multi,
         }
     }
 }

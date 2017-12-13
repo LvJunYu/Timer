@@ -25,6 +25,7 @@ namespace GameA
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private long _lastProjectId;
         private bool _isPostComment;
+        public bool IsMulti;
 
         protected override void OnViewCreated()
         {
@@ -40,7 +41,7 @@ namespace GameA
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
             _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
             _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
-
+            _cachedView.CreateBtn.onClick.AddListener(OnCreateBtn);
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
             var upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
             upCtrlProjectRecentRecord.SetResScenary(ResScenary);
@@ -82,6 +83,7 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
+            IsMulti = Project.IsMulti;
             Project.Request(Project.ProjectId, null, null);
             RefreshView();
             if (Project.ProjectId != _lastProjectId)
@@ -212,6 +214,9 @@ namespace GameA
                 SetNull();
                 return;
             }
+            _cachedView.StandalonePannel.SetActive(!IsMulti);
+            _cachedView.MultiPannel.SetActive(IsMulti);
+            _cachedView.CreateBtn.SetActiveEx(IsMulti);
             UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.ProjectId, Project.ShortId.ToString());
             DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
@@ -254,6 +259,14 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
                 string.Format(_countFormat, Project.LikeCount + Project.UnlikeCount));
+        }
+
+        private void OnCreateBtn()
+        {
+            if (IsMulti)
+            {
+                RoomManager.Instance.SendRequestCreateRoom(Project.ProjectId);
+            }
         }
 
         private void RefreshCommentCount(int count)
@@ -427,13 +440,8 @@ namespace GameA
 
         private void OnPlayBtnClick()
         {
-            if (Project == null)
+            if (Project == null || Project.IsMulti)
             {
-                return;
-            }
-            if (Project.IsMulti)
-            {
-                RoomManager.Instance.SendRequestCreateRoom(Project.ProjectId);
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");

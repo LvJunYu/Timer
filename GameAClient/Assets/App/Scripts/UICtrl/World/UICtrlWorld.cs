@@ -86,6 +86,16 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
+            RegisterEvent<long>(EMessengerType.OnRoomProjectInfoFinish, OnRoomProjectInfoFinish);
+            RegisterEvent(EMessengerType.OnRoomListChanged, OnRoomListChanged);
+        }
+
+        private void OnRoomListChanged()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                _curMenuCtrl.RefreshView();
+            }
         }
 
         protected override void OnOpen(object parameter)
@@ -240,9 +250,21 @@ namespace GameA
             {
                 return;
             }
-            if (_curMenuCtrl != null)
+            if (_curMenu != EMenu.Multi && _curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
+            }
+        }
+
+        private void OnRoomProjectInfoFinish(long roomId)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
+            {
+                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(roomId);
             }
         }
 

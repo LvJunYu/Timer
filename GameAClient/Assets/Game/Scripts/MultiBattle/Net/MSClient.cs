@@ -11,7 +11,6 @@ namespace SoyEngine.MasterServer
             _handler = new MSHandler();
             _serializer = new ClientProtoSerializer(typeof(ECMMsgType), ProtoSerializer.ProtoNameSpace,
                 new GeneratedClientSerializer());
-            
         }
 
         protected override void OnConnected()
@@ -28,7 +27,7 @@ namespace SoyEngine.MasterServer
     public class MSHandler : Handler<object, object>
     {
         private GameModeNetPlay _modeNetPlay;
-        
+
         protected override void InitHandler()
         {
             RegisterHandler<Msg_MC_LoginRet>(Msg_MC_LoginRet);
@@ -46,6 +45,13 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_QueryRoomList(Msg_MC_QueryRoomList msg, object netlink)
         {
+            var list = msg.Data;
+            for (int i = 0; i < list.Count; i++)
+            {
+                RoomManager.Instance.RoomList.Add(new RoomInfo(list[i]));
+            }
+            RoomManager.Instance.IsEnd = list.Count < UPCtrlWorldMulti.PageSize;
+            Messenger.Broadcast(GameA.EMessengerType.OnRoomListChanged);
         }
 
         private void Msg_MC_LoginRet(Msg_MC_LoginRet msg, object netlink)

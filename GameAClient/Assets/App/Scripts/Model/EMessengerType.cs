@@ -112,12 +112,13 @@ namespace GameA
 
         //PVP
         public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
-
         public static readonly int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomWarnningHost = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
 
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;

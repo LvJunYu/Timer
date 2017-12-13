@@ -86,7 +86,7 @@ namespace GameA
                 });
         }
 
-        protected override void RefreshView()
+        public override void RefreshView()
         {
             _cachedView.LevelTex.text = _curType == EWorldRankType.WRT_Player ? _advLv : _createLv;
             _cachedView.CountTex.text = _curType == EWorldRankType.WRT_Player ? _advCount : _createCount;

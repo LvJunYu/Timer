@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -41,7 +40,7 @@ namespace GameA
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
-        protected override void RefreshView()
+        public override void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
