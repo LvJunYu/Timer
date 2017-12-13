@@ -51,12 +51,6 @@ namespace GameA.Game
         public bool Init()
         {
             _run = false;
-            string address = SocialApp.Instance.RoomServerAddress;
-            if (string.IsNullOrEmpty(address))
-            {
-                address = "localhost";
-            }
-//            ConnectRS(address, 6000);
             var msAddress = SocialApp.Instance.MasterServerAddress;
             if (string.IsNullOrEmpty(msAddress))
             {
@@ -64,7 +58,7 @@ namespace GameA.Game
             }
             ConnectMS(msAddress, 3001);
             _run = true;
-            
+
             Messenger.AddListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
             return true;
         }
@@ -249,9 +243,10 @@ namespace GameA.Game
 
         #endregion
 
-        public void RequestRoomList(bool append)
+        public void RequestRoomList(bool append, long projectId = 0)
         {
             var data = new Msg_CM_QueryRoomList();
+            data.ProjectId = projectId;
             if (append)
             {
                 if (_roomList.Count > 0)

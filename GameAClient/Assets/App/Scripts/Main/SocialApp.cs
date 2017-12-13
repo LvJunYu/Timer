@@ -30,7 +30,6 @@ namespace GameA
         [SerializeField] private LogHelper.ELogLevel _logLevel = LogHelper.ELogLevel.All;
         [SerializeField] private PublishChannel.EType _publishChannel = PublishChannel.EType.None;
         [SerializeField] private bool _clearCache;
-        [SerializeField] private string _roomServerAddress;
         [SerializeField] private string _masterServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
         private float _startTime;
@@ -42,11 +41,6 @@ namespace GameA
         {
             get { return _env; }
             set { _env = value; }
-        }
-
-        public string RoomServerAddress
-        {
-            get { return _roomServerAddress; }
         }
 
         public string MasterServerAddress

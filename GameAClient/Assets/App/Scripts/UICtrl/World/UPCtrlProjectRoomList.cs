@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
@@ -6,15 +7,13 @@ namespace GameA
 {
     public class UPCtrlProjectRoomList : UPCtrlProjectDetailBase
     {
-        private const int _pageSize = 10;
-        private WorldProjectRecentRecordList _data;
-        private List<Record> _dataList;
-        private List<CardDataRendererWrapper<Record>> _contentList = new List<CardDataRendererWrapper<Record>>();
+        private List<RoomInfo> _dataList;
+        private List<CardDataRendererWrapper<RoomInfo>> _contentList = new List<CardDataRendererWrapper<RoomInfo>>();
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.RecentGridDataScroller.Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.RoomGridDataScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void Open()
@@ -26,81 +25,38 @@ namespace GameA
 
         public override void Close()
         {
-            _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
+            _cachedView.RoomGridDataScroller.ContentPosition = Vector2.zero;
             base.Close();
         }
 
         protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;
-            _data = _mainCtrl.Project.ProjectRecentRecordList;
-            int startInx = 0;
-            if (append)
-            {
-                startInx = _contentList.Count;
-            }
-            _data.Request(_mainCtrl.Project.ProjectId, startInx, _pageSize, () =>
-            {
-                _dataList = _data.AllList;
-                if (_isOpen)
-                {
-                    RefreshView();
-                }
-            }, code => { });
+            RoomManager.Instance.RequestRoomList(append, _mainCtrl.Project.ProjectId);
         }
 
         protected override void RefreshView()
         {
-            if (_mainCtrl.Project == null)
+            _dataList = RoomManager.Instance.RoomList;
+            _cachedView.RoomGridDataScroller.OnViewportSizeChanged();
+            _contentList.Clear();
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _dataList.Count);
+            for (int i = 0; i < _dataList.Count; i++)
             {
-//                _cachedView.RecordGridDataScroller.OnViewportSizeChanged();
-                _cachedView.RecentGridDataScroller.SetEmpty();
-                return;
+                CardDataRendererWrapper<RoomInfo> w = new CardDataRendererWrapper<RoomInfo>(_dataList[i], OnItemClick);
+                _contentList.Add(w);
             }
-//            _cachedView.DescTitle.SetActiveEx(!string.IsNullOrEmpty(_mainCtrl.Project.Summary));
-            _cachedView.RecentGridDataScroller.OnViewportSizeChanged();
-            if (_dataList == null)
-            {
-                _cachedView.RecentGridDataScroller.SetEmpty();
-            }
-            else
-            {
-                _contentList.Clear();
-                _contentList.Capacity = Mathf.Max(_contentList.Capacity, _dataList.Count);
-                for (int i = 0; i < _dataList.Count; i++)
-                {
-                    CardDataRendererWrapper<Record> w = new CardDataRendererWrapper<Record>(_dataList[i], OnItemClick);
-                    _contentList.Add(w);
-                }
-                _cachedView.RecentGridDataScroller.SetItemCount(_contentList.Count);
-            }
+            _cachedView.RoomGridDataScroller.SetItemCount(_contentList.Count);
         }
 
-        private void OnItemClick(CardDataRendererWrapper<Record> item)
+        private void OnItemClick(CardDataRendererWrapper<RoomInfo> item)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求播放录像");
-            _mainCtrl.Project.PrepareRes(() =>
-            {
-                item.Content.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayRecord(_mainCtrl.Project, item.Content);
-                    SocialApp.Instance.ChangeToGame();
-                }, error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入录像失败");
-                });
-            }, () =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("进入录像失败");
-            });
+            
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlWorldRecentRecord();
+            var item = new UMCtrlProjectRoom();
             item.Init(parent, _resScenary);
             return item;
         }
@@ -119,7 +75,7 @@ namespace GameA
                     return;
                 }
                 item.Set(_contentList[inx]);
-                if (!_data.IsEnd)
+                if (!RoomManager.Instance.IsEnd)
                 {
                     if (inx > _contentList.Count - 2)
                     {
@@ -133,7 +89,7 @@ namespace GameA
         {
             _dataList = null;
             _contentList.Clear();
-            _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
+            _cachedView.RoomGridDataScroller.ContentPosition = Vector2.zero;
         }
     }
 }

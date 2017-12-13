@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace GameA
 {
     public class UPCtrlWorldMulti : UPCtrlWorldPanelBase
     {
-        public const int PageSize = 8;
+        public const int PageSize = 16;
         private List<CardDataRendererWrapper<RoomInfo>> _contentList = new List<CardDataRendererWrapper<RoomInfo>>();
 
         private Dictionary<long, CardDataRendererWrapper<RoomInfo>> _dict =
@@ -16,6 +17,8 @@ namespace GameA
         private UMCtrlProject.ECurUI _eCurUi;
         private List<RoomInfo> _roomList;
         private RoomInfo _curSelectRoom;
+        private const string _secondFormat = "{0}秒";
+        private const string _minFormat = "{0:f1}分钟";
 
         public override void Open()
         {
@@ -86,6 +89,22 @@ namespace GameA
 
         private void RefreshRoomInfo()
         {
+            if (_curSelectRoom == null) return;
+            var project = _curSelectRoom.Project;
+            var netData = project.NetData;
+            if (netData == null) return;
+            _cachedView.DescTxt.text = project.Summary;
+            _cachedView.PlayerCount.text = _curSelectRoom.MaxUserCount.ToString();
+            _cachedView.LifeCount.text = netData.LifeCount.ToString();
+            _cachedView.ReviveTime.text = string.Format(_secondFormat, netData.ReviveTime);
+            _cachedView.ReviveProtectTime.text = string.Format(_secondFormat, netData.ReviveInvincibleTime);
+            _cachedView.TimeLimit.text = string.Format(_minFormat, netData.TimeLimit / (float) 60);
+            _cachedView.TimeOverCondition.text = UICtrlProjectDetail.GetTimeOverCondition(netData.TimeWinCondition);
+            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
+            _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
+            _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
+            _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
         }
 
         private void OnJoinRoomBtn()

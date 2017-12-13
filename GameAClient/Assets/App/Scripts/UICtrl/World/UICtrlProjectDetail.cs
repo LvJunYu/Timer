@@ -13,6 +13,8 @@ namespace GameA
         public static string EmptyStr = "-";
         public const string _countFormat = "({0})";
         private const string _maxShow = "(999+)";
+        private const string _secondFormat = "{0}秒";
+        private const string _minFormat = "{0:f1}分钟";
         public Project Project;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
@@ -227,29 +229,56 @@ namespace GameA
             _cachedView.StandalonePannel.SetActive(!IsMulti);
             _cachedView.MultiPannel.SetActive(IsMulti);
             _cachedView.CreateBtn.SetActiveEx(IsMulti);
-            UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
-            DictionaryTools.SetContentText(_cachedView.ProjectId, Project.ShortId.ToString());
-            DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
-            DictionaryTools.SetContentText(_cachedView.Desc, Project.Summary);
-            DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.AdvLevelText,
-                GameATools.GetLevelString(user.LevelData.PlayerLevel));
-            DictionaryTools.SetContentText(_cachedView.CreateLevelText,
-                GameATools.GetLevelString(user.LevelData.CreatorLevel));
-            DictionaryTools.SetContentText(_cachedView.PlayCountText,
-                Project.ExtendReady ? Project.PlayCount.ToString() : EmptyStr);
-            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
-                GameATools.FormatServerDateString(Project.CreateTime));
+            if (IsMulti)
+            {
+                RefreshRoomInfo();
+            }
+            else
+            {
+                UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
+                DictionaryTools.SetContentText(_cachedView.ProjectId, Project.ShortId.ToString());
+                DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
+                DictionaryTools.SetContentText(_cachedView.Desc, Project.Summary);
+                DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
+                DictionaryTools.SetContentText(_cachedView.AdvLevelText,
+                    GameATools.GetLevelString(user.LevelData.PlayerLevel));
+                DictionaryTools.SetContentText(_cachedView.CreateLevelText,
+                    GameATools.GetLevelString(user.LevelData.CreatorLevel));
+                DictionaryTools.SetContentText(_cachedView.PlayCountText,
+                    Project.ExtendReady ? Project.PlayCount.ToString() : EmptyStr);
+                DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
+                    GameATools.FormatServerDateString(Project.CreateTime));
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
+                    _cachedView.DefaultCoverTexture);
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
+                    _cachedView.DefaultCoverTexture);
+                user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                    _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            }
             RefreshBtns();
             RefreshCommentCount(Project.TotalCommentCount);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
-                _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
-                _cachedView.DefaultCoverTexture);
-            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
-                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
+        private void RefreshRoomInfo()
+        {
+            if (Project == null) return;
+            var netData = Project.NetData;
+            if (netData == null) return;
+            _cachedView.TitleTxt.text = Project.Name;
+            _cachedView.DescTxt.text = Project.Summary;
+            _cachedView.PlayerCount.text = netData.PlayerCount.ToString();
+            _cachedView.LifeCount.text = netData.LifeCount.ToString();
+            _cachedView.ReviveTime.text = string.Format(_secondFormat, netData.ReviveTime);
+            _cachedView.ReviveProtectTime.text = string.Format(_secondFormat, netData.ReviveInvincibleTime);
+            _cachedView.TimeLimit.text = string.Format(_minFormat, netData.TimeLimit / (float) 60);
+            _cachedView.TimeOverCondition.text = GetTimeOverCondition(netData.TimeWinCondition);
+            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
+            _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
+            _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
+            _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
+        }
+        
         private void RefreshBtns()
         {
             if (Project == null) return;
@@ -569,5 +598,20 @@ namespace GameA
             Rank,
             Max
         }
+        
+        public static string GetTimeOverCondition(int winCondition)
+        {
+            switch ((ENetBattleTimeResult)winCondition)
+            {
+                case ENetBattleTimeResult.Score:
+                    return "分数最高的队伍胜利";
+                case ENetBattleTimeResult.AllWin:
+                    return "全体胜利";
+                case ENetBattleTimeResult.AllFail:
+                    return "全体失败";
+            }
+            return string.Empty;
+        }
+
     }
 }

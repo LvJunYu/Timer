@@ -70,6 +70,8 @@ namespace GameA
             var isGuest = LocalUser.Instance.Account.IsGuest;
             _cachedView.BindingBtn.SetActiveEx(isGuest);
             _cachedView.ChangePwdBtn.SetActiveEx(!isGuest);
+            _cachedView.RestartBtn.SetActiveEx(!PlayMode.Instance.SceneState.IsMulti);
+            _cachedView.RestartBtn_2.SetActiveEx(!PlayMode.Instance.SceneState.IsMulti);
         }
 
         protected override void OnClose()
