@@ -143,6 +143,10 @@ namespace GameA.Game
                             }
                         }
                     }
+                    else
+                    {
+                        ApplyFrameInputData(null);
+                    }
                     ProcessLogic();
                 }
                 if (_serverInputFrameQueue.Count == 0)
@@ -184,6 +188,13 @@ namespace GameA.Game
                         break;
                 }
             }
+            ApplyFrameInputData(frameData.UserInputDatas);
+            _curServerFrame++;
+        }
+
+        private void ApplyFrameInputData(List<Msg_RC_UserInputData> frameDataList)
+        {
+            PlayerManager pm = PlayerManager.Instance;
             for (int i = 0; i < pm.PlayerList.Count; i++)
             {
                 PlayerBase playerBase = pm.PlayerList[i];
@@ -191,8 +202,11 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                Msg_RC_UserInputData userInputData =
-                    frameData.UserInputDatas.Find(m => m.UserRoomInx == i);
+                Msg_RC_UserInputData userInputData = null;
+                if (frameDataList != null)
+                {
+                    userInputData = frameDataList.Find(m => m.UserRoomInx == i);
+                }
                 if (userInputData == null)
                 {
                     playerBase.Input.ApplyInputData(null);
@@ -202,8 +216,6 @@ namespace GameA.Game
                     playerBase.Input.ApplyInputData(userInputData.InputDatas);
                 }
             }
-            
-            _curServerFrame++;
         }
 
         private void ProcessLogic()
