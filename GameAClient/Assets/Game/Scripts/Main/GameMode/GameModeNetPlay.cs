@@ -79,9 +79,11 @@ namespace GameA.Game
                 {
                     while (!NeedApplyData())
                     {
+                        ApplyFrameInputData(null);
                         ProcessLogic();
                     }
                     ApplyFrameData(_serverStartInputFrameList[i]);
+                    ProcessLogic();
                     if (Time.realtimeSinceStartup - startTime > 1)
                     {
                         break;
@@ -99,9 +101,11 @@ namespace GameA.Game
                 {
                     while (!NeedApplyData())
                     {
+                        ApplyFrameInputData(null);
                         ProcessLogic();
                     }
                     ApplyFrameData(_serverInputFrameQueue.Dequeue());
+                    ProcessLogic();
                     if (Time.realtimeSinceStartup - startTime > 1)
                     {
                         break;
@@ -306,6 +310,10 @@ namespace GameA.Game
                 for (int i = 0; i < msg.FrameDatas.Count; i++)
                 {
                     _serverInputFrameQueue.Enqueue(msg.FrameDatas[i]);
+                }
+                if (msg.FrameDatas.Count > 0)
+                {
+                    _recentServerFrame = msg.FrameDatas[msg.FrameDatas.Count - 1].FrameInx;
                 }
             }
             else

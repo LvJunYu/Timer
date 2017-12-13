@@ -26,7 +26,7 @@ namespace SoyEngine.MasterServer
 
     public class MSHandler : Handler<object, object>
     {
-        private GameModeNetPlay _modeNetPlay;
+//        private GameModeNetPlay _modeNetPlay;
 
         protected override void InitHandler()
         {
@@ -61,38 +61,38 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_RoomOpen(Msg_MC_RoomOpen msg, object obj)
         {
-            RoomManager.Instance.OnOpenBattle();
-            //这里进行房间和战场的交接
-            EBattleType battleType = RoomManager.Instance.Room.EBattleType;
-
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
-            var project = new Project();
-            project.Request(RoomManager.Instance.Room.ProjectId,
-                () => project.RequestPlay(() =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        switch (battleType)
-                        {
-                            case EBattleType.EBT_PVE:
-                                GameManager.Instance.RequestPlayMultiCooperation(project);
-                                break;
-                            case EBattleType.EBT_PVP:
-                                GameManager.Instance.RequestPlayMultiBattle(project);
-                                break;
-                        }
-                        SocialApp.Instance.ChangeToGame();
-                        _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
-                    },
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    }),
-                error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
+//            RoomManager.Instance.OnOpenBattle();
+//            //这里进行房间和战场的交接
+//            EBattleType battleType = RoomManager.Instance.Room.EBattleType;
+//
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
+//            var project = new Project();
+//            project.Request(RoomManager.Instance.Room.ProjectId,
+//                () => project.RequestPlay(() =>
+//                    {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                        switch (battleType)
+//                        {
+//                            case EBattleType.EBT_PVE:
+//                                GameManager.Instance.RequestPlayMultiCooperation(project);
+//                                break;
+//                            case EBattleType.EBT_PVP:
+//                                GameManager.Instance.RequestPlayMultiBattle(project);
+//                                break;
+//                        }
+//                        SocialApp.Instance.ChangeToGame();
+//                        _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
+//                    },
+//                    error =>
+//                    {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
+//                    }),
+//                error =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+//                });
         }
 
         private void Msg_MC_WarnningHost(Msg_MC_WarnningHost msg, object obj)

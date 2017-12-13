@@ -456,6 +456,7 @@ namespace GameA.Game
                     //多人
                     var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
                     mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                    mainGhost.Setup(GM2DGame.Instance.GameMode.GetOtherPlayerInput());
                     PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
                     _mainPlayer = PlayerManager.Instance.MainPlayer;
 //                    if (users.Count == 0)
