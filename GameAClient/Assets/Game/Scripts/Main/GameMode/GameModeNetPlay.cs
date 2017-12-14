@@ -215,7 +215,7 @@ namespace GameA.Game
                     continue;
                 }
                 Msg_RC_UserInputData userInputData = null;
-                if (frameDataList != null)
+                if (frameDataList != null && frameDataList.Count > 0)
                 {
                     userInputData = frameDataList.Find(m => m.UserRoomInx == i);
                 }

@@ -19,7 +19,7 @@ namespace GameA.Game
     {
         public RoomClient()
         {
-            _handler = new RoomClientHandler();
+            _handler = RoomClientHandler.Intance;
             _serializer = new ClientProtoSerializer(typeof(ECRMsgType), ProtoSerializer.ProtoNameSpace,
                 new GeneratedClientSerializer());
         }
@@ -35,11 +35,14 @@ namespace GameA.Game
         protected override void OnDisconnected(int code = 0)
         {
             LogHelper.Debug("RoomClient OnDisConnected");
+            Loom.QueueOnMainThread(RoomClientHandler.Intance.OnDisconnect);
         }
     }
 
     public class RoomClientHandler : Handler<object, object>
     {
+        public static RoomClientHandler Intance = new RoomClientHandler();
+        
         private GameModeNetPlay _modeNetPlay;
         private List<Action> _roomActionList = new List<Action>();
 
@@ -83,6 +86,7 @@ namespace GameA.Game
 
         private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
+            _modeNetPlay = null;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
             if (msg.ResultCode == ERLoginCode.ELC_Success)
             {
@@ -117,6 +121,18 @@ namespace GameA.Game
             {
                 LogHelper.Debug("Login RS Failed");
                 SocialGUIManager.ShowPopupDialog("联机失败");
+            }
+        }
+
+        public void OnDisconnect()
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnDisconnected();
+            }
+            else
+            {
+                _roomActionList.Add(OnDisconnect);
             }
         }
     }
