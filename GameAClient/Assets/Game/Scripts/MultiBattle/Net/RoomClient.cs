@@ -89,7 +89,7 @@ namespace GameA.Game
                 var project = new Project();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在启动游戏");
                 project.Request(msg.RoomInfo.ProjectId,
-                    () => project.RequestPlay(() =>
+                    () => project.PrepareRes(() =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             GameManager.Instance.RequestPlayMultiBattle(project);
@@ -101,7 +101,7 @@ namespace GameA.Game
                                 _roomActionList[i].Invoke();
                             }
                         },
-                        error =>
+                        () =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             SocialGUIManager.ShowPopupDialog("进入关卡失败");

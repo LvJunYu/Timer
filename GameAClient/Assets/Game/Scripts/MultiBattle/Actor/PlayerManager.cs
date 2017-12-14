@@ -47,7 +47,7 @@ namespace GameA.Game
         public void JoinRoom(Msg_RC_RoomUserInfo msg)
         {
             var user = new RoomUser();
-            user.Init(msg.UserGuid, ""+msg.UserGuid, true);
+            user.Init(msg.UserGuid, msg.NickName, true);
             _userDataList.Add(user);
             _playerList.Add(null);
         }
