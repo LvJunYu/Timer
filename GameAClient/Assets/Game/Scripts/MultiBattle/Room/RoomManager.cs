@@ -78,7 +78,11 @@ namespace GameA.Game
         public void ConnectRS(string ip, ushort port)
         {
             LogHelper.Debug("StartConnectRS: {0}, {1}", ip, port);
-            _roomClient.Connect(ip, port);
+            _roomClient.Connect(ip, port, null, e =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("联机服务失败，请稍后再试");
+            }, 10);
         }
 
         public void ConnectMS(string ip, ushort port)
@@ -148,6 +152,12 @@ namespace GameA.Game
 
         public void SendRequestCreateRoom(long projectGuid)
         {
+            if (!_msClient.IsConnected())
+            {
+                SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在创建房间");
             _msgCreateRoom.ProjectId = projectGuid;
             _msgCreateRoom.MaxUserCount = 6;
             SendToMSServer(_msgCreateRoom);
@@ -155,6 +165,12 @@ namespace GameA.Game
 
         public void SendRequestJoinRoom(long roomId)
         {
+            if (!_msClient.IsConnected())
+            {
+                SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入房间");
             var msg = new Msg_CM_JoinRoom();
             msg.RoomGuid = roomId;
             SendToMSServer(msg);

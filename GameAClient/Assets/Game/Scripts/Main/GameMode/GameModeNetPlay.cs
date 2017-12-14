@@ -25,7 +25,7 @@ namespace GameA.Game
         protected EPhase _ePhase;
         protected int _bornSeed;
         protected int _recentServerFrame;
-        
+
         public override bool IsMulti
         {
             get { return true; }
@@ -33,6 +33,7 @@ namespace GameA.Game
 
         public override bool Stop()
         {
+            SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
             if (!base.Stop())
             {
@@ -44,23 +45,16 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
-            Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
-            msg.Result = EBattleResult.EBR_Win;
-            RoomManager.RoomClient.Write(msg);
-            Loom.QueueOnMainThread(RoomManager.RoomClient.Disconnect, 3000);
+            SetPhase(EPhase.Succeed);
         }
 
         public override void OnGameFailed()
         {
-            Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
-            msg.Result = EBattleResult.EBR_Fail;
-            RoomManager.RoomClient.Write(msg);
-            Loom.QueueOnMainThread(RoomManager.RoomClient.Disconnect, 3000);
+            SetPhase(EPhase.Failed);
         }
 
         public override void OnGameStart()
         {
-            base.OnGameStart();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
         }
@@ -124,6 +118,12 @@ namespace GameA.Game
                     SetPhase(EPhase.RequestStartBattle);
                 }
             }
+            else if (_ePhase == EPhase.Close
+                     || _ePhase == EPhase.Failed
+                     || _ePhase == EPhase.Succeed)
+            {
+                
+            }
             else
             {
                 _frameLeftTime += Time.deltaTime;
@@ -143,7 +143,8 @@ namespace GameA.Game
                         ApplyFrameData(_serverInputFrameQueue.Dequeue());
                         if (null != PlayerManager.Instance.MainPlayer)
                         {
-                            LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
+                            LocalPlayerInput localPlayerInput =
+                                PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                             if (localPlayerInput != null)
                             {
                                 localPlayerInput.ProcessCheckInput();
@@ -165,7 +166,6 @@ namespace GameA.Game
                 {
                     _frameLeftTime = 0;
                 }
-                
             }
         }
 
@@ -234,13 +234,14 @@ namespace GameA.Game
         {
             GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
         }
-        
-        public override bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit,  ECharacterAbility eCharacterAbility)
+
+        public override bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit,
+            ECharacterAbility eCharacterAbility)
         {
             //TODO 临时 应该使用Player的数据判断
             return true;
         }
-        
+
         private void SetPhase(EPhase phase)
         {
             switch (phase)
@@ -255,6 +256,35 @@ namespace GameA.Game
                     SendStartBattle();
                     break;
                 case EPhase.Normal:
+                    base.OnGameStart();
+                    break;
+                case EPhase.Succeed:
+                {
+                    Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
+                    msg.Result = EBattleResult.EBR_Win;
+                    RoomManager.RoomClient.Write(msg);
+                    Loom.QueueOnMainThread(()=>
+                    {
+                        if (RoomManager.RoomClient.IsConnected())
+                        {
+                            RoomManager.RoomClient.Disconnect();
+                        }
+                    }, 1000);
+                }
+                    break;
+                case EPhase.Failed:
+                {
+                    Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
+                    msg.Result = EBattleResult.EBR_Fail;
+                    RoomManager.RoomClient.Write(msg);
+                    Loom.QueueOnMainThread(()=>
+                    {
+                        if (RoomManager.RoomClient.IsConnected())
+                        {
+                            RoomManager.RoomClient.Disconnect();
+                        }
+                    }, 1000);
+                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("phase", phase, null);
@@ -308,7 +338,6 @@ namespace GameA.Game
 
         #region Receive
 
-
         internal void OnInputDatas(Msg_RC_FrameDataArray msg)
         {
             if (_ePhase == EPhase.Normal
@@ -330,8 +359,30 @@ namespace GameA.Game
             }
         }
 
-        internal void OnBattleClose(Msg_RC_BattleClose msg)
+        internal void OnRoomClose(ERoomCloseCode code)
         {
+            switch (code)
+            {
+                case ERoomCloseCode.ERCC_None:
+                    break;
+                case ERoomCloseCode.ERCC_BattleEnd:
+                    break;
+                case ERoomCloseCode.ERCC_RoomNotExist:
+                    SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
+                    SocialApp.Instance.ReturnToApp();
+                    break;
+                case ERoomCloseCode.ERCC_WaitTimeout:
+                    SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
+                    SocialApp.Instance.ReturnToApp();
+                    break;
+                case ERoomCloseCode.ERCC_BattleTimeout:
+                    break;
+                case ERoomCloseCode.ERCC_NoActiveUser:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("code", code, null);
+            }
+            SetPhase(EPhase.Close);
         }
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
@@ -341,27 +392,46 @@ namespace GameA.Game
             LogHelper.Info("RoomId: {0}", msg.RoomId);
         }
 
+        internal void OnDisconnected()
+        {
+            if (_ePhase == EPhase.Failed
+                || _ePhase == EPhase.Close
+                || _ePhase == EPhase.Succeed)
+            {
+                return;
+            }
+            SocialGUIManager.ShowPopupDialog("联机服务异常，正在退出");
+            SocialApp.Instance.ReturnToApp();
+        }
+
         #endregion
-        
+
         protected enum EPhase
         {
             None,
+
             /// <summary>
             /// 模拟进入房间前的数据指令
             /// </summary>
             Simulation,
+
             /// <summary>
             /// 追赶进入房间后的指令
             /// </summary>
             Pursue,
+
             /// <summary>
             /// 请求开始
             /// </summary>
             RequestStartBattle,
+
             /// <summary>
             /// 正常运行
             /// </summary>
             Normal,
+            Succeed,
+            Failed,
+            Close,
         }
     }
 }

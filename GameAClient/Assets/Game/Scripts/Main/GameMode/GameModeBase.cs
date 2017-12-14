@@ -98,6 +98,7 @@ namespace GameA.Game
 
         public virtual void OnGameStart()
         {
+            Messenger.Broadcast(EMessengerType.OnGameStartComplete);
         }
 
         public void RecordAnimation(string animName, bool loop, float timeScale = 1f, int trackIdx = 0)

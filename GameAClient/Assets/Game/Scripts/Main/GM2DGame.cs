@@ -235,7 +235,6 @@ namespace GameA.Game
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
             {
-                Messenger.Broadcast(EMessengerType.OnGameStartComplete);
                 _gameMode.OnGameStart();
             }));
         }

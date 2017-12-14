@@ -48,7 +48,7 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_LoginRet>(Msg_RC_LoginRet);
 
             RegisterHandler<Msg_RC_FrameDataArray>(Msg_RC_FrameDataArray);
-            RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
+            RegisterHandler<Msg_RC_RoomClose>(Msg_RC_RoomClose);
         }
 
         private void Msg_RC_FrameDataArray(Msg_RC_FrameDataArray msg, object netlink)
@@ -66,23 +66,24 @@ namespace GameA.Game
             }
         }
 
-        private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, object netLink)
+        private void Msg_RC_RoomClose(Msg_RC_RoomClose msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
-                _modeNetPlay.OnBattleClose(msg);
+                _modeNetPlay.OnRoomClose(msg.ResultCode);
             }
             else
             {
                 _roomActionList.Add(() =>
                 {
-                    Msg_RC_BattleClose(msg, netLink);
+                    Msg_RC_RoomClose(msg, netLink);
                 });
             }
         }
 
         private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
             if (msg.ResultCode == ERLoginCode.ELC_Success)
             {
                 LogHelper.Debug("Login RS Success");
@@ -115,6 +116,7 @@ namespace GameA.Game
             else
             {
                 LogHelper.Debug("Login RS Failed");
+                SocialGUIManager.ShowPopupDialog("联机失败");
             }
         }
     }
