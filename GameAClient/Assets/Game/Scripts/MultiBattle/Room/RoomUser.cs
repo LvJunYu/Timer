@@ -53,7 +53,7 @@ namespace GameA.Game
         public void Set(Msg_RC_RoomUserInfo roomUserInfo)
         {
             _guid = roomUserInfo.UserGuid;
-            _name = roomUserInfo.UserName;
+            _name = roomUserInfo.NickName;
             _ready = roomUserInfo.Ready == 1;
             _inx = roomUserInfo.inx;
         }

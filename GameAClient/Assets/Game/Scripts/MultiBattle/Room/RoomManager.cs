@@ -84,7 +84,7 @@ namespace GameA.Game
         public void ConnectMS(string ip, ushort port)
         {
             LogHelper.Debug("StartConnectMS: {0}, {1}", ip, port);
-            _msClient.Connect(ip, port);
+            _msClient.ConnectWithRetry(ip, port);
         }
 
         public void Update()
@@ -130,7 +130,7 @@ namespace GameA.Game
             var login = new Msg_CM_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
             login.Token = LocalUser.Instance.Account.Token;
-//            login.UserId = LocalUser.Instance.UserGuid;
+            login.NickName = LocalUser.Instance.User.UserInfoSimple.NickName;
             SendToMSServer(login);
         }
 
@@ -212,7 +212,7 @@ namespace GameA.Game
         {
             Msg_MC_RoomUserInfo msgUser = msg.UserInfo;
             var user = new RoomUser();
-            user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
+            user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
             _room.AddUser(user);
         }
 

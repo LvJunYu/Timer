@@ -6,6 +6,8 @@ namespace SoyEngine.MasterServer
 {
     public class MSClient : JoyTCPClient
     {
+        private int _reconnectAttempts;
+        
         public MSClient()
         {
             _handler = new MSHandler();
@@ -13,14 +15,39 @@ namespace SoyEngine.MasterServer
                 new GeneratedClientSerializer());
         }
 
+        public void ConnectWithRetry(string ip, ushort port)
+        {
+            _ip = ip;
+            _port = port;
+            Reconnect();
+        }
+
         protected override void OnConnected()
         {
             base.OnConnected();
             RoomManager.Instance.SendPlayerLoginMS();
+            _reconnectAttempts = 0;
         }
 
         protected override void OnDisconnected(int code = 0)
         {
+            Loom.QueueOnMainThread(Reconnect);
+        }
+
+        private void TryReconnect()
+        {
+            if (_reconnectAttempts < 5) {
+                _reconnectAttempts++;  
+            }
+            //重连的间隔时间会越来越长  
+            int timeout = 2 << _reconnectAttempts;  
+            LogHelper.Info("链接关闭，{0}秒后重新连接", timeout);
+            Loom.QueueOnMainThread(Reconnect, timeout * 1000);
+        }
+
+        private void Reconnect()
+        {
+            Connect(_ip, _port, null, exception => TryReconnect(), 5000);
         }
     }
 

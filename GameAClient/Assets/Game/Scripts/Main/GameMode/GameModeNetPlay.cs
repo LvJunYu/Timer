@@ -44,10 +44,18 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
+            Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
+            msg.Result = EBattleResult.EBR_Win;
+            RoomManager.RoomClient.Write(msg);
+            Loom.QueueOnMainThread(RoomManager.RoomClient.Disconnect, 3000);
         }
 
         public override void OnGameFailed()
         {
+            Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
+            msg.Result = EBattleResult.EBR_Fail;
+            RoomManager.RoomClient.Write(msg);
+            Loom.QueueOnMainThread(RoomManager.RoomClient.Disconnect, 3000);
         }
 
         public override void OnGameStart()
