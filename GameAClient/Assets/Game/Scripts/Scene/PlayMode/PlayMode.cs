@@ -171,6 +171,10 @@ namespace GameA.Game
             {
                 return;
             }
+            if (_mainPlayer == null)
+            {
+                LogHelper.Error("_mainPlayer == null");
+            }
             if (_pausing && _mainPlayer.Life <= 0)
             {
                 _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
@@ -373,7 +377,14 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            _mainPlayer.OnSucceed();
+            var playerList = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null)
+                {
+                    playerList[i].OnSucceed();
+                }
+            }
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
             {
@@ -493,6 +504,10 @@ namespace GameA.Game
             if (main)
             {
                 _mainPlayer = PlayerManager.Instance.MainPlayer;
+            }
+            if (_run)
+            {
+                player.OnPlay();
             }
         }
 

@@ -88,14 +88,7 @@ namespace GameA
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnRoomProjectInfoFinish, OnRoomProjectInfoFinish);
             RegisterEvent(EMessengerType.OnRoomListChanged, OnRoomListChanged);
-        }
-
-        private void OnRoomListChanged()
-        {
-            if (_isOpen && _curMenu == EMenu.Multi)
-            {
-                _curMenuCtrl.RefreshView();
-            }
+            RegisterEvent (EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
         }
 
         protected override void OnOpen(object parameter)
@@ -127,6 +120,22 @@ namespace GameA
                 }
             }
             _cachedView.SearchInputField.text = String.Empty;
+        }
+
+        private void OnChangeToAppMode()
+        {
+            if (_curMenu == EMenu.Multi && _curMenuCtrl!=null)
+            {
+                _curMenuCtrl.RequestData();
+            }
+        }
+
+        private void OnRoomListChanged()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                _curMenuCtrl.RefreshView();
+            }
         }
 
         private void OnSearchBtn()

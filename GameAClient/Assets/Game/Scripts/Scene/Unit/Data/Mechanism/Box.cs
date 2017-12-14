@@ -117,14 +117,13 @@ namespace GameA.Game
                 if (_isHoldingByPlayer)
                 {
                     _deltaPos.x = 0;
-                    var mainUnit = PlayMode.Instance.MainPlayer;
                     if (_deltaPos.y != 0)
                     {
-                        mainUnit.OnBoxHoldingChanged();
+                        _holder.OnBoxHoldingChanged();
                     }
                     else
                     {
-                        var deltaMainPos = mainUnit.Speed + mainUnit.ExtraDeltaPos;
+                        var deltaMainPos = _holder.Speed + _holder.ExtraDeltaPos;
                         _deltaPos += IntVec2.right*deltaMainPos.x;
                     }
                 }
