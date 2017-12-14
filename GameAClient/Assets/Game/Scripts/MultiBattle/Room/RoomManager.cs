@@ -85,7 +85,7 @@ namespace GameA.Game
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
                     SocialGUIManager.ShowPopupDialog("联机服务失败，请稍后再试");
                 });
-            }, 10);
+            }, 10000);
         }
 
         public void ConnectMS(string ip, ushort port)
