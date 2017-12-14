@@ -286,6 +286,8 @@ namespace GameA.Game
                     }, 1000);
                 }
                     break;
+                case EPhase.Close:
+                break;
                 default:
                     throw new ArgumentOutOfRangeException("phase", phase, null);
             }
