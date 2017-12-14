@@ -104,7 +104,7 @@ namespace GameA.Game
             if (teamId == _myTeamId)
             {
                 Messenger.Broadcast(EMessengerType.OnScoreChanged);
-                Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, score);
+                Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, _scoreDic[teamId]);
             }
             PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == _myTeamId);
         }

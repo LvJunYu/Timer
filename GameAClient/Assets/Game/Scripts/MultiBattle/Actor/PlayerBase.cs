@@ -19,6 +19,7 @@ namespace GameA.Game
 
         protected long _playerId;
         protected UnitExtra _unitExtra;
+        protected bool _isReviving;
 
         [SerializeField] protected IntVec2 _revivePos;
 
@@ -398,6 +399,8 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
+            if (_isReviving) return;
+            _isReviving = true;
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
@@ -413,6 +416,7 @@ namespace GameA.Game
                     _input.Clear();
                     ClearRunTime();
                     _isAlive = true;
+                    _isReviving = false;
                     if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                     {
                         GM2DGame.Instance.GameMode.ShadowData.RecordRevive();
@@ -439,6 +443,10 @@ namespace GameA.Game
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
+                    }
+                    if (PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime > 0)
+                    {
+                        AddStates(null, 61);
                     }
                 });
         }
@@ -579,12 +587,19 @@ namespace GameA.Game
                 {
                     if (_life > 0)
                     {
-                        OnRevive();
+//                        _trans.eulerAngles = new Vector3(90, 0, 0);
+//                        OnRevive();
                     }
                     else
                     {
                         Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
                     }
+                }
+                if (_life > 0 && !_isReviving && _dieTime >= 50 &&
+                    _dieTime >= PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime *
+                    ConstDefineGM2D.FixedFrameCount)
+                {
+                    OnRevive();
                 }
                 if (_life <= 0 && _dieTime == 100)
                 {

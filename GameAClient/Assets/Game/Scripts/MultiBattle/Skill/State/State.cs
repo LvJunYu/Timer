@@ -60,7 +60,15 @@ namespace GameA.Game
                     _tableState.EffectValues.Length, _tableState.EffectIds.Length);
                 return false;
             }
-            _duration = TableConvert.GetTime(_tableState.Duration);
+            if (_tableState.Id == 61)
+            {//出生无敌
+                _duration = PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime *
+                            ConstDefineGM2D.FixedFrameCount;
+            }
+            else
+            {
+                _duration = TableConvert.GetTime(_tableState.Duration);
+            }
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);

@@ -211,7 +211,14 @@ namespace GameA.Game
 
         public int NetBattleReviveTime
         {
-            get { return _netBattleData.ReviveTime; }
+            get
+            {
+                if (!IsMulti)
+                {
+                    return 0;
+                }
+                return _netBattleData.ReviveTime;
+            }
             set
             {
                 if (_netBattleData == null) return;
@@ -225,7 +232,14 @@ namespace GameA.Game
 
         public int NetBattleReviveInvincibleTime
         {
-            get { return _netBattleData.ReviveInvincibleTime; }
+            get
+            {
+                if (!IsMulti)
+                {
+                    return 0;
+                }
+                return _netBattleData.ReviveInvincibleTime;
+            }
             set
             {
                 if (_netBattleData == null) return;
@@ -343,7 +357,14 @@ namespace GameA.Game
 
         public bool InfiniteLife
         {
-            get { return _netBattleData.InfiniteLife; }
+            get
+            {
+                if (!IsMulti)
+                {
+                    return false;
+                }
+                return _netBattleData.InfiniteLife;
+            }
             set
             {
                 if (_netBattleData == null)

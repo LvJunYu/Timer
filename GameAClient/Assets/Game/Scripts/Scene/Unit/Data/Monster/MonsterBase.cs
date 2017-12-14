@@ -252,6 +252,10 @@ namespace GameA.Game
             {
                 UpdateAttackTarget(AttackTarget);
             }
+            if (GameRun.Instance.LogicFrameCnt % 251 == 0)
+            {
+                UpdateAttackTarget();
+            }
         }
 
         protected virtual void OnFire()
@@ -362,6 +366,10 @@ namespace GameA.Game
 
         protected virtual void UpdateAttackTarget(UnitBase lastTarget = null)
         {
+            if (lastTarget == this)
+            {
+                lastTarget = null;
+            }
             _attactTarget = TeamManager.Instance.GetMonsterTarget(this, lastTarget);
         }
 

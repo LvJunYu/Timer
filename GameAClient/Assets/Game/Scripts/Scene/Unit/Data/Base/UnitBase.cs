@@ -306,6 +306,10 @@ namespace GameA.Game
                 _life = value;
                 if (IsMain)
                 {
+                    if (PlayMode.Instance.SceneState.Statistics.InfiniteLife)
+                    {
+                        _life = PlayMode.Instance.SceneState.Life;
+                    }
                     Messenger.Broadcast(EMessengerType.OnLifeChanged);
                 }
             }
