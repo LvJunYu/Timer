@@ -47,6 +47,7 @@ public:
 	void CMicroClientExDlg::RePaintWindow();
 	DWORD GetProcessByName(LPCTSTR name);
 	
+	static UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam);
 	int CMicroClientExDlg::GetInfoLenght(WCHAR * _array);
 	static WCHAR* CMicroClientExDlg::ConverIntToString(int num,int printftype = 0);
 	void CMicroClientExDlg::InvokeCallGameThread(CString url);
@@ -119,6 +120,7 @@ private:
 	void ReStartApp(LPCSTR lpszProc);
 	void SendMsgToGame(IClientProcMsgObject* pProcMsgObj, PROCMSG_DATA* pProcMsgData);
 	void StartGame();
+	void StartGameOnDebug();
 	void ShowMsg(LPCTSTR lpszMsg);
 };
 
@@ -166,6 +168,12 @@ static std::string m_strOpenId;
 static std::string m_strOpenKey;
 static std::string m_strProcPara;
 
+struct ThreadParameter
+{ 
+	int Index;
+    CString FileName;
+    CString MD5Code;
+ }; 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 

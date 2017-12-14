@@ -15,6 +15,8 @@
 #include <fstream>
 #include "DecompressStream.h"
 
+#include <process.h>
+
 #include "LogUtil.h"
 #include <stdio.h> 
 #include <afxcoll.h>
@@ -41,8 +43,15 @@ const CString cfZip = ".dat";
 //验证的AUTH与SIGN字符串记录
 static CString authUrl = "";
 
+bool isUseMultiThread = true;
+const int MAXThread = 4;
+CRITICAL_SECTION g_csLock;
+
+CMapStringToOb* localFilesMap = new CMapStringToOb(1024);
+
 int totalNum;
 int loadedNum;
+int processInx;
 vector<CString> fileContainer;
 vector<CString> md5Container;
 vector<CString> zipFilesContainer;
@@ -57,7 +66,7 @@ char szLogBuf[BUF_SIZE] = {0}; //日志缓冲区
 CString starturl;//外部传入
 int greenflag = 0;//是否绿色版0否1是
 bool hasStart = false;
-
+int MaxRetryCount = 3;
 const TCHAR* szDllPath = _T("\\QQGameProcMsgHelper.dll");
 const char* szCreateClientObjFunc = "CreateClientProcMsgObject";
 const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
@@ -65,6 +74,8 @@ const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
 typedef IClientProcMsgObject* (*CreateObjFunc)();
 typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
 WCHAR szInfo[32];
+bool showProgress = false;
+bool showHeart = true;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -222,7 +233,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		exit(0);
 	}
 	
-	
+	loadedNum = 0;
 	//初始化gdiplus的环境
 	// Initialize GDI+.
 	m_Blend.BlendOp=0; //theonlyBlendOpdefinedinWindows2000
@@ -239,14 +250,14 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	MoveWindow(430,125,m_BakWidth,m_BakHeight);
 
 	closeBtn = new PngBtn();
-	closeBtn->InitButton(750, 40,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
+	closeBtn->InitButton(762, 28,CLOSE_NORMAL_STATE,CLOSE_OVER_STATE,CLOSE_ACTIVE_STATE);
 	//miniBtn = new PngBtn();
 	//miniBtn->InitButton(990,20,MINI_NORMAL_STATE,MINI_OVER_STATE,MINI_ACTIVE_STATE);
 	//startBtn = new PngBtn();
 	//startBtn->InitButton(940,420,START_NORMAL_STATE,START_OVER_STATE,START_ACTIVE_STATE);
 
 	progressBarMain = new ProgressBar();
-	progressBarMain->InitPogressBar(150,400,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
+	progressBarMain->InitPogressBar(154,400,100,PROGRESSBAR_BG,PROGRESSBAR_FILL,PROGRESSBAR_EMPTY,PROGRESSBAR_KNOB);
 	progressBarMain->InitOffset(0,0,0,1,0,0);
 	
 	//progressBarVice = new ProgressBar();
@@ -415,7 +426,10 @@ void CMicroClientExDlg::RePaintWindow()
 	graph.DrawImage(progressBarMain->progressFill, progressBarMain->pos_x + progressBarMain->processOffset.content_offset_X, progressBarMain->pos_y + progressBarMain->processOffset.content_offset_Y, 0, 0, (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content),progressBarMain->processImagRect.height_content, UnitPixel);
 	int offsetKnobX = -21;
 	int offsetKnobY = -10;
-	graph.DrawImage(progressBarMain->progressKnob, progressBarMain->pos_x + offsetKnobX + (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content), progressBarMain->pos_y + offsetKnobY, 0, 0, progressBarMain->processImagRect.width_knob,progressBarMain->processImagRect.height_knob, UnitPixel);
+	if(showHeart)
+	{
+		graph.DrawImage(progressBarMain->progressKnob, progressBarMain->pos_x + offsetKnobX + (int)(loading_procgrss_main* progressBarMain->processImagRect.width_content), progressBarMain->pos_y + offsetKnobY, 0, 0, progressBarMain->processImagRect.width_knob,progressBarMain->processImagRect.height_knob, UnitPixel);
+	}
 	//graph.DrawImage(progressBarVice->progressFill,progressBarVice->pos_x + progressBarVice->processOffset.content_offset_X,progressBarVice->pos_y + progressBarVice->processOffset.content_offset_Y, (int)(loading_procgrss_vice* progressBarMain->processImagRect.width_content),progressBarVice->processImagRect.height_content);
 	
 /*
@@ -442,21 +456,26 @@ void CMicroClientExDlg::RePaintWindow()
 	swprintf(pszbuf,L"%d/%d\0", loadedNum, totalNum);
 
     FontFamily fontFamily(L"黑体");
-    int emSize = 20;
+    int emSize = 18;
     StringFormat strformat;
 	
-	myPath.AddString(pszbuf, wcslen(pszbuf), &fontFamily,
-		FontStyleRegular, emSize, Point(760, 400), &strformat);
-    Pen pen(Color(64,64,64), 3);
-	graph.DrawPath(&pen, &myPath);
-	SolidBrush brush(Color(255,255,255));
-	graph.FillPath(&brush, &myPath);
+	Pen pen(Color(80, 101, 42), 3);
+	SolidBrush brush(Color(255, 255, 255));
 
+	if(showProgress)
+	{
+		myPath.AddString(pszbuf, wcslen(pszbuf), &fontFamily,
+			FontStyleRegular, emSize, Point(752, 398), &strformat);
+		graph.DrawPath(&pen, &myPath);
+		graph.FillPath(&brush, &myPath);
+	}
+
+	emSize = 16;
 	GraphicsPath myPath2;
 	int centerX = 460;
 	int len = wcslen(szInfo);
 	myPath2.AddString(szInfo, wcslen(szInfo), &fontFamily,
-		FontStyleRegular, emSize, Point(centerX - emSize * len/2, 440), &strformat);
+		FontStyleRegular, emSize, Point(centerX - emSize * len/2, 428), &strformat);
 	graph.DrawPath(&pen, &myPath2);
 	graph.FillPath(&brush, &myPath2);
 	
@@ -596,6 +615,72 @@ UINT CMicroClientExDlg::SendInfo(LPVOID lpParam)
 	return 0;
 }
 
+UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
+{
+	int index = 0;
+	while(true)
+	{
+		EnterCriticalSection(&g_csLock);
+		index = processInx;
+		processInx++;
+		LeaveCriticalSection(&g_csLock);
+
+		if(index >= totalNum)
+		{
+			break;
+		}
+		CString fileName = fileContainer[index];
+		CString fileMD5 = md5Container[index];
+		
+		CString filePath = m_strLocalPath + fileName;
+		CString fileTempPath = m_strTempPath + fileName + cfZip;
+		CString fileUrl = root + m_serversion + "/" + fileName + cfZip;
+
+		EnterCriticalSection(&g_csLock);
+		localFilesMap->RemoveKey(fileName);
+		LeaveCriticalSection(&g_csLock);
+
+		fileUrl.Replace('\\', '/');
+		WIN32_FIND_DATA  FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(filePath, &FindFileData);
+		BOOL flag = hFind != INVALID_HANDLE_VALUE;
+		int tryCount = 0;
+		for	(;tryCount<MaxRetryCount;tryCount++) 
+		{
+			if(flag)
+			{
+				CString localMd5 = CMD5Checksum::GetMD5(filePath);
+				if(localMd5 == fileMD5)
+				{
+					cout<<fileUrl+" success";
+					break;
+				}
+				else
+				{
+					cout<<fileUrl+" redownload";
+				}
+			}
+			flag = Download(fileUrl, true, filePath, true, fileTempPath);
+			if(!flag)
+			{
+				cout<<fileUrl+" download failed";
+			}
+		}
+		if(tryCount >= MaxRetryCount)
+		{
+			AfxMessageBox("请检查网络是否连接");
+			exit(-1);
+		}
+		//add lock
+		EnterCriticalSection(&g_csLock);
+		loadedNum++;
+		loading_procgrss_main=((float)loadedNum) / totalNum;
+		LeaveCriticalSection(&g_csLock);
+	}
+	return 0;
+}
+
 UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 {	
 	//确定能进游戏后，启动统计线程，发送微端统计给服务器，BYMM。
@@ -626,9 +711,9 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 
 		vector<CString> localFiles;
 		GetFiles(m_strLocalPath, localFiles);
-		CMapStringToOb* localFilesMap = new CMapStringToOb(1024);
 		int pathStartPos = m_strLocalPath.GetLength();
 		CString ignorePath = "JoyGame_Data\\JoyYou\\";
+		
 		for (int i=0; i<localFiles.size(); i++)
 		{
 			CString fullPathName = localFiles[i];
@@ -641,43 +726,72 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		}
 		
 		swprintf(szInfo, L"%s", L"正在下载文件");
-		vector<CString> files;
-		vector<CString> md5s;
-		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, files, md5s);
-		int MaxRetryCount = 3;
-		for(i = 0; i < files.size();++i)
+		//vector<CString> files;
+		//vector<CString> md5s;
+		
+		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, fileContainer, md5Container);
+	
+		totalNum = fileContainer.size();
+		showProgress = true;
+		if(isUseMultiThread)
 		{
-			CString filePath = m_strLocalPath + files[i];
-			CString fileTempPath = m_strTempPath + files[i] + cfZip;
-			CString fileUrl = root + m_serversion + "/" + files[i] + cfZip;
-			localFilesMap->RemoveKey(files[i]);
-			fileUrl.Replace('\\', '/');
-			WIN32_FIND_DATA  FindFileData;
-			HANDLE hFind;
-			hFind = FindFirstFile(filePath, &FindFileData);
-			bDownloadFlag = hFind != INVALID_HANDLE_VALUE;
-			int tryCount = 0;
-			for	(;tryCount<MaxRetryCount;tryCount++) {
-				if(bDownloadFlag)
-				{
-					CString localMd5 = CMD5Checksum::GetMD5(filePath);
-					if(localMd5 == md5s[i])
-					{
-						cout<<fileUrl+" success";
-						break;
-					}
-				}
-				bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
-			}
-			if(tryCount >= MaxRetryCount)
+			HANDLE hThread[MAXThread];
+			unsigned int uiThreadIdAry[MAXThread];
+			InitializeCriticalSection(&g_csLock);
+			unsigned int * uiThreadId = uiThreadIdAry;
+			for (int i=0; i<MAXThread; i++)
 			{
-				memset(szLogBuf,'\0',BUF_SIZE);
-				sprintf(szLogBuf,"Download File Failed: %s", fileUrl);
-				WriteLog(szLogBuf);
-				AfxMessageBox("请检查网络是否连接");
-				exit(-1);
+				hThread[i] = (HANDLE)_beginthreadex(NULL, 0, &DownloadFile, NULL, 0, uiThreadId);
+				uiThreadId++;
+			} 
+			
+			DWORD dwRet = WaitForMultipleObjects(MAXThread, hThread, true, INFINITE);  
+			if ( dwRet == WAIT_TIMEOUT )  
+			{  
+				for (int i=0; i<MAXThread; i++)
+				{
+					TerminateThread(hThread[i],0); 
+				}
 			}
-			loading_procgrss_main=((float)i + 1) / files.size();
+			DeleteCriticalSection(&g_csLock);
+		}
+		else
+		{
+			for(i = 0; i < fileContainer.size();++i)
+			{
+				CString filePath = m_strLocalPath + fileContainer[i];
+				CString fileTempPath = m_strTempPath + fileContainer[i] + cfZip;
+				CString fileUrl = root + m_serversion + "/" + fileContainer[i] + cfZip;
+				localFilesMap->RemoveKey(fileContainer[i]);
+				fileUrl.Replace('\\', '/');
+				WIN32_FIND_DATA  FindFileData;
+				HANDLE hFind;
+				hFind = FindFirstFile(filePath, &FindFileData);
+				bDownloadFlag = hFind != INVALID_HANDLE_VALUE;
+				int tryCount = 0;
+				for	(;tryCount<MaxRetryCount;tryCount++) 
+				{
+					if(bDownloadFlag)
+					{
+						CString localMd5 = CMD5Checksum::GetMD5(filePath);
+						if(localMd5 == md5Container[i])
+						{
+							cout<<fileUrl+" success";
+							break;
+						}
+					}
+					bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
+				}
+				if(tryCount >= MaxRetryCount)
+				{
+					memset(szLogBuf,'\0',BUF_SIZE);
+					sprintf(szLogBuf,"Download File Failed: %s", fileUrl);
+					WriteLog(szLogBuf);
+					AfxMessageBox("请检查网络是否连接");
+					exit(-1);
+				}
+				loading_procgrss_main=((float)i + 1) / fileContainer.size();
+			}
 		}
 		CopyFile(m_strTempPath + CONFIG, CString(CONFIG), FALSE);
 		
@@ -689,10 +803,11 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 			CString fileToDelete = m_strLocalPath + key;
 			DeleteFile(fileToDelete);
 		}
-		delete localFilesMap;
 		DeleteDirs(m_strTempPath);
 	}
 	//AfxMessageBox("ok");
+	showProgress = false;
+	showHeart = false;
 	swprintf(szInfo, L"%s", L"正在启动游戏");
 	m_launcher->StartGame();
 	loading_procgrss_main = 1;
@@ -1000,9 +1115,9 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer, bool record,
 	INTERNET_PORT wPort; 
 	bool bReturn = false; 
 	DWORD dwType; 
-	const int nTimeOut = 10000; 
+	const int nTimeOut = 100000; 
 	session.SetOption(INTERNET_OPTION_CONNECT_TIMEOUT, nTimeOut); //重试之间的等待延时 
-	session.SetOption(INTERNET_OPTION_DATA_RECEIVE_TIMEOUT,nTimeOut);
+	session.SetOption(INTERNET_OPTION_DATA_RECEIVE_TIMEOUT,nTimeOut*60);
 	session.SetOption(INTERNET_OPTION_DATA_SEND_TIMEOUT,nTimeOut);
 	session.SetOption(INTERNET_OPTION_CONNECT_RETRIES, 5); //重试次数
 	char* pszBuffer = NULL; 
@@ -1232,7 +1347,7 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 /*
@@ -1562,12 +1677,28 @@ void CMicroClientExDlg::ShowMsg(LPCTSTR lpszMsg)
 {
 }
 
+void CMicroClientExDlg::StartGameOnDebug()
+{
+	//启动游戏
+	STARTUPINFOA siStartupInfo = { 0 };
+	siStartupInfo.cb = sizeof(siStartupInfo);
+	PROCESS_INFORMATION stProcessInformation = { 0 };
+	TCHAR szCmdLine[1024] = { 0 };
+	std::string strCmdline = "Game\\JoyGame.exe";
+
+	CreateProcessA(NULL, (LPSTR)strCmdline.c_str(), NULL, NULL, FALSE
+		, CREATE_NEW_CONSOLE, NULL, NULL, &siStartupInfo, &stProcessInformation);
+	Quit();
+}
+
 void CMicroClientExDlg::StartGame()
 {
 #ifdef _DEBUG
+	StartGameOnDebug();
 	return;
 #endif
 	PROCMSG_DATA stProcMsgData = { 0 };
 	stProcMsgData.nCommandID = CS_REQ_NEWCONNECTION;
 	SendMsgToGame(m_pProcMsgObj, &stProcMsgData);
 }
+
