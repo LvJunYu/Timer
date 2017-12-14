@@ -67,8 +67,11 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.RoomId, room.RoomId.ToString());
             DictionaryTools.SetContentText(_cachedView.PlayCountTxt,
                 string.Format(_countFormat, room.UserCount, room.MaxUserCount));
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, room.Project.IconPath,
-                _cachedView.DefaultCoverTexture);
+            if (room.Project.IconPath != null)
+            {
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, room.Project.IconPath,
+                    _cachedView.DefaultCoverTexture);
+            }
         }
 
         public void Unload()
