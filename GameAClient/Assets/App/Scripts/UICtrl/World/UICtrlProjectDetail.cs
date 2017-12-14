@@ -276,9 +276,9 @@ namespace GameA
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
             _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
-            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
-            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
-            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
+//            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
+//            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
+//            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
         }
 
         private void RefreshBtns()

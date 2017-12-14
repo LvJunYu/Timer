@@ -78,10 +78,10 @@ namespace GameA.Game
             {
                 return;
             }
-            if (PlayMode.Instance.SceneState.Arrived)
-            {
-                return;
-            }
+//            if (PlayMode.Instance.SceneState.Arrived)
+//            {
+//                return;
+//            }
             _targetRollPos = mainPlayer.CameraFollowPos;
 
             int dx = _targetRollPos.x - _rollPos.x;

@@ -403,9 +403,9 @@ namespace GameA.Game
             _netBattleData = new NetBattleData();
             SetHarmType(EHarmType.EnemyMonster, true, true);
             SetHarmType(EHarmType.EnemyPlayer, true, true);
-            _netBattleData.TimeLimit = 120;
+            _netBattleData.TimeLimit = 180;
             _netBattleData.PlayerCount = 6;
-            _netBattleData.LifeCount = 3;
+            _netBattleData.LifeCount = 10;
             _netBattleData.ReviveTime = 0;
             _netBattleData.ReviveInvincibleTime = 0;
             _netBattleData.ReviveType = 0;
@@ -416,7 +416,7 @@ namespace GameA.Game
             _netBattleData.KillMonsterScore = 10;
             _netBattleData.KillPlayerScore = 20;
             _netBattleData.ScoreWinCondition = false;
-            _netBattleData.InfiniteLife = false;
+            _netBattleData.InfiniteLife = true;
             IsMulti = true;
         }
 

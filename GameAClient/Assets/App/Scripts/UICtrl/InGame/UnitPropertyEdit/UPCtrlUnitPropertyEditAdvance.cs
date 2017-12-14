@@ -143,9 +143,11 @@ namespace GameA
             _usCanMoveSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
-            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
-            _usAddStatesSetting.SetEnable(b);
+//            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
+//                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
+//            _usAddStatesSetting.SetEnable(b);
+            _usAddStatesSetting.SetEnable(false);
+            _usDropsSetting.SetEnable(false);
             _usMaxHpSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;

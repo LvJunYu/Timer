@@ -5,6 +5,51 @@ namespace GameA.Game
 {
     public class StatusBar : MonoBehaviour
     {
+        /// <summary>
+        /// 被攻击状态显示持续时间
+        /// </summary>
+        private static float s_hittingTime = 0.5f;
+
+        /// <summary>
+        /// 被治疗状态显示持续时间
+        /// </summary>
+        private static float s_healingTime = 0.3f;
+
+        private Transform _trans;
+        public GameObject HPRoot;
+
+        public Transform CurrentHPTrans;
+        public SpriteRenderer CurrentHPRenderer;
+        public Transform HPBeforeHitTrans;
+        public SpriteRenderer HPBeforeHitRenderer;
+        public Transform HPAfterHealTrans;
+        public SpriteRenderer HPAfterHealRenderer;
+        public GameObject ShowMe;
+
+        /// <summary>
+        ///目标物体的高度 
+        /// </summary>
+        private float _targetHeight;
+
+        private float _hpPerccentage = 1;
+        private ActorBase _owner;
+
+        /// <summary>
+        /// 当前hp显示状态
+        /// </summary>
+        [SerializeField] private EHPShowState _hpState;
+
+        [SerializeField] private float _stateTimer;
+
+        private float HpPerccentage
+        {
+            set
+            {
+                _hpPerccentage = value;
+                CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
+            }
+        }
+
         void Awake()
         {
             _trans = transform;
@@ -41,50 +86,6 @@ namespace GameA.Game
                         HPAfterHealTrans.gameObject.SetActive(false);
                     }
                     break;
-            }
-        }
-
-        /// <summary>
-        /// 被攻击状态显示持续时间
-        /// </summary>
-        private static float s_hittingTime = 0.5f;
-
-        /// <summary>
-        /// 被治疗状态显示持续时间
-        /// </summary>
-        private static float s_healingTime = 0.3f;
-
-        private Transform _trans;
-        public GameObject HPRoot;
-
-        public Transform CurrentHPTrans;
-        public SpriteRenderer CurrentHPRenderer;
-        public Transform HPBeforeHitTrans;
-        public SpriteRenderer HPBeforeHitRenderer;
-        public Transform HPAfterHealTrans;
-        public SpriteRenderer HPAfterHealRenderer;
-
-        /// <summary>
-        ///目标物体的高度 
-        /// </summary>
-        private float _targetHeight;
-
-        private float _hpPerccentage = 1;
-        private ActorBase _owner;
-
-        /// <summary>
-        /// 当前hp显示状态
-        /// </summary>
-        [SerializeField] private EHPShowState _hpState;
-
-        [SerializeField] private float _stateTimer;
-
-        private float HpPerccentage
-        {
-            set
-            {
-                _hpPerccentage = value;
-                CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
             }
         }
 
@@ -138,9 +139,10 @@ namespace GameA.Game
             HpPerccentage = current / (float) max;
         }
 
-        public void SetOwner(ActorBase owner)
+        public void SetOwner(ActorBase owner, bool isMe)
         {
             _owner = owner;
+            ShowMe.SetActive(isMe);
         }
 
         public void Reset()
