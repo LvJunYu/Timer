@@ -108,7 +108,6 @@ namespace GameA.Game
                 {
                     ChangeState(EAIState.Think);
                 }
-                UpdateAttackTarget();
             }
             if (_eState != EAIState.Seek)
             {
@@ -317,6 +316,7 @@ namespace GameA.Game
             _thinkTimer = 50;
             if (Mathf.Abs(rel.x) > SeekRange.x || Mathf.Abs(rel.y) > SeekRange.y)
             {
+                UpdateAttackTarget();//目标在视野外
                 return false;
             }
             return true;

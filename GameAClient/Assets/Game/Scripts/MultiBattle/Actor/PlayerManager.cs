@@ -77,7 +77,7 @@ namespace GameA.Game
             if (!GM2DGame.Instance.GameMode.IsMulti)
             {
                 RoomUser roomUser = new RoomUser();
-                roomUser.Init(LocalUser.Instance.UserGuid, null, true);
+                roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
                 player.Set(roomUser);
                 player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
             }
@@ -86,6 +86,12 @@ namespace GameA.Game
                 if (roomInx < _userDataList.Count)
                 {
                     player.Set(_userDataList[roomInx]);
+                }
+                else
+                {//EditTest
+                    RoomUser roomUser = new RoomUser();
+                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                    player.Set(roomUser);
                 }
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
@@ -107,7 +113,6 @@ namespace GameA.Game
                 }
                 _mainPlayer = player as MainPlayer;
             }
-            TeamManager.Instance.AddPlayer(player);
         }
 
         public void Reset()

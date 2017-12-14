@@ -168,7 +168,7 @@ namespace GameA.Game
                                     () =>
                                     {
                                         CoroutineProxy.Instance.StartCoroutine(
-                                            CoroutineProxy.RunNextFrame(OnGameFailed));
+                                            CoroutineProxy.RunNextFrame(OnGameSuccess));
                                     }),
                                 new KeyValuePair<string, Action>("跳过", () =>
                                 {

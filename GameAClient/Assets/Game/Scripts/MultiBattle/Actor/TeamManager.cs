@@ -64,13 +64,13 @@ namespace GameA.Game
             {
                 _playerDic.Add(teamId, new List<long>());
             }
-            if (_playerDic[teamId].Contains(player.PlayerId))
+            if (_playerDic[teamId].Contains(player.RoomUser.Guid))
             {
                 LogHelper.Error("player has been added to TeamManager");
                 return;
             }
             _players.Add(player);
-            _playerDic[teamId].Add(player.PlayerId);
+            _playerDic[teamId].Add(player.RoomUser.Guid);
             if (player.IsMain)
             {
                 _myTeamId = player.TeamId;
@@ -151,26 +151,16 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public UnitBase GetMonsterTarget(MonsterBase unit, UnitBase lastTarget = null)
+        public UnitBase GetMonsterTarget(MonsterBase unit)
         {
-            if (lastTarget == null)
+            int curPlayerCount = _players.Count;
+            int curStartIndex = GameRun.Instance.LogicFrameCnt % curPlayerCount;
+            for (int i = 0; i < _players.Count; i++)
             {
-                int curPlayerCount = _players.Count;
-                int curStartIndex = GameRun.Instance.LogicFrameCnt % curPlayerCount;
-                for (int i = 0; i < _players.Count; i++)
+                int index = (i + curStartIndex) % curPlayerCount;
+                if (_players[index].TeamId == 0 || unit.TeamId == 0 || _players[index].TeamId != unit.TeamId)
                 {
-                    int index = (i + curStartIndex) % curPlayerCount;
-                    if (_players[index].TeamId == 0 || unit.TeamId == 0 || _players[index].TeamId != unit.TeamId)
-                    {
-                        return _players[index];
-                    }
-                }
-            }
-            else
-            {
-                if (lastTarget.IsAlive)
-                {
-                    return lastTarget;
+                    return _players[index];
                 }
             }
             return unit; //找不到目标时返回自己

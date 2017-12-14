@@ -17,7 +17,7 @@ namespace GameA.Game
     {
         protected Gun _gun;
 
-        protected long _playerId;
+        protected RoomUser _roomUser;
         protected UnitExtra _unitExtra;
         protected bool _isReviving;
 
@@ -31,9 +31,9 @@ namespace GameA.Game
         protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
         private int _lastSlot;
 
-        public long PlayerId
+        public RoomUser RoomUser
         {
-            get { return _playerId; }
+            get { return _roomUser; }
         }
 
         public override byte TeamId
@@ -83,7 +83,7 @@ namespace GameA.Game
 
         public void Set(RoomUser roomUser)
         {
-            _playerId = roomUser.Guid;
+            _roomUser = roomUser;
         }
 
         protected override bool OnInit()
@@ -869,7 +869,7 @@ namespace GameA.Game
 //            {
             if (_statusBar != null)
             {
-                _statusBar.RefreshBarColor();
+                _statusBar.RefreshBar();
             }
 //            }));
         }

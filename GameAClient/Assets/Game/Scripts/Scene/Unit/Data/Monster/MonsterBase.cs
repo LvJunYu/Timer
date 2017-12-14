@@ -366,11 +366,19 @@ namespace GameA.Game
 
         protected virtual void UpdateAttackTarget(UnitBase lastTarget = null)
         {
-            if (lastTarget == this)
+            if (!GM2DGame.Instance.GameMode.IsMulti)
             {
-                lastTarget = null;
+                _attactTarget = PlayMode.Instance.MainPlayer;
+                return;
             }
-            _attactTarget = TeamManager.Instance.GetMonsterTarget(this, lastTarget);
+            if (lastTarget != null && lastTarget != this && lastTarget.IsAlive)
+            {
+                _attactTarget = lastTarget;
+            }
+            else
+            {
+                _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+            }
         }
 
         public override bool CanHarm(UnitBase unit)

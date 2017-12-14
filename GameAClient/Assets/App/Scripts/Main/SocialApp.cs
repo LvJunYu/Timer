@@ -314,7 +314,10 @@ namespace GameA
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }
-            PublishChannel.Instance.Update();
+            if (PublishChannel.Instance != null)
+            {
+                PublishChannel.Instance.Update();
+            }
         }
 
         [Serializable]

@@ -759,7 +759,7 @@ namespace GameA.Game
                 _statusBar = statusBarObj.GetComponent<StatusBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
-            _statusBar.SetOwner(this, IsMain);
+            _statusBar.SetOwner(this);
         }
     }
 }

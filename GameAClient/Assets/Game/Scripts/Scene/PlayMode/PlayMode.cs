@@ -487,8 +487,9 @@ namespace GameA.Game
                 id = UnitDefine.OtherPlayerId;
             }
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
-            player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
             PlayerManager.Instance.Add(player, roomInx);
+            player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
+            TeamManager.Instance.AddPlayer(player);
             if (main)
             {
                 _mainPlayer = PlayerManager.Instance.MainPlayer;

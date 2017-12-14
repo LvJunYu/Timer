@@ -349,7 +349,7 @@ namespace GameA.Game
                         break;
                 }
             }
-            if (HasWinCondition(EWinCondition.WC_TimeLimit))
+            if (!IsMulti && HasWinCondition(EWinCondition.WC_TimeLimit))
             {
                 if (CheckWinTimeLimit())
                 {
