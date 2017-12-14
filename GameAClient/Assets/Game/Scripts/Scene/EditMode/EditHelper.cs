@@ -247,7 +247,7 @@ namespace GameA.Game
             if (UnitDefine.IsSpawn(id))
             {
                 unitEditData.UnitExtra = DataScene2D.Instance.PlayerExtra;
-                unitEditData.UnitExtra.TeamId = 0;
+                unitEditData.UnitExtra.TeamId = 1;
             }
             return unitEditData;
         }
@@ -436,7 +436,7 @@ namespace GameA.Game
 
         public static int GetTableUnit_Count(Table_Unit tableUnit)
         {
-            if (!EditMode.Instance.MapStatistics.IsMulti)
+            if (!GM2DGame.Instance.GameMode.IsMulti)
             {
                 return tableUnit.Count;
             }

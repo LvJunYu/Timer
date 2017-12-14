@@ -1,8 +1,5 @@
 using System;
-using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
-using System.Collections;
 
 namespace GameA.Game
 {
@@ -15,17 +12,22 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.Battle;
+            _successType = UICtrlGameFinish.EShowState.MultiWin;
+            _failType = UICtrlGameFinish.EShowState.MultiLose;
             return true;
         }
 
         public override void OnGameFailed()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+            base.OnGameFailed();
+            if (!PlayMode.Instance.SceneState.GameFailed) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
         }
 
         public override void OnGameSuccess()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+            if (!PlayMode.Instance.SceneState.GameFailed) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
         }
 
         public override bool Restart(Action<bool> successCb, Action failedCb)

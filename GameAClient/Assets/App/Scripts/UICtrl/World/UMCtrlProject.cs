@@ -66,6 +66,7 @@ namespace GameA
             }
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
             _cachedView.PublishedObj.SetActiveEx(false);
+            _cachedView.MultiObj.SetActiveEx(_wrapper.Content.IsMulti);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
             _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject &&
                                                 _wrapper.Content.ParentId != 0);

@@ -264,7 +264,7 @@ namespace GameA
                 button.Init(list[i]);
                 _campMenuList[i] = button;
                 _campMenuList[i].AddClickListener(() => OnCampMenuClick(inx));
-                if (inx > 0 && inx < 8)
+                if (inx > 0 && inx < 7)
                 {
                     button.SetPosAngle(da * i, MenuOptionsPosRadius);
                     button.SetBgImageAngle(da * i);
@@ -614,9 +614,30 @@ namespace GameA
         {
             var teamId = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
             _menuButtonArray[(int) EEditType.Camp].SetFgImage(UnitHelper.GetSpawnSprite(teamId));
+            bool isMulti = GM2DGame.Instance.GameMode.IsMulti;
+            bool isSpawn = UnitDefine.IsSpawn(EditData.UnitDesc.Id);
             for (int i = 0; i < _campMenuList.Length; i++)
             {
                 _campMenuList[i].SetSelected(i == teamId);
+                if (i == 0) 
+                {
+                    _campMenuList[i].SetEnable(!isSpawn);//玩家没有Team0
+                }
+                else if (i > 1) 
+                {
+                    _campMenuList[i].SetEnable(isMulti || !isSpawn);//玩家多人只有Team1
+                }
+            }
+            if (isMulti || !isSpawn)
+            {
+                var da = 360f / TeamManager.MaxTeamCount;
+                _campMenuList[1].SetPosAngle(da * 1, MenuOptionsPosRadius);
+                _campMenuList[1].SetBgImageAngle(da * 1);
+            }
+            else
+            {
+                _campMenuList[1].SetPosAngle(0, 0);
+                _campMenuList[1].SetBgImageAngle(0);
             }
         }
 

@@ -6,9 +6,7 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -16,16 +14,22 @@ namespace GameA.Game
     [Unit(Id = 5004, Type = typeof(Box))]
     public class Box : RigidbodyUnit
     {
-        protected bool _isHoldingByMain;
+        protected bool _isHoldingByPlayer;
+        protected PlayerBase _holder;
 
         protected EDirectionType _directionRelativeMain;
 
-        public bool IsHoldingByMain
+        public bool IsHoldingByPlayer
         {
-            get { return _isHoldingByMain; }
-            set { _isHoldingByMain = value; }
+            get { return _isHoldingByPlayer; }
+            set { _isHoldingByPlayer = value; }
         }
         
+        public PlayerBase Holder
+        {
+            get { return _holder; }
+        }
+
         public override bool CanPortal
         {
             get { return true; }
@@ -39,7 +43,7 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _isHoldingByMain = false;
+            _isHoldingByPlayer = false;
             base.Clear();
         }
 
@@ -110,7 +114,7 @@ namespace GameA.Game
             if (_isAlive && _dynamicCollider != null)
             {
                 _deltaPos = _speed + _extraDeltaPos;
-                if (_isHoldingByMain)
+                if (_isHoldingByPlayer)
                 {
                     _deltaPos.x = 0;
                     var mainUnit = PlayMode.Instance.MainPlayer;
@@ -129,6 +133,11 @@ namespace GameA.Game
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
             }
+        }
+
+        public void SetHoder(PlayerBase playerBase)
+        {
+            _holder = playerBase;
         }
     }
 }

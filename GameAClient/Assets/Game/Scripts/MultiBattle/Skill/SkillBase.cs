@@ -413,7 +413,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit != _owner)
                     {
                         if (unit.IsActor)
                         {
@@ -440,7 +440,7 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive)
                     {
-                        if (unit.IsActor)
+                        if (unit.IsActor && unit != _owner)
                         {
                             OnActorHit(unit, projectile.Direction);
                         }
@@ -455,7 +455,7 @@ namespace GameA.Game
 
         private void OnActorHit(UnitBase unit, Vector2 direction)
         {
-            if (!unit.IsAlive)
+            if (!unit.IsAlive || unit == _owner)
             {
                 return;
             }

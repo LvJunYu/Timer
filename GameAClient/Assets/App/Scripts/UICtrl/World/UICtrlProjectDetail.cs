@@ -13,8 +13,6 @@ namespace GameA
         public static string EmptyStr = "-";
         public const string _countFormat = "({0})";
         private const string _maxShow = "(999+)";
-        private const string _secondFormat = "{0}秒";
-        private const string _minFormat = "{0:f1}分钟";
         public Project Project;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
@@ -45,13 +43,13 @@ namespace GameA
             _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
             _cachedView.CreateBtn.onClick.AddListener(OnCreateBtn);
             _menuCtrlArray = new UPCtrlProjectDetailBase[(int) EMenu.Max];
-            
+
             var upCtrlProjectRoomList = new UPCtrlProjectRoomList();
             upCtrlProjectRoomList.SetResScenary(ResScenary);
             upCtrlProjectRoomList.SetMenu(EMenu.Room);
             upCtrlProjectRoomList.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Room] = upCtrlProjectRoomList;
-            
+
             var upCtrlProjectRecentRecord = new UPCtrlProjectRecentRecord();
             upCtrlProjectRecentRecord.SetResScenary(ResScenary);
             upCtrlProjectRecentRecord.SetMenu(EMenu.Recent);
@@ -223,9 +221,9 @@ namespace GameA
                 SetNull();
                 return;
             }
-            _cachedView.MenuButtonAry[(int)EMenu.Room].SetActiveEx(IsMulti);
-            _cachedView.MenuButtonAry[(int)EMenu.Recent].SetActiveEx(!IsMulti);
-            _cachedView.MenuButtonAry[(int)EMenu.Rank].SetActiveEx(!IsMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(IsMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!IsMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!IsMulti);
             _cachedView.StandalonePannel.SetActive(!IsMulti);
             _cachedView.MultiPannel.SetActive(IsMulti);
             _cachedView.CreateBtn.SetActiveEx(IsMulti);
@@ -267,18 +265,22 @@ namespace GameA
             _cachedView.TitleTxt.text = Project.Name;
             _cachedView.DescTxt.text = Project.Summary;
             _cachedView.PlayerCount.text = netData.PlayerCount.ToString();
-            _cachedView.LifeCount.text = netData.LifeCount.ToString();
-            _cachedView.ReviveTime.text = string.Format(_secondFormat, netData.ReviveTime);
-            _cachedView.ReviveProtectTime.text = string.Format(_secondFormat, netData.ReviveInvincibleTime);
-            _cachedView.TimeLimit.text = string.Format(_minFormat, netData.TimeLimit / (float) 60);
-            _cachedView.TimeOverCondition.text = GetTimeOverCondition(netData.TimeWinCondition);
+            _cachedView.LifeCount.text = netData.GetLifeCount();
+            _cachedView.ReviveTime.text = netData.GetReviveTime();
+            _cachedView.ReviveProtectTime.text = netData.GetReviveProtectTime();
+            _cachedView.TimeLimit.text = netData.GetTimeLimit();
+            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
             _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
             _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
             _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
+            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
+            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
+            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
+            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
         }
-        
+
         private void RefreshBtns()
         {
             if (Project == null) return;
@@ -598,20 +600,5 @@ namespace GameA
             Rank,
             Max
         }
-        
-        public static string GetTimeOverCondition(int winCondition)
-        {
-            switch ((ENetBattleTimeResult)winCondition)
-            {
-                case ENetBattleTimeResult.Score:
-                    return "分数最高的队伍胜利";
-                case ENetBattleTimeResult.AllWin:
-                    return "全体胜利";
-                case ENetBattleTimeResult.AllFail:
-                    return "全体失败";
-            }
-            return string.Empty;
-        }
-
     }
 }

@@ -85,7 +85,7 @@ namespace GameA.Game
         {
             get { return _enable; }
         }
-
+        
         #endregion
 
         #region DefaultMethod

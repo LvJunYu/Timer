@@ -9,6 +9,9 @@ namespace GameA.Game
 {
     public abstract class GameModePlay : GameModeBase
     {
+	    protected UICtrlGameFinish.EShowState _successType;
+	    protected UICtrlGameFinish.EShowState _failType;
+	    
         public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
             if (!base.Init(project, param, startType, corountineProxy))

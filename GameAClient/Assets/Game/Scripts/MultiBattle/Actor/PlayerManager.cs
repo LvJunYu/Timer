@@ -15,13 +15,14 @@ namespace GameA.Game
     public class PlayerManager : IDisposable
     {
         private static PlayerManager _instance;
+
         public static PlayerManager Instance
         {
             get { return _instance ?? (_instance = new PlayerManager()); }
         }
 
         private List<RoomUser> _userDataList = new List<RoomUser>(6);
-        private List<PlayerBase> _playerList = new List<PlayerBase>(10);
+        private List<PlayerBase> _playerList = new List<PlayerBase>(10); // 可能赋null，需要判空
         private MainPlayer _mainPlayer;
 
         public MainPlayer MainPlayer
@@ -47,7 +48,7 @@ namespace GameA.Game
         public void JoinRoom(Msg_RC_RoomUserInfo msg)
         {
             var user = new RoomUser();
-            user.Init(msg.UserGuid, ""+msg.UserGuid, true);
+            user.Init(msg.UserGuid, "" + msg.UserGuid, true);
             _userDataList.Add(user);
             _playerList.Add(null);
         }
@@ -73,7 +74,7 @@ namespace GameA.Game
 
         public void Add(PlayerBase player, int roomInx = 0)
         {
-            if (_userDataList == null)
+            if (!GM2DGame.Instance.GameMode.IsMulti)
             {
                 RoomUser roomUser = new RoomUser();
                 roomUser.Init(LocalUser.Instance.UserGuid, null, true);
@@ -82,15 +83,17 @@ namespace GameA.Game
             }
             else
             {
-                player.Set(_userDataList[roomInx]);
+                if (roomInx < _userDataList.Count)
+                {
+                    player.Set(_userDataList[roomInx]);
+                }
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
                     : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
             }
-            if (roomInx<_playerList.Count)
+            if (roomInx < _playerList.Count)
             {
                 _playerList[roomInx] = player;
-                
             }
             else
             {
@@ -122,7 +125,8 @@ namespace GameA.Game
 
         public void AddGhost(MainPlayer playerBase)
         {
-            playerBase.SetPos(new IntVec2(1,1));
+            playerBase.Setup(GM2DGame.Instance.GameMode.GetOtherPlayerInput());
+            playerBase.SetPos(new IntVec2(1, 1));
             _mainPlayer = playerBase;
         }
     }

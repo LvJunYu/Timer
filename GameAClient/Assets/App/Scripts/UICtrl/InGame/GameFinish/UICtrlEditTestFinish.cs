@@ -12,7 +12,9 @@ namespace GameA
         public enum EShowState
         {
             Win,
-            Lose
+            Lose,
+            MultiWin,
+            MultiLose,
         }
 
         protected override void InitGroupId()
@@ -107,6 +109,7 @@ namespace GameA
             switch (showState)
             {
                 case EShowState.Lose:
+                case EShowState.MultiLose:
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(false);
@@ -116,12 +119,21 @@ namespace GameA
                     _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
                     break;
                 case EShowState.Win:
+                case EShowState.MultiWin:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
                     _cachedView.ReturnBtn.gameObject.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(true);
-                    _cachedView.PublishBtn.gameObject.SetActive(true);
+                    _cachedView.PublishBtn.gameObject.SetActive(showState == EShowState.Win);
+                    if (showState == EShowState.Win)
+                    {
+                        _cachedView.WinContent.text = "恭喜成功通关，现在可以发布您的关卡啦！";
+                    }
+                    else
+                    {
+                        _cachedView.WinContent.text = "恭喜您获得胜利！";
+                    }
                     _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
                     break;
             }

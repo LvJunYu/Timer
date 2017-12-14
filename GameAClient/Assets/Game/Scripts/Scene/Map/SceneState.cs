@@ -35,17 +35,17 @@ namespace GameA.Game
 
         public bool IsMulti
         {
-            get { return _mapStatistics.IsMulti; }
+            get { return Statistics.IsMulti; }
         }
 
         public bool IsMainPlayerCreated
         {
-            get { return _mapStatistics.SpawnCount > 0; }
+            get { return Statistics.SpawnCount > 0; }
         }
 
         public bool HasKey
         {
-            get { return _mapStatistics.KeyCount > 0; }
+            get { return Statistics.KeyCount > 0; }
         }
 
         public int SecondLeft
@@ -76,31 +76,36 @@ namespace GameA.Game
                 {
                     if (IsMulti)
                     {
-                        return _mapStatistics.NetBattleTimeLimit;
+                        return Statistics.NetBattleTimeLimit;
                     }
-                    return _mapStatistics.TimeLimit * 10;
+                    return Statistics.TimeLimit * 10;
                 }
             }
         }
 
+        public int FinalCount
+        {
+            get { return Statistics.FinalCount; }
+        }
+
         public int TotalGem
         {
-            get { return _mapStatistics.GemCount; }
+            get { return Statistics.GemCount; }
         }
 
         public int MonsterCount
         {
-            get { return _mapStatistics.MonsterCount; }
+            get { return Statistics.MonsterCount; }
         }
 
         public int HeroCageCount
         {
-            get { return _mapStatistics.HeroCageCount; }
+            get { return Statistics.HeroCageCount; }
         }
 
         public int WinCondition
         {
-            get { return _mapStatistics.WinCondition; }
+            get { return Statistics.WinCondition; }
         }
 
         public int GemGain
@@ -126,7 +131,7 @@ namespace GameA.Game
             get { return _arrived; }
             set
             {
-                if (!CheckWin(true))
+                if (!IsMulti && !CheckWin(true))
                 {
                     return;
                 }
@@ -158,14 +163,15 @@ namespace GameA.Game
         {
             get
             {
-//                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
-//                {
-//                    return _mapStatistics.LifeCount * 11/10;
-//                }
-//                else
+                if (IsMulti)
                 {
-                    return _mapStatistics.LifeCount;
+                    if (Statistics.InfiniteLife)
+                    {
+                        return 99;
+                    }
+                    return Statistics.NetBattleLifeCount;
                 }
+                return Statistics.LifeCount;
             }
         }
 
@@ -199,22 +205,27 @@ namespace GameA.Game
 
         public int GemScore
         {
-            get { return _mapStatistics.NetBattleCollectGemScore; }
+            get { return Statistics.NetBattleCollectGemScore; }
         }
 
         public int KillMonsterScore
         {
-            get { return _mapStatistics.NetBattleKillMonsterScore; }
+            get { return Statistics.NetBattleKillMonsterScore; }
         }
 
         public int KillPlayerScore
         {
-            get { return _mapStatistics.NetBattleKillPlayerScore; }
+            get { return Statistics.NetBattleKillPlayerScore; }
         }
 
         public int ArriveScore
         {
-            get { return _mapStatistics.NetBattleArriveScore; }
+            get { return Statistics.NetBattleArriveScore; }
+        }
+
+        public MapStatistics Statistics
+        {
+            get { return _mapStatistics; }
         }
 
         private int GetScore(bool forceCalculateAll = false)
@@ -237,7 +248,7 @@ namespace GameA.Game
 
         public void InitMultiBattleData(NetBattleData netBattleData)
         {
-            _mapStatistics.InitMultiBattleData(netBattleData);
+            Statistics.InitMultiBattleData(netBattleData);
         }
 
         public void Init(MapStatistics mapStatistics)
@@ -247,9 +258,9 @@ namespace GameA.Game
 
         internal void Init(GM2DMapData levelData)
         {
-            _mapStatistics.WinCondition = (byte) levelData.WinCondition;
-            _mapStatistics.TimeLimit = levelData.TimeLimit;
-            _mapStatistics.LifeCount = levelData.LifeCount;
+            Statistics.WinCondition = (byte) levelData.WinCondition;
+            Statistics.TimeLimit = levelData.TimeLimit;
+            Statistics.LifeCount = levelData.LifeCount;
         }
 
         public void Reset()
@@ -264,15 +275,15 @@ namespace GameA.Game
 
         public void StartPlay()
         {
-            if (_mapStatistics.FinalCount == 0)
+            if (Statistics.FinalCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Arrive);
             }
-            if (_mapStatistics.GemCount == 0)
+            if (Statistics.GemCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Collect);
             }
-            if (_mapStatistics.MonsterCount == 0)
+            if (Statistics.MonsterCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Monster);
             }
@@ -283,7 +294,7 @@ namespace GameA.Game
 
         public void Check(Table_Unit tableUnit)
         {
-            _mapStatistics.AddOrDeleteUnit(tableUnit, true);
+            Statistics.AddOrDeleteUnit(tableUnit, true);
         }
 
         /// <summary>
@@ -291,17 +302,17 @@ namespace GameA.Game
         /// </summary>
         public void ForceSetTimeFinish()
         {
-            _gameTimer = _mapStatistics.TimeLimit * 10;
+            _gameTimer = Statistics.TimeLimit * 10;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
-            return _mapStatistics.HasWinCondition(eWinCondition);
+            return Statistics.HasWinCondition(eWinCondition);
         }
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            _mapStatistics.SetWinCondition(eWinCondition, false);
+            Statistics.SetWinCondition(eWinCondition, false);
         }
 
         public void UpdateLogic(float deltaTime)
@@ -322,7 +333,7 @@ namespace GameA.Game
             _gameTimer += deltaTime;
             if (IsMulti && NetBattleTimeOver())
             {
-                switch ((ENetBattleTimeResult)_mapStatistics.NetBattleTimeWinCondition)
+                switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
                 {
                     case ENetBattleTimeResult.Score:
                         NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
@@ -398,11 +409,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_mapStatistics.WinCondition == 0)
+            if (Statistics.WinCondition == 0)
             {
                 return false;
             }
-            if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
+            if (Statistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
@@ -462,12 +473,12 @@ namespace GameA.Game
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < _mapStatistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < Statistics.GemCount;
         }
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < _mapStatistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < Statistics.MonsterCount;
         }
 
         //private bool CheckWinRescueHero()
@@ -487,15 +498,15 @@ namespace GameA.Game
 
         public bool CanHarmType(EHarmType eHarmType)
         {
-            return _mapStatistics.CanHarmType(eHarmType);
+            return Statistics.CanHarmType(eHarmType);
         }
 
-        public void CheckNetBattleWin(int score)
+        public void CheckNetBattleWin(int score, bool myTeam)
         {
             if (!IsMulti) return;
-            if (_mapStatistics.NetBattleScoreWinCondition && score >= _mapStatistics.NetBattleWinScore)
+            if (Statistics.NetBattleScoreWinCondition && score >= Statistics.NetBattleWinScore)
             {
-                NetBattleWin(true);
+                NetBattleWin(myTeam);
             }
         }
 
@@ -516,7 +527,6 @@ namespace GameA.Game
                 _runState = ESceneState.Fail;
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
             }
-            
         }
     }
 }

@@ -279,13 +279,16 @@ namespace GameA.Game
             }
             if (IsValidBox(_hitUnits[(int) EDirectionType.Right]))
             {
-                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
-                if (uiControl != null)
+                if (IsMain)
                 {
-                    uiControl.SetAssistBtnVisible(true);
+                    var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                    if (uiControl != null)
+                    {
+                        uiControl.SetAssistBtnVisible(true);
+                    }
+                    //弹出UI给提示
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 }
-                //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 _box = _hitUnits[(int) EDirectionType.Right] as Box;
                 if (_box != null)
                 {
@@ -294,13 +297,16 @@ namespace GameA.Game
             }
             else if (IsValidBox(_hitUnits[(int) EDirectionType.Left]))
             {
-                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
-                if (uiControl != null)
+                if (IsMain)
                 {
-                    uiControl.SetAssistBtnVisible(true);
+                    var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                    if (uiControl != null)
+                    {
+                        uiControl.SetAssistBtnVisible(true);
+                    }
+                    //弹出UI给提示
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 }
-                //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 _box = _hitUnits[(int) EDirectionType.Left] as Box;
                 if (_box != null)
                 {
@@ -309,18 +315,28 @@ namespace GameA.Game
             }
         }
 
+        protected override void CheckAssist()
+        {
+            if (_box != null && _box.IsHoldingByPlayer && _box.Holder != this)
+            {
+                return;
+            }
+            base.CheckAssist();
+        }
+
         public override void OnBoxHoldingChanged()
         {
             if (_box == null)
             {
                 return;
             }
-            _box.IsHoldingByMain = !_box.IsHoldingByMain;
-            if (_box.IsHoldingByMain)
+            _box.IsHoldingByPlayer = !_box.IsHoldingByPlayer;
+            if (_box.IsHoldingByPlayer)
             {
+                _box.SetHoder(this);
                 SetFacingDir((EMoveDirection) (_box.DirectionRelativeMain + 1));
             }
-            LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByMain);
+            LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByPlayer);
         }
 
         private bool IsValidBox(UnitBase unit)
@@ -330,7 +346,7 @@ namespace GameA.Game
 
         public override bool IsHoldingBox()
         {
-            return _box != null && _box.IsHoldingByMain;
+            return _box != null && _box.IsHoldingByPlayer;
         }
 
         public EBoxOperateType GetBoxOperateType()
@@ -405,7 +421,7 @@ namespace GameA.Game
                     _dieTime = 0;
                     if (_box != null)
                     {
-                        _box.IsHoldingByMain = false;
+                        _box.IsHoldingByPlayer = false;
                         _box = null;
                     }
                     _trans.eulerAngles = new Vector3(0, 0, 0);
@@ -846,6 +862,21 @@ namespace GameA.Game
         public override UnitExtra GetUnitExtra()
         {
             return _unitExtra;
+        }
+
+        public override bool CanHarm(UnitBase unit)
+        {
+            if (unit.IsPlayer)
+            {
+                return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfPlayer) && IsSameTeam(unit.TeamId) ||
+                       PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyPlayer) && !IsSameTeam(unit.TeamId);
+            }
+            if (unit.IsMonster)
+            {
+                return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfMonster) && IsSameTeam(unit.TeamId) ||
+                       PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
+            }
+            return true;
         }
     }
 }

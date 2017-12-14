@@ -32,12 +32,12 @@ namespace GameA.Game
 
         public override void OnGameFailed()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Lose);
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.MultiLose);
         }
 
         public override void OnGameSuccess()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Win);
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.MultiWin);
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)

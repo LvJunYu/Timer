@@ -9,8 +9,6 @@ namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
-        protected UICtrlGameFinish.EShowState _successType;
-        protected UICtrlGameFinish.EShowState _failType;
         private Msg_SC_DAT_ShadowBattleData _shadowBattleData;
         private EShadowBattleType _eShadowBattleType;
         private bool _firstStart;
@@ -46,19 +44,22 @@ namespace GameA.Game
                 _failType = UICtrlGameFinish.EShowState.ShadowBattleLose;
                 ShadowDataPlayed = null;
                 _shadowBattleData = param as Msg_SC_DAT_ShadowBattleData;
-                _record = new Record(_shadowBattleData.Record);
-                if (InitRecord() && _gm2drecordData.ShadowData != null)
+                if (_shadowBattleData != null)
                 {
-                    ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
-                }
-                if (_shadowBattleData.OriginPlayer != null &&
-                    _shadowBattleData.OriginPlayer.UserId != LocalUser.Instance.UserGuid)
-                {
-                    _eShadowBattleType = EShadowBattleType.FriendHelp;
-                }
-                else
-                {
-                    _eShadowBattleType = EShadowBattleType.Normal;
+                    _record = new Record(_shadowBattleData.Record);
+                    if (InitRecord() && _gm2drecordData.ShadowData != null)
+                    {
+                        ShadowDataPlayed = new ShadowData(_gm2drecordData.ShadowData);
+                    }
+                    if (_shadowBattleData.OriginPlayer != null &&
+                        _shadowBattleData.OriginPlayer.UserId != LocalUser.Instance.UserGuid)
+                    {
+                        _eShadowBattleType = EShadowBattleType.FriendHelp;
+                    }
+                    else
+                    {
+                        _eShadowBattleType = EShadowBattleType.Normal;
+                    }
                 }
             }
             else

@@ -25,7 +25,7 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (CanHarm(unit))
+            if (unit.IsPlayer && CanHarm(unit))
             {
                 OnDead();
                 return;
@@ -39,7 +39,7 @@ namespace GameA.Game
 
         public override void OnIntersect(UnitBase other)
         {
-            if (CanHarm(other))
+            if (CanHarm(other) && other.IsPlayer)
             {
                 OnDead();
             }
@@ -73,7 +73,7 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                     {
-                        if (CanHarm(unit))
+                        if (unit.IsPlayer && CanHarm(unit))
                         {
                             target = true;
                             if (_eMonsterState != EMonsterState.Chase)

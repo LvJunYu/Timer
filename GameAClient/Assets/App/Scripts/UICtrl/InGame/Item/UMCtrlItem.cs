@@ -48,8 +48,7 @@ namespace GameA
             Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
             if (UnitDefine.IsSpawn(_table.Id))
             {
-                Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSpawnSprite);
-                RefreshSpawnSprite();
+                Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
         }
 
@@ -67,7 +66,7 @@ namespace GameA
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
             if (UnitDefine.IsSpawn(_table.Id))
             {
-                Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSpawnSprite);
+                Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
         }
 
@@ -190,16 +189,7 @@ namespace GameA
             }
             _cachedView.SpriteIcon.sprite = null;
             _cachedView.SpriteIcon.SetActiveEx(true);
-            Sprite texture;
-            if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
-            {
-                _cachedView.SpriteIcon.sprite = texture;
-            }
-            else
-            {
-                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-                    tableUnit.Icon, tableUnit.EGeneratedType);
-            }
+            RefreshSprite();
             if (_selected)
             {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
@@ -232,10 +222,26 @@ namespace GameA
             _cachedView.Number.gameObject.SetActive(true);
         }
 
-        private void RefreshSpawnSprite()
+        private void RefreshSprite()
         {
-            var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
-            _cachedView.SpriteIcon.sprite = UnitHelper.GetSpawnSprite(define.UnitExtra.TeamId);
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
+                _cachedView.SpriteIcon.sprite = UnitHelper.GetSpawnSprite(define.UnitExtra.TeamId);
+            }
+            else
+            {
+                Sprite texture;
+                if (JoyResManager.Instance.TryGetSprite(_table.Icon, out texture))
+                {
+                    _cachedView.SpriteIcon.sprite = texture;
+                }
+                else
+                {
+                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", _table.Id,
+                        _table.Icon, _table.EGeneratedType);
+                }
+            }
         }
 
         private void OnSelectedItemChanged(ushort id)

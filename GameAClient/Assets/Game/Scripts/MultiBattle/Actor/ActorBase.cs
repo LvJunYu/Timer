@@ -301,7 +301,7 @@ namespace GameA.Game
             }
         }
 
-        protected void CheckAssist()
+        protected virtual void CheckAssist()
         {
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {

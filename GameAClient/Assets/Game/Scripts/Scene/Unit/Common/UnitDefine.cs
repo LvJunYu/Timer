@@ -195,9 +195,9 @@ namespace GameA.Game
             switch (teamId)
             {
                 case 0:
-                    return Color.green;
-                case 1:
                     return Color.red;
+                case 1:
+                    return Color.green;
                 case 2:
                     return new Color(1, 164 / (float) 255, 0);
                 case 3:
@@ -209,7 +209,7 @@ namespace GameA.Game
                 case 6:
                     return Color.magenta;
             }
-            return Color.green;
+            return Color.red;
         }
     }
 }

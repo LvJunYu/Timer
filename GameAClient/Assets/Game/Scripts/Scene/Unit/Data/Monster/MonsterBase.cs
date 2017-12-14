@@ -250,7 +250,7 @@ namespace GameA.Game
         {
             if (GameRun.Instance.LogicFrameCnt % 100 == 0)
             {
-                UpdateAttackTarget();
+                UpdateAttackTarget(AttackTarget);
             }
         }
 
@@ -360,9 +360,18 @@ namespace GameA.Game
             _input.CurAppliedInputKeyAry[(int) eInputType] = value;
         }
 
-        protected virtual void UpdateAttackTarget()
+        protected virtual void UpdateAttackTarget(UnitBase lastTarget = null)
         {
-            _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+            _attactTarget = TeamManager.Instance.GetMonsterTarget(this, lastTarget);
+        }
+
+        public override bool CanHarm(UnitBase unit)
+        {
+            if (!unit.IsActor)
+            {
+                return false;
+            }
+            return !IsSameTeam(unit.TeamId);
         }
     }
 }

@@ -93,7 +93,7 @@ namespace GameA.Game
         {
             _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
             _skill = skill;
-            _hitLayer = _skill.Owner.IsMain ? EnvManager.BulletHitLayer : EnvManager.BulletHitLayerWithMainPlayer;
+            _hitLayer = EnvManager.BulletHitLayerWithMainPlayer;
             _curPos = _originPos = pos;
             
             _angle = angle;

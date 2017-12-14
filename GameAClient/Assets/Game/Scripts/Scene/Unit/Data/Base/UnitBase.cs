@@ -1782,30 +1782,8 @@ namespace GameA.Game
             return teamId != 0 && TeamId != 0 && teamId == TeamId;
         }
 
-        public bool CanHarm(UnitBase unit)
+        public virtual bool CanHarm(UnitBase unit)
         {
-            if (IsPlayer)
-            {
-                if (unit.IsPlayer)
-                {
-                    return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfPlayer) && IsSameTeam(unit.TeamId) ||
-                           PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyPlayer) && !IsSameTeam(unit.TeamId);
-                }
-                if (unit.IsMonster)
-                {
-                    return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfMonster) && IsSameTeam(unit.TeamId) ||
-                           PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
-                }
-                return true;
-            }
-            if (IsMonster)
-            {
-                if (!unit.IsPlayer)
-                {
-                    return false;
-                }
-                return !IsSameTeam(unit.TeamId);
-            }
             return true;
         }
     }

@@ -35,25 +35,25 @@ namespace GameA.Game
 
         private void OnPlayerArrive(UnitBase unit)
         {
-            if (!PlayMode.Instance.SceneState.IsMulti) return;
+            if (!GM2DGame.Instance.GameMode.IsMulti) return;
             AddScore(unit, PlayMode.Instance.SceneState.ArriveScore);
         }
 
         private void OnPlayerKilled(UnitBase unit)
         {
-            if (!PlayMode.Instance.SceneState.IsMulti) return;
+            if (!GM2DGame.Instance.GameMode.IsMulti) return;
             AddScore(unit, PlayMode.Instance.SceneState.KillPlayerScore);
         }
 
         private void OnMonsterKilled(UnitBase unit)
         {
-            if (!PlayMode.Instance.SceneState.IsMulti) return;
+            if (!GM2DGame.Instance.GameMode.IsMulti) return;
             AddScore(unit, PlayMode.Instance.SceneState.KillMonsterScore);
         }
 
         private void OnGemCollect(UnitBase unit)
         {
-            if (!PlayMode.Instance.SceneState.IsMulti) return;
+            if (!GM2DGame.Instance.GameMode.IsMulti) return;
             AddScore(unit, PlayMode.Instance.SceneState.GemScore);
         }
 
@@ -104,8 +104,9 @@ namespace GameA.Game
             if (teamId == _myTeamId)
             {
                 Messenger.Broadcast(EMessengerType.OnScoreChanged);
+                Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, score);
             }
-            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId]);
+            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == _myTeamId);
         }
 
         public int GetMyTeamScore()
@@ -150,18 +151,29 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public UnitBase GetMonsterTarget(MonsterBase unit)
+        public UnitBase GetMonsterTarget(MonsterBase unit, UnitBase lastTarget = null)
         {
-//            byte teamId = unit.TeamId;
-            for (int i = 0; i < _players.Count; i++)
+            if (lastTarget == null)
             {
-                if (_players[i].TeamId == 0 || unit.TeamId == 0 || _players[i].TeamId != unit.TeamId)
+                int curPlayerCount = _players.Count;
+                int curStartIndex = GameRun.Instance.LogicFrameCnt % curPlayerCount;
+                for (int i = 0; i < _players.Count; i++)
                 {
-                    return _players[i];
+                    int index = (i + curStartIndex) % curPlayerCount;
+                    if (_players[index].TeamId == 0 || unit.TeamId == 0 || _players[index].TeamId != unit.TeamId)
+                    {
+                        return _players[index];
+                    }
                 }
             }
-            //找不到目标时返回自己
-            return unit;
+            else
+            {
+                if (lastTarget.IsAlive)
+                {
+                    return lastTarget;
+                }
+            }
+            return unit; //找不到目标时返回自己
         }
     }
 }

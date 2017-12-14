@@ -433,8 +433,7 @@ namespace GameA.Game
             }
             if (run)
             {
-                var users = PlayerManager.Instance.UserDataList;
-                if (users == null)
+                if (!SceneState.IsMulti)
                 {
                     //单人
                     AddPlayer(0);
@@ -454,27 +453,17 @@ namespace GameA.Game
                 else
                 {
                     //多人
-                    var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
-                    mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
-                    mainGhost.Setup(GM2DGame.Instance.GameMode.GetOtherPlayerInput());
-                    PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
-                    _mainPlayer = PlayerManager.Instance.MainPlayer;
-//                    if (users.Count == 0)
-//                    {
-//                        LogHelper.Error("users's count is zero, create player failed.");
-//                        return false;
-//                    }
-//                    for (int j = 0; j < users.Count; j++)
-//                    {
-//                        if (users[j].Guid == LocalUser.Instance.UserGuid)
-//                        {
-//                            AddPlayer(0);
-//                        }
-//                        else
-//                        {
-//                            AddPlayer(0, false);
-//                        }
-//                    }
+                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit)
+                    {
+                        AddPlayer(0);
+                    }
+                    else
+                    {
+                        var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
+                        mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                        PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
+                        _mainPlayer = PlayerManager.Instance.MainPlayer;
+                    }
                 }
             }
             return true;

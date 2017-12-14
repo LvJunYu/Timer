@@ -108,6 +108,7 @@ namespace GameA.Game
                 {
                     ChangeState(EAIState.Think);
                 }
+                UpdateAttackTarget();
             }
             if (_eState != EAIState.Seek)
             {

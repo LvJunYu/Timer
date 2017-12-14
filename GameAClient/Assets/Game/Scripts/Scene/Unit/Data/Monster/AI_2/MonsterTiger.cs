@@ -126,7 +126,7 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                     {
-                        if (CanHarm(unit))
+                        if (unit.IsPlayer && CanHarm(unit))
                         {
                             if (_eMonsterState != EMonsterState.Chase)
                             {

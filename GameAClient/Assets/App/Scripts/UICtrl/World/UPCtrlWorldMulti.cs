@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
@@ -14,16 +13,15 @@ namespace GameA
         private Dictionary<long, CardDataRendererWrapper<RoomInfo>> _dict =
             new Dictionary<long, CardDataRendererWrapper<RoomInfo>>();
 
-        private UMCtrlProject.ECurUI _eCurUi;
         private List<RoomInfo> _roomList;
-        private RoomInfo _curSelectRoom;
-        private const string _secondFormat = "{0}秒";
-        private const string _minFormat = "{0:f1}分钟";
+        public CardDataRendererWrapper<RoomInfo> CurSelectRoom;
+
 
         public override void Open()
         {
             base.Open();
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+            CurSelectRoom = null;
             RequestData();
             RefreshView();
         }
@@ -34,10 +32,14 @@ namespace GameA
             base.Close();
         }
 
+        public void Update()
+        {
+            
+        }
+        
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _eCurUi = UMCtrlProject.ECurUI.Multi;
             _cachedView.JoinRoomBtn.onClick.AddListener(OnJoinRoomBtn);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
@@ -66,11 +68,11 @@ namespace GameA
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
             _cachedView.MultiDetailPannel.SetActive(_contentList.Count != 0);
-            if (_curSelectRoom == null && _contentList.Count > 0)
+            if (CurSelectRoom == null && _contentList.Count > 0)
             {
                 _contentList[0].IsSelected = true;
                 _contentList[0].BroadcastDataChanged();
-                _curSelectRoom = _contentList[0].Content;
+                CurSelectRoom = _contentList[0];
                 RefreshRoomInfo();
             }
         }
@@ -81,37 +83,47 @@ namespace GameA
             {
                 return;
             }
+            if (CurSelectRoom != null)
+            {
+                if (item.Content.RoomId == CurSelectRoom.Content.RoomId) return;
+                CurSelectRoom.IsSelected = false;
+                CurSelectRoom.BroadcastDataChanged();
+            }
             item.IsSelected = true;
             item.BroadcastDataChanged();
-            _curSelectRoom = item.Content;
+            CurSelectRoom = item;
             RefreshRoomInfo();
         }
 
         private void RefreshRoomInfo()
         {
-            if (_curSelectRoom == null) return;
-            var project = _curSelectRoom.Project;
+            if (CurSelectRoom == null) return;
+            var project = CurSelectRoom.Content.Project;
             var netData = project.NetData;
             if (netData == null) return;
             _cachedView.DescTxt.text = project.Summary;
-            _cachedView.PlayerCount.text = _curSelectRoom.MaxUserCount.ToString();
-            _cachedView.LifeCount.text = netData.LifeCount.ToString();
-            _cachedView.ReviveTime.text = string.Format(_secondFormat, netData.ReviveTime);
-            _cachedView.ReviveProtectTime.text = string.Format(_secondFormat, netData.ReviveInvincibleTime);
-            _cachedView.TimeLimit.text = string.Format(_minFormat, netData.TimeLimit / (float) 60);
-            _cachedView.TimeOverCondition.text = UICtrlProjectDetail.GetTimeOverCondition(netData.TimeWinCondition);
+            _cachedView.PlayerCount.text = CurSelectRoom.Content.MaxUserCount.ToString();
+            _cachedView.LifeCount.text = netData.GetLifeCount();
+            _cachedView.ReviveTime.text = netData.GetReviveTime();
+            _cachedView.ReviveProtectTime.text = netData.GetReviveProtectTime();
+            _cachedView.TimeLimit.text = netData.GetTimeLimit();
+            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
             _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
             _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
             _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
+            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
+            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
+            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
+            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
         }
 
         private void OnJoinRoomBtn()
         {
-            if (_curSelectRoom != null)
+            if (CurSelectRoom != null)
             {
-                RoomManager.Instance.SendRequestJoinRoom(_curSelectRoom.RoomId);
+                RoomManager.Instance.SendRequestJoinRoom(CurSelectRoom.Content.RoomId);
             }
         }
 
