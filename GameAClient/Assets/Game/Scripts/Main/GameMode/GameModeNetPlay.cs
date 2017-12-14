@@ -25,6 +25,7 @@ namespace GameA.Game
         protected EPhase _ePhase;
         protected int _bornSeed;
         protected int _recentServerFrame;
+        protected bool _hasStarted;
 
         public override bool IsMulti
         {
@@ -33,6 +34,10 @@ namespace GameA.Game
 
         public override bool Stop()
         {
+            if (!_hasStarted)
+            {
+                base.OnGameStart();
+            }
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
             if (!base.Stop())
@@ -257,6 +262,7 @@ namespace GameA.Game
                     break;
                 case EPhase.Normal:
                     base.OnGameStart();
+                    _hasStarted = true;
                     break;
                 case EPhase.Succeed:
                 {
@@ -342,9 +348,7 @@ namespace GameA.Game
 
         internal void OnInputDatas(Msg_RC_FrameDataArray msg)
         {
-            if (_ePhase == EPhase.Normal
-                || _ePhase == EPhase.Pursue
-                || msg.FrameDatas[0].FrameInx >= _preServerFrameCount)
+            if (msg.FrameDatas[0].FrameInx >= _preServerFrameCount)
             {
                 for (int i = 0; i < msg.FrameDatas.Count; i++)
                 {
@@ -371,11 +375,9 @@ namespace GameA.Game
                     break;
                 case ERoomCloseCode.ERCC_RoomNotExist:
                     SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
-                    SocialApp.Instance.ReturnToApp();
                     break;
                 case ERoomCloseCode.ERCC_WaitTimeout:
                     SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
-                    SocialApp.Instance.ReturnToApp();
                     break;
                 case ERoomCloseCode.ERCC_BattleTimeout:
                     break;
@@ -385,6 +387,7 @@ namespace GameA.Game
                     throw new ArgumentOutOfRangeException("code", code, null);
             }
             SetPhase(EPhase.Close);
+            SocialApp.Instance.ReturnToApp();
         }
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)

@@ -117,6 +117,10 @@ namespace GameA
 
         private void OnTeamScoreChanged(int teamId, int score)
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             int index = teamId - 1;
             if (index >= 0 && index < _usCtrlMultiScores.Length)
             {

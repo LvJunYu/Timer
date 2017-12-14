@@ -80,8 +80,11 @@ namespace GameA.Game
             LogHelper.Debug("StartConnectRS: {0}, {1}", ip, port);
             _roomClient.Connect(ip, port, null, e =>
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("联机服务失败，请稍后再试");
+                Loom.QueueOnMainThread(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("联机服务失败，请稍后再试");
+                });
             }, 10);
         }
 
@@ -198,7 +201,9 @@ namespace GameA.Game
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
-                _room.OnCreateFailed();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("房间创建失败");
+//                _room.OnCreateFailed();
                 return;
             }
 //            var user = new RoomUser();
@@ -212,6 +217,8 @@ namespace GameA.Game
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("加入房间失败");
 //                _room.OnJoinFailed();
                 return;
             }
