@@ -18,14 +18,14 @@ namespace GameA.Game
         protected IntVec2 _speed;
         protected IntVec2 _originPos;
         protected IntVec2 _curPos;
-     
+
         protected int _maskRandom;
         protected int _destroy;
 
         protected UnitBase _targetUnit;
 
         protected int _hitLayer;
-        
+
         public Vector2 Direction
         {
             get { return _direction; }
@@ -40,7 +40,7 @@ namespace GameA.Game
         {
             get { return _maskRandom; }
         }
-        
+
         public IntVec2 CurPos
         {
             get { return _curPos; }
@@ -83,7 +83,7 @@ namespace GameA.Game
         public Bullet()
         {
             _trans = new GameObject("Bullet").transform;
-            if (UnitManager.Instance != null) 
+            if (UnitManager.Instance != null)
             {
                 _trans.parent = UnitManager.Instance.GetParent(EUnitType.Bullet);
             }
@@ -95,13 +95,13 @@ namespace GameA.Game
             _skill = skill;
             _hitLayer = EnvManager.BulletHitLayerWithMainPlayer;
             _curPos = _originPos = pos;
-            
+
             _angle = angle;
             _direction = GM2DTools.GetDirection(_angle);
-            
+
             _speed = new IntVec2((int) (_skill.ProjectileSpeed * _direction.x),
                 (int) (_skill.ProjectileSpeed * _direction.y));
-            
+
             _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
             if (_effectBullet != null)
             {
@@ -119,7 +119,7 @@ namespace GameA.Game
                 _trans.position = GM2DTools.TileToWorld(_curPos, GetZ());
             }
         }
-        
+
         protected float GetZ()
         {
             return -(_curPos.x + _curPos.y * 1.5f) * UnitDefine.UnitSorttingLayerRatio;
@@ -132,7 +132,8 @@ namespace GameA.Game
                 return;
             }
             //MagicSwith Brick Cloud
-            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer, float.MinValue, float.MaxValue, _skill.Owner.DynamicCollider);
+            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer,
+                float.MinValue, float.MaxValue, _skill.Owner.DynamicCollider);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
@@ -140,7 +141,7 @@ namespace GameA.Game
                     var hit = hits[i];
                     if (CheckHit(hit.node.Id))
                     {
-                       var units = ColliderScene2D.GetUnits(hit);
+                        var units = ColliderScene2D.GetUnits(hit);
                         for (var j = 0; j < units.Count; j++)
                         {
                             var unit = units[j];
@@ -182,7 +183,8 @@ namespace GameA.Game
                 //超出最大射击距离
                 if ((_curPos - _originPos).SqrMagnitude() >= _skill.CastRange * _skill.CastRange)
                 {
-                    _curPos = _originPos + new IntVec2((int)(_skill.CastRange * _direction.x), (int)(_skill.CastRange * _direction.y));
+                    _curPos = _originPos + new IntVec2((int) (_skill.CastRange * _direction.x),
+                                  (int) (_skill.CastRange * _direction.y));
                     _destroy = 1;
                 }
             }
@@ -190,7 +192,7 @@ namespace GameA.Game
 
         private bool CheckHit(int id)
         {
-            if (_skill.EPaintType != EPaintType.None && UnitDefine.IsPlayer(id))
+            if (_skill.EPaintType == EPaintType.None && !_skill.Owner.IsActor)
             {
                 return false;
             }
@@ -208,7 +210,8 @@ namespace GameA.Game
             if (_trans != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position,
+                    new Vector3(0, 0, _angle), Vector3.one);
             }
             _skill.OnBulletHit(this);
         }

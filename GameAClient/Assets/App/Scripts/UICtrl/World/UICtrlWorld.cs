@@ -91,6 +91,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OnRoomListChanged, OnRoomListChanged);
             RegisterEvent<Msg_MC_QueryRoom>(EMessengerType.OnQueryRoomRet, OnQueryRoomRet);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            RegisterEvent(EMessengerType.OnJoinRoomFail, OnJoinRoomFail);
         }
 
         protected override void OnOpen(object parameter)
@@ -122,6 +123,7 @@ namespace GameA
                 }
             }
             _cachedView.SearchInputField.text = String.Empty;
+            _cachedView.SearchRoomInputField.text = String.Empty;
         }
 
         private void OnChangeToAppMode()
@@ -129,6 +131,14 @@ namespace GameA
             if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
             {
                 _curMenuCtrl.RequestData();
+            }
+        }
+
+        private void OnJoinRoomFail()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnJoinRoomFail();
             }
         }
 

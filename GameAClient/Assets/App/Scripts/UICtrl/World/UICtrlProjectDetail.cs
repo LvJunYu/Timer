@@ -95,7 +95,14 @@ namespace GameA
             RefreshView();
             if (Project.ProjectId != _lastProjectId)
             {
-                _curMenu = EMenu.Recent;
+                if (IsMulti)
+                {
+                    _curMenu = EMenu.Room;
+                }
+                else
+                {
+                    _curMenu = EMenu.Recent;
+                }
                 _lastProjectId = Project.ProjectId;
             }
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
@@ -190,11 +197,15 @@ namespace GameA
 
         public bool CheckPlayed(string content)
         {
+            if (IsMulti)
+            {
+                return true;
+            }
             if (Project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.ShowPopupDialog(content, null,
                     new KeyValuePair<string, Action>("取消", null),
-                    new KeyValuePair<string, Action>("进入", OnPlayBtnClick));
+                    new KeyValuePair<string, Action>("进入", () => { OnPlayBtnClick(); }));
                 return false;
             }
             return true;

@@ -10,7 +10,8 @@ namespace GameA.Game
         public GameObject ShowMe, PlayerBar, MonsterBar;
         public Transform PlayerCurrentHPTrans, MonsterCurrentHPTrans;
         public TextMesh Name;
-
+        public SpriteRenderer PlayerBg, MonsterBg;
+        
         private Transform _trans;
         private ActorBase _owner;
         private float _showPerccentage = 1;
@@ -47,8 +48,10 @@ namespace GameA.Game
             var srs = _trans.GetComponentsInChildren<SpriteRenderer>(true);
             for (int i = 0; i < srs.Length; i++)
             {
-                srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
+                srs[i].sortingOrder = (int) ESortingOrder.DragingItem + 1;
             }
+            PlayerBg.sortingOrder = (int) ESortingOrder.DragingItem;
+            MonsterBg.sortingOrder = (int) ESortingOrder.DragingItem;
             SetHPActive(false);
             _playeSpriteRenderers = PlayerCurrentHPTrans.GetComponentsInChildren<SpriteRenderer>(true);
             _monsterSpriteRenderers = MonsterCurrentHPTrans.GetComponentsInChildren<SpriteRenderer>(true);

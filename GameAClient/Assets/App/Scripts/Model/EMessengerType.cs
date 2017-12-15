@@ -119,8 +119,9 @@ namespace GameA
         public static readonly int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnQueryRoomRet = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnJoinRoomFail = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
-
+        
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 

@@ -18,6 +18,15 @@ namespace GameA
         private List<RoomInfo> _roomList;
         public CardDataRendererWrapper<RoomInfo> CurSelectRoom;
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.JoinRoomBtn.onClick.AddListener(OnJoinRoomBtn);
+            _cachedView.SearchRoomBtn.onClick.AddListener(OnSearchRoomBtn);
+            _cachedView.QuickJoinBtn.onClick.AddListener(OnQuickJoinBtn);
+            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
+        }
+
         public override void Open()
         {
             base.Open();
@@ -32,15 +41,6 @@ namespace GameA
         {
             _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
             base.Close();
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.JoinRoomBtn.onClick.AddListener(OnJoinRoomBtn);
-            _cachedView.SearchRoomBtn.onClick.AddListener(OnSearchRoomBtn);
-            _cachedView.QuickJoinBtn.onClick.AddListener(OnQuickJoinBtn);
-            _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
         public override void RequestData(bool append = false)
@@ -90,7 +90,7 @@ namespace GameA
             else
             {
                 long roomId;
-                if (long.TryParse(_cachedView.SearchInputField.text, out roomId))
+                if (long.TryParse(_cachedView.SearchRoomInputField.text, out roomId))
                 {
                     RoomManager.Instance.SendQueryRoom(roomId);
                 }
@@ -211,6 +211,12 @@ namespace GameA
         {
             _isShowingSearchRoom = false;
             RefreshView();
+        }
+
+        public void OnJoinRoomFail()
+        {
+            _isShowingSearchRoom = false;
+            RequestData();
         }
     }
 }

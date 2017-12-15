@@ -46,7 +46,7 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
+
         protected override void SetSkillValue()
         {
             _skillCtrl.CurrentSkills[0].SetValue(_attackInterval, _castRange);
@@ -71,9 +71,23 @@ namespace GameA.Game
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
-            _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            if (unitExtra.TimeInterval > 0)
+            {
+                _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            }
+            else
+            {
+                _attackInterval = TableConvert.GetTime(150);
+            }
 //            _attackInterval = Math.Max(25, _attackInterval);
-            _castRange = TableConvert.GetRange(unitExtra.CastRange);
+            if (unitExtra.CastRange > 0)
+            {
+                _castRange = TableConvert.GetRange(unitExtra.CastRange);
+            }
+            else
+            {
+                _castRange = TableConvert.GetRange(300);
+            }
             return unitExtra;
         }
 

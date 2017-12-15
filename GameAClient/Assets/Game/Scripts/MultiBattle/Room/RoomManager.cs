@@ -243,7 +243,19 @@ namespace GameA.Game
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("加入房间失败");
+                if (msg.ResultCode == ERoomCode.ERC_Full)
+                {
+                    SocialGUIManager.ShowPopupDialog("房间人数已满");
+                }
+                else if (msg.ResultCode == ERoomCode.ERC_NotExist)
+                {
+                    SocialGUIManager.ShowPopupDialog("房间已失效");
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("加入房间失败");
+                }
+                Messenger.Broadcast(EMessengerType.OnJoinRoomFail);
 //                _room.OnJoinFailed();
                 return;
             }
