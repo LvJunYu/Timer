@@ -74,6 +74,7 @@ namespace GameA.Game
             if (player.IsMain)
             {
                 _myTeamId = player.TeamId;
+                Messenger.Broadcast(EMessengerType.OnTeamChanged);
             }
         }
 

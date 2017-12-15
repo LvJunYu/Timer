@@ -26,11 +26,17 @@ namespace GameA.Game
                 if (_owner == null) return;
                 if (_owner.IsPlayer)
                 {
-                    _playeSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, _showPerccentage);
+                    var sprite = _playeSpriteRenderers[_owner.TeamId].sprite;
+                    var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                              sprite.texture.width;
+                    _playeSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
                 }
                 if (_owner.IsMonster)
                 {
-                    _monsterSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, _showPerccentage);
+                    var sprite = _monsterSpriteRenderers[_owner.TeamId].sprite;
+                    var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                              sprite.texture.width;
+                    _monsterSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
                 }
             }
         }
@@ -102,6 +108,7 @@ namespace GameA.Game
                     _monsterSpriteRenderers[i].SetActiveEx(i == _owner.TeamId);
                 }
             }
+            SetHP(EHPModifyCase.Set, 1, 1);
         }
 
         public void SetHP(EHPModifyCase modifyCase, int current, int max)

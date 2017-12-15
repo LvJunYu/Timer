@@ -113,6 +113,16 @@ namespace GameA
             RegisterEvent<int, int>(EMessengerType.OnScoreChanged, OnTeamScoreChanged);
             RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
+            RegisterEvent(EMessengerType.OnTeamChanged, OnTeamChanged);
+        }
+
+        private void OnTeamChanged()
+        {
+            if (!_isOpen) return;
+            for (int i = 0; i < _usCtrlMultiScores.Length; i++)
+            {
+                _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == i + 1);
+            }
         }
 
         private void OnTeamScoreChanged(int teamId, int score)
@@ -207,14 +217,10 @@ namespace GameA
             _cachedView.StandaloneObj.SetActive(!_isMulti);
             if (_isMulti)
             {
-                _cachedView.LeftTimeRoot.SetParent(_cachedView.MultiTimeRtf);
-                _cachedView.LeftTimeRoot.anchoredPosition = Vector2.zero;
                 UpdateMulti();
             }
             else
             {
-                _cachedView.LeftTimeRoot.SetParent(_cachedView.StandaloneTimeRtf);
-                _cachedView.LeftTimeRoot.anchoredPosition = Vector2.zero;
                 InitConditionView();
                 UpdateWinDataWithOutTimeLimit();
                 UpdateItemVisible();

@@ -237,7 +237,7 @@ namespace GameA.Game
 
         public bool Fire()
         {
-            if (_currentBulletCount <= 0)
+            if (_currentBulletCount <= 0 && _owner.IsPlayer)
             {
                 if (_owner.IsMain)
                 {
