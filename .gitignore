@@ -57,3 +57,5 @@ Tools/Project/JoyGameBuildVersionTool/.idea
 Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/bin
 *.suo
 sh.exe.stackdump
+*.ncb
+*.opt

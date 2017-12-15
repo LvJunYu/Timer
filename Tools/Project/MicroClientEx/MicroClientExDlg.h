@@ -114,6 +114,7 @@ private:
 	IClientProcMsgObject* m_pProcMsgObj;
 	HMODULE m_hModule;
 
+
 	BOOL LoadLibrary();
 	IClientProcMsgObject* CreateObj();
 	void ReleaseObj(IClientProcMsgObject* pObj);

@@ -10,8 +10,8 @@ namespace JoyGameBuildVersionTool
         private static List<DatFileInfo> _fileInfoList;
         public static void Main(string[] args)
         {
-            Process("/Users/quan/Downloads/JoyGameRes/InputResRoot/version/0.1.0/",
-                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.1.0");
+            Process("/Users/quan/Downloads/JoyGame/Game/",
+                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.0.0");
         }
 
         private static void Process(string inputPath, string outputPath, string version)
@@ -32,14 +32,21 @@ namespace JoyGameBuildVersionTool
                 {
                     Directory.CreateDirectory(targetDir);
                 }
-                using (ZOutputStream zOutputStream = new ZOutputStream(File.Create(targetFileName), zlibConst.Z_DEFAULT_COMPRESSION))
+                if (datFileInfo.Name.Replace("\\", "/").StartsWith("JoyGame_Data/StreamingAssets"))
                 {
-                    using (var fi = fileInfo.OpenRead())
+                    fileInfo.CopyTo(targetFileName, true);
+                }
+                else
+                {
+                    using (ZOutputStream zOutputStream = new ZOutputStream(File.Create(targetFileName), zlibConst.Z_DEFAULT_COMPRESSION))
                     {
-                        int len;
-                        while ((len = fi.Read(writeBuffer, 0, writeBuffer.Length))>0)
+                        using (var fi = fileInfo.OpenRead())
                         {
-                            zOutputStream.Write(writeBuffer, 0, len);
+                            int len;
+                            while ((len = fi.Read(writeBuffer, 0, writeBuffer.Length))>0)
+                            {
+                                zOutputStream.Write(writeBuffer, 0, len);
+                            }
                         }
                     }
                 }

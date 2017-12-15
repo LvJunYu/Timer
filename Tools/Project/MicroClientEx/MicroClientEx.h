@@ -25,6 +25,7 @@
 #define MSGWEBREFRESH  (WM_USER + 124)
 #define MSGWEBFULLSRC  (WM_USER + 132)
 #define MSGRESTORE  (WM_USER + 140)
+#define MSGREPAINT  (WM_USER + 141)
 #define LOGINWINDOW 0
 
 static int windowsflag = 0;

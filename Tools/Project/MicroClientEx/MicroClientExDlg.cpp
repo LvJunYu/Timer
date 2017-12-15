@@ -58,7 +58,7 @@ vector<CString> zipFilesContainer;
 CString root = GetConfigValue(CString(CONFIG), cfRoot);
 CString vroot = GetConfigValue(CString(CONFIG), cfVroot);
 int singleFileCount = 0;
-bool bDownloadFlag = false;
+bool bDownloadFlag = true;
 bool callbyjs = false;
 const int MAX_DOWNLOAD_TIMES = 10; //最大下载次数
 const int BUF_SIZE = 256; 
@@ -76,6 +76,8 @@ typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
 WCHAR szInfo[32];
 bool showProgress = false;
 bool showHeart = true;
+
+CString notUncompressPath = "JoyGame_Data\\StreamingAssets\\";
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -123,6 +125,7 @@ void Quit()
 
 BOOL CMicroClientExDlg::OnInitDialog()
 {
+	m_launcher = this;
 	CDialog::OnInitDialog();
 
 	// Set the icon for this dialog.  The framework does this automatically
@@ -213,7 +216,6 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	}
 	//--不符合要求，缺少数据，则直接退出主程序
 
-	m_launcher = this;
 	m_launcher->ConncetPipe();
 #endif
 
@@ -644,11 +646,11 @@ UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
 		WIN32_FIND_DATA  FindFileData;
 		HANDLE hFind;
 		hFind = FindFirstFile(filePath, &FindFileData);
-		BOOL flag = hFind != INVALID_HANDLE_VALUE;
+		bDownloadFlag = hFind != INVALID_HANDLE_VALUE;
 		int tryCount = 0;
 		for	(;tryCount<MaxRetryCount;tryCount++) 
 		{
-			if(flag)
+			if(bDownloadFlag)
 			{
 				CString localMd5 = CMD5Checksum::GetMD5(filePath);
 				if(localMd5 == fileMD5)
@@ -661,8 +663,15 @@ UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
 					cout<<fileUrl+" redownload";
 				}
 			}
-			flag = Download(fileUrl, true, filePath, true, fileTempPath);
-			if(!flag)
+			if (fileName.Left(notUncompressPath.GetLength()) == notUncompressPath)
+			{
+				bDownloadFlag = Download(fileUrl, true, filePath, false, fileTempPath);
+			}
+			else
+			{
+				bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
+			}
+			if(!bDownloadFlag)
 			{
 				cout<<fileUrl+" download failed";
 			}
@@ -676,6 +685,7 @@ UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
 		EnterCriticalSection(&g_csLock);
 		loadedNum++;
 		loading_procgrss_main=((float)loadedNum) / totalNum;
+		m_launcher->PostMessage(MSGREPAINT);
 		LeaveCriticalSection(&g_csLock);
 	}
 	return 0;
@@ -691,10 +701,11 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	singleFileCount = 1;
 	
 	swprintf(szInfo, L"%s", L"正在获取最新版本信息");
-	
+	m_launcher->PostMessage(MSGREPAINT);
 	if (CheckNeedUpdate())
 	{
 		swprintf(szInfo, L"%s", L"正在获取更新文件列表");
+		m_launcher->PostMessage(MSGREPAINT);
 		bDownloadFlag = false;
 		while(!bDownloadFlag)
 		{
@@ -729,6 +740,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		//vector<CString> files;
 		//vector<CString> md5s;
 		
+		m_launcher->PostMessage(MSGREPAINT);
 		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, fileContainer, md5Container);
 	
 		totalNum = fileContainer.size();
@@ -779,8 +791,25 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 							cout<<fileUrl+" success";
 							break;
 						}
+						else
+						{
+							cout<<fileUrl+" md5 fail";
+						}
 					}
-					bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
+					
+					if (fileContainer[i].Left(notUncompressPath.GetLength()) == notUncompressPath)
+					{
+						bDownloadFlag = Download(fileUrl, true, filePath, false, fileTempPath);
+					}
+					else
+					{
+						bDownloadFlag = Download(fileUrl, true, filePath, true, fileTempPath);
+					}
+					
+					if(!bDownloadFlag)
+					{
+						cout<<fileUrl+" download fail";
+					}
 				}
 				if(tryCount >= MaxRetryCount)
 				{
@@ -790,7 +819,10 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 					AfxMessageBox("请检查网络是否连接");
 					exit(-1);
 				}
-				loading_procgrss_main=((float)i + 1) / fileContainer.size();
+				
+				loadedNum++;
+				loading_procgrss_main=((float)loadedNum) / totalNum;
+				m_launcher->PostMessage(MSGREPAINT);
 			}
 		}
 		CopyFile(m_strTempPath + CONFIG, CString(CONFIG), FALSE);
@@ -809,6 +841,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	showProgress = false;
 	showHeart = false;
 	swprintf(szInfo, L"%s", L"正在启动游戏");
+	m_launcher->PostMessage(MSGREPAINT);
 	m_launcher->StartGame();
 	loading_procgrss_main = 1;
 	loading_procgrss_vice = 1;
@@ -1236,13 +1269,14 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer, bool record,
 		e->GetErrorMessage(tszErrString, sizeof(tszErrString)); 
 		TRACE(_T("Download XSL error! URL: %s,Error: %s"), strFileURLInServer, tszErrString); 
 		e->Delete(); 
-	} 
-	catch(...) 
-	{ 
+	} /*
+	catch(...)
+	{
 		memset(szLogBuf,'\0',256);
 		sprintf(szLogBuf,"Download %s Failed. exception",strFileLocalFullPath);
 		WriteLog(szLogBuf);
-	} 
+	}*/
+
 	if(pszBuffer != NULL) 
 	{ 
 		delete[]pszBuffer; 
@@ -1264,7 +1298,6 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer, bool record,
 bool CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
 {
 	CreateDirs(DestName);
-    //char buff[4096];
 	ofstream destS(DestName, ios::out|ios::trunc|ios::binary);
 	if(!destS.is_open())
 	{
@@ -1277,7 +1310,8 @@ bool CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
 		dds.close();
 		return false;
 	}
-	/*
+/*
+    char buff[4096];
     int n=0;
     while(!srcS.eof())//没有到文件末尾
     {
@@ -1286,6 +1320,7 @@ bool CMicroClientExDlg::UnCompressFile(CString DestName, CString SrcName)
         dds.write(buff,n);
     }
 	*/
+	
 	dds<<srcS.rdbuf();
 	dds.close();
 	srcS.close();
@@ -1679,6 +1714,7 @@ void CMicroClientExDlg::ShowMsg(LPCTSTR lpszMsg)
 
 void CMicroClientExDlg::StartGameOnDebug()
 {
+	return;
 	//启动游戏
 	STARTUPINFOA siStartupInfo = { 0 };
 	siStartupInfo.cb = sizeof(siStartupInfo);
