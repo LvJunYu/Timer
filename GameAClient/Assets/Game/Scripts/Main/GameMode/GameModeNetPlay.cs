@@ -50,11 +50,19 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
+            if (!_hasStarted)
+            {
+                base.OnGameStart();
+            }
             SetPhase(EPhase.Succeed);
         }
 
         public override void OnGameFailed()
         {
+            if (!_hasStarted)
+            {
+                base.OnGameStart();
+            }
             SetPhase(EPhase.Failed);
         }
 
@@ -385,6 +393,10 @@ namespace GameA.Game
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("code", code, null);
+            }
+            if (code == ERoomCloseCode.ERCC_BattleEnd && _hasStarted)
+            {
+                return;
             }
             SetPhase(EPhase.Close);
             SocialApp.Instance.ReturnToApp();
