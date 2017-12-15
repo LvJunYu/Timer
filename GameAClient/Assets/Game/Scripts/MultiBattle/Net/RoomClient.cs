@@ -105,6 +105,7 @@ namespace GameA.Game
                             {
                                 _roomActionList[i].Invoke();
                             }
+                            _roomActionList.Clear();
                         },
                         () =>
                         {
