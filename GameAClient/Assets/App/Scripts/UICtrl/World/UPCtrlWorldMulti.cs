@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -16,7 +17,36 @@ namespace GameA
 
         private bool _isShowingSearchRoom;
         private List<RoomInfo> _roomList;
-        public CardDataRendererWrapper<RoomInfo> CurSelectRoom;
+        private CardDataRendererWrapper<RoomInfo> _curSelectRoom;
+
+        public CardDataRendererWrapper<RoomInfo> CurSelectRoom
+        {
+            get { return _curSelectRoom; }
+            set
+            {
+                if (value == _curSelectRoom) return;
+                if (value == null)
+                {
+                    _curSelectRoom.IsSelected = false;
+                    _curSelectRoom.BroadcastDataChanged();
+                    _curSelectRoom = null;
+                    _cachedView.MultiDetailPannel.SetActive(false);
+                }
+                else
+                {
+                    if (_curSelectRoom != null)
+                    {
+                        _curSelectRoom.IsSelected = false;
+                        _curSelectRoom.BroadcastDataChanged();
+                    }
+                    _curSelectRoom = value;
+                    _curSelectRoom.IsSelected = true;
+                    _curSelectRoom.BroadcastDataChanged();
+                    _cachedView.MultiDetailPannel.SetActive(true);
+                    RefreshRoomInfo();
+                }
+            }
+        }
 
         protected override void OnViewCreated()
         {
@@ -45,6 +75,10 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            if (!append)
+            {
+                CurSelectRoom = null;
+            }
             RoomManager.Instance.RequestRoomList(append);
         }
 
@@ -69,9 +103,10 @@ namespace GameA
             _cachedView.MultiDetailPannel.SetActive(_contentList.Count != 0);
             if (CurSelectRoom == null && _contentList.Count > 0)
             {
-                _contentList[0].IsSelected = true;
-                _contentList[0].BroadcastDataChanged();
-                CurSelectRoom = _contentList[0];
+                OnItemClick(_contentList[0]);
+            }
+            else
+            {
                 RefreshRoomInfo();
             }
         }
@@ -107,16 +142,7 @@ namespace GameA
             {
                 return;
             }
-            if (CurSelectRoom != null)
-            {
-                if (item.Content.RoomId == CurSelectRoom.Content.RoomId) return;
-                CurSelectRoom.IsSelected = false;
-                CurSelectRoom.BroadcastDataChanged();
-            }
-            item.IsSelected = true;
-            item.BroadcastDataChanged();
             CurSelectRoom = item;
-            RefreshRoomInfo();
         }
 
         private void RefreshRoomInfo()
@@ -189,6 +215,10 @@ namespace GameA
             {
                 w.BroadcastDataChanged();
             }
+            if (CurSelectRoom != null && val == CurSelectRoom.Content.RoomId)
+            {
+                RefreshRoomInfo();
+            }
         }
 
         public override void Clear()
@@ -204,6 +234,7 @@ namespace GameA
         public void OnQueryRoomRet(Msg_MC_QueryRoom msg)
         {
             _isShowingSearchRoom = true;
+            CurSelectRoom = null;
             RefreshView();
         }
 
@@ -214,6 +245,12 @@ namespace GameA
         }
 
         public void OnJoinRoomFail()
+        {
+            _isShowingSearchRoom = false;
+            RequestData();
+        }
+
+        public void OnChangeToAppMode()
         {
             _isShowingSearchRoom = false;
             RequestData();

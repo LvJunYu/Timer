@@ -128,9 +128,9 @@ namespace GameA
 
         private void OnChangeToAppMode()
         {
-            if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
+            if (_isOpen && _curMenu == EMenu.Multi)
             {
-                _curMenuCtrl.RequestData();
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnChangeToAppMode();
             }
         }
 
@@ -160,7 +160,6 @@ namespace GameA
 
         private void OnSearchBtn()
         {
-            if (!(_curMenuCtrl is UPCtrlWorldProjectBase)) return;
             if (string.IsNullOrEmpty(_cachedView.SearchInputField.text))
             {
                 ChangeMenu(_curMenu);
