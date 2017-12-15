@@ -179,6 +179,31 @@ namespace GameA.Game
             SendToMSServer(msg);
         }
 
+        public void SendRequestQuickPlay()
+        {
+            if (!_msClient.IsConnected())
+            {
+                SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入");
+            var msg = new Msg_CM_QuickPlay();
+            msg.Flag = 1;
+            SendToMSServer(msg);
+        }
+        
+        public void SendQueryRoom(long roomId)
+        {
+            if (!_msClient.IsConnected())
+            {
+                SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
+                return;
+            }
+            var msg = new Msg_CM_QueryRoom();
+            msg.RoomId = roomId;
+            SendToMSServer(msg);
+        }
+
         public void SendRoomReadyInfo(bool flag)
         {
             var msg = new Msg_CM_UserReadyInfo();
@@ -262,6 +287,35 @@ namespace GameA.Game
         internal void OnOpenBattle()
         {
             _room.OnOpenBattle();
+        }
+
+        public void OnQueryRoomListRet(Msg_MC_QueryRoomList msg)
+        {
+            var list = msg.Data;
+            for (int i = 0; i < list.Count; i++)
+            {
+                RoomList.Add(new RoomInfo(list[i]));
+            }
+            IsEnd = list.Count < UPCtrlWorldMulti.PageSize;
+            Messenger.Broadcast(EMessengerType.OnRoomListChanged);
+        }
+
+        public void OnQueryRoomRet(Msg_MC_QueryRoom msg)
+        {
+            if (msg.ResultCode == ERoomCode.ERC_Success)
+            {
+                RoomList.Clear();
+                RoomList.Add(new RoomInfo(msg.Data));
+                Messenger<Msg_MC_QueryRoom>.Broadcast(EMessengerType.OnQueryRoomRet, msg);
+            }
+            else if (msg.ResultCode == ERoomCode.ERC_NotExist)
+            {
+                SocialGUIManager.ShowPopupDialog(string.Format("没有房间ID为{0}的房间", msg.RoomId));
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("查找失败");
+            }
         }
 
         #endregion

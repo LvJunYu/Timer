@@ -62,6 +62,7 @@ namespace GameA
                 }
             }
             BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchInputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchRoomInputField);
         }
 
         protected override void OnDestroy()
@@ -88,7 +89,8 @@ namespace GameA
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnRoomProjectInfoFinish, OnRoomProjectInfoFinish);
             RegisterEvent(EMessengerType.OnRoomListChanged, OnRoomListChanged);
-            RegisterEvent (EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            RegisterEvent<Msg_MC_QueryRoom>(EMessengerType.OnQueryRoomRet, OnQueryRoomRet);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
         }
 
         protected override void OnOpen(object parameter)
@@ -124,7 +126,7 @@ namespace GameA
 
         private void OnChangeToAppMode()
         {
-            if (_curMenu == EMenu.Multi && _curMenuCtrl!=null)
+            if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
             {
                 _curMenuCtrl.RequestData();
             }
@@ -134,7 +136,15 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Multi)
             {
-                _curMenuCtrl.RefreshView();
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnRoomListChanged();
+            }
+        }
+
+        private void OnQueryRoomRet(Msg_MC_QueryRoom msg)
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnQueryRoomRet(msg);
             }
         }
 

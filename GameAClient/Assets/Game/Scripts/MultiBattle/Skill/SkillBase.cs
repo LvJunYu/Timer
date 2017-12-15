@@ -237,9 +237,12 @@ namespace GameA.Game
 
         public bool Fire()
         {
-            if (_owner.IsMain && _currentBulletCount <= 0)
+            if (_currentBulletCount <= 0)
             {
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
+                if (_owner.IsMain)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
+                }
                 return false;
             }
             if (_timerCD > 0)

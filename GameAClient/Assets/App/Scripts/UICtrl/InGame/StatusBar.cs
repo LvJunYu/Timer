@@ -5,8 +5,6 @@ namespace GameA.Game
 {
     public class StatusBar : MonoBehaviour
     {
-        private static float s_hittingTime = 0.5f;
-        private static float s_healingTime = 0.3f;
         private static string _fillAmout = "_FillAmount";
 
         public GameObject ShowMe, PlayerBar, MonsterBar;

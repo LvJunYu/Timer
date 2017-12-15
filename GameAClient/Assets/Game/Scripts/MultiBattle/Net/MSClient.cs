@@ -67,18 +67,13 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_UserReadyInfo>(Msg_MC_UserReadyInfo);
             RegisterHandler<Msg_MC_WarnningHost>(Msg_MC_WarnningHost);
             RegisterHandler<Msg_MC_RoomOpen>(Msg_MC_RoomOpen);
-            RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomList);
+            RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomListRet);
+            RegisterHandler<Msg_MC_QueryRoom>(Msg_MC_QueryRoomRet);
         }
 
-        private void Msg_MC_QueryRoomList(Msg_MC_QueryRoomList msg, object netlink)
+        private void Msg_MC_QueryRoomListRet(Msg_MC_QueryRoomList msg, object netlink)
         {
-            var list = msg.Data;
-            for (int i = 0; i < list.Count; i++)
-            {
-                RoomManager.Instance.RoomList.Add(new RoomInfo(list[i]));
-            }
-            RoomManager.Instance.IsEnd = list.Count < UPCtrlWorldMulti.PageSize;
-            Messenger.Broadcast(GameA.EMessengerType.OnRoomListChanged);
+            RoomManager.Instance.OnQueryRoomListRet(msg);
         }
 
         private void Msg_MC_LoginRet(Msg_MC_LoginRet msg, object netlink)
@@ -160,6 +155,11 @@ namespace SoyEngine.MasterServer
         private void Msg_MC_CreateRoomRet(Msg_MC_CreateRoomRet msg, object obj)
         {
             RoomManager.Instance.OnCreateRoomRet(msg);
+        }
+        
+        private void Msg_MC_QueryRoomRet(Msg_MC_QueryRoom msg, object obj)
+        {
+            RoomManager.Instance.OnQueryRoomRet(msg);
         }
     }
 }

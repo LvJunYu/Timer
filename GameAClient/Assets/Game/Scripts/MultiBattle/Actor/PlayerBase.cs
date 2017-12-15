@@ -121,6 +121,7 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
+            _isReviving = false;
             _dieTime = 0;
             _box = null;
             ClearView();
@@ -242,6 +243,7 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
+            _isReviving = false;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
                 Life = PlayMode.Instance.SceneState.Life + 1;
@@ -394,7 +396,10 @@ namespace GameA.Game
             {
                 GM2DGame.Instance.GameMode.ShadowData.RecordDeath();
             }
-            Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
+            if (IsMain)
+            {
+                Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
+            }
         }
 
         protected void OnRevive()
@@ -439,7 +444,10 @@ namespace GameA.Game
                     _animation.PlayLoop(IdleAnimName());
                     GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
-                    Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
+                    if (IsMain)
+                    {
+                        Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
+                    }
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
@@ -601,11 +609,11 @@ namespace GameA.Game
                 {
                     OnRevive();
                 }
-                if (_life <= 0 && _dieTime == 100)
+                if (_life <= 0 && _dieTime == 100 && IsMain)
                 {
-                    PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                    // 因生命用完而失败
-                    Messenger.Broadcast(EMessengerType.GameFinishFailed);
+//                    PlayMode.Instance.SceneState.MainUnitSiTouLe();
+//                    Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
+                    return;
                 }
             }
             CheckBox();

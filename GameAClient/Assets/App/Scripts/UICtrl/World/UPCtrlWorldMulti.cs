@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -13,15 +14,16 @@ namespace GameA
         private Dictionary<long, CardDataRendererWrapper<RoomInfo>> _dict =
             new Dictionary<long, CardDataRendererWrapper<RoomInfo>>();
 
+        private bool _isShowingSearchRoom;
         private List<RoomInfo> _roomList;
         public CardDataRendererWrapper<RoomInfo> CurSelectRoom;
-
 
         public override void Open()
         {
             base.Open();
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
             CurSelectRoom = null;
+            _isShowingSearchRoom = false;
             RequestData();
             RefreshView();
         }
@@ -32,15 +34,12 @@ namespace GameA
             base.Close();
         }
 
-        public void Update()
-        {
-            
-        }
-        
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.JoinRoomBtn.onClick.AddListener(OnJoinRoomBtn);
+            _cachedView.SearchRoomBtn.onClick.AddListener(OnSearchRoomBtn);
+            _cachedView.QuickJoinBtn.onClick.AddListener(OnQuickJoinBtn);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
@@ -74,6 +73,31 @@ namespace GameA
                 _contentList[0].BroadcastDataChanged();
                 CurSelectRoom = _contentList[0];
                 RefreshRoomInfo();
+            }
+        }
+
+        private void OnQuickJoinBtn()
+        {
+            RoomManager.Instance.SendRequestQuickPlay();
+        }
+
+        private void OnSearchRoomBtn()
+        {
+            if (string.IsNullOrEmpty(_cachedView.SearchRoomInputField.text))
+            {
+                RequestData();
+            }
+            else
+            {
+                long roomId;
+                if (long.TryParse(_cachedView.SearchInputField.text, out roomId))
+                {
+                    RoomManager.Instance.SendQueryRoom(roomId);
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("请输入正确的房间号！");
+                }
             }
         }
 
@@ -148,7 +172,7 @@ namespace GameA
                     return;
                 }
                 item.Set(_contentList[inx]);
-                if (!RoomManager.Instance.IsEnd)
+                if (!RoomManager.Instance.IsEnd && !_isShowingSearchRoom)
                 {
                     if (inx > _contentList.Count - 2)
                     {
@@ -175,6 +199,18 @@ namespace GameA
             _dict.Clear();
             _roomList = null;
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+        }
+
+        public void OnQueryRoomRet(Msg_MC_QueryRoom msg)
+        {
+            _isShowingSearchRoom = true;
+            RefreshView();
+        }
+
+        public void OnRoomListChanged()
+        {
+            _isShowingSearchRoom = false;
+            RefreshView();
         }
     }
 }

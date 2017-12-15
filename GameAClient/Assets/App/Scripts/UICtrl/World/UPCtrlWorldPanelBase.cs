@@ -32,7 +32,9 @@ namespace GameA
 
         protected abstract void OnItemRefresh(IDataItemRenderer item, int inx);
 
-        public virtual void OnChangeHandler(long val){}
+        public virtual void OnChangeHandler(long val)
+        {
+        }
 
         public void Set(EResScenary resScenary)
         {

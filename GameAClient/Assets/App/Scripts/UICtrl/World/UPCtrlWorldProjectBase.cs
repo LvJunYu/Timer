@@ -130,15 +130,15 @@ namespace GameA
                 case UICtrlWorld.EMenu.Recommend:
                     return UMCtrlProject.ECurUI.Recommend;
 //                case UICtrlWorld.EMenu.MaxScore:
-                    return UMCtrlProject.ECurUI.MaxScore;
+//                    return UMCtrlProject.ECurUI.MaxScore;
                 case UICtrlWorld.EMenu.NewestProject:
                     return UMCtrlProject.ECurUI.AllNewestProject;
 //                case UICtrlWorld.EMenu.Follows:
-                    return UMCtrlProject.ECurUI.Follows;
+//                    return UMCtrlProject.ECurUI.Follows;
                 case UICtrlWorld.EMenu.UserFavorite:
                     return UMCtrlProject.ECurUI.UserFavorite;
 //                case UICtrlWorld.EMenu.UserPlayHistory:
-                    return UMCtrlProject.ECurUI.UserPlayHistory;
+//                    return UMCtrlProject.ECurUI.UserPlayHistory;
                 case UICtrlWorld.EMenu.RankList:
                     return UMCtrlProject.ECurUI.RankList;
                 default:
