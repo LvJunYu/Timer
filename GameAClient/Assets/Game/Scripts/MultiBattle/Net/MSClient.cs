@@ -31,6 +31,8 @@ namespace SoyEngine.MasterServer
 
         protected override void OnDisconnected(int code = 0)
         {
+            base.OnDisconnected(code);
+            LogHelper.Debug("MSClient OnDisConnected");
             Loom.QueueOnMainThread(Reconnect);
         }
 
