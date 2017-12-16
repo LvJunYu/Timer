@@ -34,6 +34,7 @@ namespace GameA.Game
 
         protected override void OnDisconnected(int code = 0)
         {
+            base.OnDisconnected(code);
             LogHelper.Debug("RoomClient OnDisConnected");
             Loom.QueueOnMainThread(RoomClientHandler.Intance.OnDisconnect);
         }
