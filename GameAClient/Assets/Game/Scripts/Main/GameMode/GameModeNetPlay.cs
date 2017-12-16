@@ -25,7 +25,9 @@ namespace GameA.Game
         protected EPhase _ePhase;
         protected int _bornSeed;
         protected int _recentServerFrame;
-        protected bool _hasStarted;
+        protected bool _loadingHasClosed;
+        protected bool _localMyPlayerStarted;
+        protected bool _serverMyPlayerStarted;
 
         public override bool IsMulti
         {
@@ -34,7 +36,7 @@ namespace GameA.Game
 
         public override bool Stop()
         {
-            if (!_hasStarted)
+            if (!_loadingHasClosed)
             {
                 base.OnGameStart();
             }
@@ -50,7 +52,7 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
-            if (!_hasStarted)
+            if (!_loadingHasClosed)
             {
                 base.OnGameStart();
             }
@@ -59,7 +61,7 @@ namespace GameA.Game
 
         public override void OnGameFailed()
         {
-            if (!_hasStarted)
+            if (!_loadingHasClosed)
             {
                 base.OnGameStart();
             }
@@ -206,8 +208,12 @@ namespace GameA.Game
                         bool isMain = false;
                         if (roomUser.Guid == LocalUser.Instance.UserGuid)
                         {
-                            SetPhase(EPhase.Normal);
                             isMain = true;
+                            _serverMyPlayerStarted = true;
+                            if (_localMyPlayerStarted)
+                            {
+                                SetPhase(EPhase.Normal);
+                            }
                         }
                         PlayMode.Instance.AddPlayer(_bornSeed, isMain, commandData.UserRoomInx);
                         break;
@@ -257,7 +263,8 @@ namespace GameA.Game
 
         private void SetPhase(EPhase phase)
         {
-            switch (phase)
+            _ePhase = phase;
+            switch (_ePhase)
             {
                 case EPhase.None:
                     break;
@@ -266,11 +273,19 @@ namespace GameA.Game
                 case EPhase.Pursue:
                     break;
                 case EPhase.RequestStartBattle:
-                    SendStartBattle();
+                    if (_serverMyPlayerStarted)
+                    {
+                        SetPhase(EPhase.Normal);
+                    }
+                    else
+                    {
+                        SendStartBattle();
+                    }
+                    _localMyPlayerStarted = true;
                     break;
                 case EPhase.Normal:
                     base.OnGameStart();
-                    _hasStarted = true;
+                    _loadingHasClosed = true;
                     break;
                 case EPhase.Succeed:
                 {
@@ -305,7 +320,6 @@ namespace GameA.Game
                 default:
                     throw new ArgumentOutOfRangeException("phase", phase, null);
             }
-            _ePhase = phase;
         }
 
         #region Send
