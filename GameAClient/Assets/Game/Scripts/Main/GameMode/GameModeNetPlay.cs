@@ -375,31 +375,68 @@ namespace GameA.Game
 
         internal void OnRoomClose(ERoomCloseCode code)
         {
-            switch (code)
+
+            switch (_ePhase)
             {
-                case ERoomCloseCode.ERCC_None:
+                case EPhase.None:
+                case EPhase.Simulation:
+                case EPhase.Pursue:
+                case EPhase.RequestStartBattle:
+                {
+                    switch (code)
+                    {
+                        case ERoomCloseCode.ERCC_None:
+                            break;
+                        case ERoomCloseCode.ERCC_BattleEnd:
+                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
+                            break;
+                        case ERoomCloseCode.ERCC_RoomNotExist:
+                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
+                            break;
+                        case ERoomCloseCode.ERCC_WaitTimeout:
+                            SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
+                            break;
+                        case ERoomCloseCode.ERCC_BattleTimeout:
+                            break;
+                        case ERoomCloseCode.ERCC_NoActiveUser:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("code", code, null);
+                    }
+                    SocialApp.Instance.ReturnToApp();
+                }
                     break;
-                case ERoomCloseCode.ERCC_BattleEnd:
+                case EPhase.Normal:
+                case EPhase.Succeed:
+                case EPhase.Failed:
+                {
+                    switch (code)
+                    {
+                        case ERoomCloseCode.ERCC_None:
+                            break;
+                        case ERoomCloseCode.ERCC_BattleEnd:
+                            break;
+                        case ERoomCloseCode.ERCC_RoomNotExist:
+                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
+                            break;
+                        case ERoomCloseCode.ERCC_WaitTimeout:
+                            SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
+                            break;
+                        case ERoomCloseCode.ERCC_BattleTimeout:
+                            return;
+                        case ERoomCloseCode.ERCC_NoActiveUser:
+                            return;
+                        default:
+                            throw new ArgumentOutOfRangeException("code", code, null);
+                    }
+                    SocialApp.Instance.ReturnToApp();
+                }
                     break;
-                case ERoomCloseCode.ERCC_RoomNotExist:
-                    SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
-                    break;
-                case ERoomCloseCode.ERCC_WaitTimeout:
-                    SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
-                    break;
-                case ERoomCloseCode.ERCC_BattleTimeout:
-                    break;
-                case ERoomCloseCode.ERCC_NoActiveUser:
+                case EPhase.Close:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("code", code, null);
+                    throw new ArgumentOutOfRangeException();
             }
-            if (code == ERoomCloseCode.ERCC_BattleEnd && _hasStarted)
-            {
-                return;
-            }
-            SetPhase(EPhase.Close);
-            SocialApp.Instance.ReturnToApp();
         }
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
