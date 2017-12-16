@@ -528,5 +528,17 @@ namespace GameA.Game
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
             }
         }
+
+        public void AllPlayerSiTouLe()
+        {
+            if (Statistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
+            {
+                NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
+            }
+            else
+            {
+                NetBattleWin(false);
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new TeamManager()); }
         }
 
-        public const int MaxTeamCount = 6;
+        public const int MaxTeamCount = PlayerManager.MaxTeamCount;
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
@@ -23,6 +23,11 @@ namespace GameA.Game
         public byte MyTeamId
         {
             get { return _myTeamId; }
+        }
+
+        public List<PlayerBase> Players
+        {
+            get { return _players; }
         }
 
         private TeamManager()
@@ -69,7 +74,7 @@ namespace GameA.Game
                 LogHelper.Error("player has been added to TeamManager");
                 return;
             }
-            _players.Add(player);
+            Players.Add(player);
             _playerDic[teamId].Add(player.RoomUser.Guid);
             if (player.IsMain)
             {
@@ -135,14 +140,14 @@ namespace GameA.Game
 
         public void Reset()
         {
-            _players.Clear();
+            Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
         }
 
         public void Dispose()
         {
-            _players.Clear();
+            Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnGemCollect, OnGemCollect);
@@ -154,14 +159,14 @@ namespace GameA.Game
 
         public UnitBase GetMonsterTarget(MonsterBase unit)
         {
-            int curPlayerCount = _players.Count;
+            int curPlayerCount = Players.Count;
             int curStartIndex = GameRun.Instance.LogicFrameCnt % curPlayerCount;
-            for (int i = 0; i < _players.Count; i++)
+            for (int i = 0; i < Players.Count; i++)
             {
                 int index = (i + curStartIndex) % curPlayerCount;
-                if (_players[index].TeamId == 0 || unit.TeamId == 0 || _players[index].TeamId != unit.TeamId)
+                if (Players[index].TeamId == 0 || unit.TeamId == 0 || Players[index].TeamId != unit.TeamId)
                 {
-                    return _players[index];
+                    return Players[index];
                 }
             }
             return unit; //找不到目标时返回自己

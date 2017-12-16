@@ -5,8 +5,6 @@
 ** Summary : ProjectileBase
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 

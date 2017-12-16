@@ -487,10 +487,10 @@ namespace GameA.Game
             int spwanCount = spawnDatas.Count;
             if (spwanCount == 0)
             {
-                LogHelper.Error("can find a spwan!");
+                LogHelper.Error("can not find a spwan!");
                 return;
             }
-            int curPlayerCount = PlayerManager.Instance.PlayerList.Count;
+            int curPlayerCount = TeamManager.Instance.Players.Count;
             basicNum = (basicNum + curPlayerCount) % spwanCount;
             int id = UnitDefine.MainPlayerId;
             if (!main)

@@ -21,8 +21,10 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new PlayerManager()); }
         }
 
-        private List<RoomUser> _userDataList = new List<RoomUser>(6);
-        private List<PlayerBase> _playerList = new List<PlayerBase>(10); // 可能赋null，需要判空
+        public const int MaxTeamCount = 6;
+        private List<RoomUser> _userDataList = new List<RoomUser>(MaxTeamCount);
+        private List<PlayerBase> _playerList = new List<PlayerBase>(MaxTeamCount); // 可能赋null，需要判空
+
         private MainPlayer _mainPlayer;
 
         public MainPlayer MainPlayer
@@ -133,6 +135,18 @@ namespace GameA.Game
             playerBase.Setup(GM2DGame.Instance.GameMode.GetOtherPlayerInput());
             playerBase.SetPos(new IntVec2(1, 1));
             _mainPlayer = playerBase;
+        }
+
+        public bool CheckAllPlayerSiTouLe()
+        {
+            for (int i = 0; i < _playerList.Count; i++)
+            {
+                if (_playerList == null || !_playerList[i].SiTouLe)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

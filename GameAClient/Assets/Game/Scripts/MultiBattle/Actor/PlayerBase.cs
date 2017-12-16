@@ -19,7 +19,7 @@ namespace GameA.Game
 
         protected RoomUser _roomUser;
         protected UnitExtra _unitExtra;
-        protected bool _isReviving;
+        protected bool _siTouLe;
 
         [SerializeField] protected IntVec2 _revivePos;
 
@@ -39,6 +39,11 @@ namespace GameA.Game
         public override byte TeamId
         {
             get { return _unitExtra.TeamId; }
+        }
+
+        public bool SiTouLe
+        {
+            get { return _siTouLe; }
         }
 
         public override SkillCtrl SkillCtrl
@@ -121,7 +126,7 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            _isReviving = false;
+            _siTouLe = false;
             _dieTime = 0;
             _box = null;
             ClearView();
@@ -243,7 +248,7 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
-            _isReviving = false;
+            _siTouLe = false;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
                 Life = PlayMode.Instance.SceneState.Life + 1;
@@ -404,8 +409,6 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
-            if (_isReviving) return;
-            _isReviving = true;
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
@@ -421,7 +424,6 @@ namespace GameA.Game
                     _input.Clear();
                     ClearRunTime();
                     _isAlive = true;
-                    _isReviving = false;
                     if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
                     {
                         GM2DGame.Instance.GameMode.ShadowData.RecordRevive();
@@ -603,14 +605,18 @@ namespace GameA.Game
                         Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
                     }
                 }
-                if (_life > 0 && !_isReviving && _dieTime >= 50 &&
-                    _dieTime >= PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime *
-                    ConstDefineGM2D.FixedFrameCount)
+                if (_life > 0 && _dieTime == Mathf.Max(50, 
+                        PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime * ConstDefineGM2D.FixedFrameCount))
                 {
                     OnRevive();
                 }
                 if (_life <= 0 && _dieTime == 100 && IsMain)
                 {
+                    _siTouLe = true;
+                    if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                    {
+                        PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                    }
 //                    PlayMode.Instance.SceneState.MainUnitSiTouLe();
 //                    Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
                     return;
