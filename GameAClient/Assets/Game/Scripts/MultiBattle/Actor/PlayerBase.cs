@@ -605,20 +605,29 @@ namespace GameA.Game
                         Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
                     }
                 }
-                if (_life > 0 && _dieTime == Mathf.Max(50, 
+                if (_life > 0 && _dieTime == Mathf.Max(50,
                         PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime * ConstDefineGM2D.FixedFrameCount))
                 {
                     OnRevive();
                 }
-                if (_life <= 0 && _dieTime == 100 && IsMain)
+                if (_life <= 0 && _dieTime == 100)
                 {
                     _siTouLe = true;
-                    if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                    if (GM2DGame.Instance.GameMode.IsMulti)
                     {
-                        PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                        if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                        {
+                            PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                        }
                     }
-//                    PlayMode.Instance.SceneState.MainUnitSiTouLe();
-//                    Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
+                    else
+                    {
+                        if (IsMain)
+                        {
+                            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
+                        }
+                    }
                     return;
                 }
             }
