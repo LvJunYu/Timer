@@ -231,10 +231,13 @@ namespace GameA
 
         private void UpdateMulti()
         {
+            var teams = TeamManager.Instance.Teams;
             for (int i = 0; i < _usCtrlMultiScores.Length; i++)
             {
-                _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(i + 1));
-                _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == i + 1);
+                byte team = (byte) (i + 1);
+                _usCtrlMultiScores[i].SetEnable(teams.Contains(team));
+                _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(team));
+                _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == team);
             }
             var netData = PlayMode.Instance.SceneState.Statistics.NetBattleData;
             _cachedView.TimeLimit.text = string.Format("游戏时间{0}", netData.GetTimeLimit());

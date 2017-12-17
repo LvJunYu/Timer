@@ -17,6 +17,7 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
+        private List<byte> _teams = new List<byte>(MaxTeamCount);
         private int _curCameraPlayerIndex;
 
         private byte _myTeamId;
@@ -46,8 +47,14 @@ namespace GameA.Game
             }
         }
 
+        public List<byte> Teams
+        {
+            get { return _teams; }
+        }
+
         public void ResetCameraPlayer()
         {
+            _curCameraPlayerIndex = 0;
             _cameraPlayer = PlayMode.Instance.MainPlayer;
         }
 
@@ -56,12 +63,12 @@ namespace GameA.Game
             for (int i = 1; i < _players.Count; i++)
             {
                 int index = (_curCameraPlayerIndex + i) % _players.Count;
-                if (_players[index] == PlayMode.Instance.MainPlayer)
+                if (!_players[index].IsMain && _players[index].IsAlive)
                 {
-                    continue;
+                    _curCameraPlayerIndex = index;
+                    _cameraPlayer = _players[index];
+                    break;
                 }
-                _curCameraPlayerIndex = index;
-                _cameraPlayer = _players[index];
             }
         }
 
@@ -180,18 +187,17 @@ namespace GameA.Game
 
         public void Reset()
         {
+            _curCameraPlayerIndex = 0;
             _cameraPlayer = null;
             Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
+            Teams.Clear();
         }
 
         public void Dispose()
         {
-            _cameraPlayer = null;
-            Players.Clear();
-            _scoreDic.Clear();
-            _playerDic.Clear();
+            Reset();
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnGemCollect, OnGemCollect);
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterKilled);
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnPlayerDead, OnPlayerKilled);
@@ -212,6 +218,14 @@ namespace GameA.Game
                 }
             }
             return unit; //找不到目标时返回自己
+        }
+
+        public void AddTeam(byte team)
+        {
+            if (!Teams.Contains(team))
+            {
+                Teams.Add(team);
+            }
         }
     }
 }

@@ -475,6 +475,11 @@ namespace GameA.Game
                         PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
+                    for (int i = 0; i < spawnDatas.Count; i++)
+                    {
+                        byte team = DataScene2D.Instance.GetUnitExtra(spawnDatas[i].Guid).TeamId;
+                        TeamManager.Instance.AddTeam(team);
+                    }
                 }
             }
             return true;

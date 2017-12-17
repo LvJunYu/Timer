@@ -9,6 +9,11 @@ namespace GameA
             _cachedView.MyNum.text = _cachedView.Num.text = score.ToString();
         }
 
+        public void SetEnable(bool value)
+        {
+            _cachedView.SetActiveEx(value);
+        }
+
         public void SetMyTeam(bool value)
         {
             _cachedView.MyNum.SetActiveEx(value);
