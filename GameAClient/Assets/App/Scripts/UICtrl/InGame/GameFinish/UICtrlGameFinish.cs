@@ -309,8 +309,9 @@ namespace GameA
             _cachedView.ShadowBattleWinObj.SetActive(_showState == EShowState.ShadowBattleWin);
             switch (_showState)
             {
-                case EShowState.Win:
                 case EShowState.MultiWin:
+                    //todo 多人胜利
+                case EShowState.Win:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(_showState == EShowState.Win);
@@ -330,8 +331,9 @@ namespace GameA
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
-                case EShowState.Lose:
                 case EShowState.MultiLose:
+                    //todo 多人失败
+                case EShowState.Lose:
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
@@ -395,8 +397,10 @@ namespace GameA
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
                     var gameMode2 = GM2DGame.Instance.GameMode as GameModeWorldPlay;
-                    _cachedView.FriendHelpBtn.SetActiveEx(gameMode2 != null && gameMode2.ShadowBattleType == EShadowBattleType.Normal);
-                    _cachedView.FriendHelpTxt.SetActiveEx(gameMode2 != null && gameMode2.ShadowBattleType == EShadowBattleType.Normal);
+                    _cachedView.FriendHelpBtn.SetActiveEx(gameMode2 != null &&
+                                                          gameMode2.ShadowBattleType == EShadowBattleType.Normal);
+                    _cachedView.FriendHelpTxt.SetActiveEx(gameMode2 != null &&
+                                                          gameMode2.ShadowBattleType == EShadowBattleType.Normal);
                     _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;

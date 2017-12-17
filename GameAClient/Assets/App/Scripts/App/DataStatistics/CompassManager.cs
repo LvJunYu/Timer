@@ -22,7 +22,7 @@ namespace GameA
         {
         }
 
-        public bool Init()
+        private bool Init()
         {
             if (_hasInited) return true;
             _userGuid = "&opuid=" + LocalUser.Instance.UserGuid;
@@ -123,7 +123,7 @@ namespace GameA
         /// 实时在线
         /// </summary>
         /// <param name="onlinetime">用户本次登录的在线时长</param>
-        public void Online(string user_num = null, string userip = null, string svrip = null, string time = null,
+        private void Online(string user_num = null, string userip = null, string svrip = null, string time = null,
             string worldid = null, string level = null)
         {
             if (!Init()) return;

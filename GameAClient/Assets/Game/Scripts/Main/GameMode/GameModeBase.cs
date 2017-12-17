@@ -21,6 +21,7 @@ namespace GameA.Game
         public ShadowData ShadowData = new ShadowData();
         public ShadowData ShadowDataPlayed;
         protected bool _playShadowData;
+        public DebugFile DebugClintData = DebugFile.Create("ClintData", "clintData.txt");
 
         public virtual bool IsMulti
         {

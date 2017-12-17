@@ -162,7 +162,7 @@ namespace GameA
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
             ReYunManager.Instance.Login();
-            CompassManager.Instance.Login();
+//            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
@@ -299,7 +299,7 @@ namespace GameA
                 PublishChannel.Instance.OnDestroy();
             }
             base.OnDestroy();
-            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
+//            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
             ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
         }
 
@@ -307,7 +307,7 @@ namespace GameA
         {
             base.Update();
             GameManager.Instance.Update();
-            CompassManager.Instance.Update();
+//            CompassManager.Instance.Update();
             ReYunManager.Instance.Update();
             RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
