@@ -233,7 +233,7 @@ namespace GameA
         {
             for (int i = 0; i < _usCtrlMultiScores.Length; i++)
             {
-                _usCtrlMultiScores[i].SetScore(0);
+                _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(i + 1));
                 _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == i + 1);
             }
             var netData = PlayMode.Instance.SceneState.Statistics.NetBattleData;

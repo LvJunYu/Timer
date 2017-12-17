@@ -248,11 +248,11 @@ namespace GameA.Game
 
         protected virtual void UpdateMonsterAI()
         {
-            if (GameRun.Instance.LogicFrameCnt % 100 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 50 == 0)
             {
                 UpdateAttackTarget(AttackTarget);
             }
-            if (GameRun.Instance.LogicFrameCnt % 251 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 101 == 0)
             {
                 UpdateAttackTarget();
             }

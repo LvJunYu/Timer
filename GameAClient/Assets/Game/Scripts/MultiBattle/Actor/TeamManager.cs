@@ -115,14 +115,19 @@ namespace GameA.Game
             PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == _myTeamId);
         }
 
-        public int GetMyTeamScore()
+        public int GetTeamScore(int teamId)
         {
             int score;
-            if (!_scoreDic.TryGetValue(MyTeamId, out score))
+            if (!_scoreDic.TryGetValue((byte) teamId, out score))
             {
-                _scoreDic.Add(MyTeamId, 0);
+                _scoreDic.Add((byte) teamId, 0);
             }
             return score;
+        }
+
+        public int GetMyTeamScore()
+        {
+            return GetTeamScore(_myTeamId);
         }
 
         public bool MyTeamHeighScore()

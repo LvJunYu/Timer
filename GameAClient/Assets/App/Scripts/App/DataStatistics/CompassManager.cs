@@ -24,6 +24,7 @@ namespace GameA
 
         private bool Init()
         {
+            if (SocialApp.Instance.Env != EEnvironment.Production) return false;
             if (_hasInited) return true;
             _userGuid = "&opuid=" + LocalUser.Instance.UserGuid;
             var channel = ChannelQQGame.Instance as ChannelQQGame;

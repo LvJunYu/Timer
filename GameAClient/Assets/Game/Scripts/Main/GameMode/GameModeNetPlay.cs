@@ -18,6 +18,8 @@ namespace GameA.Game
 {
     public class GameModeNetPlay : GameModePlay
     {
+        private static GameModeNetPlay _instance;
+        
         protected Dictionary<long, PlayerBase> _players = new Dictionary<long, PlayerBase>();
         protected List<Msg_RC_FrameData> _serverStartInputFrameList = new List<Msg_RC_FrameData>();
         protected Queue<Msg_RC_FrameData> _serverInputFrameQueue = new Queue<Msg_RC_FrameData>(128);
@@ -30,17 +32,28 @@ namespace GameA.Game
         protected bool _loadingHasClosed;
         protected bool _localMyPlayerStarted;
         protected bool _serverMyPlayerStarted;
-
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
+        private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
 
         public override bool IsMulti
         {
             get { return true; }
         }
 
+        public static DebugFile DebugClientData
+        {
+            get { return _instance._debugClientData; }
+        }
+
+        public GameModeNetPlay()
+        {
+            _instance = this;
+        }
+
         public override bool Stop()
         {
             _debugFile.Close();
+            _debugClientData.Close();
             if (!_loadingHasClosed)
             {
                 base.OnGameStart();

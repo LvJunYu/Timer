@@ -213,7 +213,10 @@ namespace GameA.Game
             }
             _tableEquipments[slot] = tableEquipment;
             //发送事件
-            Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
+            if (IsMain)
+            {
+                Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
+            }
             CalculateMaxHp();
             OnHpChanged(_maxHp);
             ChangeGunView(slot);

@@ -299,7 +299,7 @@ namespace GameA
                 PublishChannel.Instance.OnDestroy();
             }
             base.OnDestroy();
-//            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
+            CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
             ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
         }
 
