@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -66,6 +67,10 @@ namespace GameA
 			Request(0, ()=>{
 				SoyPath.Instance.FileUrlRoot = _fileUrlRoot;
 				SoyPath.Instance.ImageUrlRoot = _imageUrlRoot;
+				if (GlobalVar.Instance.Env == EEnvironment.Production)
+				{
+					RoomManager.Instance.MasterServerAddress = _masterServerAddress;
+				}
 				if (_serverTime != 0)
 				{
 					DateTimeUtil.SyncServerTime(_serverTime);

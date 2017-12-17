@@ -33,6 +33,10 @@ namespace GameA
         /// api是否兼容
         /// </summary>
         private bool _aPISupport;
+        /// <summary>
+        /// MS地址
+        /// </summary>
+        private string _masterServerAddress;
 
         // cs fields----------------------------------
         /// <summary>
@@ -103,6 +107,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// MS地址
+        /// </summary>
+        public string MasterServerAddress { 
+            get { return _masterServerAddress; }
+            set { if (_masterServerAddress != value) {
+                _masterServerAddress = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -161,6 +175,7 @@ namespace GameA
             _newestAppVersion = msg.NewestAppVersion;           
             _serverTime = msg.ServerTime;           
             _aPISupport = msg.APISupport;           
+            _masterServerAddress = msg.MasterServerAddress;           
             OnSyncPartial(msg);
             return true;
         }
@@ -174,6 +189,7 @@ namespace GameA
             _newestAppVersion = msg.NewestAppVersion;           
             _serverTime = msg.ServerTime;           
             _aPISupport = msg.APISupport;           
+            _masterServerAddress = msg.MasterServerAddress;           
             return true;
         } 
 
@@ -186,6 +202,7 @@ namespace GameA
             _newestAppVersion = obj.NewestAppVersion;           
             _serverTime = obj.ServerTime;           
             _aPISupport = obj.APISupport;           
+            _masterServerAddress = obj.MasterServerAddress;           
             return true;
         }
 
