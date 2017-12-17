@@ -57,6 +57,7 @@ namespace GameA
             _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
             _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
             _cachedView.FriendHelpBtn.onClick.AddListener(OnFriendHelpBtn);
+            _cachedView.MultiConfirmBtn.onClick.AddListener(OnReturnBtn);
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -69,6 +70,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            CloseMultiPanel();
             EShowState showState = (EShowState) parameter;
             _showState = showState;
 //			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
@@ -107,6 +109,7 @@ namespace GameA
         {
             base.OnUpdate();
             _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
+            _cachedView.MultiShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
         }
 
         private void OnShadowBattleStart(Reward reward)
@@ -311,6 +314,12 @@ namespace GameA
             {
                 case EShowState.MultiWin:
                     //todo 多人胜利
+                    CloseSinglePanel();
+                    _cachedView.MultiWinObj.gameObject.SetActive(true);
+                    _cachedView.MultiConfirmBtn.gameObject.SetActive(true);
+                    _cachedView.Animation.Play("UICtrlGameFinishMultiWin");
+
+                    break;
                 case EShowState.Win:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
@@ -333,6 +342,11 @@ namespace GameA
                     break;
                 case EShowState.MultiLose:
                     //todo 多人失败
+                    CloseSinglePanel();
+                    _cachedView.MultiLoseObj.SetActive(true);
+                    _cachedView.MultiConfirmBtn.gameObject.SetActive(true);
+                    _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
+                    break;
                 case EShowState.Lose:
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
@@ -645,6 +659,20 @@ namespace GameA
                     _groupId);
             uiparticle.Particle.Play();
             _particleList.Add(uiparticle);
+        }
+
+        private void CloseSinglePanel()
+        {
+            _cachedView.Lose.SetActive(false);
+            _cachedView.Win.SetActive(false);
+            _cachedView.SiglePanel.SetActive(false);
+        }
+
+        private void CloseMultiPanel()
+        {
+            _cachedView.MultiConfirmBtn.SetActiveEx(false);
+            _cachedView.MultiLoseObj.SetActiveEx(false);
+            _cachedView.MultiWinObj.SetActiveEx(false);
         }
     }
 }

@@ -102,6 +102,7 @@ namespace GameA
             _cachedView.PuzzleBtn.onClick.AddListener(OnPuzzleBtn);
             _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
+            _cachedView.AnnouncementBtn.onClick.AddListener(OnAnnoncementBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
             _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
@@ -436,6 +437,11 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlChat>();
         }
 
+        private void OnAnnoncementBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlAnnouncement>();
+        }
+
         private void RefreshUserInfo()
         {
             _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
@@ -489,7 +495,7 @@ namespace GameA
                 JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
                 _cachedView.QqHallImage.sprite = openHall;
             }
-            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip )
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip)
             {
                 if (
                     RewardSave.Instance.IsQQBlueNewPlayerColltion &&
@@ -506,7 +512,7 @@ namespace GameA
                     Sprite openBlue;
                     JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
                     _cachedView.QqOpenImage.sprite = openBlue;
-                } 
+                }
             }
             else
             {
