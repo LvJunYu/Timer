@@ -30,11 +30,11 @@ namespace GameA
             _usKillPlayerScoreSetting.Init(_cachedView.KillPlayerScoreSetting);
             _usWinScoreSetting.Init(_cachedView.WinScoreSetting);
             _usTimeLimitSetting.Set(60, 180, value => EditMode.Instance.MapStatistics.NetBattleTimeLimit = value, 30,"{0:f1}分钟", 60);
-            _usArriveScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleArriveScore = value,10);
-            _usCollectGemScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleCollectGemScore = value, 10);
-            _usKillMonsterScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleKillMonsterScore = value, 10);
-            _usKillPlayerScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleKillPlayerScore = value, 10);
-            _usWinScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleWinScore = value, 10);
+            _usArriveScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleArriveScore = value);
+            _usCollectGemScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleCollectGemScore = value);
+            _usKillMonsterScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleKillMonsterScore = value);
+            _usKillPlayerScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleKillPlayerScore = value);
+            _usWinScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleWinScore = value);
             _usScoreConditionSetting = new USCtrlGameSettingItem();
             _usScoreConditionSetting.Init(_cachedView.ScoreConditionSetting);
 

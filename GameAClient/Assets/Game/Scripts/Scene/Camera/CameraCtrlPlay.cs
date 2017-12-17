@@ -73,8 +73,8 @@ namespace GameA.Game
 
         private void UpdatePosByPlayer()
         {
-            MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
-            if (null == mainPlayer)
+            PlayerBase player = TeamManager.Instance.CameraPlayer;
+            if (null == player)
             {
                 return;
             }
@@ -82,7 +82,7 @@ namespace GameA.Game
 //            {
 //                return;
 //            }
-            _targetRollPos = mainPlayer.CameraFollowPos;
+            _targetRollPos = player.CameraFollowPos;
 
             int dx = _targetRollPos.x - _rollPos.x;
             if (dx > -5 && dx <= -1)
@@ -91,7 +91,7 @@ namespace GameA.Game
             }
             else if (dx < 1)
             {
-                _rollPos.x = mainPlayer.CameraFollowPos.x;
+                _rollPos.x = player.CameraFollowPos.x;
             }
             else if (dx < 5)
             {
@@ -113,12 +113,12 @@ namespace GameA.Game
             }
             else if (dy <= 0)
             {
-                _rollPos.y = mainPlayer.CameraFollowPos.y;
+                _rollPos.y = player.CameraFollowPos.y;
             }
             else
             {
                 dy = _targetRollPos.y - _rollPos.y;
-                if (dy < 10 || mainPlayer.EUnitState != EUnitState.Normal)
+                if (dy < 10 || player.EUnitState != EUnitState.Normal)
                 {
                     _rollPos.y = _targetRollPos.y;
                 }

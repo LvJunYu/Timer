@@ -269,31 +269,20 @@ namespace GameA.Game
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.TimeInterval:
-                    return 1000;
-                case EAdvanceAttribute.Damage:
-                    return 100;
-                case EAdvanceAttribute.EffectRange:
-                    return 10;
-                case EAdvanceAttribute.ViewRange:
-                    return 10;
-                case EAdvanceAttribute.BulletCount:
-                    return 10;
-                case EAdvanceAttribute.CastRange:
-                    return 10;
-                case EAdvanceAttribute.BulletSpeed:
-                    return 5;
                 case EAdvanceAttribute.ChargeTime:
-                    return 1000;
-                case EAdvanceAttribute.MaxHp:
                     return 100;
+                case EAdvanceAttribute.Damage:
+                case EAdvanceAttribute.EffectRange:
+                case EAdvanceAttribute.ViewRange:
+                case EAdvanceAttribute.BulletCount:
+                case EAdvanceAttribute.CastRange:
+                case EAdvanceAttribute.BulletSpeed:
+                case EAdvanceAttribute.MaxHp:
                 case EAdvanceAttribute.MaxSpeedX:
-                    return 10;
                 case EAdvanceAttribute.JumpAbility:
-                    return 10;
                 case EAdvanceAttribute.InjuredReduce:
-                    return 10;
                 case EAdvanceAttribute.CureIncrease:
-                    return 10;
+                    return 1;
             }
             return 0;
         }

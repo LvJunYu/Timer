@@ -27,11 +27,16 @@ namespace GameA
             _usMoveSpeedSetting.Init(_cachedView.MoveSpeedSetting);
             _usInjuredReduceSetting.Init(_cachedView.InjuredReduceSetting);
             _usCureIncreaseSetting.Init(_cachedView.CureIncreaseSetting);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp, value => HasChanged = true);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpAbilitySetting, EAdvanceAttribute.JumpAbility, value => HasChanged = true);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usMoveSpeedSetting, EAdvanceAttribute.MaxSpeedX, value => HasChanged = true);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usInjuredReduceSetting, EAdvanceAttribute.InjuredReduce, value => HasChanged = true);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usCureIncreaseSetting, EAdvanceAttribute.CureIncrease, value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp,
+                value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpAbilitySetting, EAdvanceAttribute.JumpAbility,
+                value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMoveSpeedSetting, EAdvanceAttribute.MaxSpeedX,
+                value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usInjuredReduceSetting, EAdvanceAttribute.InjuredReduce,
+                value => HasChanged = true);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usCureIncreaseSetting, EAdvanceAttribute.CureIncrease,
+                value => HasChanged = true);
         }
 
         private void OnRestoreDefaultBtn()
@@ -67,11 +72,11 @@ namespace GameA
             if (!_mainCtrl.IsMulti) return;
             if (HasChanged)
             {
-                DataScene2D.Instance.SetPlayerCommonValue("MaxHp", _usMaxHpSetting.Cur);
-                DataScene2D.Instance.SetPlayerCommonValue("JumpAbility", (ushort) _usJumpAbilitySetting.Cur);
-                DataScene2D.Instance.SetPlayerCommonValue("MaxSpeedX", (ushort) _usMoveSpeedSetting.Cur);
-                DataScene2D.Instance.SetPlayerCommonValue("InjuredReduce", (byte) _usInjuredReduceSetting.Cur);
-                DataScene2D.Instance.SetPlayerCommonValue("CureIncrease", (ushort) _usCureIncreaseSetting.Cur);
+                DataScene2D.Instance.SetPlayerMaxHp(_usMaxHpSetting.Cur);
+                DataScene2D.Instance.SetPlayerJumpAbility(_usJumpAbilitySetting.Cur);
+                DataScene2D.Instance.SetPlayerMaxSpeedX(_usMoveSpeedSetting.Cur);
+                DataScene2D.Instance.SetPlayerInjuredReduce(_usInjuredReduceSetting.Cur);
+                DataScene2D.Instance.SetPlayerCureIncrease(_usCureIncreaseSetting.Cur);
                 HasChanged = false;
             }
         }

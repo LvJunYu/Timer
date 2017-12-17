@@ -22,7 +22,7 @@ namespace GameA
             _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting.Init(_cachedView.ReviveProtectTimeSetting);
             _usPlayerCountSetting.Set(1, 6, value => EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value);
-            _usLifeCountSetting.Set(1, 20, value => EditMode.Instance.MapStatistics.NetBattleLifeCount = value, 5);
+            _usLifeCountSetting.Set(1, 20, value => EditMode.Instance.MapStatistics.NetBattleLifeCount = value);
             _usReviveTimeSetting.Set(0, 10, value => EditMode.Instance.MapStatistics.NetBattleReviveTime = value, 1,
                 "{0}秒");
             _usReviveProtectTimeSetting.Set(0, 10,

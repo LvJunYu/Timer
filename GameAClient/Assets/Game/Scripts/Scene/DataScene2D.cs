@@ -611,13 +611,108 @@ namespace GameA.Game
             _playerExtra = (UnitExtra) playerExtraObj;
         }
 
+        public void SetPlayerMaxHp(int value)
+        {
+            if (_playerExtra.MaxHp == value) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (unitExtra.MaxHp == _playerExtra.MaxHp)
+                    {
+                        unitExtra.MaxHp = (ushort) value;
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, unitExtra);
+                    }
+                }
+            }
+            _playerExtra.MaxHp = (ushort) value;
+        }
+
+        public void SetPlayerJumpAbility(int value)
+        {
+            if (_playerExtra.JumpAbility == value) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (unitExtra.JumpAbility == _playerExtra.JumpAbility)
+                    {
+                        unitExtra.JumpAbility = (ushort) value;
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, unitExtra);
+                    }
+                }
+            }
+            _playerExtra.JumpAbility = (ushort) value;
+        }
+
+        public void SetPlayerMaxSpeedX(int value)
+        {
+            if (_playerExtra.MaxSpeedX == value) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (unitExtra.MaxSpeedX == _playerExtra.MaxSpeedX)
+                    {
+                        unitExtra.MaxSpeedX = (ushort) value;
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, unitExtra);
+                    }
+                }
+            }
+            _playerExtra.MaxSpeedX = (ushort) value;
+        }
+
+        public void SetPlayerInjuredReduce(int value)
+        {
+            if (_playerExtra.InjuredReduce == value) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (unitExtra.InjuredReduce == _playerExtra.InjuredReduce)
+                    {
+                        unitExtra.InjuredReduce = (byte) value;
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, unitExtra);
+                    }
+                }
+            }
+            _playerExtra.InjuredReduce = (byte) value;
+        }
+
+        public void SetPlayerCureIncrease(int value)
+        {
+            if (_playerExtra.CureIncrease == value) return;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+                for (int i = 0; i < _spawnDatas.Count; i++)
+                {
+                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
+                    if (unitExtra.CureIncrease == _playerExtra.CureIncrease)
+                    {
+                        unitExtra.CureIncrease = (ushort) value;
+                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, unitExtra);
+                    }
+                }
+            }
+            _playerExtra.CureIncrease = (ushort) value;
+        }
+
         public void InitDefaultPlayerUnitExtra()
         {
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
             var unitExtra = new UnitExtra();
             unitExtra.MaxHp = (ushort) table.Hp;
-            unitExtra.MaxSpeedX = (ushort)table.MaxSpeed;
-            unitExtra.JumpAbility = (ushort)table.JumpAbility;
+            unitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
+            unitExtra.JumpAbility = (ushort) table.JumpAbility;
             unitExtra.InjuredReduce = 0;
             unitExtra.CureIncrease = 0;
             SetPlayerExtra(unitExtra);

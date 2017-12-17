@@ -17,6 +17,7 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
+        private int _curCameraPlayerIndex;
 
         private byte _myTeamId;
 
@@ -28,6 +29,40 @@ namespace GameA.Game
         public List<PlayerBase> Players
         {
             get { return _players; }
+        }
+
+        public PlayerBase _cameraPlayer;
+
+        public PlayerBase CameraPlayer
+        {
+            set { _cameraPlayer = value; }
+            get
+            {
+                if (_cameraPlayer == null)
+                {
+                    _cameraPlayer = PlayMode.Instance.MainPlayer;
+                }
+                return _cameraPlayer;
+            }
+        }
+
+        public void ResetCameraPlayer()
+        {
+            _cameraPlayer = PlayMode.Instance.MainPlayer;
+        }
+
+        public void SetNextCameraPlayer()
+        {
+            for (int i = 1; i < _players.Count; i++)
+            {
+                int index = (_curCameraPlayerIndex + i) % _players.Count;
+                if (_players[index] == PlayMode.Instance.MainPlayer)
+                {
+                    continue;
+                }
+                _curCameraPlayerIndex = index;
+                _cameraPlayer = _players[index];
+            }
         }
 
         private TeamManager()
@@ -145,6 +180,7 @@ namespace GameA.Game
 
         public void Reset()
         {
+            _cameraPlayer = null;
             Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
@@ -152,6 +188,7 @@ namespace GameA.Game
 
         public void Dispose()
         {
+            _cameraPlayer = null;
             Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();

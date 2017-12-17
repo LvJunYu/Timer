@@ -88,12 +88,15 @@ namespace GameA.Game
                 if (roomInx < _userDataList.Count)
                 {
                     player.Set(_userDataList[roomInx]);
+//                    GameModeNetPlay.DebugClientData.Write("roomInx < _userDataList.Count");
                 }
                 else
-                {//EditTest
+                {
+//EditTest
                     RoomUser roomUser = new RoomUser();
                     roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
                     player.Set(roomUser);
+//                    GameModeNetPlay.DebugClientData.Write("roomInx >= _userDataList.Count");
                 }
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
@@ -102,10 +105,12 @@ namespace GameA.Game
             if (roomInx < _playerList.Count)
             {
                 _playerList[roomInx] = player;
+//                GameModeNetPlay.DebugClientData.Write("roomInx < _playerList.Count");
             }
             else
             {
                 _playerList.Add(player);
+//                GameModeNetPlay.DebugClientData.Write("roomInx >= _playerList.Count");
             }
             if (player.IsMain)
             {
@@ -141,7 +146,7 @@ namespace GameA.Game
         {
             for (int i = 0; i < _playerList.Count; i++)
             {
-                if (_playerList == null || !_playerList[i].SiTouLe)
+                if (_playerList[i] == null || !_playerList[i].SiTouLe)
                 {
                     return false;
                 }
