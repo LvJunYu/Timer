@@ -616,7 +616,6 @@ namespace GameA.Game
         /// <param name="isInit"></param>
         public void UpdateWorldRegion(IntVec2 mainPlayerPos, bool isInit = false)
         {
-            return;
             CameraManager.Instance.CameraCtrlPlay.SetRollPosImmediately(mainPlayerPos);
             _focusPos = GetFocusPos(mainPlayerPos);
             if (isInit)

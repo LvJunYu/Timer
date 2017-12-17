@@ -437,7 +437,10 @@ namespace GameA.Game
                     }
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     SetPos(_revivePos);
-                    PlayMode.Instance.UpdateWorldRegion(_curPos);
+                    if (IsMain)
+                    {
+                        PlayMode.Instance.UpdateWorldRegion(_curPos);
+                    }
                     if (_gun != null)
                     {
                         _gun.Play();
@@ -488,7 +491,10 @@ namespace GameA.Game
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     Speed = speed;
                     SetPos(targetPos);
-                    PlayMode.Instance.UpdateWorldRegion(_curPos);
+                    if (IsMain)
+                    {
+                        PlayMode.Instance.UpdateWorldRegion(_curPos);
+                    }
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
                     if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)

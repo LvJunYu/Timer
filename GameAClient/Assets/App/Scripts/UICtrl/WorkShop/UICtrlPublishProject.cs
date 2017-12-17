@@ -30,12 +30,7 @@ namespace GameA
                 return;
             }
             _needSave = false;
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
-                _cachedView.DefaultCover);
-            _cachedView.TitleField.text = _project.Name;
-            _cachedView.DescField.text = _project.Summary;
-            RefreshWinConditionText();
-            _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
+            RefreshView();
         }
 
         protected override void OnClose()
@@ -68,6 +63,24 @@ namespace GameA
             base.SetPartAnimations();
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.transform, EAnimationType.Fade);
+        }
+
+        private void RefreshView()
+        {
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                _cachedView.DefaultCover);
+            _cachedView.TitleField.text = _project.Name;
+            _cachedView.DescField.text = _project.Summary;
+            _cachedView.MultiObj.SetActive(_project.IsMulti);
+            _cachedView.StandaloneObj.SetActive(!_project.IsMulti);
+            if (_project.IsMulti)
+            {
+                RefreshMultiWinConditonText();
+            }
+            else
+            {
+                RefreshWinConditionText();
+            }
         }
 
         private void RefreshWinConditionText()
@@ -104,6 +117,21 @@ namespace GameA
                 _stringBuilder.Append(_timeLimit);
             }
             _cachedView.PassCondition.text = _stringBuilder.ToString();
+            _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
+        }
+
+        private void RefreshMultiWinConditonText()
+        {
+            var netData = _project.NetData;
+            if (netData == null) return;
+            _cachedView.NetBattleTimeLimit.text = netData.GetTimeLimit();
+            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
+            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
+            _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
+            _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
+            _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
+            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
         }
 
         private void OnDescEndEdit(string arg0)
@@ -145,7 +173,7 @@ namespace GameA
                 _cachedView.TitleField.text = _project.Name;
             }
         }
-        
+
         private void OnOKBtn()
         {
             if (_needSave)
@@ -165,7 +193,6 @@ namespace GameA
             {
                 Publsih();
             }
-            
         }
 
         private void Publsih()
