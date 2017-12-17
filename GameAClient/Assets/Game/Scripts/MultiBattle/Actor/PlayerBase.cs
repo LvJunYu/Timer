@@ -30,6 +30,7 @@ namespace GameA.Game
 
         protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
         private int _lastSlot;
+        private bool _isReviving;
 
         public RoomUser RoomUser
         {
@@ -126,6 +127,7 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
+            _isReviving = false;
             _siTouLe = false;
             _dieTime = 0;
             _box = null;
@@ -251,6 +253,7 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
+            _isReviving = false;
             _siTouLe = false;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
@@ -412,6 +415,7 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
+            _isReviving = true;
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
@@ -422,6 +426,7 @@ namespace GameA.Game
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                 GM2DTools.TileToWorld(_revivePos), 8, () =>
                 {
+                    _isReviving = false;
                     _eDieType = EDieType.None;
                     _eUnitState = EUnitState.Normal;
                     _input.Clear();
@@ -602,7 +607,7 @@ namespace GameA.Game
             if (!_isAlive)
             {
                 _dieTime++;
-                if (_dieTime == 50)
+                if (_dieTime == ConstDefineGM2D.FixedFrameCount)
                 {
                     if (_life > 0)
                     {
@@ -614,30 +619,50 @@ namespace GameA.Game
                         Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
                     }
                 }
-                if (_life > 0 && _dieTime == Mathf.Max(50,
-                        PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime * ConstDefineGM2D.FixedFrameCount))
+                if (_life > 0)
                 {
-                    OnRevive();
+                    if (_dieTime % ConstDefineGM2D.FixedFrameCount == 0)
+                    {
+                        var reviveTime = PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime;
+                        int dieTime = _dieTime / ConstDefineGM2D.FixedFrameCount;
+                        if (dieTime == Mathf.Max(1, reviveTime))
+                        {
+                            TeamManager.Instance.ResetCameraPlayer();
+                            OnRevive();
+                        }
+                        else if (dieTime == 1)
+                        {
+                            TeamManager.Instance.SetNextCameraPlayer();
+                        }
+                        Messenger<int>.Broadcast(EMessengerType.OnMainPlayerReviveTime, reviveTime - dieTime);
+                    }
                 }
-                if (_life <= 0 && _dieTime == 100)
+                else
                 {
-                    _siTouLe = true;
-                    if (GM2DGame.Instance.GameMode.IsMulti)
+                    if (_dieTime == 100)
                     {
-                        if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                        _siTouLe = true;
+                        if (GM2DGame.Instance.GameMode.IsMulti)
                         {
-                            PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                            if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                            {
+                                PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                            }
+                        }
+                        else
+                        {
+                            if (IsMain)
+                            {
+                                PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                                Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
+                            }
+                            return;
                         }
                     }
-                    else
-                    {
-                        if (IsMain)
-                        {
-                            PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                            Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
-                        }
-                    }
-                    return;
+                }
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
+                {
+                    TeamManager.Instance.SetNextCameraPlayer();
                 }
             }
             CheckBox();
@@ -694,10 +719,12 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (_reviveEffect != null)
             {
                 _reviveEffect.Update();
             }
+
             if (_portalEffect != null)
             {
                 _portalEffect.Update();
@@ -896,7 +923,7 @@ namespace GameA.Game
         {
             _unitExtra = unitExtra;
             UpdateExtraData();
-            //下一帧刷新血条颜色
+//下一帧刷新血条颜色
 //            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
 //            {
             if (_statusBar != null)

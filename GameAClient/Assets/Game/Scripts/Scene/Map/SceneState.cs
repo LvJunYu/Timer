@@ -380,7 +380,7 @@ namespace GameA.Game
             }
         }
 
-        public void AddKey()
+        public void AddKey(PlayerBase owner = null)
         {
             _keyGain++;
             Messenger.Broadcast(EMessengerType.OnKeyChanged);

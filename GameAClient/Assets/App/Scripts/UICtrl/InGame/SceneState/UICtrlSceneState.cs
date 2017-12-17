@@ -114,6 +114,19 @@ namespace GameA
             RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
             RegisterEvent(EMessengerType.OnTeamChanged, OnTeamChanged);
+            RegisterEvent<int>(EMessengerType.OnMainPlayerReviveTime, OnMainPlayerReviveTime);
+        }
+
+        private void OnMainPlayerReviveTime(int second)
+        {
+            if (!_isOpen) return;
+            _cachedView.ReviveDock.SetActiveEx(second > 0);
+            if (second > 0)
+            {
+                int min = second / 60;
+                second = second % 60;
+                _cachedView.ReviveTxt.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, min, second);
+            }
         }
 
         private void OnTeamChanged()
@@ -599,6 +612,7 @@ namespace GameA
             _lastFrame = 0;
             _lastValue = 0;
             _showValue = 0;
+            _cachedView.ReviveDock.SetActive(false);
         }
 
         private void ShowCollectionAnimation(Vector3 InitialPos)

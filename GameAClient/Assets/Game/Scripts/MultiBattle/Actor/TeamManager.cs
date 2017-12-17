@@ -60,9 +60,9 @@ namespace GameA.Game
 
         public void SetNextCameraPlayer()
         {
-            for (int i = 1; i < _players.Count; i++)
+            for (int i = 0; i < _players.Count; i++)
             {
-                int index = (_curCameraPlayerIndex + i) % _players.Count;
+                int index = (_curCameraPlayerIndex + i + 1) % _players.Count;
                 if (!_players[index].IsMain && _players[index].IsAlive)
                 {
                     _curCameraPlayerIndex = index;
