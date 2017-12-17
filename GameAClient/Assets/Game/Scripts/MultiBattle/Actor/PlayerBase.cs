@@ -630,11 +630,14 @@ namespace GameA.Game
                             TeamManager.Instance.ResetCameraPlayer();
                             OnRevive();
                         }
-                        else if (dieTime == 1)
+//                        else if (IsMain && dieTime == 1)
+//                        {
+//                            TeamManager.Instance.SetNextCameraPlayer();
+//                        }
+                        if (IsMain)
                         {
-                            TeamManager.Instance.SetNextCameraPlayer();
+                            Messenger<int>.Broadcast(EMessengerType.OnMainPlayerReviveTime, reviveTime - dieTime);
                         }
-                        Messenger<int>.Broadcast(EMessengerType.OnMainPlayerReviveTime, reviveTime - dieTime);
                     }
                 }
                 else
@@ -660,7 +663,7 @@ namespace GameA.Game
                         }
                     }
                 }
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
+                if (IsMain && UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
                 {
                     TeamManager.Instance.SetNextCameraPlayer();
                 }
