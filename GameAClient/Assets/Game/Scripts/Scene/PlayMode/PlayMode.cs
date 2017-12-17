@@ -39,7 +39,6 @@ namespace GameA.Game
         private UnitUpdateManager _unitUpdateManager;
         private List<Trap> _traps = new List<Trap>();
         protected List<Bullet> _bullets = new List<Bullet>();
-        public DebugFile DebugClintData = DebugFile.Create("ClintData", "clintData.txt");
 
         public static PlayMode Instance
         {

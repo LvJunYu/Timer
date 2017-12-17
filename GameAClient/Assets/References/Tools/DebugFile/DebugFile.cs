@@ -53,6 +53,7 @@ namespace SoyEngine
 
         private DebugFile(string name, string path)
         {
+            _name = name;
         }
 
         public abstract void Write(string str);
@@ -91,11 +92,19 @@ namespace SoyEngine
 
             public override void Write(string str)
             {
+                if (_streamWriter == null)
+                {
+                    return;
+                }
                 _streamWriter.Write(str);
             }
 
             public override void WriteLine(string str)
             {
+                if (_streamWriter == null)
+                {
+                    return;
+                }
                 _streamWriter.WriteLine(str);
             }
 
@@ -111,6 +120,7 @@ namespace SoyEngine
                     return;
                 }
                 _streamWriter.Close();
+                _streamWriter = null;
                 base.Close();
             }
         }
