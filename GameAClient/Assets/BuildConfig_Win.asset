@@ -14,9 +14,9 @@ MonoBehaviour:
   _debug: 0
   _includeLocales: -1
   _fullResPackage: 1
-  _appVersion: 0.1.0.5
-  _minimumAppVersion: 0.1.0.5
-  _baseResVersion: 0.1.29
+  _appVersion: 0.2.1.0
+  _minimumAppVersion: 0.2.1.0
+  _baseResVersion: 0.1.30
   _resVersion: 0.1.30
   _singleAdamResList:
   - 67979d915f7944ef0a171d534c13d1ec
