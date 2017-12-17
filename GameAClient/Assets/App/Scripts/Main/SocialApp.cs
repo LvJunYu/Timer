@@ -130,6 +130,7 @@ namespace GameA
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
+            RoomManager.Instance.MasterServerAddress = _masterServerAddress;
             gameObject.AddComponent<SocialGUIManager>();
             CoroutineManager.Instance.Init(this);
             JoyResManager.Instance.Init();
@@ -173,7 +174,6 @@ namespace GameA
         {
             AppData.Instance.Init();
 //            ShareUtil.Init();
-//            RoomManager.Instance.Init();
 #if !UNITY_EDITOR_OSX && !UNITY_STANDALONE_OSX
 //            YIMManager.Instance.Login();
 #endif

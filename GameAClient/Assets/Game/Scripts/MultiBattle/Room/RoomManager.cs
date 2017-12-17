@@ -21,6 +21,7 @@ namespace GameA.Game
         private Room _room = new Room();
         private Msg_CM_CreateRoom _msgCreateRoom = new Msg_CM_CreateRoom();
         private List<RoomInfo> _roomList = new List<RoomInfo>();
+        private string _masterServerAddress;
         public bool IsEnd;
 
         public static RoomManager Instance
@@ -43,6 +44,12 @@ namespace GameA.Game
             get { return Instance._msClient; }
         }
 
+        public string MasterServerAddress
+        {
+            get { return _masterServerAddress; }
+            set { _masterServerAddress = value; }
+        }
+
         public List<RoomInfo> RoomList
         {
             get { return _roomList; }
@@ -51,12 +58,7 @@ namespace GameA.Game
         public bool Init()
         {
             _run = false;
-            var msAddress = SocialApp.Instance.MasterServerAddress;
-            if (string.IsNullOrEmpty(msAddress))
-            {
-                msAddress = "127.0.0.1";
-            }
-            ConnectMS(msAddress, 3001);
+            ConnectMS(_masterServerAddress, 3001);
             _run = true;
 
             Messenger.AddListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
