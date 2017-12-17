@@ -8,6 +8,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -29,6 +31,8 @@ namespace GameA.Game
         protected bool _localMyPlayerStarted;
         protected bool _serverMyPlayerStarted;
 
+        private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
+
         public override bool IsMulti
         {
             get { return true; }
@@ -36,6 +40,7 @@ namespace GameA.Game
 
         public override bool Stop()
         {
+            _debugFile.Close();
             if (!_loadingHasClosed)
             {
                 base.OnGameStart();
@@ -191,6 +196,8 @@ namespace GameA.Game
 
         private void ApplyFrameData(Msg_RC_FrameData frameData)
         {
+            _debugFile.Write(_curServerFrame + " " + GameRun.Instance.LogicFrameCnt + "");
+            _debugFile.WriteLine(JsonConvert.SerializeObject(frameData));
             PlayerManager pm = PlayerManager.Instance;
             for (int i = 0; i < frameData.CommandDatas.Count; i++)
             {
