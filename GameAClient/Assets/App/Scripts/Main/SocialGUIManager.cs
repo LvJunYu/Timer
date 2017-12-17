@@ -108,6 +108,10 @@ namespace GameA
             {
                 OpenUI<UICtrlStory>();
             }
+            else
+            {
+                OpenUI<UICtrlAnnouncement>();
+            }
             OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();
             ChangeToAppMode();
