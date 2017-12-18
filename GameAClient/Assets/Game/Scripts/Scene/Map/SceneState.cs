@@ -7,6 +7,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -30,6 +32,7 @@ namespace GameA.Game
         [SerializeField] private int _gemGain;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
+        private Dictionary<long, int> _keyDic = new Dictionary<long, int>(PlayerManager.MaxTeamCount);
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
@@ -271,6 +274,7 @@ namespace GameA.Game
             _gemGain = 0;
             _monsterKilled = 0;
             _keyGain = 0;
+            _keyDic.Clear();
         }
 
         public void StartPlay()
@@ -331,42 +335,37 @@ namespace GameA.Game
                 return;
             }
             _gameTimer += deltaTime;
-            if (IsMulti && NetBattleTimeOver())
+            if (IsMulti)
             {
-                switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
+                if (NetBattleTimeOver())
                 {
-                    case ENetBattleTimeResult.Score:
-                        NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
-                        break;
-                    case ENetBattleTimeResult.AllWin:
-                        NetBattleWin(true);
-                        break;
-                    case ENetBattleTimeResult.AllFail:
-                        NetBattleWin(false);
-                        break;
-                    default:
-                        LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
-                        break;
+                    switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
+                    {
+                        case ENetBattleTimeResult.Score:
+                            NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
+                            break;
+                        case ENetBattleTimeResult.AllWin:
+                            NetBattleWin(true);
+                            break;
+                        case ENetBattleTimeResult.AllFail:
+                            NetBattleWin(false);
+                            break;
+                        default:
+                            LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
+                            break;
+                    }
                 }
             }
-            if (!IsMulti && HasWinCondition(EWinCondition.WC_TimeLimit))
+            else
             {
-                if (CheckWinTimeLimit())
+                if (HasWinCondition(EWinCondition.WC_TimeLimit) && CheckWinTimeLimit())
                 {
                     bool value = CheckWin();
                     _gameTimer = 0;
                     if (value)
                     {
-//                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-//                        {
-//                            _runState = ESceneState.Fail;
-//                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
-//                        }
-//                        else
-                        {
-                            _runState = ESceneState.Win;
-                            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
-                        }
+                        _runState = ESceneState.Win;
+                        Messenger.Broadcast(EMessengerType.GameFinishSuccess);
                     }
                     else
                     {
@@ -382,17 +381,47 @@ namespace GameA.Game
 
         public void AddKey(PlayerBase owner = null)
         {
-            _keyGain++;
-            Messenger.Broadcast(EMessengerType.OnKeyChanged);
+            if (IsMulti)
+            {
+                if (owner != null)
+                {
+                    var playerId = owner.RoomUser.Guid;
+                    if (!_keyDic.ContainsKey(playerId))
+                    {
+                        _keyDic.Add(playerId, 0);
+                    }
+                    _keyDic[playerId]++;
+                }
+            }
+            else
+            {
+                _keyGain++;
+                Messenger.Broadcast(EMessengerType.OnKeyChanged);
+            }
         }
 
-        public bool UseKey()
+        public bool UseKey(PlayerBase owner = null)
         {
-            if (_keyGain > 0)
+            if (IsMulti)
             {
-                _keyGain--;
-                Messenger.Broadcast(EMessengerType.OnKeyChanged);
-                return true;
+                if (owner != null)
+                {
+                    var playerId = owner.RoomUser.Guid;
+                    if (_keyDic.ContainsKey(playerId) && _keyDic[playerId] > 0)
+                    {
+                        _keyDic[playerId]--;
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                if (_keyGain > 0)
+                {
+                    _keyGain--;
+                    Messenger.Broadcast(EMessengerType.OnKeyChanged);
+                    return true;
+                }
             }
             return false;
         }

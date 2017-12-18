@@ -73,7 +73,7 @@ namespace GameA.Game
             base.SetDamageShaderValue(name, value);
             if (_renderer == null)
             {
-                LogHelper.Error("SetDamageShaderValue , but _renderer == null");
+//                LogHelper.Error("SetDamageShaderValue , but _renderer == null");
                 return;
             }
             if (_unit == null)

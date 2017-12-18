@@ -67,7 +67,15 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-            _weaponId = unitExtra.ChildId;
+            //todo 兼容老版本
+            if (unitExtra.ChildId < 1000)
+            {
+                _weaponId = unitExtra.ChildId / 100 * 1000 + unitExtra.ChildId % 100;
+            }
+            else
+            {
+                _weaponId = unitExtra.ChildId;
+            }
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);

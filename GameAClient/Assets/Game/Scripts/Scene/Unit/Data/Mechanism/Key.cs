@@ -5,8 +5,6 @@
 ** Summary : Key
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using DG.Tweening;
 
 namespace GameA.Game
@@ -28,7 +26,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            PlayMode.Instance.SceneState.AddKey();
+            PlayMode.Instance.SceneState.AddKey(other as PlayerBase);
             base.OnTrigger(other);
         }
     }

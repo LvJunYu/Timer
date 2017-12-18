@@ -21,7 +21,15 @@ namespace GameA.Game
         {
             base.OnPlay();
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
-            _weaponId = unitExtra.ChildId;
+            //todo 兼容老版本
+            if (unitExtra.ChildId < 1000)
+            {
+                _weaponId = unitExtra.ChildId / 100 * 1000 + unitExtra.ChildId % 100;
+            }
+            else
+            {
+                _weaponId = unitExtra.ChildId;
+            }
             SetWeapon(_weaponId);
         }
 

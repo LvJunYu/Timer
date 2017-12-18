@@ -79,7 +79,15 @@ namespace GameA.Game
             if (!GM2DGame.Instance.GameMode.IsMulti)
             {
                 RoomUser roomUser = new RoomUser();
-                roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                if (GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
+                {
+                    var user = GM2DGame.Instance.GameMode.Record.UserInfo;
+                    roomUser.Init(user.UserId, user.NickName, true);
+                }
+                else
+                {
+                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                }
                 player.Set(roomUser);
                 player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
             }
@@ -88,15 +96,20 @@ namespace GameA.Game
                 if (roomInx < _userDataList.Count)
                 {
                     player.Set(_userDataList[roomInx]);
-//                    GameModeNetPlay.DebugClientData.Write("roomInx < _userDataList.Count");
                 }
                 else
                 {
-//EditTest
                     RoomUser roomUser = new RoomUser();
-                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
+                    {
+                        var user = GM2DGame.Instance.GameMode.Record.UserInfo;
+                        roomUser.Init(user.UserId, user.NickName, true);
+                    }
+                    else
+                    {
+                        roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                    }
                     player.Set(roomUser);
-//                    GameModeNetPlay.DebugClientData.Write("roomInx >= _userDataList.Count");
                 }
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
@@ -105,12 +118,10 @@ namespace GameA.Game
             if (roomInx < _playerList.Count)
             {
                 _playerList[roomInx] = player;
-//                GameModeNetPlay.DebugClientData.Write("roomInx < _playerList.Count");
             }
             else
             {
                 _playerList.Add(player);
-//                GameModeNetPlay.DebugClientData.Write("roomInx >= _playerList.Count");
             }
             if (player.IsMain)
             {

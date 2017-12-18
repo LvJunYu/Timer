@@ -72,7 +72,7 @@ namespace GameA.Game
             {
                 if (other.IsPlayer)
                 {
-                    if (_enabled && PlayMode.Instance.SceneState.UseKey())
+                    if (_enabled && PlayMode.Instance.SceneState.UseKey(other as PlayerBase))
                     {
                         SetEnabled(false);
                         _timer = 50;

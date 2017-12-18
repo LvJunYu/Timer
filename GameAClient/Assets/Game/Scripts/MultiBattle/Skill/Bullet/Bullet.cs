@@ -192,7 +192,7 @@ namespace GameA.Game
 
         private bool CheckHit(int id)
         {
-            if (_skill.EPaintType == EPaintType.None && !_skill.Owner.IsActor)
+            if (_skill.EPaintType != EPaintType.None && !_skill.Owner.IsActor && UnitDefine.IsPlayer(id))
             {
                 return false;
             }
