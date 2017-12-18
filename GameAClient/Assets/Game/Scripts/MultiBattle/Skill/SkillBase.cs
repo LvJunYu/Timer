@@ -400,7 +400,7 @@ namespace GameA.Game
                         if (unit.IsActor)
                         {
                             var dir = unit.CenterPos - centerDownPos;
-                            OnActorHit(unit, new Vector2(dir.x, dir.y));
+                            OnActorHit(unit as ActorBase, new Vector2(dir.x, dir.y));
                         }
                     }
                 }
@@ -420,7 +420,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, bullet.Direction);
+                            OnActorHit(unit as ActorBase, bullet.Direction);
                         }
                         else if (unit.CanPainted && _epaintType != EPaintType.None)
                         {
@@ -445,7 +445,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor && unit != _owner)
                         {
-                            OnActorHit(unit, projectile.Direction);
+                            OnActorHit(unit as ActorBase, projectile.Direction);
                         }
                         else if (unit.CanPainted && _epaintType != EPaintType.None)
                         {
@@ -456,7 +456,7 @@ namespace GameA.Game
             }
         }
 
-        private void OnActorHit(UnitBase unit, Vector2 direction)
+        private void OnActorHit(ActorBase unit, Vector2 direction)
         {
             if (!unit.IsAlive || unit == _owner)
             {
@@ -485,6 +485,10 @@ namespace GameA.Game
                     else if (direction.y < 0)
                     {
                         unit.ExtraSpeed.y = -_knockbackForces[1];
+                    }
+                    if (_owner.IsPlayer)
+                    {
+                        unit.AddBreaker(_owner as PlayerBase);
                     }
                 }
             }

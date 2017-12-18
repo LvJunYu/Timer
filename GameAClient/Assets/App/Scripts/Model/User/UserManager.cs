@@ -88,7 +88,7 @@ namespace GameA
             });
         }
 
-        public bool TryGetData(long guid, out UserInfoDetail user)
+        private bool TryGetData(long guid, out UserInfoDetail user)
         {
             if (_caches.TryGetItem(guid, out user))
             {
