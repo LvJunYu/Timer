@@ -456,49 +456,49 @@ namespace GameA.Game
             }
         }
 
-        private void OnActorHit(ActorBase unit, Vector2 direction)
+        private void OnActorHit(ActorBase actor, Vector2 direction)
         {
-            if (!unit.IsAlive || unit == _owner)
+            if (!actor.IsAlive || actor == _owner)
             {
                 return;
             }
-            var canHarm = _owner.CanHarm(unit);
+            var canHarm = _owner.CanHarm(actor);
             //击退
-            if (canHarm && !unit.IsInvincible)
+            if (canHarm && !actor.IsInvincible)
             {
                 if (_knockbackForces.Length == 2)
                 {
-                    unit.Speed = IntVec2.zero;
-                    unit.CurBanInputTime = 10;
+                    actor.Speed = IntVec2.zero;
+                    actor.CurBanInputTime = 10;
                     if (direction.x > 0)
                     {
-                        unit.ExtraSpeed.x = _knockbackForces[0];
+                        actor.ExtraSpeed.x = _knockbackForces[0];
                     }
                     else if (direction.x < 0)
                     {
-                        unit.ExtraSpeed.x = -_knockbackForces[0];
+                        actor.ExtraSpeed.x = -_knockbackForces[0];
                     }
                     if (direction.y > 0)
                     {
-                        unit.ExtraSpeed.y = _knockbackForces[1];
+                        actor.ExtraSpeed.y = _knockbackForces[1];
                     }
                     else if (direction.y < 0)
                     {
-                        unit.ExtraSpeed.y = -_knockbackForces[1];
+                        actor.ExtraSpeed.y = -_knockbackForces[1];
                     }
                     if (_owner.IsPlayer)
                     {
-                        unit.AddBreaker(_owner as PlayerBase);
+                        actor.AddBreaker(_owner as PlayerBase);
                     }
                 }
             }
             //触发状态
             if (canHarm)
             {
-                unit.AddStates(_owner, _addStates);
-                unit.OnHpChanged(-_damage, _owner);
+                actor.AddStates(_owner, _addStates);
+                actor.OnHpChanged(-_damage, _owner);
             }
-            unit.RemoveStates(_tableSkill.RemoveStates);
+            actor.RemoveStates(_tableSkill.RemoveStates);
         }
 
         protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)

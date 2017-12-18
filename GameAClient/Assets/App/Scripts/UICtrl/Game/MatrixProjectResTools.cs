@@ -227,7 +227,7 @@ namespace GameA
                 msg.ProjectId = projectId;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(SoyHttpApiPath.Project, msg, ret =>
                 {
-                    ProjectManager.Instance.OnSyncProject(ret);
+                    ProjectManager.Instance.UpdateData(ret);
                     helper.CompleteOne();
                 }, (code, msgStr) => { helper.FailOne(); });
             }

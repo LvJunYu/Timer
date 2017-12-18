@@ -71,7 +71,7 @@ namespace GameA
         private void OnPlayBtn()
         {
             if (null == _matchShadowBattle) return;
-            Project project = new Project(_matchShadowBattle.Project);
+            Project project = ProjectManager.Instance.UpdateData(_matchShadowBattle.Project);
             long battleId = _matchShadowBattle.PlayProjectData.ShadowBattleData.Id;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
             project.RequestPlayShadowBattle(battleId, () =>

@@ -47,10 +47,21 @@ namespace GameA
             return project;
         }
 
-        public void GetDataOnAsync(long userId, Action<Project> successCallback, Action failedCallback = null)
+        public List<Project> UpdateData(List<Msg_SC_DAT_Project> list)
+        {
+            if (list == null) return null;
+            List<Project> projects = new List<Project>(list.Count);
+            for (int i = 0; i < list.Count; i++)
+            {
+                projects.Add(UpdateData(list[i]));
+            }
+            return projects;
+        }
+
+        public void GetDataOnAsync(long projectId, Action<Project> successCallback, Action failedCallback = null)
         {
             Project project;
-            if (TryGetData(userId, out project))
+            if (TryGetData(projectId, out project))
             {
                 if (successCallback != null)
                 {
@@ -59,9 +70,9 @@ namespace GameA
                 return;
             }
             project = new Project();
-            project.Request(userId, () =>
+            project.Request(projectId, () =>
             {
-                _caches.Insert(userId, project);
+                _caches.Insert(projectId, project);
                 if (successCallback != null)
                 {
                     successCallback(project);

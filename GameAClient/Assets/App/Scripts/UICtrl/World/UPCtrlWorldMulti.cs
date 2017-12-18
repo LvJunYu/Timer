@@ -78,7 +78,7 @@ namespace GameA
             {
                 CurSelectRoom = null;
             }
-            RoomManager.Instance.RequestRoomList(append);
+            RoomManager.Instance.SendQueryRoomList(append);
         }
 
         public override void RefreshView()
@@ -148,6 +148,7 @@ namespace GameA
         {
             if (CurSelectRoom == null) return;
             var project = CurSelectRoom.Content.Project;
+            if (project == null) return;
             var netData = project.NetData;
             if (netData == null) return;
             _cachedView.DescTxt.text = project.Summary;
@@ -163,9 +164,10 @@ namespace GameA
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
             _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
-//            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
-//            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
-//            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
+//            _cachedView.ArriveScore.SetActiveEx(netData.ArriveScore > 0);
+//            _cachedView.CollectGemScore.SetActiveEx(netData.CollectGemScore > 0);
+//            _cachedView.KillMonsterScore.SetActiveEx(netData.KillMonsterScore > 0);
+//            _cachedView.KillPlayerScore.SetActiveEx(netData.KillPlayerScore > 0);
         }
 
         private void OnJoinRoomBtn()

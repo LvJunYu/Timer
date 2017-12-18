@@ -90,15 +90,15 @@ namespace GameA
             if (_mail.FuncType == EMailFuncType.MFT_ShareProject)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在读取关卡数据");
-                _project = new Project();
-                _project.Request(_mail.ContentId,
-                    () =>
+                ProjectManager.Instance.GetDataOnAsync(_mail.ContentId,
+                    project =>
                     {
+                        _project = project;
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectRawImage, _project.IconPath,
                             _cachedView.DefaltTexture);
                     },
-                    code =>
+                    () =>
                     {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         SocialGUIManager.ShowPopupDialog("请求关卡数据失败");
@@ -115,7 +115,7 @@ namespace GameA
                 _shadowBattleData.Request(_mail.ContentId,
                     () =>
                     {
-                        _project = _shadowBattleData.Record.ProjectData;
+                        _project = _shadowBattleData.Record.ProjectSyncData;
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         ImageResourceManager.Instance.SetDynamicImage(_cachedView.ShadowBattleRawImage,
                             _project.IconPath, _cachedView.DefaltTexture);
