@@ -9,7 +9,6 @@ using System;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -55,6 +54,15 @@ namespace GameA.Game
         public Box Box
         {
             get { return _box; }
+        }
+
+        public override bool CanAttack
+        {
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice);
+            }
         }
 
         public override bool CanPortal
@@ -455,10 +463,10 @@ namespace GameA.Game
                     }
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
-                    GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                     if (IsMain)
                     {
+                        GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                         Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                     }
                     if (_statusBar != null)
@@ -502,6 +510,7 @@ namespace GameA.Game
                     if (IsMain)
                     {
                         PlayMode.Instance.UpdateWorldRegion(_curPos);
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                     }
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
@@ -510,7 +519,6 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowData.RecordOutPortal();
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
@@ -749,7 +757,8 @@ namespace GameA.Game
             if (_eClimbState == EClimbState.Left && _input.GetKeyApplied(EInputType.Up))
             {
                 Vector3 rotate = new Vector3(0, 0, 90);
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.left * 0.2f + Vector3.up * 0.7f, rotate, Vector3.one);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay,
+                    _trans.position + Vector3.left * 0.2f + Vector3.up * 0.7f, rotate, Vector3.one);
                 _lastPlayTime = Time.time;
             }
             else if (_eClimbState == EClimbState.Up)
@@ -757,13 +766,15 @@ namespace GameA.Game
                 if (_input.GetKeyApplied(EInputType.Left))
                 {
                     Vector3 rotate = new Vector3(0, 180, 0);
-                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay,
+                        _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
                     _lastPlayTime = Time.time;
                 }
                 else if (_input.GetKeyApplied(EInputType.Right))
                 {
                     Vector3 rotate = Vector3.zero;
-                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay,
+                        _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
                     _lastPlayTime = Time.time;
                 }
             }
@@ -783,10 +794,6 @@ namespace GameA.Game
 
         protected override void OnJump()
         {
-            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.Sping))
-            {
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Jump);
-            }
             if (_downUnit == null || _view == null)
             {
                 return;
@@ -813,30 +820,17 @@ namespace GameA.Game
         /// <summary>
         /// 播放跑步烟尘
         /// </summary>
-        protected void OnStep()
+        protected virtual void OnStep()
         {
             if (_downUnit == null || _view == null)
             {
                 return;
             }
-            Vector3 scale = _moveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
+            Vector3 rotate = _moveDirection == EMoveDirection.Right ? Vector3.zero : new Vector3(0, 180, 0);
             if (_downUnit.Id == UnitDefine.ClayId || _onClay)
             {
                 GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnClay,
-                    _trans.position, scale);
-            }
-            int randomValue = Random.Range(0, 3);
-            switch (randomValue)
-            {
-                case 0:
-                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
-                    break;
-                case 1:
-                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
-                    break;
-                case 2:
-                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
-                    break;
+                    _trans.position, rotate, Vector3.one);
             }
         }
 

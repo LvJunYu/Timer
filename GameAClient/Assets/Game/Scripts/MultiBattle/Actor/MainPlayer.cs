@@ -6,6 +6,8 @@
 ***********************************************************************/
 
 using System;
+using SoyEngine;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -17,5 +19,33 @@ namespace GameA.Game
         {
             get { return true; }
         }
+
+        protected override void OnJump()
+        {
+            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.Sping))
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Jump);
+            }
+            base.OnJump();
+        }
+
+        protected override void OnStep()
+        {
+            base.OnStep();
+            int randomValue = Random.Range(0, 3);
+            switch (randomValue)
+            {
+                case 0:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
+                    break;
+                case 1:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
+                    break;
+                case 2:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
+                    break;
+            }
+        }
+
     }
 }
