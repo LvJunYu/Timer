@@ -470,9 +470,10 @@ namespace GameA.Game
                     }
                     else
                     {
-                        var mainGhost = CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
+                        var mainGhost =
+                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
                         mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
-                        PlayerManager.Instance.AddGhost(mainGhost);//增加临时主角
+                        PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
                     for (int i = 0; i < spawnDatas.Count; i++)
@@ -495,8 +496,7 @@ namespace GameA.Game
                 LogHelper.Error("can not find a spwan!");
                 return;
             }
-            int curPlayerCount = TeamManager.Instance.Players.Count;
-            basicNum = (basicNum + curPlayerCount) % spwanCount;
+            basicNum = TeamManager.Instance.GetSpawnIndex(spawnDatas, basicNum);
             int id = UnitDefine.MainPlayerId;
             if (!main)
             {
@@ -505,7 +505,7 @@ namespace GameA.Game
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
             PlayerManager.Instance.Add(player, roomInx);
             player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
-            TeamManager.Instance.AddPlayer(player);
+            TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
             if (main)
             {
                 _mainPlayer = PlayerManager.Instance.MainPlayer;

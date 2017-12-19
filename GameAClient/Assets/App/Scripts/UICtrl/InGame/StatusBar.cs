@@ -11,7 +11,7 @@ namespace GameA.Game
         public Transform PlayerCurrentHPTrans, MonsterCurrentHPTrans;
         public TextMesh Name;
         public SpriteRenderer PlayerBg, MonsterBg;
-        
+
         private Transform _trans;
         private ActorBase _owner;
         private float _showPerccentage = 1;
@@ -28,16 +28,22 @@ namespace GameA.Game
                 if (_owner.IsPlayer)
                 {
                     var sprite = _playeSpriteRenderers[_owner.TeamId].sprite;
-                    var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
-                              sprite.texture.width;
-                    _playeSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    if (sprite != null)
+                    {
+                        var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                                  sprite.texture.width;
+                        _playeSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    }
                 }
                 if (_owner.IsMonster)
                 {
                     var sprite = _monsterSpriteRenderers[_owner.TeamId].sprite;
-                    var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
-                              sprite.texture.width;
-                    _monsterSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    if (sprite != null)
+                    {
+                        var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                                  sprite.texture.width;
+                        _monsterSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    }
                 }
             }
         }

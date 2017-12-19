@@ -17,6 +17,7 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
+        private List<UnitDesc> _unitDescs = new List<UnitDesc>(MaxTeamCount);
         private List<byte> _teams = new List<byte>(MaxTeamCount);
         private int _curCameraPlayerIndex;
 
@@ -33,6 +34,7 @@ namespace GameA.Game
         }
 
         public PlayerBase _cameraPlayer;
+        private int _curTeamCount;
 
         public PlayerBase CameraPlayer
         {
@@ -104,8 +106,12 @@ namespace GameA.Game
             AddScore(unit, PlayMode.Instance.SceneState.GemScore);
         }
 
-        public void AddPlayer(PlayerBase player)
+        public void AddPlayer(PlayerBase player, UnitDesc spawnUnitDesc)
         {
+            if (!_unitDescs.Contains(spawnUnitDesc))
+            {
+                _unitDescs.Add(spawnUnitDesc);
+            }
             byte teamId = player.GetUnitExtra().TeamId;
             if (!_playerDic.ContainsKey(teamId))
             {
@@ -188,11 +194,13 @@ namespace GameA.Game
         public void Reset()
         {
             _curCameraPlayerIndex = 0;
+            _curTeamCount = 0;
             _cameraPlayer = null;
             Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
             Teams.Clear();
+            _unitDescs.Clear();
         }
 
         public void Dispose()
@@ -226,6 +234,40 @@ namespace GameA.Game
             {
                 Teams.Add(team);
             }
+        }
+
+        /// 根据当前队伍数匹配
+        public int GetSpawnIndex(List<UnitDesc> spawnDatas, int basicNum)
+        {
+            int spwanCount = spawnDatas.Count;
+            for (int teamCount = _curTeamCount; teamCount < MaxTeamCount; teamCount++)
+            {
+                for (int i = 0; i < spawnDatas.Count; i++)
+                {
+                    var index = (basicNum + i) % spwanCount;
+                    if (CheckTeamerCount(spawnDatas[index], teamCount))
+                    {
+                        _curTeamCount = teamCount;
+                        return index;
+                    }
+                }
+            }
+            LogHelper.Error("can not find an appropriate spawn");
+            return 0;
+        }
+
+        private bool CheckTeamerCount(UnitDesc spawnData, int checkTeamCount = 0, bool checkTeam = true)
+        {
+            if (_unitDescs.Contains(spawnData))
+            {
+                return false;
+            }
+            if (checkTeam)
+            {
+                var teamId = DataScene2D.Instance.GetUnitExtra(spawnData.Guid).TeamId;
+                return !_playerDic.ContainsKey(teamId) || _playerDic[teamId].Count <= checkTeamCount;
+            }
+            return true;
         }
     }
 }
