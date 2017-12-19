@@ -36,9 +36,9 @@ namespace GameA
 
         private void OnProjectBtn()
         {
-            if (_record != null && _record.ProjectData != null)
+            if (_record != null && _record.ProjectSyncData != null)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_record.ProjectData);
+                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_record.ProjectSyncData);
             }
         }
 
@@ -46,12 +46,12 @@ namespace GameA
         {
             if (_record == null) return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入录像");
-            _record.ProjectData.PrepareRes(() =>
+            _record.ProjectSyncData.PrepareRes(() =>
             {
                 _record.RequestPlay(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayRecord(_record.ProjectData, _record);
+                    GameManager.Instance.RequestPlayRecord(_record.ProjectSyncData, _record);
                     SocialApp.Instance.ChangeToGame();
                 }, error =>
                 {
@@ -78,10 +78,10 @@ namespace GameA
                 Unload();
                 return;
             }
-            _cachedView.RecordNameTxt.text = _record.ProjectData.Name;
+            _cachedView.RecordNameTxt.text = _record.ProjectSyncData.Name;
             _cachedView.DateTxt.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(_record.CreateTime, 1);
             _cachedView.SuccessTxt.text = _record.Result == (int) EGameResult.GR_Success ? _successStr : _failStr;
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectImg, _record.ProjectData.IconPath,
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectImg, _record.ProjectSyncData.IconPath,
                 _cachedView.DefaultUserIconTexture);
         }
 

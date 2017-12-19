@@ -14,6 +14,8 @@ namespace GameA
 
 	public partial class Record
 	{
+	    private Project _projectSyncData;
+	    
 	    private UserInfoDetail _userInfoDetail;
 
 	    public UserInfoDetail UserInfoDetail
@@ -33,9 +35,15 @@ namespace GameA
             }
         }
 
+	    public Project ProjectSyncData
+	    {
+	        get { return _projectSyncData; }
+	    }
+
 	    protected override void OnSyncPartial (Msg_SC_DAT_Record msg)
 	    {
 	        base.OnSyncPartial ();
+	        _projectSyncData = ProjectManager.Instance.UpdateData(msg.ProjectData);
 	        _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
 	    }
 	    

@@ -179,7 +179,7 @@ namespace GameA
                         {
                             if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_Success)
                             {
-                                ShowSearchedProject(new Project(msg.Data));
+                                ShowSearchedProject(ProjectManager.Instance.UpdateData(msg.Data));
                             }
                             else if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_NotExsit)
                             {

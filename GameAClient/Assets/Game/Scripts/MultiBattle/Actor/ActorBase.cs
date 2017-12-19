@@ -50,7 +50,9 @@ namespace GameA.Game
         protected static string Idle = "Idle";
         protected static string Run = "Run";
         protected static string Attack = "Attack";
-
+        protected static int _breakFlagDuration = 5 * ConstDefineGM2D.FixedFrameCount; //使坏标记持续时间，用于击杀者判断
+        protected PlayerBase _curBreaker; //使坏的人，用于击杀者判断
+        protected int _breakFrame; //使坏的帧数，用于击杀判断
         private static EInputType[] _skillInputs = {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
         protected List<State> _currentStates = new List<State>();
@@ -107,6 +109,8 @@ namespace GameA.Game
         protected override void Clear()
         {
             RemoveAllStates();
+            _curBreaker = null;
+            _breakFrame = 0;
             _eDieType = EDieType.None;
             _damageFrame = 0;
             if (_view != null)
@@ -401,6 +405,30 @@ namespace GameA.Game
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
 
+        private void CheckKiller()
+        {
+            if (_curBreaker != null && _breakFrame > 0 &&
+                GameRun.Instance.LogicFrameCnt - _breakFrame < _breakFlagDuration)
+            {
+                if (IsMonster)
+                {
+                    Messenger<UnitBase>.Broadcast(EMessengerType.OnMonsterDead, _curBreaker);
+                }
+                else if (IsPlayer)
+                {
+                    Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, _curBreaker);
+                }
+                _curBreaker = null;
+                _breakFrame = 0;
+            }
+        }
+
+        public void AddBreaker(PlayerBase player)
+        {
+            _curBreaker = player;
+            _breakFrame = GameRun.Instance.LogicFrameCnt;
+        }
+
         /// sender是状态的施与者，用于计算击杀
         public override void AddStates(UnitBase sender, params int[] ids)
         {
@@ -424,6 +452,19 @@ namespace GameA.Game
                 if (tableState.IsBuff == 0 && IsInvincible)
                 {
                     continue;
+                }
+                //记录debuff施与者，用于计算击杀
+                if (tableState.IsBuff == 0 && sender != null && !IsSameTeam(sender.TeamId))
+                {
+                    var player = sender as PlayerBase;
+                    if (player != null)
+                    {
+                        AddBreaker(player);
+                    }
+                }
+                else
+                {
+                    _breakFrame = 0;
                 }
                 //如果已存在，判断叠加属性
                 State state;
@@ -568,6 +609,7 @@ namespace GameA.Game
                 return;
             }
             _eDieType = EDieType.Lazer;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -582,6 +624,7 @@ namespace GameA.Game
                 return;
             }
             _eDieType = EDieType.Saw;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -610,6 +653,7 @@ namespace GameA.Game
                 return;
             }
             _eDieType = EDieType.Water;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -713,7 +757,7 @@ namespace GameA.Game
                     {
                         Messenger<UnitBase>.Broadcast(EMessengerType.OnMonsterDead, killer);
                     }
-                    if (IsPlayer)
+                    else if (IsPlayer)
                     {
                         Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, killer);
                     }
@@ -759,7 +803,7 @@ namespace GameA.Game
                 _statusBar = statusBarObj.GetComponent<StatusBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
-            _statusBar.SetOwner(this);
+            if (_statusBar != null) _statusBar.SetOwner(this);
         }
     }
 }

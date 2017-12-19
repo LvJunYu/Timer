@@ -271,12 +271,12 @@ namespace GameA
                 {
                     project.DeleteResCache();
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
-                    project = ProjectManager.Instance.OnSyncProject(msgProject, true);
+                    project = ProjectManager.Instance.UpdateData(msgProject);
                 }
                 else
                 {
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
-                    project = ProjectManager.Instance.OnSyncProject(msgProject, true);
+                    project = ProjectManager.Instance.UpdateData(msgProject);
                     localSavedProjectList.Add(project);
                 }
             }

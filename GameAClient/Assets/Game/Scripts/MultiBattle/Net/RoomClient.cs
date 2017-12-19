@@ -92,10 +92,10 @@ namespace GameA.Game
             if (msg.ResultCode == ERLoginCode.ELC_Success)
             {
                 LogHelper.Debug("Login RS Success");
-                var project = new Project();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在启动游戏");
-                project.Request(msg.RoomInfo.ProjectId,
-                    () => project.PrepareRes(() =>
+                ProjectManager.Instance.GetDataOnAsync(msg.RoomInfo.ProjectId, project =>
+                {
+                    project.PrepareRes(() =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             GameManager.Instance.RequestPlayMultiBattle(project);
@@ -112,12 +112,12 @@ namespace GameA.Game
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                        }),
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    });
+                        });
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                });
             }
             else
             {

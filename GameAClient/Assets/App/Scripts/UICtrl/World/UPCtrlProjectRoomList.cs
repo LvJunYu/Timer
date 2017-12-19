@@ -32,7 +32,7 @@ namespace GameA
         protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;
-            RoomManager.Instance.RequestRoomList(append, _mainCtrl.Project.ProjectId);
+            RoomManager.Instance.SendQueryRoomList(append, _mainCtrl.Project.ProjectId);
         }
 
         protected override void RefreshView()

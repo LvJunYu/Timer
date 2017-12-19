@@ -63,15 +63,18 @@ namespace GameA
             }
             _cachedView.SelectObj.SetActive(_wrapper.IsSelected);
             var room = _wrapper.Content;
-            DictionaryTools.SetContentText(_cachedView.Title, room.Project.Name);
+            if (room.Project != null)
+            {
+                DictionaryTools.SetContentText(_cachedView.Title, room.Project.Name);
+                if (room.Project.IconPath != null)
+                {
+                    ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, room.Project.IconPath,
+                        _cachedView.DefaultCoverTexture);
+                }
+            }
             DictionaryTools.SetContentText(_cachedView.RoomId, room.RoomId.ToString());
             DictionaryTools.SetContentText(_cachedView.PlayCountTxt,
                 string.Format(_countFormat, room.UserCount, room.MaxUserCount));
-            if (room.Project.IconPath != null)
-            {
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, room.Project.IconPath,
-                    _cachedView.DefaultCoverTexture);
-            }
         }
 
         public void Unload()

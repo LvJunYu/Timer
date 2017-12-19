@@ -219,6 +219,25 @@ namespace GameA.Game
             msg.Flag = 1;
             SendToRSServer(msg);
         }
+        
+        public void SendQueryRoomList(bool append, long projectId = 0)
+        {
+            var data = new Msg_CM_QueryRoomList();
+            data.ProjectId = projectId;
+            if (append)
+            {
+                if (_roomList.Count > 0)
+                {
+                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId;
+                }
+            }
+            else
+            {
+                _roomList.Clear();
+            }
+            data.MaxCount = UPCtrlWorldMulti.PageSize;
+            MsClient.Write(data);
+        }
 
         #endregion
 
@@ -334,23 +353,5 @@ namespace GameA.Game
 
         #endregion
 
-        public void RequestRoomList(bool append, long projectId = 0)
-        {
-            var data = new Msg_CM_QueryRoomList();
-            data.ProjectId = projectId;
-            if (append)
-            {
-                if (_roomList.Count > 0)
-                {
-                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId;
-                }
-            }
-            else
-            {
-                _roomList.Clear();
-            }
-            data.MaxCount = UPCtrlWorldMulti.PageSize;
-            MsClient.Write(data);
-        }
     }
 }

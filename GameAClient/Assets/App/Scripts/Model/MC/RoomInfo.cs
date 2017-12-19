@@ -10,7 +10,7 @@ namespace GameA
         private long _projectId;
         private int _maxUserCount;
         private long _createTime;
-        private Project _project;
+        private Project _project; //可能为空
         private List<Msg_MC_RoomUserInfo> _users;
         private bool _requestFinish;
 
@@ -57,12 +57,12 @@ namespace GameA
             _maxUserCount = msg.MaxUserCount;
             _createTime = msg.CreateTime;
             _users = msg.Users;
-            _project = new Project();
-            _project.Request(_projectId, () =>
+            ProjectManager.Instance.GetDataOnAsync(_projectId, value =>
             {
+                _project = value;
                 _requestFinish = true;
                 Messenger<long>.Broadcast(EMessengerType.OnRoomProjectInfoFinish, _roomId);
-            }, null);
+            });
         }
     }
 }

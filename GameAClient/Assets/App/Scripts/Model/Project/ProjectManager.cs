@@ -5,6 +5,7 @@
 ** Summary : ProjectManager
 ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
@@ -16,22 +17,85 @@ namespace GameA
         public readonly static ProjectManager Instance = new ProjectManager();
 
         private readonly LRUCache<long, Project> _caches = new LRUCache<long, Project>(ConstDefine.MaxLRUProjectCount);
-        
+
+        public Project UpdateData(Project newData)
+        {
+            Project project;
+            if (_caches.TryGetItem(newData.ProjectId, out project))
+            {
+                project.DeepCopy(newData);
+                return project;
+            }
+            _caches.Insert(newData.ProjectId, newData);
+            return newData;
+        }
+
+        public Project UpdateData(Msg_SC_DAT_Project msgData)
+        {
+            if (msgData == null)
+            {
+                return null;
+            }
+            Project project;
+            if (_caches.TryGetItem(msgData.ProjectId, out project))
+            {
+                project.CopyMsgData(msgData);
+                return project;
+            }
+            project = new Project(msgData);
+            _caches.Insert(msgData.ProjectId, project);
+            return project;
+        }
+
+        public List<Project> UpdateData(List<Msg_SC_DAT_Project> list)
+        {
+            if (list == null) return null;
+            List<Project> projects = new List<Project>(list.Count);
+            for (int i = 0; i < list.Count; i++)
+            {
+                projects.Add(UpdateData(list[i]));
+            }
+            return projects;
+        }
+
+        public void GetDataOnAsync(long projectId, Action<Project> successCallback, Action failedCallback = null)
+        {
+            Project project;
+            if (TryGetData(projectId, out project))
+            {
+                if (successCallback != null)
+                {
+                    successCallback(project);
+                }
+                return;
+            }
+            project = new Project();
+            project.Request(projectId, () =>
+            {
+                _caches.Insert(projectId, project);
+                if (successCallback != null)
+                {
+                    successCallback(project);
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback();
+                }
+            });
+        }
+
         public bool TryGetData(long guid, out Project project)
         {
             if (_caches.TryGetItem(guid, out project))
             {
                 return true;
             }
-            var msg = LocalCacheManager.Instance.LoadObject<Msg_SC_DAT_Project>(ECacheDataType.CDT_ProjectData, guid);
-            if (msg == null)
-            {
-                return false;
-            }
-            project = OnSyncProject(msg);
-            return true;
+            return false;
         }
 
+        //-------------------- old ------------------------
         public bool IsAllGuidsHasData(List<ST_ValueItem> guids, out List<ST_ValueItem> guidsWithNoData)
         {
             bool isAll = true;
@@ -59,6 +123,7 @@ namespace GameA
             }
             return projects;
         }
+
         public List<Project> GetDatas(List<ST_ValueItem> guids)
         {
             var projects = new List<Project>(guids.Count);
@@ -70,8 +135,8 @@ namespace GameA
             }
             return projects;
         }
-        
-		public Project OnSyncProject(Msg_SC_DAT_Project msg, bool save = false)
+
+        public Project OnSyncProject(Msg_SC_DAT_Project msg, bool save = false)
         {
             Project project;
             if (!_caches.TryGetItem(msg.ProjectId, out project))
@@ -80,9 +145,9 @@ namespace GameA
                 project = new Project();
                 _caches.Insert(msg.ProjectId, project);
             }
-			project.OnSyncFromParent(msg);
-            ImageResourceManager.Instance.CancelDeleteImageCache (project.IconPath);
-            LocalCacheManager.Instance.CancelDelete (LocalCacheManager.EType.File, project.ResPath);
+            project.OnSyncFromParent(msg);
+            ImageResourceManager.Instance.CancelDeleteImageCache(project.IconPath);
+            LocalCacheManager.Instance.CancelDelete(LocalCacheManager.EType.File, project.ResPath);
             if (save)
             {
                 LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_ProjectData, msg, msg.ProjectId);
@@ -90,18 +155,17 @@ namespace GameA
             return project;
         }
 
-
         public void OnCreateProject(Msg_SC_DAT_Project msg, Project project)
         {
             Project p;
             if (_caches.TryGetItem(msg.ProjectId, out p))
             {
                 LogHelper.Error("OnCreateProject, project exist, projectId");
-				p.OnSyncFromParent(msg);
+                p.OnSyncFromParent(msg);
                 return;
             }
-			project.OnSyncFromParent(msg);
-			project.LocalDataState = ELocalDataState.LDS_Uptodate;
+            project.OnSyncFromParent(msg);
+            project.LocalDataState = ELocalDataState.LDS_Uptodate;
             _caches.Insert(project.ProjectId, project);
             LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_ProjectData, msg, msg.ProjectId);
         }

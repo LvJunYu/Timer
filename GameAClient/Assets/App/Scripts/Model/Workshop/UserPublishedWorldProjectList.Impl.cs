@@ -7,6 +7,7 @@ namespace GameA
 {
     public partial class UserPublishedWorldProjectList
     {
+        private List<Project> _projectSyncList = new List<Project>();
         private readonly List<Project> _allList = new List<Project>();
         
         public bool IsEnd { get; private set; }
@@ -14,7 +15,13 @@ namespace GameA
         {
             get { return _allList; }
         }
-        
+
+        protected override void OnSyncPartial(Msg_SC_DAT_UserPublishedWorldProjectList msg)
+        {
+            _projectSyncList = ProjectManager.Instance.UpdateData(msg.ProjectList);
+            base.OnSyncPartial(msg);
+        }
+
         protected override void OnSyncPartial()
         {
             base.OnSyncPartial();
@@ -32,8 +39,8 @@ namespace GameA
             {
                 _allList.Clear();
             }
-            _allList.AddRange(_projectList);
-            IsEnd = _projectList.Count < _cs_maxCount;
+            _allList.AddRange(_projectSyncList);
+            IsEnd = _projectSyncList.Count < _cs_maxCount;
             Messenger.Broadcast(EMessengerType.OnUserPublishedProjectChanged);
         }
 
