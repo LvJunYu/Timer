@@ -615,41 +615,32 @@ namespace GameA.Game
             if (!_isAlive)
             {
                 _dieTime++;
-                if (_dieTime == ConstDefineGM2D.FixedFrameCount)
-                {
-                    if (_life > 0)
-                    {
-//                        _trans.eulerAngles = new Vector3(90, 0, 0);
-//                        OnRevive();
-                    }
-                    else
-                    {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                    }
-                }
                 if (_life > 0)
                 {
                     if (_dieTime % ConstDefineGM2D.FixedFrameCount == 0)
                     {
                         var reviveTime = PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime;
-                        int dieTime = _dieTime / ConstDefineGM2D.FixedFrameCount;
-                        if (dieTime == Mathf.Max(1, reviveTime))
+                        int dieSecond = _dieTime / ConstDefineGM2D.FixedFrameCount;
+                        if (dieSecond == Mathf.Max(1, reviveTime))
                         {
-                            TeamManager.Instance.ResetCameraPlayer();
+                            if (IsMain)
+                            {
+                                TeamManager.Instance.ResetCameraPlayer();
+                            }
                             OnRevive();
                         }
-//                        else if (IsMain && dieTime == 1)
-//                        {
-//                            TeamManager.Instance.SetNextCameraPlayer();
-//                        }
                         if (IsMain)
                         {
-                            Messenger<int>.Broadcast(EMessengerType.OnMainPlayerReviveTime, reviveTime - dieTime);
+                            Messenger<int>.Broadcast(EMessengerType.OnMainPlayerReviveTime, reviveTime - dieSecond);
                         }
                     }
                 }
                 else
                 {
+                    if (_dieTime == 50)
+                    {
+                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                    }
                     if (_dieTime == 100)
                     {
                         _siTouLe = true;
@@ -671,7 +662,7 @@ namespace GameA.Game
                         }
                     }
                 }
-                if (IsMain && UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
+                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain && UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
                 {
                     TeamManager.Instance.SetNextCameraPlayer();
                 }
