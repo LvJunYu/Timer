@@ -73,6 +73,7 @@ namespace GameA
             CloseMultiPanel();
             EShowState showState = (EShowState) parameter;
             _showState = showState;
+            OpenSinglePanel();
 //			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
             UpdateView();
             //UpdateLifeItem();
@@ -666,6 +667,13 @@ namespace GameA
             _cachedView.Lose.SetActive(false);
             _cachedView.Win.SetActive(false);
             _cachedView.SiglePanel.SetActive(false);
+        }
+
+        private void OpenSinglePanel()
+        {
+            _cachedView.Lose.SetActive(true);
+            _cachedView.Win.SetActive(true);
+            _cachedView.SiglePanel.SetActive(true);
         }
 
         private void CloseMultiPanel()
