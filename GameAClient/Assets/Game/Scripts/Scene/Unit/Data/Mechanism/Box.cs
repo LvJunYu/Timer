@@ -24,7 +24,7 @@ namespace GameA.Game
             get { return _isHoldingByPlayer; }
             set { _isHoldingByPlayer = value; }
         }
-        
+
         public PlayerBase Holder
         {
             get { return _holder; }
@@ -124,7 +124,7 @@ namespace GameA.Game
                     else
                     {
                         var deltaMainPos = _holder.Speed + _holder.ExtraDeltaPos;
-                        _deltaPos += IntVec2.right*deltaMainPos.x;
+                        _deltaPos += IntVec2.right * deltaMainPos.x;
                     }
                 }
                 _curPos += _deltaPos;

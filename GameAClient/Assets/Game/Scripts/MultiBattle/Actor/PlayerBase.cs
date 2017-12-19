@@ -561,7 +561,7 @@ namespace GameA.Game
                 return false;
             }
             _animation.Init("Idle1");
-            if (!_animation.AddEventHandle("Step", OnStep))
+            if (!_animation.AddEventHandle("Yan", OnStep))
             {
                 return false;
             }
@@ -704,6 +704,7 @@ namespace GameA.Game
                         {
                             speed = Math.Abs(SpeedY);
                         }
+                        PlayClimbEffect();
                         if (_onClay)
                         {
                             speed = 30;
@@ -712,13 +713,19 @@ namespace GameA.Game
                         {
                             speed = 50;
                         }
-                        _animation.PlayLoop(RunAnimName(speed), speed * deltaTime);
-                        GM2DGame.Instance.GameMode.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
+                        _animation.PlayLoop(CurAnimName(speed), speed * deltaTime);
+                        if (IsMain)
+                        {
+                            GM2DGame.Instance.GameMode.RecordAnimation(CurAnimName(speed), true, speed * deltaTime);
+                        }
                     }
                     else
                     {
                         _animation.PlayLoop(IdleAnimName());
-                        GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                        if (IsMain)
+                        {
+                            GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                        }
                     }
                 }
             }
@@ -731,6 +738,34 @@ namespace GameA.Game
             if (_portalEffect != null)
             {
                 _portalEffect.Update();
+            }
+        }
+
+        private float _lastPlayTime;
+
+        private void PlayClimbEffect()
+        {
+            if (Time.time - _lastPlayTime < 0.3f) return;
+            if (_eClimbState == EClimbState.Left && _input.GetKeyApplied(EInputType.Up))
+            {
+                Vector3 rotate = new Vector3(0, 0, 90);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.left * 0.2f + Vector3.up * 0.7f, rotate, Vector3.one);
+                _lastPlayTime = Time.time;
+            }
+            else if (_eClimbState == EClimbState.Up)
+            {
+                if (_input.GetKeyApplied(EInputType.Left))
+                {
+                    Vector3 rotate = new Vector3(0, 180, 0);
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
+                    _lastPlayTime = Time.time;
+                }
+                else if (_input.GetKeyApplied(EInputType.Right))
+                {
+                    Vector3 rotate = Vector3.zero;
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay, _trans.position + Vector3.up * 0.7f, rotate, Vector3.one);
+                    _lastPlayTime = Time.time;
+                }
             }
         }
 
@@ -785,10 +820,10 @@ namespace GameA.Game
                 return;
             }
             Vector3 scale = _moveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
-            if (_downUnit.Id == UnitDefine.ClayId)
+            if (_downUnit.Id == UnitDefine.ClayId || _onClay)
             {
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud,
-                    _trans.position + Vector3.up * 0.2f, scale);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnClay,
+                    _trans.position, scale);
             }
             int randomValue = Random.Range(0, 3);
             switch (randomValue)
@@ -805,7 +840,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual string RunAnimName(float speed)
+        protected virtual string CurAnimName(float speed)
         {
             if (IsHoldingBox())
             {

@@ -110,7 +110,10 @@ namespace GameA
             }
             else
             {
-                OpenUI<UICtrlAnnouncement>();
+                if (!Application.isEditor)
+                {
+                    OpenUI<UICtrlAnnouncement>();
+                }
             }
             OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();

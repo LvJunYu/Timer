@@ -162,8 +162,7 @@ namespace SoyEngine
             return Emit(itemName, pos, Vector3.zero, scale, sortingOrder);
         }
 
-        public bool Emit(string itemName, Vector3 pos, 
-            ESortingOrder sortingOrder = ESortingOrder.Item)
+        public bool Emit(string itemName, Vector3 pos, ESortingOrder sortingOrder = ESortingOrder.Item)
         {
             return Emit(itemName, pos, Vector3.zero, Vector3.one, sortingOrder);
         }
