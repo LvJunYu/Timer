@@ -46,6 +46,5 @@ namespace GameA.Game
                     break;
             }
         }
-
     }
 }

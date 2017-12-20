@@ -26,11 +26,13 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.Button.onClick.AddListener(OnCardClick);
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
         }
 
         protected override void OnDestroy()
         {
             _cachedView.Button.onClick.RemoveAllListeners();
+            _cachedView.HeadBtn.onClick.RemoveAllListeners();
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
@@ -105,6 +107,14 @@ namespace GameA
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage, _cachedView.DefaultCoverTexture);
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_wrapper != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_wrapper.Content.UserInfoDetail);
+            }
         }
 
         public enum ECurUI

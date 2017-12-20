@@ -7,6 +7,8 @@
 
 using NewResourceSolution;
 using SoyEngine;
+using Spine;
+using Spine.Unity;
 using UnityEngine;
 
 namespace GameA.Game
@@ -15,19 +17,21 @@ namespace GameA.Game
     {
         public static Color SelectedColor = Color.red;
         public static Color NormalColor = Color.white;
-        
+
         protected Transform _trans;
 
         protected Transform _pairTrans;
 
         protected UnitBase _unit;
         protected AnimationSystem _animation;
+        protected Skeleton _skeleton;
+        protected SkeletonAnimation _skeletonAnimation;
 
         protected UnitPropertyViewWrapper _propertyViewWrapper;
 
         protected bool _isPart;
 
-		public Transform Trans
+        public Transform Trans
         {
             get { return _trans; }
         }
@@ -37,13 +41,23 @@ namespace GameA.Game
             get { return _animation; }
         }
 
+        public Skeleton Skeleton
+        {
+            get { return _skeleton; }
+        }
+
+        public SkeletonAnimation SkeletonAnimation
+        {
+            get { return _skeletonAnimation; }
+        }
+
         public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
-			if (UnitManager.Instance != null) 
+            if (UnitManager.Instance != null)
             {
-				_trans.parent = UnitManager.Instance.GetOriginParent ();
-			}
+                _trans.parent = UnitManager.Instance.GetOriginParent();
+            }
         }
 
         public virtual void OnGet()
@@ -76,21 +90,18 @@ namespace GameA.Game
 
         public virtual void SetRendererEnabled(bool value)
         {
-
         }
 
-        public virtual void SetRendererColor (Color color)
+        public virtual void SetRendererColor(Color color)
         {
         }
 
         public virtual void SetSortingOrder(int sortingOrder)
         {
-            
         }
 
-        public virtual void SetDamageShaderValue(string name = null,float value = 1)
+        public virtual void SetDamageShaderValue(string name = null, float value = 1)
         {
-            
         }
 
         public virtual void OnFree()
@@ -121,14 +132,12 @@ namespace GameA.Game
         }
 
         public virtual void OnSelect()
-	    {
-		    
-	    }
+        {
+        }
 
-	    public virtual void OnCancelSelect()
-	    {
-		    
-	    }
+        public virtual void OnCancelSelect()
+        {
+        }
 
         public virtual void OnDestroyObject()
         {
@@ -160,7 +169,7 @@ namespace GameA.Game
             }
             UpdateSign();
         }
-        
+
         public virtual void OnPlay()
         {
             SetEditAssistActive(false);
@@ -189,7 +198,6 @@ namespace GameA.Game
 
         public virtual void ChangeView(string assetPath)
         {
-            
         }
 
         public virtual void OnNeighborDirChanged(ENeighborDir neighborDir, bool add)
@@ -235,7 +243,7 @@ namespace GameA.Game
             {
                 SetPairRenderer();
             }
-	    }
+        }
 
         private void SetPairRenderer()
         {
@@ -245,7 +253,7 @@ namespace GameA.Game
                 _pairTrans = new GameObject("Pair").transform;
                 CommonTools.SetParent(_pairTrans, _trans);
                 spriteRenderer = _pairTrans.gameObject.AddComponent<SpriteRenderer>();
-                spriteRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
+                spriteRenderer.sortingOrder = (int) ESortingOrder.AttTexture2;
                 if (this is SpineUnit)
                 {
                     var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
@@ -275,7 +283,7 @@ namespace GameA.Game
             }
             Vector2 res = Vector2.zero;
             Vector2 size = GM2DTools.TileToWorld(_unit.GetDataSize() * 0.5f);
-            switch ((EDirectionType)_unit.Rotation)
+            switch ((EDirectionType) _unit.Rotation)
             {
                 case EDirectionType.Right:
                     res.x = -size.x;

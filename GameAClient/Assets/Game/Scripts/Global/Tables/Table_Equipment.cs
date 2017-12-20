@@ -55,6 +55,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("WeaponPartIcon")]
 		public string WeaponPartIcon;
+		/// <summary>
+        /// 额外模型
+        /// </summary>
+		[ColumnMapping("ModelExtra")]
+		public string ModelExtra;
 	}
 
     public class TableEquipmentAsset:BaseTableAsset

@@ -17,7 +17,6 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 30, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class SpineUnit : UnitView
     {
-        protected SkeletonAnimation _skeletonAnimation;
         protected Renderer _renderer;
         protected Shader _damageShader;
         private bool _hasSetShader;

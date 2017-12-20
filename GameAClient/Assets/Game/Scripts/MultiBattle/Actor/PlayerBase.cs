@@ -233,12 +233,13 @@ namespace GameA.Game
             return true;
         }
 
-        public override void ChangeGunView(int slot)
+        public override void ChangeGunView(int slot, EShootDirectionType? eShootDir = null)
         {
             var tableEquip = _tableEquipments[slot];
             if (_gun != null && tableEquip != null)
             {
                 _gun.ChangeView(tableEquip.Model);
+                _gun.ChangeGun(tableEquip, eShootDir);
             }
         }
 

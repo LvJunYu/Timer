@@ -373,7 +373,7 @@ namespace GameA.Game
                             {
                                 if (_skillCtrl.Fire(i))
                                 {
-                                    ChangeGunView(i);
+                                    ChangeGunView(i, eShootDir);
                                 }
                                 return;
                             }
@@ -383,7 +383,7 @@ namespace GameA.Game
                             {
                                 if (_skillCtrl.Fire(i))
                                 {
-                                    ChangeGunView(i);
+                                    ChangeGunView(i, eShootDir);
                                 }
                             }
                             break;
@@ -392,7 +392,7 @@ namespace GameA.Game
             }
         }
 
-        public virtual void ChangeGunView(int slot)
+        public virtual void ChangeGunView(int slot, EShootDirectionType? eShootDir)
         {
         }
 

@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
+using Spine;
+using Spine.Unity;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -168,6 +170,16 @@ namespace GameA.Game
         protected AnimationSystem _animation
         {
             get { return _view == null ? null : _view.Animation; }
+        }
+
+        public Skeleton Skeleton
+        {
+            get { return _view == null ? null : _view.Skeleton; }
+        }
+        
+        public SkeletonAnimation SkeletonAnimation
+        {
+            get { return _view == null ? null : _view.SkeletonAnimation; }
         }
 
         public IntVec2 DeltaImpactPos
