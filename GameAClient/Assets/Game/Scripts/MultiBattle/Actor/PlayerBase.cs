@@ -599,10 +599,10 @@ namespace GameA.Game
         {
             Messenger.RemoveListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             Messenger.RemoveListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
+            _gun.OnObjectDestroy();
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();
-            _gun.OnObjectDestroy();
         }
 
         protected override void UpdateDynamicView(float deltaTime)
@@ -612,7 +612,7 @@ namespace GameA.Game
                 return;
             }
             base.UpdateDynamicView(deltaTime);
-            _gun.UpdateView();
+            _gun.UpdateView(deltaTime);
             if (!_isAlive)
             {
                 _dieTime++;
