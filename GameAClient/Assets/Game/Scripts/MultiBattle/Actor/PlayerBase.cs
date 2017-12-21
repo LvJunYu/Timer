@@ -227,8 +227,8 @@ namespace GameA.Game
             {
                 Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
             }
-            CalculateMaxHp();
-            OnHpChanged(_maxHp);
+//            CalculateMaxHp();
+//            OnHpChanged(_maxHp);
             ChangeGunView(slot);
             return true;
         }
