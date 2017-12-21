@@ -11,7 +11,7 @@ namespace JoyGameBuildVersionTool
         public static void Main(string[] args)
         {
             Process("/Users/quan/Downloads/JoyGameRes/Game/",
-                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.1.0");
+                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.1.2");
         }
 
         private static void Process(string inputPath, string outputPath, string version)
