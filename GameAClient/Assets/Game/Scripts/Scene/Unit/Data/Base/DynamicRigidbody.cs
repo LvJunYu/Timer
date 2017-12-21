@@ -44,12 +44,12 @@ namespace GameA.Game
 
         protected override bool IsClimbing
         {
-            get { return _eClimbState != EClimbState.None; }
+            get { return ClimbState != EClimbState.None; }
         }
 
         protected override bool IsClimbingVertical
         {
-            get { return _eClimbState == EClimbState.Left || _eClimbState == EClimbState.Right; }
+            get { return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right; }
         }
 
         public InputBase Input
@@ -60,6 +60,11 @@ namespace GameA.Game
         public int CurMaxSpeedX
         {
             get { return _curMaxSpeedX; }
+        }
+
+        public EClimbState ClimbState
+        {
+            get { return _eClimbState; }
         }
 
         protected override void Clear()
@@ -188,7 +193,7 @@ namespace GameA.Game
                 }
                 SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
             }
-            else if (_grounded || _fanForce.y != 0 || _eClimbState == EClimbState.Up)
+            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up)
             {
                 var friction = MaxFriction;
                 if (_fanForce.x == 0)
@@ -204,7 +209,7 @@ namespace GameA.Game
 
         protected virtual void CheckClimb()
         {
-            switch (_eClimbState)
+            switch (ClimbState)
             {
                 case EClimbState.None:
                     break;
@@ -252,7 +257,7 @@ namespace GameA.Game
                     }
                     break;
             }
-            if (_eClimbState != EClimbState.None)
+            if (ClimbState != EClimbState.None)
             {
                 _grounded = false;
             }
@@ -267,9 +272,9 @@ namespace GameA.Game
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
                 }
-                else if (_eClimbState > EClimbState.None)
+                else if (ClimbState > EClimbState.None)
                 {
-                    switch (_eClimbState)
+                    switch (ClimbState)
                     {
                         case EClimbState.Left:
                             SpeedY = 0;
@@ -338,7 +343,7 @@ namespace GameA.Game
         public override void SetClimbState(EClimbState eClimbState)
         {
             _eClimbState = eClimbState;
-            switch (_eClimbState)
+            switch (ClimbState)
             {
                 case EClimbState.None:
                     break;
@@ -388,7 +393,7 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (CanMove && (_eClimbState != EClimbState.Left && _eClimbState != EClimbState.Right))
+            if (CanMove && (ClimbState != EClimbState.Left && ClimbState != EClimbState.Right))
             {
                 if (_input.GetKeyApplied(EInputType.Right))
                 {

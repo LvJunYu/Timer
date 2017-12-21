@@ -177,7 +177,7 @@ namespace GameA.Game
             get { return _view == null ? null : _view.Skeleton; }
         }
         
-        public SkeletonAnimation SkeletonAnimation
+        public virtual SkeletonAnimation SkeletonAnimation
         {
             get { return _view == null ? null : _view.SkeletonAnimation; }
         }

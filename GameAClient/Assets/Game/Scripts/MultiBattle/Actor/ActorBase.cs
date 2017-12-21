@@ -42,15 +42,15 @@ namespace GameA.Game
 
     public class ActorBase : DynamicRigidbody
     {
-        protected static string Death = "Death";
-        protected static string DeathLazer = "DeathLazer";
-        protected static string DeathWater = "DeathWater";
-        protected static string DeathFire = "DeathFire";
-        protected static string OnSawStart = "OnSawStart";
-        protected static string Idle = "Idle";
-        protected static string Run = "Run";
-        protected static string Attack = "Attack";
-        protected static int _breakFlagDuration = 5 * ConstDefineGM2D.FixedFrameCount; //使坏标记持续时间，用于击杀者判断
+        protected const string Death = "Death";
+        protected const string DeathLazer = "DeathLazer";
+        protected const string DeathWater = "DeathWater";
+        protected const string DeathFire = "DeathFire";
+        protected const string OnSawStart = "OnSawStart";
+        protected const string Idle = "Idle";
+        public string Run = "Run";
+        protected const string Attack = "Attack";
+        protected const int _breakFlagDuration = 5 * ConstDefineGM2D.FixedFrameCount; //使坏标记持续时间，用于击杀者判断
         protected PlayerBase _curBreaker; //使坏的人，用于击杀者判断
         protected int _breakFrame; //使坏的帧数，用于击杀判断
         private static EInputType[] _skillInputs = {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
@@ -192,7 +192,7 @@ namespace GameA.Game
             }
             if (_curBanInputTime == 0 && !IsHoldingBox())
             {
-                switch (_eClimbState)
+                switch (ClimbState)
                 {
                     case EClimbState.None:
                         if (_input.GetKeyApplied(EInputType.Left))
@@ -227,13 +227,13 @@ namespace GameA.Game
             if (_input.GetKeyDownApplied(EInputType.Jump))
             {
                 //攀墙跳
-                if (_eClimbState > EClimbState.None)
+                if (ClimbState > EClimbState.None)
                 {
                     _climbJump = true;
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
-                    if (_eClimbState == EClimbState.Left)
+                    if (ClimbState == EClimbState.Left)
                     {
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
@@ -248,7 +248,7 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Right);
                         }
                     }
-                    else if (_eClimbState == EClimbState.Right)
+                    else if (ClimbState == EClimbState.Right)
                     {
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
@@ -263,7 +263,7 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Left);
                         }
                     }
-                    else if (_eClimbState == EClimbState.Up)
+                    else if (ClimbState == EClimbState.Up)
                     {
                         SpeedY = -10;
                     }
@@ -318,7 +318,7 @@ namespace GameA.Game
             var eShootDir = _moveDirection == EMoveDirection.Left
                 ? EShootDirectionType.Left
                 : EShootDirectionType.Right;
-            if (_eClimbState == EClimbState.Up)
+            if (ClimbState == EClimbState.Up)
             {
                 eShootDir = _moveDirection == EMoveDirection.Left
                     ? EShootDirectionType.Right

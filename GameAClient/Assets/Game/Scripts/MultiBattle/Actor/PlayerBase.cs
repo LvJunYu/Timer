@@ -458,12 +458,13 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.UpdateWorldRegion(_curPos);
                     }
+                    _animation.Reset();
+                    _animation.PlayLoop(IdleAnimName());
                     if (_gun != null)
                     {
                         _gun.Play();
+                        _gun.Revive();
                     }
-                    _animation.Reset();
-                    _animation.PlayLoop(IdleAnimName());
                     if (IsMain)
                     {
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
@@ -671,7 +672,7 @@ namespace GameA.Game
             CheckBox();
             if (_isAlive)
             {
-                if (!_grounded && _eClimbState == EClimbState.None)
+                if (!_grounded && ClimbState == EClimbState.None)
                 {
                     if (_climbJump)
                     {
@@ -746,14 +747,14 @@ namespace GameA.Game
         private void PlayClimbEffect()
         {
             if (Time.time - _lastPlayTime < 0.3f) return;
-            if (_eClimbState == EClimbState.Left && _input.GetKeyApplied(EInputType.Up))
+            if (ClimbState == EClimbState.Left && _input.GetKeyApplied(EInputType.Up))
             {
                 Vector3 rotate = new Vector3(0, 0, 90);
                 GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.ClimbOnClay,
                     _trans.position + Vector3.left * 0.2f + Vector3.up * 0.7f, rotate, Vector3.one);
                 _lastPlayTime = Time.time;
             }
-            else if (_eClimbState == EClimbState.Up)
+            else if (ClimbState == EClimbState.Up)
             {
                 if (_input.GetKeyApplied(EInputType.Left))
                 {
@@ -774,13 +775,13 @@ namespace GameA.Game
 
         private bool IsClimbingSide()
         {
-            return (_eClimbState == EClimbState.Left || _eClimbState == EClimbState.Right) &&
+            return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
         private bool IsInputSideValid()
         {
-            return (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up) &&
+            return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
 
@@ -850,7 +851,7 @@ namespace GameA.Game
                 }
                 return "Pull";
             }
-            switch (_eClimbState)
+            switch (ClimbState)
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
@@ -896,7 +897,7 @@ namespace GameA.Game
             {
                 return "Prepare";
             }
-            switch (_eClimbState)
+            switch (ClimbState)
             {
                 case EClimbState.Left:
                 case EClimbState.Right:

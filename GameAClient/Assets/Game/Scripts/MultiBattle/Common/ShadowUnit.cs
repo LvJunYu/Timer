@@ -34,7 +34,7 @@ namespace GameA.Game
             get { return true; }
         }
 
-        public SkeletonAnimation SkeletonAnimation
+        public override SkeletonAnimation SkeletonAnimation
         {
             get
             {
