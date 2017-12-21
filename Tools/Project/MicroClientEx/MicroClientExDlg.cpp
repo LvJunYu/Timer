@@ -47,7 +47,7 @@ bool isUseMultiThread = true;
 const int MAXThread = 4;
 CRITICAL_SECTION g_csLock;
 
-CMapStringToOb* localFilesMap = new CMapStringToOb(1024);
+CMapStringToOb* localFilesMap=NULL;
 
 int totalNum;
 int loadedNum;
@@ -74,6 +74,8 @@ const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
 typedef IClientProcMsgObject* (*CreateObjFunc)();
 typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
 WCHAR szInfo[32];
+
+WCHAR pszbuf[16];
 bool showProgress = false;
 bool showHeart = true;
 
@@ -94,6 +96,7 @@ CMicroClientExDlg::CMicroClientExDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	//_CrtSetBreakAlloc(5231);
 }
 
 void CMicroClientExDlg::DoDataExchange(CDataExchange* pDX)
@@ -454,7 +457,6 @@ void CMicroClientExDlg::RePaintWindow()
     
 	GraphicsPath myPath;
 
-	WCHAR * pszbuf = new WCHAR[10];
 	swprintf(pszbuf,L"%d/%d\0", loadedNum, totalNum);
 
     FontFamily fontFamily(L"黑体");
@@ -593,6 +595,7 @@ void CMicroClientExDlg::InvokeCallWebClient(CString url)//用于判断是否js微端
 UINT CMicroClientExDlg::SendInfo(LPVOID lpParam)
 {
 	return 0;
+	/*
 	//获得统计页面地址，长度<10则基本不可能OK，遂不发送统计，针对内网服务
 	CString url = GetConfigValue(CString(CONFIG), cfInfo);
 	if (url.GetLength() <= 10)
@@ -615,6 +618,7 @@ UINT CMicroClientExDlg::SendInfo(LPVOID lpParam)
 	WriteLog( "oops launcher stat is done!" );
 	delete[] resp;
 	return 0;
+	*/
 }
 
 UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
@@ -724,7 +728,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		GetFiles(m_strLocalPath, localFiles);
 		int pathStartPos = m_strLocalPath.GetLength();
 		CString ignorePath = "JoyGame_Data\\JoyYou\\";
-		
+		localFilesMap = new CMapStringToOb(1024);
 		for (int i=0; i<localFiles.size(); i++)
 		{
 			CString fullPathName = localFiles[i];
@@ -845,21 +849,28 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	m_launcher->StartGame();
 	loading_procgrss_main = 1;
 	loading_procgrss_vice = 1;
+	if(localFilesMap != NULL)
+	{
+		localFilesMap->RemoveAll();
+		delete localFilesMap;
+	}
 	return 1;
 }
 
 //读取XML文件
 void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileContainer,vector<CString> &md5Container)
 {
+	TiXmlDocument *myDocument = NULL;
 	try
 	{
 		fileContainer.clear();
 		md5Container.clear();
 		
-		TiXmlDocument *myDocument = new TiXmlDocument(szFileName);
+		myDocument = new TiXmlDocument(szFileName);
 		myDocument->LoadFile();
 		if(myDocument->Error())
 		{
+			delete myDocument;
 			return;
 		}
 
@@ -870,6 +881,7 @@ void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileCon
 	
 		if ( pChild->NoChildren() )
 		{
+			delete myDocument;
 			return;
 		}
 		else if( ! pChild->NoChildren() )
@@ -888,30 +900,34 @@ void CMicroClientExDlg::ReadXmlFile(CString& szFileName,vector<CString> &fileCon
 			}
 			delete []bufferXML;
 			bufferXML = NULL;
+			delete myDocument;
 			return ;
 		}
 	}
 	catch (...)
 	{
-		return;
 	}
+	delete myDocument;
 	return;
 }
 
 CString CMicroClientExDlg::ReadSerXml(CString key)
 {
+	TiXmlDocument *myDocument = NULL;
 	try
 	{
-		TiXmlDocument *myDocument = new TiXmlDocument();
+		myDocument = new TiXmlDocument();
 		myDocument->Parse(bufferXML,0,TIXML_DEFAULT_ENCODING);
 		TiXmlElement* element = myDocument->FirstChildElement( (LPSTR) (LPCTSTR) key);
 		CString str = element->FirstChild()->Value();
 		delete []bufferXML;
 		bufferXML = NULL;
+		delete myDocument;
 		return str;
 	}
 	catch (...)
 	{
+		delete myDocument;
 		return "";
 	}
 }

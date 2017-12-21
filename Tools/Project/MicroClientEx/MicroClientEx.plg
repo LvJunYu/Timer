@@ -6,13 +6,13 @@
 --------------------Configuration: MicroClientEx - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPE867.tmp" with contents
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSP9218.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx\MicroClientExDlg.cpp"
 ]
-Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSPE867.tmp" 
-Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPE868.tmp" with contents
+Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSP9218.tmp" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSP9219.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/JoyGame_Launcher.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/JoyGame_Launcher.exe" /pdbtype:sept 
 .\Debug\CaptionButton.obj
@@ -43,7 +43,7 @@ Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPE868.tmp" with cont
 .\Debug\ZlibStreamBuf.obj
 .\Debug\MicroClientEx.res
 ]
-Creating command line "link.exe @C:\Users\quan\AppData\Local\Temp\RSPE868.tmp"
+Creating command line "link.exe @C:\Users\quan\AppData\Local\Temp\RSP9219.tmp"
 <h3>Output Window</h3>
 Compiling...
 MicroClientExDlg.cpp

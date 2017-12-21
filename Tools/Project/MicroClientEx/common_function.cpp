@@ -14,9 +14,10 @@
 
 CString GetConfigValue(CString& szFileName, CString key)
 {
+	TiXmlDocument *myDocument=NULL;
 	try
 	{
-		TiXmlDocument *myDocument = new TiXmlDocument(szFileName);
+		myDocument = new TiXmlDocument(szFileName);
 		myDocument->LoadFile();
 		if(myDocument->Error())
 		{
@@ -24,10 +25,15 @@ CString GetConfigValue(CString& szFileName, CString key)
 		}
 		TiXmlElement* element = myDocument->FirstChildElement( (LPSTR) (LPCTSTR) key);
 		CString str = element->FirstChild()->Value();
+		delete myDocument;
 		return str;
 	}
 	catch (...)
 	{
+		if(myDocument != NULL)
+		{
+			delete myDocument;
+		}
 		return "";
 	}
 }
