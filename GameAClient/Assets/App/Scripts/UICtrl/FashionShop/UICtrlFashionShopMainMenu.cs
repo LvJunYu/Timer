@@ -345,14 +345,17 @@ namespace GameA
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
-        
+
         protected override void OnClose()
         {
             base.OnClose();
             OnCloseChangeFashion();
             RefreshFashionShopPanel();
             SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().OnCloseBtnClick();
-            _uiParticleItem.Particle.DestroySelf();
+            if (_uiParticleItem != null)
+            {
+                _uiParticleItem.Particle.DestroySelf();
+            }
         }
 
         protected override void OnViewCreated()

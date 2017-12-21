@@ -15,6 +15,7 @@ namespace GameA
         private RenderCamera _renderCamera;
         private int _timer;
         private const int IntervalTime = 10 * ConstDefineGM2D.FixedFrameCount;
+
         private bool _justTouch;
 //        private bool _buttonEnable = true;
 
@@ -160,6 +161,7 @@ namespace GameA
                     _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
                 };
             _timer = IntervalTime;
+            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
         private void OnDownBtn()
@@ -173,6 +175,7 @@ namespace GameA
                     _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
                 };
             _timer = IntervalTime;
+            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
         public void Set(bool ifUsable)
