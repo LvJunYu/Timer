@@ -689,7 +689,7 @@ UINT __stdcall CMicroClientExDlg::DownloadFile(LPVOID lpParam)
 		EnterCriticalSection(&g_csLock);
 		loadedNum++;
 		loading_procgrss_main=((float)loadedNum) / totalNum;
-		m_launcher->PostMessage(MSGREPAINT);
+		m_launcher->Invalidate();
 		LeaveCriticalSection(&g_csLock);
 	}
 	return 0;
@@ -705,11 +705,11 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	singleFileCount = 1;
 	
 	swprintf(szInfo, L"%s", L"正在获取最新版本信息");
-	m_launcher->PostMessage(MSGREPAINT);
+	m_launcher->Invalidate();
 	if (CheckNeedUpdate())
 	{
 		swprintf(szInfo, L"%s", L"正在获取更新文件列表");
-		m_launcher->PostMessage(MSGREPAINT);
+		m_launcher->Invalidate();
 		bDownloadFlag = false;
 		while(!bDownloadFlag)
 		{
@@ -744,7 +744,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 		//vector<CString> files;
 		//vector<CString> md5s;
 		
-		m_launcher->PostMessage(MSGREPAINT);
+		m_launcher->Invalidate();
 		ReadXmlFile(m_strLocalPath +"/" + MANIFEST, fileContainer, md5Container);
 	
 		totalNum = fileContainer.size();
@@ -826,7 +826,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 				
 				loadedNum++;
 				loading_procgrss_main=((float)loadedNum) / totalNum;
-				m_launcher->PostMessage(MSGREPAINT);
+				m_launcher->Invalidate();
 			}
 		}
 		CopyFile(m_strTempPath + CONFIG, CString(CONFIG), FALSE);
@@ -845,7 +845,7 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	showProgress = false;
 	showHeart = false;
 	swprintf(szInfo, L"%s", L"正在启动游戏");
-	m_launcher->PostMessage(MSGREPAINT);
+	m_launcher->Invalidate();
 	m_launcher->StartGame();
 	loading_procgrss_main = 1;
 	loading_procgrss_vice = 1;
