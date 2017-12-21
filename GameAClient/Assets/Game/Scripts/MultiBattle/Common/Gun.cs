@@ -17,14 +17,12 @@ namespace GameA.Game
         protected PlayerBase _player;
         protected IntVec2 _curPos;
         protected string _lastModelName;
-        protected JetGun _jetGuan;
-        protected ProjectileGun _projectileGun;
+        protected GunInHand _gunInHand;
 
         public Gun(PlayerBase player)
         {
             _player = player;
-            _jetGuan = new JetGun(player);
-            _projectileGun = new ProjectileGun(player);
+            _gunInHand = new GunInHand(player);
         }
 
         internal bool InstantiateView()
@@ -65,8 +63,7 @@ namespace GameA.Game
 
         public void Revive()
         {
-            _jetGuan.Revive();
-            _projectileGun.Revive();
+            _gunInHand.Revive();
         }
 
         public void Stop()
@@ -75,14 +72,12 @@ namespace GameA.Game
             {
                 _shooterEffect.Stop();
             }
-            _jetGuan.Stop();
-            _projectileGun.Stop();
+            _gunInHand.Stop();
         }
 
         internal void OnObjectDestroy()
         {
-            _jetGuan.OnObjectDestroy();
-            _projectileGun.OnObjectDestroy();
+            _gunInHand.OnObjectDestroy();
             if (_shooterEffect != null)
             {
                 GameParticleManager.FreeParticleItem(_shooterEffect);
@@ -92,8 +87,7 @@ namespace GameA.Game
 
         public void UpdateView(float deltaTime)
         {
-            _jetGuan.UpdateView(deltaTime);
-            _projectileGun.UpdateView(deltaTime);
+            _gunInHand.UpdateView(deltaTime);
             var destPos = GetDestPos();
             var deltaPos = (destPos - _curPos) / 6;
             if (deltaPos.x == 0)
@@ -120,27 +114,7 @@ namespace GameA.Game
 
         public void ChangeGun(Table_Equipment tableEquipment, EShootDirectionType? eShootDir)
         {
-            if (_player.Skeleton != null)
-            {
-                if (UsePenGuan(tableEquipment.Id))
-                {
-                    _jetGuan.SetGun(tableEquipment, eShootDir);
-                }
-                else if (UseGun(tableEquipment.Id))
-                {
-                    _projectileGun.SetGun(tableEquipment, eShootDir);
-                }
-            }
-        }
-
-        private bool UsePenGuan(int id)
-        {
-            return id > 100 && id < 200;
-        }
-
-        private bool UseGun(int id)
-        {
-            return id > 200 && id < 300;
+            _gunInHand.SetGun(tableEquipment, eShootDir);
         }
     }
 }
