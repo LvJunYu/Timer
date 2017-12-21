@@ -48,8 +48,8 @@ namespace GameA.Game
             if (eShootDir != null)
             {
                 SetBoneDir("SMainBoy0/YouDaBi", eShootDir.Value);
-                _player.Animation.ClearTrack(2);
-                _track = _player.Animation.PlayOnce("RunHit", 1, 2);
+                _player.Animation.ClearTrack(1);
+                _track = _player.SkeletonAnimation.state.SetAnimation(1, "RunHit", false);
                 if (_track != null)
                 {
                     _track.endTime = _duration;
