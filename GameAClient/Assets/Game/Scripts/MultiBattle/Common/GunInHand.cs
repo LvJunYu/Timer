@@ -143,7 +143,7 @@ namespace GameA.Game
                         dir = 35;
                         break;
                     case EShootDirectionType.Down:
-                        dir = -55;
+                        dir = -60;
                         break;
                     case EShootDirectionType.Left:
                         dir = -25;
@@ -152,7 +152,7 @@ namespace GameA.Game
                         dir = 25;
                         break;
                     case EShootDirectionType.RightDown:
-                        dir = -60;
+                        dir = -75;
                         break;
                     case EShootDirectionType.LeftDown:
                         dir = -45;
@@ -197,28 +197,28 @@ namespace GameA.Game
                 switch (eShootDir)
                 {
                     case EShootDirectionType.Up:
-                        dir = 45;
+                        dir = 35;
                         break;
                     case EShootDirectionType.Right:
                         dir = 0;
                         break;
                     case EShootDirectionType.Down:
-                        dir = -45;
+                        dir = -35;
                         break;
                     case EShootDirectionType.Left:
                         dir = 0;
                         break;
                     case EShootDirectionType.RightUp:
-                        dir = 25;
+                        dir = 20;
                         break;
                     case EShootDirectionType.RightDown:
-                        dir = -25;
+                        dir = -20;
                         break;
                     case EShootDirectionType.LeftDown:
-                        dir = -25;
+                        dir = -20;
                         break;
                     case EShootDirectionType.LeftUp:
-                        dir = 25;
+                        dir = 20;
                         break;
                 }
             }
