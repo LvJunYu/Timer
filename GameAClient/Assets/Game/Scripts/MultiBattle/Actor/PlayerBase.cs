@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _revivePos;
 
         protected Box _box;
-
+        protected List<Ladder> _inLadders = new List<Ladder>(4);
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
@@ -229,11 +230,11 @@ namespace GameA.Game
             }
 //            CalculateMaxHp();
 //            OnHpChanged(_maxHp);
-            ChangeGunView(slot);
+            ChangeGunView(slot, null);
             return true;
         }
 
-        public override void ChangeGunView(int slot, EShootDirectionType? eShootDir = null)
+        public override void ChangeGunView(int slot, EShootDirectionType? eShootDir)
         {
             var tableEquip = _tableEquipments[slot];
             if (_gun != null && tableEquip != null)
@@ -664,7 +665,8 @@ namespace GameA.Game
                         }
                     }
                 }
-                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain && UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
+                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
+                    UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
                 {
                     TeamManager.Instance.SetNextCameraPlayer();
                 }
@@ -775,13 +777,15 @@ namespace GameA.Game
 
         private bool IsClimbingSide()
         {
-            return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right) &&
+            return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
+                    ClimbState == EClimbState.Ladder) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
         private bool IsInputSideValid()
         {
-            return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up) &&
+            return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up ||
+                    ClimbState == EClimbState.Ladder) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
 
@@ -855,6 +859,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
+                case EClimbState.Ladder:
                     return "ClimbRunRight";
                 case EClimbState.Up:
                     return "ClimbRunUp";
@@ -901,6 +906,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
+                case EClimbState.Ladder:
                     return "ClimbIdleRight";
                 case EClimbState.Up:
                     return "ClimbIdleUp";
@@ -976,6 +982,29 @@ namespace GameA.Game
                        PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
             }
             return true;
+        }
+
+        public void OnIntersectLadder(Ladder ladder, bool value)
+        {
+            if (value)
+            {
+                if (!_inLadders.Contains(ladder))
+                {
+                    _inLadders.Add(ladder);
+                }
+                _inLadder = true;
+            }
+            else
+            {
+                if (_inLadders.Contains(ladder))
+                {
+                    _inLadders.Remove(ladder);
+                }
+                if (_inLadders.Count == 0)
+                {
+                    _inLadder = false;
+                }
+            }
         }
     }
 }

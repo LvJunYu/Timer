@@ -5,8 +5,6 @@
 ** Summary : Clay
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 
 namespace GameA.Game

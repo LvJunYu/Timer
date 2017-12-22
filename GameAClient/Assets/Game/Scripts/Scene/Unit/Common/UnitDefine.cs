@@ -181,6 +181,11 @@ namespace GameA.Game
         {
             return !IsBullet(unit.Id);
         }
+
+        public static bool IsLadder(int id)
+        {
+            return id == 5019;
+        }
     }
 
     public class UnitHelper

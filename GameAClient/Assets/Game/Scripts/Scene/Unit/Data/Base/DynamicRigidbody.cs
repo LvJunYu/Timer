@@ -11,6 +11,7 @@ namespace GameA.Game
 
         protected float _speedRatio;
         protected int _motorAcc;
+        protected bool _inLadder;
 
         protected InputBase _input;
 
@@ -67,6 +68,11 @@ namespace GameA.Game
             get { return _eClimbState; }
         }
 
+        public bool InLadder
+        {
+            get { return _inLadder; }
+        }
+
         protected override void Clear()
         {
             base.Clear();
@@ -74,6 +80,7 @@ namespace GameA.Game
             _jumpState = EJumpState.Land;
             _jumpLevel = -1;
             _eClimbState = EClimbState.None;
+            _inLadder = false;
             _climbJump = false;
             _stepY = 0;
         }
@@ -193,7 +200,7 @@ namespace GameA.Game
                 }
                 SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
             }
-            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up)
+            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up || ClimbState == EClimbState.Ladder)
             {
                 var friction = MaxFriction;
                 if (_fanForce.x == 0)
@@ -212,6 +219,25 @@ namespace GameA.Game
             switch (ClimbState)
             {
                 case EClimbState.None:
+                    if (InLadder && (_input.GetKeyApplied(EInputType.Down) || _input.GetKeyApplied(EInputType.Up)))
+                    {
+                        SpeedX = 0;
+                        SetClimbState(EClimbState.Ladder);
+//                        if (_moveDirection == EMoveDirection.Right)
+//                        {
+//                            SetClimbState(EClimbState.Right);
+//                        }
+//                        else if (_moveDirection == EMoveDirection.Left)
+//                        {
+//                            SetClimbState(EClimbState.Left);
+//                        }
+                    }
+                    break;
+                case EClimbState.Ladder:
+                    if (_input.GetKeyApplied(EInputType.Down) && _grounded)
+                    {
+                        SetClimbState(EClimbState.None);
+                    }
                     break;
                 case EClimbState.Left:
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
@@ -276,6 +302,27 @@ namespace GameA.Game
                 {
                     switch (ClimbState)
                     {
+                        case EClimbState.Ladder:
+                            SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                if (CheckLadderVerticalFloor(_curMaxSpeedX))
+                                {
+                                    SpeedY = _curMaxSpeedX;
+                                }
+                            }
+                            else if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                if (CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                {
+                                    SpeedY = -_curMaxSpeedX;
+                                }
+                                if (_grounded)
+                                {
+                                    _eClimbState = EClimbState.None;
+                                }
+                            }
+                            break;
                         case EClimbState.Left:
                             SpeedY = 0;
                             if (_input.GetKeyApplied(EInputType.Up))
@@ -393,7 +440,7 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (CanMove && (ClimbState != EClimbState.Left && ClimbState != EClimbState.Right))
+            if (CanMove && ClimbState != EClimbState.Left && ClimbState != EClimbState.Right && ClimbState != EClimbState.Ladder )
             {
                 if (_input.GetKeyApplied(EInputType.Right))
                 {

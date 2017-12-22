@@ -5,9 +5,6 @@
 ** Summary : MorphUnit
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     public class MorphUnit : SpriteUnit

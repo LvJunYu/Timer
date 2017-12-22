@@ -132,7 +132,7 @@ namespace GameA.Game
         private int GetHeadDir(EShootDirectionType eShootDir)
         {
             int dir = 0;
-            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right)
+            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right || _player.ClimbState == EClimbState.Ladder)
             {
                 switch (eShootDir)
                 {

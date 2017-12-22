@@ -195,6 +195,7 @@ namespace GameA.Game
                 switch (ClimbState)
                 {
                     case EClimbState.None:
+                    case EClimbState.Ladder:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -266,6 +267,20 @@ namespace GameA.Game
                     else if (ClimbState == EClimbState.Up)
                     {
                         SpeedY = -10;
+                    }
+                    else if (ClimbState == EClimbState.Ladder)
+                    {
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down) &&
+                            !(_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            SpeedY = 120;
+                        }
                     }
                     SetClimbState(EClimbState.None);
                 }

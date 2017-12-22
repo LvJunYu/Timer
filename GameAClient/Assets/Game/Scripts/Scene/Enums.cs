@@ -5,9 +5,6 @@
 ** Summary : Enums
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     public enum EClimbState
@@ -16,6 +13,7 @@ namespace GameA.Game
         Left,
         Right,
         Up,
+        Ladder
     }
 
     public enum EUnitState

@@ -176,7 +176,7 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Skeleton; }
         }
-        
+
         public virtual SkeletonAnimation SkeletonAnimation
         {
             get { return _view == null ? null : _view.SkeletonAnimation; }
@@ -1086,14 +1086,14 @@ namespace GameA.Game
 
         #endregion
 
-        internal void DoProcessMorph(bool add)
+        internal virtual void DoProcessMorph(bool add)
         {
             var size = GetDataSize();
             var keys = new IntVec3[4];
-            keys[0] = new IntVec3(_guid.x, _guid.y + size.y, _guid.z);
-            keys[1] = new IntVec3(_guid.x + size.x, _guid.y, _guid.z);
-            keys[2] = new IntVec3(_guid.x, _guid.y - size.y, _guid.z);
-            keys[3] = new IntVec3(_guid.x - size.x, _guid.y, _guid.z);
+            keys[0] = new IntVec3(_guid.x, _guid.y + size.y, _guid.z); //上
+            keys[1] = new IntVec3(_guid.x + size.x, _guid.y, _guid.z); //右
+            keys[2] = new IntVec3(_guid.x, _guid.y - size.y, _guid.z); //下
+            keys[3] = new IntVec3(_guid.x - size.x, _guid.y, _guid.z); //左
             int id = _tableUnit.Id;
             byte neighborDir = 0;
             UnitBase upUnit, downUnit, leftUnit, rightUnit;
@@ -1183,6 +1183,23 @@ namespace GameA.Game
             var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + deltaY);
             return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+        }
+
+        public bool CheckLadderVerticalFloor(int deltaPosY = 0)
+        {
+            var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool CheckRightClimbFloor(int deltaPosY = 0)
