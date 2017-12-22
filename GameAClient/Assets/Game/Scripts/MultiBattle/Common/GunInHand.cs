@@ -10,13 +10,11 @@ namespace GameA.Game
         protected const float _duration = 0.5f;
         protected const float _mixDuration = 0.2f;
         protected Bone _bone;
-        protected float _timer;
-        protected float _originalDir = -1;
+        protected Bone _headBone;
         protected TrackEntry _track;
         protected float _dir;
-        private Bone _headBone;
-        private float _originalHeadDir = -1;
-        private float _headDir;
+        protected float _headDir;
+        protected float _timer;
 
         public GunInHand(PlayerBase player)
         {
@@ -62,12 +60,12 @@ namespace GameA.Game
             if (_bone == null)
             {
                 _bone = _player.Skeleton.FindBone(boneName);
-                _originalDir = _bone.data.rotation;
             }
             if (_bone == null) return;
-            _bone.data.rotation = _dir = GetDir(eShootDir);
+            _dir = GetDir(eShootDir);
+            _bone.SetControlRotate(_dir);
             //保证从前方旋转
-            if (_dir < _originalDir)
+            if (_dir < _bone.data.rotation)
             {
                 _dir += 360;
             }
@@ -77,10 +75,10 @@ namespace GameA.Game
             if (_headBone == null)
             {
                 _headBone = _player.Skeleton.FindBone("SMainBoy0/TouBu");
-                _originalHeadDir = _headBone.data.rotation;
             }
             if (_headBone == null) return;
-            _headBone.data.rotation = _headDir = GetHeadDir(eShootDir);
+            _headDir = GetHeadDir(eShootDir);
+            _headBone.SetControlRotate(_headDir);
         }
 
         protected int GetDir(EShootDirectionType eShootDir)
@@ -134,33 +132,6 @@ namespace GameA.Game
         private int GetHeadDir(EShootDirectionType eShootDir)
         {
             int dir = 0;
-            switch (eShootDir)
-            {
-                case EShootDirectionType.Up:
-                    dir = 45;
-                    break;
-                case EShootDirectionType.Right:
-                    dir = 0;
-                    break;
-                case EShootDirectionType.Down:
-                    dir = -45;
-                    break;
-                case EShootDirectionType.Left:
-                    dir = 0;
-                    break;
-                case EShootDirectionType.RightUp:
-                    dir = 25;
-                    break;
-                case EShootDirectionType.RightDown:
-                    dir = -25;
-                    break;
-                case EShootDirectionType.LeftDown:
-                    dir = -25;
-                    break;
-                case EShootDirectionType.LeftUp:
-                    dir = 25;
-                    break;
-            }
             if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right)
             {
                 switch (eShootDir)
@@ -221,17 +192,49 @@ namespace GameA.Game
                         break;
                 }
             }
+            else
+            {
+                switch (eShootDir)
+                {
+                    case EShootDirectionType.Up:
+                        dir = 45;
+                        break;
+                    case EShootDirectionType.Right:
+                        dir = 0;
+                        break;
+                    case EShootDirectionType.Down:
+                        dir = -45;
+                        break;
+                    case EShootDirectionType.Left:
+                        dir = 0;
+                        break;
+                    case EShootDirectionType.RightUp:
+                        dir = 25;
+                        break;
+                    case EShootDirectionType.RightDown:
+                        dir = -25;
+                        break;
+                    case EShootDirectionType.LeftDown:
+                        dir = -25;
+                        break;
+                    case EShootDirectionType.LeftUp:
+                        dir = 25;
+                        break;
+                }
+            }
             return dir;
         }
 
         protected void Reset()
         {
-            if (_bone == null) return;
-            _bone.data.rotation = _originalDir;
+            if (_bone != null)
+            {
+                _bone.ClearControlRotate();
+            }
             _timer = -1;
             if (_headBone != null)
             {
-                _headBone.data.rotation = _originalHeadDir;
+                _headBone.ClearControlRotate();
             }
         }
 
@@ -259,11 +262,12 @@ namespace GameA.Game
                     }
                     if (_bone != null)
                     {
-                        _bone.data.rotation = Mathf.Lerp(_dir, _originalDir, 1 - _timer / _mixDuration);
+                        _bone.SetControlRotate(Mathf.Lerp(_dir, _bone.data.rotation, 1 - _timer / _mixDuration));
                     }
                     if (_headBone != null)
                     {
-                        _headBone.data.rotation = Mathf.Lerp(_headDir, _originalHeadDir, 1 - _timer / _mixDuration);
+                        _headBone.SetControlRotate(Mathf.Lerp(_headDir, _headBone.data.rotation,
+                            1 - _timer / _mixDuration));
                     }
                 }
             }
