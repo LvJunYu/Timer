@@ -178,6 +178,10 @@ namespace GameA.Game
             {
                 _jumpState = EJumpState.Fall;
             }
+            if (_dropLadderTimer > 0)
+            {
+                _dropLadderTimer--;
+            }
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -270,16 +274,22 @@ namespace GameA.Game
                     }
                     else if (ClimbState == EClimbState.Ladder)
                     {
+                        _climbJump = false;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) &&
                             !(_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
                         {
                             SpeedX = 0;
                             SpeedY = 0;
+                            _dropLadderTimer = 25;
                         }
                         else
                         {
                             SpeedY = 120;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                _dropLadderTimer = 15;
+                            }
                         }
                     }
                     SetClimbState(EClimbState.None);
@@ -317,6 +327,10 @@ namespace GameA.Game
                         _input.CurAppliedInputKeyAry[(int) EInputType.Jump] = false;
                     }
                 }
+            }
+            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) || _input.GetKeyUpApplied(EInputType.Up))
+            {
+                _dropLadderTimer = 0;
             }
         }
 

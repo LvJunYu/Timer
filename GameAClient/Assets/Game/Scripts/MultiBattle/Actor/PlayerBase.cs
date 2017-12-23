@@ -716,10 +716,21 @@ namespace GameA.Game
                         {
                             speed = 50;
                         }
-                        _animation.PlayLoop(CurAnimName(speed), speed * deltaTime);
-                        if (IsMain)
+                        if (speed == 0 && _eClimbState == EClimbState.Ladder)
                         {
-                            GM2DGame.Instance.GameMode.RecordAnimation(CurAnimName(speed), true, speed * deltaTime);
+                            _animation.PlayLoop(IdleAnimName());
+                            if (IsMain)
+                            {
+                                GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
+                            }
+                        }
+                        else
+                        {
+                            _animation.PlayLoop(MoveAnimName(speed), speed * deltaTime);
+                            if (IsMain)
+                            {
+                                GM2DGame.Instance.GameMode.RecordAnimation(MoveAnimName(speed), true, speed * deltaTime);
+                            }
                         }
                     }
                     else
@@ -831,7 +842,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual string CurAnimName(float speed)
+        protected virtual string MoveAnimName(float speed)
         {
             if (IsHoldingBox())
             {
@@ -863,10 +874,6 @@ namespace GameA.Game
                     return "ClimbRunRight";
                 case EClimbState.Up:
                     return "ClimbRunUp";
-            }
-            if (speed <= 60)
-            {
-                return Run;
             }
             return Run;
         }

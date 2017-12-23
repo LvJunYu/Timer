@@ -6,19 +6,30 @@ namespace GameA.Game
     [Unit(Id = 5019, Type = typeof(Ladder))]
     public class Ladder : Magic
     {
-        public override bool CanClimbed
-        {
-            get { return true; }
-        }
+//        public override bool CanClimbed
+//        {
+//            get { return true; }
+//        }
 
         private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
+
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBackground();
+            return true;
+        }
 
         public override void UpdateLogic()
         {
             for (int i = 0; i < _players.Count; i++)
             {
-//                var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
-                _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(_players[i].ColliderGrid));
+                var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
+                _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(grid));
+//                _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(_players[i].ColliderGrid));
             }
         }
 

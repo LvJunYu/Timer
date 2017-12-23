@@ -1202,6 +1202,23 @@ namespace GameA.Game
             return false;
         }
 
+        public bool CheckLadderHorizontalFloor(int deltaPosY = 0)
+        {
+            var grid = new Grid2D(CenterPos.x + deltaPosY, CenterPos.y, CenterPos.x + deltaPosY, CenterPos.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool CheckRightClimbFloor(int deltaPosY = 0)
         {
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);

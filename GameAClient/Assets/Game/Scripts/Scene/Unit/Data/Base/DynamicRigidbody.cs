@@ -12,6 +12,7 @@ namespace GameA.Game
         protected float _speedRatio;
         protected int _motorAcc;
         protected bool _inLadder;
+        protected int _dropLadderTimer;
 
         protected InputBase _input;
 
@@ -81,6 +82,7 @@ namespace GameA.Game
             _jumpLevel = -1;
             _eClimbState = EClimbState.None;
             _inLadder = false;
+            _dropLadderTimer = 0;
             _climbJump = false;
             _stepY = 0;
         }
@@ -214,30 +216,55 @@ namespace GameA.Game
             }
         }
 
+        private void CheckLadder()
+        {
+            if (InLadder && _dropLadderTimer == 0)
+            {
+                SpeedX = 0;
+                SetClimbState(EClimbState.Ladder);
+            }
+        }
+
         protected virtual void CheckClimb()
         {
             switch (ClimbState)
             {
                 case EClimbState.None:
-                    if (InLadder && (_input.GetKeyApplied(EInputType.Down) || _input.GetKeyApplied(EInputType.Up)))
+                    if (_input.GetKeyApplied(EInputType.Down) && !_grounded || _input.GetKeyApplied(EInputType.Up))
                     {
-                        SpeedX = 0;
-                        SetClimbState(EClimbState.Ladder);
-//                        if (_moveDirection == EMoveDirection.Right)
-//                        {
-//                            SetClimbState(EClimbState.Right);
-//                        }
-//                        else if (_moveDirection == EMoveDirection.Left)
-//                        {
-//                            SetClimbState(EClimbState.Left);
-//                        }
+                        CheckLadder();
                     }
                     break;
                 case EClimbState.Ladder:
+//                    if (!CheckLadderVerticalFloor())
+//                    {
+//                        SetClimbState(EClimbState.None);
+//                    }
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
                     }
+//                    if (CheckLadderHorizontalFloor())
+                {
+                    if (_input.GetKeyApplied(EInputType.Right))
+                    {
+                        if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                        {
+                            _motorAcc = 0;
+                        }
+                    }
+                    else if (_input.GetKeyApplied(EInputType.Left))
+                    {
+                        if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                        {
+                            _motorAcc = 0;
+                        }
+                    }
+                }
+//                    else
+//                    {
+//                        SetClimbState(EClimbState.None);
+//                    }
                     break;
                 case EClimbState.Left:
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
@@ -325,6 +352,10 @@ namespace GameA.Game
                             break;
                         case EClimbState.Left:
                             SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Right))
+                            {
+                                CheckLadder();
+                            }
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
                                 if (CheckLeftClimbFloor(_curMaxSpeedX))
@@ -346,6 +377,10 @@ namespace GameA.Game
                             break;
                         case EClimbState.Right:
                             SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Left))
+                            {
+                                CheckLadder();
+                            }
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
                                 if (CheckRightClimbFloor(_curMaxSpeedX))
@@ -440,7 +475,7 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (CanMove && ClimbState != EClimbState.Left && ClimbState != EClimbState.Right && ClimbState != EClimbState.Ladder )
+            if (CanMove && ClimbState != EClimbState.Left && ClimbState != EClimbState.Right)
             {
                 if (_input.GetKeyApplied(EInputType.Right))
                 {
