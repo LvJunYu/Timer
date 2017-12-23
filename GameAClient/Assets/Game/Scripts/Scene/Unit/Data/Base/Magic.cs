@@ -126,6 +126,10 @@ namespace GameA.Game
                                     continue;
                                 }
                             }
+                            if (UnitDefine.IsLadder(Id) && unit.IsActor)
+                            {
+                                continue;
+                            }
                             if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
                             {
                                 if (unit.Id == UnitDefine.ScorchedEarthId)

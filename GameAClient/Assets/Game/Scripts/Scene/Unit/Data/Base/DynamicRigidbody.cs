@@ -236,35 +236,35 @@ namespace GameA.Game
                     }
                     break;
                 case EClimbState.Ladder:
-//                    if (!CheckLadderVerticalFloor())
-//                    {
-//                        SetClimbState(EClimbState.None);
-//                    }
+                    if (!CheckLadderVerticalFloor())
+                    {
+                        SetClimbState(EClimbState.None);
+                    }
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
                     }
-//                    if (CheckLadderHorizontalFloor())
-                {
-                    if (_input.GetKeyApplied(EInputType.Right))
+                    if (CheckLadderHorizontalFloor())
                     {
-                        if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                        if (_input.GetKeyApplied(EInputType.Right))
                         {
-                            _motorAcc = 0;
+                            if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
                         }
                     }
-                    else if (_input.GetKeyApplied(EInputType.Left))
+                    else
                     {
-                        if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
-                        {
-                            _motorAcc = 0;
-                        }
+                        SetClimbState(EClimbState.None);
                     }
-                }
-//                    else
-//                    {
-//                        SetClimbState(EClimbState.None);
-//                    }
                     break;
                 case EClimbState.Left:
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)

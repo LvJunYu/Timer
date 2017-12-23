@@ -19,12 +19,14 @@ namespace GameA.Game
             {
                 return false;
             }
+//            SetSortingOrderFrontest();
             SetSortingOrderBackground();
             return true;
         }
-
+        
         public override void UpdateLogic()
         {
+            base.UpdateLogic();
             for (int i = 0; i < _players.Count; i++)
             {
                 var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);

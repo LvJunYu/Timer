@@ -132,7 +132,7 @@ namespace GameA.Game
         private int GetHeadDir(EShootDirectionType eShootDir)
         {
             int dir = 0;
-            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right || _player.ClimbState == EClimbState.Ladder)
+            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right)
             {
                 switch (eShootDir)
                 {
@@ -161,6 +161,37 @@ namespace GameA.Game
                         dir = 0;
                         break;
                 }
+            }
+            else if (_player.ClimbState == EClimbState.Ladder)
+            {
+                switch (eShootDir)
+                {
+                    case EShootDirectionType.Up:
+                        dir = 15;
+                        break;
+                    case EShootDirectionType.Right:
+                        dir = -25;
+                        break;
+                    case EShootDirectionType.Down:
+                        dir = -60;
+                        break;
+                    case EShootDirectionType.Left:
+                        dir = -25;
+                        break;
+                    case EShootDirectionType.RightUp:
+                        dir = 0;
+                        break;
+                    case EShootDirectionType.RightDown:
+                        dir = -45;
+                        break;
+                    case EShootDirectionType.LeftDown:
+                        dir = -45;
+                        break;
+                    case EShootDirectionType.LeftUp:
+                        dir = 0;
+                        break;
+                }
+
             }
             else if (_player.ClimbState == EClimbState.Up)
             {
