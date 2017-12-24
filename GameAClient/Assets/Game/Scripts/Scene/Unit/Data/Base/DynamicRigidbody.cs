@@ -51,7 +51,11 @@ namespace GameA.Game
 
         protected override bool IsClimbingVertical
         {
-            get { return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right; }
+            get
+            {
+                return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
+                       ClimbState == EClimbState.Ladder;
+            }
         }
 
         public InputBase Input
@@ -216,13 +220,15 @@ namespace GameA.Game
             }
         }
 
-        private void CheckLadder()
+        private bool CheckLadder()
         {
             if (InLadder && _dropLadderTimer == 0)
             {
                 SpeedX = 0;
                 SetClimbState(EClimbState.Ladder);
+                return true;
             }
+            return false;
         }
 
         protected virtual void CheckClimb()
@@ -267,6 +273,10 @@ namespace GameA.Game
                     }
                     break;
                 case EClimbState.Left:
+                    if (_input.GetKeyApplied(EInputType.Right))
+                    {
+                        CheckLadder();
+                    }
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
@@ -277,6 +287,10 @@ namespace GameA.Game
                     }
                     break;
                 case EClimbState.Right:
+                    if (_input.GetKeyApplied(EInputType.Left))
+                    {
+                        CheckLadder();
+                    }
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
@@ -287,20 +301,44 @@ namespace GameA.Game
                     }
                     break;
                 case EClimbState.Up:
+                    if (_input.GetKeyApplied(EInputType.Down))
+                    {
+                        CheckLadder();
+                    }
                     if (CheckUpClimbFloor())
                     {
                         if (_input.GetKeyApplied(EInputType.Right))
                         {
                             if (!CheckUpClimbFloor(_curMaxSpeedX))
                             {
-                                _motorAcc = 0;
+                                if (CheckLadder())
+                                {
+                                    if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                                    {
+                                        _motorAcc = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    _motorAcc = 0;
+                                }
                             }
                         }
                         else if (_input.GetKeyApplied(EInputType.Left))
                         {
                             if (!CheckUpClimbFloor(-_curMaxSpeedX))
                             {
-                                _motorAcc = 0;
+                                if (CheckLadder())
+                                {
+                                    if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                                    {
+                                        _motorAcc = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    _motorAcc = 0;
+                                }
                             }
                         }
                     }
@@ -352,15 +390,18 @@ namespace GameA.Game
                             break;
                         case EClimbState.Left:
                             SpeedY = 0;
-                            if (_input.GetKeyApplied(EInputType.Right))
-                            {
-                                CheckLadder();
-                            }
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
                                 if (CheckLeftClimbFloor(_curMaxSpeedX))
                                 {
                                     SpeedY = _curMaxSpeedX;
+                                }
+                                else
+                                {
+                                    if (CheckLadder() && CheckLadderVerticalFloor(_curMaxSpeedX))
+                                    {
+                                        SpeedY = _curMaxSpeedX;
+                                    }
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
@@ -368,6 +409,13 @@ namespace GameA.Game
                                 if (CheckLeftClimbFloor(-_curMaxSpeedX))
                                 {
                                     SpeedY = -_curMaxSpeedX;
+                                }
+                                else
+                                {
+                                    if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    {
+                                        SpeedY = -_curMaxSpeedX;
+                                    }
                                 }
                                 if (_grounded)
                                 {
@@ -377,15 +425,18 @@ namespace GameA.Game
                             break;
                         case EClimbState.Right:
                             SpeedY = 0;
-                            if (_input.GetKeyApplied(EInputType.Left))
-                            {
-                                CheckLadder();
-                            }
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
                                 if (CheckRightClimbFloor(_curMaxSpeedX))
                                 {
                                     SpeedY = _curMaxSpeedX;
+                                }
+                                else
+                                {
+                                    if (CheckLadder() && CheckLadderVerticalFloor(_curMaxSpeedX))
+                                    {
+                                        SpeedY = _curMaxSpeedX;
+                                    }
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
@@ -393,6 +444,13 @@ namespace GameA.Game
                                 if (CheckRightClimbFloor(-_curMaxSpeedX))
                                 {
                                     SpeedY = -_curMaxSpeedX;
+                                }
+                                else
+                                {
+                                    if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    {
+                                        SpeedY = -_curMaxSpeedX;
+                                    }
                                 }
                                 if (_grounded)
                                 {

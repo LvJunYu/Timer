@@ -48,6 +48,7 @@ namespace GameA.Game
         protected bool _canCross;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
+        protected List<UnitBase> _extraDeltaPosUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
         protected bool _isDisposed;
@@ -1308,14 +1309,15 @@ namespace GameA.Game
         public virtual void CalculateExtraDeltaPos()
         {
             _extraDeltaPos = IntVec2.zero;
-            if (_downUnits.Count > 0)
+            _extraDeltaPosUnits.AddRange(_downUnits);
+            if (_extraDeltaPosUnits.Count > 0)
             {
                 int right = 0;
                 int left = 0;
                 int extraDeltaY = int.MinValue;
-                for (int i = 0; i < _downUnits.Count; i++)
+                for (int i = 0; i < _extraDeltaPosUnits.Count; i++)
                 {
-                    var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
+                    var deltaPos = _extraDeltaPosUnits[i].GetDeltaImpactPos(this);
                     if (deltaPos.x > 0 && deltaPos.x > right)
                     {
                         right = deltaPos.x;
@@ -1340,6 +1342,7 @@ namespace GameA.Game
                     SpeedX -= extraDeltaX;
                 }
             }
+            _extraDeltaPosUnits.Clear();
             _lastExtraDeltaPos = _extraDeltaPos;
             if (_lastExtraDeltaPos.y < 0)
             {

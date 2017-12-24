@@ -31,7 +31,13 @@ namespace GameA.Game
             {
                 var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
                 _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(grid));
-//                _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(_players[i].ColliderGrid));
+            }
+            for (int i = _players.Count-1; i >= 0; i--)
+            {
+                if (!_colliderGrid.Intersects(_players[i].ColliderGrid))
+                {
+                    _players.RemoveAt(i);
+                }
             }
         }
 

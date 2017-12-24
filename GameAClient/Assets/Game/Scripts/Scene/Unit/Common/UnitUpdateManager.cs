@@ -11,7 +11,6 @@ namespace GameA.Game
     {
         public void UpdateLogic(float deltaTime)
         {
-//            var mainUnit = PlayMode.Instance.MainPlayer;
             var playerList = PlayerManager.Instance.PlayerList;
             var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
             var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;

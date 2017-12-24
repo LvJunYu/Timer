@@ -24,7 +24,7 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _revivePos;
 
         protected Box _box;
-        protected List<Ladder> _inLadders = new List<Ladder>(4);
+        protected List<UnitBase> _inLadders = new List<UnitBase>(4);
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
@@ -1012,6 +1012,15 @@ namespace GameA.Game
                     _inLadder = false;
                 }
             }
+        }
+
+        public override void CalculateExtraDeltaPos()
+        {
+            if (_eClimbState == EClimbState.Ladder)
+            {
+                _extraDeltaPosUnits.AddRange(_inLadders);
+            }
+            base.CalculateExtraDeltaPos();
         }
     }
 }

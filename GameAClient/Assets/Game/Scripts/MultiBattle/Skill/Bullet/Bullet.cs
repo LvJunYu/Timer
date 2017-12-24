@@ -192,6 +192,7 @@ namespace GameA.Game
 
         private bool CheckHit(int id)
         {
+            //喷涂枪穿过玩家
             if (_skill.EPaintType != EPaintType.None && !_skill.Owner.IsActor && UnitDefine.IsPlayer(id))
             {
                 return false;

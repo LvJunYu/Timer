@@ -143,7 +143,7 @@ namespace GameA.Game
                         dir = 35;
                         break;
                     case EShootDirectionType.Down:
-                        dir = -60;
+                        dir = -70;
                         break;
                     case EShootDirectionType.Left:
                         dir = -25;
@@ -152,10 +152,10 @@ namespace GameA.Game
                         dir = 25;
                         break;
                     case EShootDirectionType.RightDown:
-                        dir = -75;
+                        dir = -80;
                         break;
                     case EShootDirectionType.LeftDown:
-                        dir = -45;
+                        dir = -55;
                         break;
                     case EShootDirectionType.LeftUp:
                         dir = 0;
@@ -173,7 +173,7 @@ namespace GameA.Game
                         dir = -25;
                         break;
                     case EShootDirectionType.Down:
-                        dir = -60;
+                        dir = -70;
                         break;
                     case EShootDirectionType.Left:
                         dir = -25;
@@ -182,10 +182,10 @@ namespace GameA.Game
                         dir = 0;
                         break;
                     case EShootDirectionType.RightDown:
-                        dir = -45;
+                        dir = -55;
                         break;
                     case EShootDirectionType.LeftDown:
-                        dir = -45;
+                        dir = -55;
                         break;
                     case EShootDirectionType.LeftUp:
                         dir = 0;
