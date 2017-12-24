@@ -276,12 +276,11 @@ namespace GameA.Game
                     {
                         _climbJump = false;
                         //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down) &&
-                            !(_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
+                        if (_input.GetKeyApplied(EInputType.Down))
                         {
                             SpeedX = 0;
                             SpeedY = 0;
-                            _dropLadderTimer = 25;
+                            _dropLadderTimer = 15;
                         }
                         else
                         {
