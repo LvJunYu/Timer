@@ -583,7 +583,8 @@ namespace GameA.Game
                 UpdateTransPos();
                 if (GameModeNetPlay.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid, _trans.position));
+                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid,
+                        _trans.position));
                 }
             }
             else if (GameRun.Instance.IsPlaying)
@@ -599,6 +600,21 @@ namespace GameA.Game
 
         protected virtual void UpdateDynamicView(float deltaTime)
         {
+        }
+
+        protected override void CheckClimbUnit(ref float z)
+        {
+            if (_curClimbUnit != null && _curClimbUnit.UseMagic())
+            {
+                if (_eClimbState == EClimbState.Left)
+                {
+                    z = Mathf.Min(z, _curClimbUnit.Trans.position.z - 0.01f);
+                }
+                else if (_eClimbState == EClimbState.Right)
+                {
+                    z = Mathf.Max(z, _curClimbUnit.Trans.position.z + 0.01f);
+                }
+            }
         }
     }
 }

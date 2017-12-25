@@ -818,11 +818,11 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-
             _colliderPos = GetColliderPos(_curPos);
             _lastColliderGrid = _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
 
+            _curClimbUnit = null;
             _downUnits.Clear();
             _downUnit = null;
             _curBanInputTime = 0;
@@ -1023,8 +1023,10 @@ namespace GameA.Game
             else if (_deltaPos.y != 0 || IsClimbingVertical)
             {
                 var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
-                z = Mathf.Clamp(z, GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f,
-                    GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f);
+                var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
+                var max = GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f;
+                z = Mathf.Clamp(z, min, max);
+                CheckClimbUnit(ref z);
             }
             if (UnitDefine.IsJet(Id))
             {
@@ -1035,6 +1037,10 @@ namespace GameA.Game
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
+        }
+
+        protected virtual void CheckClimbUnit(ref float f)
+        {
         }
 
         protected float GetZ(IntVec2 pos)
