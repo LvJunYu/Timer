@@ -84,6 +84,10 @@ namespace GameA.Game
                         if (unit.IsAlive)
                         {
                             unit.OnIntersect(this);
+                            if (CheckMagicPassBeforeHit(unit))
+                            {
+                                continue;
+                            }
                             switch (_moveDirection)
                             {
                                 case EMoveDirection.Up:
@@ -176,6 +180,11 @@ namespace GameA.Game
             }
         }
 
+        protected virtual bool CheckMagicPassBeforeHit(UnitBase unit)
+        {
+            return false;
+        }
+        
         protected virtual bool CheckMagicPassAfterHit(UnitBase unit)
         {
             //如果碰死了 继续

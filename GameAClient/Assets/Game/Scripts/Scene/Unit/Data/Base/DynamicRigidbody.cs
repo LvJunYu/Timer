@@ -87,6 +87,7 @@ namespace GameA.Game
             _jumpLevel = -1;
             _eClimbState = EClimbState.None;
             _inLadder = false;
+            _inLadders.Clear();
             _dropLadderTimer = 0;
             _climbJump = false;
             _stepY = 0;

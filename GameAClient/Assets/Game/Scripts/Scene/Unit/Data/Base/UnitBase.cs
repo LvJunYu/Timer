@@ -1022,10 +1022,9 @@ namespace GameA.Game
             }
             else if (_deltaPos.y != 0 || IsClimbingVertical)
             {
-                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
-                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
-                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f,
-                    GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f);
+                var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
+                z = Mathf.Clamp(z, GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f,
+                    GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f);
             }
             if (UnitDefine.IsJet(Id))
             {

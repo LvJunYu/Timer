@@ -35,9 +35,9 @@ namespace GameA.Game
             }
         }
         
-        protected override bool CheckMagicPassAfterHit(UnitBase unit)
+        protected override bool CheckMagicPassBeforeHit(UnitBase unit)
         {
-            if (base.CheckMagicPassAfterHit(unit))
+            if (base.CheckMagicPassBeforeHit(unit))
             {
                 return true;
             }
