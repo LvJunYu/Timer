@@ -221,8 +221,11 @@ namespace GameA.Game
 
         private void ApplyFrameData(Msg_RC_FrameData frameData)
         {
-            _debugFile.Write(_curServerFrame + " " + GameRun.Instance.LogicFrameCnt + "");
-            _debugFile.WriteLine(JsonConvert.SerializeObject(frameData));
+            if (_debugFile.Enable)
+            {
+                _debugFile.Write(_curServerFrame + " " + GameRun.Instance.LogicFrameCnt + "");
+                _debugFile.WriteLine(JsonConvert.SerializeObject(frameData));
+            }
             PlayerManager pm = PlayerManager.Instance;
             for (int i = 0; i < frameData.CommandDatas.Count; i++)
             {
