@@ -65,7 +65,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\launcher.ico"
+IDR_MAINFRAME           ICON    DISCARDABLE     "innerRes\\launcher.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,0,0
- PRODUCTVERSION 0,2,0,0
+ FILEVERSION 0,2,1,0
+ PRODUCTVERSION 0,2,1,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -120,14 +120,14 @@ BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "冒险与创造启动器\0"
-            VALUE "FileVersion", "0.2.0.0\0"
+            VALUE "FileVersion", "0.2.1.0\0"
             VALUE "InternalName", "JoyGame_Launcher\0"
             VALUE "LegalCopyright", "北京匠游科技有限公司 版权所有 (C) 2017\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "JoyGame_Launcher.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "MicroClientEx 应用程序\0"
-            VALUE "ProductVersion", "0.2.0.0\0"
+            VALUE "ProductVersion", "0.2.1.2\0"
             VALUE "SpecialBuild", "\0"
         END
     END

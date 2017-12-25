@@ -1285,13 +1285,13 @@ bool CMicroClientExDlg::Download(const CString& strFileURLInServer, bool record,
 		e->GetErrorMessage(tszErrString, sizeof(tszErrString)); 
 		TRACE(_T("Download XSL error! URL: %s,Error: %s"), strFileURLInServer, tszErrString); 
 		e->Delete(); 
-	} /*
+	}
 	catch(...)
 	{
 		memset(szLogBuf,'\0',256);
 		sprintf(szLogBuf,"Download %s Failed. exception",strFileLocalFullPath);
 		WriteLog(szLogBuf);
-	}*/
+	}
 
 	if(pszBuffer != NULL) 
 	{ 

@@ -59,3 +59,4 @@ Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/bin
 sh.exe.stackdump
 *.ncb
 *.opt
+GameAClient/data.txt
