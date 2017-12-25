@@ -441,7 +441,7 @@ namespace GameA.Game
                     Jelly.OnEffect(other, edge.Direction);
                     break;
                 case EPaintType.Clay:
-                    Clay.OnEffect(other, edge.Direction);
+                    Clay.OnEffect(other, edge.Direction, this);
                     break;
                 case EPaintType.Ice:
                     Ice.OnEffect(other, edge.Direction);

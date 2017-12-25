@@ -24,7 +24,6 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _revivePos;
 
         protected Box _box;
-        protected List<UnitBase> _inLadders = new List<UnitBase>(4);
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
@@ -191,6 +190,11 @@ namespace GameA.Game
                 LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
                 return false;
             }
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
+                    _roomUser == null ? -1 : _roomUser.Guid, weaponId));
+            }
             int skillId = tableEquipment.SkillId;
             var tableSkill = TableManager.Instance.GetSkill(skillId);
             if (tableSkill == null)
@@ -260,6 +264,11 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPlay",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
@@ -360,6 +369,11 @@ namespace GameA.Game
                 _box.SetHoder(this);
                 SetFacingDir((EMoveDirection) (_box.DirectionRelativeMain + 1));
             }
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnBoxHoldingChanged {1}",
+                    _roomUser == null ? -1 : _roomUser.Guid, _box.IsHoldingByPlayer));
+            }
             LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByPlayer);
         }
 
@@ -402,6 +416,11 @@ namespace GameA.Game
             {
                 return;
             }
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnDead",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             if (_gun != null)
             {
@@ -425,6 +444,11 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1}",
+                    _roomUser == null ? -1 : _roomUser.Guid, _revivePos));
+            }
             _isReviving = true;
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
@@ -489,6 +513,11 @@ namespace GameA.Game
             {
                 return;
             }
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPortal",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             if (_statusBar != null)
             {
                 _statusBar.SetHPActive(false);
@@ -531,6 +560,11 @@ namespace GameA.Game
 
         public virtual void OnSucceed()
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnSucceed",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             _animation.ClearTrack(0);
             _animation.ClearTrack(1);
             if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
@@ -729,7 +763,8 @@ namespace GameA.Game
                             _animation.PlayLoop(MoveAnimName(speed), speed * deltaTime);
                             if (IsMain)
                             {
-                                GM2DGame.Instance.GameMode.RecordAnimation(MoveAnimName(speed), true, speed * deltaTime);
+                                GM2DGame.Instance.GameMode.RecordAnimation(MoveAnimName(speed), true,
+                                    speed * deltaTime);
                             }
                         }
                     }
@@ -802,6 +837,11 @@ namespace GameA.Game
 
         protected override void OnJump()
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnJump ",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             if (_downUnit == null || _view == null)
             {
                 return;
@@ -815,6 +855,11 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnLand ",
+                    _roomUser == null ? -1 : _roomUser.Guid));
+            }
             if (_downUnit == null || _view == null)
             {
                 return;
@@ -1016,9 +1061,12 @@ namespace GameA.Game
 
         public override void CalculateExtraDeltaPos()
         {
-            if (_eClimbState == EClimbState.Ladder)
+            if (_eClimbState > EClimbState.None)
             {
-                _extraDeltaPosUnits.AddRange(_inLadders);
+                if (_curClimbUnit != null)
+                {
+                    _extraDeltaPosUnits.Add(_curClimbUnit);
+                }
             }
             base.CalculateExtraDeltaPos();
         }

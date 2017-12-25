@@ -12,10 +12,12 @@ namespace GameA.Game
     public class Magic : UnitBase
     {
         protected int _timerMagic;
+
         /// <summary>
         /// 必须可以被640整除
         /// </summary>
         protected int _velocity;
+
         protected IntVec2 _pointACheck;
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
@@ -72,8 +74,10 @@ namespace GameA.Game
                 {
                     int z = 0;
                     GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_moveDirection - 1), _velocity);
-                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
+                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte) (_moveDirection - 1),
+                        _velocity);
+                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
+                        float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
                         var unit = units[i];
@@ -107,26 +111,7 @@ namespace GameA.Game
                                     }
                                     break;
                             }
-                            //如果碰死了 继续
-                            if (!unit.IsAlive)
-                            {
-                                continue;
-                            }
-                            //朝上运动时，如果是角色或者箱子。
-                            if (_moveDirection == EMoveDirection.Up)
-                            {
-                                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
-                                {
-                                    //如果远离
-                                    if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
-                                    {
-                                        Speed = IntVec2.zero;
-                                        _timerMagic = 24;
-                                    }
-                                    continue;
-                                }
-                            }
-                            if (UnitDefine.IsLadder(Id) && unit.IsActor)
+                            if (CheckMagicPassAfterHit(unit))
                             {
                                 continue;
                             }
@@ -148,7 +133,7 @@ namespace GameA.Game
                             }
                             if (unit.Id == UnitDefine.BlueStoneRotateId)
                             {
-                                if (_magicRotate ==null)
+                                if (_magicRotate == null)
                                 {
                                     _magicRotate = unit;
                                 }
@@ -177,7 +162,7 @@ namespace GameA.Game
                                 SpeedY = _velocity;
                                 break;
                             case EMoveDirection.Down:
-                                SpeedY = - _velocity;
+                                SpeedY = -_velocity;
                                 break;
                             case EMoveDirection.Left:
                                 SpeedX = -_velocity;
@@ -190,12 +175,36 @@ namespace GameA.Game
                 }
             }
         }
-        
+
+        protected virtual bool CheckMagicPassAfterHit(UnitBase unit)
+        {
+            //如果碰死了 继续
+            if (!unit.IsAlive)
+            {
+                return true;
+            }
+            //朝上运动时，如果是角色或者箱子。
+            if (_moveDirection == EMoveDirection.Up)
+            {
+                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                {
+                    //如果远离
+                    if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                    {
+                        Speed = IntVec2.zero;
+                        _timerMagic = 24;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
         protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
         }
 
-        private void ChangeMoveDirection()
+        protected void ChangeMoveDirection()
         {
             switch (_moveDirection)
             {
@@ -227,6 +236,11 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
+                if (GameModeNetPlay.DebugEnable())
+                {
+                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid,
+                        _trans.position));
+                }
             }
         }
 

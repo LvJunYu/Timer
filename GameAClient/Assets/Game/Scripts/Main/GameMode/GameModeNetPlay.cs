@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -19,7 +18,7 @@ namespace GameA.Game
     public class GameModeNetPlay : GameModePlay
     {
         private static GameModeNetPlay _instance;
-        
+
         protected Dictionary<long, PlayerBase> _players = new Dictionary<long, PlayerBase>();
         protected List<Msg_RC_FrameData> _serverStartInputFrameList = new List<Msg_RC_FrameData>();
         protected Queue<Msg_RC_FrameData> _serverInputFrameQueue = new Queue<Msg_RC_FrameData>(128);
@@ -40,12 +39,26 @@ namespace GameA.Game
             get { return true; }
         }
 
-        public static DebugFile DebugClientData
+        public static bool DebugEnable()
         {
-            get { return _instance._debugClientData; }
+            if (_instance == null) return false;
+            return _instance._debugClientData.Enable;
         }
 
-        public GameModeNetPlay()
+        public static void WriteDebugData(string str, bool writeLine = true)
+        {
+            if (_instance == null) return;
+            if (writeLine)
+            {
+                _instance._debugClientData.WriteLine(string.Format("_curServerFrame  {0}", str));
+            }
+            else
+            {
+                _instance._debugClientData.Write(string.Format("_curServerFrame  {0}  ", str));
+            }
+        }
+
+        protected GameModeNetPlay()
         {
             _instance = this;
         }
@@ -155,7 +168,6 @@ namespace GameA.Game
                      || _ePhase == EPhase.Failed
                      || _ePhase == EPhase.Succeed)
             {
-                
             }
             else
             {
@@ -312,7 +324,7 @@ namespace GameA.Game
                     Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
                     msg.Result = EBattleResult.EBR_Win;
                     RoomManager.RoomClient.Write(msg);
-                    Loom.QueueOnMainThread(()=>
+                    Loom.QueueOnMainThread(() =>
                     {
                         if (RoomManager.RoomClient.IsConnected())
                         {
@@ -326,7 +338,7 @@ namespace GameA.Game
                     Msg_CR_BattleResult msg = new Msg_CR_BattleResult();
                     msg.Result = EBattleResult.EBR_Fail;
                     RoomManager.RoomClient.Write(msg);
-                    Loom.QueueOnMainThread(()=>
+                    Loom.QueueOnMainThread(() =>
                     {
                         if (RoomManager.RoomClient.IsConnected())
                         {
@@ -336,7 +348,7 @@ namespace GameA.Game
                 }
                     break;
                 case EPhase.Close:
-                break;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("phase", phase, null);
             }
@@ -409,7 +421,6 @@ namespace GameA.Game
 
         internal void OnRoomClose(ERoomCloseCode code)
         {
-
             switch (_ePhase)
             {
                 case EPhase.None:

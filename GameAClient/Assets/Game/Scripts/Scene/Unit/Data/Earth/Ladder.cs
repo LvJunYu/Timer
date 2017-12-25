@@ -6,11 +6,6 @@ namespace GameA.Game
     [Unit(Id = 5019, Type = typeof(Ladder))]
     public class Ladder : Magic
     {
-//        public override bool CanClimbed
-//        {
-//            get { return true; }
-//        }
-
         private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
 
         protected override bool OnInit()
@@ -19,11 +14,10 @@ namespace GameA.Game
             {
                 return false;
             }
-//            SetSortingOrderFrontest();
             SetSortingOrderBackground();
             return true;
         }
-        
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
@@ -32,7 +26,7 @@ namespace GameA.Game
                 var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
                 _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(grid));
             }
-            for (int i = _players.Count-1; i >= 0; i--)
+            for (int i = _players.Count - 1; i >= 0; i--)
             {
                 if (!_colliderGrid.Intersects(_players[i].ColliderGrid))
                 {
@@ -51,6 +45,15 @@ namespace GameA.Game
                     _players.Add(player);
                 }
             }
+        }
+
+        protected override bool CheckMagicPassAfterHit(UnitBase unit)
+        {
+            if (base.CheckMagicPassAfterHit(unit))
+            {
+                return true;
+            }
+            return unit.IsActor;
         }
 
         protected override void Clear()

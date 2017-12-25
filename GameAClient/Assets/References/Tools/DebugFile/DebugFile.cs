@@ -7,6 +7,11 @@ namespace SoyEngine
     {
         private static Dictionary<string, DebugFile> _dict = new Dictionary<string, DebugFile>();
 
+        public virtual bool Enable
+        {
+            get { return true; }
+        }
+        
         public static DebugFile Get(string name)
         {
             return _dict[name];
@@ -69,6 +74,11 @@ namespace SoyEngine
     
         private class EmptyDebugFile : DebugFile
         {
+            public override bool Enable
+            {
+                get { return false; }
+            }
+
             public EmptyDebugFile(string name, string path) : base(name, path)
             {
             }

@@ -5,10 +5,6 @@
 ** Summary : BlueStone
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-
 namespace GameA.Game
 {
     [Unit(Id = 8002, Type = typeof(BlueStone))]

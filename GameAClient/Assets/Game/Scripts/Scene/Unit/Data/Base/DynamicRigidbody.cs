@@ -13,6 +13,7 @@ namespace GameA.Game
         protected int _motorAcc;
         protected bool _inLadder;
         protected int _dropLadderTimer;
+        protected List<UnitBase> _inLadders = new List<UnitBase>(4);
 
         protected InputBase _input;
 
@@ -222,10 +223,10 @@ namespace GameA.Game
 
         private bool CheckLadder()
         {
-            if (InLadder && _dropLadderTimer == 0)
+            if (_inLadder && _dropLadderTimer == 0)
             {
                 SpeedX = 0;
-                SetClimbState(EClimbState.Ladder);
+                SetClimbState(EClimbState.Ladder, _inLadders[0]);
                 return true;
             }
             return false;
@@ -480,7 +481,7 @@ namespace GameA.Game
             }
         }
 
-        public override void SetClimbState(EClimbState eClimbState)
+        public override void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
         {
             _eClimbState = eClimbState;
             switch (ClimbState)
@@ -493,6 +494,11 @@ namespace GameA.Game
                 case EClimbState.Right:
                     SetFacingDir(EMoveDirection.Right);
                     break;
+            }
+            _curClimbUnit = unit;
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("SetClimbState {0}", _eClimbState.ToString()));
             }
 //            LogHelper.Debug(_eClimbState.ToString());
         }
@@ -574,6 +580,10 @@ namespace GameA.Game
                     GM2DGame.Instance.GameMode.ShadowData.RecordPos(_curPos);
                 }
                 UpdateTransPos();
+                if (GameModeNetPlay.DebugEnable())
+                {
+                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid, _trans.position));
+                }
             }
             else if (GameRun.Instance.IsPlaying)
             {

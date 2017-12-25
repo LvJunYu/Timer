@@ -20,7 +20,8 @@ namespace GameA.Game
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
+            ;
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
@@ -227,7 +228,7 @@ namespace GameA.Game
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
             }
-            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsSpawn(table.Id))
+            if (UnitDefine.IsMonster(table.Id))
             {
                 unitEditData.UnitExtra.MaxHp = (ushort) table.Hp;
                 unitEditData.UnitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
@@ -473,6 +474,51 @@ namespace GameA.Game
             if (Mathf.Abs(pairUnitUnitB.Guid.y - unitDesc.Guid.y) > validRange) return false;
             return true;
         }
-        
+
+        public static UnitExtra CheckUnitExtra(int id, UnitExtra unitExtra)
+        {
+            var defaultUnitExtra = GetUnitDefaultData(id).UnitExtra;
+            if (unitExtra.Damage == 0)
+            {
+                unitExtra.Damage = defaultUnitExtra.Damage;
+            }
+            if (unitExtra.EffectRange == 0)
+            {
+                unitExtra.EffectRange = defaultUnitExtra.EffectRange;
+            }
+            if (unitExtra.CastRange == 0)
+            {
+                unitExtra.CastRange = defaultUnitExtra.CastRange;
+            }
+            if (unitExtra.ViewRange == 0)
+            {
+                unitExtra.ViewRange = defaultUnitExtra.ViewRange;
+            }
+            if (unitExtra.BulletCount == 0)
+            {
+                unitExtra.BulletCount = defaultUnitExtra.BulletCount;
+            }
+            if (unitExtra.BulletSpeed == 0)
+            {
+                unitExtra.BulletSpeed = defaultUnitExtra.BulletSpeed;
+            }
+            if (unitExtra.ChargeTime == 0)
+            {
+                unitExtra.ChargeTime = defaultUnitExtra.ChargeTime;
+            }
+            if (unitExtra.MaxHp == 0)
+            {
+                unitExtra.MaxHp = defaultUnitExtra.MaxHp;
+            }
+            if (unitExtra.MaxSpeedX == 0)
+            {
+                unitExtra.MaxSpeedX = defaultUnitExtra.MaxSpeedX;
+            }
+            if (unitExtra.JumpAbility == 0)
+            {
+                unitExtra.JumpAbility = defaultUnitExtra.JumpAbility;
+            }
+            return unitExtra;
+        }
     }
 }

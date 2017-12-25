@@ -54,9 +54,18 @@ namespace GameA.Game
             _mapProcess = 0f;
             var timer = new GameTimer();
             //先读取获得玩家通用属性
-            DataScene2D.Instance.SetPlayerExtra(GM2DTools.ToEngine(mapData.PlayerUnitExtra));
-
+            var playerUnitExtra = GM2DTools.ToEngine(mapData.PlayerUnitExtra);
+            //兼容老地图
+            if (playerUnitExtra.MaxHp == 0) 
+            {
+                DataScene2D.Instance.InitDefaultPlayerUnitExtra();
+            }
+            else
+            {
+                DataScene2D.Instance.SetPlayerExtra(playerUnitExtra);
+            }
             var childList = mapData.UnitExtraInfos;
+            
             if (childList != null)
             {
                 for (int i = 0; i < childList.Count; i++)

@@ -49,6 +49,10 @@ namespace GameA.Game
 
         public virtual bool OnAttached(Table_State tableState, ActorBase target, UnitBase sender)
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+            }
             _run = true;
             _tableState = tableState;
             _target = target;
@@ -83,6 +87,10 @@ namespace GameA.Game
 
         private bool Excute(EEffectType eEffectType)
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+            }
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
                 if (_tableState.EffectTypes[i] != (int) eEffectType)
@@ -122,6 +130,10 @@ namespace GameA.Game
 
         public virtual bool OnRemoved()
         {
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+            }
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
                 var value = _tableState.EffectValues[i];

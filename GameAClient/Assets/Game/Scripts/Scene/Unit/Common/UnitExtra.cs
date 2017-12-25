@@ -43,10 +43,7 @@ namespace GameA.Game
         public MultiParam AddStates;
         public ushort BulletSpeed;
         public ushort ChargeTime;
-
-        ///下面别改字段名，DataScene2D里通过反射赋值
         public ushort MaxHp;
-
         public ushort MaxSpeedX;
         public ushort JumpAbility;
         public byte InjuredReduce;

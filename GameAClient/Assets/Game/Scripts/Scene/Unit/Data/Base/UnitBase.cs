@@ -47,6 +47,7 @@ namespace GameA.Game
         [SerializeField] protected bool _isAlive;
         protected bool _canCross;
 
+        protected UnitBase _curClimbUnit;
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected List<UnitBase> _extraDeltaPosUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -553,6 +554,11 @@ namespace GameA.Game
         {
             get { return _isInterest; }
             set { _isInterest = value; }
+        }
+
+        public UnitBase CurClimbUnit
+        {
+            get { return _curClimbUnit; }
         }
 
         public virtual bool UseMagic()
@@ -1197,6 +1203,7 @@ namespace GameA.Game
                 var unit = units[i];
                 if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
                 {
+                    _curClimbUnit = unit;
                     return true;
                 }
             }
@@ -1214,6 +1221,7 @@ namespace GameA.Game
                 var unit = units[i];
                 if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
                 {
+                    _curClimbUnit = unit;
                     return true;
                 }
             }
@@ -1233,6 +1241,7 @@ namespace GameA.Game
                 if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
                     CheckRightFloor(unit))
                 {
+                    _curClimbUnit = unit;
                     return true;
                 }
             }
@@ -1252,6 +1261,7 @@ namespace GameA.Game
                 if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
                     CheckLeftFloor(unit))
                 {
+                    _curClimbUnit = unit;
                     return true;
                 }
             }
@@ -1271,6 +1281,7 @@ namespace GameA.Game
                 if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
                     CheckUpFloor(unit))
                 {
+                    _curClimbUnit = unit;
                     return true;
                 }
             }
@@ -1795,7 +1806,7 @@ namespace GameA.Game
 
         #endregion
 
-        public virtual void SetClimbState(EClimbState eClimbState)
+        public virtual void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
         {
         }
 

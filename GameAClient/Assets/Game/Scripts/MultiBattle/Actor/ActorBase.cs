@@ -125,6 +125,10 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Actor {0} OnLand ", Guid));
+            }
             if (HasStateType(EStateType.Stun))
             {
                 //落地时候移除掉猛犸象的晕眩
