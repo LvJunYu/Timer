@@ -33,7 +33,7 @@ namespace GameA
             string[] allKey = allWord.Trim().Split('\n');
             for (int i = 0; i < allKey.Length; i++)
             {
-                AddKey(allKey[i]);
+                AddKey(allKey[i].Trim());
             }
         }
 
