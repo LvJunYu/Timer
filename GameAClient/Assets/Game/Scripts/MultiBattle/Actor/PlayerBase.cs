@@ -1058,16 +1058,16 @@ namespace GameA.Game
             }
         }
 
-        public override void CalculateExtraDeltaPos()
+        protected override void GetCarryUnits()
         {
-            if (_eClimbState > EClimbState.None)
+            if (_eClimbState > EClimbState.None && _curClimbUnit != null)
             {
-                if (_curClimbUnit != null)
-                {
-                    _extraDeltaPosUnits.Add(_curClimbUnit);
-                }
+                _carryUnits.Add(_curClimbUnit);
             }
-            base.CalculateExtraDeltaPos();
+            else
+            {
+                base.GetCarryUnits();
+            }
         }
     }
 }

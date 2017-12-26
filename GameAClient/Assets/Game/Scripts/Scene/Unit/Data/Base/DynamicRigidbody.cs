@@ -482,9 +482,21 @@ namespace GameA.Game
             }
         }
 
+        public override void SetStepOnClay()
+        {
+            if (_eClimbState == EClimbState.None)
+            {
+                _onClay = true;
+            }
+        }
+
         public override void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
         {
             _eClimbState = eClimbState;
+            if (_eClimbState > EClimbState.None)
+            {
+                _onClay = false;
+            }
             switch (ClimbState)
             {
                 case EClimbState.None:
@@ -608,11 +620,11 @@ namespace GameA.Game
             {
                 if (_eClimbState == EClimbState.Left)
                 {
-                    z = Mathf.Min(z, _curClimbUnit.Trans.position.z - 0.01f);
+                    z = Mathf.Min(z, _curClimbUnit.Trans.position.z - 1.51f);
                 }
                 else if (_eClimbState == EClimbState.Right)
                 {
-                    z = Mathf.Max(z, _curClimbUnit.Trans.position.z + 0.01f);
+                    z = Mathf.Max(z, _curClimbUnit.Trans.position.z + 1.51f);
                 }
             }
         }

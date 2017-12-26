@@ -52,11 +52,6 @@ namespace GameA.Game
             _excludeUnit = null;
         }
 
-        public override void SetStepOnClay()
-        {
-            _onClay = true;
-        }
-
         public override void SetStepOnIce()
         {
             _onIce = true;
