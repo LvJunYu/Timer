@@ -134,6 +134,10 @@ namespace GameA.Game
             return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
+        protected virtual void CheckClimbUnitChangeDir(EClimbState eClimbState)
+        {
+        }
+
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
@@ -226,6 +230,7 @@ namespace GameA.Game
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
                     _hitUnits[(int) EDirectionType.Down] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Up);
                 }
             }
             for (int i = 0; i < _downUnits.Count; i++)
@@ -286,6 +291,7 @@ namespace GameA.Game
                 {
                     _colliderPos.x = x;
                     _hitUnits[(int) EDirectionType.Left] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Right);
                 }
             }
         }
@@ -329,6 +335,7 @@ namespace GameA.Game
                 {
                     _colliderPos.x = x;
                     _hitUnits[(int) EDirectionType.Right] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Left);
                 }
             }
         }

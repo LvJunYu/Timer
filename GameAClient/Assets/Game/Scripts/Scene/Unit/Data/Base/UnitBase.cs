@@ -1026,7 +1026,7 @@ namespace GameA.Game
                 var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
                 var max = GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f;
                 z = Mathf.Clamp(z, min, max);
-                CheckClimbUnit(ref z);
+                CheckClimbUnitZ(ref z);
             }
             if (UnitDefine.IsJet(Id))
             {
@@ -1039,7 +1039,7 @@ namespace GameA.Game
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
-        protected virtual void CheckClimbUnit(ref float f)
+        protected virtual void CheckClimbUnitZ(ref float f)
         {
         }
 

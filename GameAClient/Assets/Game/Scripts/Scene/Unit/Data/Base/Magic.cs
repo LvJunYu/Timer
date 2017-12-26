@@ -70,6 +70,28 @@ namespace GameA.Game
             }
             if (_isAlive)
             {
+                if (Speed == IntVec2.zero)
+                {
+                    _timerMagic++;
+                    if (_timerMagic == 25)
+                    {
+                        switch (_moveDirection)
+                        {
+                            case EMoveDirection.Up:
+                                SpeedY = _velocity;
+                                break;
+                            case EMoveDirection.Down:
+                                SpeedY = -_velocity;
+                                break;
+                            case EMoveDirection.Left:
+                                SpeedX = -_velocity;
+                                break;
+                            case EMoveDirection.Right:
+                                SpeedX = _velocity;
+                                break;
+                        }
+                    }
+                }
                 if (Speed != IntVec2.zero)
                 {
                     int z = 0;
@@ -129,10 +151,7 @@ namespace GameA.Game
                                         se.OnExplode();
                                     }
                                 }
-                                _timerMagic = 0;
-                                Speed = IntVec2.zero;
                                 ChangeMoveDirection();
-                                _magicRotate = null;
                                 break;
                             }
                             if (unit.Id == UnitDefine.BlueStoneRotateId)
@@ -152,28 +171,6 @@ namespace GameA.Game
                             Speed = IntVec2.zero;
                             _moveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
                             _magicRotate = null;
-                        }
-                    }
-                }
-                else
-                {
-                    _timerMagic++;
-                    if (_timerMagic == 25)
-                    {
-                        switch (_moveDirection)
-                        {
-                            case EMoveDirection.Up:
-                                SpeedY = _velocity;
-                                break;
-                            case EMoveDirection.Down:
-                                SpeedY = -_velocity;
-                                break;
-                            case EMoveDirection.Left:
-                                SpeedX = -_velocity;
-                                break;
-                            case EMoveDirection.Right:
-                                SpeedX = _velocity;
-                                break;
                         }
                     }
                 }
@@ -213,8 +210,10 @@ namespace GameA.Game
         {
         }
 
-        protected void ChangeMoveDirection()
+        public void ChangeMoveDirection()
         {
+            _timerMagic = 0;
+            Speed = IntVec2.zero;
             switch (_moveDirection)
             {
                 case EMoveDirection.Up:
@@ -230,6 +229,7 @@ namespace GameA.Game
                     _moveDirection = EMoveDirection.Left;
                     break;
             }
+            _magicRotate = null;
         }
 
         public override void UpdateView(float deltaTime)

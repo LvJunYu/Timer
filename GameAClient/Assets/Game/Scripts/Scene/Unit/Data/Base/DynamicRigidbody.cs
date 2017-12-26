@@ -247,10 +247,12 @@ namespace GameA.Game
                     if (!CheckLadderVerticalFloor())
                     {
                         SetClimbState(EClimbState.None);
+                        break;
                     }
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
+                        break;
                     }
                     if (CheckLadderHorizontalFloor())
                     {
@@ -282,6 +284,7 @@ namespace GameA.Game
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
+                        break;
                     }
                     if (!CheckLeftClimbFloor())
                     {
@@ -296,6 +299,7 @@ namespace GameA.Game
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
                         SetClimbState(EClimbState.None);
+                        break;
                     }
                     if (!CheckRightClimbFloor())
                     {
@@ -490,9 +494,34 @@ namespace GameA.Game
             }
         }
 
+        protected override void CheckClimbUnitChangeDir(EClimbState eClimbState)
+        {
+            //判断物体是否需要改变方向（用于该物体已经完成移动判定，不变向会出现穿透）
+            if (_curClimbUnit != null && _curClimbUnit.UseMagic() && _eClimbState == eClimbState)
+            {
+                if (_eClimbState == EClimbState.Left && _curClimbUnit.SpeedX > 0)
+                {
+                    ((Magic) _curClimbUnit).ChangeMoveDirection();
+                }
+                else if (_eClimbState == EClimbState.Right && _curClimbUnit.SpeedX < 0)
+                {
+                    ((Magic) _curClimbUnit).ChangeMoveDirection();
+                }
+                else if (_eClimbState == EClimbState.Up && _curClimbUnit.SpeedY < 0)
+                {
+                    ((Magic) _curClimbUnit).ChangeMoveDirection();
+                } 
+            }
+        }
+
         public override void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
         {
+            if (eClimbState == EClimbState.None && _eClimbState > EClimbState.None)
+            {
+                CheckClimbUnitChangeDir(_eClimbState);
+            }
             _eClimbState = eClimbState;
+            _curClimbUnit = unit;
             if (_eClimbState > EClimbState.None)
             {
                 _onClay = false;
@@ -508,7 +537,6 @@ namespace GameA.Game
                     SetFacingDir(EMoveDirection.Right);
                     break;
             }
-            _curClimbUnit = unit;
             if (GameModeNetPlay.DebugEnable())
             {
                 GameModeNetPlay.WriteDebugData(string.Format("SetClimbState {0}", _eClimbState.ToString()));
@@ -614,7 +642,7 @@ namespace GameA.Game
         {
         }
 
-        protected override void CheckClimbUnit(ref float z)
+        protected override void CheckClimbUnitZ(ref float z)
         {
             if (_curClimbUnit != null && _curClimbUnit.UseMagic())
             {
