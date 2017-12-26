@@ -175,7 +175,7 @@ namespace GameA.Game
             {
                 LogHelper.Error("_mainPlayer == null");
             }
-            if (_pausing && _mainPlayer.Life <= 0)
+            if (_pausing && _mainPlayer != null && _mainPlayer.Life <= 0)
             {
                 _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
@@ -380,7 +380,7 @@ namespace GameA.Game
             var playerList = PlayerManager.Instance.PlayerList;
             for (int i = 0; i < playerList.Count; i++)
             {
-                if (playerList[i] != null)
+                if (playerList[i] != null && TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
                 {
                     playerList[i].OnSucceed();
                 }

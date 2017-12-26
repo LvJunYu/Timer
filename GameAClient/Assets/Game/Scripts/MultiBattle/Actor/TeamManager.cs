@@ -19,6 +19,9 @@ namespace GameA.Game
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
         private List<UnitDesc> _unitDescs = new List<UnitDesc>(MaxTeamCount);
         private List<byte> _teams = new List<byte>(MaxTeamCount);
+        private ENetBattleTimeResult _eNetBattleTimeResult;
+        private int _bestScore;
+        private bool _scoreChanged;
         private int _curCameraPlayerIndex;
 
         private byte _myTeamId;
@@ -155,6 +158,7 @@ namespace GameA.Game
                 _scoreDic.Add(teamId, 0);
             }
             _scoreDic[teamId] += score;
+            _scoreChanged = true;
             if (teamId == _myTeamId)
             {
                 Messenger.Broadcast(EMessengerType.OnScoreChanged);
@@ -178,24 +182,53 @@ namespace GameA.Game
             return GetTeamScore(_myTeamId);
         }
 
-        public bool MyTeamHeighScore()
+        public bool MyTeamScoreBest()
         {
-            var myScore = GetMyTeamScore();
-            foreach (var value in _scoreDic.Values)
+            return GetMyTeamScore() >= GetBestScore();
+        }
+
+        public bool CheckTeamWin(int teamId)
+        {
+            switch (_eNetBattleTimeResult)
             {
-                if (value > myScore)
-                {
+                case ENetBattleTimeResult.Score:
+                    return CheckTeamScoreBest(teamId);
+                case ENetBattleTimeResult.AllWin:
+                    return true;
+                case ENetBattleTimeResult.AllFail:
                     return false;
-                }
             }
             return true;
+        }
+
+        private bool CheckTeamScoreBest(int teamId)
+        {
+            return GetTeamScore(teamId) >= GetBestScore();
+        }
+
+        private int GetBestScore()
+        {
+            if (!_scoreChanged) return _bestScore;
+            _bestScore = 0;
+            foreach (var value in _scoreDic.Values)
+            {
+                if (value > _bestScore)
+                {
+                    _bestScore = value;
+                }
+            }
+            _scoreChanged = false;
+            return _bestScore;
         }
 
         public void Reset()
         {
             _curCameraPlayerIndex = 0;
             _curTeamCount = 0;
+            _bestScore = 0;
+            _eNetBattleTimeResult = ENetBattleTimeResult.None;
             _cameraPlayer = null;
+            _scoreChanged = false;
             Players.Clear();
             _scoreDic.Clear();
             _playerDic.Clear();
@@ -268,6 +301,11 @@ namespace GameA.Game
                 return !_playerDic.ContainsKey(teamId) || _playerDic[teamId].Count <= checkTeamCount;
             }
             return true;
+        }
+
+        public void GameOver(ENetBattleTimeResult eNetBattleTimeResult)
+        {
+            _eNetBattleTimeResult = eNetBattleTimeResult;
         }
     }
 }

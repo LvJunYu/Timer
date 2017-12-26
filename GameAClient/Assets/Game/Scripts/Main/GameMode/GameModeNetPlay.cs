@@ -19,7 +19,6 @@ namespace GameA.Game
     {
         private static GameModeNetPlay _instance;
 
-        protected Dictionary<long, PlayerBase> _players = new Dictionary<long, PlayerBase>();
         protected List<Msg_RC_FrameData> _serverStartInputFrameList = new List<Msg_RC_FrameData>();
         protected Queue<Msg_RC_FrameData> _serverInputFrameQueue = new Queue<Msg_RC_FrameData>(128);
         protected int _preServerFrameCount;
@@ -77,7 +76,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _players.Clear();
             return true;
         }
 
@@ -164,10 +162,12 @@ namespace GameA.Game
                     SetPhase(EPhase.RequestStartBattle);
                 }
             }
-            else if (_ePhase == EPhase.Close
-                     || _ePhase == EPhase.Failed
-                     || _ePhase == EPhase.Succeed)
+            else if (_ePhase == EPhase.Close)
             {
+            }
+            else if (_ePhase == EPhase.Failed || _ePhase == EPhase.Succeed)
+            {
+                GameRun.Instance.UpdateSkeletonAnimation();
             }
             else
             {

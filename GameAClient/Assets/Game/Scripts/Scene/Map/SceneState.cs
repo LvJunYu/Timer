@@ -5,10 +5,8 @@
 ** Summary : SceneState  
 ***********************************************************************/
 
-
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -342,7 +340,7 @@ namespace GameA.Game
                     switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
                     {
                         case ENetBattleTimeResult.Score:
-                            NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
+                            NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
                             break;
                         case ENetBattleTimeResult.AllWin:
                             NetBattleWin(true);
@@ -535,7 +533,7 @@ namespace GameA.Game
             if (!IsMulti) return;
             if (Statistics.NetBattleScoreWinCondition && score >= Statistics.NetBattleWinScore)
             {
-                NetBattleWin(myTeam);
+                NetBattleWin(myTeam, true);
             }
         }
 
@@ -544,7 +542,7 @@ namespace GameA.Game
             return _gameTimer >= RunTimeTimeLimit;
         }
 
-        private void NetBattleWin(bool win)
+        private void NetBattleWin(bool win, bool scoreWin = false)
         {
             if (win)
             {
@@ -556,13 +554,21 @@ namespace GameA.Game
                 _runState = ESceneState.Fail;
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
             }
+            if (scoreWin)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
+            }
+            else
+            {
+                TeamManager.Instance.GameOver((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition);
+            }
         }
 
         public void AllPlayerSiTouLe()
         {
             if (Statistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
             {
-                NetBattleWin(TeamManager.Instance.MyTeamHeighScore());
+                NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
             }
             else
             {

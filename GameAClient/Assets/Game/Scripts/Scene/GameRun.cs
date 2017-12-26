@@ -205,6 +205,14 @@ namespace GameA.Game
             _logicFrameCnt++;
         }
 
+        public void UpdateSkeletonAnimation()
+        {
+            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
+            {
+                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
+            }
+        }
+
         #region GameState
 
         public bool ChangeState(ESceneState eSceneState)

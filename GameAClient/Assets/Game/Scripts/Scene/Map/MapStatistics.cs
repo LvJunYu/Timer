@@ -534,6 +534,7 @@ namespace GameA.Game
 
     public enum ENetBattleTimeResult
     {
+        None = -1,
         Score,
         AllWin,
         AllFail

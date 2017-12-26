@@ -46,5 +46,16 @@ namespace GameA.Game
                     break;
             }
         }
+
+        public override void OnSucceed()
+        {
+            base.OnSucceed();
+            if (GM2DGame.Instance.GameMode.SaveShadowData)
+            {
+                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(0);
+                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(1);
+            }
+            GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
+        }
     }
 }

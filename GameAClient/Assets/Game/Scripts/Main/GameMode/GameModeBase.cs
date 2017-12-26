@@ -118,21 +118,29 @@ namespace GameA.Game
             GameRun.Instance.Update();
             if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
+                if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
-                    if (localPlayerInput != null)
+                    if (GameRun.Instance.IsPlaying)
                     {
-                        localPlayerInput.ProcessCheckInput();
-                        List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
-                        for (int i = 0; i < inputChangeList.Count; i++)
+                        LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
+                        if (localPlayerInput != null)
                         {
-                            _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
-                            _inputDatas.Add(inputChangeList[i]);
+                            localPlayerInput.ProcessCheckInput();
+                            List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+                            for (int i = 0; i < inputChangeList.Count; i++)
+                            {
+                                _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+                                _inputDatas.Add(inputChangeList[i]);
+                            }
+                            localPlayerInput.ApplyInputData(inputChangeList);
                         }
-                        localPlayerInput.ApplyInputData(inputChangeList);
+                        UpdateLogic();
                     }
-                    UpdateLogic();
+                    // 结束时依然播放动画
+                    else
+                    {
+                        GameRun.Instance.UpdateSkeletonAnimation();
+                    }
                 }
             }
         }

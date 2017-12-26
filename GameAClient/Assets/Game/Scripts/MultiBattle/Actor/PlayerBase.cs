@@ -566,17 +566,11 @@ namespace GameA.Game
             }
             _animation.ClearTrack(0);
             _animation.ClearTrack(1);
-            if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
-            {
-                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(0);
-                GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(1);
-            }
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);
             }
             _animation.PlayLoop(VictoryAnimName(), 1, 1);
-            GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
         }
 
         public override void OnRevivePos(IntVec2 pos)

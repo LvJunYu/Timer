@@ -573,7 +573,9 @@ namespace GameA
         private void ShowFinalCountDown()
         {
             if (null == _finalCountDownSequence)
+            {
                 CreateFinalCountDownSequence();
+            }
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
             _cachedView.LeftTimeText.color = Color.red;
             _finalCountDownSequence.Restart();
@@ -594,7 +596,7 @@ namespace GameA
         {
             int seconds = curValue % 60;
             int frameCount =
-                100 - (int) ((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
+                100 - Mathf.RoundToInt((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
             frameCount = Mathf.Clamp(frameCount, 0, 99);
             _cachedView.LeftTimeText.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, seconds, frameCount);
         }
