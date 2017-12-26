@@ -514,13 +514,13 @@ namespace GameA.Game
             }
         }
 
-        public override void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
+        public override void SetClimbState(EClimbState newClimbState, UnitBase unit = null)
         {
-            if (eClimbState == EClimbState.None && _eClimbState > EClimbState.None)
+            if (newClimbState == EClimbState.None && _eClimbState > EClimbState.None)
             {
                 CheckClimbUnitChangeDir(_eClimbState);
             }
-            _eClimbState = eClimbState;
+            _eClimbState = newClimbState;
             _curClimbUnit = unit;
             if (_eClimbState > EClimbState.None)
             {

@@ -326,6 +326,76 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public void CreateDefaultScene(int index)
+        {
+            //生成主角
+            {
+                var unitObject = new UnitDesc();
+                unitObject.Id = MapConfig.SpawnId;
+                unitObject.Scale = Vector2.one;
+                unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
+                    ConstDefineGM2D.MapStartPos.y,
+                    (int) EUnitDepth.Earth);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
+            }
+            //生成胜利之门
+            {
+                var unitObject = new UnitDesc();
+                unitObject.Id = MapConfig.FinalItemId;
+                unitObject.Scale = Vector2.one;
+                unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
+                    ConstDefineGM2D.MapStartPos.y, 0);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
+            }
+            //生成地形
+            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            for (int i = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale;
+                i < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale;
+                i += ConstDefineGM2D.ServerTileScale)
+            {
+                //down
+                for (int j = validMapRect.Min.y - ConstDefineGM2D.ServerTileScale;
+                    j < validMapRect.Min.y;
+                    j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(
+                        new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one),
+                        EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+                //up
+                for (int j = validMapRect.Max.y + 1;
+                    j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale;
+                    j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(
+                        new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one),
+                        EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+            }
+            for (int i = validMapRect.Min.y; i < validMapRect.Max.y; i += ConstDefineGM2D.ServerTileScale)
+            {
+                //left
+                for (int j = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale;
+                    j < validMapRect.Min.x;
+                    j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(
+                        new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one),
+                        EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+                //right
+                for (int j = validMapRect.Max.x + 1;
+                    j < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale;
+                    j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnitWithCheck(
+                        new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one),
+                        EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+                }
+            }
+        }
+
 
         private void GenerateMap(int randomSeed)
         {

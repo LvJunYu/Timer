@@ -265,6 +265,7 @@ namespace GameA.Game
     {
         None,
         PortalDoor,
+        BlackHole,
         TrapDoor,
         Max
     }

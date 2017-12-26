@@ -1816,7 +1816,7 @@ namespace GameA.Game
 
         #endregion
 
-        public virtual void SetClimbState(EClimbState eClimbState, UnitBase unit = null)
+        public virtual void SetClimbState(EClimbState newClimbState, UnitBase unit = null)
         {
         }
 

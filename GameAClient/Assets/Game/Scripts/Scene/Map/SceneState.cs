@@ -235,7 +235,7 @@ namespace GameA.Game
             if (_runState == ESceneState.Fail) return 0;
             if (_runState == ESceneState.Win || forceCalculateAll)
             {
-                total += ((int) (RunTimeTimeLimit - _gameTimer)) * 10;
+                total += (int) (RunTimeTimeLimit - _gameTimer) * 10;
                 total += PlayMode.Instance.MainPlayer.Life * 200;
             }
             //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
