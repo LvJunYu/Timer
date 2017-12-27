@@ -153,7 +153,7 @@ namespace GameA.Game
                         break;
                     case EEffectId.Clay:
                         _target.RemoveEnvState(EEnvState.Clay);
-                        if (_target is MonsterBase)
+                        if (_target.IsMonster)
                         {
                             ((MonsterBase) _target).IsClayOnWall = false;
                         }
@@ -264,7 +264,7 @@ namespace GameA.Game
             string path = _tableState.Particle;
             if (_tableState.StateType == (int) EStateType.Clay)
             {
-                if (_target is MonsterBase && ((MonsterBase) _target).IsClayOnWall)
+                if (_target.IsMonster && ((MonsterBase) _target).IsClayOnWall)
                 {
                     switch (((MonsterBase) _target).EClayOnWallDirection)
                     {

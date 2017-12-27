@@ -396,7 +396,6 @@ namespace GameA.Game
             }
         }
 
-
         private void GenerateMap(int randomSeed)
         {
             GenerateBg(randomSeed);

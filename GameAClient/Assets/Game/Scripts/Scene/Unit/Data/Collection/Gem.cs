@@ -5,8 +5,6 @@
 ** Summary : Gem
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;

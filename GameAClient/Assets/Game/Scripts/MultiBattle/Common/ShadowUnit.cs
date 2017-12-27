@@ -1,7 +1,9 @@
 ﻿using System;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -238,6 +240,19 @@ namespace GameA.Game
             if (_playerNameInGame != null)
             {
                 _playerNameInGame.SetName(name);
+            }
+        }
+
+        private void CreatePlayerName()
+        {
+            if (null != _playerNameInGame) return;
+            GameObject playerName =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "PlayerNameInGame")) as
+                    GameObject;
+            if (null != playerName)
+            {
+                _playerNameInGame = playerName.GetComponent<PlayerNameInGame>();
+                CommonTools.SetParent(playerName.transform, _trans);
             }
         }
     }

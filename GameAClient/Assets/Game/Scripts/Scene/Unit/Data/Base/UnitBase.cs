@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using Spine;
 using Spine.Unity;
@@ -88,8 +87,6 @@ namespace GameA.Game
         protected int _curBanInputTime;
 
         [SerializeField] protected SceneNode _dynamicCollider;
-
-        protected bool _isMonster = false;
 
         protected EUnitState _eUnitState;
 
@@ -192,19 +189,6 @@ namespace GameA.Game
         public AnimationSystem Animation
         {
             get { return _animation; }
-        }
-
-        public void CreatePlayerName()
-        {
-            if (null != _playerNameInGame) return;
-            GameObject playerName =
-                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "PlayerNameInGame")) as
-                    GameObject;
-            if (null != playerName)
-            {
-                _playerNameInGame = playerName.GetComponent<PlayerNameInGame>();
-                CommonTools.SetParent(playerName.transform, _trans);
-            }
         }
 
         [SerializeField] protected int _dieTime;
@@ -494,6 +478,33 @@ namespace GameA.Game
             }
         }
 
+        public IntVec2 CenterLeftPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x, _curPos.y + dataSize.x / 2);
+            }
+        }
+
+        public IntVec2 CenterRightPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x, _curPos.y + dataSize.y / 2);
+            }
+        }
+
+        public IntVec2 CenterUpPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y + dataSize.y);
+            }
+        }
+
         public virtual bool IsFreezed
         {
             get { return _isFreezed; }
@@ -527,7 +538,7 @@ namespace GameA.Game
 
         public virtual bool IsMonster
         {
-            get { return _isMonster; }
+            get { return false; }
         }
 
         public virtual byte TeamId
@@ -559,6 +570,11 @@ namespace GameA.Game
         public UnitBase CurClimbUnit
         {
             get { return _curClimbUnit; }
+        }
+
+        public virtual bool CanRope
+        {
+            get { return false; }
         }
 
         public virtual bool UseMagic()

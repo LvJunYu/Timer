@@ -15,9 +15,14 @@ namespace GameA.Game
     {
         protected int _fireTimer;
         protected EClayOnWallDirection _eClayOnWallDirection;
-        protected IntVec2 _hitPos;
+        protected IntVec2 _clayPos;
         protected bool _isClayOnWall;
         protected UnitBase _attactTarget;
+
+        public override bool IsMonster
+        {
+            get { return true; }
+        }
 
         public bool IsClayOnWall
         {
@@ -27,7 +32,7 @@ namespace GameA.Game
                 if (!value)
                 {
                     _eClayOnWallDirection = EClayOnWallDirection.None;
-                    _hitPos = IntVec2.zero;
+                    _clayPos = IntVec2.zero;
                 }
                 _isClayOnWall = value;
             }
@@ -84,7 +89,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _isMonster = true;
 //            _maxSpeedX = 40;
             return true;
         }
@@ -168,7 +172,7 @@ namespace GameA.Game
             }
             _eClayOnWallDirection = eClayOnWallDirection;
             IsClayOnWall = true;
-            _hitPos = CenterPos;
+            _clayPos = CenterPos;
             Speed = IntVec2.zero;
             AddStates(null, 41);
         }
@@ -177,7 +181,7 @@ namespace GameA.Game
         {
             base.UpdateLogic();
             //判断黏在墙上若发生位移，则解除黏在墙上
-            if (IsClayOnWall && (_hitPos - CenterPos).SqrMagnitude() >
+            if (IsClayOnWall && (_clayPos - CenterPos).SqrMagnitude() >
                 GM2DTools.WorldToTile(0.5f) * GM2DTools.WorldToTile(0.5f))
             {
                 RemoveStates(41);
@@ -331,10 +335,6 @@ namespace GameA.Game
 
         public override bool ChangeWay(EMoveDirection eMoveDirection)
         {
-            if (!_isMonster)
-            {
-                return false;
-            }
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;

@@ -105,20 +105,10 @@ namespace GameA
             umCtrlUnitProperty.UITran.localPosition = Vector3.up * 10000;
         }
 
-        #region ui event
-
         private void OnSelectTab(int inx)
         {
             RefreshView((EUIType) (inx + 1));
         }
-
-        #endregion
-
-        #region event
-
-        #endregion
-
-        #region private
 
         private void RefreshView(EUIType eUnitType)
         {
@@ -184,14 +174,7 @@ namespace GameA
         {
             for (int i = 0; i < _cachedView.SelectedCategorys.Length; i++)
             {
-                if (_selectedUnitType == (EUIType) (i + 1))
-                {
-                    _cachedView.SelectedCategorys[i].SetActive(true);
-                }
-                else
-                {
-                    _cachedView.SelectedCategorys[i].SetActive(false);
-                }
+                _cachedView.SelectedCategorys[i].SetActive(_selectedUnitType == (EUIType) (i + 1));
             }
         }
 
@@ -201,7 +184,5 @@ namespace GameA
             umItem.Init(_cachedView.ScrollRect.content, ResScenary);
             return umItem;
         }
-
-        #endregion
     }
 }

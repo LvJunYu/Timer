@@ -474,18 +474,6 @@ namespace GameA.Game
             _fanForce.y = 0;
         }
 
-        protected virtual void CaculateGravity()
-        {
-            if (SpeedY > 0 && _fanForce.y == 0)
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-            }
-            else
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-            }
-        }
-
         public override void SetStepOnClay()
         {
             if (_eClimbState == EClimbState.None)

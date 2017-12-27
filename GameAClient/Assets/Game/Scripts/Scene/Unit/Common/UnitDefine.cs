@@ -186,6 +186,11 @@ namespace GameA.Game
         {
             return id == 5019;
         }
+
+        public static bool IsRope(int id)
+        {
+            return id == 4017;
+        }
     }
 
     public class UnitHelper
