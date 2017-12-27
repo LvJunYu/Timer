@@ -1,5 +1,4 @@
-﻿using System.Security.Permissions;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -27,7 +26,7 @@ namespace GameA.Game
             }
             if (!CheckNeighbor())
             {
-                LogHelper.Error("can not tie this rope!");
+//                LogHelper.Error("can not tie this rope!");
 //                return false;
             }
             if (Rotation == (int) EDirectionType.Right)
@@ -53,22 +52,21 @@ namespace GameA.Game
             }
             var tableUnit = TableManager.Instance.GetUnit(RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
-            var offset = IntVec2.down * size.y;
-            var startPos = CenterUpFloorPos;
-            switch ((EDirectionType) Rotation)
+            IntVec2 offset, startPos;
+            if (Rotation == (int) EDirectionType.Right)
             {
-                case EDirectionType.Right:
-                    startPos = CenterLeftPos;
-                    offset = IntVec2.right * size.y;
-                    break;
-                case EDirectionType.Down:
-                    offset = IntVec2.down * size.y;
-                    startPos = CenterUpPos + offset;
-                    break;
-                case EDirectionType.Left:
-                    offset = IntVec2.left * size.y;
-                    startPos = CenterRightPos + offset;
-                    break;
+                startPos = CenterLeftPos;
+                offset = IntVec2.right * size.y;
+            }
+            else if (Rotation == (int) EDirectionType.Left)
+            {
+                offset = IntVec2.left * size.y;
+                startPos = CenterRightPos + offset;
+            }
+            else
+            {
+                offset = IntVec2.down * size.y;
+                startPos = CenterUpPos + offset;
             }
             for (int i = 0; i < _ropeJoints.Length; i++)
             {
@@ -77,6 +75,10 @@ namespace GameA.Game
 
                 if (i == 0)
                 {
+                    if (_tieUnit == null)
+                    {
+                        CheckNeighbor();
+                    }
                     if (_tieUnit != null)
                     {
                         _ropeJoints[i].SetPreJoint(_tieUnit);
@@ -114,7 +116,7 @@ namespace GameA.Game
                 {
                     canRope = true;
                     _tieUnit = units[i];
-                    if (UnitDefine.IsRope(units[i].Id))
+                    if (units[i].Id == Id)
                     {
                         Rope neighborRope = units[i] as Rope;
                         if (neighborRope != null)
