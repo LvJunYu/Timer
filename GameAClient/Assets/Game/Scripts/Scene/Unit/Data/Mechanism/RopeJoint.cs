@@ -20,6 +20,16 @@ namespace GameA.Game
         private IntVec2 _preJointForce;
         private IntVec2 _nextJointForce;
 
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBackground();
+            return true;
+        }
+
         public override void UpdateLogic()
         {
             Speed = IntVec2.zero;
@@ -86,7 +96,7 @@ namespace GameA.Game
                 SpeedY -= 2;
             }
         }
-        
+
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (other.Id == Id)

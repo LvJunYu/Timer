@@ -79,7 +79,8 @@ namespace GameA.Game
             MapManager.Instance.Dispose();
             PlayerManager.Instance.Dispose();
             TeamManager.Instance.Dispose();
-            
+            RopeManager.Instance.Dispose();
+
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();
             PoolFactory<SpriteUnit>.Clear();

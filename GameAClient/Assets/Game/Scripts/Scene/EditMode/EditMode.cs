@@ -603,6 +603,12 @@ namespace GameA.Game
             {
                 return false;
             }
+            //绑绳子的物体删除下面的绳子
+            Rope rope;
+            if (RopeManager.Instance.CheckTieRope(unitDesc, out rope))
+            {
+                DeleteUnitWithCheck(rope.UnitDesc);
+            }
             //地块上的植被自动删除
             if (UnitDefine.IsEarth(unitDesc.Id))
             {

@@ -273,6 +273,15 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+            //绳子必须绑在石头上
+            if (UnitDefine.RopeId == tableUnit.Id)
+            {
+                if (!RopeManager.Instance.CheckTieUnit(unitDesc, tableUnit))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子只能绑在物体上喔~");
+                    return false;
+                }
+            }
             //怪物同屏数量不可过多
             {
                 if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)

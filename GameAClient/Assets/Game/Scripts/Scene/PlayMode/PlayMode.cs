@@ -128,6 +128,7 @@ namespace GameA.Game
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
+            RopeManager.Instance.Reset();
             PlayerManager.Instance.Reset();
             TeamManager.Instance.Reset();
             _sceneState.Reset();
@@ -581,12 +582,37 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+            RopeManager.Instance.OnPlay();
             BgScene2D.Instance.OnPlay();
             return true;
         }
 
         private void BeforePlay()
         {
+//            List<UnitDesc> deleteRopes = null;
+//            using (var iter = RopeManager.Instance.RopeUnits.GetEnumerator())
+//            {
+//                while (iter.MoveNext())
+//                {
+//                    if (!iter.Current.Value.Tied)
+//                    {
+//                        UnitDesc unitObject = iter.Current.Value.UnitDesc;
+//                        if (deleteRopes == null)
+//                        {
+//                            deleteRopes = new List<UnitDesc>();
+//                        }
+//                        deleteRopes.Add(unitObject);
+//                    }
+//                }
+//            }
+//            if (deleteRopes != null)
+//            {
+//                for (int i = 0; i < deleteRopes.Count; i++)
+//                {
+//                    DeleteUnit(deleteRopes[i]);
+//                }
+//                Messenger<string>.Broadcast(EMessengerType.GameLog, "已移除没有绑住的绳子~");
+//            }
             bool flag = false;
             using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())
             {
