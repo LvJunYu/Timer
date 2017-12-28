@@ -162,7 +162,7 @@ namespace GameA.Game
                         break;
                 }
             }
-            else if (_player.ClimbState == EClimbState.Ladder)
+            else if (_player.ClimbState == EClimbState.Ladder || _player.ClimbState == EClimbState.Rope)
             {
                 switch (eShootDir)
                 {

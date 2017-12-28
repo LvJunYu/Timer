@@ -90,7 +90,7 @@ namespace GameA.Game
             }
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (allOtherUnits[i].IsPlayer)
+                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
                 {
                     continue;
                 }
@@ -99,6 +99,8 @@ namespace GameA.Game
                     allOtherUnits[i].UpdateView(deltaTime);
                 }
             }
+            //控制绳子每个节点的逻辑顺序
+            RopeManager.Instance.UpdateView(deltaTime);
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (playerList[i] != null && playerList[i].GetBoxOperateType() != EBoxOperateType.Pull)

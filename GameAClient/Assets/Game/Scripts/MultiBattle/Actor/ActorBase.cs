@@ -186,6 +186,10 @@ namespace GameA.Game
             {
                 _dropLadderTimer--;
             }
+            if (_dropRopeTimer > 0)
+            {
+                _dropRopeTimer--;
+            }
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -204,6 +208,7 @@ namespace GameA.Game
                 {
                     case EClimbState.None:
                     case EClimbState.Ladder:
+                    case EClimbState.Rope:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -235,15 +240,14 @@ namespace GameA.Game
             _climbJump = false;
             if (_input.GetKeyDownApplied(EInputType.Jump))
             {
-                //攀墙跳
                 if (ClimbState > EClimbState.None)
                 {
-                    _climbJump = true;
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
                     if (ClimbState == EClimbState.Left)
                     {
+                        _climbJump = true;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
                         {
@@ -259,6 +263,7 @@ namespace GameA.Game
                     }
                     else if (ClimbState == EClimbState.Right)
                     {
+                        _climbJump = true;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
                         {
@@ -274,11 +279,11 @@ namespace GameA.Game
                     }
                     else if (ClimbState == EClimbState.Up)
                     {
+                        _climbJump = true;
                         SpeedY = -10;
                     }
                     else if (ClimbState == EClimbState.Ladder)
                     {
-                        _climbJump = false;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down))
                         {
@@ -294,6 +299,17 @@ namespace GameA.Game
                                 _dropLadderTimer = 15;
                             }
                         }
+                    }
+                    else if (ClimbState == EClimbState.Ladder)
+                    {
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                            _dropLadderTimer = 10;
+                        }
+                        //todo 绳子跳
                     }
                     SetClimbState(EClimbState.None);
                 }

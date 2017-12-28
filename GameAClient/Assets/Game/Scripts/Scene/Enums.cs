@@ -13,7 +13,8 @@ namespace GameA.Game
         Left,
         Right,
         Up,
-        Ladder
+        Ladder,
+        Rope
     }
 
     public enum EUnitState

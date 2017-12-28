@@ -40,6 +40,7 @@ namespace GameA.Game
         public const int ScorchedEarthId = 4013;
         public const int CloudId = 4015;
         public const int RopeId = 4017;
+        public const int RopeJointId = 4018;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
         public const int BlueStoneRotateId = 8004;

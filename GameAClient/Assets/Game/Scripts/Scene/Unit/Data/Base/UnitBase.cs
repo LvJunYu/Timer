@@ -47,6 +47,7 @@ namespace GameA.Game
         protected bool _canCross;
 
         protected UnitBase _curClimbUnit;
+        protected Rope _curTieRope;
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected List<UnitBase> _carryUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -1213,43 +1214,7 @@ namespace GameA.Game
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
-        public bool CheckLadderVerticalFloor(int deltaPosY = 0)
-        {
-            var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
-                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
-                {
-                    _curClimbUnit = unit;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool CheckLadderHorizontalFloor(int deltaPosY = 0)
-        {
-            var grid = new Grid2D(CenterPos.x + deltaPosY, CenterPos.y, CenterPos.x + deltaPosY, CenterPos.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
-                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
-                {
-                    _curClimbUnit = unit;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool CheckRightClimbFloor(int deltaPosY = 0)
+        protected bool CheckRightClimbFloor(int deltaPosY = 0)
         {
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
@@ -1269,7 +1234,7 @@ namespace GameA.Game
             return false;
         }
 
-        public bool CheckLeftClimbFloor(int deltaPosY = 0)
+        protected bool CheckLeftClimbFloor(int deltaPosY = 0)
         {
             var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
@@ -1289,7 +1254,7 @@ namespace GameA.Game
             return false;
         }
 
-        public bool CheckUpClimbFloor(int deltaPosX = 0)
+        protected bool CheckUpClimbFloor(int deltaPosX = 0)
         {
             var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
@@ -1314,25 +1279,25 @@ namespace GameA.Game
             return false;
         }
 
-        public bool CheckOnFloor(UnitBase unit)
+        protected bool CheckOnFloor(UnitBase unit)
         {
             return _colliderGrid.YMin - 1 == unit.ColliderGrid.YMax && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
                    _colliderGrid.XMin <= unit.ColliderGrid.XMax;
         }
 
-        public bool CheckUpFloor(UnitBase unit)
+        protected bool CheckUpFloor(UnitBase unit)
         {
             return _colliderGrid.YMax + 1 == unit.ColliderGrid.YMin && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
                    _colliderGrid.XMin <= unit.ColliderGrid.XMax;
         }
 
-        public bool CheckLeftFloor(UnitBase unit)
+        protected bool CheckLeftFloor(UnitBase unit)
         {
             return _colliderGrid.XMin - 1 == unit.ColliderGrid.XMax && _colliderGrid.YMax >= unit.ColliderGrid.YMin &&
                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;
         }
 
-        public bool CheckRightFloor(UnitBase unit)
+        protected bool CheckRightFloor(UnitBase unit)
         {
             return _colliderGrid.XMax + 1 == unit.ColliderGrid.XMin && _colliderGrid.YMax >= unit.ColliderGrid.YMin &&
                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;

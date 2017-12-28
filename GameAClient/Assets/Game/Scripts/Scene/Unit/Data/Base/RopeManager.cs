@@ -160,5 +160,44 @@ namespace GameA.Game
                 }
             }
         }
+
+        public void Transmit(IntVec2 acc, int ropeIndex)
+        {
+            var joints = _ropes[ropeIndex];
+            for (int i = ropeIndex + 1; i < joints.Count; i++)
+            {
+                joints[i].Transmit(acc);
+            }
+            for (int i = ropeIndex - 1; i >= 0; i--)
+            {
+                joints[i].Transmit(acc);
+            }
+        }
+
+        public void UpdateView(float deltaTime)
+        {
+            foreach (var joints in _ropes.Values)
+            {
+                for (int i = 0; i < joints.Count; i++)
+                {
+                    if (joints[i].IsInterest)
+                    {
+                        joints[i].UpdateView(deltaTime);
+                    }
+                }
+            }
+        }
+
+        public int GetMaxHeight(int ropeIndex)
+        {
+            var joints = _ropes[ropeIndex];
+            return joints[joints.Count - 1].CenterPos.y;
+        }
+        
+        public int GetMinHeight(int ropeIndex)
+        {
+            var joints = _ropes[ropeIndex];
+            return joints[0].CenterPos.y;
+        }
     }
 }

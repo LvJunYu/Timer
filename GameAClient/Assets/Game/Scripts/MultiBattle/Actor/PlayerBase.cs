@@ -743,7 +743,7 @@ namespace GameA.Game
                         {
                             speed = 50;
                         }
-                        if (speed == 0 && _eClimbState == EClimbState.Ladder)
+                        if (speed == 0 && (_eClimbState == EClimbState.Ladder || _eClimbState == EClimbState.Rope))
                         {
                             _animation.PlayLoop(IdleAnimName());
                             if (IsMain)
@@ -817,7 +817,7 @@ namespace GameA.Game
         private bool IsClimbingSide()
         {
             return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                    ClimbState == EClimbState.Ladder) &&
+                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
@@ -909,6 +909,7 @@ namespace GameA.Game
                 case EClimbState.Left:
                 case EClimbState.Right:
                 case EClimbState.Ladder:
+                case EClimbState.Rope:
                     return "ClimbRunRight";
                 case EClimbState.Up:
                     return "ClimbRunUp";
@@ -952,6 +953,7 @@ namespace GameA.Game
                 case EClimbState.Left:
                 case EClimbState.Right:
                 case EClimbState.Ladder:
+                case EClimbState.Rope:
                     return "ClimbIdleRight";
                 case EClimbState.Up:
                     return "ClimbIdleUp";

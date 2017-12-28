@@ -1,24 +1,28 @@
 ﻿using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4018, Type = typeof(RopeJoint))]
     public class RopeJoint : RigidbodyUnit
     {
-        private const float ForceNormal = 0.1f;
-        private const float ForceHard = 0.2f;
-        private const float ForceMost = 0.3f;
-        private const int AreaNormal = 2;
-        private const int AreaHard = 4;
-        private const int AreaMost = 6;
-        private const int MaxSpeed = 10;
+        private const int MaxDis = 74;
         private UnitBase _preJoint;
         private UnitBase _nextJoint;
-        private Vector2 _preJointOffset;
-        private Vector2 _nextJointOffset;
+        private Rope _rope;
+        private IntVec2 _acc;
+
         private IntVec2 _preJointForce;
         private IntVec2 _nextJointForce;
+
+        public int MaxHeight
+        {
+            get { return RopeManager.Instance.GetMaxHeight(_rope.RopeIndex); }
+        }
+        
+        public int MinHeight
+        {
+            get { return RopeManager.Instance.GetMinHeight(_rope.RopeIndex); }
+        }
 
         protected override bool OnInit()
         {
@@ -32,74 +36,88 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            Speed = IntVec2.zero;
-            CaculateGravity();
-            _preJointForce = GetNeighborRelativePos(_preJoint, _preJointOffset, true);
-            _nextJointForce = GetNeighborRelativePos(_nextJoint, _nextJointOffset, false);
-            Speed += _preJointForce;
-            Speed += _nextJointForce;
-
-            SpeedX = Mathf.Clamp(SpeedX, -MaxSpeed, MaxSpeed);
-            SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
+            SpeedY -= 2;
         }
 
         public override void UpdateView(float deltaTime)
         {
             _deltaPos = _speed;
             _curPos += _deltaPos;
+            CheckPos();
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
         }
 
-        private IntVec2 GetNeighborRelativePos(UnitBase unit, Vector2 offset, bool isPre)
+        private void CheckPos()
         {
-            if (unit == null) return IntVec2.zero;
-            var relativePos =
-                GM2DTools.WorldToTile((Vector2) unit.View.Trans.position - (Vector2) _view.Trans.position + offset);
-            float force;
-            if (relativePos.SqrMagnitude() < AreaNormal * AreaNormal)
+            if (_preJoint.Id == UnitDefine.RopeJointId)
             {
-                force = ForceNormal;
+                var relativePos = GetNeighborRelativePos(_preJoint);
+                if (relativePos.x > MaxDis)
+                {
+                    relativePos.x = MaxDis;
+                    SpeedX = 0;
+                }
+                else if (relativePos.x < -MaxDis)
+                {
+                    relativePos.x = -MaxDis;
+                    SpeedX = 0;
+                }
+                if (relativePos.y > MaxDis)
+                {
+                    relativePos.y = MaxDis;
+                    SpeedY = 0;
+                }
+                else if (relativePos.y < -MaxDis)
+                {
+                    relativePos.y = -MaxDis;
+                    SpeedY = 0;
+                }
+                CenterPos = _preJoint.CenterPos + relativePos;
             }
-            else if (relativePos.SqrMagnitude() < AreaHard * AreaHard)
-            {
-                force = ForceHard;
-            }
+            //第一个物体固定在原物体下
             else
             {
-                force = ForceMost;
+                CenterUpFloorPos = _preJoint.CenterDownPos;
             }
-//            if (isPre)
-//            {
-//                force += 0.3f;
-//            }
-            return relativePos * force;
+        }
+
+        public void Set(Rope rope)
+        {
+            _rope = rope;
+        }
+
+        private IntVec2 GetNeighborRelativePos(UnitBase unit)
+        {
+            if (unit == null) return IntVec2.zero;
+            return CenterPos - unit.CenterPos;
         }
 
         public void SetPreJoint(UnitBase joint)
         {
             _preJoint = joint;
-            _preJointOffset = Trans.position - joint.Trans.position;
         }
 
         public void SetnNextJoint(UnitBase joint)
         {
             _nextJoint = joint;
-            _nextJointOffset = Trans.position - joint.Trans.position;
         }
 
-        protected override void CaculateGravity()
+        public override void OnIntersect(UnitBase other)
         {
-            if (_nextJoint == null)
+            if (other.IsPlayer && other.IsAlive)
             {
-                SpeedY -= 2;
+                if (_colliderGrid.Intersects(new Grid2D(other.CenterPos, other.CenterPos)))
+                {
+                    ((PlayerBase) other).CheckRope(this);
+                }
             }
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.Id == Id)
+            if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
@@ -108,7 +126,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.Id == Id)
+            if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
@@ -117,7 +135,7 @@ namespace GameA.Game
 
         public override bool OnLeftDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
         {
-            if (other.Id == Id)
+            if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
@@ -126,7 +144,7 @@ namespace GameA.Game
 
         public override bool OnRightDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
         {
-            if (other.Id == Id)
+            if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
@@ -137,6 +155,11 @@ namespace GameA.Game
         {
             base.Clear();
             _preJoint = _nextJoint = null;
+        }
+
+        public void Transmit(IntVec2 acc)
+        {
+            Speed += acc;
         }
     }
 }

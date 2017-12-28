@@ -13,6 +13,7 @@ namespace GameA.Game
         protected int _motorAcc;
         protected bool _inLadder;
         protected int _dropLadderTimer;
+        protected int _dropRopeTimer;
         protected List<UnitBase> _inLadders = new List<UnitBase>(4);
 
         protected InputBase _input;
@@ -55,7 +56,7 @@ namespace GameA.Game
             get
             {
                 return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                       ClimbState == EClimbState.Ladder;
+                       ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope;
             }
         }
 
@@ -243,6 +244,34 @@ namespace GameA.Game
                         CheckLadder();
                     }
                     break;
+                case EClimbState.Rope:
+                    if (!CheckRopeVerticalFloor())
+                    {
+                        SetClimbState(EClimbState.None);
+                        break;
+                    }
+                    if (_input.GetKeyApplied(EInputType.Down) && _grounded)
+                    {
+                        SetClimbState(EClimbState.None);
+                        break;
+                    }
+                    if (_input.GetKeyApplied(EInputType.Right))
+                    {
+                        var ropeJoint = _curClimbUnit as RopeJoint;
+                        if (ropeJoint != null)
+                        {
+                            ropeJoint.Transmit(IntVec2.right * 1);
+                        }
+                    }
+                    else if (_input.GetKeyApplied(EInputType.Left))
+                    {
+                        var ropeJoint = _curClimbUnit as RopeJoint;
+                        if (ropeJoint != null)
+                        {
+                            ropeJoint.Transmit(IntVec2.left * 1);
+                        }
+                    }
+                    break;
                 case EClimbState.Ladder:
                     if (!CheckLadderVerticalFloor())
                     {
@@ -360,6 +389,68 @@ namespace GameA.Game
             }
         }
 
+        protected bool CheckLadderVerticalFloor(int deltaPosY = 0)
+        {
+            var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
+                {
+                    _curClimbUnit = unit;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected bool CheckLadderHorizontalFloor(int deltaPosX = 0)
+        {
+            var grid = new Grid2D(CenterPos.x + deltaPosX, CenterPos.y, CenterPos.x + deltaPosX, CenterPos.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
+                {
+                    _curClimbUnit = unit;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected bool CheckRopeVerticalFloor(int deltaPosY = 0)
+        {
+            RopeJoint joint = _curClimbUnit as RopeJoint;
+            if (joint != null)
+            {
+                return CenterPos.y + deltaPosY < joint.MaxHeight && CenterPos.y + deltaPosY < joint.MinHeight;
+            }
+            return false;
+        }
+
+        public void CheckRope(RopeJoint ropeJoint)
+        {
+            if (_dropRopeTimer == 0)
+            {
+                if (_eClimbState == EClimbState.Rope)
+                {
+                    _curClimbUnit = ropeJoint;
+                }
+                else
+                {
+                    SpeedX = 0;
+                    SetClimbState(EClimbState.Rope, ropeJoint);
+                }
+            }
+        }
+
         protected virtual void UpdateSpeedY()
         {
             SpeedY += _fanForce.y;
@@ -373,6 +464,27 @@ namespace GameA.Game
                 {
                     switch (ClimbState)
                     {
+                        case EClimbState.Rope:
+                            SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                if (CheckRopeVerticalFloor(_curMaxSpeedX))
+                                {
+                                    SpeedY = _curMaxSpeedX;
+                                }
+                            }
+                            else if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                if (CheckRopeVerticalFloor(-_curMaxSpeedX))
+                                {
+                                    SpeedY = -_curMaxSpeedX;
+                                }
+                                if (_grounded)
+                                {
+                                    _eClimbState = EClimbState.None;
+                                }
+                            }
+                            break;
                         case EClimbState.Ladder:
                             SpeedY = 0;
                             if (_input.GetKeyApplied(EInputType.Up))
@@ -498,12 +610,13 @@ namespace GameA.Game
                 else if (_eClimbState == EClimbState.Up && _curClimbUnit.SpeedY < 0)
                 {
                     ((Magic) _curClimbUnit).ChangeMoveDirection();
-                } 
+                }
             }
         }
 
         public override void SetClimbState(EClimbState newClimbState, UnitBase unit = null)
         {
+            //这一帧从Climb变为None时，需要判断抓着的物体是否停止移动，防止穿透
             if (newClimbState == EClimbState.None && _eClimbState > EClimbState.None)
             {
                 CheckClimbUnitChangeDir(_eClimbState);
@@ -568,7 +681,8 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (CanMove && ClimbState != EClimbState.Left && ClimbState != EClimbState.Right)
+            if (CanMove && ClimbState != EClimbState.Left && ClimbState != EClimbState.Right &&
+                ClimbState != EClimbState.Rope)
             {
                 if (_input.GetKeyApplied(EInputType.Right))
                 {

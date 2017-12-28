@@ -95,9 +95,13 @@ namespace GameA.Game
             {
                 _ropeJoints[i] =
                     PlayMode.Instance.CreateRuntimeUnit(RopeJointId, startPos + i * offset, Rotation) as RopeJoint;
-                if (i == 0 && _segmentIndex == 0)
+                if (_ropeJoints[i] != null)
                 {
-                    _ropeJoints[i].SetPreJoint(_tieUnit);
+                    _ropeJoints[i].Set(this);
+                    if (i == 0 && _segmentIndex == 0)
+                    {
+                        _ropeJoints[i].SetPreJoint(_tieUnit);
+                    }
                 }
             }
             RopeManager.Instance.SetRopeJoint(RopeIndex, SegmentIndex, _ropeJoints);
@@ -133,7 +137,7 @@ namespace GameA.Game
                         if (neighborRope != null)
                         {
                             SetPreRope(neighborRope);
-                            RopeManager.Instance.AddRopeJoint(RopeIndex);
+                            RopeManager.Instance.AddRopeJoint(neighborRope.RopeIndex);
                             neighborRope.SetNextRope(this);
                         }
                     }
