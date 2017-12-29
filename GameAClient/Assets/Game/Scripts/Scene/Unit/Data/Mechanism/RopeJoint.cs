@@ -8,14 +8,16 @@ namespace GameA.Game
     {
         private const int MaxDis = 64;
         private const int MaxSpeed = 200;
-        private const float AirPara = 1000f;
+        private const int AirPower = 2;
         private const int Gravity = 10;
-        private const int ForcePower = 4;
+        private const int ForcePower = 6;
         private UnitBase _preJoint;
         private RopeJoint _nextJoint;
         private Rope _rope;
+        private IntVec2 _oriPos;
         private int _jointIndex;
         private IntVec2 _acc;
+        private bool _right;
 
         private IntVec2 _preJointForce;
         private IntVec2 _nextJointForce;
@@ -62,19 +64,31 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-//            SpeedX = Mathf.Clamp(SpeedX, -MaxSpeed, MaxSpeed);
-//            SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
             _deltaPos = _speed;
             _curPos += _deltaPos;
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
+//            if (!_addForce)
+//            {
+//                var sqr = Speed.SqrMagnitude();
+//                var resistance = Speed * (sqr / (sqr + AirPara));
+//                SpeedX = Util.ConstantLerp(SpeedX, 0, Mathf.Abs(resistance.x));
+//                SpeedY = Util.ConstantLerp(SpeedY, 0, Mathf.Abs(resistance.y));
+//            }
+//            bool right = _curPos.x > _oriPos.x;
+//            if (_right != right)
+            {
+                SpeedX = Util.ConstantLerp(SpeedX, 0, AirPower);
+//                _right = right;
+            }
         }
 
-        public void Set(Rope rope, int jointIndex)
+        public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
         {
             _rope = rope;
             _jointIndex = jointIndex;
+            _oriPos = oriPos;
         }
 
         public IntVec2 GetNeighborRelativePos(bool pre)
@@ -164,13 +178,6 @@ namespace GameA.Game
 
         public void CheckPos()
         {
-//            if (!_addForce)
-//            {
-//                var sqr = Speed.SqrMagnitude();
-//                var resistance = Speed * (sqr / (sqr + AirPara));
-//                SpeedX = Util.ConstantLerp(SpeedX, 0, Mathf.Abs(resistance.x));
-//                SpeedY = Util.ConstantLerp(SpeedY, 0, Mathf.Abs(resistance.y));
-//            }
             if (PreJoint.Id == UnitDefine.RopeJointId)
             {
                 var target = PreJoint.CurPos + PreJoint.Speed;
@@ -212,12 +219,9 @@ namespace GameA.Game
             return true;
         }
 
-        public static bool _addForce;
-
         public void AddForce(IntVec2 forceDir)
         {
-            RopeManager.Instance.Transmit(forceDir * ForcePower, _rope.RopeIndex, JointIndex);
-            _addForce = true;
+            RopeManager.Instance.AddForce(forceDir * ForcePower, _rope.RopeIndex, JointIndex);
         }
     }
 }

@@ -96,7 +96,7 @@ namespace GameA.Game
                     PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, startPos + i * offset, Rotation) as RopeJoint;
                 if (_ropeJoints[i] != null)
                 {
-                    _ropeJoints[i].Set(this,_segmentIndex * JointCount + i);
+                    _ropeJoints[i].Set(this,_segmentIndex * JointCount + i, startPos + i * offset);
                     if (i == 0 && _segmentIndex == 0)
                     {
                         _ropeJoints[i].SetPreJoint(_tieUnit);

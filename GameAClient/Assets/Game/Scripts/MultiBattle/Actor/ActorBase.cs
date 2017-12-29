@@ -307,25 +307,28 @@ namespace GameA.Game
                         {
                             SpeedX = 0;
                             SpeedY = 0;
+                            _dropRopeTimer = 30;
                         }
                         else
                         {
                             Speed = _curClimbUnit.Speed;
                             if (SpeedX > 0)
                             {
-                                SpeedX = Mathf.Clamp(SpeedX, 100, 200);
+                                SpeedX += 50;
                             }
                             else if (SpeedX < 0)
                             {
-                                SpeedX = Mathf.Clamp(SpeedX, -200, -100);
+                                SpeedX -= 50;
                             }
+                            SpeedX = Mathf.Clamp(SpeedX, -200, 200);
+                            
                             SpeedY += 120;
                             if (SpeedY > 0)
                             {
                                 SpeedY = Mathf.Clamp(SpeedY, 120, 250);
                             }
+                            _dropRopeTimer = 10;
                         }
-                        _dropRopeTimer = 10;
                     }
                     SetClimbState(EClimbState.None);
                 }

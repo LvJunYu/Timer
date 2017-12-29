@@ -112,6 +112,7 @@ namespace GameA
 
         //PVP
         public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
+
         public static readonly int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
@@ -121,7 +122,7 @@ namespace GameA
         public static readonly int OnQueryRoomRet = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnJoinRoomFail = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
-        
+
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 
@@ -171,14 +172,19 @@ namespace GameA
 
         //留言板
         public static readonly int OnPublishDockActiveChanged = SoyEngine.EMessengerType.NextId++;
+
         public static readonly int OnReplyUserMessage = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnReplyProjectComment = SoyEngine.EMessengerType.NextId++;
-        
+
         //乱入
         public static readonly int OnShadowBattleStart = SoyEngine.EMessengerType.NextId++;
+
         public static readonly int OnShadowBattleFriendHelp = SoyEngine.EMessengerType.NextId++;
-        
+
         //新消息通知
         public static readonly int OnInfoNotificationChanged = SoyEngine.EMessengerType.NextId++;
+
+        //绳子
+        public static readonly int OnPlayerClimbRope = SoyEngine.EMessengerType.NextId++;
     }
 }

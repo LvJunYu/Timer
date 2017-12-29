@@ -442,9 +442,10 @@ namespace GameA.Game
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
                 _curRopeProgress = 0;
+                Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.JointIndex, true);
             }
         }
-        
+
         protected float _curRopeProgress;
 
         protected virtual void UpdateSpeedY()
@@ -616,6 +617,14 @@ namespace GameA.Game
             if (newClimbState == EClimbState.None && _eClimbState > EClimbState.None)
             {
                 CheckClimbUnitChangeDir(_eClimbState);
+                if (_eClimbState == EClimbState.Rope)
+                {
+                    var ropeJoint = _curClimbUnit as RopeJoint;
+                    if (ropeJoint != null)
+                    {
+                        Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.JointIndex, false);
+                    }
+                }
             }
             _eClimbState = newClimbState;
             _curClimbUnit = unit;
