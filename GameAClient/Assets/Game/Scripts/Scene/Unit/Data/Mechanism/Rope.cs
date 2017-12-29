@@ -26,7 +26,6 @@ namespace GameA.Game
             get { return _tied; }
         }
 
-        public const int RopeJointId = 4018;
         public const int JointCount = 10;
         private bool _tied;
         private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
@@ -69,7 +68,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(false);
             }
-            var tableUnit = TableManager.Instance.GetUnit(RopeJointId);
+            var tableUnit = TableManager.Instance.GetUnit(UnitDefine.RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
             IntVec2 offset, startPos;
             if (Rotation == (int) EDirectionType.Right)
@@ -87,17 +86,17 @@ namespace GameA.Game
                 offset = IntVec2.down * size.y;
                 startPos = CenterUpPos + offset;
             }
-            if (!_tied && !CheckNeighbor())
+            if (!_tied && !CheckTieUnit())
             {
                 LogHelper.Error("rope can not tie!");
             }
             for (int i = 0; i < _ropeJoints.Length; i++)
             {
                 _ropeJoints[i] =
-                    PlayMode.Instance.CreateRuntimeUnit(RopeJointId, startPos + i * offset, Rotation) as RopeJoint;
+                    PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, startPos + i * offset, Rotation) as RopeJoint;
                 if (_ropeJoints[i] != null)
                 {
-                    _ropeJoints[i].Set(this);
+                    _ropeJoints[i].Set(this,_segmentIndex * JointCount + i);
                     if (i == 0 && _segmentIndex == 0)
                     {
                         _ropeJoints[i].SetPreJoint(_tieUnit);
@@ -107,7 +106,7 @@ namespace GameA.Game
             RopeManager.Instance.SetRopeJoint(RopeIndex, SegmentIndex, _ropeJoints);
         }
 
-        public bool CheckNeighbor()
+        public bool CheckTieUnit()
         {
             _tied = false;
             Grid2D checkGrid;
@@ -136,15 +135,21 @@ namespace GameA.Game
                         Rope neighborRope = units[i] as Rope;
                         if (neighborRope != null)
                         {
+                            //保证前面的绳子先注册
+                            if (!neighborRope._tied && !neighborRope.CheckTieUnit())
+                            {
+                                LogHelper.Error("rope can not tie");
+                                return false;
+                            }
                             SetPreRope(neighborRope);
-                            RopeManager.Instance.AddRopeJoint(neighborRope.RopeIndex);
+                            RopeManager.Instance.SetRopeJoint(ref _ropeIndex);
                             neighborRope.SetNextRope(this);
                         }
                     }
                     else
                     {
                         _segmentIndex = 0;
-                        _ropeIndex = RopeManager.Instance.AddNewRope();
+                        RopeManager.Instance.SetRopeJoint(ref _ropeIndex, true);
                     }
                     break;
                 }

@@ -47,7 +47,6 @@ namespace GameA.Game
         protected bool _canCross;
 
         protected UnitBase _curClimbUnit;
-        protected Rope _curTieRope;
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected List<UnitBase> _carryUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -1308,7 +1307,7 @@ namespace GameA.Game
             _carryUnits.AddRange(_downUnits);
         }
 
-        public void CalculateExtraDeltaPos()
+        public virtual void CalculateExtraDeltaPos()
         {
             _extraDeltaPos = IntVec2.zero;
             GetCarryUnits();

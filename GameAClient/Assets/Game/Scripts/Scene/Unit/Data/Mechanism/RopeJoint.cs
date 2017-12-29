@@ -1,14 +1,20 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4018, Type = typeof(RopeJoint))]
     public class RopeJoint : RigidbodyUnit
     {
-        private const int MaxDis = 74;
+        private const int MaxDis = 64;
+        private const int MaxSpeed = 200;
+        private const float AirPara = 1000f;
+        private const int Gravity = 10;
+        private const int ForcePower = 4;
         private UnitBase _preJoint;
-        private UnitBase _nextJoint;
+        private RopeJoint _nextJoint;
         private Rope _rope;
+        private int _jointIndex;
         private IntVec2 _acc;
 
         private IntVec2 _preJointForce;
@@ -18,10 +24,25 @@ namespace GameA.Game
         {
             get { return RopeManager.Instance.GetMaxHeight(_rope.RopeIndex); }
         }
-        
+
         public int MinHeight
         {
             get { return RopeManager.Instance.GetMinHeight(_rope.RopeIndex); }
+        }
+
+        public UnitBase PreJoint
+        {
+            get { return _preJoint; }
+        }
+
+        public RopeJoint NextJoint
+        {
+            get { return _nextJoint; }
+        }
+
+        public int JointIndex
+        {
+            get { return _jointIndex; }
         }
 
         protected override bool OnInit()
@@ -36,62 +57,35 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            SpeedY -= 2;
+            SpeedY -= Gravity;
         }
 
         public override void UpdateView(float deltaTime)
         {
+//            SpeedX = Mathf.Clamp(SpeedX, -MaxSpeed, MaxSpeed);
+//            SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
             _deltaPos = _speed;
             _curPos += _deltaPos;
-            CheckPos();
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
         }
 
-        private void CheckPos()
-        {
-            if (_preJoint.Id == UnitDefine.RopeJointId)
-            {
-                var relativePos = GetNeighborRelativePos(_preJoint);
-                if (relativePos.x > MaxDis)
-                {
-                    relativePos.x = MaxDis;
-                    SpeedX = 0;
-                }
-                else if (relativePos.x < -MaxDis)
-                {
-                    relativePos.x = -MaxDis;
-                    SpeedX = 0;
-                }
-                if (relativePos.y > MaxDis)
-                {
-                    relativePos.y = MaxDis;
-                    SpeedY = 0;
-                }
-                else if (relativePos.y < -MaxDis)
-                {
-                    relativePos.y = -MaxDis;
-                    SpeedY = 0;
-                }
-                CenterPos = _preJoint.CenterPos + relativePos;
-            }
-            //第一个物体固定在原物体下
-            else
-            {
-                CenterUpFloorPos = _preJoint.CenterDownPos;
-            }
-        }
-
-        public void Set(Rope rope)
+        public void Set(Rope rope, int jointIndex)
         {
             _rope = rope;
+            _jointIndex = jointIndex;
         }
 
-        private IntVec2 GetNeighborRelativePos(UnitBase unit)
+        public IntVec2 GetNeighborRelativePos(bool pre)
         {
-            if (unit == null) return IntVec2.zero;
-            return CenterPos - unit.CenterPos;
+            if (pre)
+            {
+                if (JointIndex == 0) return IntVec2.zero;
+                return PreJoint.CenterDownPos - CenterDownPos;
+            }
+            if (NextJoint == null) return IntVec2.zero;
+            return NextJoint.CenterDownPos - CenterDownPos;
         }
 
         public void SetPreJoint(UnitBase joint)
@@ -99,19 +93,16 @@ namespace GameA.Game
             _preJoint = joint;
         }
 
-        public void SetnNextJoint(UnitBase joint)
+        public void SetnNextJoint(RopeJoint joint)
         {
             _nextJoint = joint;
         }
 
         public override void OnIntersect(UnitBase other)
         {
-            if (other.IsPlayer && other.IsAlive)
+            if (other.IsPlayer)
             {
-                if (_colliderGrid.Intersects(new Grid2D(other.CenterPos, other.CenterPos)))
-                {
-                    ((PlayerBase) other).CheckRope(this);
-                }
+                ((PlayerBase) other).CheckRope(this);
             }
         }
 
@@ -133,22 +124,22 @@ namespace GameA.Game
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
-        public override bool OnLeftDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
+        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
             if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
-            return base.OnLeftDownHit(other, ref x, ref y, checkOnly);
+            return base.OnLeftHit(other, ref x, checkOnly);
         }
 
-        public override bool OnRightDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
+        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
             if (other.Id == Id || other.IsActor)
             {
                 return false;
             }
-            return base.OnRightDownHit(other, ref x, ref y, checkOnly);
+            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         protected override void Clear()
@@ -157,9 +148,76 @@ namespace GameA.Game
             _preJoint = _nextJoint = null;
         }
 
-        public void Transmit(IntVec2 acc)
+        public void FixSpeedFromPre()
         {
-            Speed += acc;
+            var target = PreJoint.CurPos + PreJoint.Speed;
+            var from = CurPos + Speed;
+            if (!CheckDis(ref from, ref target, false))
+            {
+                Speed = from - CurPos;
+                if (NextJoint != null)
+                {
+                    NextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
+        public void CheckPos()
+        {
+//            if (!_addForce)
+//            {
+//                var sqr = Speed.SqrMagnitude();
+//                var resistance = Speed * (sqr / (sqr + AirPara));
+//                SpeedX = Util.ConstantLerp(SpeedX, 0, Mathf.Abs(resistance.x));
+//                SpeedY = Util.ConstantLerp(SpeedY, 0, Mathf.Abs(resistance.y));
+//            }
+            if (PreJoint.Id == UnitDefine.RopeJointId)
+            {
+                var target = PreJoint.CurPos + PreJoint.Speed;
+                var from = CurPos + Speed;
+                if (!CheckDis(ref from, ref target))
+                {
+                    PreJoint.Speed = target - PreJoint.CurPos;
+                }
+            }
+            //第一个物体固定在原物体下
+            else
+            {
+                Speed = PreJoint.CenterDownPos - CenterUpFloorPos;
+                if (NextJoint != null)
+                {
+                    NextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
+        public bool CheckDis(ref IntVec2 from, ref IntVec2 target, bool changeTarget = true)
+        {
+            var relative = target - from;
+            var sqr = relative.SqrMagnitude();
+            if (sqr > MaxDis * MaxDis)
+            {
+                var distance = Mathf.Pow(sqr, 0.5f);
+                var delta = 1 - MaxDis / distance;
+                if (changeTarget)
+                {
+                    target -= relative * delta;
+                }
+                else
+                {
+                    from += relative * delta;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public static bool _addForce;
+
+        public void AddForce(IntVec2 forceDir)
+        {
+            RopeManager.Instance.Transmit(forceDir * ForcePower, _rope.RopeIndex, JointIndex);
+            _addForce = true;
         }
     }
 }

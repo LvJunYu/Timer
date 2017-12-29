@@ -300,16 +300,32 @@ namespace GameA.Game
                             }
                         }
                     }
-                    else if (ClimbState == EClimbState.Ladder)
+                    else if (ClimbState == EClimbState.Rope)
                     {
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down))
                         {
                             SpeedX = 0;
                             SpeedY = 0;
-                            _dropLadderTimer = 10;
                         }
-                        //todo 绳子跳
+                        else
+                        {
+                            Speed = _curClimbUnit.Speed;
+                            if (SpeedX > 0)
+                            {
+                                SpeedX = Mathf.Clamp(SpeedX, 100, 200);
+                            }
+                            else if (SpeedX < 0)
+                            {
+                                SpeedX = Mathf.Clamp(SpeedX, -200, -100);
+                            }
+                            SpeedY += 120;
+                            if (SpeedY > 0)
+                            {
+                                SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                            }
+                        }
+                        _dropRopeTimer = 10;
                     }
                     SetClimbState(EClimbState.None);
                 }
@@ -347,7 +363,8 @@ namespace GameA.Game
                     }
                 }
             }
-            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) || _input.GetKeyUpApplied(EInputType.Up))
+            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
+                _input.GetKeyUpApplied(EInputType.Up))
             {
                 _dropLadderTimer = 0;
             }
@@ -852,6 +869,42 @@ namespace GameA.Game
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
             if (_statusBar != null) _statusBar.SetOwner(this);
+        }
+
+        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (other.Id == UnitDefine.RopeJointId)
+            {
+                return false;
+            }
+            return base.OnDownHit(other, ref y, checkOnly);
+        }
+
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (other.Id == UnitDefine.RopeJointId)
+            {
+                return false;
+            }
+            return base.OnUpHit(other, ref y, checkOnly);
+        }
+
+        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
+        {
+            if (other.Id == UnitDefine.RopeJointId)
+            {
+                return false;
+            }
+            return base.OnLeftHit(other, ref x, checkOnly);
+        }
+
+        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
+        {
+            if (other.Id == UnitDefine.RopeJointId)
+            {
+                return false;
+            }
+            return base.OnRightHit(other, ref x, checkOnly);
         }
     }
 }

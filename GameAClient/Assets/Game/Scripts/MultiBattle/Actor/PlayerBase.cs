@@ -753,6 +753,10 @@ namespace GameA.Game
                         }
                         else
                         {
+                            if (_eClimbState == EClimbState.Rope)
+                            {
+                                speed = 50;
+                            }
                             _animation.PlayLoop(MoveAnimName(speed), speed * deltaTime);
                             if (IsMain)
                             {
@@ -1064,6 +1068,52 @@ namespace GameA.Game
             {
                 base.GetCarryUnits();
             }
+        }
+
+        public override void UpdateView(float deltaTime)
+        {
+            if (_eClimbState == EClimbState.Rope)
+            {
+                RopeJoint joint = _curClimbUnit as RopeJoint;
+                if (joint != null)
+                {
+                    if (_input.GetKeyApplied(EInputType.Up))
+                    {
+                        _curRopeProgress += 1f;
+                    }
+                    else if (_input.GetKeyApplied(EInputType.Down))
+                    {
+                        _curRopeProgress -= 1f;
+                    }
+                    IntVec2 delta = IntVec2.zero;
+                    if (_curRopeProgress >= 1)
+                    {
+                        if (joint.JointIndex != 0)
+                        {
+                            _curClimbUnit = joint.PreJoint;
+                        }
+                        _curRopeProgress = 0;
+                    }
+                    else if (_curRopeProgress > 0)
+                    {
+                        delta = joint.GetNeighborRelativePos(true);
+                    }
+                    else if (_curRopeProgress <= -1)
+                    {
+                        if (joint.NextJoint != null)
+                        {
+                            _curClimbUnit = joint.NextJoint;
+                        }
+                        _curRopeProgress = 0;
+                    }
+                    else if (_curRopeProgress < 0)
+                    {
+                        delta = -1 * joint.GetNeighborRelativePos(false);
+                    }
+                    Speed = _curClimbUnit.CenterPos - CenterPos + delta * _curRopeProgress;
+                }
+            }
+            base.UpdateView(deltaTime);
         }
     }
 }

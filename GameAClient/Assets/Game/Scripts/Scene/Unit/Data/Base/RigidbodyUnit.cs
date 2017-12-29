@@ -425,16 +425,5 @@ namespace GameA.Game
             return deltaImpactPos;
         }
         
-        protected virtual void CaculateGravity()
-        {
-            if (SpeedY > 0 && _fanForce.y == 0)
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-            }
-            else
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-            }
-        }
     }
 }

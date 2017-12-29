@@ -52,24 +52,22 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void AddRopeJoint(int ropeIndex)
+        public void SetRopeJoint(ref int ropeIndex, bool createNew = false)
         {
-            _ropes[ropeIndex].Capacity += Rope.JointCount;
+            if (createNew)
+            {
+                _curDicIndex++;
+                _ropes.Add(_curDicIndex, new List<RopeJoint>(Rope.JointCount));
+                ropeIndex = _curDicIndex;
+            }
+            else
+            {
+                _ropes[ropeIndex].Capacity += Rope.JointCount;
+            }
             for (int j = 0; j < Rope.JointCount; j++)
             {
                 _ropes[ropeIndex].Add(null);
             }
-        }
-
-        public int AddNewRope()
-        {
-            _curDicIndex++;
-            _ropes.Add(_curDicIndex, new List<RopeJoint>(Rope.JointCount));
-            for (int j = 0; j < Rope.JointCount; j++)
-            {
-                _ropes[_curDicIndex].Add(null);
-            }
-            return _curDicIndex;
         }
 
         public void SetRopeJoint(int ropeIndex, int segmentIndex, RopeJoint[] ropeJoints)
@@ -154,47 +152,59 @@ namespace GameA.Game
         {
             foreach (var rope in _ropeUnits.Values)
             {
-                if (!rope.Tied && !rope.CheckNeighbor())
+                if (!rope.Tied && !rope.CheckTieUnit())
                 {
                     LogHelper.Error("rope can not tie!");
                 }
             }
         }
 
-        public void Transmit(IntVec2 acc, int ropeIndex)
+        public void Transmit(IntVec2 force, int ropeIndex, int jointIndex)
         {
             var joints = _ropes[ropeIndex];
-            for (int i = ropeIndex + 1; i < joints.Count; i++)
+            var length = joints.Count / 2;
+            for (int i = jointIndex; i < length; i++)
             {
-                joints[i].Transmit(acc);
-            }
-            for (int i = ropeIndex - 1; i >= 0; i--)
-            {
-                joints[i].Transmit(acc);
-            }
-        }
-
-        public void UpdateView(float deltaTime)
-        {
-            foreach (var joints in _ropes.Values)
-            {
-                for (int i = 0; i < joints.Count; i++)
+                var delta = 1 - (i - jointIndex) / (float) length;
+                if (delta > 0)
                 {
-                    if (joints[i].IsInterest)
-                    {
-                        joints[i].UpdateView(deltaTime);
-                    }
+                    joints[i].Speed += force * delta;
+                }
+            }
+            for (int i = jointIndex - 1; i >= 0; i--)
+            {
+                var delta = 1 - (jointIndex - i) / (float) length;
+                if (delta > 0)
+                {
+                    joints[i].Speed += force * delta;
                 }
             }
         }
 
-        public int GetMaxHeight(int ropeIndex)
+        // todo 判断Interest
+        public void UpdateView(float deltaTime)
+        {
+            foreach (var joints in _ropes.Values)
+            {
+                for (int i = joints.Count - 1; i >= 0; i--)
+                {
+                    joints[i].CheckPos();
+                }
+                RopeJoint._addForce = false;
+                for (int i = 0; i < joints.Count; i++)
+                {
+                    joints[i].UpdateView(deltaTime);
+                }
+            }
+        }
+
+        public int GetMinHeight(int ropeIndex)
         {
             var joints = _ropes[ropeIndex];
             return joints[joints.Count - 1].CenterPos.y;
         }
-        
-        public int GetMinHeight(int ropeIndex)
+
+        public int GetMaxHeight(int ropeIndex)
         {
             var joints = _ropes[ropeIndex];
             return joints[0].CenterPos.y;

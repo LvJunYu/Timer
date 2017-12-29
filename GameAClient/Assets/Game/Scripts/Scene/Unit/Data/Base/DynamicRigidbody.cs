@@ -260,7 +260,7 @@ namespace GameA.Game
                         var ropeJoint = _curClimbUnit as RopeJoint;
                         if (ropeJoint != null)
                         {
-                            ropeJoint.Transmit(IntVec2.right * 1);
+                            ropeJoint.AddForce(IntVec2.right);
                         }
                     }
                     else if (_input.GetKeyApplied(EInputType.Left))
@@ -268,7 +268,7 @@ namespace GameA.Game
                         var ropeJoint = _curClimbUnit as RopeJoint;
                         if (ropeJoint != null)
                         {
-                            ropeJoint.Transmit(IntVec2.left * 1);
+                            ropeJoint.AddForce(IntVec2.left);
                         }
                     }
                     break;
@@ -427,29 +427,25 @@ namespace GameA.Game
 
         protected bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
+            return true;
             RopeJoint joint = _curClimbUnit as RopeJoint;
             if (joint != null)
             {
-                return CenterPos.y + deltaPosY < joint.MaxHeight && CenterPos.y + deltaPosY < joint.MinHeight;
+                return CenterPos.y + deltaPosY < joint.MaxHeight && CenterPos.y + deltaPosY > joint.MinHeight;
             }
             return false;
         }
 
         public void CheckRope(RopeJoint ropeJoint)
         {
-            if (_dropRopeTimer == 0)
+            if (_eClimbState != EClimbState.Rope && IsAlive && _dropRopeTimer == 0 && Speed != IntVec2.zero)
             {
-                if (_eClimbState == EClimbState.Rope)
-                {
-                    _curClimbUnit = ropeJoint;
-                }
-                else
-                {
-                    SpeedX = 0;
-                    SetClimbState(EClimbState.Rope, ropeJoint);
-                }
+                SetClimbState(EClimbState.Rope, ropeJoint);
+                _curRopeProgress = 0;
             }
         }
+        
+        protected float _curRopeProgress;
 
         protected virtual void UpdateSpeedY()
         {
@@ -466,19 +462,19 @@ namespace GameA.Game
                     {
                         case EClimbState.Rope:
                             SpeedY = 0;
-                            if (_input.GetKeyApplied(EInputType.Up))
+//                            if (_input.GetKeyApplied(EInputType.Up))
+//                            {
+//                                if (CheckRopeVerticalFloor(_curMaxSpeedX))
+//                                {
+//                                    SpeedY = _curMaxSpeedX;
+//                                }
+//                            }
+                            if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                if (CheckRopeVerticalFloor(_curMaxSpeedX))
-                                {
-                                    SpeedY = _curMaxSpeedX;
-                                }
-                            }
-                            else if (_input.GetKeyApplied(EInputType.Down))
-                            {
-                                if (CheckRopeVerticalFloor(-_curMaxSpeedX))
-                                {
-                                    SpeedY = -_curMaxSpeedX;
-                                }
+//                                if (CheckRopeVerticalFloor(-_curMaxSpeedX))
+//                                {
+//                                    SpeedY = -_curMaxSpeedX;
+//                                }
                                 if (_grounded)
                                 {
                                     _eClimbState = EClimbState.None;
@@ -696,6 +692,18 @@ namespace GameA.Game
                 {
                     SpeedY = 120;
                 }
+            }
+        }
+
+        protected virtual void CaculateGravity()
+        {
+            if (SpeedY > 0 && _fanForce.y == 0)
+            {
+                SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
+            }
+            else
+            {
+                SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
             }
         }
 
