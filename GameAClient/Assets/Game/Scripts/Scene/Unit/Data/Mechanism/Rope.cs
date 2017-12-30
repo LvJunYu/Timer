@@ -26,6 +26,11 @@ namespace GameA.Game
             get { return _tied; }
         }
 
+        public int RopeLength
+        {
+            get { return RopeManager.Instance.GetRopeLength(_ropeIndex); }
+        }
+
         public const int JointCount = 10;
         private bool _tied;
         private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
@@ -47,6 +52,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (Rotation == (int) EDirectionType.Right)
             {
                 _view.Trans.localEulerAngles = new Vector3(0, 0, 90);
@@ -59,6 +65,7 @@ namespace GameA.Game
             {
                 _view.Trans.localEulerAngles = Vector3.zero;
             }
+
             return true;
         }
 
@@ -68,35 +75,40 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(false);
             }
+
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
             IntVec2 offset, startPos;
             if (Rotation == (int) EDirectionType.Right)
             {
-                startPos = CenterLeftPos;
                 offset = IntVec2.right * size.y;
+                startPos = CenterLeftPos + new IntVec2(0, -size.x / 2);
             }
             else if (Rotation == (int) EDirectionType.Left)
             {
                 offset = IntVec2.left * size.y;
-                startPos = CenterRightPos + offset;
+                startPos = CenterRightPos + new IntVec2(-size.y, -size.x / 2);
             }
             else
             {
                 offset = IntVec2.down * size.y;
-                startPos = CenterUpPos + offset;
+                startPos = CenterUpPos + new IntVec2(-size.x / 2, -size.y);
             }
-            if (!_tied && !CheckTieUnit())
+
+            if (!_tied && !CheckRopeTie())
             {
                 LogHelper.Error("rope can not tie!");
+                PlayMode.Instance.DestroyUnit(this);
+                return;
             }
+
             for (int i = 0; i < _ropeJoints.Length; i++)
             {
-                _ropeJoints[i] =
-                    PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, startPos + i * offset, Rotation) as RopeJoint;
+                var jointPos = startPos + i * offset;
+                _ropeJoints[i] = PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, jointPos, Rotation) as RopeJoint;
                 if (_ropeJoints[i] != null)
                 {
-                    _ropeJoints[i].Set(this,_segmentIndex * JointCount + i, startPos + i * offset);
+                    _ropeJoints[i].Set(this, _segmentIndex * JointCount + i, jointPos);
                     if (i == 0 && _segmentIndex == 0)
                     {
                         _ropeJoints[i].SetPreJoint(_tieUnit);
@@ -106,7 +118,7 @@ namespace GameA.Game
             RopeManager.Instance.SetRopeJoint(RopeIndex, SegmentIndex, _ropeJoints);
         }
 
-        public bool CheckTieUnit()
+        public bool CheckRopeTie()
         {
             _tied = false;
             Grid2D checkGrid;
@@ -122,6 +134,7 @@ namespace GameA.Game
             {
                 checkGrid = new Grid2D(CenterUpFloorPos, CenterUpFloorPos);
             }
+
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer, float.MinValue,
                 float.MaxValue, _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
@@ -136,24 +149,27 @@ namespace GameA.Game
                         if (neighborRope != null)
                         {
                             //保证前面的绳子先注册
-                            if (!neighborRope._tied && !neighborRope.CheckTieUnit())
+                            if (!neighborRope._tied && !neighborRope.CheckRopeTie())
                             {
                                 LogHelper.Error("rope can not tie");
                                 return false;
                             }
+
                             SetPreRope(neighborRope);
-                            RopeManager.Instance.SetRopeJoint(ref _ropeIndex);
+                            RopeManager.Instance.RegisterRope(ref _ropeIndex);
                             neighborRope.SetNextRope(this);
                         }
                     }
                     else
                     {
                         _segmentIndex = 0;
-                        RopeManager.Instance.SetRopeJoint(ref _ropeIndex, true);
+                        RopeManager.Instance.RegisterRope(ref _ropeIndex, true);
                     }
+
                     break;
                 }
             }
+
             return Tied;
         }
 
@@ -189,6 +205,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
+
             base.Clear();
         }
 
@@ -198,14 +215,17 @@ namespace GameA.Game
             {
                 _nextRope.TieUnitDestroy();
             }
+
             if (_preRope != null)
             {
                 _preRope.SetNextRope(null);
             }
+
             if (_tied)
             {
                 RopeManager.Instance.RemoveRopeJoint(_ropeIndex, _segmentIndex);
             }
+
             RopeManager.Instance.RemoveRope(this);
             base.OnObjectDestroy();
         }

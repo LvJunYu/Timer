@@ -117,6 +117,7 @@ namespace GameA.Game
             {
                 _view.SetDamageShaderValue("Value", 0);
             }
+
             _hpStayTimer = 0;
             _skillCtrl = null;
             base.Clear();
@@ -129,6 +130,7 @@ namespace GameA.Game
             {
                 GameModeNetPlay.WriteDebugData(string.Format("Actor {0} OnLand ", Guid));
             }
+
             if (HasStateType(EStateType.Stun))
             {
                 //落地时候移除掉猛犸象的晕眩
@@ -143,6 +145,7 @@ namespace GameA.Game
                 Object.Destroy(_statusBar.gameObject);
                 _statusBar = null;
             }
+
             RemoveAllStates();
             base.OnObjectDestroy();
         }
@@ -159,6 +162,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             base.UpdateLogic();
             //死亡时也要变色
             CheckShowDamage();
@@ -170,26 +174,32 @@ namespace GameA.Game
             {
                 UpdateInput();
             }
+
             if (_skillCtrl != null && CanAttack)
             {
                 _skillCtrl.UpdateLogic();
             }
+
             if (_jumpTimer > 0)
             {
                 _jumpTimer--;
             }
+
             if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
             {
                 _jumpState = EJumpState.Fall;
             }
+
             if (_dropLadderTimer > 0)
             {
                 _dropLadderTimer--;
             }
+
             if (_dropRopeTimer > 0)
             {
                 _dropRopeTimer--;
             }
+
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -202,6 +212,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_curBanInputTime == 0 && !IsHoldingBox())
             {
                 switch (ClimbState)
@@ -217,6 +228,7 @@ namespace GameA.Game
                         {
                             SetFacingDir(EMoveDirection.Right);
                         }
+
                         break;
                     case EClimbState.Up: //翻转
                         if (_input.GetKeyApplied(EInputType.Left))
@@ -227,9 +239,11 @@ namespace GameA.Game
                         {
                             SetFacingDir(EMoveDirection.Left);
                         }
+
                         break;
                 }
             }
+
             CheckJump();
             CheckAssist();
             CheckSkill();
@@ -311,25 +325,28 @@ namespace GameA.Game
                         }
                         else
                         {
-                            Speed = _curClimbUnit.Speed;
+                            Speed = _curClimbUnit.Speed * 2;
                             if (SpeedX > 0)
                             {
-                                SpeedX += 50;
+                                SpeedX += 10;
                             }
                             else if (SpeedX < 0)
                             {
-                                SpeedX -= 50;
+                                SpeedX -= 10;
                             }
+
                             SpeedX = Mathf.Clamp(SpeedX, -200, 200);
-                            
+
                             SpeedY += 120;
                             if (SpeedY > 0)
                             {
                                 SpeedY = Mathf.Clamp(SpeedY, 120, 250);
                             }
-                            _dropRopeTimer = 10;
+
+                            _dropRopeTimer = 20;
                         }
                     }
+
                     SetClimbState(EClimbState.None);
                 }
                 else if (_jumpLevel == -1)
@@ -339,6 +356,7 @@ namespace GameA.Game
                         ExtraSpeed.y = _stepY;
                         _stepY = 0;
                     }
+
                     _jumpLevel = 0;
                     SpeedY = _onClay ? 120 : _jumpAbility;
                     _jumpState = EJumpState.Jump1;
@@ -360,12 +378,14 @@ namespace GameA.Game
                             SpeedY = _jumpAbility;
                             _jumpState = EJumpState.Jump2;
                         }
+
                         ExtraSpeed.y = 0;
                         _jumpTimer = 15;
                         _input.CurAppliedInputKeyAry[(int) EInputType.Jump] = false;
                     }
                 }
             }
+
             if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
                 _input.GetKeyUpApplied(EInputType.Up))
             {
@@ -392,6 +412,7 @@ namespace GameA.Game
                     ? EShootDirectionType.Right
                     : EShootDirectionType.Left;
             }
+
             if (_input.GetKeyApplied(EInputType.Left))
             {
                 eShootDir = EShootDirectionType.Left;
@@ -424,6 +445,7 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
+
             _angle = (int) eShootDir;
             if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot) && _skillCtrl != null)
             {
@@ -434,6 +456,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     switch (skill.EWeaponInputType)
                     {
                         case EWeaponInputType.GetKey:
@@ -443,8 +466,10 @@ namespace GameA.Game
                                 {
                                     ChangeGunView(i, eShootDir);
                                 }
+
                                 return;
                             }
+
                             break;
                         case EWeaponInputType.GetKeyUp:
                             if (_input.GetKeyUpApplied(_skillInputs[i]))
@@ -454,6 +479,7 @@ namespace GameA.Game
                                     ChangeGunView(i, eShootDir);
                                 }
                             }
+
                             break;
                     }
                 }
@@ -470,6 +496,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
 
@@ -486,6 +513,7 @@ namespace GameA.Game
                 {
                     Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, _curBreaker);
                 }
+
                 _curBreaker = null;
                 _breakFrame = 0;
             }
@@ -504,6 +532,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
@@ -511,16 +540,19 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 var tableState = TableManager.Instance.GetState(id);
                 if (tableState == null)
                 {
                     continue;
                 }
+
                 //如果是减益buff 当前无敌时跳过。
                 if (tableState.IsBuff == 0 && IsInvincible)
                 {
                     continue;
                 }
+
                 //记录debuff施与者，用于计算击杀
                 if (tableState.IsBuff == 0 && sender != null && !IsSameTeam(sender.TeamId))
                 {
@@ -534,6 +566,7 @@ namespace GameA.Game
                 {
                     _breakFrame = 0;
                 }
+
                 //如果已存在，判断叠加属性
                 State state;
                 if (TryGetState(id, out state))
@@ -541,11 +574,13 @@ namespace GameA.Game
                     ++state;
                     continue;
                 }
+
                 //如果不存在，判断是否同类替换
                 if (tableState.IsReplace == 1)
                 {
                     RemoveStateByType((EStateType) tableState.StateType);
                 }
+
                 state = PoolFactory<State>.Get();
                 if (state.OnAttached(tableState, this, sender))
                 {
@@ -554,6 +589,7 @@ namespace GameA.Game
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
+
                 PoolFactory<State>.Free(state);
             }
         }
@@ -596,6 +632,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             state = null;
             return false;
         }
@@ -621,6 +658,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             state = null;
             return false;
         }
@@ -642,6 +680,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     state.OnRemoved();
                     PoolFactory<State>.Free(state);
                     _currentStates.Remove(state);
@@ -667,6 +706,7 @@ namespace GameA.Game
             {
                 v = one.TableState.StateTypePriority.CompareTo(other.TableState.StateTypePriority);
             }
+
             return v;
         }
 
@@ -676,6 +716,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _eDieType = EDieType.Lazer;
             CheckKiller();
             OnDead();
@@ -691,6 +732,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _eDieType = EDieType.Saw;
             CheckKiller();
             OnDead();
@@ -707,6 +749,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _hasWaterCheckedInFrame = true;
             if (HasStateType(EStateType.Fire))
             {
@@ -716,10 +759,12 @@ namespace GameA.Game
                 RemoveStateByType(EStateType.Fire);
                 return;
             }
+
             if (!_isAlive || IsInvincible)
             {
                 return;
             }
+
             _eDieType = EDieType.Water;
             CheckKiller();
             OnDead();
@@ -736,15 +781,18 @@ namespace GameA.Game
             {
                 _statusBar.SetHPActive(false);
             }
+
             if (HasStateType(EStateType.Fire))
             {
                 _eDieType = EDieType.Fire;
             }
+
             State state;
             if (TryGetState(73, out state))
             {
                 _eDieType = EDieType.TigerEat;
             }
+
             if (_animation != null)
             {
                 RemoveAllStates(true);
@@ -792,6 +840,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (hpChanged < 0)
             {
                 //无敌时候不管用
@@ -799,6 +848,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 _damageFrame = BattleDefine.DamageDurationFrame;
 //                if (_isMonster)
 //                {
@@ -814,6 +864,7 @@ namespace GameA.Game
             {
                 hpChanged = (int) (hpChanged * TableConvert.GetCurIncrease(_curIncrease));
             }
+
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);
             if (_hp == 0)
@@ -831,6 +882,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (_statusBar != null)
             {
                 _statusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
@@ -847,6 +899,7 @@ namespace GameA.Game
                     _view.SetDamageShaderValue("Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
                 }
             }
+
             if (_hpStayTimer > 0)
             {
                 _hpStayTimer--;
@@ -863,6 +916,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             GameObject statusBarObj =
                 Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar")) as
                     GameObject;
@@ -871,6 +925,7 @@ namespace GameA.Game
                 _statusBar = statusBarObj.GetComponent<StatusBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
+
             if (_statusBar != null) _statusBar.SetOwner(this);
         }
 
@@ -880,6 +935,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -889,6 +945,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -898,6 +955,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -907,6 +965,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
     }

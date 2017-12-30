@@ -7,30 +7,21 @@ namespace GameA.Game
     public class RopeJoint : RigidbodyUnit
     {
         private const int MaxDis = 64;
-        private const int MaxSpeed = 200;
-        private const int AirPower = 2;
-        private const int Gravity = 10;
-        private const int ForcePower = 6;
+        private const int AirPower = 4;
+        private const int Gravity = 2;
+        private const int ForcePower = 2;
         private UnitBase _preJoint;
         private RopeJoint _nextJoint;
         private Rope _rope;
+        private WholeRope _wholeRope;
         private IntVec2 _oriPos;
         private int _jointIndex;
         private IntVec2 _acc;
         private bool _right;
+        private int _maxSpeed = 100;
 
         private IntVec2 _preJointForce;
         private IntVec2 _nextJointForce;
-
-        public int MaxHeight
-        {
-            get { return RopeManager.Instance.GetMaxHeight(_rope.RopeIndex); }
-        }
-
-        public int MinHeight
-        {
-            get { return RopeManager.Instance.GetMinHeight(_rope.RopeIndex); }
-        }
 
         public UnitBase PreJoint
         {
@@ -53,13 +44,29 @@ namespace GameA.Game
             {
                 return false;
             }
+
             SetSortingOrderBackground();
             return true;
         }
 
         public override void UpdateLogic()
         {
+            if (_nextJoint == null)
+            {
+                SpeedY -= 32;
+                int airPower = AirPower - (_wholeRope.Length - 1 - _jointIndex);
+                if (airPower > 0)
+                {
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, airPower);
+                }
+            }
+
             SpeedY -= Gravity;
+            if (_jumpOnTimer > 0)
+            {
+                AddForce(_jumpDir);
+                _jumpOnTimer--;
+            }
         }
 
         public override void UpdateView(float deltaTime)
@@ -76,12 +83,16 @@ namespace GameA.Game
 //                SpeedX = Util.ConstantLerp(SpeedX, 0, Mathf.Abs(resistance.x));
 //                SpeedY = Util.ConstantLerp(SpeedY, 0, Mathf.Abs(resistance.y));
 //            }
+//            SpeedX = Util.ConstantLerp(SpeedX, 0, AirPower);
 //            bool right = _curPos.x > _oriPos.x;
 //            if (_right != right)
-            {
-                SpeedX = Util.ConstantLerp(SpeedX, 0, AirPower);
+//            {
+//                if (SpeedX == 0)
+//                {
+//                    SpeedX = _oriPos.x - _curPos.x;
+//                }
 //                _right = right;
-            }
+//            }
         }
 
         public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
@@ -91,6 +102,11 @@ namespace GameA.Game
             _oriPos = oriPos;
         }
 
+        public void Set(WholeRope wholeRope)
+        {
+            _wholeRope = wholeRope;
+        }
+
         public IntVec2 GetNeighborRelativePos(bool pre)
         {
             if (pre)
@@ -98,6 +114,7 @@ namespace GameA.Game
                 if (JointIndex == 0) return IntVec2.zero;
                 return PreJoint.CenterDownPos - CenterDownPos;
             }
+
             if (NextJoint == null) return IntVec2.zero;
             return NextJoint.CenterDownPos - CenterDownPos;
         }
@@ -126,6 +143,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -135,6 +153,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -144,6 +163,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -153,6 +173,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
@@ -178,6 +199,7 @@ namespace GameA.Game
 
         public void CheckPos()
         {
+//            SpeedX = Mathf.Clamp(SpeedX, -_maxSpeed, _maxSpeed);
             if (PreJoint.Id == UnitDefine.RopeJointId)
             {
                 var target = PreJoint.CurPos + PreJoint.Speed;
@@ -214,14 +236,38 @@ namespace GameA.Game
                 {
                     from += relative * delta;
                 }
+
                 return false;
             }
+
             return true;
         }
 
         public void AddForce(IntVec2 forceDir)
         {
-            RopeManager.Instance.AddForce(forceDir * ForcePower, _rope.RopeIndex, JointIndex);
+            RopeManager.Instance.AddForce(forceDir * ForcePower + IntVec2.down * ForcePower, _rope.RopeIndex,
+                JointIndex);
+        }
+
+        public void CarryPlayer()
+        {
+            SpeedY -= 20;
+        }
+
+        private int _jumpOnTimer;
+        private IntVec2 _jumpDir;
+
+        public void JumpOnRope(EMoveDirection moveDirection)
+        {
+            _jumpOnTimer = 20;
+            if (moveDirection == EMoveDirection.Left)
+            {
+                _jumpDir = IntVec2.left;
+            }
+            else
+            {
+                _jumpDir = IntVec2.right;
+            }
         }
     }
 }

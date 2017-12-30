@@ -223,7 +223,7 @@ namespace GameA.Game
             }
         }
 
-        private bool CheckLadder()
+        protected bool CheckLadder()
         {
             if (_inLadder && _dropLadderTimer == 0)
             {
@@ -428,12 +428,12 @@ namespace GameA.Game
         protected bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
             return true;
-            RopeJoint joint = _curClimbUnit as RopeJoint;
-            if (joint != null)
-            {
-                return CenterPos.y + deltaPosY < joint.MaxHeight && CenterPos.y + deltaPosY > joint.MinHeight;
-            }
-            return false;
+//            RopeJoint joint = _curClimbUnit as RopeJoint;
+//            if (joint != null)
+//            {
+//                return CenterPos.y + deltaPosY < joint.MaxHeight && CenterPos.y + deltaPosY > joint.MinHeight;
+//            }
+//            return false;
         }
 
         public void CheckRope(RopeJoint ropeJoint)
@@ -441,6 +441,7 @@ namespace GameA.Game
             if (_eClimbState != EClimbState.Rope && IsAlive && _dropRopeTimer == 0 && Speed != IntVec2.zero)
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
+                ropeJoint.JumpOnRope(_moveDirection);
                 _curRopeProgress = 0;
                 Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.JointIndex, true);
             }

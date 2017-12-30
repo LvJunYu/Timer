@@ -1,18 +1,153 @@
 ﻿using System;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
+    public class WholeRope
+    {
+        private List<RopeJoint> _joints = new List<RopeJoint>(Rope.JointCount);
+        private int _addForceTimer;
+        private int _carryPlayerCount;
+
+        public int Length
+        {
+            get { return _joints.Count; }
+        }
+
+        public void AddRope(bool create = false)
+        {
+            if (!create)
+            {
+                _joints.Capacity += Rope.JointCount;
+            }
+
+            for (int j = 0; j < Rope.JointCount; j++)
+            {
+                _joints.Add(null);
+            }
+        }
+
+        public void SetJoint(int segmentIndex, RopeJoint[] ropeJoints)
+        {
+            for (int i = 0; i < ropeJoints.Length; i++)
+            {
+                int index = segmentIndex * Rope.JointCount + i;
+                if (index < _joints.Count)
+                {
+                    _joints[index] = ropeJoints[i];
+                }
+                else
+                {
+                    LogHelper.Error("index is out of range");
+                }
+            }
+        }
+
+        public void RemoveRopeJoint(int segmentIndex)
+        {
+            for (int i = _joints.Count - 1; i >= segmentIndex * Rope.JointCount; i--)
+            {
+                _joints.RemoveAt(i);
+            }
+        }
+
+        public void OnPlay()
+        {
+            for (int i = 0; i < _joints.Count; i++)
+            {
+                if (_joints[i] == null)
+                {
+                    LogHelper.Error("joint == null");
+                    return;
+                }
+
+                _joints[i].Set(this);
+                if (i > 0)
+                {
+                    _joints[i].SetPreJoint(_joints[i - 1]);
+                    _joints[i - 1].SetnNextJoint(_joints[i]);
+                }
+            }
+        }
+
+        public RopeJoint GetJoint(int jointIndex)
+        {
+            if (jointIndex < _joints.Count)
+            {
+                return _joints[jointIndex];
+            }
+
+            LogHelper.Error("index is out of range");
+            return null;
+        }
+
+        public void UpdateView(float deltaTime, bool addForce = false)
+        {
+            for (int i = _joints.Count - 1; i >= 0; i--)
+            {
+                _joints[i].CheckPos();
+            }
+
+            for (int i = 0; i < _joints.Count; i++)
+            {
+                _joints[i].UpdateView(deltaTime);
+            }
+        }
+
+        public void AddForce(IntVec2 force, int jointIndex)
+        {
+            if (jointIndex < _joints.Count)
+            {
+                _addForceTimer = GameRun.Instance.LogicFrameCnt;
+                _joints[jointIndex].Speed += force * 8;
+            }
+
+//            for (int i = jointIndex; i < Length; i++)
+//            {
+//                var delta = 1 - (i - jointIndex) / (float) Length;
+//                if (delta > 0)
+//                {
+//                    _joints[i].Speed += force * delta;
+//                }
+//            }
+//            for (int i = jointIndex - 1; i >= 0; i--)
+//            {
+//                var delta = 1 - (jointIndex - i) / (float) Length;
+//                if (delta > 0)
+//                {
+//                    _joints[i].Speed += force * delta;
+//                }
+//            }
+        }
+
+        private bool CheckAddForce(int ropeIndex)
+        {
+            return GameRun.Instance.LogicFrameCnt - _addForceTimer < 10;
+        }
+
+        public void OnPlayerClimbRope(bool value)
+        {
+            if (value)
+            {
+                _carryPlayerCount++;
+            }
+            else
+            {
+                if (_carryPlayerCount > 0)
+                {
+                    _carryPlayerCount--;
+                }
+            }
+        }
+    }
+
     public class RopeManager : IDisposable
     {
         private static RopeManager _instance;
-        [SerializeField] private Dictionary<int, List<RopeJoint>> _ropes = new Dictionary<int, List<RopeJoint>>();
         private int _curDicIndex;
+        private Dictionary<int, WholeRope> _ropes = new Dictionary<int, WholeRope>();
         private Dictionary<IntVec3, Rope> _ropeUnits = new Dictionary<IntVec3, Rope>();
-        private Dictionary<int, int> _ropeCarryDic = new Dictionary<int, int>();
-        private Dictionary<int, int> _addForceTimer = new Dictionary<int, int>();
 
         public static RopeManager Instance
         {
@@ -29,65 +164,10 @@ namespace GameA.Game
             Messenger<int, bool>.AddListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
         }
 
-        private void OnPlayerClimbRope(int ropeIndex, bool value)
-        {
-            if (!_ropeCarryDic.ContainsKey(ropeIndex))
-            {
-                _ropeCarryDic.Add(ropeIndex, 0);
-            }
-            if (value)
-            {
-                _ropeCarryDic[ropeIndex]++;
-            }
-            else
-            {
-                if (_ropeCarryDic[ropeIndex] > 0)
-                {
-                    _ropeCarryDic[ropeIndex]--;
-                }
-            }
-        }
-
-        private bool CheckAddForce(int ropeIndex)
-        {
-            if (!_addForceTimer.ContainsKey(ropeIndex))
-            {
-                _addForceTimer.Add(ropeIndex, 0);
-            }
-            return GameRun.Instance.LogicFrameCnt - _addForceTimer[ropeIndex] < 30;
-        }
-
-        private bool CheckCarryPlayer(int ropeIndex)
-        {
-            if (!_ropeCarryDic.ContainsKey(ropeIndex))
-            {
-                _ropeCarryDic.Add(ropeIndex, 0);
-            }
-            return _ropeCarryDic[ropeIndex] > 0;
-        }
-
-        public void AddRope(Rope rope)
-        {
-            if (!RopeUnits.ContainsKey(rope.Guid))
-            {
-                RopeUnits.Add(rope.Guid, rope);
-            }
-        }
-
-        public void RemoveRope(Rope rope)
-        {
-            if (RopeUnits.ContainsKey(rope.Guid))
-            {
-                RopeUnits.Remove(rope.Guid);
-            }
-        }
-
         public void Reset()
         {
             _curDicIndex = 0;
             _ropes.Clear();
-            _ropeCarryDic.Clear();
-            _addForceTimer.Clear();
         }
 
         public void Dispose()
@@ -98,41 +178,41 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void SetRopeJoint(ref int ropeIndex, bool createNew = false)
+        public void RegisterRope(ref int ropeIndex, bool createNew = false)
         {
             if (createNew)
             {
                 _curDicIndex++;
-                _ropes.Add(_curDicIndex, new List<RopeJoint>(Rope.JointCount));
+                _ropes.Add(_curDicIndex, new WholeRope());
                 ropeIndex = _curDicIndex;
             }
-            else
+
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
             {
-                _ropes[ropeIndex].Capacity += Rope.JointCount;
-            }
-            for (int j = 0; j < Rope.JointCount; j++)
-            {
-                _ropes[ropeIndex].Add(null);
+                wholeRope.AddRope(createNew);
             }
         }
 
         public void SetRopeJoint(int ropeIndex, int segmentIndex, RopeJoint[] ropeJoints)
         {
-            for (int i = 0; i < ropeJoints.Length; i++)
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
             {
-                _ropes[ropeIndex][segmentIndex * Rope.JointCount + i] = ropeJoints[i];
+                wholeRope.SetJoint(segmentIndex, ropeJoints);
             }
         }
 
         public void RemoveRopeJoint(int ropeIndex, int segmentIndex)
         {
-            for (int i = _ropes[ropeIndex].Count - 1; i >= segmentIndex * Rope.JointCount; i--)
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
             {
-                _ropes[ropeIndex].RemoveAt(i);
-            }
-            if (_ropes[ropeIndex].Count == 0)
-            {
-                _ropes.Remove(ropeIndex);
+                wholeRope.RemoveRopeJoint(segmentIndex);
+                if (wholeRope.Length == 0)
+                {
+                    _ropes.Remove(ropeIndex);
+                }
             }
         }
 
@@ -149,6 +229,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -167,30 +248,16 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             rope = null;
             return false;
         }
 
         public void OnPlay()
         {
-            foreach (var joints in _ropes.Values)
+            foreach (var ropeUnit in _ropes.Values)
             {
-                for (int i = 0; i < joints.Count; i++)
-                {
-                    if (joints[i] == null)
-                    {
-                        LogHelper.Error("joint == null");
-                        return;
-                    }
-                    if (i == 0)
-                    {
-                    }
-                    else
-                    {
-                        joints[i].SetPreJoint(joints[i - 1]);
-                        joints[i - 1].SetnNextJoint(joints[i]);
-                    }
-                }
+                ropeUnit.OnPlay();
             }
         }
 
@@ -198,7 +265,7 @@ namespace GameA.Game
         {
             foreach (var rope in _ropeUnits.Values)
             {
-                if (!rope.Tied && !rope.CheckTieUnit())
+                if (!rope.Tied && !rope.CheckRopeTie())
                 {
                     LogHelper.Error("rope can not tie!");
                 }
@@ -207,63 +274,68 @@ namespace GameA.Game
 
         public void AddForce(IntVec2 force, int ropeIndex, int jointIndex)
         {
-            if (!_addForceTimer.ContainsKey(ropeIndex))
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
             {
-                _addForceTimer.Add(ropeIndex, 0);
-            }
-            _addForceTimer[ropeIndex] = GameRun.Instance.LogicFrameCnt;
-            var joints = _ropes[ropeIndex];
-            var length = joints.Count;
-            for (int i = jointIndex; i < length; i++)
-            {
-                var delta = 1 - (i - jointIndex) / (float) length;
-                if (delta > 0)
-                {
-                    joints[i].Speed += force * delta;
-                }
-            }
-            for (int i = jointIndex - 1; i >= 0; i--)
-            {
-                var delta = 1 - (jointIndex - i) / (float) length;
-                if (delta > 0)
-                {
-                    joints[i].Speed += force * delta;
-                }
+                wholeRope.AddForce(force, jointIndex);
             }
         }
 
         // todo 判断Interest
         public void UpdateView(float deltaTime)
         {
-            foreach (var ropeIndex in _ropes.Keys)
+            foreach (var ropeUnit in _ropes.Values)
             {
-                var joints = _ropes[ropeIndex];
-                bool addForce = CheckAddForce(ropeIndex);
-                for (int i = joints.Count - 1; i >= 0; i--)
-                {
-                    joints[i].CheckPos();
-                }
-                for (int i = 0; i < joints.Count; i++)
-                {
-                    joints[i].UpdateView(deltaTime);
-//                    if (!addForce)
-                    {
-//                        joints[i].Speed *= 0.9f;
-                    }
-                }
+                ropeUnit.UpdateView(deltaTime);
             }
         }
 
-        public int GetMinHeight(int ropeIndex)
+        public int GetRopeLength(int ropeIndex)
         {
-            var joints = _ropes[ropeIndex];
-            return joints[joints.Count - 1].CenterPos.y;
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
+            {
+                return wholeRope.Length;
+            }
+
+            return 0;
         }
 
-        public int GetMaxHeight(int ropeIndex)
+        private WholeRope GetWholeRope(int ropeIndex)
         {
-            var joints = _ropes[ropeIndex];
-            return joints[0].CenterPos.y;
+            WholeRope wholeRope;
+            if (_ropes.TryGetValue(ropeIndex, out wholeRope))
+            {
+                return wholeRope;
+            }
+
+            LogHelper.Error("can not find rope of index {0}", ropeIndex);
+            return null;
+        }
+
+        private void OnPlayerClimbRope(int ropeIndex, bool value)
+        {
+            WholeRope wholeRope = GetWholeRope(ropeIndex);
+            if (wholeRope != null)
+            {
+                wholeRope.OnPlayerClimbRope(value);
+            }
+        }
+
+        public void AddRope(Rope rope)
+        {
+            if (!_ropeUnits.ContainsKey(rope.Guid))
+            {
+                _ropeUnits.Add(rope.Guid, rope);
+            }
+        }
+
+        public void RemoveRope(Rope rope)
+        {
+            if (_ropeUnits.ContainsKey(rope.Guid))
+            {
+                _ropeUnits.Remove(rope.Guid);
+            }
         }
     }
 }

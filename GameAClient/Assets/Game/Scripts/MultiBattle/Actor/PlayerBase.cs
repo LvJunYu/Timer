@@ -1110,6 +1110,11 @@ namespace GameA.Game
                     {
                         delta = -1 * joint.GetNeighborRelativePos(false);
                     }
+                    joint = _curClimbUnit as RopeJoint;
+                    if (joint != null)
+                    {
+                        joint.CarryPlayer();
+                    }
                     Speed = _curClimbUnit.CenterPos - CenterPos + delta * _curRopeProgress;
                 }
             }
