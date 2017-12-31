@@ -343,6 +343,11 @@ namespace GameA.Game
                                 SpeedY = Mathf.Clamp(SpeedY, 120, 250);
                             }
 
+                            RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
+                            if (ropeJoint != null)
+                            {
+                                ropeJoint.JumpAwayRope(_moveDirection);
+                            }
                             _dropRopeTimer = 20;
                         }
                     }

@@ -27,7 +27,7 @@ namespace GameA.Game
         protected const int MaxReSeekFrames = 5;
         protected List<IntVec2> _path = new List<IntVec2>();
 
-        protected IntVec2 _lastPos;
+        protected IntVec2 _lastMonsterPos;
         protected EAIState _eState;
         
         protected int _thinkTimer;
@@ -68,7 +68,7 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _lastPos = _curPos;
+            _lastMonsterPos = _curPos;
             _eState = EAIState.Think;
             _path.Clear();
             _thinkTimer = 0;
@@ -151,7 +151,7 @@ namespace GameA.Game
 
         protected virtual void OnSeek()
         {
-            if (_curPos != _lastPos)
+            if (_curPos != _lastMonsterPos)
             {
                 _stuckTimer = 0;
             }
@@ -164,7 +164,7 @@ namespace GameA.Game
                     return;
                 }
             }
-            _lastPos = _curPos;
+            _lastMonsterPos = _curPos;
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
             IntVec2 distance = (_path[_path.Count - 1] - AttackTarget.CurPos) / ConstDefineGM2D.ServerTileScale;
             if (Mathf.Abs(distance.x) <= PathRange.x && Mathf.Abs(distance.y) <= PathRange.y)
@@ -324,7 +324,7 @@ namespace GameA.Game
         
         protected void FindPath()
         {
-            _lastPos = _curPos;
+            _lastMonsterPos = _curPos;
             _path.Clear();
             _stuckTimer = 0;
             _reSeekTimer = 0;

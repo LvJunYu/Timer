@@ -26,11 +26,6 @@ namespace GameA.Game
             get { return _tied; }
         }
 
-        public int RopeLength
-        {
-            get { return RopeManager.Instance.GetRopeLength(_ropeIndex); }
-        }
-
         public const int JointCount = 10;
         private bool _tied;
         private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
@@ -156,14 +151,14 @@ namespace GameA.Game
                             }
 
                             SetPreRope(neighborRope);
-                            RopeManager.Instance.RegisterRope(ref _ropeIndex);
+                            RopeManager.Instance.RegistRope(ref _ropeIndex);
                             neighborRope.SetNextRope(this);
                         }
                     }
                     else
                     {
                         _segmentIndex = 0;
-                        RopeManager.Instance.RegisterRope(ref _ropeIndex, true);
+                        RopeManager.Instance.RegistRope(ref _ropeIndex, true);
                     }
 
                     break;

@@ -15,6 +15,16 @@ namespace GameA.Game
             get { return _joints.Count; }
         }
 
+        public UnitBase TieUnit
+        {
+            get { return _joints[0].PreJoint; }
+        }
+
+        public WholeRope(int index)
+        {
+//            _ropeIndex = index;
+        }
+
         public void AddRope(bool create = false)
         {
             if (!create)
@@ -100,25 +110,8 @@ namespace GameA.Game
             if (jointIndex < _joints.Count)
             {
                 _addForceTimer = GameRun.Instance.LogicFrameCnt;
-                _joints[jointIndex].Speed += force * 8;
+                _joints[jointIndex].Speed += force;
             }
-
-//            for (int i = jointIndex; i < Length; i++)
-//            {
-//                var delta = 1 - (i - jointIndex) / (float) Length;
-//                if (delta > 0)
-//                {
-//                    _joints[i].Speed += force * delta;
-//                }
-//            }
-//            for (int i = jointIndex - 1; i >= 0; i--)
-//            {
-//                var delta = 1 - (jointIndex - i) / (float) Length;
-//                if (delta > 0)
-//                {
-//                    _joints[i].Speed += force * delta;
-//                }
-//            }
         }
 
         private bool CheckAddForce(int ropeIndex)
@@ -178,13 +171,13 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void RegisterRope(ref int ropeIndex, bool createNew = false)
+        public void RegistRope(ref int ropeIndex, bool createNew = false)
         {
             if (createNew)
             {
                 _curDicIndex++;
-                _ropes.Add(_curDicIndex, new WholeRope());
                 ropeIndex = _curDicIndex;
+                _ropes.Add(_curDicIndex, new WholeRope(ropeIndex));
             }
 
             WholeRope wholeRope = GetWholeRope(ropeIndex);
@@ -272,15 +265,6 @@ namespace GameA.Game
             }
         }
 
-        public void AddForce(IntVec2 force, int ropeIndex, int jointIndex)
-        {
-            WholeRope wholeRope = GetWholeRope(ropeIndex);
-            if (wholeRope != null)
-            {
-                wholeRope.AddForce(force, jointIndex);
-            }
-        }
-
         // todo 判断Interest
         public void UpdateView(float deltaTime)
         {
@@ -288,17 +272,6 @@ namespace GameA.Game
             {
                 ropeUnit.UpdateView(deltaTime);
             }
-        }
-
-        public int GetRopeLength(int ropeIndex)
-        {
-            WholeRope wholeRope = GetWholeRope(ropeIndex);
-            if (wholeRope != null)
-            {
-                return wholeRope.Length;
-            }
-
-            return 0;
         }
 
         private WholeRope GetWholeRope(int ropeIndex)

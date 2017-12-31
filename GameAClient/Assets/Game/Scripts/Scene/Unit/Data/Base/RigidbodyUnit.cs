@@ -138,6 +138,8 @@ namespace GameA.Game
         {
         }
 
+        protected IntVec2 _colliderDeltaPos;
+        
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)

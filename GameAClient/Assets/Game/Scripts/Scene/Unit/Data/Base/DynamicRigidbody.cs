@@ -29,6 +29,8 @@ namespace GameA.Game
         // 攀墙跳
         [SerializeField] protected bool _climbJump;
 
+        protected float _curRopeProgress;
+        protected IntVec2 _lastPos;
         protected int _stepY;
 
         /// <summary>
@@ -260,7 +262,7 @@ namespace GameA.Game
                         var ropeJoint = _curClimbUnit as RopeJoint;
                         if (ropeJoint != null)
                         {
-                            ropeJoint.AddForce(IntVec2.right);
+                            ropeJoint.DragRope(IntVec2.right);
                         }
                     }
                     else if (_input.GetKeyApplied(EInputType.Left))
@@ -268,7 +270,7 @@ namespace GameA.Game
                         var ropeJoint = _curClimbUnit as RopeJoint;
                         if (ropeJoint != null)
                         {
-                            ropeJoint.AddForce(IntVec2.left);
+                            ropeJoint.DragRope(IntVec2.left);
                         }
                     }
                     break;
@@ -427,7 +429,7 @@ namespace GameA.Game
 
         protected bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
-            return true;
+            return _curClimbUnit.ColliderGrid.Intersects(_colliderGrid);
 //            RopeJoint joint = _curClimbUnit as RopeJoint;
 //            if (joint != null)
 //            {
@@ -443,11 +445,9 @@ namespace GameA.Game
                 SetClimbState(EClimbState.Rope, ropeJoint);
                 ropeJoint.JumpOnRope(_moveDirection);
                 _curRopeProgress = 0;
-                Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.JointIndex, true);
+                Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true);
             }
         }
-
-        protected float _curRopeProgress;
 
         protected virtual void UpdateSpeedY()
         {
@@ -623,7 +623,7 @@ namespace GameA.Game
                     var ropeJoint = _curClimbUnit as RopeJoint;
                     if (ropeJoint != null)
                     {
-                        Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.JointIndex, false);
+                        Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false);
                     }
                 }
             }
@@ -725,8 +725,6 @@ namespace GameA.Game
         public virtual void OnBoxHoldingChanged()
         {
         }
-
-        private IntVec2 _lastPos;
 
         public override void UpdateView(float deltaTime)
         {

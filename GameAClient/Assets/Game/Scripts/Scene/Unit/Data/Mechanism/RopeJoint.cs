@@ -7,21 +7,19 @@ namespace GameA.Game
     public class RopeJoint : RigidbodyUnit
     {
         private const int MaxDis = 64;
-        private const int AirPower = 4;
+        private const int MaxSpeed = 600;
         private const int Gravity = 2;
-        private const int ForcePower = 2;
+        private const int ForcePower = 12;
         private UnitBase _preJoint;
         private RopeJoint _nextJoint;
         private Rope _rope;
         private WholeRope _wholeRope;
-        private IntVec2 _oriPos;
         private int _jointIndex;
-        private IntVec2 _acc;
-        private bool _right;
-        private int _maxSpeed = 100;
-
-        private IntVec2 _preJointForce;
-        private IntVec2 _nextJointForce;
+        private IntVec2 _expectPos;
+        private int _jumpOnTimer;
+        private int _jumpAwayTimer;
+        private IntVec2 _jumpDir;
+        private IntVec2 _jumpAwayDir;
 
         public UnitBase PreJoint
         {
@@ -38,6 +36,11 @@ namespace GameA.Game
             get { return _jointIndex; }
         }
 
+        public int RopeIndex
+        {
+            get { return _rope.RopeIndex; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -51,55 +54,61 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            SpeedY -= Gravity;
             if (_nextJoint == null)
             {
+                var pos = CenterPos - _wholeRope.TieUnit.CenterDownPos;
                 SpeedY -= 32;
-                int airPower = AirPower - (_wholeRope.Length - 1 - _jointIndex);
-                if (airPower > 0)
+                if (Mathf.Abs(pos.x) > 8 * _wholeRope.Length)
                 {
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, airPower);
+                    SpeedX += Mathf.Min(32 * pos.x / Mathf.Max(1, Mathf.Abs(pos.y)), 32);
                 }
             }
 
-            SpeedY -= Gravity;
+//            int airPower = _jointIndex * AirPower / _wholeRope.Length;
+//            if (airPower > 0)
+//            {
+//                SpeedX = Util.ConstantLerp(SpeedX, 0, airPower);
+//            }
+
+            //跳上绳子时的冲力
             if (_jumpOnTimer > 0)
             {
-                AddForce(_jumpDir);
+                AddForce(_jumpDir * ForcePower);
                 _jumpOnTimer--;
             }
+
+            //跳下时的弹力
+            if (_jumpAwayTimer > 0)
+            {
+                AddForce(-1 * _jumpAwayDir * ForcePower + IntVec2.down * ForcePower);
+                _jumpAwayTimer--;
+            }
+
+            SpeedX = Mathf.Clamp(SpeedX, -MaxSpeed, MaxSpeed);
+            SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
         }
 
         public override void UpdateView(float deltaTime)
         {
             _deltaPos = _speed;
             _curPos += _deltaPos;
+            _expectPos = _curPos;
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
-//            if (!_addForce)
-//            {
-//                var sqr = Speed.SqrMagnitude();
-//                var resistance = Speed * (sqr / (sqr + AirPara));
-//                SpeedX = Util.ConstantLerp(SpeedX, 0, Mathf.Abs(resistance.x));
-//                SpeedY = Util.ConstantLerp(SpeedY, 0, Mathf.Abs(resistance.y));
-//            }
-//            SpeedX = Util.ConstantLerp(SpeedX, 0, AirPower);
-//            bool right = _curPos.x > _oriPos.x;
-//            if (_right != right)
-//            {
-//                if (SpeedX == 0)
-//                {
-//                    SpeedX = _oriPos.x - _curPos.x;
-//                }
-//                _right = right;
-//            }
+            //如果发生碰撞导致与预期位置不符，则调整后面关节的速度
+            if (_expectPos != _curPos && _nextJoint != null)
+            {
+                _nextJoint.FixSpeedFromPre(true);
+            }
         }
 
         public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
         {
             _rope = rope;
             _jointIndex = jointIndex;
-            _oriPos = oriPos;
+//            _oriPos = oriPos;
         }
 
         public void Set(WholeRope wholeRope)
@@ -183,9 +192,13 @@ namespace GameA.Game
             _preJoint = _nextJoint = null;
         }
 
-        public void FixSpeedFromPre()
+        public void FixSpeedFromPre(bool afterMove = false)
         {
-            var target = PreJoint.CurPos + PreJoint.Speed;
+            var target = PreJoint.CurPos;
+            if (!afterMove)
+            {
+                target += PreJoint.Speed;
+            }
             var from = CurPos + Speed;
             if (!CheckDis(ref from, ref target, false))
             {
@@ -199,7 +212,6 @@ namespace GameA.Game
 
         public void CheckPos()
         {
-//            SpeedX = Mathf.Clamp(SpeedX, -_maxSpeed, _maxSpeed);
             if (PreJoint.Id == UnitDefine.RopeJointId)
             {
                 var target = PreJoint.CurPos + PreJoint.Speed;
@@ -243,19 +255,21 @@ namespace GameA.Game
             return true;
         }
 
-        public void AddForce(IntVec2 forceDir)
+        public void DragRope(IntVec2 dir)
         {
-            RopeManager.Instance.AddForce(forceDir * ForcePower + IntVec2.down * ForcePower, _rope.RopeIndex,
-                JointIndex);
+            int force = ForcePower / 2 + ForcePower * (1 + _jointIndex) / _wholeRope.Length / 2;
+            AddForce(force * dir);
+        }
+
+        public void AddForce(IntVec2 force)
+        {
+            _wholeRope.AddForce(force, _jointIndex);
         }
 
         public void CarryPlayer()
         {
-            SpeedY -= 20;
+//            SpeedY -= 20;
         }
-
-        private int _jumpOnTimer;
-        private IntVec2 _jumpDir;
 
         public void JumpOnRope(EMoveDirection moveDirection)
         {
@@ -267,6 +281,19 @@ namespace GameA.Game
             else
             {
                 _jumpDir = IntVec2.right;
+            }
+        }
+
+        public void JumpAwayRope(EMoveDirection moveDirection)
+        {
+            _jumpAwayTimer = 20;
+            if (moveDirection == EMoveDirection.Left)
+            {
+                _jumpAwayDir = IntVec2.left;
+            }
+            else
+            {
+                _jumpAwayDir = IntVec2.right;
             }
         }
     }
