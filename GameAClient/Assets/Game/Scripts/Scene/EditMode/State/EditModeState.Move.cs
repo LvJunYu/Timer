@@ -48,6 +48,7 @@ namespace GameA.Game
                             GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, ref oriUnitExtra);
                         }
                     }
+
                     stateData.MousePos = Input.mousePosition;
                     stateData.MouseActualPos = Input.mousePosition;
                 }
@@ -61,6 +62,7 @@ namespace GameA.Game
                     LogHelper.Error("Move State, Param is null");
                     EditMode.Instance.StateMachine.RevertToPreviousState();
                 }
+
                 Drag(boardData.GetStateData<Data>().MousePos);
             }
 
@@ -77,6 +79,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 var stateData = boardData.GetStateData<Data>();
                 stateData.MousePos = gesture.position;
             }
@@ -93,6 +96,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 var stateData = boardData.GetStateData<Data>();
                 stateData.MouseActualPos = Vector2.Lerp(stateData.MouseActualPos, mousePos, 20 * Time.deltaTime);
                 Vector3 realMousePos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
@@ -125,6 +129,7 @@ namespace GameA.Game
                         delta.y += 15;
                     }
                 }
+
                 stateData.MovingRoot.localScale = new Vector3(
                     Mathf.Clamp(1f + delta.y * 0.0025f, 0.8f, 1.2f),
                     Mathf.Clamp(1f - delta.y * 0.005f, 0.8f, 1.2f),
@@ -138,6 +143,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 var stateData = boardData.GetStateData<Data>();
 
                 ProcessDrop(boardData, stateData);
@@ -147,11 +153,13 @@ namespace GameA.Game
                 {
                     UnitManager.Instance.FreeUnitView(stateData.CurrentMovingUnitBase);
                 }
+
                 if (null != stateData.MovingRoot)
                 {
                     Object.Destroy(stateData.MovingRoot.gameObject);
                     stateData.MovingRoot = null;
                 }
+
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 stateData.DragUnitExtra = UnitExtra.zero;
                 EditMode.Instance.StateMachine.RevertToPreviousState();
@@ -166,6 +174,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 var recordBatch = GetRecordBatch();
                 unitDesc.Scale = stateData.CurrentMovingUnitBase.Scale;
                 unitDesc.Rotation = stateData.CurrentMovingUnitBase.Rotation;
@@ -178,11 +187,12 @@ namespace GameA.Game
                     //检查是否覆盖了空气墙
                     for (int i = 0; i < coverUnits.Count; i++)
                     {
-                        if (UnitDefine.IsAirWall(coverUnits[i].Id))
+                        if (UnitDefine.TerrainId == coverUnits[i].Id)
                         {
                             return;
                         }
                     }
+
                     for (int i = 0; i < coverUnits.Count; i++)
                     {
                         var deleteUnitDesc = coverUnits[i];
@@ -194,6 +204,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 UnitDesc needReplaceUnitDesc;
                 if (EditHelper.TryGetReplaceUnit(unitDesc.Id, out needReplaceUnitDesc))
                 {
@@ -204,6 +215,7 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                 }
+
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc, stateData.DragUnitExtra))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
@@ -222,6 +234,7 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
                     }
                 }
+
                 CommitRecordBatch();
             }
         }

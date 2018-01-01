@@ -23,11 +23,13 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
+        private readonly List<UnitBase> _allTerrainUnits = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
         private byte[,] _pathGrid;
+        private int _curSceneIndex;
 
         public static ColliderScene2D Instance
         {
@@ -79,6 +81,7 @@ namespace GameA.Game
             _allMagicUnits.Clear();
             _allBulletUnits.Clear();
             _allOtherUnits.Clear();
+            _allTerrainUnits.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -188,6 +191,7 @@ namespace GameA.Game
                 return false;
             }
             _units.Add(unitDesc.Guid, unit);
+            
             if (tableUnit.IsGround == 1)
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
@@ -207,6 +211,10 @@ namespace GameA.Game
             else
             {
                 _allOtherUnits.Add(unit);
+            }
+            if (unit.Id == UnitDefine.TerrainId)
+            {
+                _allTerrainUnits.Add(unit);
             }
             return true;
         }
@@ -256,6 +264,10 @@ namespace GameA.Game
             else
             {
                 _allOtherUnits.Remove(unit);
+            }
+            if (unit.Id == UnitDefine.TerrainId)
+            {
+                _allTerrainUnits.Remove(unit);
             }
             return _units.Remove(unitDesc.Guid);
         }
@@ -317,6 +329,23 @@ namespace GameA.Game
                 return false;
             }
             return _units.TryGetValue(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation), out unit);
+        }
+
+        public void ChangeScene(int index)
+        {
+            if (_curSceneIndex == index) return;
+            if (index >= ConstDefineGM2D.MapStartPosArry.Length)
+            {
+                LogHelper.Error("index is out of range");
+                return;
+            }
+            var delta = ConstDefineGM2D.MapStartPosArry[index] - ConstDefineGM2D.MapStartPosArry[_curSceneIndex];
+            for (int i = 0; i < _allTerrainUnits.Count; i++)
+            {
+                _allTerrainUnits[i].CurPos += delta;
+                _allTerrainUnits[i].UpdateView(ConstDefineGM2D.FixedDeltaTime);
+            }
+            _curSceneIndex = index;
         }
 
         #region AOI

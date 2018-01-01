@@ -35,6 +35,7 @@ namespace GameA.Game
         private static BgScene2D _instance;
         private bool _run;
         private int _curSeed;
+        private int _curSceneIndex;
         private Vector3 _basePos;
         private readonly Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
         private Grid2D _followTileRect;
@@ -71,11 +72,13 @@ namespace GameA.Game
                     Object.Destroy(bgItem.Trans.gameObject);
                 }
             }
+
             _items.Clear();
             if (_parent != null)
             {
                 Object.Destroy(_parent.gameObject);
             }
+
             _tableBgs.Clear();
             _instance = null;
         }
@@ -92,6 +95,7 @@ namespace GameA.Game
             {
                 increase = 1;
             }
+
             return MaxDepthCount[depth - 1] * increase;
         }
 
@@ -104,6 +108,7 @@ namespace GameA.Game
                 case (int) EBgDepth.Depth11:
                     return _cloudRect;
             }
+
             return _followRect;
         }
 
@@ -135,6 +140,7 @@ namespace GameA.Game
                 _parents[i] = new GameObject(((EBgDepth) i).ToString()).transform;
                 _parents[i].parent = _parent;
             }
+
             var bgs = TableManager.Instance.Table_BackgroundDic;
             foreach (Table_Background bg in bgs.Values)
             {
@@ -144,6 +150,7 @@ namespace GameA.Game
                     tables = new List<Table_Background>();
                     _tableBgs.Add(bg.Depth, tables);
                 }
+
                 tables.Add(bg);
             }
         }
@@ -195,6 +202,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             using (var iter = _items.GetEnumerator())
             {
                 while (iter.MoveNext())
@@ -204,6 +212,7 @@ namespace GameA.Game
                     {
                         bgItem.SetBaseFollowPos(pos);
                     }
+
                     bgItem.Update(pos);
                 }
             }
@@ -218,6 +227,7 @@ namespace GameA.Game
             {
                 GenerateItems(pair.Value, GetMaxDepthCount(pair.Key));
             }
+
             SetChirldFollowBasePos();
         }
 
@@ -248,6 +258,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return AddView(node, tableBg);
         }
 
@@ -260,6 +271,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             bgNode = NodeFactory.GetBgNode((ushort) tableBg.Id, grid, tableBg.Depth, scale);
             SceneNode node;
             //藤蔓可以重叠
@@ -268,10 +280,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (!AddNode(bgNode))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -289,6 +303,7 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
+
                     //左柱子
                     if (num % 2 == 1)
                     {
@@ -301,6 +316,7 @@ namespace GameA.Game
                         min = new IntVec2(_validTileRect.XMax - GM2DTools.WorldToTile(0.6f),
                             _followTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
+
                     break;
                 //草
                 case EBgDepth.Depth1:
@@ -309,6 +325,7 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
+
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                         _followTileRect.YMin - GM2DTools.WorldToTile(1f));
                     break;
@@ -319,6 +336,7 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
+
                     min = new IntVec2(_followTileRect.XMin + (int) ((num - 1) * size.x * 0.8f),
                         _validTileRect.YMax - GM2DTools.WorldToTile(0.7f));
                     break;
@@ -334,6 +352,7 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
+
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                         _followTileRect.YMin - GM2DTools.WorldToTile(1.13f));
                     break;
@@ -344,6 +363,7 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
+
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                         _followTileRect.YMin + GM2DTools.WorldToTile(1.85f));
                     break;
@@ -367,6 +387,7 @@ namespace GameA.Game
                     min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin - GM2DTools.WorldToTile(2f));
                     break;
             }
+
             grid = new Grid2D(min.x, min.y, min.x + size.x - 1, min.y + size.y - 1);
             return true;
         }
@@ -380,6 +401,7 @@ namespace GameA.Game
             {
                 x = y = Mathf.Max(x, y);
             }
+
             scale.x = x;
             scale.y = y;
             //1米 = 640计算单位 = 128像素，650 / 128 = 5，所以每像素占5个计算单位
@@ -404,11 +426,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             var bgItem = PoolFactory<BgItem>.Get();
             if (bgItem == null || !bgItem.Init(tableBg, node))
             {
                 return false;
             }
+
             _items.Add(node.Guid, bgItem);
             return true;
         }
@@ -448,5 +472,43 @@ namespace GameA.Game
 //        {
 //            PoolFactory<BgItem>.Free(bgItem);
 //        }
+        public void ChangeScene(int index)
+        {
+            if (_curSceneIndex == index) return;
+            if (index >= ConstDefineGM2D.MapStartPosArry.Length)
+            {
+                LogHelper.Error("index is out of range");
+                return;
+            }
+            
+            var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
+            var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
+            _basePos = validMapRect.center;
+            _followRect = validMapRect;
+            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
+            _followRect.width += 10;
+            _followRect.height += 4; //地图编辑黑边有渐变 防止走光
+            _followRect.center = _basePos;
+            _followTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_followRect));
+            _cloudRect = _followRect;
+            _cloudRect.size += new Vector2(20, 0);
+            _cloudRect.center = _basePos;
+            _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
+            
+            var delta = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPosArry[index] - ConstDefineGM2D.MapStartPosArry[_curSceneIndex]);
+            using (var iter = _items.GetEnumerator())
+            {
+                while (iter.MoveNext())
+                {
+                    var bgItem = iter.Current.Value;
+                    bgItem.ResetBasePos(delta);
+                    bgItem.SetBaseFollowPos(CameraManager.Instance.MainCameraPos);
+                    bgItem.ResetPos();
+                }
+            }
+
+            _curSceneIndex = index;
+        }
     }
 }

@@ -28,7 +28,6 @@ namespace GameA.Game
 
         protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
         private int _lastSlot;
-        private bool _isReviving;
 
         public RoomUser RoomUser
         {
@@ -134,7 +133,6 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            _isReviving = false;
             _siTouLe = false;
             _dieTime = 0;
             _box = null;
@@ -271,7 +269,6 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
-            _isReviving = false;
             _siTouLe = false;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
@@ -448,7 +445,6 @@ namespace GameA.Game
                 GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1}",
                     _roomUser == null ? -1 : _roomUser.Guid, _revivePos));
             }
-            _isReviving = true;
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
@@ -459,7 +455,6 @@ namespace GameA.Game
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                 GM2DTools.TileToWorld(_revivePos), 8, () =>
                 {
-                    _isReviving = false;
                     _eDieType = EDieType.None;
                     _eUnitState = EUnitState.Normal;
                     _input.Clear();
@@ -693,7 +688,7 @@ namespace GameA.Game
                     }
                 }
                 if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
-                    UnityEngine.Input.GetKeyDown(KeyCode.Space) && !_isReviving)
+                    UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
                 {
                     TeamManager.Instance.SetNextCameraPlayer();
                 }

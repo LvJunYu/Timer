@@ -22,6 +22,7 @@ namespace GameA.Game
         [SerializeField] private static Vector3 _startPos;
         [SerializeField] private Grid2D _mapGrid;
         [SerializeField] private IntRect _validMapRect;
+        private int _curSceneIndex;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         private UnitExtra _playerExtra;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
@@ -99,8 +100,6 @@ namespace GameA.Game
 
         #endregion
 
-        #region 方法
-
         protected override void OnInit()
         {
             base.OnInit();
@@ -162,8 +161,9 @@ namespace GameA.Game
                 LogHelper.Error("WorldPosToTileIndex failed,{0}", id);
                 return IntVec3.zero;
             }
+
             var tile = GM2DTools.WorldToTile(
-                worldPos - GM2DTools.TileToWorld(tableUnit.GetDataSize(0, Vector2.one)) * 0.5f - _startPos);
+                worldPos - GM2DTools.TileToWorld(tableUnit.GetDataSize(0, Vector2.one)) * 0.5f);
             //>4的按照一个大格子（4小格）对其摆放。
             var size = tableUnit.GetDataSize(rotation, Vector2.one);
             int x = size.x > ConstDefineGM2D.ServerTileScale
@@ -176,8 +176,6 @@ namespace GameA.Game
             return new IntVec3(x, y, UnitManager.GetDepth(tableUnit));
         }
 
-        #endregion
-
         public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid);
@@ -188,15 +186,18 @@ namespace GameA.Game
                 LogHelper.Error("AddData Failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             var dataNode = NodeFactory.GetDataNode(unitDesc, tableUnit);
             if (!AddNode(dataNode))
             {
                 return false;
             }
+
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Add(unitDesc);
             }
+
             return true;
         }
 
@@ -207,11 +208,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             DeleteUnitExtra(unitDesc.Guid);
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Remove(unitDesc);
             }
+
             return true;
         }
 
@@ -244,6 +247,7 @@ namespace GameA.Game
                     canSwitch = unit.CanControlledBySwitch;
                     needCreate = true;
                 }
+
                 if (unitExtra.Equals(UnitExtra.zero))
                 {
                     DeleteUnitExtra(unitDesc.Guid);
@@ -252,10 +256,12 @@ namespace GameA.Game
                 {
                     _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
                 }
+
                 if (needCreate)
                 {
                     EditMode.Instance.AddUnit(unitDesc);
                 }
+
                 if (canSwitch)
                 {
                     if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
@@ -312,6 +318,7 @@ namespace GameA.Game
             {
                 return null;
             }
+
             _cachedUnits.Clear();
             for (int i = 0; i < unitsGuid.Count; i++)
             {
@@ -321,6 +328,7 @@ namespace GameA.Game
                     _cachedUnits.Add(unit);
                 }
             }
+
             return _cachedUnits.ToList();
         }
 
@@ -346,6 +354,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return result;
         }
 
@@ -355,10 +364,12 @@ namespace GameA.Game
             {
                 _switchedUnits.Add(switchGuid, new List<IntVec3>());
             }
+
             if (_switchedUnits[switchGuid].Contains(unitGuid))
             {
                 return false;
             }
+
             _switchedUnits[switchGuid].Add(unitGuid);
             Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                 switchGuid, unitGuid, true);
@@ -373,11 +384,13 @@ namespace GameA.Game
                 LogHelper.Error("UnbindSwitch Failed, {0}, {1}", switchGuid, unitGuid);
                 return false;
             }
+
             unitsGuid.Remove(unitGuid);
             if (unitsGuid.Count == 0)
             {
                 _switchedUnits.Remove(switchGuid);
             }
+
             Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                 switchGuid, unitGuid, false);
             return true;
@@ -400,6 +413,7 @@ namespace GameA.Game
                             recordBatch.RecordRemoveSwitchConnection(unitDesc.Guid, unitGuid);
                         }
                     }
+
                     _switchedUnits.Remove(unitDesc.Guid);
                 }
             }
@@ -416,6 +430,7 @@ namespace GameA.Game
                         {
                             continue;
                         }
+
                         units.RemoveAt(unitInx);
                         Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                             switchGuid, unitDesc.Guid, true);
@@ -475,6 +490,7 @@ namespace GameA.Game
                                     recordBatch.RecordRemoveSwitchConnection(switchGuid, oldUnitDesc.Guid);
                                     recordBatch.RecordAddSwitchConnection(switchGuid, newUnitDesc.Guid);
                                 }
+
                                 break;
                             }
                         }
@@ -495,6 +511,7 @@ namespace GameA.Game
                     {
                         newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
                     }
+
                     list.Add(newData);
                 }
             }
@@ -533,6 +550,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetGridByUnitObject falied! UnitDesc is {0}", unitDesc);
                 return null;
             }
+
             return GridCastAllReturnUnits(outValue, layerMask, minDepth, maxDepth);
         }
 
@@ -545,6 +563,7 @@ namespace GameA.Game
                 outValue = new Grid2D();
                 return false;
             }
+
             outValue = tableUnit.GetDataGrid(ref unitDesc);
             return true;
         }
@@ -569,6 +588,7 @@ namespace GameA.Game
                     LogHelper.Error("GetTableUnit failed.{0}", node.Id);
                     continue;
                 }
+
                 var newGrid = GM2DTools.IntersectWith(grid2D, node, tableUnit);
                 var size = tableUnit.GetDataSize(node.Rotation, node.Scale);
                 var count = tableUnit.GetDataCount(newGrid, node.Rotation, node.Scale);
@@ -582,6 +602,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return _cachedUnitObjects;
         }
 
@@ -606,6 +627,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             object playerExtraObj = _playerExtra;
             field.SetValue(playerExtraObj, value);
             _playerExtra = (UnitExtra) playerExtraObj;
@@ -627,6 +649,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             _playerExtra.MaxHp = (ushort) value;
         }
 
@@ -646,6 +669,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             _playerExtra.JumpAbility = (ushort) value;
         }
 
@@ -665,6 +689,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             _playerExtra.MaxSpeedX = (ushort) value;
         }
 
@@ -684,6 +709,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             _playerExtra.InjuredReduce = (byte) value;
         }
 
@@ -703,6 +729,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             _playerExtra.CureIncrease = (ushort) value;
         }
 
@@ -716,6 +743,21 @@ namespace GameA.Game
             unitExtra.InjuredReduce = 0;
             unitExtra.CureIncrease = 0;
             SetPlayerExtra(unitExtra);
+        }
+
+        public void ChangeScene(int index)
+        {
+            if (_curSceneIndex == index) return;
+            if (index >= ConstDefineGM2D.MapStartPosArry.Length)
+            {
+                LogHelper.Error("index is out of range");
+                return;
+            }
+
+            var startPos = ConstDefineGM2D.MapStartPosArry[index];
+            var size = _validMapRect.Max - _validMapRect.Min;
+            _validMapRect = new IntRect(startPos, size + startPos);
+            _curSceneIndex = index;
         }
     }
 
@@ -770,12 +812,14 @@ namespace GameA.Game
                 LogHelper.Error("Instantiate modifyData failed, datascene2d not exist");
                 return;
             }
+
             Table_Unit table = TableManager.Instance.GetUnit(modifyItemData.OrigData.Id);
             if (null == table)
             {
                 LogHelper.Error("ParseModifyData error, unit with invalid id {0}", modifyItemData.OrigData.Id);
                 return;
             }
+
             int depth = UnitManager.GetDepth(table);
             UnitDesc origDesc = new UnitDesc(
                 modifyItemData.OrigData.Id,

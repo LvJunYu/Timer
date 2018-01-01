@@ -17,27 +17,24 @@ namespace GameA.Game
         Play,
         Edit,
     }
-    
+
     public class CameraManager : IDisposable
     {
-        #region private
-        
         private static CameraManager _instance;
-        
+
         //外层camera 逻辑位置 用于移动视角
         [SerializeField] private Transform _mainCameraTrans;
+
         [SerializeField] private Camera _mainCamera;
+
         //内层camera默认位置归零 用于震屏之类的操作 不影响逻辑位置
         [SerializeField] private Camera _rendererCamera;
-        
+
         private CameraCtrlBase _curCameraCtrl;
         private ECameraState _curCameraState;
 
         private CameraCtrlPlay _cameraCtrlPlay;
         private CameraCtrlEdit _cameraCtrlEdit;
-        #endregion
-
-        #region properties
 
         public static CameraManager Instance
         {
@@ -75,10 +72,6 @@ namespace GameA.Game
             get { return _cameraCtrlEdit; }
         }
 
-        #endregion
-
-        #region method
-
         public void Init()
         {
             _mainCamera = InstantiateCamera("MainCamera");
@@ -103,7 +96,7 @@ namespace GameA.Game
                 _cameraCtrlEdit.OnMapReady();
             }
         }
-        
+
         /// <summary>
         /// 逻辑帧 和逻辑相关放这里
         /// </summary>
@@ -114,6 +107,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _curCameraCtrl.UpdateLogic(deltaTime);
         }
 
@@ -126,6 +120,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _curCameraCtrl.Update();
         }
 
@@ -135,12 +130,14 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (null != _curCameraCtrl)
             {
                 _curCameraCtrl.Exit();
             }
+
             _curCameraState = cameraState;
-            
+
             if (ECameraState.Play == _curCameraState)
             {
                 _curCameraCtrl = _cameraCtrlPlay;
@@ -159,8 +156,7 @@ namespace GameA.Game
                 _curCameraCtrl.Enter();
             }
         }
-        
-        
+
         private Camera InstantiateCamera(string cameraName)
         {
             var cameraObject = new GameObject(cameraName);
@@ -175,17 +171,19 @@ namespace GameA.Game
             return c;
         }
 
-        #endregion
-
-        #region implement
-
         public void Dispose()
         {
             UnityEngine.Object.Destroy(_mainCamera.gameObject);
             _instance = null;
         }
 
-        #endregion
+        public void ChangeScene(int index)
+        {
+            OnMapReady();
+            if (_curCameraCtrl != null)
+            {
+                _curCameraCtrl.Enter();
+            }
+        }
     }
-
 }

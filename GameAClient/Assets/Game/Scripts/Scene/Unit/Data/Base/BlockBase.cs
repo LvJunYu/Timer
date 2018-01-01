@@ -9,11 +9,6 @@ namespace GameA.Game
 {
     public class BlockBase : Magic
     {
-        public override bool CanRope
-        {
-            get { return true; }
-        }
-
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly)

@@ -41,6 +41,7 @@ namespace GameA.Game
         public const int CloudId = 4015;
         public const int RopeId = 4017;
         public const int RopeJointId = 4018;
+        public const int TerrainId = 4100;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
         public const int BlueStoneRotateId = 8004;
@@ -128,11 +129,6 @@ namespace GameA.Game
         public static bool IsShadow(int id)
         {
             return id == ShadowId || id == 65534;
-        }
-
-        public static bool IsAirWall(int id)
-        {
-            return id == 4100;
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)

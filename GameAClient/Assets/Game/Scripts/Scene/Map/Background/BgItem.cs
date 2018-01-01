@@ -48,19 +48,23 @@ namespace GameA.Game
             {
                 zDepth -= 850;
             }
+
             _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
             //背景居中
             if (table.Depth == 14)
             {
-                int offset = size.x / ConstDefineGM2D.ServerTileScale - (int)BgScene2D.Instance.GetRect(table.Depth).width;
-                _basePos += new Vector3(-offset/2, 0, 0);
+                int offset = size.x / ConstDefineGM2D.ServerTileScale -
+                             (int) BgScene2D.Instance.GetRect(table.Depth).width;
+                _basePos += new Vector3(-offset / 2, 0, 0);
             }
+
             _curPos = _basePos;
             GameObject go;
             if (!TryCreateObject(out go))
             {
                 return false;
             }
+
             _trans = go.transform;
             _trans.localPosition = _curPos;
             _trans.localScale = new Vector3(_node.Scale.x, _node.Scale.y, 1);
@@ -82,12 +86,18 @@ namespace GameA.Game
             Update(_baseFollowPos);
         }
 
+        public virtual void ResetBasePos(Vector3 basePosOffset)
+        {
+            _basePos += basePosOffset;
+        }
+
         public virtual void Update(Vector3 followPos)
         {
             if (_trans == null)
             {
                 return;
             }
+
             UpdateMove(followPos);
             _trans.position = _curPos;
         }
@@ -98,6 +108,7 @@ namespace GameA.Game
             {
                 _deltaMove += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime;
             }
+
             _curPos = _basePos + (followPos - _baseFollowPos) * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth)) +
                       _deltaMove * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
             var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
@@ -107,6 +118,7 @@ namespace GameA.Game
             {
                 modX += w;
             }
+
             _curPos.x = modX + followRect.xMin - _halfSizeX;
             return true;
         }
@@ -120,6 +132,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
                 return false;
             }
+
             go = new GameObject();
             _spriteRenderer = go.AddComponent<SpriteRenderer>();
             _spriteRenderer.sprite = sprite;
@@ -127,6 +140,7 @@ namespace GameA.Game
             {
                 _spriteRenderer.material.color = new Color(1, 1, 1, _tableBg.Alpha);
             }
+
             _spriteRenderer.sortingOrder = (int) ESortingOrder.Item;
             go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;
@@ -142,6 +156,7 @@ namespace GameA.Game
             {
                 _spriteRenderer.sprite = null;
             }
+
             _tableBg = null;
             _curPos = Vector2.zero;
             if (_trans != null)
@@ -154,6 +169,7 @@ namespace GameA.Game
                         Object.Destroy(scripts[i]);
                     }
                 }
+
                 _trans.position = Vector3.zero;
                 _trans.rotation = Quaternion.identity;
                 _trans.localScale = Vector3.one;

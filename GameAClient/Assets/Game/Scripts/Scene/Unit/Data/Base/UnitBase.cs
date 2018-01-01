@@ -244,6 +244,7 @@ namespace GameA.Game
         public IntVec2 CurPos
         {
             get { return _curPos; }
+            set { _curPos = value; }
         }
 
         public UnitDesc UnitDesc
@@ -574,7 +575,7 @@ namespace GameA.Game
 
         public virtual bool CanRope
         {
-            get { return false; }
+            get { return _tableUnit.CanTieRope == 1; }
         }
 
         public virtual bool UseMagic()

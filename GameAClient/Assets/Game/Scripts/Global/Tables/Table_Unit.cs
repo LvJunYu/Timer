@@ -111,6 +111,11 @@ namespace GameA.Game
 		[ColumnMapping("IsBulletBlock")]
 		public int IsBulletBlock;
 		/// <summary>
+        /// 系绳子
+        /// </summary>
+		[ColumnMapping("CanTieRope")]
+		public int CanTieRope;
+		/// <summary>
         /// 数量
         /// </summary>
 		[ColumnMapping("Count")]
