@@ -101,7 +101,10 @@ namespace GameA.Game
 
             for (int i = 0; i < _joints.Count; i++)
             {
-                _joints[i].UpdateView(deltaTime);
+                if (_joints[i].IsInterest)
+                {
+                    _joints[i].UpdateView(deltaTime);
+                }
             }
         }
 

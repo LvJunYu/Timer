@@ -177,7 +177,7 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void ChangeScene(int index)
+        public void ChangeScene()
         {
             OnMapReady();
             if (_curCameraCtrl != null)

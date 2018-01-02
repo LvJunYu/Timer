@@ -97,11 +97,21 @@ namespace GameA.Game
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
-            //如果发生碰撞导致与预期位置不符，则调整后面关节的速度
+            //如果发生碰撞导致与位置变化，则调整后面关节的速度
             if (_expectPos != _curPos && _nextJoint != null)
             {
                 _nextJoint.FixSpeedFromPre(true);
             }
+        }
+
+        protected override float GetZ()
+        {
+            if (_preJoint != null && _preJoint.View != null && _preJoint.Id == UnitDefine.RopeJointId)
+            {
+                return _preJoint.Trans.position.z - 0.01f;
+            }
+
+            return base.GetZ();
         }
 
         public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
@@ -199,6 +209,7 @@ namespace GameA.Game
             {
                 target += PreJoint.Speed;
             }
+
             var from = CurPos + Speed;
             if (!CheckDis(ref from, ref target, false))
             {

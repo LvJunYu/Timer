@@ -119,7 +119,6 @@ namespace GameA.Game
         /// <summary>
         /// 可能会为NULL
         /// </summary>
-        [SerializeField]
         protected Transform _trans
         {
             get { return _view == null ? null : _view.Trans; }
@@ -994,8 +993,6 @@ namespace GameA.Game
             return !(a == b);
         }
 
-        #region private 
-
         public void UpdateTransPos()
         {
             if (_view != null)
@@ -1030,21 +1027,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var z = GetZ(_colliderPos);
-            if (IsInWater)
-            {
-                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
-                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
-                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
-            }
-            else if (_deltaPos.y != 0 || IsClimbingVertical)
-            {
-                var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
-                var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
-                var max = GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f;
-                z = Mathf.Clamp(z, min, max);
-                CheckClimbUnitZ(ref z);
-            }
+            var z = GetZ();
             if (UnitDefine.IsJet(Id))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
@@ -1060,7 +1043,27 @@ namespace GameA.Game
         {
         }
 
-        protected float GetZ(IntVec2 pos)
+        protected virtual float GetZ()
+        {
+            var z = GetZ(_colliderPos);
+            if (IsInWater)
+            {
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
+                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
+            }
+            else if (_deltaPos.y != 0 || IsClimbingVertical)
+            {
+                var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
+                var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
+                var max = GetZ((tile + new IntVec2(-1, 1)) * ConstDefineGM2D.ServerTileScale) - 0.01f;
+                z = Mathf.Clamp(z, min, max);
+                CheckClimbUnitZ(ref z);
+            }
+            return z;
+        }
+        
+        protected  float GetZ(IntVec2 pos)
         {
             //为了子弹
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
@@ -1112,8 +1115,6 @@ namespace GameA.Game
             trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, y, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
-
-        #endregion
 
         internal virtual void DoProcessMorph(bool add)
         {

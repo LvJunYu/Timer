@@ -60,8 +60,7 @@ namespace GameA.Game
                 _mapFile = null;
             }
 
-            DataScene2D.Instance.Dispose();
-            ColliderScene2D.Instance.Dispose();
+            Scene2DManager.Instance.Dispose();
             BgScene2D.Instance.Dispose();
             PairUnitManager.Instance.Dispose();
             _instance = null;
@@ -75,10 +74,7 @@ namespace GameA.Game
                 return false;
             }
 
-            DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x,
-                ConstDefineGM2D.MapTileSize.y);
-
+            Scene2DManager.Instance.Init();
             _mapFile = new GameObject("MapFile").AddComponent<MapFile>();
             switch (eGameInitType)
             {
@@ -237,7 +233,7 @@ namespace GameA.Game
 
         private void InitCreate(GameManager.EStartType startType)
         {
-            DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
+            Scene2DManager.Instance.SetMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
             if (startType == GameManager.EStartType.WorkshopMultiCreate)
             {
                 EditMode.Instance.MapStatistics.CreateDefaltNetData();
@@ -346,20 +342,6 @@ namespace GameA.Game
                         EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
                 }
             }
-        }
-
-        public void ChangeScene(int index)
-        {
-            if (_curMapIndex == index) return;
-            DataScene2D.Instance.ChangeScene(index);
-            CameraManager.Instance.ChangeScene(index);
-            BgScene2D.Instance.ChangeScene(index);
-            ColliderScene2D.Instance.ChangeScene(index);
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                EditMode.Instance.OnMapReady();
-            }
-            _curMapIndex = index;
         }
 
         private void GenerateMap(int randomSeed)

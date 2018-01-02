@@ -16,15 +16,12 @@ namespace GameA.Game
 {
     public class DataScene2D : Scene2D
     {
-        #region 常量与字段
-
         private static DataScene2D _instance;
-        [SerializeField] private static Vector3 _startPos;
-        [SerializeField] private Grid2D _mapGrid;
         [SerializeField] private IntRect _validMapRect;
-        private int _curSceneIndex;
+        private int _sceneIndex;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         private UnitExtra _playerExtra;
+        private IntVec2 _size = ConstDefineGM2D.DefaultValidMapRectSize;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
@@ -44,13 +41,9 @@ namespace GameA.Game
         /// </summary>
         private List<ModifyData> _addedUnits = new List<ModifyData>();
 
-        #endregion
-
-        #region 属性
-
         public static DataScene2D Instance
         {
-            get { return _instance ?? (_instance = new DataScene2D()); }
+            get { return Scene2DManager.Instance.CurDataScene2D; }
         }
 
         public List<UnitDesc> SpawnDatas
@@ -58,19 +51,9 @@ namespace GameA.Game
             get { return _spawnDatas; }
         }
 
-        public Vector3 StartPos
-        {
-            get { return _startPos; }
-        }
-
         public IntRect ValidMapRect
         {
             get { return _validMapRect; }
-        }
-
-        public Grid2D MapGrid
-        {
-            get { return _mapGrid; }
         }
 
         public Dictionary<IntVec3, UnitExtra> UnitExtras
@@ -98,31 +81,29 @@ namespace GameA.Game
             get { return _playerExtra; }
         }
 
-        #endregion
+        public void Init(IntVec2 size, int index = 0)
+        {
+            _sceneIndex = index;
+            _size = size;
+            Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+        }
 
         protected override void OnInit()
         {
             base.OnInit();
-            _mapGrid = new Grid2D(0, 0, ConstDefineGM2D.MapTileSize.x - 1, ConstDefineGM2D.MapTileSize.y - 1);
-            var worldPos = GM2DTools.TileToWorld(new IntVec2(_mapGrid.XMin, _mapGrid.YMin));
-            _startPos = new Vector2(worldPos.x, worldPos.y);
-            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos,
-                ConstDefineGM2D.DefaultValidMapRectSize + ConstDefineGM2D.MapStartPos - IntVec2.one);
+            var startPos = ConstDefineGM2D.MapStartPosArry[_sceneIndex];
+            _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
         }
 
         /// <summary>
         /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
         /// </summary>
         /// <param name="size"></param>
-        public void SetDefaultMapSize(IntVec2 size)
+        public void SetMapSize(IntVec2 size)
         {
-            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            _instance = null;
+            _size = size;
+            var startPos = ConstDefineGM2D.MapStartPosArry[_sceneIndex];
+            _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
         }
 
         internal void ChangeMapRect(IntRect changedTileSize)
@@ -137,20 +118,20 @@ namespace GameA.Game
 
         public bool IsInTileMap(IntVec2 tile)
         {
-            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
-                    tile.y <= _validMapRect.Max.y);
+            return tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
+                   tile.y <= _validMapRect.Max.y;
         }
 
         public bool IsInTileMap(IntVec3 tile)
         {
-            return (tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
-                    tile.y <= _validMapRect.Max.y);
+            return tile.x >= _validMapRect.Min.x && tile.x <= _validMapRect.Max.x && tile.y >= _validMapRect.Min.y &&
+                   tile.y <= _validMapRect.Max.y;
         }
 
         public bool IsInTileMap(Grid2D grid)
         {
-            return (grid.XMin >= _validMapRect.Min.x && grid.XMax <= _validMapRect.Max.x &&
-                    grid.YMin >= _validMapRect.Min.y && grid.YMax <= _validMapRect.Max.y);
+            return grid.XMin >= _validMapRect.Min.x && grid.XMax <= _validMapRect.Max.x &&
+                   grid.YMin >= _validMapRect.Min.y && grid.YMax <= _validMapRect.Max.y;
         }
 
         internal IntVec3 GetTileIndex(Vector3 worldPos, int id, byte rotation = 0)
@@ -743,21 +724,6 @@ namespace GameA.Game
             unitExtra.InjuredReduce = 0;
             unitExtra.CureIncrease = 0;
             SetPlayerExtra(unitExtra);
-        }
-
-        public void ChangeScene(int index)
-        {
-            if (_curSceneIndex == index) return;
-            if (index >= ConstDefineGM2D.MapStartPosArry.Length)
-            {
-                LogHelper.Error("index is out of range");
-                return;
-            }
-
-            var startPos = ConstDefineGM2D.MapStartPosArry[index];
-            var size = _validMapRect.Max - _validMapRect.Min;
-            _validMapRect = new IntRect(startPos, size + startPos);
-            _curSceneIndex = index;
         }
     }
 

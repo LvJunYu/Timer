@@ -176,6 +176,8 @@ namespace GameA.Game
                     return (int) ESceneLayer.Bullet;
                 case (int) ELayerType.Gun:
                     return (int) ESceneLayer.Gun;
+                case (int) ELayerType.Rope:
+                    return (int) ESceneLayer.Rope;
             }
             LogHelper.Error("GetLayer Failed,LayerType:{0}", tableUnit.Layer);
             return (int) ESceneLayer.Item;

@@ -42,7 +42,9 @@ namespace GameA.Game
         public static IntVec2[] MapStartPosArry = {
             new IntVec2(100, 100) * ServerTileScale,
             new IntVec2(1100, 100) * ServerTileScale,
-            new IntVec2(2100, 100) * ServerTileScale
+            new IntVec2(2100, 100) * ServerTileScale,
+            new IntVec2(3100, 100) * ServerTileScale,
+            new IntVec2(4100, 100) * ServerTileScale
         };
 
         public const int MaxHeightTileCount = 10;

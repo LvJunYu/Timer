@@ -55,6 +55,7 @@ namespace GameA.Game
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Monster);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Effect);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Decoration);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Rope);
 	        
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);
@@ -62,6 +63,10 @@ namespace GameA.Game
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Monster);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Effect);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Decoration);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Rope);
+		        
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Rope, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Rope, (int) ESceneLayer.RemotePlayer);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.RigidbodyItem);
@@ -113,6 +118,7 @@ namespace GameA.Game
         Bullet,
         Gun,
 	    Decoration,
+	    Rope,
 		HomeAvatar = 30,
         Max = 31
     }

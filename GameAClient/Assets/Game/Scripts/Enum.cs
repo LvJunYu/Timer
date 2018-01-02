@@ -113,6 +113,7 @@ namespace GameA.Game
         Gun = 6,
         Bullet = 7,
         Decoration = 8,
+        Rope = 9,
         Max
     }
 

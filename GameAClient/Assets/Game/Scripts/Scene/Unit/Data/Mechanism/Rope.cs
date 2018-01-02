@@ -6,6 +6,7 @@ namespace GameA.Game
     [Unit(Id = 4017, Type = typeof(Rope))]
     public class Rope : UnitBase
     {
+        private bool _isPlaying;
         public override bool CanRope
         {
             get { return true; }
@@ -61,6 +62,10 @@ namespace GameA.Game
                 _view.Trans.localEulerAngles = Vector3.zero;
             }
 
+            if (_isPlaying)
+            {
+                _view.SetRendererEnabled(false);
+            }
             return true;
         }
 
@@ -71,6 +76,7 @@ namespace GameA.Game
                 _view.SetRendererEnabled(false);
             }
 
+            _isPlaying = true;
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
             IntVec2 offset, startPos;
@@ -200,11 +206,11 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
-
+            _isPlaying = false;
             base.Clear();
         }
 
-        internal override void OnObjectDestroy()
+        internal override void OnDispose()
         {
             if (_nextRope != null)
             {
@@ -222,7 +228,7 @@ namespace GameA.Game
             }
 
             RopeManager.Instance.RemoveRope(this);
-            base.OnObjectDestroy();
+            base.OnDispose();
         }
     }
 }
