@@ -190,7 +190,7 @@ namespace GameA.Game
             var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
             //通知UnitBase
             UnitBase listernerUnit;
-            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            if (ColliderScene2D.CurScene.TryGetUnit(listerner, out listernerUnit))
             {
                 listernerUnit.OnPairUnitTriggerEnter(pairUnit);
             }
@@ -209,7 +209,7 @@ namespace GameA.Game
             var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
             //通知UnitBase
             UnitBase listernerUnit;
-            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            if (ColliderScene2D.CurScene.TryGetUnit(listerner, out listernerUnit))
             {
                 listernerUnit.OnPairUnitTriggerExit(pairUnit);
             }

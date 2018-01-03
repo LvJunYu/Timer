@@ -26,7 +26,7 @@ namespace GameA.Game
                 }
                 GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.EditLayItem);
                 
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                UnitExtra unitExtra = DataScene2D.CurScene.GetUnitExtra(touchedUnitDesc.Guid);
                 if (EditMode.Instance.DeleteUnitWithCheck(touchedUnitDesc))
                 {
                     OnModifyDelete(new UnitEditData(touchedUnitDesc, unitExtra));

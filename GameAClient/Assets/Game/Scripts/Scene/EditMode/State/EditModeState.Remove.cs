@@ -85,11 +85,11 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), GetBlackBoard().EditorLayer, out unitDesc))
                 {
-                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(unitDesc))
                     {
                         GetRecordBatch().RecordRemoveUnit(ref unitDesc, ref unitExtra);
-                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(unitDesc, GetRecordBatch());
+                        DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(unitDesc, GetRecordBatch());
                     }
                 }
             }

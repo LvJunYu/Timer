@@ -41,7 +41,7 @@ namespace GameA.Game
             _onOrthoTargetSizeChangeCallback = action;
             _curState = ESpingState.None;
             
-            Rect mapValidRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            Rect mapValidRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
             float tmpAspectRatio = GM2DGame.Instance.GameScreenAspectRatio;
             float tmpValueX = mapValidRect.width/tmpAspectRatio/2;
             float tmpValueY = mapValidRect.height/2;

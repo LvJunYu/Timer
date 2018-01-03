@@ -113,11 +113,11 @@ namespace GameA
                     _umCountDict.Add(unitList[i], umCount);
                     umCount.Set(GM2DTools.TileToWorld(unitList[i]));
                     umCount.SetCount(0);
-                    var list = DataScene2D.Instance.GetControlledUnits (unitList [i]);
+                    var list = DataScene2D.CurScene.GetControlledUnits (unitList [i]);
                     if (null != list) {
                         umCount.SetCount(list.Count);
                     } else {
-                        var list2 = DataScene2D.Instance.GetSwitchUnitsConnected (unitList [i]);
+                        var list2 = DataScene2D.CurScene.GetSwitchUnitsConnected (unitList [i]);
                         if (null != list2) {
                             umCount.SetCount(list2.Count);
                         }

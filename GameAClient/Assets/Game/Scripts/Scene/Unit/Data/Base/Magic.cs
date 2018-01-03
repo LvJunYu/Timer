@@ -264,7 +264,7 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
+                ColliderScene2D.CurScene.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
             }
         }

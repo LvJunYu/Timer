@@ -55,7 +55,7 @@ namespace GameA.Game
 
         public static int GetDistanceToBorder(IntVec2 point, byte direction)
         {
-            var validRect = DataScene2D.Instance.ValidMapRect;
+            var validRect = DataScene2D.CurScene.ValidMapRect;
             switch (direction)
             {
                 case 0:

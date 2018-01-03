@@ -43,7 +43,7 @@ namespace GameA.Game
         {
             var unitExtra = base.UpdateExtraData();
             _eActiveState = EActiveState.Deactive;
-            _triggerName = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
+            _triggerName = DataScene2D.CurScene.GetUnitExtra(_guid).Msg;
             return unitExtra;
         }
 

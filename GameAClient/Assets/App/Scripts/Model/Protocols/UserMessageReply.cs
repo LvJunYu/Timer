@@ -29,10 +29,6 @@ namespace GameA
         /// </summary>
         private string _content;
         /// <summary>
-        /// 是否回复他人
-        /// </summary>
-        private bool _relayOther;
-        /// <summary>
         /// 回复对象信息
         /// </summary>
         private UserInfoSimple _targetUserInfo;
@@ -90,16 +86,6 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 是否回复他人
-        /// </summary>
-        public bool RelayOther { 
-            get { return _relayOther; }
-            set { if (_relayOther != value) {
-                _relayOther = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
         /// 回复对象信息
         /// </summary>
         public UserInfoSimple TargetUserInfo { 
@@ -124,7 +110,6 @@ namespace GameA
             }
             _createTime = msg.CreateTime;     
             _content = msg.Content;     
-            _relayOther = msg.RelayOther;     
             if (null == _targetUserInfo) {
                 _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
             } else {
@@ -147,7 +132,6 @@ namespace GameA
             }
             _createTime = msg.CreateTime;           
             _content = msg.Content;           
-            _relayOther = msg.RelayOther;           
             if(null != msg.TargetUserInfo){
                 if (null == _targetUserInfo){
                     _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
@@ -170,7 +154,6 @@ namespace GameA
             }
             _createTime = obj.CreateTime;           
             _content = obj.Content;           
-            _relayOther = obj.RelayOther;           
             if(null != obj.TargetUserInfo){
                 if (null == _targetUserInfo){
                     _targetUserInfo = new UserInfoSimple();

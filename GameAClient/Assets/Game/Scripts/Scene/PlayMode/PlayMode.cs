@@ -109,22 +109,22 @@ namespace GameA.Game
             foreach (UnitDesc unitDesc in _addedDatas)
             {
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.DestroyView(unitDesc);
-                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
+                ColliderScene2D.CurScene.DestroyView(unitDesc);
+                ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit);
             }
             _addedDatas.Clear();
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
                 UnitDesc unitDesc = _deletedDatas[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
+                ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit);
                 if (!MapConfig.UseAOI)
                 {
-                    ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit);
+                    ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit);
                 }
             }
             _deletedDatas.Clear();
-            ColliderScene2D.Instance.Reset();
+            ColliderScene2D.CurScene.Reset();
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
@@ -276,7 +276,7 @@ namespace GameA.Game
                 return null;
             }
             UnitBase unit;
-            if (!ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+            if (!ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
             {
                 LogHelper.Error("CreateUnit TryGetUnit Failed,{0}", unitDesc);
                 return null;
@@ -307,11 +307,11 @@ namespace GameA.Game
                 return false;
             }
             _addedDatas.Add(unitDesc);
-            if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 //return false;
             }
@@ -339,11 +339,11 @@ namespace GameA.Game
             {
                 _deletedDatas.Add(unitDesc);
             }
-            if (!ColliderScene2D.Instance.DestroyView(unitDesc))
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -434,7 +434,7 @@ namespace GameA.Game
 
         private bool CheckPlayerValid(bool run = true)
         {
-            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            var spawnDatas = DataScene2D.CurScene.SpawnDatas;
             if (spawnDatas.Count == 0)
             {
                 if (run)
@@ -473,13 +473,13 @@ namespace GameA.Game
                     {
                         var mainGhost =
                             CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
-                        mainGhost.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[0].Guid));
+                        mainGhost.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[0].Guid));
                         PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
                     for (int i = 0; i < spawnDatas.Count; i++)
                     {
-                        byte team = DataScene2D.Instance.GetUnitExtra(spawnDatas[i].Guid).TeamId;
+                        byte team = DataScene2D.CurScene.GetUnitExtra(spawnDatas[i].Guid).TeamId;
                         TeamManager.Instance.AddTeam(team);
                     }
                 }
@@ -490,7 +490,7 @@ namespace GameA.Game
         ///多人模式下，basicNum是服务器随机的初始位置序号        
         public void AddPlayer(int basicNum, bool main = true, int roomInx = 0)
         {
-            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            var spawnDatas = DataScene2D.CurScene.SpawnDatas;
             int spwanCount = spawnDatas.Count;
             if (spwanCount == 0)
             {
@@ -505,7 +505,7 @@ namespace GameA.Game
             }
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
             PlayerManager.Instance.Add(player, roomInx);
-            player.SetUnitExtra(DataScene2D.Instance.GetUnitExtra(spawnDatas[basicNum].Guid));
+            player.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[basicNum].Guid));
             TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
             if (main)
             {
@@ -529,7 +529,7 @@ namespace GameA.Game
             BgScene2D.Instance.OnStop();
             BgScene2D.Instance.Reset();
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos), true);
-            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
+            UnitBase[] units = ColliderScene2D.CurScene.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
                 units[i].OnEdit();
@@ -574,9 +574,9 @@ namespace GameA.Game
         {
             _pausing = false;
             _run = true;
-            ColliderScene2D.Instance.SortData();
+            ColliderScene2D.CurScene.SortData();
             CrossPlatformInputManager.ClearVirtualInput();
-            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
+            UnitBase[] units = ColliderScene2D.CurScene.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
                 UnitBase unit = units[i];
@@ -651,17 +651,17 @@ namespace GameA.Game
             _focusPos = GetFocusPos(mainPlayerPos);
             if (isInit)
             {
-                ColliderScene2D.Instance.InitCreateArea(_focusPos);
+                ColliderScene2D.CurScene.InitCreateArea(_focusPos);
             }
             else
             {
-                ColliderScene2D.Instance.UpdateLogic(_focusPos);
+                ColliderScene2D.CurScene.UpdateLogic(_focusPos);
             }
         }
 
         private IntVec2 GetFocusPos(IntVec2 followPos)
         {
-            IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
+            IntRect validMapRect = DataScene2D.CurScene.ValidMapRect;
             IntVec2 size = ConstDefineGM2D.HalfMaxScreenSize;
             followPos.x = Mathf.Clamp(followPos.x, validMapRect.Min.x + size.x, validMapRect.Max.x + 1 - size.x);
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);

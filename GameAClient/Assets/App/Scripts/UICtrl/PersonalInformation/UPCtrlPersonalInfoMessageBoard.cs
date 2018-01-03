@@ -68,8 +68,15 @@ namespace GameA
                 userMessage.FirstReply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 1000 + i;
                 userMessage.FirstReply.Id = i + 1000;
                 userMessage.FirstReply.MessageId = userMessage.Id;
-                userMessage.FirstReply.RelayOther = Random.Range(0, 2) == 0;
-                userMessage.FirstReply.TargetUserInfoDetail = _mainCtrl.UserInfoDetail;
+                bool relayOther = Random.Range(0, 2) == 0;
+                if (relayOther)
+                {
+                    userMessage.FirstReply.TargetUserInfoDetail = _mainCtrl.UserInfoDetail;
+                }
+                else
+                {
+                    userMessage.FirstReply.TargetUserInfoDetail = null;
+                }
                 userMessage.FirstReply.UserInfoDetail = _mainCtrl.UserInfoDetail;
                 _dataList.Add(userMessage);
             }

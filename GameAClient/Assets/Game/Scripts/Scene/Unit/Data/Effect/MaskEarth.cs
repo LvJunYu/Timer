@@ -239,7 +239,7 @@ namespace GameA.Game
         private void CheckPos(IntVec3 pos)
         {
             UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(pos, out unit))
+            if (ColliderScene2D.CurScene.TryGetUnit(pos, out unit))
             {
                 if (unit != null && unit.Id == Id)
                 {
@@ -298,7 +298,7 @@ namespace GameA.Game
         private bool CheckMaskEarth(IntVec3 pos, EDirectionType eDirectionType, bool add)
         {
             UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(pos, out unit))
+            if (ColliderScene2D.CurScene.TryGetUnit(pos, out unit))
             {
                 if (unit != null && unit.Id == Id)
                 {

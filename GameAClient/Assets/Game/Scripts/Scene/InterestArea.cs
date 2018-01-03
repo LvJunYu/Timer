@@ -63,7 +63,7 @@ namespace GameA.Game
         public void InitCreate(IntVec2 pos)
         {
             _pos = pos;
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            var validMapRect = DataScene2D.CurScene.ValidMapRect;
             var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
 
             var innerGrid = new Grid2D(_pos - _viewInner, _pos + _viewInner);
@@ -90,7 +90,7 @@ namespace GameA.Game
                 return;
             }
             _pos = pos;
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            var validMapRect = DataScene2D.CurScene.ValidMapRect;
             var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
 
             var innerGrid = new Grid2D(_pos - _viewInner, _pos + _viewInner);

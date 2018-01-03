@@ -42,7 +42,7 @@ namespace GameA.Game
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
                         var oriUnitDesc = boardData.CurrentTouchUnitDesc;
-                        var oriUnitExtra = DataScene2D.Instance.GetUnitExtra(oriUnitDesc.Guid);
+                        var oriUnitExtra = DataScene2D.CurScene.GetUnitExtra(oriUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(oriUnitDesc))
                         {
                             GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, ref oriUnitExtra);
@@ -196,11 +196,11 @@ namespace GameA.Game
                     for (int i = 0; i < coverUnits.Count; i++)
                     {
                         var deleteUnitDesc = coverUnits[i];
-                        var deleteUnitExtra = DataScene2D.Instance.GetUnitExtra(deleteUnitDesc.Guid);
+                        var deleteUnitExtra = DataScene2D.CurScene.GetUnitExtra(deleteUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(deleteUnitDesc))
                         {
                             recordBatch.RecordRemoveUnit(ref deleteUnitDesc, ref deleteUnitExtra);
-                            DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
+                            DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
                         }
                     }
                 }
@@ -208,11 +208,11 @@ namespace GameA.Game
                 UnitDesc needReplaceUnitDesc;
                 if (EditHelper.TryGetReplaceUnit(unitDesc.Id, out needReplaceUnitDesc))
                 {
-                    var needReplaceUnitExtra = DataScene2D.Instance.GetUnitExtra(needReplaceUnitDesc.Guid);
+                    var needReplaceUnitExtra = DataScene2D.CurScene.GetUnitExtra(needReplaceUnitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
                     {
                         recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
-                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
+                        DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                 }
 
@@ -223,7 +223,7 @@ namespace GameA.Game
                     recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc,
+                        DataScene2D.CurScene.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc,
                             recordBatch);
                     }
                 }
@@ -231,7 +231,7 @@ namespace GameA.Game
                 {
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
+                        DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
                     }
                 }
 

@@ -1,7 +1,6 @@
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine.Networking;
 
 namespace GameA
 {
@@ -32,7 +31,7 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyUserMessage(_id, content, false, 0, res =>
+                RemoteCommands.ReplyUserMessage(_id, content, 0, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {

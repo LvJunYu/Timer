@@ -16,7 +16,6 @@ namespace GameA.Game
     [Serializable]
     public class ColliderScene2D : Scene2D
     {
-        private static ColliderScene2D _instance;
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
 
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
@@ -30,8 +29,9 @@ namespace GameA.Game
         private InterestArea _interestArea;
         private byte[,] _pathGrid;
         private int _sceneIndex;
+        private bool _hasInit;
 
-        public static ColliderScene2D Instance
+        public static ColliderScene2D CurScene
         {
             get { return Scene2DManager.Instance.CurColliderScene2D; }
         }
@@ -92,6 +92,7 @@ namespace GameA.Game
 
         public void Init(int index = 0)
         {
+            if (_hasInit) return;
             _sceneIndex = index;
             var regionTilesCount = ConstDefineGM2D.RegionTileSize;
             var width = ConstDefineGM2D.MapTileSize.x;
@@ -116,6 +117,7 @@ namespace GameA.Game
             }
 
             InitPathFinder(_pathGrid);
+            _hasInit = true;
         }
 
         protected override void OnInit()
@@ -613,7 +615,7 @@ namespace GameA.Game
         internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
-            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
+            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, CurScene, minDepth, maxDepth);
         }
 
         internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit,
@@ -621,7 +623,7 @@ namespace GameA.Game
             int layerMask = JoyPhysics2D.LayMaskAll, SceneNode excludeNode = null)
         {
             return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask,
-                Instance, float.MinValue, float.MaxValue, excludeNode);
+                CurScene, float.MinValue, float.MaxValue, excludeNode);
         }
 
         internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction,
@@ -629,7 +631,7 @@ namespace GameA.Game
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, Instance,
+            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, CurScene,
                 float.MinValue, float.MaxValue, excludeNode);
         }
 
@@ -654,7 +656,7 @@ namespace GameA.Game
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
@@ -663,7 +665,7 @@ namespace GameA.Game
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(pointA, pointB, direction, out hit, distance, layerMask, Instance, minDepth,
+            return SceneQuery2D.GridCast(pointA, pointB, direction, out hit, distance, layerMask, CurScene, minDepth,
                 maxDepth, excludeNode);
         }
 
@@ -671,7 +673,7 @@ namespace GameA.Game
             float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
@@ -680,7 +682,7 @@ namespace GameA.Game
             float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, Instance, minDepth,
+            return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, CurScene, minDepth,
                 maxDepth,
                 excludeNode);
         }
@@ -689,14 +691,14 @@ namespace GameA.Game
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
         public static List<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             _cachedUnits.Clear();
-            var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
                 GetUnits(nodes[i], one, _cachedUnits);
@@ -735,7 +737,7 @@ namespace GameA.Game
             {
                 IntVec3 guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!Instance.TryGetUnit(guid, out unit))
+                if (!CurScene.TryGetUnit(guid, out unit))
                 {
                     //LogHelper.Warning("TryGetUnits failed,{0}", node);
                     return false;
@@ -755,7 +757,7 @@ namespace GameA.Game
                         var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                         guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                         UnitBase unit;
-                        if (!Instance.TryGetUnit(guid, out unit))
+                        if (!CurScene.TryGetUnit(guid, out unit))
                         {
                             continue;
                         }
@@ -772,7 +774,7 @@ namespace GameA.Game
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.CircleCastAll(center, radius, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
@@ -782,9 +784,9 @@ namespace GameA.Game
         {
             _cachedUnits.Clear();
             var grid = new Grid2D(center.x - radius, center.y - radius, center.x + radius - 1, center.y + radius - 1);
-            grid = grid.IntersectWith(DataScene2D.Instance.RootGrid);
+            grid = grid.IntersectWith(DataScene2D.CurScene.RootGrid);
             List<SceneNode> nodes =
-                SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth, excludeNode);
+                SceneQuery2D.CircleCastAll(center, radius, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
                 if (!SplitNode(center, radius, grid, nodes[i]))
@@ -810,7 +812,7 @@ namespace GameA.Game
             {
                 var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!Instance.TryGetUnit(guid, out unit))
+                if (!CurScene.TryGetUnit(guid, out unit))
                 {
                     return false;
                 }
@@ -833,7 +835,7 @@ namespace GameA.Game
                     if (splitedGrid.Intersect(center, radius))
                     {
                         UnitBase unit;
-                        if (!Instance.TryGetUnit(guid, out unit))
+                        if (!CurScene.TryGetUnit(guid, out unit))
                         {
                             continue;
                         }

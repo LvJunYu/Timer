@@ -34,7 +34,7 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyUserMessage(_messageId, content, true, _id, res =>
+                RemoteCommands.ReplyUserMessage(_messageId, content, _id, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {

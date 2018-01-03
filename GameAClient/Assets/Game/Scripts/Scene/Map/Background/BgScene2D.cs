@@ -115,7 +115,7 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
 //            validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x,
 //                validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
@@ -481,7 +481,7 @@ namespace GameA.Game
                 return;
             }
             
-            var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
             var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
             _basePos = validMapRect.center;

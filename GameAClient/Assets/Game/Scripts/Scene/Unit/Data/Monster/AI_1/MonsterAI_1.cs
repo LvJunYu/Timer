@@ -251,7 +251,7 @@ namespace GameA.Game
                     }
 
                     if (checkedX != 0 &&
-                        !ColliderScene2D.Instance.HasBlockInLine(checkedX / ConstDefineGM2D.ServerTileScale,
+                        !ColliderScene2D.CurScene.HasBlockInLine(checkedX / ConstDefineGM2D.ServerTileScale,
                             pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                     {
                         if (nextDest.x - pathPos.x >= _curMaxSpeedX)
@@ -329,7 +329,7 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _currentNodeId = 0;
-            var path = ColliderScene2D.Instance.FindPath(this, AttackTarget, 3);
+            var path = ColliderScene2D.CurScene.FindPath(this, AttackTarget, 3);
             if (path != null && path.Count > 1)
             {
                 _currentNodeId = 1;
@@ -359,7 +359,7 @@ namespace GameA.Game
                     {
                         jumpHeight = _path[i].y - _path[lastNodeId].y;
                     }
-                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
+                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.CurScene.IsGround(_path[i].x, _path[i].y - 1))
                     {
                         return GetJumpSpeed(jumpHeight);
                     }
@@ -401,7 +401,7 @@ namespace GameA.Game
             destOnGround = false;
             for (int i = _path[_currentNodeId].x; i < _path[_currentNodeId].x + 1; ++i)
             {
-                if (ColliderScene2D.Instance.IsGround(i, _path[_currentNodeId].y - 1))
+                if (ColliderScene2D.CurScene.IsGround(i, _path[_currentNodeId].y - 1))
                 {
                     destOnGround = true;
                     break;

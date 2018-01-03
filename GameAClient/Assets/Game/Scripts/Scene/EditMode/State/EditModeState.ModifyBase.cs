@@ -28,17 +28,17 @@ namespace GameA.Game
 
             public List<ModifyData> RemovedUnits
             {
-                get { return DataScene2D.Instance.RemovedUnits; }
+                get { return DataScene2D.CurScene.RemovedUnits; }
             }
 
             public List<ModifyData> ModifiedUnits
             {
-                get { return DataScene2D.Instance.ModifiedUnits; }
+                get { return DataScene2D.CurScene.ModifiedUnits; }
             }
 
             public List<ModifyData> AddedUnits
             {
-                get { return DataScene2D.Instance.AddedUnits; }
+                get { return DataScene2D.CurScene.AddedUnits; }
             }
 
             public override void Init()
@@ -77,9 +77,9 @@ namespace GameA.Game
             public int UsedModifyAddUnitCnt(int unitId)
             {
                 int result = 0;
-                for (int i = 0; i < DataScene2D.Instance.AddedUnits.Count; i++)
+                for (int i = 0; i < DataScene2D.CurScene.AddedUnits.Count; i++)
                 {
-                    if (DataScene2D.Instance.AddedUnits[i].ModifiedUnit.UnitDesc.Id == unitId)
+                    if (DataScene2D.CurScene.AddedUnits[i].ModifiedUnit.UnitDesc.Id == unitId)
                     {
                         result++;
                     }

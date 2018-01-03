@@ -13,19 +13,28 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new Scene2DManager()); }
         }
 
+        private int _curSceneIndex;
+        private DataScene2D _curDataScene2D;
+        private ColliderScene2D _curColliderScene2D;
+        private List<DataScene2D> _dataScenes = new List<DataScene2D>();
+        private List<ColliderScene2D> _colliderScenes = new List<ColliderScene2D>();
+        private IntVec2 _mapSize = ConstDefineGM2D.DefaultValidMapRectSize;
+
+        public int CurSceneIndex
+        {
+            get { return _curSceneIndex; }
+        }
+
         public DataScene2D CurDataScene2D
         {
             get
             {
-                while (CurSceneIndex >= _dataScenes.Count)
+                if (_curDataScene2D == null)
                 {
-                    int index = _dataScenes.Count;
-                    var dataScene2D = new DataScene2D();
-                    dataScene2D.Init(_mapSize, index);
-                    _dataScenes.Add(dataScene2D);
+                    _curDataScene2D = GetDataScene2D(_curSceneIndex);
                 }
 
-                return _dataScenes[CurSceneIndex];
+                return _curDataScene2D;
             }
         }
 
@@ -33,30 +42,35 @@ namespace GameA.Game
         {
             get
             {
-                while (CurSceneIndex >= _colliderScenes.Count)
+                if (_curColliderScene2D == null)
                 {
-                    int index = _colliderScenes.Count;
-                    var colliderScene2D = new ColliderScene2D();
-                    colliderScene2D.Init(index);
-                    _colliderScenes.Add(colliderScene2D);
+                    _curColliderScene2D = GetColliderScene2D(_curSceneIndex);
                 }
-                
-                return _colliderScenes[CurSceneIndex];
+
+                return _curColliderScene2D;
             }
         }
 
-        public int CurSceneIndex
+        public DataScene2D MainDataScene2D
         {
-            get { return _curSceneIndex; }
+            get { return GetDataScene2D(0); }
         }
 
-        private List<DataScene2D> _dataScenes = new List<DataScene2D>();
-        private List<ColliderScene2D> _colliderScenes = new List<ColliderScene2D>();
-        private int _curSceneIndex;
-        private IntVec2 _mapSize = ConstDefineGM2D.DefaultValidMapRectSize;
-        
+        public ColliderScene2D MainColliderScene2D
+        {
+            get { return GetColliderScene2D(0); }
+        }
+
+        public int SceneCount
+        {
+            get { return _dataScenes.Count; }
+        }
+
         public void Dispose()
         {
+            _curDataScene2D = null;
+            _curColliderScene2D = null;
+            _curSceneIndex = 0;
             for (int i = 0; i < _dataScenes.Count; i++)
             {
                 _dataScenes[i].Dispose();
@@ -69,25 +83,32 @@ namespace GameA.Game
 
             _dataScenes.Clear();
             _colliderScenes.Clear();
-            _curSceneIndex = 0;
             _instance = null;
         }
 
         public bool Init()
         {
-            DataScene2D.Instance.Init(_mapSize);
-            ColliderScene2D.Instance.Init();
+            DataScene2D.CurScene.Init(_mapSize);
+            ColliderScene2D.CurScene.Init();
             return true;
         }
 
         public void ChangeScene(int index)
         {
-            if (CurSceneIndex == index) return;
-            CurColliderScene2D.OnLeaveScene();
+            if (_curSceneIndex == index) return;
+            if (_curColliderScene2D != null)
+            {
+                _curColliderScene2D.OnLeaveScene();
+            }
+
             _curSceneIndex = index;
+            _curDataScene2D = GetDataScene2D(index);
+            _curDataScene2D.Init(_mapSize, index);
             CameraManager.Instance.ChangeScene();
             BgScene2D.Instance.ChangeScene(index);
-            CurColliderScene2D.OnEnterScene();
+            _curColliderScene2D = GetColliderScene2D(index);
+            _curColliderScene2D.Init(index);
+            _curColliderScene2D.OnEnterScene();
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.OnMapReady();
@@ -104,6 +125,34 @@ namespace GameA.Game
             for (int i = 0; i < _dataScenes.Count; i++)
             {
                 _dataScenes[i].SetMapSize(size);
+            }
+        }
+
+        public DataScene2D GetDataScene2D(int index)
+        {
+            while (index >= _dataScenes.Count)
+            {
+                _dataScenes.Add(new DataScene2D());
+            }
+
+            return _dataScenes[index];
+        }
+
+        public ColliderScene2D GetColliderScene2D(int index)
+        {
+            while (index >= _colliderScenes.Count)
+            {
+                _colliderScenes.Add(new ColliderScene2D());
+            }
+
+            return _colliderScenes[index];
+        }
+
+        public void InitPlay(IntRect rect)
+        {
+            for (int i = 0; i < _dataScenes.Count; i++)
+            {
+                _dataScenes[i].InitPlay(rect);
             }
         }
     }

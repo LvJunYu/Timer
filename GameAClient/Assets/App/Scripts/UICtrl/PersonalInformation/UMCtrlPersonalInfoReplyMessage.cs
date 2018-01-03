@@ -51,7 +51,7 @@ namespace GameA
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.CreateTime,
                 DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_reply.CreateTime));
-            if (_reply.RelayOther)
+            if (_reply.TargetUserInfoDetail != null)
             {
                 DictionaryTools.SetContentText(_cachedView.Content, string.Format(_contentReplyFormat, user.NickName,
                     _reply.TargetUserInfoDetail.UserInfoSimple.NickName, _reply.Content));
@@ -83,7 +83,6 @@ namespace GameA
                 reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                 reply.Id = 4000;
                 reply.MessageId = _reply.MessageId;
-                reply.RelayOther = true;
                 reply.UserInfoDetail = LocalUser.Instance.User;
                 reply.TargetUserInfoDetail = LocalUser.Instance.User;
                 Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, reply.MessageId, reply);

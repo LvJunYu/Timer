@@ -20,7 +20,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            var unitExtra = DataScene2D.CurScene.GetUnitExtra(_guid);
             //todo 兼容老版本
             if (unitExtra.ChildId < 1000)
             {

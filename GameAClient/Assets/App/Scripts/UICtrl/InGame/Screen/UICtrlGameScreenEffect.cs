@@ -63,7 +63,7 @@ namespace GameA
 
         private void InitParameter()
         {
-            var validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            var validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
             var canvasSize = SocialGUIManager.GetUIResolution();
             _coordinateOffset = validMapRect.center;
             _coordinateScalefactor = canvasSize.y / ConstDefineGM2D.CameraOrthoSizeOnPlay / 2;

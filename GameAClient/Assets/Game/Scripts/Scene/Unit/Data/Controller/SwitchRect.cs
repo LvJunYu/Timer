@@ -23,7 +23,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            _units = DataScene2D.Instance.GetControlledUnits(_guid);
+            _units = DataScene2D.CurScene.GetControlledUnits(_guid);
             if (_view != null)
             {
                 _view.SetRendererEnabled(false);

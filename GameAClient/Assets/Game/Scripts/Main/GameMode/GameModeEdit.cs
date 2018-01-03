@@ -347,7 +347,7 @@ namespace GameA.Game
 			Rect captureRect = new Rect();
 			captureRect.height = imageHeight;
 			captureRect.width = imageWidth;
-			var mapTiledRect = DataScene2D.Instance.ValidMapRect;
+			var mapTiledRect = DataScene2D.CurScene.ValidMapRect;
 			mapTiledRect.Max += new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
 			mapTiledRect.Min -= new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
 			Rect mapRect = GM2DTools.TileRectToWorldRect(mapTiledRect);

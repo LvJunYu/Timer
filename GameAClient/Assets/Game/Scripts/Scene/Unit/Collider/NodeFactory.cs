@@ -30,7 +30,7 @@ namespace GameA.Game
                     break;
                 case EColliderType.Static:
                     UnitExtra unitExtra;
-                    if (DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                    if (DataScene2D.CurScene.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                     {
                         isDynamic = unitExtra.IsDynamic();
                     }

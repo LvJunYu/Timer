@@ -120,7 +120,7 @@ namespace GameA.Game
                     if (UnitDefine.IsFanEffect(hit.node.Layer, hit.node.Id))
                     {
                         UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
+                        if (ColliderScene2D.CurScene.TryGetUnit(hit.node, out unit))
                         {
                             if (unit != null && unit.IsAlive)
                             {

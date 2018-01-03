@@ -30,7 +30,7 @@ namespace GameA.Game
         /// </summary>
         private IntVec2 _defaultMapSize = new IntVec2(60, 30);
 #if UNITY_EDITOR
-        public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
+//        public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
 #endif
 
         public float MapProcess
@@ -213,7 +213,7 @@ namespace GameA.Game
         public void Update()
         {
             var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
-            ColliderScene2D.Instance.UpdateLogic(pos);
+            ColliderScene2D.CurScene.UpdateLogic(pos);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace GameA.Game
             }
 
             //在生成出生点之前，生成玩家通用属性
-            DataScene2D.Instance.InitDefaultPlayerUnitExtra();
+            DataScene2D.CurScene.InitDefaultPlayerUnitExtra();
             CreateDefaultScene();
             GenerateMap(0);
         }
@@ -253,7 +253,7 @@ namespace GameA.Game
             }
 
             PlayMode.Instance.SceneState.Init(mapData);
-            DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
+            Scene2DManager.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
             GenerateMap(mapData.BgRandomSeed);
         }
 
@@ -294,7 +294,7 @@ namespace GameA.Game
             }
             //生成地形
 
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            var validMapRect = DataScene2D.CurScene.ValidMapRect;
             for (int i = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale;
                 i < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale;
                 i += ConstDefineGM2D.ServerTileScale)
@@ -369,7 +369,7 @@ namespace GameA.Game
 
         public void OnDrawGizmos()
         {
-            ColliderScene2D.Instance.OnDrawGizmos();
+            ColliderScene2D.CurScene.OnDrawGizmos();
 //            DataScene2D.Instance.OnDrawGizmos();
 //            BgScene2D.Instance.OnDrawGizmos();
         }

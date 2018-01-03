@@ -322,7 +322,7 @@ namespace GameA.Game
 
         public void OnMapReady()
         {
-            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
+            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect));
         }
         
         /// <summary>
@@ -418,7 +418,7 @@ namespace GameA.Game
             switch (_boardData.EditorLayer)
             {//进入模式
                 case EEditorLayer.None:
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -433,7 +433,7 @@ namespace GameA.Game
                     }
                     break;
                 case EEditorLayer.Normal:
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -453,7 +453,7 @@ namespace GameA.Game
                 case EEditorLayer.Effect:
                     _cameraMask.SetLayerMaskSortOrder((int) ESortingOrder.EffectEditorLayMask);
                     CameraMask.ShowLayerMask();
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -470,7 +470,7 @@ namespace GameA.Game
                     break;
                 case EEditorLayer.Capture:
                     BgScene2D.Instance.SetCirrus(false);
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -548,11 +548,11 @@ namespace GameA.Game
                 return false;
             }
             EditHelper.BeforeAddUnit(tableUnit);
-            UnitExtra oldExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-            DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+            UnitExtra oldExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+            DataScene2D.CurScene.ProcessUnitExtra(unitDesc, unitExtra);
             if (!AddUnit(unitDesc))
             {
-                DataScene2D.Instance.ProcessUnitExtra(unitDesc, oldExtra);
+                DataScene2D.CurScene.ProcessUnitExtra(unitDesc, oldExtra);
                 return false;
             }
             EditHelper.AfterAddUnit(unitDesc, tableUnit);
@@ -572,7 +572,7 @@ namespace GameA.Game
                 LogHelper.Error("InternalAddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
+            if (!DataScene2D.CurScene.AddData(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -581,11 +581,11 @@ namespace GameA.Game
                 PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
-            if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -637,11 +637,11 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            if (!ColliderScene2D.Instance.DestroyView(unitDesc))
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
             {
                 //成对的不能返回false
                 if (tableUnit.EPairType == 0)
@@ -649,7 +649,7 @@ namespace GameA.Game
                     return false;
                 }
             }
-            if (!DataScene2D.Instance.DeleteData(unitDesc, tableUnit))
+            if (!DataScene2D.CurScene.DeleteData(unitDesc, tableUnit))
             {
                 return false;
             }

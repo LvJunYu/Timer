@@ -49,7 +49,7 @@ namespace GameA
 
         private void UpdateShow()
         {
-            _pristineValue = DataScene2D.Instance.GetUnitExtra(_selectItem.Guid).Msg;
+            _pristineValue = DataScene2D.CurScene.GetUnitExtra(_selectItem.Guid).Msg;
             _cachedView.AddMessageContentValue.text = _pristineValue == null ? "" : _pristineValue;
         }
 

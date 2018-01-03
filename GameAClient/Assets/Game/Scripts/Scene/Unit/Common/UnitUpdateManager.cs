@@ -12,10 +12,10 @@ namespace GameA.Game
         public void UpdateLogic(float deltaTime)
         {
             var playerList = PlayerManager.Instance.PlayerList;
-            var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
-            var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
-            var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
-            var allOtherUnits = ColliderScene2D.Instance.AllOtherUnits;
+            var allSwitchUnits = ColliderScene2D.CurScene.AllSwitchUnits;
+            var allMagicUnits = ColliderScene2D.CurScene.AllMagicUnits;
+            var allBulletUnits = ColliderScene2D.CurScene.AllBulletUnits;
+            var allOtherUnits = ColliderScene2D.CurScene.AllOtherUnits;
 
             for (int i = 0; i < allSwitchUnits.Count; i++)
             {

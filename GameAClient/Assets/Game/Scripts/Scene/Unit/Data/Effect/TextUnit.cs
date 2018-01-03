@@ -37,7 +37,7 @@ namespace GameA.Game
             {
                 CommonTools.SetParent(go.transform, _trans);
                 _textMesh = go.GetComponent<TextMesh>();
-                _textMesh.text = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
+                _textMesh.text = DataScene2D.CurScene.GetUnitExtra(_guid).Msg;
                 _textMesh.GetComponent<Renderer>().sortingOrder = (int) ESortingOrder.EffectItem;
             }
             ShowHide(false);

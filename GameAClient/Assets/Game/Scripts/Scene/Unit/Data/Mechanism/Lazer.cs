@@ -151,7 +151,7 @@ namespace GameA.Game
                         if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                         {
                             UnitBase switchTrigger;
-                            if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
+                            if (ColliderScene2D.CurScene.TryGetUnit(hit.node, out switchTrigger))
                             {
                                 _gridCheck.Do((SwitchTriggerPress) switchTrigger);
                                 _distance = hit.distance + 80;
@@ -177,7 +177,7 @@ namespace GameA.Game
                     if (UnitDefine.IsLaserDamage(hit.node.Layer))
                     {
                         UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
+                        if (ColliderScene2D.CurScene.TryGetUnit(hit.node, out unit))
                         {
                             if (unit != null && unit.IsAlive && unit.IsActor)
                             {

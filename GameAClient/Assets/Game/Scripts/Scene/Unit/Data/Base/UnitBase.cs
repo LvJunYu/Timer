@@ -805,7 +805,7 @@ namespace GameA.Game
             if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
+                ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
             }
             _lastColliderGrid = _colliderGrid;
             Clear();
@@ -952,7 +952,7 @@ namespace GameA.Game
 
         public virtual UnitExtra GetUnitExtra()
         {
-            return DataScene2D.Instance.GetUnitExtra(_guid);
+            return DataScene2D.CurScene.GetUnitExtra(_guid);
         }
 
         protected virtual void SetSkillValue()
@@ -1127,7 +1127,7 @@ namespace GameA.Game
             int id = _tableUnit.Id;
             byte neighborDir = 0;
             UnitBase upUnit, downUnit, leftUnit, rightUnit;
-            var units = ColliderScene2D.Instance.Units;
+            var units = ColliderScene2D.CurScene.Units;
             if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.IsFakePart(upUnit.Id, id)) &&
                 upUnit.View != null)
             {
@@ -1516,7 +1516,7 @@ namespace GameA.Game
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;
-                    ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
+                    ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
                     _lastColliderGrid = _colliderGrid;
                 }
             }
@@ -1815,7 +1815,7 @@ namespace GameA.Game
             _canCross = value;
             if (_tableUnit.IsGround == 1)
             {
-                ColliderScene2D.Instance.SetGround(_guid, !value);
+                ColliderScene2D.CurScene.SetGround(_guid, !value);
             }
         }
 

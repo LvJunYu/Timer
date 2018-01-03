@@ -79,7 +79,7 @@ namespace GameA.Game
         
         private void InitEditorCameraStartParam()
         {
-            Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
             
             float sWHRatio = GM2DGame.Instance.GameScreenAspectRatio;
             float mWHRatio = validMapRect.width / validMapRect.height;

@@ -117,13 +117,13 @@ namespace GameA.Game
                     EditMode.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
+                    DataScene2D.CurScene.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.AddSwitchConnection:
-                    DataScene2D.Instance.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
+                    DataScene2D.CurScene.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
                 case EditRecordData.EAction.RemoveSwitchConnection:
-                    DataScene2D.Instance.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
+                    DataScene2D.CurScene.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
             }
         }
@@ -139,13 +139,13 @@ namespace GameA.Game
                     EditMode.Instance.AddUnitWithCheck(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDescOld, recordData.UnitExtraOld);
+                    DataScene2D.CurScene.ProcessUnitExtra(recordData.UnitDescOld, recordData.UnitExtraOld);
                     break;
                 case EditRecordData.EAction.AddSwitchConnection:
-                    DataScene2D.Instance.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
+                    DataScene2D.CurScene.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
                 case EditRecordData.EAction.RemoveSwitchConnection:
-                    DataScene2D.Instance.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
+                    DataScene2D.CurScene.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
             }
         }

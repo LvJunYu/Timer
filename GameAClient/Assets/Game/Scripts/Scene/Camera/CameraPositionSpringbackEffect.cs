@@ -47,7 +47,7 @@ namespace GameA.Game
 			_cameraManager = cameraManager;
 			_curState = ESpingState.None;
 			
-            _validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            _validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
 			_cameraViewHalfSizeFactor = new Vector2(GM2DGame.Instance.GameScreenAspectRatio, 1f);
 			_orthoSize = _cameraManager.RendererCamera.orthographicSize;
 			CalcMoveRect();

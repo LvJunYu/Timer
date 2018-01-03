@@ -105,7 +105,7 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
+                ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
                 _lastColliderGrid = _colliderGrid;
             }
             else if (!_isFreezed) //静止的时候检测是否交叉

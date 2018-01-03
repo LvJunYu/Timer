@@ -51,7 +51,7 @@ namespace GameA.Game
         {
             unitDesc = new UnitDesc();
             IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
+            if (!DataScene2D.CurScene.IsInTileMap(mouseTile))
             {
                 return false;
             }
@@ -66,11 +66,11 @@ namespace GameA.Game
         {
             unitDesc = GetUnitDefaultData(unitId).UnitDesc;
             IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
+            if (!DataScene2D.CurScene.IsInTileMap(mouseTile))
             {
                 return false;
             }
-            IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, unitId);
+            IntVec3 tileIndex = DataScene2D.CurScene.GetTileIndex(mouseWorldPos, unitId);
             unitDesc.Guid = tileIndex;
             var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
             if (tableUnit == null)
@@ -109,7 +109,7 @@ namespace GameA.Game
             }
             else
             {
-                unitEditData = new UnitEditData(unitDesc, DataScene2D.Instance.GetUnitExtra(unitDesc.Guid));
+                unitEditData = new UnitEditData(unitDesc, DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid));
             }
             //地块特殊处理一下
             if (UnitDefine.IsEarth(unitDesc.Id))
@@ -247,7 +247,7 @@ namespace GameA.Game
             }
             if (UnitDefine.IsSpawn(id))
             {
-                unitEditData.UnitExtra = DataScene2D.Instance.PlayerExtra;
+                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
                 unitEditData.UnitExtra.TeamId = 1;
             }
             return unitEditData;
@@ -423,13 +423,13 @@ namespace GameA.Game
 
         public static bool TryGetUnit(IntVec3 pos, out UnitBase unit)
         {
-            return ColliderScene2D.Instance.TryGetUnit(pos, out unit);
+            return ColliderScene2D.CurScene.TryGetUnit(pos, out unit);
         }
 
         public static bool IsEmpty(IntVec3 pos)
         {
             UnitBase unit;
-            return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
+            return !ColliderScene2D.CurScene.TryGetUnit(pos, out unit);
         }
 
         public static int CalcDirectionVal(byte dir)

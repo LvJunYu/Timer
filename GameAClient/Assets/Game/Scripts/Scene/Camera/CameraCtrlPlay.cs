@@ -66,7 +66,7 @@ namespace GameA.Game
             _cameraViewTileSize = GM2DTools.WorldToTile(cameraViewWorldSize);
             _cameraViewHalfTileSize = _cameraViewTileSize / 2;
 
-            _validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            _validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validMapTileRect.Max += new IntVec2(5, 1) * ConstDefineGM2D.ServerTileScale;
             _validMapTileRect.Min -= new IntVec2(5, 3) * ConstDefineGM2D.ServerTileScale;
         }

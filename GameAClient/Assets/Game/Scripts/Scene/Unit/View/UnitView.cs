@@ -186,7 +186,7 @@ namespace GameA.Game
                 if (active)
                 {
                     var unitDesc = _unit.UnitDesc;
-                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                     _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
                 }
                 else
@@ -234,7 +234,7 @@ namespace GameA.Game
                             _propertyViewWrapper = new UnitPropertyViewWrapper();
                         }
                         var unitDesc = _unit.UnitDesc;
-                        var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                        var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                         _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
                     }
                 }

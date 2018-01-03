@@ -72,22 +72,22 @@ namespace GameA
             if (!_mainCtrl.IsMulti) return;
             if (HasChanged)
             {
-                DataScene2D.Instance.SetPlayerMaxHp(_usMaxHpSetting.Cur);
-                DataScene2D.Instance.SetPlayerJumpAbility(_usJumpAbilitySetting.Cur);
-                DataScene2D.Instance.SetPlayerMaxSpeedX(_usMoveSpeedSetting.Cur);
-                DataScene2D.Instance.SetPlayerInjuredReduce(_usInjuredReduceSetting.Cur);
-                DataScene2D.Instance.SetPlayerCureIncrease(_usCureIncreaseSetting.Cur);
+                DataScene2D.CurScene.SetPlayerMaxHp(_usMaxHpSetting.Cur);
+                DataScene2D.CurScene.SetPlayerJumpAbility(_usJumpAbilitySetting.Cur);
+                DataScene2D.CurScene.SetPlayerMaxSpeedX(_usMoveSpeedSetting.Cur);
+                DataScene2D.CurScene.SetPlayerInjuredReduce(_usInjuredReduceSetting.Cur);
+                DataScene2D.CurScene.SetPlayerCureIncrease(_usCureIncreaseSetting.Cur);
                 HasChanged = false;
             }
         }
 
         public void RefreshView()
         {
-            _usMaxHpSetting.SetCur(DataScene2D.Instance.PlayerExtra.MaxHp);
-            _usJumpAbilitySetting.SetCur(DataScene2D.Instance.PlayerExtra.JumpAbility);
-            _usMoveSpeedSetting.SetCur(DataScene2D.Instance.PlayerExtra.MaxSpeedX);
-            _usInjuredReduceSetting.SetCur(DataScene2D.Instance.PlayerExtra.InjuredReduce);
-            _usCureIncreaseSetting.SetCur(DataScene2D.Instance.PlayerExtra.CureIncrease);
+            _usMaxHpSetting.SetCur(DataScene2D.CurScene.PlayerExtra.MaxHp);
+            _usJumpAbilitySetting.SetCur(DataScene2D.CurScene.PlayerExtra.JumpAbility);
+            _usMoveSpeedSetting.SetCur(DataScene2D.CurScene.PlayerExtra.MaxSpeedX);
+            _usInjuredReduceSetting.SetCur(DataScene2D.CurScene.PlayerExtra.InjuredReduce);
+            _usCureIncreaseSetting.SetCur(DataScene2D.CurScene.PlayerExtra.CureIncrease);
         }
     }
 }

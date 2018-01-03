@@ -297,7 +297,7 @@ namespace GameA.Game
             }
             if (checkTeam)
             {
-                var teamId = DataScene2D.Instance.GetUnitExtra(spawnData.Guid).TeamId;
+                var teamId = DataScene2D.CurScene.GetUnitExtra(spawnData.Guid).TeamId;
                 return !_playerDic.ContainsKey(teamId) || _playerDic[teamId].Count <= checkTeamCount;
             }
             return true;

@@ -71,7 +71,7 @@ namespace GameA.Game
             int id = _tableUnit.Id;
             byte neighborDir = 0;
             UnitBase upUnit, downUnit;
-            var units = ColliderScene2D.Instance.Units;
+            var units = ColliderScene2D.CurScene.Units;
             if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.IsFakePart(upUnit.Id, id)) &&
                 upUnit.View != null)
             {

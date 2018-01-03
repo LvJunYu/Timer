@@ -189,8 +189,15 @@ namespace GameA
                     replay.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 800 + i;
                     replay.Id = i + 2000;
                     replay.MessageId = _message.Id;
-                    replay.RelayOther = Random.Range(0, 2) == 0;
-                    replay.TargetUserInfoDetail = LocalUser.Instance.User;
+                    bool relayOther = Random.Range(0, 2) == 0;
+                    if (relayOther)
+                    {
+                        replay.TargetUserInfoDetail = LocalUser.Instance.User;
+                    }
+                    else
+                    {
+                        replay.TargetUserInfoDetail = null;
+                    }
                     replay.UserInfoDetail = LocalUser.Instance.User;
                     _dataList.Add(replay);
                 }
@@ -210,8 +217,7 @@ namespace GameA
                 reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                 reply.Id = 3000;
                 reply.MessageId = _message.Id;
-                reply.RelayOther = false;
-                reply.UserInfoDetail = LocalUser.Instance.User;
+                reply.UserInfoDetail = null;
                 Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _message.Id, reply);
             }
             SetPublishDock(false);

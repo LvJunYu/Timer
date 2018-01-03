@@ -16,9 +16,9 @@ namespace GameA.Game
 {
     public class DataScene2D : Scene2D
     {
-        private static DataScene2D _instance;
         [SerializeField] private IntRect _validMapRect;
         private int _sceneIndex;
+        private bool _hasInit;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         private UnitExtra _playerExtra;
         private IntVec2 _size = ConstDefineGM2D.DefaultValidMapRectSize;
@@ -41,7 +41,7 @@ namespace GameA.Game
         /// </summary>
         private List<ModifyData> _addedUnits = new List<ModifyData>();
 
-        public static DataScene2D Instance
+        public static DataScene2D CurScene
         {
             get { return Scene2DManager.Instance.CurDataScene2D; }
         }
@@ -83,9 +83,11 @@ namespace GameA.Game
 
         public void Init(IntVec2 size, int index = 0)
         {
+            if (_hasInit) return;
             _sceneIndex = index;
             _size = size;
             Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+            _hasInit = true;
         }
 
         protected override void OnInit()
@@ -221,7 +223,7 @@ namespace GameA.Game
             {
                 EditMode.Instance.MapStatistics.NeedSave = true;
                 bool needCreate = false;
-                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                if (ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
                 {
                     var oldUnitDesc = unit.UnitDesc;
                     EditMode.Instance.DeleteUnit(oldUnitDesc);
@@ -245,7 +247,7 @@ namespace GameA.Game
 
                 if (canSwitch)
                 {
-                    if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                    if (ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
                     {
                         if (!unit.CanControlledBySwitch)
                         {
@@ -263,7 +265,7 @@ namespace GameA.Game
             {
                 _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
                 // 更新unit
-                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                if (ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
                 {
                     unit.UpdateExtraData();
                 }
@@ -304,7 +306,7 @@ namespace GameA.Game
             for (int i = 0; i < unitsGuid.Count; i++)
             {
                 UnitBase unit;
-                if (ColliderScene2D.Instance.TryGetUnit(unitsGuid[i], out unit))
+                if (ColliderScene2D.CurScene.TryGetUnit(unitsGuid[i], out unit))
                 {
                     _cachedUnits.Add(unit);
                 }
@@ -507,19 +509,19 @@ namespace GameA.Game
         internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
-            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, Instance, minDepth, maxDepth);
+            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, CurScene, minDepth, maxDepth);
         }
 
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
         internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
         internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc,
@@ -773,7 +775,7 @@ namespace GameA.Game
         {
             OrigUnit = new UnitEditData();
             ModifiedUnit = new UnitEditData();
-            if (DataScene2D.Instance == null)
+            if (DataScene2D.CurScene == null)
             {
                 LogHelper.Error("Instantiate modifyData failed, datascene2d not exist");
                 return;
@@ -813,7 +815,7 @@ namespace GameA.Game
                     modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.Y)
             );
             UnitExtra modifiedExtra;
-            DataScene2D.Instance.TryGetUnitExtra(modifiedDesc.Guid, out modifiedExtra);
+            DataScene2D.CurScene.TryGetUnitExtra(modifiedDesc.Guid, out modifiedExtra);
             ModifiedUnit = new UnitEditData(modifiedDesc, modifiedExtra);
         }
 
