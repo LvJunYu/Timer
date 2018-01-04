@@ -94,5 +94,8 @@ namespace GameA.Game
         // 冒险模式每章奖励关卡数
         public const int AdvBonuslevelPerChapter = 3;
         public const int MaxUserCount = 6;
+
+        //最大留言字数
+        public const int MaxMessageLength = 50;
     }
 }

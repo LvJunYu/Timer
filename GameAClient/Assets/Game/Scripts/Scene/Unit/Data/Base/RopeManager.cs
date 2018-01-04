@@ -212,7 +212,7 @@ namespace GameA.Game
             }
         }
 
-        public bool CheckTieUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public UnitBase GetUpFloorUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
             IntVec2 centerUpFloorPos = new IntVec2(unitDesc.Guid.x + dataSize.x / 2, unitDesc.Guid.y + dataSize.y + 1);
@@ -222,11 +222,28 @@ namespace GameA.Game
             {
                 if (units[i].CanRope)
                 {
-                    return true;
+                    return units[i];
                 }
             }
 
-            return false;
+            return null;
+        }
+        
+        public Rope GetDownFloorRope(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
+            IntVec2 centerDownFloorPos = new IntVec2(unitDesc.Guid.x + dataSize.x / 2, unitDesc.Guid.y - 1);
+            Grid2D checkGrid = new Grid2D(centerDownFloorPos, centerDownFloorPos);
+            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (units[i].Id == UnitDefine.RollerId)
+                {
+                    return units[i] as Rope;
+                }
+            }
+
+            return null;
         }
 
         public bool CheckTieRope(UnitDesc unitDesc, out Rope rope)

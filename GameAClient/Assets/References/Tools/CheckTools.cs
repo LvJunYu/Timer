@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using GameA.Game;
 
 namespace SoyEngine
 {
@@ -182,7 +183,7 @@ namespace SoyEngine
             if(string.IsNullOrEmpty(content)) {
                 return ECheckMessageResult.None;
             }
-            if(content.Length > SoyConstDefine.MaxProjectCommentLength) {
+            if(content.Length > ConstDefineGM2D.MaxMessageLength) {
                 return ECheckMessageResult.TooLong;
             }
             //中文英文字母下划线减号

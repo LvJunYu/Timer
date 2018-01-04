@@ -7,6 +7,7 @@ namespace GameA.Game
     public class Rope : UnitBase
     {
         private bool _isPlaying;
+
         public override bool CanRope
         {
             get { return true; }
@@ -39,7 +40,35 @@ namespace GameA.Game
         protected override bool OnInit()
         {
             RopeManager.Instance.AddRope(this);
+            //初始化时计算所在绳子的段数，用于限制绳子长度
+            UnitBase tieUnit = RopeManager.Instance.GetUpFloorUnit(_unitDesc, _tableUnit);
+            if (tieUnit != null)
+            {
+                if (tieUnit.Id == UnitDefine.RopeId)
+                {
+                    _segmentIndex = ((Rope) tieUnit).SegmentIndex + 1;
+                }
+                else
+                {
+                    _segmentIndex = 0;
+                }
+            }
+            SegmentIndexChanged(_segmentIndex);
+
             return base.OnInit();
+        }
+
+        private void SegmentIndexChanged(int segmentIndex)
+        {
+            _segmentIndex = segmentIndex;
+            _nextRope = RopeManager.Instance.GetDownFloorRope(_unitDesc, _tableUnit);
+            if (_nextRope != null)
+            {
+                if (_nextRope != null)
+                {
+                    _nextRope.SegmentIndexChanged(segmentIndex + 1);
+                }
+            }
         }
 
         internal override bool InstantiateView()
@@ -66,6 +95,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(false);
             }
+
             return true;
         }
 
@@ -75,6 +105,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(false);
             }
+
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
             IntVec2 offset, startPos;
@@ -104,7 +135,8 @@ namespace GameA.Game
             for (int i = 0; i < _ropeJoints.Length; i++)
             {
                 var jointPos = startPos + i * offset;
-                _ropeJoints[i] = PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, jointPos, Rotation) as RopeJoint;
+                _ropeJoints[i] =
+                    PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, jointPos, Rotation) as RopeJoint;
                 if (_ropeJoints[i] != null)
                 {
                     _ropeJoints[i].Set(this, _segmentIndex * JointCount + i, jointPos);
@@ -114,6 +146,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             RopeManager.Instance.SetRopeJoint(RopeIndex, SegmentIndex, _ropeJoints);
         }
 
@@ -142,7 +175,7 @@ namespace GameA.Game
                 {
                     _tied = true;
                     _tieUnit = units[i];
-                    if (units[i].Id == Id)
+                    if (units[i].Id == UnitDefine.RopeId)
                     {
                         Rope neighborRope = units[i] as Rope;
                         if (neighborRope != null)
@@ -202,7 +235,7 @@ namespace GameA.Game
             _tieUnit = _preRope = _nextRope = null;
             base.Clear();
         }
-        
+
         internal override void OnEdit()
         {
             base.OnEdit();

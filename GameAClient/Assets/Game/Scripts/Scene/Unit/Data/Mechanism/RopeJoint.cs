@@ -97,7 +97,7 @@ namespace GameA.Game
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
-            //如果发生碰撞导致与位置变化，则调整后面关节的速度
+            //如果发生碰撞导致预期位置变化，则调整后面关节的速度
             if (_expectPos != _curPos && _nextJoint != null)
             {
                 _nextJoint.FixSpeedFromPre(true);
@@ -130,12 +130,12 @@ namespace GameA.Game
         {
             if (pre)
             {
-                if (JointIndex == 0) return IntVec2.zero;
-                return PreJoint.CenterDownPos - CenterDownPos;
+                if (_jointIndex == 0) return IntVec2.zero;
+                return _preJoint.CenterDownPos - CenterDownPos;
             }
 
-            if (NextJoint == null) return IntVec2.zero;
-            return NextJoint.CenterDownPos - CenterDownPos;
+            if (_nextJoint == null) return IntVec2.zero;
+            return _nextJoint.CenterDownPos - CenterDownPos;
         }
 
         public void SetPreJoint(UnitBase joint)

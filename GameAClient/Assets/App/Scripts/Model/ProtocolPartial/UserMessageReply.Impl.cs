@@ -13,13 +13,11 @@ namespace GameA
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
-            set { _userInfoDetail = value; } //测试用
         }
 
         public UserInfoDetail TargetUserInfoDetail
         {
             get { return _targetUserInfoDetail; }
-            set { _targetUserInfoDetail = value; } //测试用
         }
 
         protected override void OnSyncPartial(Msg_UserMessageReply msg)
@@ -38,6 +36,8 @@ namespace GameA
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
+                        Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _messageId,
+                            new UserMessageReply(res.Data));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();

@@ -77,15 +77,6 @@ namespace GameA
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
                 _reply.Reply(_cachedView.InputField.text);
-                //测试
-                var reply = new UserMessageReply();
-                reply.Content = _cachedView.InputField.text;
-                reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                reply.Id = 4000;
-                reply.MessageId = _reply.MessageId;
-                reply.UserInfoDetail = LocalUser.Instance.User;
-                reply.TargetUserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, reply.MessageId, reply);
             }
             SetPublishDock(false);
         }

@@ -45,7 +45,13 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.PraiseBtn.onClick.AddListener(OnPraiseBtn);
             _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
-            _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
+            _cachedView.InputField.onEndEdit.AddListener(str =>
+            {
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    OnSendBtn();
+                }
+            });
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.MoreBtn.onClick.AddListener(OnMoreBtn);
             _cachedView.FoldBtn.onClick.AddListener(OnFoldBtn);
@@ -67,6 +73,7 @@ namespace GameA
                 Unload();
                 return;
             }
+
             _unfold = false;
             _openPublishDock = false;
             _dataList = _message.ReplyList.AllList;
@@ -76,18 +83,16 @@ namespace GameA
         protected virtual void RequestData(bool append = false)
         {
             if (_message == null) return;
-            if (_message.ReplyList.IsEnd) return;
-            TempData();
-//            int startInx = 0;
-//            if (append)
-//            {
-//                startInx = _dataList.Count;
-//            }
-//            _message.ReplyList.Request(_message.Id, startInx, pageSize, () =>
-//            {
-//                _dataList = _message.ReplyList.AllList;
-//                RefreshReplyDock();
-//            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
+            int startInx = 0;
+            if (append)
+            {
+                startInx = _dataList.Count;
+            }
+            _message.ReplyList.Request(_message.Id, startInx, pageSize, () =>
+            {
+                _dataList = _message.ReplyList.AllList;
+                RefreshReplyDock();
+            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
         }
 
         protected virtual void RefreshView()
@@ -119,6 +124,7 @@ namespace GameA
                 {
                     _firstReplay.Set(_message.FirstReply);
                 }
+
                 if (_dataList.Count == 0)
                 {
                     ClearItem();
@@ -130,9 +136,10 @@ namespace GameA
                     int remainCount = _message.ReplyCount - _dataList.Count;
                     if (remainCount < 0)
                     {
-                        LogHelper.Error("_message.ReplayCount<_dataList.Count");
+                        LogHelper.Error("_message.ReplayCount < _dataList.Count");
                         return;
                     }
+
                     _cachedView.MoreTxt.text = string.Format(_moreFormat, remainCount);
                     _cachedView.MoreBtn.SetActiveEx(remainCount > 0);
                     ClearItem();
@@ -142,6 +149,7 @@ namespace GameA
                     }
                 }
             }
+
             Canvas.ForceUpdateCanvases();
             if (Broadcast)
             {
@@ -173,62 +181,13 @@ namespace GameA
             RefreshReplyDock(true);
         }
 
-        protected virtual void TempData()
-        {
-            if (_dataList.Count == _message.ReplyCount) return;
-            for (int i = 0; i < pageSize; i++)
-            {
-                if (_dataList.Count == 0)
-                {
-                    _dataList.Add(_message.FirstReply);
-                }
-                else
-                {
-                    var replay = new UserMessageReply();
-                    replay.Content = "测试下拉留言测试下拉留言测试下拉留言测试下拉留言" + i;
-                    replay.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 800 + i;
-                    replay.Id = i + 2000;
-                    replay.MessageId = _message.Id;
-                    bool relayOther = Random.Range(0, 2) == 0;
-                    if (relayOther)
-                    {
-                        replay.TargetUserInfoDetail = LocalUser.Instance.User;
-                    }
-                    else
-                    {
-                        replay.TargetUserInfoDetail = null;
-                    }
-                    replay.UserInfoDetail = LocalUser.Instance.User;
-                    _dataList.Add(replay);
-                }
-                if (_dataList.Count == _message.ReplyCount) break;
-            }
-            RefreshReplyDock(true);
-        }
-
         protected virtual void OnSendBtn()
         {
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
                 _message.Reply(_cachedView.InputField.text);
-                //测试
-                var reply = new UserMessageReply();
-                reply.Content = _cachedView.InputField.text;
-                reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                reply.Id = 3000;
-                reply.MessageId = _message.Id;
-                reply.UserInfoDetail = null;
-                Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _message.Id, reply);
             }
             SetPublishDock(false);
-        }
-
-        protected virtual void OnInputEndEdit(string arg0)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                OnSendBtn();
-            }
         }
 
         protected virtual void OnReplyBtn()
@@ -246,6 +205,7 @@ namespace GameA
             {
                 _message.LikeNum++;
             }
+
             _message.UserLike = !_message.UserLike;
             RefreshView();
         }
@@ -270,6 +230,7 @@ namespace GameA
                 {
                     OpenInputCallBack.Invoke();
                 }
+
                 OpenInputCallBack = () => SetPublishDock(false);
                 _cachedView.InputField.text = String.Empty;
                 _cachedView.InputField.Select();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,7 +18,13 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.MessageTableDataScroller.Set(OnItemRefresh, GetItemRenderer);
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
-            _cachedView.InputField.onEndEdit.AddListener(OnInputFieldEndEdit);
+            _cachedView.InputField.onEndEdit.AddListener(str =>
+            {
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    OnSendBtn();
+                }
+            });
         }
 
         public override void Open()
@@ -30,56 +37,20 @@ namespace GameA
         private void RequestData(bool append = false)
         {
             if (_mainCtrl.UserInfoDetail == null) return;
-            TempData();
-//            int startInx = 0;
-//            if (append)
-//            {
-//                startInx = _dataList.Count;
-//            }
-//            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, () =>
-//            {
-//                _dataList = _data.AllList;
-//                if (_isOpen)
-//                {
-//                    RefreshView();
-//                }
-//            }, code =>
-//            {
-//                SocialGUIManager.ShowPopupDialog("获取留言数据失败。");
-//            });
-        }
-
-        private void TempData()
-        {
-            if (_dataList != null) return;
-            _dataList = new List<UserMessage>();
-            for (int i = 0; i < _mainCtrl.MessageCount; i++)
+            int startInx = 0;
+            if (append)
             {
-                UserMessage userMessage = new UserMessage();
-                userMessage.Content = "测试留言测试留言测试留言测试留言" + i;
-                userMessage.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 4000;
-                userMessage.Id = i + 100;
-                userMessage.UserInfoDetail = _mainCtrl.UserInfoDetail;
-                userMessage.LikeNum = Random.Range(0, 5);
-                userMessage.UserLike = false;
-                userMessage.ReplyCount = Random.Range(0, 15);
-                userMessage.FirstReply = new UserMessageReply();
-                userMessage.FirstReply.Content = "测试第一条回复测试第一条回复测试第一条回复测试第一条回复";
-                userMessage.FirstReply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 1000 + i;
-                userMessage.FirstReply.Id = i + 1000;
-                userMessage.FirstReply.MessageId = userMessage.Id;
-                bool relayOther = Random.Range(0, 2) == 0;
-                if (relayOther)
-                {
-                    userMessage.FirstReply.TargetUserInfoDetail = _mainCtrl.UserInfoDetail;
-                }
-                else
-                {
-                    userMessage.FirstReply.TargetUserInfoDetail = null;
-                }
-                userMessage.FirstReply.UserInfoDetail = _mainCtrl.UserInfoDetail;
-                _dataList.Add(userMessage);
+                startInx = _dataList.Count;
             }
+
+            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, () =>
+            {
+                _dataList = _data.AllList;
+                if (_isOpen)
+                {
+                    RefreshView();
+                }
+            }, code => { SocialGUIManager.ShowPopupDialog("获取留言数据失败"); });
         }
 
         public override void RefreshView()
@@ -91,34 +62,47 @@ namespace GameA
                 _cachedView.MessageTableDataScroller.SetEmpty();
                 return;
             }
+
             _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
             _cachedView.MessageTableDataScroller.SetItemCount(_dataList.Count);
-        }
-
-        private void OnInputFieldEndEdit(string arg0)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                OnSendBtn();
-            }
         }
 
         private void OnSendBtn()
         {
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
-                //测试
-                var message = new UserMessage();
-                message.Content = _cachedView.InputField.text;
-                message.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                message.Id = Random.Range(10000, 20000);
-                message.UserInfoDetail = _mainCtrl.UserInfoDetail;
-                _dataList.Add(message);
-                _dataList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
-                RefreshView();
-                _mainCtrl.MessageCount++;
-                _mainCtrl.RefreshMessageNum(_mainCtrl.MessageCount);
+                string content = _cachedView.InputField.text;
+                var testRes = CheckTools.CheckMessage(content);
+                if (testRes == CheckTools.ECheckMessageResult.Success)
+                {
+                    RemoteCommands.PublishUserMessage(LocalUser.Instance.UserGuid, content, msg =>
+                    {
+                        if (msg.ResultCode == (int) EPublishUserMessageCode.PUMC_Success)
+                        {
+                            _cachedView.InputField.text = String.Empty;
+                            _dataList.Add(new UserMessage(msg.Data));
+                            _dataList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
+                            RefreshView();
+                            _mainCtrl.MessageCount++;
+                            _mainCtrl.RefreshMessageNum(_mainCtrl.MessageCount);
+                        }
+                        else
+                        {
+                            SocialGUIManager.ShowPopupDialog("发送失败");
+                            LogHelper.Error("发布留言失败，ResultCode：{0}", msg.ResultCode);
+                        }
+                    }, code =>
+                    {
+                        SocialGUIManager.ShowPopupDialog("发送失败");
+                        LogHelper.Error("发布留言失败，code：{0}", code);
+                    });
+                }
+                else
+                {
+                    SocialGUIManager.ShowCheckMessageRes(testRes);
+                }
             }
+
             _cachedView.InputField.text = String.Empty;
         }
 
@@ -129,6 +113,7 @@ namespace GameA
                 LogHelper.Error("OnItemRefresh Error Inx > count");
                 return;
             }
+
             item.Set(_dataList[inx]);
             if (!_data.IsEnd)
             {

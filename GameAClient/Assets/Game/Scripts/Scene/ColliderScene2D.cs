@@ -936,15 +936,6 @@ namespace GameA.Game
 
         public void Enter()
         {
-            foreach (var unit in _units.Values)
-            {
-                if (!unit.IsInterest)
-                {
-                    InstantiateView(unit);
-                    SetUnitInterest(unit, true);
-                }
-            }
-
             InitCreateArea(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos));
         }
     }

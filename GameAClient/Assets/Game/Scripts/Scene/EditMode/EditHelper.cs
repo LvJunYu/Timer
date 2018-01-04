@@ -276,10 +276,21 @@ namespace GameA.Game
             //绳子必须绑在石头上
             if (UnitDefine.RopeId == tableUnit.Id)
             {
-                if (!RopeManager.Instance.CheckTieUnit(unitDesc, tableUnit))
+                var upUnit = RopeManager.Instance.GetUpFloorUnit(unitDesc, tableUnit);
+                if (upUnit == null)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子只能绑在物体上喔~");
                     return false;
+                }
+
+                if (upUnit.Id == UnitDefine.RopeId)
+                {
+                    Rope rope = upUnit as Rope;
+                    if (rope != null && rope.SegmentIndex >= tableUnit.ValidRange - 1)
+                    {
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子最长就这么长喔~");
+                        return false;
+                    }
                 }
             }
             //怪物同屏数量不可过多

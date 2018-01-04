@@ -41,17 +41,17 @@ namespace GameA
         {
             if (_comment == null) return;
             if (_comment.ReplyList.IsEnd) return;
-            TempData();
-//            int startInx = 0;
-//            if (append)
-//            {
-//                startInx = _dataList.Count;
-//            }
-//            _comment.ReplyList.Request(_comment.Id, startInx, pageSize, () =>
-//            {
-//                _dataList = _comment.ReplyList.AllList;
-//                RefreshReplyDock();
-//            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
+//            TempData();
+            int startInx = 0;
+            if (append)
+            {
+                startInx = _dataList.Count;
+            }
+            _comment.ReplyList.Request(_comment.Id, startInx, pageSize, () =>
+            {
+                _dataList = _comment.ReplyList.AllList;
+                RefreshReplyDock();
+            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
         }
 
         protected override void RefreshView()
@@ -170,32 +170,6 @@ namespace GameA
         {
             ClearItem();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultIconTexture);
-        }
-
-        protected override void TempData()
-        {
-            if (_dataList.Count == _comment.ReplyCount) return;
-            for (int i = 0; i < pageSize; i++)
-            {
-                if (_dataList.Count == 0)
-                {
-                    _dataList.Add(_comment.FirstReply);
-                }
-                else
-                {
-                    var replay = new ProjectCommentReply();
-                    replay.Content = "测试下拉留言测试下拉留言测试下拉留言测试下拉留言" + i;
-                    replay.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis() - 800 + i;
-                    replay.Id = i + 2000;
-                    replay.CommentId = _comment.Id;
-                    replay.RelayOther = Random.Range(0, 2) == 0;
-                    replay.TargetUserInfoDetail = LocalUser.Instance.User;
-                    replay.UserInfoDetail = LocalUser.Instance.User;
-                    _dataList.Add(replay);
-                }
-                if (_dataList.Count == _comment.ReplyCount) break;
-            }
-            RefreshReplyDock(true);
         }
     }
 }
