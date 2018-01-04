@@ -361,7 +361,7 @@ namespace GameA.Game
                 var allNodes = dataScene2D.GetAllNodes();
                 for (int j = 0; j < allNodes.Count; j++)
                 {
-                    sceneData.Data.Add(GM2DTools.ToProto(nodes[j]));
+                    sceneData.Data.Add(GM2DTools.ToProto(allNodes[j]));
                 }
 
                 using (var enumerator = dataScene2D.UnitExtras.GetEnumerator())
@@ -374,6 +374,7 @@ namespace GameA.Game
                 }
 
                 dataScene2D.SaveSwitchUnitData(sceneData.SwitchUnitDatas);
+                sceneData.ValidMapRect = GM2DTools.ToProto(dataScene2D.ValidMapRect);
 
                 gm2DMapData.OtherScenes.Add(sceneData);
             }

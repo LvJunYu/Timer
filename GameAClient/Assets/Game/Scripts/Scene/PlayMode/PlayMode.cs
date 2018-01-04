@@ -84,6 +84,7 @@ namespace GameA.Game
             {
                 _statistic.Dispose();
             }
+
             _instance = null;
         }
 
@@ -101,6 +102,7 @@ namespace GameA.Game
             {
                 UnFreeze(_freezingNodes[i]);
             }
+
             _freezingNodes.Clear();
             _nextActions.Clear();
             _waitDestroyUnits.Clear();
@@ -109,9 +111,11 @@ namespace GameA.Game
             foreach (UnitDesc unitDesc in _addedDatas)
             {
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.CurScene.DestroyView(unitDesc);
-                ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit);
+                var colliderScene2D = Scene2DManager.Instance.GetColliderScene2D(unitDesc.SceneIndx);
+                colliderScene2D.DestroyView(unitDesc);
+                colliderScene2D.DeleteUnit(unitDesc, tableUnit);
             }
+
             _addedDatas.Clear();
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
@@ -123,8 +127,9 @@ namespace GameA.Game
                     ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit);
                 }
             }
+
             _deletedDatas.Clear();
-            ColliderScene2D.CurScene.Reset();
+            Scene2DManager.Instance.Reset();
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
@@ -137,6 +142,7 @@ namespace GameA.Game
             {
                 DeleteTrap(_traps[i].Guid);
             }
+
             _traps.Clear();
 
             for (int i = 0; i < _bullets.Count; i++)
@@ -147,6 +153,7 @@ namespace GameA.Game
                     PoolFactory<Bullet>.Free(bullet);
                 }
             }
+
             _bullets.Clear();
         }
 
@@ -172,32 +179,39 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_mainPlayer == null)
             {
                 LogHelper.Error("_mainPlayer == null");
             }
+
             if (_pausing && _mainPlayer != null && _mainPlayer.Life <= 0)
             {
                 _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
+
 //            ColliderScene2D.Instance.UpdateLogic(_focusPos);
             if (_mainPlayer != null && _unitUpdateManager != null)
             {
                 _unitUpdateManager.UpdateLogic(deltaTime);
             }
+
             if (_sceneState != null)
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
+
             if (_mainPlayer != null)
             {
                 _focusPos = GetFocusPos(_mainPlayer.CameraFollowPos);
             }
+
             for (int i = 0; i < _traps.Count; i++)
             {
                 _traps[i].UpdateLogic();
             }
+
             if (_bullets.Count > 0)
             {
                 for (int i = 0; i < _bullets.Count; i++)
@@ -214,6 +228,7 @@ namespace GameA.Game
                 DeleteUnit(_waitDestroyUnits[i]);
                 _waitDestroyUnits.RemoveAt(i);
             }
+
             if (_nextActions.Count > 0)
             {
                 for (int i = 0; i < _nextActions.Count; i++)
@@ -223,6 +238,7 @@ namespace GameA.Game
                         _nextActions[i].Invoke();
                     }
                 }
+
                 _nextActions.Clear();
             }
         }
@@ -270,17 +286,20 @@ namespace GameA.Game
                     return current;
                 }
             }
+
             if (!AddUnit(unitDesc))
             {
                 LogHelper.Error("CreateUnit Failed,{0}", unitDesc);
                 return null;
             }
+
             UnitBase unit;
             if (!ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
             {
                 LogHelper.Error("CreateUnit TryGetUnit Failed,{0}", unitDesc);
                 return null;
             }
+
             return unit;
         }
 
@@ -290,11 +309,13 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsAlive = false;
             if (_waitDestroyUnits.Contains(unit))
             {
                 return;
             }
+
             _waitDestroyUnits.Add(unit);
         }
 
@@ -306,15 +327,18 @@ namespace GameA.Game
                 LogHelper.Error("AddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             _addedDatas.Add(unitDesc);
             if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
             {
                 return false;
             }
+
             if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 //return false;
             }
+
             return true;
         }
 
@@ -331,6 +355,7 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             if (_addedDatas.Contains(unitDesc))
             {
                 _addedDatas.Remove(unitDesc);
@@ -339,14 +364,17 @@ namespace GameA.Game
             {
                 _deletedDatas.Add(unitDesc);
             }
+
             if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
+
             if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -356,6 +384,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsFreezed = true;
             _freezingNodes.Add(unit);
         }
@@ -370,6 +399,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsFreezed = false;
             _freezingNodes.Remove(unit);
         }
@@ -386,6 +416,7 @@ namespace GameA.Game
                     playerList[i].OnSucceed();
                 }
             }
+
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
             {
@@ -423,6 +454,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -434,15 +466,17 @@ namespace GameA.Game
 
         private bool CheckPlayerValid(bool run = true)
         {
-            var spawnDatas = DataScene2D.CurScene.SpawnDatas;
+            var spawnDatas = Scene2DManager.Instance.SpawnDatas;
             if (spawnDatas.Count == 0)
             {
                 if (run)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
                 }
+
                 return false;
             }
+
             if (run)
             {
                 if (!SceneState.IsMulti)
@@ -477,6 +511,7 @@ namespace GameA.Game
                         PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
+
                     for (int i = 0; i < spawnDatas.Count; i++)
                     {
                         byte team = DataScene2D.CurScene.GetUnitExtra(spawnDatas[i].Guid).TeamId;
@@ -484,25 +519,28 @@ namespace GameA.Game
                     }
                 }
             }
+
             return true;
         }
 
         ///多人模式下，basicNum是服务器随机的初始位置序号        
         public void AddPlayer(int basicNum, bool main = true, int roomInx = 0)
         {
-            var spawnDatas = DataScene2D.CurScene.SpawnDatas;
+            var spawnDatas = Scene2DManager.Instance.SpawnDatas;
             int spwanCount = spawnDatas.Count;
             if (spwanCount == 0)
             {
                 LogHelper.Error("can not find a spwan!");
                 return;
             }
+
             basicNum = TeamManager.Instance.GetSpawnIndex(spawnDatas, basicNum);
             int id = UnitDefine.MainPlayerId;
             if (!main)
             {
                 id = UnitDefine.OtherPlayerId;
             }
+
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
             PlayerManager.Instance.Add(player, roomInx);
             player.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[basicNum].Guid));
@@ -511,6 +549,7 @@ namespace GameA.Game
             {
                 _mainPlayer = PlayerManager.Instance.MainPlayer;
             }
+
             if (_run)
             {
                 player.OnPlay();
@@ -523,17 +562,14 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
             BgScene2D.Instance.OnStop();
             BgScene2D.Instance.Reset();
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos), true);
-            UnitBase[] units = ColliderScene2D.CurScene.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                units[i].OnEdit();
-            }
+            Scene2DManager.Instance.OnEdit();
             return true;
         }
 
@@ -543,6 +579,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             PreparePlay();
             return true;
         }
@@ -554,6 +591,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             CameraManager.Instance.SetCameraState(ECameraState.None);
             PreparePlay();
             return true;
@@ -564,6 +602,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
+            Scene2DManager.Instance.ChangeScene(0);
             CameraManager.Instance.SetCameraState(ECameraState.Play);
             BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCameraPos);
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
@@ -582,6 +621,7 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+
             RopeManager.Instance.OnPlay();
             BgScene2D.Instance.OnPlay();
             return true;
@@ -634,6 +674,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (flag)
             {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "已移除没有成双的机关喔~");
@@ -676,6 +717,7 @@ namespace GameA.Game
                 _traps.Add(trap);
                 return true;
             }
+
             PoolFactory<Trap>.Free(trap);
             return false;
         }
@@ -692,6 +734,7 @@ namespace GameA.Game
                     break;
                 }
             }
+
             return true;
         }
 
@@ -716,6 +759,7 @@ namespace GameA.Game
                     PoolFactory<Bullet>.Free(bullet);
                 }
             }
+
             _bullets.Clear();
         }
     }

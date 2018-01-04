@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA.Game
 {
@@ -66,6 +68,11 @@ namespace GameA.Game
             get { return _dataScenes.Count; }
         }
 
+        public List<UnitDesc> SpawnDatas
+        {
+            get { return MainDataScene2D.SpawnDatas; }
+        }
+
         public void Dispose()
         {
             _curDataScene2D = null;
@@ -98,7 +105,7 @@ namespace GameA.Game
             if (_curSceneIndex == index) return;
             if (_curColliderScene2D != null)
             {
-                _curColliderScene2D.OnLeaveScene();
+                _curColliderScene2D.Exit();
             }
 
             _curSceneIndex = index;
@@ -108,7 +115,7 @@ namespace GameA.Game
             BgScene2D.Instance.ChangeScene(index);
             _curColliderScene2D = GetColliderScene2D(index);
             _curColliderScene2D.Init(index);
-            _curColliderScene2D.OnEnterScene();
+            _curColliderScene2D.Enter();
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.OnMapReady();
@@ -148,11 +155,35 @@ namespace GameA.Game
             return _colliderScenes[index];
         }
 
-        public void InitPlay(IntRect rect)
+        public void InitWithMapData(GM2DMapData mapData)
         {
-            for (int i = 0; i < _dataScenes.Count; i++)
+            var mainRect = GM2DTools.ToEngine(mapData.ValidMapRect);
+            //todo 分开处理子地图的大小
+            SetMapSize(mainRect.Max - mainRect.Min);
+            MainDataScene2D.InitPlay(mainRect);
+            for (int i = 0; i < mapData.OtherScenes.Count; i++)
             {
-                _dataScenes[i].InitPlay(rect);
+                GetDataScene2D(i + 1).InitPlay(GM2DTools.ToEngine(mapData.OtherScenes[i].ValidMapRect));
+            }
+        }
+
+        public void OnEdit()
+        {
+            for (int i = 0; i < _colliderScenes.Count; i++)
+            {
+                UnitBase[] units = _colliderScenes[i].Units.Values.ToArray();
+                for (int j = 0; j < units.Length; j++)
+                {
+                    units[j].OnEdit();
+                }
+            }
+        }
+
+        public void Reset()
+        {
+            for (int i = 0; i < _colliderScenes.Count; i++)
+            {
+                _colliderScenes[i].Reset();
             }
         }
     }

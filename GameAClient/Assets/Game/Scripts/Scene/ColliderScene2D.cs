@@ -36,6 +36,11 @@ namespace GameA.Game
             get { return Scene2DManager.Instance.CurColliderScene2D; }
         }
 
+        public static ColliderScene2D MainColliderScene2D
+        {
+            get { return Scene2DManager.Instance.MainColliderScene2D; }
+        }
+
         public Dictionary<IntVec3, UnitBase> Units
         {
             get { return _units; }
@@ -920,7 +925,7 @@ namespace GameA.Game
             return false;
         }
 
-        public void OnLeaveScene()
+        public void Exit()
         {
             foreach (var unit in _units.Values)
             {
@@ -932,7 +937,7 @@ namespace GameA.Game
             }
         }
 
-        public void OnEnterScene()
+        public void Enter()
         {
             foreach (var unit in _units.Values)
             {

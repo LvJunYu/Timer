@@ -21,6 +21,7 @@ namespace GameA.Game
         public static UnitDesc zero;
 
         public int Id;
+        public int SceneIndx;
         public IntVec3 Guid;
         public byte Rotation;
         public Vector2 Scale;
@@ -31,6 +32,7 @@ namespace GameA.Game
             Guid = guid;
             Rotation = rotation;
             Scale = scale;
+            SceneIndx = Scene2DManager.Instance.CurSceneIndex;
         }
 
         public IntVec3 GetUpPos(int z)

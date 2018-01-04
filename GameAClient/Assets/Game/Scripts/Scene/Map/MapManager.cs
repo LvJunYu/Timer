@@ -253,7 +253,7 @@ namespace GameA.Game
             }
 
             PlayMode.Instance.SceneState.Init(mapData);
-            Scene2DManager.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
+            Scene2DManager.Instance.InitWithMapData(mapData);
             GenerateMap(mapData.BgRandomSeed);
         }
 

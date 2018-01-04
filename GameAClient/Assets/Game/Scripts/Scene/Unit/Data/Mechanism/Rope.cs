@@ -62,7 +62,7 @@ namespace GameA.Game
                 _view.Trans.localEulerAngles = Vector3.zero;
             }
 
-            if (_isPlaying)
+            if (GameRun.Instance.IsPlaying)
             {
                 _view.SetRendererEnabled(false);
             }
@@ -75,8 +75,6 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(false);
             }
-
-            _isPlaying = true;
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.RopeJointId);
             var size = tableUnit.GetDataSize(0, Vector2.one);
             IntVec2 offset, startPos;
@@ -202,12 +200,16 @@ namespace GameA.Game
         {
             _tied = false;
             _tieUnit = _preRope = _nextRope = null;
+            base.Clear();
+        }
+        
+        internal override void OnEdit()
+        {
+            base.OnEdit();
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);
             }
-            _isPlaying = false;
-            base.Clear();
         }
 
         internal override void OnDispose()
