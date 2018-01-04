@@ -75,7 +75,7 @@ namespace GameA
                 var testRes = CheckTools.CheckMessage(content);
                 if (testRes == CheckTools.ECheckMessageResult.Success)
                 {
-                    RemoteCommands.PublishUserMessage(LocalUser.Instance.UserGuid, content, msg =>
+                    RemoteCommands.PublishUserMessage(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, content, msg =>
                     {
                         if (msg.ResultCode == (int) EPublishUserMessageCode.PUMC_Success)
                         {
