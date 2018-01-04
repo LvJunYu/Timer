@@ -60,3 +60,4 @@ sh.exe.stackdump
 *.ncb
 *.opt
 GameAClient/data.txt
+GameAClient/clientData.txt
