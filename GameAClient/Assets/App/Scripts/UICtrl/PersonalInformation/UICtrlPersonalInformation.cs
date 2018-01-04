@@ -1,5 +1,4 @@
 ﻿using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -115,9 +114,6 @@ namespace GameA
             UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);
-            //测试
-//            MessageCount = Random.Range(6, 30);
-//            RefreshMessageNum(MessageCount);
             RefreshView();
             if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
@@ -146,6 +142,8 @@ namespace GameA
 
         private void RefreshView()
         {
+            MessageCount = UserInfoDetail.MessageCount;
+            RefreshMessageNum(MessageCount);
             IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _cachedView.BtnsObj.SetActiveEx(!IsMyself);
             _cachedView.AvatarRawImage.texture =
