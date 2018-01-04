@@ -139,7 +139,9 @@ namespace GameA.Game
         {
             while (index >= _dataScenes.Count)
             {
-                _dataScenes.Add(new DataScene2D());
+                var scene = new DataScene2D();
+                scene.Init(_mapSize, _dataScenes.Count);
+                _dataScenes.Add(scene);
             }
 
             return _dataScenes[index];
@@ -149,7 +151,8 @@ namespace GameA.Game
         {
             while (index >= _colliderScenes.Count)
             {
-                _colliderScenes.Add(new ColliderScene2D());
+                var scene = new ColliderScene2D();
+                _colliderScenes.Add(scene);
             }
 
             return _colliderScenes[index];
