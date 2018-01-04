@@ -18,7 +18,6 @@ namespace GameA.Game
     {
         [SerializeField] private IntRect _validMapRect;
         private int _sceneIndex;
-        private bool _hasInit;
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         private UnitExtra _playerExtra;
         private IntVec2 _size = ConstDefineGM2D.DefaultValidMapRectSize;
@@ -88,11 +87,9 @@ namespace GameA.Game
 
         public void Init(IntVec2 size, int index = 0)
         {
-            if (_hasInit) return;
             _sceneIndex = index;
             _size = size;
             Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            _hasInit = true;
         }
 
         protected override void OnInit()

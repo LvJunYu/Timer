@@ -110,11 +110,9 @@ namespace GameA.Game
 
             _curSceneIndex = index;
             _curDataScene2D = GetDataScene2D(index);
-            _curDataScene2D.Init(_mapSize, index);
             CameraManager.Instance.ChangeScene();
             BgScene2D.Instance.ChangeScene(index);
             _curColliderScene2D = GetColliderScene2D(index);
-            _curColliderScene2D.Init(index);
             _curColliderScene2D.Enter();
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
@@ -152,6 +150,7 @@ namespace GameA.Game
             while (index >= _colliderScenes.Count)
             {
                 var scene = new ColliderScene2D();
+                scene.Init(_colliderScenes.Count);
                 _colliderScenes.Add(scene);
             }
 

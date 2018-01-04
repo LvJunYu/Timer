@@ -29,7 +29,6 @@ namespace GameA.Game
         private InterestArea _interestArea;
         private byte[,] _pathGrid;
         private int _sceneIndex;
-        private bool _hasInit;
 
         public static ColliderScene2D CurScene
         {
@@ -97,7 +96,6 @@ namespace GameA.Game
 
         public void Init(int index = 0)
         {
-            if (_hasInit) return;
             _sceneIndex = index;
             var regionTilesCount = ConstDefineGM2D.RegionTileSize;
             var width = ConstDefineGM2D.MapTileSize.x;
@@ -122,7 +120,6 @@ namespace GameA.Game
             }
 
             InitPathFinder(_pathGrid);
-            _hasInit = true;
         }
 
         protected override void OnInit()
