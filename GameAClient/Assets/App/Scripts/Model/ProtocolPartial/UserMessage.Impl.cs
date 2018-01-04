@@ -73,5 +73,35 @@ namespace GameA
             _replyList.AllList.Add(reply);
             _replyList.AllList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
         }
+
+        public void LikeChanged(Action successAction = null, Action failAction = null)
+        {
+            RemoteCommands.UpdateUserMessageLike(_id, !_userLike, msg =>
+            {
+                if (msg.ResultCode == (int) EUpdateUserMessageLikeCode.UUMLC_Success)
+                {
+                    CopyMsgData(msg.Data);
+                    if (successAction != null)
+                    {
+                        successAction.Invoke();
+                    }
+                }
+                else
+                {
+                    LogHelper.Error("ResultCode：{0}", msg.ResultCode);
+                    if (failAction != null)
+                    {
+                        failAction.Invoke();
+                    }
+                }
+            }, code =>
+            {
+                LogHelper.Error("code：{0}", code);
+                if (failAction != null)
+                {
+                    failAction.Invoke();
+                }
+            });
+        }
     }
 }

@@ -91,7 +91,7 @@ namespace GameA
             _message.ReplyList.Request(_message.Id, startInx, pageSize, () =>
             {
                 _dataList = _message.ReplyList.AllList;
-                RefreshReplyDock();
+                RefreshReplyDock(true);
             }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
         }
 
@@ -197,17 +197,7 @@ namespace GameA
 
         protected virtual void OnPraiseBtn()
         {
-            if (_message.UserLike)
-            {
-                _message.LikeNum--;
-            }
-            else
-            {
-                _message.LikeNum++;
-            }
-
-            _message.UserLike = !_message.UserLike;
-            RefreshView();
+            _message.LikeChanged(RefreshView);
         }
 
         protected virtual void OnHeadBtn()

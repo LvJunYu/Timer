@@ -212,6 +212,8 @@ namespace SoyEngine
         public const string PublishUserMessage = "/home/publishUserMessage";
         // 回复留言
         public const string ReplyUserMessage = "/home/replyUserMessage";
+        // 回复留言
+        public const string UpdateUserMessageLike = "/home/updateUserMessageLike";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

@@ -2211,6 +2211,46 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUpdateUserMessageLike {
+            get { return _isRequstingUpdateUserMessageLike; }
+        }
+        private static bool _isRequstingUpdateUserMessageLike = false;
+        /// <summary>
+		/// 回复留言
+		/// </summary>
+		/// <param name="userMessageId">留言ID</param>
+		/// <param name="likeFlag">赞</param>
+        public static void UpdateUserMessageLike (
+            long userMessageId,
+            bool likeFlag,
+            Action<Msg_SC_CMD_UpdateUserMessageLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateUserMessageLike) {
+                return;
+            }
+            _isRequstingUpdateUserMessageLike = true;
+            Msg_CS_CMD_UpdateUserMessageLike msg = new Msg_CS_CMD_UpdateUserMessageLike();
+            // 回复留言
+            msg.UserMessageId = userMessageId;
+            msg.LikeFlag = likeFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUserMessageLike>(
+                SoyHttpApiPath.UpdateUserMessageLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateUserMessageLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateUserMessageLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateUserMessageLike = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }
