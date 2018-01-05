@@ -92,7 +92,7 @@ namespace GameA
             {
                 _dataList = _message.ReplyList.AllList;
                 RefreshReplyDock(true);
-            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
+            }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败"); });
         }
 
         protected virtual void RefreshView()

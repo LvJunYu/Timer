@@ -7,7 +7,7 @@ namespace GameA.Game
     public class RopeJoint : RigidbodyUnit
     {
         private const int MaxDis = 64;
-        private const int MaxSpeed = 400;
+        private const int MaxSpeed = 300;
         private const int Gravity = 2;
         private const int ForcePower = 12;
         private UnitBase _preJoint;
@@ -61,7 +61,7 @@ namespace GameA.Game
                 SpeedY -= 32;
                 if (Mathf.Abs(pos.x) > 8 * _wholeRope.Length)
                 {
-                    SpeedX += Mathf.Clamp(32 * pos.x / Mathf.Max(1, Mathf.Abs(pos.y)), -32, 32);
+                    SpeedX += Mathf.Clamp(32 * pos.x / Mathf.Max(1, Mathf.Abs(pos.y)), -64, 64);
                 }
             }
 
@@ -101,6 +101,13 @@ namespace GameA.Game
             if (_expectPos != _curPos && _nextJoint != null)
             {
                 _nextJoint.FixSpeedFromPre(true);
+            }
+
+            var relativePrePos = GetNeighborRelativePos(true);
+            var angel = Mathf.Rad2Deg * Mathf.Atan2(relativePrePos.y, relativePrePos.x) - 90;
+            if (Trans != null)
+            {
+                Trans.eulerAngles = Vector3.forward * angel;
             }
         }
 
