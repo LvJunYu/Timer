@@ -22,5 +22,6 @@ namespace GameA.Game
         Normal,
         Portaling,
         Reviving,
+        Spacetiming
     }
 }

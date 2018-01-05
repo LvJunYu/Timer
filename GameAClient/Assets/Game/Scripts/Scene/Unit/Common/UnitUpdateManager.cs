@@ -34,9 +34,20 @@ namespace GameA.Game
 
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
+                if (allOtherUnits[i].IsPlayer)
+                {
+                    continue;
+                }
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CheckStart();
+                }
+            }
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null)
+                {
+                    playerList[i].CheckStart();
                 }
             }
             //人先执行 AI怪物后执行

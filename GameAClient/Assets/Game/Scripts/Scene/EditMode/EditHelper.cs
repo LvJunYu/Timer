@@ -20,8 +20,8 @@ namespace GameA.Game
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
-        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>()
-            ;
+        private static readonly Dictionary<int, UnitEditData>
+            _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
@@ -55,10 +55,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (!GM2DTools.TryGetUnitObject(mouseWorldPos, editorLayer, out unitDesc))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -70,6 +72,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             IntVec3 tileIndex = DataScene2D.CurScene.GetTileIndex(mouseWorldPos, unitId);
             unitDesc.Guid = tileIndex;
             var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
@@ -77,6 +80,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             unitDesc.Scale = Vector2.one;
             return true;
         }
@@ -88,6 +92,7 @@ namespace GameA.Game
             {
                 return cnt;
             }
+
             return 0;
         }
 
@@ -102,6 +107,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             UnitEditData unitEditData;
             if (unitDesc.Guid == DefaultUnitGuid)
             {
@@ -111,6 +117,7 @@ namespace GameA.Game
             {
                 unitEditData = new UnitEditData(unitDesc, DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid));
             }
+
             //地块特殊处理一下
             if (UnitDefine.IsEarth(unitDesc.Id))
             {
@@ -123,6 +130,7 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
             }
+
             return false;
         }
 
@@ -136,6 +144,7 @@ namespace GameA.Game
                 {
                     Messenger.Broadcast(EMessengerType.OnTeamChanged);
                 }
+
                 Messenger<int>.Broadcast(EMessengerType.OnEditUnitDefaultDataChange, origin.UnitDesc.Id);
             }
             else
@@ -153,6 +162,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
                 if (type != EEditType.Style && table.CanEdit(type))
@@ -160,6 +170,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -176,11 +187,14 @@ namespace GameA.Game
                 data = InternalGetUnitDefaultData(id);
                 _unitDefaultDataDict.Add(id, data);
             }
+
             //地块特殊处理
             if (UnitDefine.IsEarth(id))
             {
                 data.UnitExtra.ChildId = (ushort) Random.Range(1, 3);
             }
+
+            data.UnitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             return data;
         }
 
@@ -196,43 +210,52 @@ namespace GameA.Game
                 LogHelper.Error("InternalGetUnitDefaultData TableUnit is null, id: " + id);
                 return unitEditData;
             }
+
             if (table.CanEdit(EEditType.Active))
             {
                 unitEditData.UnitExtra.Active = (byte) table.DefaultActiveState;
             }
+
             if (table.CanEdit(EEditType.Child))
             {
                 unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
                 unitEditData.UnitExtra.UpdateFromChildId();
             }
+
             if (table.CanEdit(EEditType.Direction))
             {
                 unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
             }
+
             if (table.CanEdit(EEditType.MoveDirection))
             {
                 unitEditData.UnitExtra.MoveDirection = table.DefaultMoveDirection;
             }
+
             if (table.CanEdit(EEditType.Rotate))
             {
                 unitEditData.UnitExtra.RotateMode = (byte) table.DefaultRotateMode;
                 unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
             }
+
             if (table.CanEdit(EEditType.TimeDelay))
             {
                 unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
+
             if (UnitDefine.IsMonster(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
             }
+
             if (UnitDefine.IsMonster(table.Id))
             {
                 unitEditData.UnitExtra.MaxHp = (ushort) table.Hp;
                 unitEditData.UnitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
             }
+
             if (table.SkillId > 0)
             {
                 var skill = TableManager.Instance.GetSkill(table.SkillId);
@@ -240,16 +263,19 @@ namespace GameA.Game
                 {
                     unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
+
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
                 unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
                 unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }
+
             if (UnitDefine.IsSpawn(id))
             {
                 unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
                 unitEditData.UnitExtra.TeamId = 1;
             }
+
             return unitEditData;
         }
 
@@ -273,6 +299,7 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             //绳子必须绑在石头上
             if (UnitDefine.RopeId == tableUnit.Id)
             {
@@ -288,11 +315,12 @@ namespace GameA.Game
                     Rope rope = upUnit as Rope;
                     if (rope != null && rope.SegmentIndex >= tableUnit.ValidRange - 1)
                     {
-                        Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子最长就这么长喔~");
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子最长就这么长~");
                         return false;
                     }
                 }
             }
+
             //怪物同屏数量不可过多
             {
                 if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)
@@ -325,10 +353,13 @@ namespace GameA.Game
                                 pairUnit.UnitB != UnitDesc.zero &&
                                 !InValidRange(pairUnit.UnitB, unitDesc, validTileRange))
                             {
-                                Messenger<string>.Broadcast(EMessengerType.GameLog,
-                                    string.Format("传送门的间距不能超过{0}个格子哦~", tableUnit.ValidRange));
+                                Messenger<string>.Broadcast(EMessengerType.GameLog, "传送门的间距不能太远哦~");
                                 return false;
                             }
+                        }
+                        else if (tableUnit.EPairType == EPairType.SpacetimeDoor)
+                        {
+                            
                         }
                     }
                     else
@@ -363,6 +394,7 @@ namespace GameA.Game
                         string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
                     return false;
                 }
+
                 if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前剩余{0}个", count));
@@ -394,12 +426,14 @@ namespace GameA.Game
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
             }
+
 //            if (tableUnit.Count > 1)
             {
                 if (!_unitIndexCount.ContainsKey(unitDesc.Id))
                 {
                     _unitIndexCount.Add(unitDesc.Id, new int());
                 }
+
                 _unitIndexCount[unitDesc.Id] += 1;
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
@@ -412,12 +446,14 @@ namespace GameA.Game
             {
                 _replaceUnits.Remove(unitDesc.Id);
             }
+
 //            if (tableUnit.Count > 1)
             {
                 if (_unitIndexCount.ContainsKey(unitDesc.Id))
                 {
                     _unitIndexCount[unitDesc.Id] -= 1;
                 }
+
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
@@ -429,6 +465,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return outUnitDesc.Id != 0;
         }
 
@@ -461,10 +498,12 @@ namespace GameA.Game
             {
                 return tableUnit.Count;
             }
+
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 return 6;
             }
+
             return tableUnit.Count;
         }
 
@@ -478,6 +517,7 @@ namespace GameA.Game
             {
                 collectUnit.StopTwenner();
             }
+
             var helperParentObj = new GameObject("DragHelperParent");
             var tran = helperParentObj.transform;
             pos.z = -50;
@@ -502,42 +542,52 @@ namespace GameA.Game
             {
                 unitExtra.Damage = defaultUnitExtra.Damage;
             }
+
             if (unitExtra.EffectRange == 0)
             {
                 unitExtra.EffectRange = defaultUnitExtra.EffectRange;
             }
+
             if (unitExtra.CastRange == 0)
             {
                 unitExtra.CastRange = defaultUnitExtra.CastRange;
             }
+
             if (unitExtra.ViewRange == 0)
             {
                 unitExtra.ViewRange = defaultUnitExtra.ViewRange;
             }
+
             if (unitExtra.BulletCount == 0)
             {
                 unitExtra.BulletCount = defaultUnitExtra.BulletCount;
             }
+
             if (unitExtra.BulletSpeed == 0)
             {
                 unitExtra.BulletSpeed = defaultUnitExtra.BulletSpeed;
             }
+
             if (unitExtra.ChargeTime == 0)
             {
                 unitExtra.ChargeTime = defaultUnitExtra.ChargeTime;
             }
+
             if (unitExtra.MaxHp == 0)
             {
                 unitExtra.MaxHp = defaultUnitExtra.MaxHp;
             }
+
             if (unitExtra.MaxSpeedX == 0)
             {
                 unitExtra.MaxSpeedX = defaultUnitExtra.MaxSpeedX;
             }
+
             if (unitExtra.JumpAbility == 0)
             {
                 unitExtra.JumpAbility = defaultUnitExtra.JumpAbility;
             }
+
             return unitExtra;
         }
     }

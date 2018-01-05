@@ -301,6 +301,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 _life = value;
                 if (IsMain)
                 {
@@ -308,6 +309,7 @@ namespace GameA.Game
                     {
                         _life = PlayMode.Instance.SceneState.Life;
                     }
+
                     Messenger.Broadcast(EMessengerType.OnLifeChanged);
                 }
             }
@@ -516,6 +518,11 @@ namespace GameA.Game
             get { return false; }
         }
 
+        public virtual bool CanPassBlackHole
+        {
+            get { return false; }
+        }
+
         public virtual bool IsInvincible
         {
             get { return false; }
@@ -597,6 +604,7 @@ namespace GameA.Game
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
                 return;
             }
+
             SetFacingDir(_moveDirection, true);
             _view.SetSortingOrder((int) ESortingOrder.DragingItem);
             if (_viewExtras != null)
@@ -644,6 +652,7 @@ namespace GameA.Game
             {
                 _dynamicCollider = dynamicCollider;
             }
+
             _viewZOffset = 0;
             _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
@@ -691,6 +700,7 @@ namespace GameA.Game
                 case EDirectionType.LeftUp:
                     return new Vector2(-1, 1);
             }
+
             return Vector2.zero;
         }
 
@@ -707,6 +717,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
+
             if (_tableUnit.ModelExtras != null && _tableUnit.ModelExtras.Length > 0)
             {
                 _viewExtras = new UnitView[_tableUnit.ModelExtras.Length];
@@ -716,12 +727,14 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     _assetPath = _tableUnit.ModelExtras[i];
                     if (!UnitManager.Instance.TryGetUnitView(this, true, out _viewExtras[i]))
                     {
                         LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                         return false;
                     }
+
                     CommonTools.SetParent(_viewExtras[i].Trans, _trans);
                     if (UnitDefine.IsPlant(Id))
                     {
@@ -739,12 +752,14 @@ namespace GameA.Game
                     }
                 }
             }
+
             UpdateTransPos();
             SetFacingDir(_moveDirection, true);
             if (GameRun.Instance.IsEdit)
             {
                 _view.UpdateSign();
             }
+
             if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
             {
                 _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName, _trans);
@@ -752,15 +767,18 @@ namespace GameA.Game
                 {
                     _withEffect.Play();
                 }
+
                 if (_eActiveState != EActiveState.None)
                 {
                     OnActiveStateChanged();
                 }
             }
+
             if (!string.IsNullOrEmpty(_tableUnit.DestroyEffectName))
             {
                 GameParticleManager.Instance.PreLoadParticle(_tableUnit.DestroyEffectName);
             }
+
             return true;
         }
 
@@ -795,10 +813,12 @@ namespace GameA.Game
             {
                 OnActiveStateChanged();
             }
+
             if (_view != null)
             {
                 _view.Reset();
             }
+
             _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
@@ -807,6 +827,7 @@ namespace GameA.Game
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
             }
+
             _lastColliderGrid = _colliderGrid;
             Clear();
             UpdateTransPos();
@@ -814,6 +835,7 @@ namespace GameA.Game
             {
                 _dynamicCollider.Reset();
             }
+
             if (_animation != null)
             {
                 _animation.Reset();
@@ -932,10 +954,12 @@ namespace GameA.Game
             {
                 _eActiveState = EActiveState.Active;
             }
+
             if (IsPlayer || IsShadow)
             {
                 _moveDirection = EMoveDirection.Right;
             }
+
             if (unitExtra.MaxHp > 0)
             {
                 _maxHp = unitExtra.MaxHp;
@@ -947,6 +971,7 @@ namespace GameA.Game
                     _maxHp = _tableUnit.Hp;
                 }
             }
+
             return unitExtra;
         }
 
@@ -976,15 +1001,18 @@ namespace GameA.Game
             {
                 return true;
             }
+
             // If one is null, the other is disposed, return true.
             if (((object) a == null) && b._isDisposed)
             {
                 return true;
             }
+
             if (((object) b == null) && a._isDisposed)
             {
                 return true;
             }
+
             return false;
         }
 
@@ -1019,6 +1047,7 @@ namespace GameA.Game
                                         ConstDefineGM2D.InverseTextureSize;
                         }
                     }
+
                     IntVec2 tileTextureSize = GM2DTools.WorldToTile(modelSize);
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, tileTextureSize, _tableUnit);
                 }
@@ -1027,15 +1056,18 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
+
             var z = GetZ();
             if (UnitDefine.IsJet(Id))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
             }
+
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
+
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
@@ -1060,10 +1092,11 @@ namespace GameA.Game
                 z = Mathf.Clamp(z, min, max);
                 CheckClimbUnitZ(ref z);
             }
+
             return z;
         }
-        
-        protected  float GetZ(IntVec2 pos)
+
+        protected float GetZ(IntVec2 pos)
         {
             //为了子弹
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
@@ -1076,11 +1109,13 @@ namespace GameA.Game
             {
                 return;
             }
+
             //默认等同于此Unit
             if (Math.Abs(viewZOffset) < float.Epsilon)
             {
                 viewZOffset = _viewZOffset;
             }
+
             var size = GetColliderSize();
             var halfSize = size / 2;
             IntVec2 pos = _curPos;
@@ -1106,12 +1141,14 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
+
             float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * UnitDefine.UnitSorttingLayerRatio + viewZOffset;
             float y = 0f;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 y = -0.1f;
             }
+
             trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, y, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
@@ -1134,24 +1171,28 @@ namespace GameA.Game
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Up);
                 upUnit.View.OnNeighborDirChanged(ENeighborDir.Down, add);
             }
+
             if (units.TryGetValue(keys[1], out rightUnit) &&
                 (rightUnit.Id == id || UnitDefine.IsFakePart(rightUnit.Id, id)) && rightUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Right);
                 rightUnit.View.OnNeighborDirChanged(ENeighborDir.Left, add);
             }
+
             if (units.TryGetValue(keys[2], out downUnit) &&
                 (downUnit.Id == id || UnitDefine.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Down);
                 downUnit.View.OnNeighborDirChanged(ENeighborDir.Up, add);
             }
+
             if (units.TryGetValue(keys[3], out leftUnit) &&
                 (leftUnit.Id == id || UnitDefine.IsFakePart(leftUnit.Id, id)) && leftUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Left);
                 leftUnit.View.OnNeighborDirChanged(ENeighborDir.Right, add);
             }
+
             if (add && _view != null)
             {
                 _view.InitMorphId(neighborDir);
@@ -1166,12 +1207,28 @@ namespace GameA.Game
         {
         }
 
+        public virtual void OnSpacetimeDoor(IntVec2 targetPos)
+        {
+            if (_eUnitState != EUnitState.Normal) return;
+            _eUnitState = EUnitState.Spacetiming;
+            PlayMode.Instance.Freeze(this);
+            ClearRunTime();
+            PlayMode.Instance.RunNextLogic(() =>
+            {
+                _eUnitState = EUnitState.Normal;
+                PlayMode.Instance.UnFreeze(this);
+                Speed = IntVec2.zero;
+                SetPos(targetPos);
+            });
+        }
+
         public virtual void OnPortal(IntVec2 targetPos, IntVec2 speed)
         {
             if (_eUnitState == EUnitState.Portaling)
             {
                 return;
             }
+
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
             ClearRunTime();
@@ -1183,10 +1240,12 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
+
                 if (speed.x < 0)
                 {
                     ChangeWay(EMoveDirection.Left);
                 }
+
                 Speed = speed;
                 SetPos(targetPos);
             });
@@ -1232,6 +1291,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -1252,6 +1312,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -1272,6 +1333,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -1325,26 +1387,31 @@ namespace GameA.Game
                     {
                         right = deltaPos.x;
                     }
+
                     if (deltaPos.x < 0 && deltaPos.x < left)
                     {
                         left = deltaPos.x;
                     }
+
                     if (deltaPos.y > extraDeltaY)
                     {
                         extraDeltaY = deltaPos.y;
                     }
                 }
+
                 int extraDeltaX = right + left;
                 if (_curBanInputTime > 0)
                 {
                     extraDeltaX = 0;
                 }
+
                 _extraDeltaPos = new IntVec2(extraDeltaX, extraDeltaY);
                 if (!_lastGrounded && IsPlayer && !IsClimbing)
                 {
                     SpeedX -= extraDeltaX;
                 }
             }
+
             _carryUnits.Clear();
             _lastExtraDeltaPos = _extraDeltaPos;
             if (_lastExtraDeltaPos.y < 0)
@@ -1429,6 +1496,7 @@ namespace GameA.Game
             {
                 return Vector3.zero;
             }
+
             var otherCenterPos = other.GetColliderPos(other.CurPos) + other.GetColliderSize() / 2;
             var otherPos = GM2DTools.TileToWorld(otherCenterPos, other.Trans.localPosition.z);
             switch (hitDirectionType)
@@ -1442,6 +1510,7 @@ namespace GameA.Game
                 case EDirectionType.Right:
                     return new Vector3(GM2DTools.TileToWorld(GetRightHitMin()), otherPos.y, otherPos.z);
             }
+
             return Vector3.zero;
         }
 
@@ -1520,6 +1589,7 @@ namespace GameA.Game
                     _lastColliderGrid = _colliderGrid;
                 }
             }
+
             UpdateTransPos();
         }
 
@@ -1544,6 +1614,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             EMoveDirection lastMoveDirection = _moveDirection;
             _moveDirection = eMoveDirection;
             if (_trans != null && _moveDirection != EMoveDirection.None && (IsActor || IsShadow) &&
@@ -1607,6 +1678,7 @@ namespace GameA.Game
                 Object.Destroy(_playerNameInGame.gameObject);
                 _playerNameInGame = null;
             }
+
             _view = null;
             _viewExtras = null;
             FreeEffect(_withEffect);
@@ -1629,11 +1701,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _switchPressUnits.Add(switchUnit);
             if (_switchPressUnits.Count == 1)
             {
                 OnCtrlBySwitch();
             }
+
             return true;
         }
 
@@ -1643,10 +1717,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (_switchPressUnits.Count == 0)
             {
                 OnCtrlBySwitch();
             }
+
             return true;
         }
 
@@ -1656,11 +1732,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _switchRectUnits.Add(switchRect);
             if (_switchRectUnits.Count == 1)
             {
                 OnCtrlBySwitch();
             }
+
             return true;
         }
 
@@ -1670,10 +1748,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (_switchRectUnits.Count == 0)
             {
                 OnCtrlBySwitch();
             }
+
             return true;
         }
 
@@ -1683,6 +1763,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _hasSwitchRectOnce = true;
             OnCtrlBySwitch();
         }
@@ -1712,6 +1793,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return false;
         }
 

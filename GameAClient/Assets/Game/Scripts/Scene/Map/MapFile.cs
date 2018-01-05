@@ -178,6 +178,7 @@ namespace GameA.Game
                 unitObject.Guid.z = node.Depth;
                 unitObject.Scale = node.Scale;
                 unitObject.Rotation = node.Direction;
+                unitObject.SceneIndx = sceneIndex;
                 var size = tableUnit.GetDataSize(node.Direction, node.Scale);
                 var count = tableUnit.GetDataCount(node);
                 for (int j = 0; j < count.x; j++)

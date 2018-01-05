@@ -51,6 +51,11 @@ namespace GameA.Game
             get { return _skeletonAnimation; }
         }
 
+        public Transform PairTrans
+        {
+            get { return _pairTrans; }
+        }
+
         public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;

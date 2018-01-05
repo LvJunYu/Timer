@@ -23,6 +23,10 @@ namespace GameA.Game
             {
                 SetRelativeEffectPos(_withEffect.Trans, (EDirectionType) Rotation);
             }
+            if (_view.PairTrans != null)
+            {
+                _view.PairTrans.SetActiveEx(!GameRun.Instance.IsPlaying);
+            }
             return true;
         }
 

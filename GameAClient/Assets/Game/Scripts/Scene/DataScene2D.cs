@@ -49,7 +49,7 @@ namespace GameA.Game
         {
             get { return Scene2DManager.Instance.MainDataScene2D; }
         }
-        
+
         public List<UnitDesc> SpawnDatas
         {
             get { return _spawnDatas; }
@@ -177,6 +177,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Add(unitDesc);
@@ -728,7 +729,6 @@ namespace GameA.Game
             unitExtra.CureIncrease = 0;
             SetPlayerExtra(unitExtra);
         }
-
     }
 
 #pragma warning disable 0660 0661
