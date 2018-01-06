@@ -24,6 +24,7 @@ namespace GameA.Game
                     allSwitchUnits[i].UpdateLogic();
                 }
             }
+
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
                 if (allMagicUnits[i].IsInterest)
@@ -38,11 +39,13 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CheckStart();
                 }
             }
+
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (playerList[i] != null)
@@ -50,6 +53,7 @@ namespace GameA.Game
                     playerList[i].CheckStart();
                 }
             }
+
             //人先执行 AI怪物后执行
             for (int i = 0; i < playerList.Count; i++)
             {
@@ -58,17 +62,22 @@ namespace GameA.Game
                     playerList[i].UpdateLogic();
                 }
             }
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (allOtherUnits[i].IsPlayer)
+                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].UpdateLogic();
                 }
             }
+
+            RopeManager.Instance.UpdateLogic();
+
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
                 if (allBulletUnits[i].IsInterest)
@@ -84,6 +93,7 @@ namespace GameA.Game
                     allMagicUnits[i].UpdateView(deltaTime);
                 }
             }
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
                 if (allOtherUnits[i].IsInterest)
@@ -91,6 +101,7 @@ namespace GameA.Game
                     allOtherUnits[i].CalculateExtraDeltaPos();
                 }
             }
+
             //拉箱子的先移动，推箱子的最后
             for (int i = 0; i < playerList.Count; i++)
             {
@@ -99,18 +110,21 @@ namespace GameA.Game
                     playerList[i].UpdateView(deltaTime);
                 }
             }
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
                 if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].UpdateView(deltaTime);
                 }
             }
-            //控制绳子每个节点的逻辑顺序
+
+            //绳子单独控制
             RopeManager.Instance.UpdateView(deltaTime);
             for (int i = 0; i < playerList.Count; i++)
             {

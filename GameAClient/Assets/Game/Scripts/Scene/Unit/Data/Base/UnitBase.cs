@@ -1207,7 +1207,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void OnSpacetimeDoor(IntVec2 targetPos)
+        public virtual void EnterSpacetimeDoor(IntVec2 targetPos)
         {
             if (_eUnitState != EUnitState.Normal) return;
             _eUnitState = EUnitState.Spacetiming;
@@ -1218,7 +1218,7 @@ namespace GameA.Game
                 _eUnitState = EUnitState.Normal;
                 PlayMode.Instance.UnFreeze(this);
                 Speed = IntVec2.zero;
-                SetPos(targetPos);
+                SetPos(targetPos + IntVec2.up * 10); 
             });
         }
 

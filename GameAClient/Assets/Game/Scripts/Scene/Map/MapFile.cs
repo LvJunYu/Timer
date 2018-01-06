@@ -50,7 +50,7 @@ namespace GameA.Game
             StopAllCoroutines();
         }
 
-        private bool CaculateTotalCount(List<MapRect2D> data)
+        private bool CaculateUnitCount(List<MapRect2D> data)
         {
             for (int i = 0; i < data.Count; i++)
             {
@@ -130,14 +130,14 @@ namespace GameA.Game
             _num = 0;
             _totalCount = 0;
             var rectData = mapData.Data;
-            if (!CaculateTotalCount(rectData))
+            if (!CaculateUnitCount(rectData))
             {
                 yield break;
             }
 
             for (int i = 0; i < scenes.Count; i++)
             {
-                if (!CaculateTotalCount(scenes[i].Data))
+                if (!CaculateUnitCount(scenes[i].Data))
                 {
                     yield break;
                 }

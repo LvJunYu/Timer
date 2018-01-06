@@ -5,6 +5,9 @@ namespace GameA.Game
     [Unit(Id = 4016, Type = typeof(SpacetimeDoor))]
     public class SpacetimeDoor : BlockBase
     {
+        private UnitBase _outUnit;
+        private int _outTimer;
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -28,21 +31,33 @@ namespace GameA.Game
                 SetRelativeEffectPos(_withEffect.Trans, (EDirectionType) Rotation);
             }
 
-            if (_view.PairTrans != null)
+            if (GameRun.Instance.IsPlaying && _view.PairTrans != null)
             {
-                _view.PairTrans.SetActiveEx(!GameRun.Instance.IsPlaying);
+                _view.PairTrans.SetActiveEx(false);
             }
+
             return true;
+        }
+
+        public override void UpdateLogic()
+        {
+            if (_outTimer > 0)
+            {
+                _outTimer--;
+            }
+            else
+            {
+                if (_outUnit != null && !_colliderGrid.Intersects(_outUnit.ColliderGrid))
+                {
+                    _outUnit = null;
+                }
+            }
         }
 
         public static void OnSpacetimeDoor(PairUnit pairUnit, UnitDesc unitDesc)
         {
             var sender = pairUnit.Sender;
-            if (sender == null)
-            {
-                return;
-            }
-
+            if (sender == null) return;
             int sceneIndex = unitDesc.SceneIndx;
             if (sceneIndex == Scene2DManager.Instance.CurSceneIndex)
             {
@@ -57,9 +72,23 @@ namespace GameA.Game
                 return;
             }
 
+            SpacetimeDoor spacetimeDoor = unit as SpacetimeDoor;
+            if (spacetimeDoor == null)
+            {
+                LogHelper.Error("the out spacetimeDoor is null");
+                return;
+            }
+
             Scene2DManager.Instance.ChangeScene(sceneIndex);
-            sender.OnSpacetimeDoor(unit.CurPos);
+            sender.EnterSpacetimeDoor(spacetimeDoor.CurPos);
+            spacetimeDoor.OnUnitOut(sender);
             pairUnit.Sender = null;
+        }
+
+        private void OnUnitOut(UnitBase unit)
+        {
+            _outUnit = unit;
+            _outTimer = 10;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -69,6 +98,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
+            if (other.IsPlayer) return false;
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -79,6 +109,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
+            if (other.IsPlayer) return false;
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -89,6 +120,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
+            if (other.IsPlayer) return false;
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -99,12 +131,13 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
+            if (other.IsPlayer) return false;
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
         private void OnTrigger(UnitBase other)
         {
-            if (!other.CanPassBlackHole)
+            if (other == _outUnit || !other.CanPassBlackHole)
             {
                 return;
             }
@@ -113,6 +146,13 @@ namespace GameA.Game
             {
                 PairUnitManager.Instance.OnPairTriggerEnter(other, this);
             }
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _outUnit = null;
+            _outTimer = 0;
         }
     }
 }

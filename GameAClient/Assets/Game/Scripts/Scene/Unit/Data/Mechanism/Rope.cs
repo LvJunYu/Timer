@@ -29,8 +29,8 @@ namespace GameA.Game
         }
 
         public const int JointCount = 10;
-        private bool _tied;
         private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
+        private bool _tied;
         private int _ropeIndex;
         private int _segmentIndex;
         private UnitBase _tieUnit;
@@ -39,35 +39,36 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            RopeManager.Instance.AddRope(this);
             //初始化时计算所在绳子的段数，用于限制绳子长度
-            UnitBase tieUnit = RopeManager.Instance.GetUpFloorUnit(_unitDesc, _tableUnit);
-            if (tieUnit != null)
+            _tieUnit = RopeManager.Instance.GetUpFloorUnit(_unitDesc, _tableUnit);
+            if (_tieUnit != null)
             {
-                if (tieUnit.Id == UnitDefine.RopeId)
+                if (_tieUnit.Id == UnitDefine.RopeId)
                 {
-                    _segmentIndex = ((Rope) tieUnit).SegmentIndex + 1;
+                    _segmentIndex = ((Rope) _tieUnit).SegmentIndex + 1;
                 }
                 else
                 {
                     _segmentIndex = 0;
                 }
+                CheckNextRopeSegmentIndex(_segmentIndex);
             }
-            SegmentIndexChanged(_segmentIndex);
 
             return base.OnInit();
         }
 
-        private void SegmentIndexChanged(int segmentIndex)
+        private void CheckNextRopeSegmentIndex(int segmentIndex)
         {
+            if (_segmentIndex == segmentIndex) return;
             _segmentIndex = segmentIndex;
-            _nextRope = RopeManager.Instance.GetDownFloorRope(_unitDesc, _tableUnit);
             if (_nextRope != null)
             {
-                if (_nextRope != null)
-                {
-                    _nextRope.SegmentIndexChanged(segmentIndex + 1);
-                }
+                _nextRope = RopeManager.Instance.GetDownFloorRope(_unitDesc, _tableUnit);
+            }
+
+            if (_nextRope != null)
+            {
+                _nextRope.CheckNextRopeSegmentIndex(segmentIndex + 1);
             }
         }
 
@@ -153,20 +154,7 @@ namespace GameA.Game
         public bool CheckRopeTie()
         {
             _tied = false;
-            Grid2D checkGrid;
-            if (Rotation == (int) EDirectionType.Left)
-            {
-                checkGrid = new Grid2D(CenterRightPos + IntVec2.right, CenterRightPos + IntVec2.right);
-            }
-            else if (Rotation == (int) EDirectionType.Right)
-            {
-                checkGrid = new Grid2D(CenterLeftPos + IntVec2.left, CenterLeftPos + IntVec2.left);
-            }
-            else
-            {
-                checkGrid = new Grid2D(CenterUpFloorPos, CenterUpFloorPos);
-            }
-
+            Grid2D checkGrid = new Grid2D(CenterUpFloorPos, CenterUpFloorPos);
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer, float.MinValue,
                 float.MaxValue, _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
@@ -202,7 +190,7 @@ namespace GameA.Game
                 }
             }
 
-            return Tied;
+            return _tied;
         }
 
         private void SetNextRope(Rope rope)
@@ -262,7 +250,6 @@ namespace GameA.Game
                 RopeManager.Instance.RemoveRopeJoint(_ropeIndex, _segmentIndex);
             }
 
-            RopeManager.Instance.RemoveRope(this);
             base.OnDispose();
         }
     }

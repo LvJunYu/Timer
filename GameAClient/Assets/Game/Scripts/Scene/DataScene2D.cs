@@ -95,7 +95,7 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            var startPos = ConstDefineGM2D.MapStartPosArry[_sceneIndex];
+            var startPos = ConstDefineGM2D.MapStartPos;
             _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
         }
 
@@ -106,7 +106,7 @@ namespace GameA.Game
         public void SetMapSize(IntVec2 size)
         {
             _size = size;
-            var startPos = ConstDefineGM2D.MapStartPosArry[_sceneIndex];
+            var startPos = ConstDefineGM2D.MapStartPos;
             _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
         }
 

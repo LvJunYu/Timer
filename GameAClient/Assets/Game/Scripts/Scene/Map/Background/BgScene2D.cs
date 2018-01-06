@@ -475,12 +475,6 @@ namespace GameA.Game
         public void ChangeScene(int index)
         {
             if (_curSceneIndex == index) return;
-            if (index >= ConstDefineGM2D.MapStartPosArry.Length)
-            {
-                LogHelper.Error("index is out of range");
-                return;
-            }
-            
             var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
             var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
@@ -496,13 +490,11 @@ namespace GameA.Game
             _cloudRect.center = _basePos;
             _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
             
-            var delta = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPosArry[index] - ConstDefineGM2D.MapStartPosArry[_curSceneIndex]);
             using (var iter = _items.GetEnumerator())
             {
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
-                    bgItem.ResetBasePos(delta);
                     bgItem.SetBaseFollowPos(CameraManager.Instance.MainCameraPos);
                     bgItem.ResetPos();
                 }

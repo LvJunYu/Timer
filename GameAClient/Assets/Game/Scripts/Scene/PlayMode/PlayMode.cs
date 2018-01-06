@@ -613,16 +613,8 @@ namespace GameA.Game
         {
             _pausing = false;
             _run = true;
-            ColliderScene2D.CurScene.SortData();
             CrossPlatformInputManager.ClearVirtualInput();
-            UnitBase[] units = ColliderScene2D.CurScene.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                UnitBase unit = units[i];
-                unit.OnPlay();
-            }
-
-            RopeManager.Instance.OnPlay();
+            Scene2DManager.Instance.OnPlay();
             BgScene2D.Instance.OnPlay();
             return true;
         }

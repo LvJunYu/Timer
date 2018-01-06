@@ -208,7 +208,7 @@ namespace GameA.Game
             }
         }
 
-        public void CheckPos()
+        public void CheckPreJointPos()
         {
             if (PreJoint.Id == UnitDefine.RopeJointId)
             {

@@ -10,6 +10,22 @@ namespace GameA.Game
         private int _addForceTimer;
         private int _carryPlayerCount;
 
+        public bool IsInterest
+        {
+            get
+            {
+                for (int i = 0; i < _joints.Count; i++)
+                {
+                    if (_joints[i] == null || !_joints[i].IsInterest)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public int Length
         {
             get { return _joints.Count; }
@@ -18,11 +34,6 @@ namespace GameA.Game
         public UnitBase TieUnit
         {
             get { return _joints[0].PreJoint; }
-        }
-
-        public WholeRope(int index)
-        {
-//            _ropeIndex = index;
         }
 
         public void AddRope(bool create = false)
@@ -92,19 +103,33 @@ namespace GameA.Game
             return null;
         }
 
+        public void UpdateLogic()
+        {
+            if (!IsInterest)
+            {
+                return;
+            }
+            for (int i = 0; i < _joints.Count; i++)
+            {
+                _joints[i].UpdateLogic();
+            }
+        }
+
         public void UpdateView(float deltaTime, bool addForce = false)
         {
+            if (!IsInterest)
+            {
+                return;
+            }
+
             for (int i = _joints.Count - 1; i >= 0; i--)
             {
-                _joints[i].CheckPos();
+                _joints[i].CheckPreJointPos();
             }
 
             for (int i = 0; i < _joints.Count; i++)
             {
-                if (_joints[i].IsInterest)
-                {
-                    _joints[i].UpdateView(deltaTime);
-                }
+                _joints[i].UpdateView(deltaTime);
             }
         }
 
@@ -117,7 +142,7 @@ namespace GameA.Game
             }
         }
 
-        private bool CheckAddForce(int ropeIndex)
+        public bool JustAddForce(int ropeIndex)
         {
             return GameRun.Instance.LogicFrameCnt - _addForceTimer < 10;
         }
@@ -136,6 +161,12 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public void Clear()
+        {
+            _joints.Clear();
+        }
+
     }
 
     public class RopeManager : IDisposable
@@ -143,16 +174,10 @@ namespace GameA.Game
         private static RopeManager _instance;
         private int _curDicIndex;
         private Dictionary<int, WholeRope> _ropes = new Dictionary<int, WholeRope>();
-        private Dictionary<IntVec3, Rope> _ropeUnits = new Dictionary<IntVec3, Rope>();
 
         public static RopeManager Instance
         {
             get { return _instance ?? (_instance = new RopeManager()); }
-        }
-
-        public Dictionary<IntVec3, Rope> RopeUnits
-        {
-            get { return _ropeUnits; }
         }
 
         public RopeManager()
@@ -163,6 +188,10 @@ namespace GameA.Game
         public void Reset()
         {
             _curDicIndex = 0;
+            foreach (var wholeRope in _ropes.Values)
+            {
+                wholeRope.Clear();
+            }
             _ropes.Clear();
         }
 
@@ -170,7 +199,6 @@ namespace GameA.Game
         {
             Messenger<int, bool>.RemoveListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
             Reset();
-            _ropeUnits.Clear();
             _instance = null;
         }
 
@@ -180,7 +208,7 @@ namespace GameA.Game
             {
                 _curDicIndex++;
                 ropeIndex = _curDicIndex;
-                _ropes.Add(_curDicIndex, new WholeRope(ropeIndex));
+                _ropes.Add(_curDicIndex, new WholeRope());
             }
 
             WholeRope wholeRope = GetWholeRope(ropeIndex);
@@ -228,7 +256,7 @@ namespace GameA.Game
 
             return null;
         }
-        
+
         public Rope GetDownFloorRope(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
@@ -274,18 +302,14 @@ namespace GameA.Game
             }
         }
 
-        public void CheckAllRopeTie()
+        public void UpdateLogic()
         {
-            foreach (var rope in _ropeUnits.Values)
+            foreach (var ropeUnit in _ropes.Values)
             {
-                if (!rope.Tied && !rope.CheckRopeTie())
-                {
-                    LogHelper.Error("rope can not tie!");
-                }
+                ropeUnit.UpdateLogic();
             }
         }
 
-        // todo 判断Interest
         public void UpdateView(float deltaTime)
         {
             foreach (var ropeUnit in _ropes.Values)
@@ -312,22 +336,6 @@ namespace GameA.Game
             if (wholeRope != null)
             {
                 wholeRope.OnPlayerClimbRope(value);
-            }
-        }
-
-        public void AddRope(Rope rope)
-        {
-            if (!_ropeUnits.ContainsKey(rope.Guid))
-            {
-                _ropeUnits.Add(rope.Guid, rope);
-            }
-        }
-
-        public void RemoveRope(Rope rope)
-        {
-            if (_ropeUnits.ContainsKey(rope.Guid))
-            {
-                _ropeUnits.Remove(rope.Guid);
             }
         }
     }

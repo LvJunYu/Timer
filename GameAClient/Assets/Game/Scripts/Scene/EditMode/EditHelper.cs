@@ -348,18 +348,30 @@ namespace GameA.Game
                         if (tableUnit.EPairType == EPairType.PortalDoor)
                         {
                             int validTileRange = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
-                            if (pairUnit.UnitA != UnitDesc.zero &&
-                                !InValidRange(pairUnit.UnitA, unitDesc, validTileRange) ||
-                                pairUnit.UnitB != UnitDesc.zero &&
-                                !InValidRange(pairUnit.UnitB, unitDesc, validTileRange))
+                            var notEmptyUnitDesc = pairUnit.GetNotEmptyUnitDesc();
+                            if (notEmptyUnitDesc != UnitDesc.zero)
                             {
-                                Messenger<string>.Broadcast(EMessengerType.GameLog, "传送门的间距不能太远哦~");
-                                return false;
+                                if (!InValidRange(notEmptyUnitDesc, unitDesc, validTileRange))
+                                {
+                                    Messenger<string>.Broadcast(EMessengerType.GameLog, "超过传送门的最大间距，不可放置喔~");
+                                    return false;
+                                }
+
+                                if (notEmptyUnitDesc.SceneIndx != unitDesc.SceneIndx)
+                                {
+                                    Messenger<string>.Broadcast(EMessengerType.GameLog, "传送门不能放在不同场景哦~");
+                                    return false;
+                                }
                             }
                         }
                         else if (tableUnit.EPairType == EPairType.SpacetimeDoor)
                         {
-                            
+                            var notEmptyUnitDesc = pairUnit.GetNotEmptyUnitDesc();
+                            if (notEmptyUnitDesc != UnitDesc.zero && notEmptyUnitDesc.SceneIndx == unitDesc.SceneIndx)
+                            {
+                                Messenger<string>.Broadcast(EMessengerType.GameLog, "时空门不能放在同一个场景内哦~");
+                                return false;
+                            }
                         }
                     }
                     else

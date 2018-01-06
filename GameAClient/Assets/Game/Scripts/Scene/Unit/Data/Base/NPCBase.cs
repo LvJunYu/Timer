@@ -1,13 +1,16 @@
-﻿using SoyEngine;
-
+﻿
 namespace GameA.Game
 {
-//    [Unit(Id = 7201, Type = typeof(NPCBase))]
     public class NPCBase : ActorBase
     {
         private bool _trigger;
         private UnitBase _unit;
         private int _time;
+
+        protected override bool IsCheckClimb()
+        {
+            return false;
+        }
 
         public override bool CanControlledBySwitch
         {
@@ -31,7 +34,6 @@ namespace GameA.Game
                 {
                     _trigger = false;
                     _unit = null;
-//                    Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
                 }
             }
         }
@@ -42,7 +44,6 @@ namespace GameA.Game
             {
                 return false;
             }
-//            _animation.Init("Run");
             return true;
         }
 
@@ -61,17 +62,7 @@ namespace GameA.Game
                 _trigger = true;
                 _unit = other;
                 _time = 0;
-//                if (_animation != null)
-//                {
-//                    _animation.PlayOnce("Start", 1, 1);
-//                }
-//                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
-        }
-
-        protected override bool IsCheckClimb()
-        {
-            return false;
         }
     }
 }

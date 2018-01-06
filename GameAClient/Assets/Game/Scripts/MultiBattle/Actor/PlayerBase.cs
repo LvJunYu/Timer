@@ -19,7 +19,6 @@ namespace GameA.Game
         protected RoomUser _roomUser;
         protected UnitExtra _unitExtra;
         protected bool _siTouLe;
-        protected int _blackHoleTimer;
 
         [SerializeField] protected IntVec2 _revivePos;
 
@@ -72,7 +71,7 @@ namespace GameA.Game
 
         public override bool CanPassBlackHole
         {
-            get { return _blackHoleTimer == 0; }
+            get { return true; }
         }
 
         public override bool IsPlayer
@@ -593,14 +592,6 @@ namespace GameA.Game
         }
 
         #endregion
-        public override void UpdateLogic()
-        {
-            base.UpdateLogic();
-            if (_blackHoleTimer > 0)
-            {
-                _blackHoleTimer--;
-            }
-        }
 
         internal override bool InstantiateView()
         {
@@ -1124,13 +1115,6 @@ namespace GameA.Game
                 }
             }
             base.UpdateView(deltaTime);
-        }
-
-        public override void OnSpacetimeDoor(IntVec2 targetPos)
-        {
-            if (_eUnitState != EUnitState.Normal) return;
-            _blackHoleTimer = 200;
-            base.OnSpacetimeDoor(targetPos);
         }
     }
 }

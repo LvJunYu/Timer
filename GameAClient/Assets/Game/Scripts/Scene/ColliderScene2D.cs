@@ -22,7 +22,6 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
-        private readonly List<UnitBase> _allTerrainUnits = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
@@ -87,7 +86,6 @@ namespace GameA.Game
             _allMagicUnits.Clear();
             _allBulletUnits.Clear();
             _allOtherUnits.Clear();
-            _allTerrainUnits.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -235,11 +233,6 @@ namespace GameA.Game
                 _allOtherUnits.Add(unit);
             }
 
-            if (unit.Id == UnitDefine.TerrainId)
-            {
-                _allTerrainUnits.Add(unit);
-            }
-
             return true;
         }
 
@@ -293,11 +286,6 @@ namespace GameA.Game
             else
             {
                 _allOtherUnits.Remove(unit);
-            }
-
-            if (unit.Id == UnitDefine.TerrainId)
-            {
-                _allTerrainUnits.Remove(unit);
             }
 
             return _units.Remove(unitDesc.Guid);
