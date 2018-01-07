@@ -207,6 +207,11 @@ namespace GameA.Game
 
         public IntVec2 GetDataCount(NodeData node)
         {
+            //todo 临时，找东哥修改grid大小
+            if (node.Id == UnitDefine.TerrainId)
+            {
+                return IntVec2.one;
+            }
             return GetDataCount(node.Grid, node.Direction, node.Scale);
         }
 

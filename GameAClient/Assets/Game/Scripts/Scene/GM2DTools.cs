@@ -424,6 +424,15 @@ namespace GameA.Game
             };
         }
 
+        public static Vector2 ToEngine(Vec2Proto vec2Proto)
+        {
+            return new Vector2
+            {
+                x = vec2Proto.X,
+                y = vec2Proto.Y
+            };
+        }
+        
         public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtra data)
         {
             var res = new UnitExtraKeyValuePair();
@@ -838,5 +847,6 @@ namespace GameA.Game
             rotation = 0;
             return false;
         }
+
     }
 }
