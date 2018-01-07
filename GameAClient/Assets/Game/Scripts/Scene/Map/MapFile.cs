@@ -181,6 +181,11 @@ namespace GameA.Game
                 unitObject.SceneIndx = sceneIndex;
                 var size = tableUnit.GetDataSize(node.Direction, node.Scale);
                 var count = tableUnit.GetDataCount(node);
+                //todo 临时
+                if (unitObject.Id == UnitDefine.TerrainId)
+                {
+                    count = IntVec2.one;
+                }
                 for (int j = 0; j < count.x; j++)
                 {
                     for (int k = 0; k < count.y; k++)

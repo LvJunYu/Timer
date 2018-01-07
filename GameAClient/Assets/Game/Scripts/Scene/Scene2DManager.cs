@@ -121,6 +121,7 @@ namespace GameA.Game
                 _sceneList.Add(scene);
                 if (MapManager.Instance.GenerateMapComplete && !GameRun.Instance.IsPlaying)
                 {
+                    //todo 改为根据场景大小生成空气墙
                     CreateDefaultScene(sceneIndex);
                 }
             }

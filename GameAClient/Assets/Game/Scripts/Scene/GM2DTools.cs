@@ -399,14 +399,28 @@ namespace GameA.Game
 
         public static MapRect2D ToProto(SceneNode node)
         {
-            return new MapRect2D
+           var mapRect2D = new MapRect2D
             {
                 XMin = node.Grid.XMin,
                 YMin = node.Grid.YMin,
                 XMax = node.Grid.XMax,
                 YMax = node.Grid.YMax,
                 Id = node.Id,
-                Rotation = node.Rotation,
+                Rotation = node.Rotation
+            };
+            if(node.Scale != Vector2.one)
+            {
+                mapRect2D.Scale = ToProto(node.Scale);
+            }
+            return mapRect2D;
+        }
+
+        private static Vec2Proto ToProto(Vector2 nodeScale)
+        {
+            return new Vec2Proto
+            {
+                X = nodeScale.x,
+                Y = nodeScale.y
             };
         }
 

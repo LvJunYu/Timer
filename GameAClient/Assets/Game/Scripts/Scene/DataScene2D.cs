@@ -85,6 +85,11 @@ namespace GameA.Game
             get { return _playerExtra; }
         }
 
+        public int SceneIndex
+        {
+            get { return _sceneIndex; }
+        }
+
         public void Init(IntVec2 size, int index = 0)
         {
             _sceneIndex = index;
@@ -166,7 +171,7 @@ namespace GameA.Game
             var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid);
             SceneNode hit;
             //数据检测
-            if (GridCast(grid, out hit, JoyPhysics2D.LayMaskAll, unitDesc.Guid.z, unitDesc.Guid.z))
+            if (GridCast(grid, out hit, _sceneIndex, JoyPhysics2D.LayMaskAll, unitDesc.Guid.z, unitDesc.Guid.z))
             {
                 LogHelper.Error("AddData Failed,{0}", unitDesc.ToString());
                 return false;
@@ -514,10 +519,12 @@ namespace GameA.Game
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, CurScene, minDepth, maxDepth);
         }
 
-        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
-            float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int sceneIndex, 
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
+            SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, CurScene, minDepth, maxDepth, excludeNode);
+            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, 
+                Scene2DManager.Instance.GetDataScene2D(sceneIndex), minDepth, maxDepth, excludeNode);
         }
 
         internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll,

@@ -38,7 +38,7 @@ namespace GameA.Game
                 var grid = tableUnit.GetBaseDataGrid(createUnitDesc.Guid.x, createUnitDesc.Guid.y);
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
                 SceneNode outHit;
-                if (DataScene2D.GridCast(grid, out outHit, layerMask))
+                if (DataScene2D.GridCast(grid, out outHit, Scene2DManager.Instance.CurSceneIndex, layerMask))
                 {
                     return;
                 }
