@@ -54,19 +54,21 @@ namespace GameA.Game
             }
         }
 
-        public static void OnSpacetimeDoor(PairUnit pairUnit, UnitDesc unitDesc)
+        public static void OnSpacetimeDoor(PairUnit pairUnit, bool enterADoor)
         {
             var sender = pairUnit.Sender;
             if (sender == null) return;
-            int sceneIndex = unitDesc.SceneIndx;
+            UnitDesc unitDesc = enterADoor ? pairUnit.UnitB : pairUnit.UnitA;
+            int sceneIndex = enterADoor ? pairUnit.UnitBScene : pairUnit.UnitAScene;
             if (sceneIndex == Scene2DManager.Instance.CurSceneIndex)
             {
                 LogHelper.Error("The Spacetime Door is in the same scene");
                 return;
             }
+            Scene2DManager.Instance.ChangeScene(sceneIndex);
 
             UnitBase unit;
-            if (!Scene2DManager.Instance.GetColliderScene2D(sceneIndex).TryGetUnit(unitDesc.Guid, out unit))
+            if (!Scene2DManager.Instance.CurColliderScene2D.TryGetUnit(unitDesc.Guid, out unit))
             {
                 LogHelper.Error("can not get unit");
                 return;
@@ -79,7 +81,6 @@ namespace GameA.Game
                 return;
             }
 
-            Scene2DManager.Instance.ChangeScene(sceneIndex);
             sender.EnterSpacetimeDoor(spacetimeDoor.CurPos);
             spacetimeDoor.OnUnitOut(sender);
             pairUnit.Sender = null;

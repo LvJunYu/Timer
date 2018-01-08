@@ -18,8 +18,6 @@ namespace GameA.Game
     public class PlayMode : IDisposable
     {
         private static PlayMode _instance;
-        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
         private readonly List<Action> _nextActions = new List<Action>();
@@ -108,27 +106,6 @@ namespace GameA.Game
             _waitDestroyUnits.Clear();
             _statistic.Reset();
 
-            foreach (UnitDesc unitDesc in _addedDatas)
-            {
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                var colliderScene2D = Scene2DManager.Instance.GetColliderScene2D(unitDesc.SceneIndx);
-                colliderScene2D.DestroyView(unitDesc);
-                colliderScene2D.DeleteUnit(unitDesc, tableUnit);
-            }
-
-            _addedDatas.Clear();
-            for (int i = 0; i < _deletedDatas.Count; i++)
-            {
-                UnitDesc unitDesc = _deletedDatas[i];
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI)
-                {
-                    ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit);
-                }
-            }
-
-            _deletedDatas.Clear();
             Scene2DManager.Instance.Reset();
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
@@ -328,8 +305,7 @@ namespace GameA.Game
                 return false;
             }
 
-            _addedDatas.Add(unitDesc);
-            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit, true))
             {
                 return false;
             }
@@ -356,16 +332,7 @@ namespace GameA.Game
                 return false;
             }
 
-            if (_addedDatas.Contains(unitDesc))
-            {
-                _addedDatas.Remove(unitDesc);
-            }
-            else
-            {
-                _deletedDatas.Add(unitDesc);
-            }
-
-            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc, true))
             {
                 return false;
             }
@@ -562,6 +529,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            Scene2DManager.Instance.ChangeScene(0);
 
             _run = false;
             Reset();

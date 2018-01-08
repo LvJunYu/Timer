@@ -206,7 +206,6 @@ namespace GameA.Game
             unitDesc.Id = tableUnit.Id;
             unitDesc.Rotation = (byte) dir;
             unitDesc.Scale = Vector2.one;
-            unitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             unit.Init(unitDesc, tableUnit);
             return unit;
         }

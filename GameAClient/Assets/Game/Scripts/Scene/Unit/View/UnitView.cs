@@ -268,7 +268,7 @@ namespace GameA.Game
             }
             spriteRenderer = _pairTrans.GetComponent<SpriteRenderer>();
             PairUnit pairUnit;
-            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, out pairUnit))
+            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
             {
                 LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
                 return;

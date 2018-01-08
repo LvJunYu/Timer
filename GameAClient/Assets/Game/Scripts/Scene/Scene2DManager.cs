@@ -78,23 +78,24 @@ namespace GameA.Game
             return true;
         }
 
-        public void ChangeScene(int index, bool createNew = false)
+        public void ChangeScene(int index, bool changeAll = true)
         {
             if (_curSceneIndex == index) return;
-            if (_curScene != null)
+            if (changeAll && _curScene != null)
             {
                 _curScene.Exit();
             }
 
-            _curSceneIndex = index;
             _curScene = GetScene2DEntity(index);
-
-            CameraManager.Instance.ChangeScene();
-            BgScene2D.Instance.ChangeScene(index);
-            _curScene.Enter();
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            if (changeAll)
             {
-                EditMode.Instance.OnMapReady();
+                CameraManager.Instance.ChangeScene();
+                BgScene2D.Instance.ChangeScene(index);
+                _curScene.Enter();
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                {
+                    EditMode.Instance.OnMapReady();
+                }
             }
         }
 
@@ -122,11 +123,15 @@ namespace GameA.Game
                 if (MapManager.Instance.GenerateMapComplete && !GameRun.Instance.IsPlaying)
                 {
                     //todo 改为根据场景大小生成空气墙
+                    _curSceneIndex = sceneIndex;
+                    _curScene = _sceneList[sceneIndex];
                     CreateDefaultScene(sceneIndex);
                 }
             }
 
-            return _sceneList[index];
+            _curSceneIndex = index;
+            _curScene = _sceneList[index];
+            return _curScene;
         }
 
         public DataScene2D GetDataScene2D(int index)
@@ -172,7 +177,6 @@ namespace GameA.Game
                     unitObject.Scale = Vector2.one;
                     unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
                         ConstDefineGM2D.MapStartPos.y, 0);
-                    unitObject.SceneIndx = sceneIndex;
                     EditMode.Instance.AddUnitWithCheck(unitObject,
                         EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
                 }
@@ -192,10 +196,6 @@ namespace GameA.Game
                 new Vector2(1, size.y));
             var rightUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
                 new IntVec3(validMapRect.Max.x + 1, validMapRect.Min.y, 0), 0, new Vector2(1, size.y));
-            downUnitDesc.SceneIndx = sceneIndex;
-            downUnitDesc.SceneIndx = sceneIndex;
-            leftUnitDesc.SceneIndx = sceneIndex;
-            rightUnitDesc.SceneIndx = sceneIndex;
             EditMode.Instance.AddUnitWithCheck(downUnitDesc,
                 EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
             EditMode.Instance.AddUnitWithCheck(upUnitDesc,
@@ -265,17 +265,20 @@ namespace GameA.Game
         {
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                _sceneList[i].Reset();
+                ChangeScene(i, false);
+                _curScene.Reset();
             }
+            ChangeScene(0);
         }
 
         public void OnPlay()
         {
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                _sceneList[i].OnPlay();
+                ChangeScene(i, false);
+                _curScene.OnPlay();
             }
-
+            ChangeScene(0);
             RopeManager.Instance.OnPlay();
         }
     }

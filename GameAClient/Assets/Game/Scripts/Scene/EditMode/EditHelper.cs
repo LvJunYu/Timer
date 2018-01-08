@@ -194,7 +194,6 @@ namespace GameA.Game
                 data.UnitExtra.ChildId = (ushort) Random.Range(1, 3);
             }
 
-            data.UnitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             return data;
         }
 
@@ -345,19 +344,30 @@ namespace GameA.Game
                     PairUnit pairUnit;
                     if (PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
                     {
+                        UnitDesc notEmptyUnitDesc;
+                        int notEmptyScene;
+                        if (pairUnit.UnitA != UnitDesc.zero)
+                        {
+                            notEmptyUnitDesc = pairUnit.UnitA;
+                            notEmptyScene = pairUnit.UnitAScene;
+                        }
+                        else
+                        {
+                            notEmptyUnitDesc = pairUnit.UnitB;
+                            notEmptyScene = pairUnit.UnitBScene;
+                        }
                         if (tableUnit.EPairType == EPairType.PortalDoor)
                         {
-                            int validTileRange = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
-                            var notEmptyUnitDesc = pairUnit.GetNotEmptyUnitDesc();
                             if (notEmptyUnitDesc != UnitDesc.zero)
                             {
+                                int validTileRange = tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
                                 if (!InValidRange(notEmptyUnitDesc, unitDesc, validTileRange))
                                 {
                                     Messenger<string>.Broadcast(EMessengerType.GameLog, "超过传送门的最大间距，不可放置喔~");
                                     return false;
                                 }
 
-                                if (notEmptyUnitDesc.SceneIndx != unitDesc.SceneIndx)
+                                if (notEmptyScene != Scene2DManager.Instance.CurSceneIndex)
                                 {
                                     Messenger<string>.Broadcast(EMessengerType.GameLog, "传送门不能放在不同场景哦~");
                                     return false;
@@ -366,8 +376,7 @@ namespace GameA.Game
                         }
                         else if (tableUnit.EPairType == EPairType.SpacetimeDoor)
                         {
-                            var notEmptyUnitDesc = pairUnit.GetNotEmptyUnitDesc();
-                            if (notEmptyUnitDesc != UnitDesc.zero && notEmptyUnitDesc.SceneIndx == unitDesc.SceneIndx)
+                            if (notEmptyUnitDesc != UnitDesc.zero && notEmptyScene == Scene2DManager.Instance.CurSceneIndex)
                             {
                                 Messenger<string>.Broadcast(EMessengerType.GameLog, "时空门不能放在同一个场景内哦~");
                                 return false;

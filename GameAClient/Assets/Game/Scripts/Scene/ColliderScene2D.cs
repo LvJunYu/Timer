@@ -17,6 +17,8 @@ namespace GameA.Game
     public class ColliderScene2D : Scene2D
     {
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
+        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
+        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
@@ -62,6 +64,11 @@ namespace GameA.Game
         public List<UnitBase> AllBulletUnits
         {
             get { return _allBulletUnits; }
+        }
+
+        public int SceneIndex
+        {
+            get { return _sceneIndex; }
         }
 
         public override void Dispose()
@@ -181,8 +188,13 @@ namespace GameA.Game
             return true;
         }
 
-        public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool tempData = false)
         {
+            if (tempData)
+            {
+                _addedDatas.Add(unitDesc);
+            }
+
             if (_units.ContainsKey(unitDesc.Guid))
             {
                 //LogHelper.Warning("AddUnit Failed, {0}", UnitDesc);
@@ -323,8 +335,20 @@ namespace GameA.Game
             return true;
         }
 
-        public bool DestroyView(UnitDesc unitDesc)
+        public bool DestroyView(UnitDesc unitDesc, bool tempData = false)
         {
+            if (tempData)
+            {
+                if (_addedDatas.Contains(unitDesc))
+                {
+                    _addedDatas.Remove(unitDesc);
+                }
+                else
+                {
+                    _deletedDatas.Add(unitDesc);
+                }
+            }
+
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
@@ -390,6 +414,26 @@ namespace GameA.Game
 
         public void Reset()
         {
+            foreach (UnitDesc unitDesc in _addedDatas)
+            {
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                DestroyView(unitDesc);
+                DeleteUnit(unitDesc, tableUnit);
+            }
+
+            _addedDatas.Clear();
+            for (int i = 0; i < _deletedDatas.Count; i++)
+            {
+                UnitDesc unitDesc = _deletedDatas[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                AddUnit(unitDesc, tableUnit);
+                if (!MapConfig.UseAOI)
+                {
+                    InstantiateView(unitDesc, tableUnit);
+                }
+            }
+
+            _deletedDatas.Clear();
             for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
                 _allSwitchUnits[i].Reset();
@@ -494,7 +538,6 @@ namespace GameA.Game
                 unitObject.Rotation = node.Direction;
                 unitObject.Scale = node.Scale;
                 unitObject.Guid.z = node.Depth;
-                unitObject.SceneIndx = _sceneIndex;
                 var count = tableUnit.GetColliderCount(node);
                 var size = tableUnit.GetColliderSize(node.Direction, node.Scale);
                 for (int j = 0; j < count.x; j++)
@@ -551,7 +594,6 @@ namespace GameA.Game
                 unitObject.Rotation = node.Rotation;
                 unitObject.Scale = node.Scale;
                 unitObject.Guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
-                unitObject.SceneIndx = _sceneIndex;
                 if (isSubscribe)
                 {
                     if (!grid.Contains(node.Grid))

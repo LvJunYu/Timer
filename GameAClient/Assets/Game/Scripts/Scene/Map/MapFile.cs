@@ -104,16 +104,19 @@ namespace GameA.Game
             var scenes = mapData.OtherScenes;
             for (int i = 0; i < scenes.Count; i++)
             {
-                ParseUnitExtraInfo(scenes[i].UnitExtraInfos, i + 1);
+                int sceneIndex = i + 1;
+                Scene2DManager.Instance.ChangeScene(sceneIndex, false);
+                ParseUnitExtraInfo(scenes[i].UnitExtraInfos, sceneIndex);
             }
 
+            Scene2DManager.Instance.ChangeScene(0, false);
             var pairUnits = new Dictionary<IntVec3, PairUnitData>();
             var pairUnitDatas = mapData.PairUnitDatas;
             if (pairUnitDatas != null)
             {
                 for (int i = 0; i < pairUnitDatas.Count; i++)
                 {
-                    //用场景作为z值
+                    //防止场景间GUID冲突，用场景作为z值
                     var unitAGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitA);
                     unitAGrid.z = pairUnitDatas[i].UnitAScene;
                     var unitBGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitB);
@@ -128,9 +131,12 @@ namespace GameA.Game
 
             for (int i = 0; i < scenes.Count; i++)
             {
-                ParseSwitchUnitData(scenes[i].SwitchUnitDatas, i + 1);
+                int sceneIndex = i + 1;
+                Scene2DManager.Instance.ChangeScene(sceneIndex, false);
+                ParseSwitchUnitData(scenes[i].SwitchUnitDatas, sceneIndex);
             }
 
+            Scene2DManager.Instance.ChangeScene(0, false);
             //计算总数
             _num = 0;
             _totalCount = 0;
@@ -142,18 +148,24 @@ namespace GameA.Game
 
             for (int i = 0; i < scenes.Count; i++)
             {
+                int sceneIndex = i + 1;
+                Scene2DManager.Instance.ChangeScene(sceneIndex, false);
                 if (!CaculateUnitCount(scenes[i].Data))
                 {
                     yield break;
                 }
             }
 
+            Scene2DManager.Instance.ChangeScene(0, false);
             yield return ParseSceneData(rectData, pairUnits, timer);
             for (int i = 0; i < scenes.Count; i++)
             {
-                yield return ParseSceneData(scenes[i].Data, pairUnits, timer, i + 1);
+                int sceneIndex = i + 1;
+                Scene2DManager.Instance.ChangeScene(sceneIndex, false);
+                yield return ParseSceneData(scenes[i].Data, pairUnits, timer, sceneIndex);
             }
 
+            Scene2DManager.Instance.ChangeScene(0, false);
             // 只有在改造编辑的时候才读取地图的改造信息数据
             if (startType == GameManager.EStartType.ModifyEdit)
             {
@@ -183,7 +195,6 @@ namespace GameA.Game
                 unitObject.Guid.z = node.Depth;
                 unitObject.Scale = node.Scale;
                 unitObject.Rotation = node.Direction;
-                unitObject.SceneIndx = sceneIndex;
                 var size = tableUnit.GetDataSize(node.Direction, node.Scale);
                 var count = tableUnit.GetDataCount(node);
 
@@ -212,7 +223,7 @@ namespace GameA.Game
                             sceneGuid.z = sceneIndex;
                             if (pairUnits.TryGetValue(sceneGuid, out pairUnitData))
                             {
-                                PairUnitManager.Instance.OnReadMapFile(unitObject, tableUnit, pairUnitData);
+                                PairUnitManager.Instance.OnReadMapFile(unitObject, tableUnit, pairUnitData, sceneIndex);
                             }
                         }
 
@@ -402,7 +413,6 @@ namespace GameA.Game
                     dataScene2D.ProcessUnitExtra(new UnitDesc
                     {
                         Guid = GM2DTools.ToEngine(item.Guid),
-                        SceneIndx = sceneIndex
                     }, GM2DTools.ToEngine(item));
                 }
             }
