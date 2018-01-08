@@ -1218,7 +1218,7 @@ namespace GameA.Game
                 _eUnitState = EUnitState.Normal;
                 PlayMode.Instance.UnFreeze(this);
                 Speed = IntVec2.zero;
-                SetPos(targetPos + IntVec2.up * 10); 
+                SetPos(targetPos); 
             });
         }
 
@@ -1581,7 +1581,8 @@ namespace GameA.Game
             {
                 //先摆正位置
                 _colliderPos = GetColliderPos(_curPos);
-                _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
+                _colliderGrid = GetColliderGrid(_colliderPos);
+//                _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;

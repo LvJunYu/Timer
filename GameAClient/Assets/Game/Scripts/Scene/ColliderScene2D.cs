@@ -494,6 +494,7 @@ namespace GameA.Game
                 unitObject.Rotation = node.Direction;
                 unitObject.Scale = node.Scale;
                 unitObject.Guid.z = node.Depth;
+                unitObject.SceneIndx = _sceneIndex;
                 var count = tableUnit.GetColliderCount(node);
                 var size = tableUnit.GetColliderSize(node.Direction, node.Scale);
                 for (int j = 0; j < count.x; j++)
@@ -550,6 +551,7 @@ namespace GameA.Game
                 unitObject.Rotation = node.Rotation;
                 unitObject.Scale = node.Scale;
                 unitObject.Guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
+                unitObject.SceneIndx = _sceneIndex;
                 if (isSubscribe)
                 {
                     if (!grid.Contains(node.Grid))

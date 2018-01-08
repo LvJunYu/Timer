@@ -188,7 +188,7 @@ namespace GameA.Game
         public void OnPairTriggerEnter(UnitBase sender, UnitBase unit)
         {
             PairUnit pairUnit;
-            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.UnitDesc, out pairUnit))
             {
                 LogHelper.Error("OnPairTriggerEnter TryGetPairUnit Failed, {0}", unit);
                 return;
@@ -221,7 +221,7 @@ namespace GameA.Game
         public void OnPairTriggerExit(UnitBase sender, UnitBase unit)
         {
             PairUnit pairUnit;
-            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.UnitDesc, out pairUnit))
             {
                 LogHelper.Error("OnPairTriggerExit TryGetPairUnit Failed, {0}", unit);
                 return;
@@ -238,7 +238,7 @@ namespace GameA.Game
             }
         }
 
-        public bool TryGetPairUnit(EPairType ePairType, IntVec3 guid, out PairUnit pairUnit)
+        public bool TryGetPairUnit(EPairType ePairType, IntVec3 guid, int sceneIndex, out PairUnit pairUnit)
         {
             pairUnit = null;
             PairUnit[] pairUnits;
@@ -250,7 +250,7 @@ namespace GameA.Game
             for (int i = 0; i < pairUnits.Length; i++)
             {
                 var current = pairUnits[i];
-                if (current.UnitA.Guid == guid || current.UnitB.Guid == guid)
+                if (current.UnitA.Guid == guid && current.UnitA.SceneIndx == sceneIndex  || current.UnitB.Guid == guid && current.UnitB.SceneIndx == sceneIndex)
                 {
                     pairUnit = current;
                     return true;
@@ -262,7 +262,7 @@ namespace GameA.Game
 
         public bool TryGetPairUnit(EPairType ePairType, UnitDesc unitDesc, out PairUnit pairUnit)
         {
-            return TryGetPairUnit(ePairType, unitDesc.Guid, out pairUnit);
+            return TryGetPairUnit(ePairType, unitDesc.Guid, unitDesc.SceneIndx, out pairUnit);
         }
 
         public bool TryGetNotFullPairUnit(EPairType ePairType, out PairUnit pairUnit)

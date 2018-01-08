@@ -55,6 +55,7 @@ namespace GameA.Game
                 {
                     return EMoveDirection.None;
                 }
+
                 return (EMoveDirection) MoveDirection;
             }
         }
@@ -72,6 +73,7 @@ namespace GameA.Game
                 {
                     return ERotateMode.None;
                 }
+
                 return (ERotateMode) (RotateState - 1);
             }
         }
@@ -116,6 +118,7 @@ namespace GameA.Game
                 case EEditType.Style:
                     return Id == 4001;
             }
+
             return false;
         }
 
@@ -141,6 +144,7 @@ namespace GameA.Game
             {
                 return new IntVec2((int) (Width * scale.x), (int) (Height * scale.y));
             }
+
             return new IntVec2((int) (Height * scale.y), (int) (Width * scale.x));
         }
 
@@ -160,6 +164,7 @@ namespace GameA.Game
             {
                 return new IntVec2((int) (CWidth * scale.x), (int) (CHeight * scale.y));
             }
+
             return new IntVec2((int) (CHeight * scale.y), (int) (CWidth * scale.x));
         }
 
@@ -207,11 +212,6 @@ namespace GameA.Game
 
         public IntVec2 GetDataCount(NodeData node)
         {
-            //todo 临时，找东哥修改grid大小
-            if (node.Id == UnitDefine.TerrainId)
-            {
-                return IntVec2.one;
-            }
             return GetDataCount(node.Grid, node.Direction, node.Scale);
         }
 
@@ -229,7 +229,8 @@ namespace GameA.Game
         public IntVec2 GetDataCount(Grid2D grid, byte rotation, Vector2 scale)
         {
             var size = GetDataSize(rotation, scale);
-            return new IntVec2((grid.XMax + 1 - grid.XMin) / size.x, (grid.YMax + 1 - grid.YMin) / size.y);
+            return new IntVec2((int) ((grid.XMax + 1 - grid.XMin) * scale.x / size.x),
+                (int) ((grid.YMax + 1 - grid.YMin) * scale.y / size.y));
         }
 
         public virtual void Init()
@@ -293,6 +294,7 @@ namespace GameA.Game
                     break;
                 }
             }
+
             // 先置为一个无效值，运行时初始化第一个物体的时候再赋有效值，因为图片大小在载入前不知道
             ModelOffset.x = float.MaxValue;
             ModelOffset.y = float.MaxValue;
@@ -310,16 +312,19 @@ namespace GameA.Game
                 return new IntVec3(renderIndex.x + Offset.x, renderIndex.y + Offset.y,
                     renderIndex.z);
             }
+
             if (rotation == (byte) EDirectionType.Right)
             {
                 return new IntVec3(renderIndex.x + Offset.y,
                     renderIndex.y + Width - Offset.x - CWidth, renderIndex.z);
             }
+
             if (rotation == (byte) EDirectionType.Down)
             {
                 return new IntVec3(renderIndex.x + Width - Offset.x - CWidth,
                     renderIndex.y + Height - Offset.y - CHeight, renderIndex.z);
             }
+
             return new IntVec3(renderIndex.x + Height - Offset.y - CHeight,
                 renderIndex.y + Width - Offset.x - CWidth, renderIndex.z);
         }
@@ -330,16 +335,19 @@ namespace GameA.Game
             {
                 return new IntVec2(renderIndex.x + Offset.x, renderIndex.y + Offset.y);
             }
+
             if (rotation == (byte) EDirectionType.Right)
             {
                 return new IntVec2(renderIndex.x + Offset.y,
                     renderIndex.y + Width - Offset.x - CWidth);
             }
+
             if (rotation == (byte) EDirectionType.Down)
             {
                 return new IntVec2(renderIndex.x + Width - Offset.x - CWidth,
                     renderIndex.y + Height - Offset.y - CHeight);
             }
+
             return new IntVec2(renderIndex.x + Height - Offset.y - CHeight,
                 renderIndex.y + Width - Offset.x - CWidth);
         }
@@ -356,16 +364,19 @@ namespace GameA.Game
                 return new IntVec3(colliderIndex.x - Offset.x, colliderIndex.y - Offset.y,
                     colliderIndex.z);
             }
+
             if (rotation == (byte) EDirectionType.Right)
             {
                 return new IntVec3(colliderIndex.x - Offset.y,
                     colliderIndex.y - Width + Offset.x + CWidth, colliderIndex.z);
             }
+
             if (rotation == (byte) EDirectionType.Down)
             {
                 return new IntVec3(colliderIndex.x - Width + Offset.x + CWidth,
                     colliderIndex.y - Height + Offset.y + CHeight, colliderIndex.z);
             }
+
             return new IntVec3(colliderIndex.x - Height + Offset.y + CHeight,
                 colliderIndex.y - Width + Offset.x + CWidth, colliderIndex.z);
         }
@@ -376,16 +387,19 @@ namespace GameA.Game
             {
                 return new IntVec2(colliderIndex.x - Offset.x, colliderIndex.y - Offset.y);
             }
+
             if (rotation == (byte) EDirectionType.Right)
             {
                 return new IntVec2(colliderIndex.x - Offset.y,
                     colliderIndex.y - Width + Offset.x + CWidth);
             }
+
             if (rotation == (byte) EDirectionType.Down)
             {
                 return new IntVec2(colliderIndex.x - Width + Offset.x + CWidth,
                     colliderIndex.y - Height + Offset.y + CHeight);
             }
+
             return new IntVec2(colliderIndex.x - Height + Offset.y + CHeight,
                 colliderIndex.y - Width + Offset.x + CWidth);
         }

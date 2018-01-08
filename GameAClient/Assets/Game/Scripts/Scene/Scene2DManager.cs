@@ -172,6 +172,7 @@ namespace GameA.Game
                     unitObject.Scale = Vector2.one;
                     unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
                         ConstDefineGM2D.MapStartPos.y, 0);
+                    unitObject.SceneIndx = sceneIndex;
                     EditMode.Instance.AddUnitWithCheck(unitObject,
                         EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
                 }

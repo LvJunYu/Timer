@@ -113,8 +113,13 @@ namespace GameA.Game
             {
                 for (int i = 0; i < pairUnitDatas.Count; i++)
                 {
-                    pairUnits.Add(GM2DTools.ToEngine(pairUnitDatas[i].UnitA), pairUnitDatas[i]);
-                    pairUnits.Add(GM2DTools.ToEngine(pairUnitDatas[i].UnitB), pairUnitDatas[i]);
+                    //用场景作为z值
+                    var unitAGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitA);
+                    unitAGrid.z = pairUnitDatas[i].UnitAScene;
+                    var unitBGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitB);
+                    unitBGrid.z = pairUnitDatas[i].UnitBScene;
+                    pairUnits.Add(unitAGrid, pairUnitDatas[i]);
+                    pairUnits.Add(unitBGrid, pairUnitDatas[i]);
                 }
             }
 
@@ -203,7 +208,9 @@ namespace GameA.Game
                         if (tableUnit.EPairType > 0)
                         {
                             PairUnitData pairUnitData;
-                            if (pairUnits.TryGetValue(unitObject.Guid, out pairUnitData))
+                            var sceneGuid = unitObject.Guid;
+                            sceneGuid.z = sceneIndex;
+                            if (pairUnits.TryGetValue(sceneGuid, out pairUnitData))
                             {
                                 PairUnitManager.Instance.OnReadMapFile(unitObject, tableUnit, pairUnitData);
                             }
@@ -394,7 +401,8 @@ namespace GameA.Game
                     var item = childList[i];
                     dataScene2D.ProcessUnitExtra(new UnitDesc
                     {
-                        Guid = GM2DTools.ToEngine(item.Guid)
+                        Guid = GM2DTools.ToEngine(item.Guid),
+                        SceneIndx = sceneIndex
                     }, GM2DTools.ToEngine(item));
                 }
             }

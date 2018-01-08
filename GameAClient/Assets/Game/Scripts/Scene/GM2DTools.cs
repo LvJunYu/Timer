@@ -530,6 +530,8 @@ namespace GameA.Game
             var data = new PairUnitData();
             data.UnitA = ToProto(pairUnit.UnitA.Guid);
             data.UnitB = ToProto(pairUnit.UnitB.Guid);
+            data.UnitAScene = pairUnit.UnitA.SceneIndx;
+            data.UnitBScene = pairUnit.UnitB.SceneIndx;
             data.Num = pairUnit.Num;
             return data;
         }
@@ -638,6 +640,7 @@ namespace GameA.Game
             unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
             unitDesc.Scale = targetNode.Scale;
+            unitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
             {
@@ -664,10 +667,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            unitDesc = new UnitDesc();
             unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
             unitDesc.Scale = targetNode.Scale;
+            unitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
             {
@@ -696,6 +699,7 @@ namespace GameA.Game
             unitDesc.Id = colliderNode.Id;
             unitDesc.Rotation = colliderNode.Rotation;
             unitDesc.Scale = colliderNode.Scale;
+            unitDesc.SceneIndx = Scene2DManager.Instance.CurSceneIndex;
             if (colliderNode.IsDynamic())
             {
                 unitDesc.Guid = tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation);
