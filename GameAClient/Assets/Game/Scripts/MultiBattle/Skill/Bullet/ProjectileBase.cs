@@ -126,7 +126,7 @@ namespace GameA.Game
         
         public override void UpdateView(float deltaTime)
         {
-            if (_isAlive && !_isFreezed && _run)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;

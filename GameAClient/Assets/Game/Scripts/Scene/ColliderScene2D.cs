@@ -379,12 +379,33 @@ namespace GameA.Game
 
         public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
         {
-            if (!_units.TryGetValue(guid, out unit))
+            if (!TryGetUnitAndPlayer(guid, out unit))
             {
                 return false;
             }
 
             return !unit.IsFreezed;
+        }
+
+        // Player会跨场景，特殊处理
+        private bool TryGetUnitAndPlayer(IntVec3 guid, out UnitBase unit)
+        {
+            if (_units.TryGetValue(guid, out unit))
+            {
+                return true;
+            }
+
+            var players = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != null && players[i].Guid == guid)
+                {
+                    unit = players[i];
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
@@ -396,7 +417,8 @@ namespace GameA.Game
                 return false;
             }
 
-            return _units.TryGetValue(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation), out unit);
+            return TryGetUnitAndPlayer(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
+                out unit);
         }
 
         #region AOI
@@ -977,7 +999,7 @@ namespace GameA.Game
             {
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_destroyDatas[i].Id);
                 DestroyView(_destroyDatas[i]);
-                DeleteUnit(_destroyDatas[i], tableUnit, true); 
+                DeleteUnit(_destroyDatas[i], tableUnit, true);
             }
 
             foreach (var unit in _units.Values)

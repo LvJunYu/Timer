@@ -132,7 +132,7 @@ namespace GameA.Game
         private int GetHeadDir(EShootDirectionType eShootDir)
         {
             int dir = 0;
-            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right)
+            if (_player.ClimbState == EClimbState.Left || _player.ClimbState == EClimbState.Right || _player.ClimbState == EClimbState.Rope)
             {
                 switch (eShootDir)
                 {
@@ -162,7 +162,7 @@ namespace GameA.Game
                         break;
                 }
             }
-            else if (_player.ClimbState == EClimbState.Ladder || _player.ClimbState == EClimbState.Rope)
+            else if (_player.ClimbState == EClimbState.Ladder)
             {
                 switch (eShootDir)
                 {
@@ -281,7 +281,6 @@ namespace GameA.Game
 
         public void UpdateView(float deltaTime)
         {
-//            Debug.Log(_player.SkeletonAnimation.state.GetCurrent(0).time);
             if (_timer > 0)
             {
                 _timer -= deltaTime;

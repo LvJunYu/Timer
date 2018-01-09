@@ -78,16 +78,18 @@ namespace GameA.Game
             return true;
         }
 
-        public void ChangeScene(int index, bool changeAll = true)
+        // todo 修改所有调用的ChangeSceneType
+        public void ChangeScene(int index, EChangeSceneType eChangeSceneType = EChangeSceneType.ChangeScene)
         {
             if (_curSceneIndex == index) return;
-            if (changeAll && _curScene != null)
+            if (eChangeSceneType > EChangeSceneType.None && _curScene != null)
             {
                 _curScene.Exit();
             }
 
             _curScene = GetScene2DEntity(index);
-            if (changeAll)
+            _curSceneIndex = index;
+            if (eChangeSceneType > EChangeSceneType.None)
             {
                 CameraManager.Instance.ChangeScene();
                 BgScene2D.Instance.ChangeScene(index);
@@ -122,16 +124,16 @@ namespace GameA.Game
                 _sceneList.Add(scene);
                 if (MapManager.Instance.GenerateMapComplete && !GameRun.Instance.IsPlaying)
                 {
-                    //todo 改为根据场景大小生成空气墙
+                    //todo 重构 根据场景大小生成空气墙
                     _curSceneIndex = sceneIndex;
                     _curScene = _sceneList[sceneIndex];
                     CreateDefaultScene(sceneIndex);
                 }
             }
 
-            _curSceneIndex = index;
-            _curScene = _sceneList[index];
-            return _curScene;
+//            _curSceneIndex = index;
+//            _curScene = _sceneList[index];
+            return _sceneList[index];
         }
 
         public DataScene2D GetDataScene2D(int index)
@@ -265,9 +267,10 @@ namespace GameA.Game
         {
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                ChangeScene(i, false);
+                ChangeScene(i, EChangeSceneType.None);
                 _curScene.Reset();
             }
+
             ChangeScene(0);
         }
 
@@ -275,9 +278,10 @@ namespace GameA.Game
         {
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                ChangeScene(i, false);
+                ChangeScene(i, EChangeSceneType.None);
                 _curScene.OnPlay();
             }
+
             ChangeScene(0);
             RopeManager.Instance.OnPlay();
         }
@@ -350,5 +354,13 @@ namespace GameA.Game
                 unit.OnPlay();
             }
         }
+    }
+
+    public enum EChangeSceneType
+    {
+        None,
+        EditCreate,
+        ParseMapCreate,
+        ChangeScene
     }
 }

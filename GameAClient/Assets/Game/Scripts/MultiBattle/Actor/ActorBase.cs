@@ -219,7 +219,7 @@ namespace GameA.Game
                 {
                     case EClimbState.None:
                     case EClimbState.Ladder:
-                    case EClimbState.Rope:
+//                    case EClimbState.Rope:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -335,7 +335,7 @@ namespace GameA.Game
                                 SpeedX -= 10;
                             }
 
-                            SpeedX = Mathf.Clamp(SpeedX, -200, 200);
+                            SpeedX = Mathf.Clamp(SpeedX, -160, 160);
 
                             SpeedY += 120;
                             if (SpeedY > 0)

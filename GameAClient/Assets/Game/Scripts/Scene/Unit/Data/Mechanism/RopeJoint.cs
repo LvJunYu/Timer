@@ -284,7 +284,7 @@ namespace GameA.Game
 
         public void JumpAwayRope(EMoveDirection moveDirection)
         {
-            _jumpAwayTimer = 20;
+            _jumpAwayTimer = 10;
             if (moveDirection == EMoveDirection.Left)
             {
                 _jumpAwayDir = IntVec2.left;
