@@ -25,11 +25,6 @@ namespace GameA
         public int GetUnitLimt(int unitId)
         {
             int limit;
-            //todo 临时处理（服务器程序不在）
-            if (unitId == 4016 || unitId == 4017 || unitId == 4018)
-            {
-                return 500;
-            }
             if (UnitDefine.IsSpawn(unitId))
             {
                 return EditHelper.GetTableUnit_Count(TableManager.Instance.GetUnit(unitId));

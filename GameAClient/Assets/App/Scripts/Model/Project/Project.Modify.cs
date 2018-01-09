@@ -185,13 +185,12 @@ namespace GameA
 
             for (int i = 0; i < _projectUploadParam.UsedUnitDataList.Count; i++) {
                 Msg_UnitDataItem msgUnitDataItem = new Msg_UnitDataItem ();
-                // todo 临时，权思维不在没法更新服务器
-                var id = _projectUploadParam.UsedUnitDataList[i].UnitId;
-                if (id == 4016 || id == 4017 || id == 4018)
-                {
-                    msgUnitDataItem.UnitCount = 0;
-                }
-                else
+//                var id = _projectUploadParam.UsedUnitDataList[i].UnitId;
+//                if (id == 4016 || id == 4017 || id == 4018)
+//                {
+//                    msgUnitDataItem.UnitCount = 0;
+//                }
+//                else
                 {
                     msgUnitDataItem.UnitCount = _projectUploadParam.UsedUnitDataList [i].UnitCount;
                 }

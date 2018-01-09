@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 4018, Type = typeof(RopeJoint))]
+    [Unit(Id = 5021, Type = typeof(RopeJoint))]
     public class RopeJoint : RigidbodyUnit
     {
         private const int MaxDis = 64;

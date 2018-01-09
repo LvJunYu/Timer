@@ -3,7 +3,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5019, Type = typeof(Ladder))]
+    [Unit(Id = 4016, Type = typeof(Ladder))]
     public class Ladder : Magic
     {
         private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);

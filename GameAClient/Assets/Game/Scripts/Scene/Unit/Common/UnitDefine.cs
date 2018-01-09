@@ -39,8 +39,8 @@ namespace GameA.Game
         public const int ClayId = 4011;
         public const int ScorchedEarthId = 4013;
         public const int CloudId = 4015;
-        public const int RopeId = 4017;
-        public const int RopeJointId = 4018;
+        public const int RopeId = 5020;
+        public const int RopeJointId = 5021;
         public const int TerrainId = 4100;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
@@ -187,7 +187,7 @@ namespace GameA.Game
 
         public static bool IsLadder(int id)
         {
-            return id == 5019;
+            return id == 4016;
         }
     }
 

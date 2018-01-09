@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    [Unit(Id = 4016, Type = typeof(SpacetimeDoor))]
+    [Unit(Id = 5019, Type = typeof(SpacetimeDoor))]
     public class SpacetimeDoor : BlockBase
     {
         private UnitBase _outUnit;
@@ -52,6 +52,7 @@ namespace GameA.Game
                     _outUnit = null;
                 }
             }
+            base.UpdateLogic();
         }
 
         public static void OnSpacetimeDoor(PairUnit pairUnit, bool enterADoor)
