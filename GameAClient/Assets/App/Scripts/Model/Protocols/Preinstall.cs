@@ -116,6 +116,10 @@ namespace GameA
         /// 
         /// </summary>
         private int _castRange;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _rotation;
         #endregion
 
         #region 属性
@@ -389,6 +393,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Rotation { 
+            get { return _rotation; }
+            set { if (_rotation != value) {
+                _rotation = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -422,6 +436,7 @@ namespace GameA
             _injuredReduce = msg.InjuredReduce;     
             _cureIncrease = msg.CureIncrease;     
             _castRange = msg.CastRange;     
+            _rotation = msg.Rotation;     
             OnSyncPartial(msg);
             return true;
         }
@@ -456,6 +471,7 @@ namespace GameA
             _injuredReduce = msg.InjuredReduce;           
             _cureIncrease = msg.CureIncrease;           
             _castRange = msg.CastRange;           
+            _rotation = msg.Rotation;           
             return true;
         } 
 
@@ -489,6 +505,7 @@ namespace GameA
             _injuredReduce = obj.InjuredReduce;           
             _cureIncrease = obj.CureIncrease;           
             _castRange = obj.CastRange;           
+            _rotation = obj.Rotation;           
             return true;
         }
 

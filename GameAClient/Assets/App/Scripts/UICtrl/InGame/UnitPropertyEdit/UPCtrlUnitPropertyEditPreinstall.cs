@@ -95,6 +95,7 @@ namespace GameA
         {
             if (_curIndex == -1) return;
             Msg_Preinstall msg = _mainCtrl.EditData.UnitExtra.ToUnitPreInstall();
+            msg.Rotation = _mainCtrl.EditData.UnitDesc.Rotation;
             msg.Name = _dataList[_curIndex].PreinstallData.Name;
             msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
             RemoteCommands.UpdateUnitPreinstall(_dataList[_curIndex].PreinstallId, msg, unitMsg =>
@@ -106,6 +107,7 @@ namespace GameA
                         HasChanged = false;
                         SocialGUIManager.ShowPopupDialog("保存预设成功");
                     }
+
                     //todo
                 },
                 res => { SocialGUIManager.ShowPopupDialog("保存预设失败"); });
@@ -133,17 +135,20 @@ namespace GameA
                 _dataList[index].PreinstallData.Name = arg0;
                 _dataList[_curIndex].Save();
             }
+
             _preinstallItems[index].SetText(arg0);
         }
 
         private void CreatePreinstall()
         {
             var msg = _mainCtrl.EditData.UnitExtra.ToUnitPreInstall();
+            msg.Rotation = _mainCtrl.EditData.UnitDesc.Rotation;
             int index = 0;
             if (_dataList != null)
             {
                 index = _dataList.Count;
             }
+
             msg.Name = string.Format("预设 {0}", index + 1);
             msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
             RemoteCommands.CreateUnitPreinstall(msg, unitMsg =>
@@ -154,11 +159,13 @@ namespace GameA
                         {
                             _dataList = new List<UnitPreinstall>();
                         }
+
                         _dataList.Add(new UnitPreinstall(unitMsg.UnitPreinstallData));
                         _curIndex = _dataList.Count - 1;
                         HasChanged = false;
                         RefreshView();
                     }
+
                     //todo
                 },
                 res => { SocialGUIManager.ShowPopupDialog("创建预设失败"); });
@@ -179,6 +186,7 @@ namespace GameA
                         successCallBack.Invoke();
                     }
                 }
+
                 //todo
             }, res => { SocialGUIManager.ShowPopupDialog("删除预设失败"); });
         }
@@ -187,6 +195,7 @@ namespace GameA
         {
             _curIndex = index;
             _mainCtrl.EditData.UnitExtra.Set(_dataList[_curIndex].PreinstallData);
+            _mainCtrl.EditData.UnitDesc.Rotation = (byte) _dataList[_curIndex].PreinstallData.Rotation;
             HasChanged = false;
             RefreshView();
             _mainCtrl.ReadPreinstall();
