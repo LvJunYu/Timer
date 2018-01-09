@@ -175,6 +175,11 @@ namespace GameA.Game
             return id == 10001 || id == 10004 || id == 10005 || id == 10006;
         }
 
+        public static bool UseProjectileBullet(int id)
+        {
+            return id == 10002 || id == 10003;
+        }
+
         public static bool CanTrigger(UnitBase unit)
         {
             return !IsBullet(unit.Id);

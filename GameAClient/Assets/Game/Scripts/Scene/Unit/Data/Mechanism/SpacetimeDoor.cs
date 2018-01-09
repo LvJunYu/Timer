@@ -99,7 +99,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer) return false;
+            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -110,7 +110,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer) return false;
+            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -121,7 +121,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer) return false;
+            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -132,7 +132,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer) return false;
+            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnRightHit(other, ref x, checkOnly);
         }
 

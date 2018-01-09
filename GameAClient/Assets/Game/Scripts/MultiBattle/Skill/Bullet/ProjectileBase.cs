@@ -55,6 +55,7 @@ namespace GameA.Game
 
         public void OnGet()
         {
+            _isInterest = true;
         }
 
         public void OnFree()
@@ -125,7 +126,7 @@ namespace GameA.Game
         
         public override void UpdateView(float deltaTime)
         {
-            if (_isAlive)
+            if (_isAlive && !_isFreezed && _run)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;

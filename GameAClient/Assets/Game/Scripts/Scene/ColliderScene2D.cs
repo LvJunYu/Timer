@@ -19,6 +19,8 @@ namespace GameA.Game
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
         private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
         private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
+        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
+        private readonly List<UnitDesc> _destroyDatas = new List<UnitDesc>();
 
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
@@ -69,6 +71,11 @@ namespace GameA.Game
         public int SceneIndex
         {
             get { return _sceneIndex; }
+        }
+
+        public List<UnitBase> WaitDestroyUnits
+        {
+            get { return _waitDestroyUnits; }
         }
 
         public override void Dispose()
@@ -254,8 +261,20 @@ namespace GameA.Game
                 (byte) (flag ? 0 : 1);
         }
 
-        public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool tempData = false)
         {
+            if (tempData)
+            {
+                if (_addedDatas.Contains(unitDesc))
+                {
+                    _addedDatas.Remove(unitDesc);
+                }
+                else
+                {
+                    _deletedDatas.Add(unitDesc);
+                }
+            }
+
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
@@ -335,20 +354,8 @@ namespace GameA.Game
             return true;
         }
 
-        public bool DestroyView(UnitDesc unitDesc, bool tempData = false)
+        public bool DestroyView(UnitDesc unitDesc)
         {
-            if (tempData)
-            {
-                if (_addedDatas.Contains(unitDesc))
-                {
-                    _addedDatas.Remove(unitDesc);
-                }
-                else
-                {
-                    _deletedDatas.Add(unitDesc);
-                }
-            }
-
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
@@ -434,6 +441,7 @@ namespace GameA.Game
             }
 
             _deletedDatas.Clear();
+            _waitDestroyUnits.Clear();
             for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
                 _allSwitchUnits[i].Reset();
@@ -956,6 +964,22 @@ namespace GameA.Game
 
         public void Exit()
         {
+            _destroyDatas.Clear();
+            foreach (UnitDesc unitDesc in _addedDatas)
+            {
+                if (UnitDefine.IsBullet(unitDesc.Id))
+                {
+                    _destroyDatas.Add(unitDesc);
+                }
+            }
+
+            for (int i = 0; i < _destroyDatas.Count; i++)
+            {
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_destroyDatas[i].Id);
+                DestroyView(_destroyDatas[i]);
+                DeleteUnit(_destroyDatas[i], tableUnit, true); 
+            }
+
             foreach (var unit in _units.Values)
             {
                 if (unit.IsInterest && CheckCanDelete(unit.TableUnit))

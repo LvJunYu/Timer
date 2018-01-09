@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -23,7 +22,6 @@ namespace GameA.Game
         private readonly List<Action> _nextActions = new List<Action>();
         private readonly SceneState _sceneState = new SceneState();
 
-        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
         [SerializeField] private IntVec2 _focusPos;
 
@@ -103,7 +101,6 @@ namespace GameA.Game
 
             _freezingNodes.Clear();
             _nextActions.Clear();
-            _waitDestroyUnits.Clear();
             _statistic.Reset();
 
             Scene2DManager.Instance.Reset();
@@ -200,10 +197,11 @@ namespace GameA.Game
 
         private void BeforeUpdateLogic()
         {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            for (int i = waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                DeleteUnit(_waitDestroyUnits[i]);
-                _waitDestroyUnits.RemoveAt(i);
+                DeleteUnit(waitDestroyUnits[i]);
+                waitDestroyUnits.RemoveAt(i);
             }
 
             if (_nextActions.Count > 0)
@@ -253,12 +251,13 @@ namespace GameA.Game
 
         public UnitBase CreateUnit(UnitDesc unitDesc)
         {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            for (int i = waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                UnitBase current = _waitDestroyUnits[i];
+                UnitBase current = waitDestroyUnits[i];
                 if (current.UnitDesc == unitDesc)
                 {
-                    _waitDestroyUnits.RemoveAt(i);
+                    waitDestroyUnits.RemoveAt(i);
                     current.IsAlive = true;
                     return current;
                 }
@@ -288,12 +287,13 @@ namespace GameA.Game
             }
 
             unit.IsAlive = false;
-            if (_waitDestroyUnits.Contains(unit))
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            if (waitDestroyUnits.Contains(unit))
             {
                 return;
             }
 
-            _waitDestroyUnits.Add(unit);
+            waitDestroyUnits.Add(unit);
         }
 
         private bool AddUnit(UnitDesc unitDesc)
@@ -332,12 +332,12 @@ namespace GameA.Game
                 return false;
             }
 
-            if (!ColliderScene2D.CurScene.DestroyView(unitDesc, true))
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
 
-            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit, true))
             {
                 return false;
             }
@@ -529,6 +529,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             Scene2DManager.Instance.ChangeScene(0);
 
             _run = false;
