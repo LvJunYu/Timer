@@ -235,6 +235,15 @@ namespace GameA.Game
             }
         }
 
+        public virtual bool CanClimb
+        {
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice);
+            }
+        }
+
         public virtual SkillCtrl SkillCtrl
         {
             get { return null; }
@@ -1276,6 +1285,7 @@ namespace GameA.Game
 
         protected bool CheckRightClimbFloor(int deltaPosY = 0)
         {
+            if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid,
@@ -1297,6 +1307,7 @@ namespace GameA.Game
 
         protected bool CheckLeftClimbFloor(int deltaPosY = 0)
         {
+            if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid,
@@ -1318,6 +1329,7 @@ namespace GameA.Game
 
         protected bool CheckUpClimbFloor(int deltaPosX = 0)
         {
+            if (!CanClimb) return false;
             var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid,

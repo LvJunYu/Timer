@@ -35,7 +35,6 @@ namespace GameA.Game
         protected int _reSeekTimer;
         
         protected int _currentNodeId;
-        protected int _jumpSpeed;
         
         protected override bool OnInit()
         {
@@ -75,14 +74,16 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _currentNodeId = 0;
-            _jumpSpeed = 0;
             base.Clear();
         }
         
         protected virtual void ChangeState(EAIState state)
         {
             _eState = state;
-            //LogHelper.Debug("ChangeState : {0}", _eState);
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("MonsterAi_1 ChangeState {0}", _eState.ToString()));
+            }
         }
         
         protected override void UpdateMonsterAI()
@@ -344,7 +345,10 @@ namespace GameA.Game
                 SetInput(EInputType.Left, false);
                 SetInput(EInputType.Right, false);
             }
-//            LogHelper.Debug("FindPath {0}", _path.Count);
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("FindPath {0}", _path.Count));
+            }
         }
 
         private int GetJumpSpeedForNode(int lastNodeId)

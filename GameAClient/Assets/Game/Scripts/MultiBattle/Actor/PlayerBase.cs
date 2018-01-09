@@ -1161,7 +1161,7 @@ namespace GameA.Game
 
         public void CheckRope(RopeJoint ropeJoint)
         {
-            if (_eClimbState != EClimbState.Rope && IsAlive && _dropRopeTimer == 0 && Speed != IntVec2.zero)
+            if (_eClimbState != EClimbState.Rope && CanClimb && _dropRopeTimer == 0 && Speed != IntVec2.zero)
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
                 ropeJoint.JumpOnRope(_moveDirection);
@@ -1172,6 +1172,7 @@ namespace GameA.Game
 
         protected override bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
+            if (!CanClimb) return false;
             Grid2D grid = new Grid2D(_colliderGrid.XMin - _ropeOffset.x, _colliderGrid.YMin - _ropeOffset.y,
                 _colliderGrid.XMax - _ropeOffset.x, _colliderGrid.YMax - _ropeOffset.y);
             return _curClimbUnit.ColliderGrid.Intersects(grid);

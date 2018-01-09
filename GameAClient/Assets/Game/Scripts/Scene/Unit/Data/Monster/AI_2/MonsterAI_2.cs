@@ -111,6 +111,10 @@ namespace GameA.Game
                     OnChangeRun();
                     break;
             }
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("MonsterAi_2 ChangeState {0}", _eMonsterState.ToString()));
+            }
         }
 
         protected virtual void OnChangeRun()

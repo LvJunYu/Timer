@@ -420,6 +420,7 @@ namespace GameA.Game
 
         protected bool CheckLadderVerticalFloor(int deltaPosY = 0)
         {
+            if (!CanClimb) return false;
             var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
@@ -439,6 +440,7 @@ namespace GameA.Game
 
         protected bool CheckLadderHorizontalFloor(int deltaPosX = 0)
         {
+            if (!CanClimb) return false;
             var grid = new Grid2D(CenterPos.x + deltaPosX, CenterPos.y, CenterPos.x + deltaPosX, CenterPos.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
@@ -458,6 +460,7 @@ namespace GameA.Game
 
         protected virtual bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
+            if (!CanClimb) return false;
             return _curClimbUnit.ColliderGrid.Intersects(_colliderGrid);
         }
 
@@ -634,6 +637,7 @@ namespace GameA.Game
 
         public override void SetClimbState(EClimbState newClimbState, UnitBase unit = null)
         {
+            if (!CanClimb && newClimbState != EClimbState.None) return;
             if (newClimbState != _eClimbState && _eClimbState > EClimbState.None)
             {
                 //离开状态
