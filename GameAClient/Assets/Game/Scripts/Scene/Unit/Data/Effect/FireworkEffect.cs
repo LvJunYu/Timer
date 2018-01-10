@@ -11,13 +11,14 @@ namespace GameA.Game
             {
                 return false;
             }
+
             GameParticleManager.Instance.PreLoadParticle("M1EffectYanHua");
             return true;
         }
-        
+
         protected override void OnTriggerEnter()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectYanHua",_trans.position);
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectYanHua", _trans.position);
         }
     }
 }

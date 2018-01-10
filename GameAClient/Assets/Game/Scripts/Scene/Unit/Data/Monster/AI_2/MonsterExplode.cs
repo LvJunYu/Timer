@@ -22,7 +22,7 @@ namespace GameA.Game
             _intelligenc = 3;
             return true;
         }
-
+        
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (unit.IsPlayer && CanHarm(unit))

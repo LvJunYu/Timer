@@ -21,6 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             Messenger<IntVec3, PlayerBase>.AddListener(EMessengerType.OnRespawnPointTrigger, OnRespawnPointTrigger);
             return true;
         }
@@ -31,11 +32,25 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init("Run");
-            for (int i = 0; i < _viewExtras.Length; i++)
+
+            var mainPlayer = PlayMode.Instance.MainPlayer;
+            if (mainPlayer != null && CheckTrigger(mainPlayer.RoomUser.Guid))
             {
-                _viewExtras[i].Animation.Init("Run");
+                _animation.PlayLoop("Start");
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].Animation.PlayLoop("Start");
+                }
             }
+            else
+            {
+                _animation.Init("Run");
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].Animation.Init("Run");
+                }
+            }
+
             return true;
         }
 
@@ -45,11 +60,13 @@ namespace GameA.Game
             {
                 return;
             }
+
             var playerId = player.RoomUser.Guid;
             if (!CheckTrigger(playerId))
             {
                 return;
             }
+
             if (player.IsMain && _trans != null)
             {
                 _animation.Reset();
@@ -60,6 +77,7 @@ namespace GameA.Game
                     _viewExtras[i].Animation.PlayLoop("Run");
                 }
             }
+
             SetTrigger(playerId, false);
         }
 
@@ -88,11 +106,14 @@ namespace GameA.Game
                             {
                                 _viewExtras[i].Animation.PlayLoop("Start");
                             }
-                            Messenger<IntVec3, PlayerBase>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid, player);
+
+                            Messenger<IntVec3, PlayerBase>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid,
+                                player);
                         }
                     }
                 }
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -108,6 +129,7 @@ namespace GameA.Game
             {
                 return trigger;
             }
+
             return false;
         }
 

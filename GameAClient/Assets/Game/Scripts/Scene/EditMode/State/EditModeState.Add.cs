@@ -153,7 +153,7 @@ namespace GameA.Game
             {
                 var recordBatch = GetRecordBatch();
                 var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
+                var grid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale);
                 float minDepth, maxDepth;
                 EditHelper.GetMinMaxDepth(GetBlackBoard().EditorLayer, out minDepth, out maxDepth);
                 var nodes = DataScene2D.GridCastAll(grid, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);

@@ -579,7 +579,7 @@ namespace GameA.Game
                         unitObject.Guid = tableUnit.ColliderToRenderer(unitObject.Guid, unitObject.Rotation);
                         if (isSubscribe)
                         {
-                            if (!grid.Contains(tableUnit.GetBaseDataGrid(unitObject.Guid)))
+                            if (!grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0 , unitObject.Scale)))
                             {
                                 continue;
                             }
@@ -589,7 +589,7 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (grid.Contains(tableUnit.GetBaseDataGrid(unitObject.Guid)))
+                            if (grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0 , unitObject.Scale)))
                             {
                                 continue;
                             }

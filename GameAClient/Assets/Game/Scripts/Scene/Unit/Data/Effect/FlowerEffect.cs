@@ -17,7 +17,7 @@ namespace GameA.Game
 
         protected override void OnTriggerEnter()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectHuaBan");
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectHuaBan", _trans.position);
         }
     }
 }

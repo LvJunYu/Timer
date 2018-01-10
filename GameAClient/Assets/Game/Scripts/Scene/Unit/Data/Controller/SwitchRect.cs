@@ -16,7 +16,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            _view.SetRendererEnabled(!GameRun.Instance.IsPlay);
+            if (GameRun.Instance.IsPlaying)
+            {
+                _view.SetRendererEnabled(false);
+            }
             return true;
         }
 

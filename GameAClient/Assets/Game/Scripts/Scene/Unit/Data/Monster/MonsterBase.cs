@@ -34,6 +34,7 @@ namespace GameA.Game
                     _eClayOnWallDirection = EClayOnWallDirection.None;
                     _clayPos = IntVec2.zero;
                 }
+
                 _isClayOnWall = value;
             }
         }
@@ -46,6 +47,7 @@ namespace GameA.Game
                 {
                     UpdateAttackTarget(); //没有目标时返回自己
                 }
+
                 return _attactTarget;
             }
         }
@@ -89,6 +91,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
 //            _maxSpeedX = 40;
             return true;
         }
@@ -99,8 +102,17 @@ namespace GameA.Game
             {
                 return false;
             }
-            CreateStatusBar();
-            _statusBar.SetHPActive(true);
+            // 用于死亡后重新生成View时进行判断
+            if (_isAlive)
+            {
+                CreateStatusBar();
+                _statusBar.SetHPActive(true);
+            }
+            else
+            {
+                _view.SetRendererEnabled(false);
+            }
+
             return true;
         }
 
@@ -153,6 +165,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (HasStateType(EStateType.Fire))
             {
                 OnFire();
@@ -170,6 +183,7 @@ namespace GameA.Game
             {
                 RemoveStates(41);
             }
+
             _eClayOnWallDirection = eClayOnWallDirection;
             IsClayOnWall = true;
             _clayPos = CenterPos;
@@ -203,6 +217,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = 40;
             }
+
             if (unitExtra.CastRange > 0)
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
@@ -211,6 +226,7 @@ namespace GameA.Game
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(10);
             }
+
             return unitExtra;
         }
 
@@ -256,6 +272,7 @@ namespace GameA.Game
             {
                 UpdateAttackTarget(AttackTarget);
             }
+
             if (GameRun.Instance.LogicFrameCnt % 101 == 0)
             {
                 UpdateAttackTarget();
@@ -269,6 +286,7 @@ namespace GameA.Game
             {
                 ChangeWay(_moveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
             }
+
             CheckWay();
         }
 
@@ -330,6 +348,7 @@ namespace GameA.Game
                     return ChangeWay(EMoveDirection.Left);
                 }
             }
+
             return false;
         }
 
@@ -371,6 +390,7 @@ namespace GameA.Game
                 _attactTarget = PlayMode.Instance.MainPlayer;
                 return;
             }
+
             if (lastTarget != null && lastTarget != this && lastTarget.IsAlive)
             {
                 _attactTarget = lastTarget;
@@ -387,6 +407,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return !IsSameTeam(unit.TeamId);
         }
     }

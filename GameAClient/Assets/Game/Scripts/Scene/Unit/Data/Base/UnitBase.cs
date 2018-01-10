@@ -607,7 +607,6 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
-            InitAssetPath();
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
@@ -666,7 +665,6 @@ namespace GameA.Game
             _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
             OnInit();
-            InitAssetPath();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;
         }
@@ -721,6 +719,7 @@ namespace GameA.Game
 
         internal virtual bool InstantiateView()
         {
+            InitAssetPath();
             if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);

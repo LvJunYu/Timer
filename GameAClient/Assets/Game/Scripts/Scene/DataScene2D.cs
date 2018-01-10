@@ -168,7 +168,7 @@ namespace GameA.Game
 
         public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid);
+            var grid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale);
             SceneNode hit;
             //数据检测
             if (GridCast(grid, out hit, _sceneIndex, JoyPhysics2D.LayMaskAll, unitDesc.Guid.z, unitDesc.Guid.z))

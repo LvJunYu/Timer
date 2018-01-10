@@ -5,10 +5,7 @@
 ** Summary : ScorchedEarth
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -25,6 +22,10 @@ namespace GameA.Game
                 return false;
             }
             _animation.Init("Run");
+            if (_state == 2)
+            {
+                _view.SetRendererEnabled(false);
+            }
             return true;
         }
 

@@ -16,7 +16,7 @@ namespace GameA.Game
         public static SceneNode GetDataNode(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             return SoyEngine.NodeFactory.GetDataNode((ushort) tableUnit.Id,
-                tableUnit.GetBaseDataGrid(unitDesc.Guid), unitDesc.Guid.z,
+                tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale), unitDesc.Guid.z,
                 unitDesc.Rotation, unitDesc.Scale, UnitManager.Instance.GetLayer(tableUnit));
         }
 

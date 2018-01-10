@@ -229,8 +229,7 @@ namespace GameA.Game
         public IntVec2 GetDataCount(Grid2D grid, byte rotation, Vector2 scale)
         {
             var size = GetDataSize(rotation, scale);
-            return new IntVec2((int) ((grid.XMax + 1 - grid.XMin) * scale.x / size.x),
-                (int) ((grid.YMax + 1 - grid.YMin) * scale.y / size.y));
+            return new IntVec2((grid.XMax + 1 - grid.XMin) / size.x, (grid.YMax + 1 - grid.YMin) / size.y);
         }
 
         public virtual void Init()

@@ -5,8 +5,6 @@
 ** Summary : Cloud
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 
 namespace GameA.Game
@@ -14,6 +12,7 @@ namespace GameA.Game
     [Unit(Id = 4015, Type = typeof(Cloud))]
     public class Cloud : BlockBase
     {
+        private const int _crossTimer = 50;
         protected bool _trigger;
         protected int _timer;
 
@@ -25,7 +24,25 @@ namespace GameA.Game
             _timer = 0;
             SetCross(false);
         }
-
+        
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            // 用于游戏过程中重新生成View时判断
+            if (_trigger)
+            {
+                _view.SetRendererEnabled(false);
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].SetRendererEnabled(false);
+                }
+            }
+            return true;
+        }
+        
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (UnitDefine.IsBullet(other.Id))
@@ -87,7 +104,7 @@ namespace GameA.Game
             if (_trigger)
             {
                 _timer++;
-                if (_timer == 50)
+                if (_timer == _crossTimer)
                 {
                     SetCross(true);
                     //消失
@@ -116,6 +133,7 @@ namespace GameA.Game
                     _animation.Reset();
                     for (int i = 0; i < _viewExtras.Length; i++)
                     {
+                        _viewExtras[i].SetRendererEnabled(true);
                         _viewExtras[i].Animation.Reset();
                     }
                 }
