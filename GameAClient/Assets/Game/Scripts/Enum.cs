@@ -86,6 +86,7 @@ namespace GameA.Game
         Decoration = 5,
         Controller = 6,
         Effect = 7,
+        Npc = 8,
         Max,
     }
 
