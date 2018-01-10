@@ -110,14 +110,17 @@ namespace GameA.Game
         /// <param name="size"></param>
         public void SetMapSize(IntVec2 size)
         {
+            if(_size == size) return;
             _size = size;
             var startPos = ConstDefineGM2D.MapStartPos;
             _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
+            Messenger<int>.Broadcast(EMessengerType.OnValidMapRectChanged, _sceneIndex);
         }
 
         internal void ChangeMapRect(IntRect changedTileSize)
         {
             _validMapRect += changedTileSize;
+            Messenger<int>.Broadcast(EMessengerType.OnValidMapRectChanged, _sceneIndex);
         }
 
         public void InitPlay(IntRect mapRect)
@@ -519,11 +522,11 @@ namespace GameA.Game
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, CurScene, minDepth, maxDepth);
         }
 
-        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int sceneIndex, 
+        internal static bool GridCast(Grid2D grid2D, out SceneNode node, int sceneIndex,
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, 
+            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask,
                 Scene2DManager.Instance.GetDataScene2D(sceneIndex), minDepth, maxDepth, excludeNode);
         }
 

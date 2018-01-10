@@ -25,6 +25,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allAireWallUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
@@ -99,7 +100,9 @@ namespace GameA.Game
             _allSwitchUnits.Clear();
             _allMagicUnits.Clear();
             _allBulletUnits.Clear();
+            _allAireWallUnits.Clear();
             _allOtherUnits.Clear();
+            Messenger<int>.RemoveListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -136,6 +139,7 @@ namespace GameA.Game
 
         protected override void OnInit()
         {
+            Messenger<int>.AddListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
             Messenger<NodeData[], Grid2D>.AddListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.AddListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.AddListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -247,6 +251,10 @@ namespace GameA.Game
             {
                 _allBulletUnits.Add(unit);
             }
+            else if (UnitDefine.TerrainId == unit.Id)
+            {
+                _allAireWallUnits.Add(unit);
+            }
             else
             {
                 _allOtherUnits.Add(unit);
@@ -314,10 +322,15 @@ namespace GameA.Game
             {
                 _allBulletUnits.Remove(unit);
             }
+            else if (UnitDefine.TerrainId == unit.Id)
+            {
+                _allAireWallUnits.Remove(unit);
+            }
             else
             {
                 _allOtherUnits.Remove(unit);
             }
+
 
             return _units.Remove(unitDesc.Guid);
         }
@@ -579,7 +592,8 @@ namespace GameA.Game
                         unitObject.Guid = tableUnit.ColliderToRenderer(unitObject.Guid, unitObject.Rotation);
                         if (isSubscribe)
                         {
-                            if (!grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0 , unitObject.Scale)))
+                            if (!grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0,
+                                unitObject.Scale)))
                             {
                                 continue;
                             }
@@ -589,7 +603,8 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0 , unitObject.Scale)))
+                            if (grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0,
+                                unitObject.Scale)))
                             {
                                 continue;
                             }
@@ -982,6 +997,17 @@ namespace GameA.Game
             }
 
             return false;
+        }
+
+        private void OnValidMapRectChanged(int sceneIndex)
+        {
+            if (_sceneIndex != sceneIndex) return;
+            for (int i = _allAireWallUnits.Count - 1; i >= 0; i--)
+            {
+                EditMode.Instance.DeleteUnitWithCheck(_allAireWallUnits[i].UnitDesc);
+            }
+
+            Scene2DManager.Instance.CreateAirWall();
         }
 
         public void Exit()

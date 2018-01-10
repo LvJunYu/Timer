@@ -105,11 +105,11 @@ namespace GameA.Game
             for (int i = 0; i < scenes.Count; i++)
             {
                 int sceneIndex = i + 1;
-                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.None);
+                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ParseMap);
                 ParseUnitExtraInfo(scenes[i].UnitExtraInfos, sceneIndex);
             }
 
-            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.None);
+            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             var pairUnits = new Dictionary<IntVec3, PairUnitData>();
             var pairUnitDatas = mapData.PairUnitDatas;
             if (pairUnitDatas != null)
@@ -132,11 +132,11 @@ namespace GameA.Game
             for (int i = 0; i < scenes.Count; i++)
             {
                 int sceneIndex = i + 1;
-                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.None);
+                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ParseMap);
                 ParseSwitchUnitData(scenes[i].SwitchUnitDatas, sceneIndex);
             }
 
-            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.None);
+            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             //计算总数
             _num = 0;
             _totalCount = 0;
@@ -149,23 +149,23 @@ namespace GameA.Game
             for (int i = 0; i < scenes.Count; i++)
             {
                 int sceneIndex = i + 1;
-                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.None);
+                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ParseMap);
                 if (!CaculateUnitCount(scenes[i].Data))
                 {
                     yield break;
                 }
             }
 
-            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.None);
+            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             yield return ParseSceneData(rectData, pairUnits, timer);
             for (int i = 0; i < scenes.Count; i++)
             {
                 int sceneIndex = i + 1;
-                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.None);
+                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ParseMap);
                 yield return ParseSceneData(scenes[i].Data, pairUnits, timer, sceneIndex);
             }
 
-            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.None);
+            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             // 只有在改造编辑的时候才读取地图的改造信息数据
             if (startType == GameManager.EStartType.ModifyEdit)
             {

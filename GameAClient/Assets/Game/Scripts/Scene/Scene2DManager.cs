@@ -16,9 +16,9 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new Scene2DManager()); }
         }
 
-        private int _curSceneIndex;
+        private int _curSceneIndex = -1;
         private Scene2DEntity _curScene;
-        private List<Scene2DEntity> _sceneList = new List<Scene2DEntity>();
+        private List<Scene2DEntity> _sceneList = new List<Scene2DEntity>(3);
 
         private IntVec2 _mapSize = ConstDefineGM2D.DefaultValidMapRectSize;
 
@@ -60,7 +60,7 @@ namespace GameA.Game
         public void Dispose()
         {
             _curScene = null;
-            _curSceneIndex = 0;
+            _curSceneIndex = -1;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 _sceneList[i].Dispose();
@@ -70,26 +70,53 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public bool Init()
+        public bool Init(GameManager.EStartType eGameInitType)
         {
-            _curScene = GetScene2DEntity(_curSceneIndex);
-//            CurDataScene2D.Init(_mapSize);
-//            CurColliderScene2D.Init();
+            if (eGameInitType == GameManager.EStartType.WorkshopStandaloneCreate ||
+                eGameInitType == GameManager.EStartType.WorkshopMultiCreate)
+            {
+                ChangeScene(0, EChangeSceneType.EditCreated);
+            }
+            else
+            {
+                ChangeScene(0, EChangeSceneType.ParseMap);
+            }
+
             return true;
         }
 
-        // todo 修改所有调用的ChangeSceneType
         public void ChangeScene(int index, EChangeSceneType eChangeSceneType = EChangeSceneType.ChangeScene)
         {
             if (_curSceneIndex == index) return;
-            if (eChangeSceneType > EChangeSceneType.None && _curScene != null)
+            if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-                _curScene.Exit();
+                if (_curScene != null)
+                {
+                    _curScene.Exit();
+                }
+            }
+
+            if (index >= _sceneList.Count)
+            {
+                if (eChangeSceneType == EChangeSceneType.EditCreated)
+                {
+                    CreateScene(true);
+                }
+                else if (eChangeSceneType == EChangeSceneType.ParseMap)
+                {
+                    CreateScene(false);
+                }
+            }
+
+            if (index >= _sceneList.Count)
+            {
+                LogHelper.Error("Change scene failed, index is out of range");
+                return;
             }
 
             _curScene = GetScene2DEntity(index);
             _curSceneIndex = index;
-            if (eChangeSceneType > EChangeSceneType.None)
+            if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
                 CameraManager.Instance.ChangeScene();
                 BgScene2D.Instance.ChangeScene(index);
@@ -98,6 +125,21 @@ namespace GameA.Game
                 {
                     EditMode.Instance.OnMapReady();
                 }
+            }
+        }
+
+        private void CreateScene(bool createDefaultUnit)
+        {
+            var scene = new Scene2DEntity();
+            int sceneIndex = _sceneList.Count;
+            scene.Init(_mapSize, sceneIndex);
+            _sceneList.Add(scene);
+            if (createDefaultUnit)
+            {
+                //todo 重构 根据场景大小生成空气墙
+                _curSceneIndex = sceneIndex;
+                _curScene = _sceneList[sceneIndex];
+                CreateDefaultScene(sceneIndex);
             }
         }
 
@@ -110,29 +152,20 @@ namespace GameA.Game
             _mapSize = size;
             for (int i = 0; i < _sceneList.Count; i++)
             {
+                ChangeScene(i, EChangeSceneType.None);
                 _sceneList[i].SetMapSize(size);
             }
+            ChangeScene(0, EChangeSceneType.None);
         }
 
         private Scene2DEntity GetScene2DEntity(int index)
         {
             while (index >= _sceneList.Count)
             {
-                var scene = new Scene2DEntity();
-                int sceneIndex = _sceneList.Count;
-                scene.Init(_mapSize, sceneIndex);
-                _sceneList.Add(scene);
-                if (MapManager.Instance.GenerateMapComplete && !GameRun.Instance.IsPlaying)
-                {
-                    //todo 重构 根据场景大小生成空气墙
-                    _curSceneIndex = sceneIndex;
-                    _curScene = _sceneList[sceneIndex];
-                    CreateDefaultScene(sceneIndex);
-                }
+                LogHelper.Error("Change scene failed, index is out of range");
+                CreateScene(false);
             }
 
-//            _curSceneIndex = index;
-//            _curScene = _sceneList[index];
             return _sceneList[index];
         }
 
@@ -166,9 +199,8 @@ namespace GameA.Game
                     var unitObject = new UnitDesc();
                     unitObject.Id = MapConfig.SpawnId;
                     unitObject.Scale = Vector2.one;
-                    unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
-                        ConstDefineGM2D.MapStartPos.y,
-                        (int) EUnitDepth.Earth);
+                    unitObject.Guid = new IntVec3(2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
+                        ConstDefineGM2D.MapStartPos.y, (int) EUnitDepth.Earth);
                     EditMode.Instance.AddUnitWithCheck(unitObject,
                         EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
                 }
@@ -185,27 +217,7 @@ namespace GameA.Game
             }
 
             //生成地形
-            var validMapRect = DataScene2D.CurScene.ValidMapRect;
-            var size = (validMapRect.Max - validMapRect.Min + IntVec2.one) / ConstDefineGM2D.ServerTileScale;
-            var downUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
-                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale,
-                    validMapRect.Min.y - ConstDefineGM2D.ServerTileScale, 0), 0, new Vector2(size.x + 2, 1));
-            var upUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
-                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale, validMapRect.Max.y + 1, 0), 0,
-                new Vector2(size.x + 2, 1));
-            var leftUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
-                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, 0), 0,
-                new Vector2(1, size.y));
-            var rightUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
-                new IntVec3(validMapRect.Max.x + 1, validMapRect.Min.y, 0), 0, new Vector2(1, size.y));
-            EditMode.Instance.AddUnitWithCheck(downUnitDesc,
-                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
-            EditMode.Instance.AddUnitWithCheck(upUnitDesc,
-                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
-            EditMode.Instance.AddUnitWithCheck(leftUnitDesc,
-                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
-            EditMode.Instance.AddUnitWithCheck(rightUnitDesc,
-                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+            CreateAirWall();
 //            for (int i = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale;
 //                i < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale;
 //                i += ConstDefineGM2D.ServerTileScale)
@@ -253,6 +265,31 @@ namespace GameA.Game
 //                        EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
 //                }
 //            }
+        }
+
+        public void CreateAirWall()
+        {
+            var validMapRect = DataScene2D.CurScene.ValidMapRect;
+            var size = (validMapRect.Max - validMapRect.Min + IntVec2.one) / ConstDefineGM2D.ServerTileScale;
+            var downUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
+                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale,
+                    validMapRect.Min.y - ConstDefineGM2D.ServerTileScale, 0), 0, new Vector2(size.x + 2, 1));
+            var upUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
+                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale, validMapRect.Max.y + 1, 0), 0,
+                new Vector2(size.x + 2, 1));
+            var leftUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
+                new IntVec3(validMapRect.Min.x - ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, 0), 0,
+                new Vector2(1, size.y));
+            var rightUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
+                new IntVec3(validMapRect.Max.x + 1, validMapRect.Min.y, 0), 0, new Vector2(1, size.y));
+            EditMode.Instance.AddUnitWithCheck(downUnitDesc,
+                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+            EditMode.Instance.AddUnitWithCheck(upUnitDesc,
+                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+            EditMode.Instance.AddUnitWithCheck(leftUnitDesc,
+                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
+            EditMode.Instance.AddUnitWithCheck(rightUnitDesc,
+                EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
         }
 
         public void OnEdit()
@@ -359,8 +396,8 @@ namespace GameA.Game
     public enum EChangeSceneType
     {
         None,
-        EditCreate,
-        ParseMapCreate,
+        EditCreated,
+        ParseMap,
         ChangeScene
     }
 }

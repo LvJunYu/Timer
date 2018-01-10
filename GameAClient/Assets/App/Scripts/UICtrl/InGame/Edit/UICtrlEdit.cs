@@ -59,7 +59,7 @@ namespace GameA
                 var inx = i;
                 _cachedView.SceneBtns[i].onClick.AddListener(() =>
                 {
-                    Scene2DManager.Instance.ChangeScene(inx);
+                    Scene2DManager.Instance.ChangeScene(inx, EChangeSceneType.EditCreated);
                 });
             }
         }
