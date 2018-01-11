@@ -16,7 +16,7 @@ namespace GameA.Game
         /// <summary>
         /// 关卡中只能存在一个的物体的索引
         /// </summary>
-        private static readonly Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
+        private static readonly Dictionary<int, SceneUnitDesc> _replaceUnits = new Dictionary<int, SceneUnitDesc>();
 
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
@@ -356,6 +356,7 @@ namespace GameA.Game
                             notEmptyUnitDesc = pairUnit.UnitB;
                             notEmptyScene = pairUnit.UnitBScene;
                         }
+
                         if (tableUnit.EPairType == EPairType.PortalDoor)
                         {
                             if (notEmptyUnitDesc != UnitDesc.zero)
@@ -376,7 +377,8 @@ namespace GameA.Game
                         }
                         else if (tableUnit.EPairType == EPairType.SpacetimeDoor)
                         {
-                            if (notEmptyUnitDesc != UnitDesc.zero && notEmptyScene == Scene2DManager.Instance.CurSceneIndex)
+                            if (notEmptyUnitDesc != UnitDesc.zero &&
+                                notEmptyScene == Scene2DManager.Instance.CurSceneIndex)
                             {
                                 Messenger<string>.Broadcast(EMessengerType.GameLog, "时空门不能放在同一个场景内哦~");
                                 return false;
@@ -430,13 +432,11 @@ namespace GameA.Game
             //只有一个的自动删除
             if (GetTableUnit_Count(tableUnit) == 1)
             {
-                UnitDesc desc;
-                if (_replaceUnits.TryGetValue(tableUnit.Id, out desc))
+                SceneUnitDesc sceneUnitDesc;
+                if (TryGetReplaceUnit(tableUnit.Id, out sceneUnitDesc))
                 {
-                    if (desc.Id != 0)
-                    {
-                        EditMode.Instance.DeleteUnitWithCheck(desc);
-                    }
+                    Scene2DManager.Instance.ActionFromOtherScene(sceneUnitDesc.SceneIndex,
+                        () => { EditMode.Instance.DeleteUnitWithCheck(sceneUnitDesc.UnitDesc); });
                 }
             }
         }
@@ -445,7 +445,7 @@ namespace GameA.Game
         {
             if (GetTableUnit_Count(tableUnit) == 1)
             {
-                _replaceUnits.Add(unitDesc.Id, unitDesc);
+                _replaceUnits.Add(unitDesc.Id, new SceneUnitDesc(unitDesc, Scene2DManager.Instance.CurSceneIndex));
             }
 
 //            if (tableUnit.Count > 1)
@@ -463,7 +463,8 @@ namespace GameA.Game
 
         public static void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            if (_replaceUnits.ContainsKey(unitDesc.Id) && _replaceUnits[unitDesc.Id] == unitDesc)
+            if (_replaceUnits.ContainsKey(unitDesc.Id) && _replaceUnits[unitDesc.Id].UnitDesc.Guid == unitDesc.Guid &&
+                _replaceUnits[unitDesc.Id].SceneIndex == Scene2DManager.Instance.CurSceneIndex)
             {
                 _replaceUnits.Remove(unitDesc.Id);
             }
@@ -480,14 +481,14 @@ namespace GameA.Game
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
-        public static bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
+        public static bool TryGetReplaceUnit(int id, out SceneUnitDesc outUnitDesc)
         {
             if (!_replaceUnits.TryGetValue(id, out outUnitDesc))
             {
                 return false;
             }
 
-            return outUnitDesc.Id != 0;
+            return outUnitDesc.UnitDesc.Id != 0;
         }
 
         public static bool TryGetUnit(IntVec3 pos, out UnitBase unit)

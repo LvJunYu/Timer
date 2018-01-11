@@ -66,7 +66,7 @@ namespace GameA.Game
                 LogHelper.Error("The Spacetime Door is in the same scene");
                 return;
             }
-            Scene2DManager.Instance.ChangeScene(sceneIndex);
+            Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ChangeScene);
 
             UnitBase unit;
             if (!Scene2DManager.Instance.CurColliderScene2D.TryGetUnit(unitDesc.Guid, out unit))

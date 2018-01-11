@@ -7,7 +7,6 @@ namespace GameA.Game
     [Serializable]
     public class CameraCtrlPlay : CameraCtrlBase
     {
-
         private IntVec2 _cameraViewTileSize;
         private IntVec2 _cameraViewHalfTileSize;
         private IntRect _validMapTileRect;
@@ -18,7 +17,7 @@ namespace GameA.Game
         [SerializeField] private IntVec2 _rollPos;
 
         [SerializeField] private IntVec2 _targetRollPos;
-        
+
 
         // 注意！！这个接口只能新手引导用
         public IntVec2 CurRollPos
@@ -30,6 +29,14 @@ namespace GameA.Game
         public override void OnMapReady()
         {
             base.OnMapReady();
+            InitMapCameraParam();
+            _mapReady = true;
+        }
+
+        public override void OnMapChanged()
+        {
+            if (!_mapReady) return;
+            base.OnMapChanged();
             InitMapCameraParam();
         }
 
@@ -78,6 +85,7 @@ namespace GameA.Game
             {
                 return;
             }
+
 //            if (PlayMode.Instance.SceneState.Arrived)
 //            {
 //                return;
@@ -101,7 +109,7 @@ namespace GameA.Game
             {
                 _rollPos.x += dx / 5;
             }
-            
+
             int dy = _targetRollPos.y - _rollPos.y;
             if (dy <= -100)
             {
@@ -131,6 +139,7 @@ namespace GameA.Game
                     _rollPos.y += dy / 25;
                 }
             }
+
             LimitRollPos();
             InnerCameraManager.MainCameraPos = GM2DTools.TileToWorld(_rollPos);
         }

@@ -160,7 +160,6 @@ namespace GameA.Game
 
 		public void SetLocalScale(float x, float y)
 		{
-			Debug.LogFormat("SetLocalScale called,x is {0},y is {1}.",x,y);
 			_scale.x = x;
 			_scale.y = y;
 			_trans.localScale = _scale;

@@ -47,12 +47,17 @@ namespace GameA.Game
 			_cameraManager = cameraManager;
 			_curState = ESpingState.None;
 			
-            _validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
 			_cameraViewHalfSizeFactor = new Vector2(GM2DGame.Instance.GameScreenAspectRatio, 1f);
 			_orthoSize = _cameraManager.RendererCamera.orthographicSize;
-			CalcMoveRect();
+			OnMapChanged();
 		}
-
+	    
+	    public void OnMapChanged()
+	    {
+		    _validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
+		    CalcMoveRect();
+	    }
+	    
 	    public void SetPos(Vector2 pos)
 	    {
 		    pos = ClampValidMoveRect(pos);
@@ -205,7 +210,6 @@ namespace GameA.Game
 			}
 		}
 
-
 		private Vector2 GetSpringbackDelta(Vector2 pos)
 		{
 			Vector2 res = Vector2.zero;
@@ -285,5 +289,6 @@ namespace GameA.Game
 		    _cameraManager.MainCameraPos = pos;
 		    Messenger.Broadcast(EMessengerType.OnEditCameraPosChange);
 	    }
-	}
+
+    }
 }

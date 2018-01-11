@@ -40,19 +40,24 @@ namespace GameA.Game
             _cameraManager = cameraManager;
             _onOrthoTargetSizeChangeCallback = action;
             _curState = ESpingState.None;
-            
+
+            OnMapChanged();
+        }
+
+        public void OnMapChanged()
+        {
             Rect mapValidRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
             float tmpAspectRatio = GM2DGame.Instance.GameScreenAspectRatio;
-            float tmpValueX = mapValidRect.width/tmpAspectRatio/2;
-            float tmpValueY = mapValidRect.height/2;
+            float tmpValueX = mapValidRect.width / tmpAspectRatio / 2;
+            float tmpValueY = mapValidRect.height / 2;
 
             _curMaxCameraOrthoSizeLimited = Mathf.Clamp(Mathf.Min(tmpValueY, tmpValueX),
                 ConstDefineGM2D.CameraOrthoSizeMinValue,
                 ConstDefineGM2D.CameraOrthoSizeMaxValue);
             _curMinCameraOrthoSizeLimited = ConstDefineGM2D.CameraOrthoSizeMinValue;
 
-            _outMaxCameraOrthoSize = _curMaxCameraOrthoSizeLimited*ExceedTopValue;
-            _outMinCameraOrthoSize = _curMinCameraOrthoSizeLimited*ExceedDownValue;
+            _outMaxCameraOrthoSize = _curMaxCameraOrthoSizeLimited * ExceedTopValue;
+            _outMinCameraOrthoSize = _curMinCameraOrthoSizeLimited * ExceedDownValue;
         }
 
         public void SetOrthoSize(float size)
@@ -73,11 +78,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             ChangeCameraOrthoSize(newValue);
             FireOnOrthoSizeChange();
             _curState = ESpingState.None;
         }
-        
+
         public void AdjustOrthoSizeEnd()
         {
             float delta = GetSpringbackDelta(_cameraManager.RendererCamera.orthographicSize);
@@ -86,6 +92,7 @@ namespace GameA.Game
                 _curState = ESpingState.None;
                 return;
             }
+
             InitSpringbackState(delta);
         }
 
@@ -95,6 +102,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             DoUpdateSpringback();
             FireOnOrthoSizeChange();
         }
@@ -106,6 +114,7 @@ namespace GameA.Game
                 validValue = Mathf.Clamp(value, _curMinCameraOrthoSizeLimited, _curMaxCameraOrthoSizeLimited);
                 return false;
             }
+
             validValue = value;
             return true;
         }
@@ -123,6 +132,7 @@ namespace GameA.Game
             {
                 res = value - _curMinCameraOrthoSizeLimited;
             }
+
             return res;
         }
 
@@ -134,7 +144,7 @@ namespace GameA.Game
         public void InitSpringbackState(float delta)
         {
             _curState = ESpingState.Springback;
-            _curSpeed = delta/SpringbackDuringTime;
+            _curSpeed = delta / SpringbackDuringTime;
             _startTime = Time.realtimeSinceStartup;
             _springAimValue = _cameraManager.RendererCamera.orthographicSize - delta;
         }
@@ -147,8 +157,9 @@ namespace GameA.Game
                 _curState = ESpingState.None;
                 ChangeCameraOrthoSize(_springAimValue);
             }
+
             float cur = _cameraManager.RendererCamera.orthographicSize;
-            float offset = _curSpeed*Time.deltaTime;
+            float offset = _curSpeed * Time.deltaTime;
             cur = cur - offset;
             ChangeCameraOrthoSize(cur);
         }
@@ -162,12 +173,13 @@ namespace GameA.Game
                 _onOrthoTargetSizeChangeCallback.Invoke(size);
             }
         }
-        
+
         private void ChangeCameraOrthoSize(float size)
         {
             _cameraManager.RendererCamera.orthographicSize = size;
             Messenger.Broadcast(EMessengerType.OnEditCameraOrthoSizeChange);
         }
+
         #endregion
     }
 }

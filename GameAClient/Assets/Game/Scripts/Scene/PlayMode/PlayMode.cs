@@ -530,8 +530,6 @@ namespace GameA.Game
                 return false;
             }
 
-            Scene2DManager.Instance.ChangeScene(0);
-
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
@@ -571,9 +569,9 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            Scene2DManager.Instance.ChangeScene(0);
+            Scene2DManager.Instance.PrepareStart();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
-            BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCameraPos);
+            BgScene2D.Instance.Reset();
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
@@ -628,8 +626,13 @@ namespace GameA.Game
                             if (!pairUnit.IsEmpty && !pairUnit.IsFull)
                             {
                                 flag = true;
-                                UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
-                                DeleteUnit(unitObject);
+                                bool unitAEmpty = pairUnit.UnitA == UnitDesc.zero;
+                                int sceneIndex = unitAEmpty ? pairUnit.UnitBScene : pairUnit.UnitAScene;
+                                UnitDesc unitObject = unitAEmpty ? pairUnit.UnitB : pairUnit.UnitA;
+                                Scene2DManager.Instance.ActionFromOtherScene(sceneIndex, () =>
+                                {
+                                    DeleteUnit(unitObject);
+                                });
                             }
                         }
                     }

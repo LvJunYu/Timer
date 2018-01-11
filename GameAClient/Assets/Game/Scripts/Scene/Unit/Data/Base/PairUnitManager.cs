@@ -19,7 +19,7 @@ namespace GameA.Game
         public int Num;
         public UnitDesc UnitA;
         public UnitDesc UnitB;
-        public int UnitAScene;
+        public int UnitAScene; //todo 包一层
         public int UnitBScene;
         public int TriggeredCnt;
         public UnitBase Sender;
@@ -50,14 +50,14 @@ namespace GameA.Game
             UnitBScene = sceneIndex;
         }
 
-        public void RemoveValue(UnitDesc unitDesc)
+        public void RemoveValue(UnitDesc unitDesc, int sceneIndex)
         {
-            if (UnitA == unitDesc)
+            if (UnitA.Guid == unitDesc.Guid && UnitAScene == sceneIndex)
             {
                 UnitA = UnitDesc.zero;
             }
 
-            if (UnitB == unitDesc)
+            if (UnitB.Guid == unitDesc.Guid && UnitBScene == sceneIndex)
             {
                 UnitB = UnitDesc.zero;
             }
@@ -169,14 +169,15 @@ namespace GameA.Game
         public bool DeletePairUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             var ePairType = tableUnit.EPairType;
+            int sceneIndex = Scene2DManager.Instance.CurSceneIndex;
             PairUnit pairUnit;
-            if (!TryGetPairUnit(ePairType, unitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
+            if (!TryGetPairUnit(ePairType, unitDesc, sceneIndex, out pairUnit))
             {
                 LogHelper.Error("DeletePairUnit TryGetPairUnit Failed, {0}", unitDesc);
                 return false;
             }
 
-            pairUnit.RemoveValue(unitDesc);
+            pairUnit.RemoveValue(unitDesc, sceneIndex);
             return true;
         }
 

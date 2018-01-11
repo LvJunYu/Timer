@@ -53,15 +53,6 @@ namespace GameA
             _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
             _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
             _cachedView.Save.onClick.AddListener(OnSave);
-
-            for (int i = 0; i < _cachedView.SceneBtns.Length; i++)
-            {
-                var inx = i;
-                _cachedView.SceneBtns[i].onClick.AddListener(() =>
-                {
-                    Scene2DManager.Instance.ChangeScene(inx, EChangeSceneType.EditCreated);
-                });
-            }
         }
 
         protected override void InitEventListener()

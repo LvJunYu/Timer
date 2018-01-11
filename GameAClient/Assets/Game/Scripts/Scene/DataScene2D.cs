@@ -24,6 +24,7 @@ namespace GameA.Game
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
+        private int _changeTitle = 10 * ConstDefineGM2D.ServerTileScale;
 
         /// <summary>
         /// 删除修改的物体堆栈
@@ -110,17 +111,70 @@ namespace GameA.Game
         /// <param name="size"></param>
         public void SetMapSize(IntVec2 size)
         {
-            if(_size == size) return;
+            if (_size == size) return;
             _size = size;
             var startPos = ConstDefineGM2D.MapStartPos;
-            _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
-            Messenger<int>.Broadcast(EMessengerType.OnValidMapRectChanged, _sceneIndex);
+            OnMapRectChanged(new IntRect(startPos, startPos + _size - IntVec2.one));
         }
 
-        internal void ChangeMapRect(IntRect changedTileSize)
+        private void ChangeMapRect(IntRect changedTileSize)
         {
-            _validMapRect += changedTileSize;
-            Messenger<int>.Broadcast(EMessengerType.OnValidMapRectChanged, _sceneIndex);
+            OnMapRectChanged(_validMapRect + changedTileSize);
+        }
+
+        public void ChangeMapRect(bool add, bool horizontal)
+        {
+            var changedTileSize = new IntRect(IntVec2.zero, IntVec2.zero);
+            if (add)
+            {
+                if (horizontal)
+                {
+                    changedTileSize.Max = IntVec2.right * _changeTitle;
+                }
+                else
+                {
+                    changedTileSize.Max = IntVec2.up * _changeTitle;
+                }
+            }
+            else
+            {
+                if (horizontal)
+                {
+                    changedTileSize.Max = IntVec2.left * _changeTitle;
+                }
+                else
+                {
+                    changedTileSize.Max = IntVec2.down * _changeTitle;
+                }
+            }
+
+            ChangeMapRect(changedTileSize);
+        }
+
+        private void OnMapRectChanged(IntRect intRect)
+        {
+            if (_validMapRect.Max == intRect.Max) return;
+            _validMapRect = intRect;
+            //空气墙
+            var airWalls = ColliderScene2D.CurScene.AllAirWallUnits;
+            for (int i = airWalls.Count - 1; i >= 0; i--)
+            {
+                EditMode.Instance.DeleteUnitWithCheck(airWalls[i].UnitDesc);
+            }
+
+            Scene2DManager.Instance.CreateAirWall();
+            if (MapManager.Instance.GenerateMapComplete)
+            {
+                //相机和遮罩
+                CameraManager.Instance.OnMapChanged();
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                {
+                    EditMode.Instance.OnMapReady();
+                }
+                //背景
+                BgScene2D.Instance.OnMapChanged();
+                Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
+            }
         }
 
         public void InitPlay(IntRect mapRect)

@@ -27,7 +27,7 @@ namespace GameA
 	    public static int OnUnitDeletedInEditMode = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
-        public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
+	    public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
 

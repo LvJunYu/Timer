@@ -52,9 +52,25 @@ namespace GameA.Game
             get { return _sceneList.Count; }
         }
 
+        public int SqawnSceneIndex
+        {
+            get
+            {
+                for (int i = 0; i < _sceneList.Count; i++)
+                {
+                    if (GetDataScene2D(i).SpawnDatas.Count > 0)
+                    {
+                        return i;
+                    }
+                }
+
+                return 0;
+            }
+        }
+
         public List<UnitDesc> SpawnDatas
         {
-            get { return MainDataScene2D.SpawnDatas; }
+            get { return GetDataScene2D(SqawnSceneIndex).SpawnDatas; }
         }
 
         public void Dispose()
@@ -75,7 +91,7 @@ namespace GameA.Game
             if (eGameInitType == GameManager.EStartType.WorkshopStandaloneCreate ||
                 eGameInitType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                ChangeScene(0, EChangeSceneType.EditCreated);
+                CreateScene(true);
             }
             else
             {
@@ -85,7 +101,7 @@ namespace GameA.Game
             return true;
         }
 
-        public void ChangeScene(int index, EChangeSceneType eChangeSceneType = EChangeSceneType.ChangeScene)
+        public void ChangeScene(int index, EChangeSceneType eChangeSceneType = EChangeSceneType.None)
         {
             if (_curSceneIndex == index) return;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
@@ -106,6 +122,11 @@ namespace GameA.Game
                 {
                     CreateScene(false);
                 }
+                else
+                {
+                    LogHelper.Error("index is out of range");
+                    CreateScene(false);
+                }
             }
 
             if (index >= _sceneList.Count)
@@ -118,17 +139,21 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-                CameraManager.Instance.ChangeScene();
-                BgScene2D.Instance.ChangeScene(index);
-                _curScene.Enter();
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                if (MapManager.Instance.GenerateMapComplete)
                 {
-                    EditMode.Instance.OnMapReady();
+                    CameraManager.Instance.OnMapChanged();
+                    BgScene2D.Instance.OnMapChanged();
+                    _curScene.Enter();
+                    if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                    {
+                        EditMode.Instance.OnMapReady();
+                    }
+                    Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
                 }
             }
         }
 
-        private void CreateScene(bool createDefaultUnit)
+        public void CreateScene(bool createDefaultUnit)
         {
             var scene = new Scene2DEntity();
             int sceneIndex = _sceneList.Count;
@@ -152,17 +177,18 @@ namespace GameA.Game
             _mapSize = size;
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                ChangeScene(i, EChangeSceneType.None);
+                ChangeScene(i);
                 _sceneList[i].SetMapSize(size);
             }
-            ChangeScene(0, EChangeSceneType.None);
+
+            ChangeScene(0);
         }
 
         private Scene2DEntity GetScene2DEntity(int index)
         {
             while (index >= _sceneList.Count)
             {
-                LogHelper.Error("Change scene failed, index is out of range");
+                LogHelper.Error("index is out of range");
                 CreateScene(false);
             }
 
@@ -302,25 +328,47 @@ namespace GameA.Game
 
         public void Reset()
         {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                ChangeScene(i, EChangeSceneType.None);
+                ChangeScene(i);
                 _curScene.Reset();
             }
 
-            ChangeScene(0);
+            ChangeScene(SqawnSceneIndex);
         }
 
         public void OnPlay()
         {
             for (int i = 0; i < _sceneList.Count; i++)
             {
-                ChangeScene(i, EChangeSceneType.None);
+                ChangeScene(i);
                 _curScene.OnPlay();
             }
 
-            ChangeScene(0);
+            ChangeScene(SqawnSceneIndex);
             RopeManager.Instance.OnPlay();
+        }
+
+        public void PrepareStart()
+        {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+        }
+
+        public void ActionFromOtherScene(int sceneIndex, Action action)
+        {
+            int curSceneIndex = CurSceneIndex;
+            if (sceneIndex == curSceneIndex)
+            {
+                action.Invoke();
+            }
+            else
+            {
+                ChangeScene(sceneIndex);
+                action.Invoke();
+                ChangeScene(curSceneIndex);
+            }
         }
     }
 

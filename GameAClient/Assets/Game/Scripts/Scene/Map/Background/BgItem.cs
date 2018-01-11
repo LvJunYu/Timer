@@ -37,6 +37,11 @@ namespace GameA.Game
             get { return _tableBg.Depth; }
         }
 
+        public SceneNode Node
+        {
+            get { return _node; }
+        }
+
         public virtual bool Init(Table_Background table, SceneNode node)
         {
             _tableBg = table;
@@ -55,7 +60,7 @@ namespace GameA.Game
             {
                 int offset = size.x / ConstDefineGM2D.ServerTileScale -
                              (int) BgScene2D.Instance.GetRect(table.Depth).width;
-                _basePos += new Vector3(-offset / 2, 0, 0);
+                _basePos += new Vector3(-offset / 2, -20, 0);
             }
 
             _curPos = _basePos;

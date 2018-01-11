@@ -179,15 +179,19 @@ namespace GameA.Game
                         return;
                     }
                 }
-                UnitDesc needReplaceUnitDesc;
-                if (EditHelper.TryGetReplaceUnit(tableUnit.Id, out needReplaceUnitDesc))
+                SceneUnitDesc needReplaceSceneUnitDesc;
+                if (EditHelper.TryGetReplaceUnit(tableUnit.Id, out needReplaceSceneUnitDesc))
                 {
-                    var needReplaceUnitExtra = DataScene2D.CurScene.GetUnitExtra(needReplaceUnitDesc.Guid);
-                    if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
+                    Scene2DManager.Instance.ActionFromOtherScene(needReplaceSceneUnitDesc.SceneIndex, () =>
                     {
-                        recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
-                        DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
-                    }
+                        var needReplaceUnitDesc = needReplaceSceneUnitDesc.UnitDesc;
+                        var needReplaceUnitExtra = DataScene2D.CurScene.GetUnitExtra(needReplaceUnitDesc.Guid);
+                        if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
+                        {
+                            recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
+                            DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
+                        }
+                    });
                 }
                 var unitExtra = EditHelper.GetUnitDefaultData(unitDesc.Id).UnitExtra;
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc, unitExtra))

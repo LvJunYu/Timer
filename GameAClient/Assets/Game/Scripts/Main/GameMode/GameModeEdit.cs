@@ -107,6 +107,7 @@ namespace GameA.Game
 	    public override bool Stop()
 	    {
 		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+		    SocialGUIManager.Instance.CloseUI<UICtrlEditMap>();
 		    EditMode.Instance.Dispose();
 		    return base.Stop();
 	    }
@@ -304,6 +305,7 @@ namespace GameA.Game
 	            EditMode.Instance.StartEdit();
 	            SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
+	            SocialGUIManager.Instance.OpenUI<UICtrlEditMap>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditMode();
@@ -328,6 +330,7 @@ namespace GameA.Game
 			    ShadowData.RecordClear();
 		    }
 		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+		    SocialGUIManager.Instance.CloseUI<UICtrlEditMap>();
 		    SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
 		    SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

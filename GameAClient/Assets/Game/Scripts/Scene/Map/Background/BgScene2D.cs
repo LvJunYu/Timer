@@ -35,8 +35,8 @@ namespace GameA.Game
         private static BgScene2D _instance;
         private bool _run;
         private int _curSeed;
-        private int _curSceneIndex;
-        private Vector3 _basePos;
+        private Vector3 _centerPos;
+        private Vector3 _downCenterPos;
         private readonly Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
         private Grid2D _followTileRect;
         private Rect _followRect;
@@ -115,24 +115,7 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
-            _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
-//            validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x,
-//                validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
-            var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
-            _basePos = validMapRect.center;
-            _followRect = validMapRect;
-//            _followRect.size = GM2DTools.TileToWorld(ConstDefineGM2D.DefaultValidMapRectSize);
-            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
-            _followRect.width += 10;
-            _followRect.height += 4; //地图编辑黑边有渐变 防止走光
-            _followRect.center = _basePos;
-
-            _followTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_followRect));
-            _cloudRect = _followRect;
-            _cloudRect.size += new Vector2(20, 0);
-            _cloudRect.center = _basePos;
-            _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
+            RefreshRect();
             _parent = new GameObject("Background").transform;
             _parents = new Transform[(int) EBgDepth.Max];
             for (int i = 0; i < (int) EBgDepth.Max; i++)
@@ -153,6 +136,25 @@ namespace GameA.Game
 
                 tables.Add(bg);
             }
+        }
+
+        private void RefreshRect()
+        {
+            var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
+            _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
+            var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
+            _centerPos = validMapRect.center;
+            _downCenterPos = new Vector2(validMapRect.x + validMapRect.width / 2f, validMapRect.y);
+            _followRect = validMapRect;
+            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
+            _followRect.width += 10;
+            _followRect.height += 4; //地图编辑黑边有渐变 防止走光
+            _followRect.center = _centerPos;
+            _followTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_followRect));
+            _cloudRect = _followRect;
+            _cloudRect.size += new Vector2(20, 0);
+            _cloudRect.center = _centerPos;
+            _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
         }
 
         public void OnPlay()
@@ -186,7 +188,6 @@ namespace GameA.Game
                     var bgItem = iter.Current.Value;
                     bgItem.SetBaseFollowPos(pos);
                     bgItem.ResetPos();
-                    bgItem.Update(pos);
                 }
             }
         }
@@ -208,10 +209,10 @@ namespace GameA.Game
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
-                    if (GameRun.Instance.LogicFrameCnt == 0)
-                    {
-                        bgItem.SetBaseFollowPos(pos);
-                    }
+//                    if (GameRun.Instance.LogicFrameCnt == 0)
+//                    {
+//                        bgItem.SetBaseFollowPos(pos);
+//                    }
 
                     bgItem.Update(pos);
                 }
@@ -415,7 +416,7 @@ namespace GameA.Game
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
-                    bgItem.SetBaseFollowPos(_basePos);
+                    bgItem.SetBaseFollowPos(_downCenterPos);
                 }
             }
         }
@@ -457,50 +458,40 @@ namespace GameA.Game
             return depth == 4;
         }
 
-//        private bool DeleteView(SceneNode node)
-//        {
-//            BgItem bgItem;
-//            if (!_items.TryGetValue(node.Guid, out bgItem))
-//            {
-//                return false;
-//            }
-//            FreeItem(bgItem);
-//            return _items.Remove(node.Guid);
-//        }
-
-//        private void FreeItem(BgItem bgItem)
-//        {
-//            PoolFactory<BgItem>.Free(bgItem);
-//        }
-        public void ChangeScene(int index)
+        private bool DeleteView(SceneNode node)
         {
-            if (_curSceneIndex == index) return;
-            var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
-            _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
-            var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
-            _basePos = validMapRect.center;
-            _followRect = validMapRect;
-            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
-            _followRect.width += 10;
-            _followRect.height += 4; //地图编辑黑边有渐变 防止走光
-            _followRect.center = _basePos;
-            _followTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_followRect));
-            _cloudRect = _followRect;
-            _cloudRect.size += new Vector2(20, 0);
-            _cloudRect.center = _basePos;
-            _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
-            
-            using (var iter = _items.GetEnumerator())
+            BgItem bgItem;
+            if (!_items.TryGetValue(node.Guid, out bgItem))
             {
-                while (iter.MoveNext())
-                {
-                    var bgItem = iter.Current.Value;
-                    bgItem.SetBaseFollowPos(CameraManager.Instance.MainCameraPos);
-                    bgItem.ResetPos();
-                }
+                return false;
             }
 
-            _curSceneIndex = index;
+            FreeItem(bgItem);
+            return true;
+        }
+
+        private void FreeItem(BgItem bgItem)
+        {
+            PoolFactory<BgItem>.Free(bgItem);
+        }
+
+        public void OnMapChanged()
+        {
+            RefreshRect();
+            ReGenerateBackground();
+        }
+
+        private void ReGenerateBackground()
+        {
+            foreach (var bgItem in _items.Values)
+            {
+                var bgNode = bgItem.Node;
+                DeleteView(bgNode);
+                DeleteNode(bgNode);
+            }
+
+            _items.Clear();
+            GenerateBackground(_curSeed);
         }
     }
 }

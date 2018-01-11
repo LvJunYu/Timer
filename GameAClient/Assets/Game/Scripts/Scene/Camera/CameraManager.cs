@@ -177,9 +177,13 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void ChangeScene()
+        public void OnMapChanged()
         {
-            OnMapReady();
+            _cameraCtrlPlay.OnMapChanged();
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                _cameraCtrlEdit.OnMapChanged();
+            }
             if (_curCameraCtrl != null)
             {
                 _curCameraCtrl.Enter();
