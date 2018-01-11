@@ -286,4 +286,16 @@ namespace GameA.Game
         Jump2,
         Fall
     }
+
+    public enum ENpcType
+    {
+        Dialog,
+        Task
+    }
+
+    public enum ENpcTriggerType
+    {
+        Close,
+        Interval
+    }
 }

@@ -117,6 +117,8 @@ namespace GameA.Game
                     return UnitDefine.IsMonster(Id) || UnitDefine.IsSpawn(Id);
                 case EEditType.Style:
                     return Id == 4001;
+                case EEditType.NpcType:
+                    return UIType == (int) EUIType.Npc;
             }
 
             return false;

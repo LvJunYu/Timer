@@ -34,10 +34,13 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
+        private USCtrlUnitPropertyEditButton[] _npcTypeMenuList;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
         private EEditType _curEditType;
+
+        private UPCtrlUnitPropertyEditNpcTask _upCtrlUnitPropertyEditNpcTask;
 
         protected override void InitGroupId()
         {
@@ -83,6 +86,8 @@ namespace GameA
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
             _upCtrlUnitPropertyEditPreinstall.Init(this, _cachedView);
+            _upCtrlUnitPropertyEditNpcTask = new UPCtrlUnitPropertyEditNpcTask();
+            _upCtrlUnitPropertyEditNpcTask.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -93,6 +98,8 @@ namespace GameA
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
             _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
             _rootArray[(int) EEditType.Camp] = _cachedView.CampDock;
+            _rootArray[(int) EEditType.NpcType] = _cachedView.NpcTypeDock;
+            _rootArray[(int) EEditType.NpcTask] = _cachedView.NpcDiaLogDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -108,6 +115,8 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
             _menuButtonArray[(int) EEditType.Camp].Init(_cachedView.CampMenu);
+            _menuButtonArray[(int) EEditType.NpcType].Init(_cachedView.NpcTypeMenu);
+            _menuButtonArray[(int) EEditType.NpcTask].Init(_cachedView.NpcTaskSettingMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -118,7 +127,7 @@ namespace GameA
                 }
                 _menuButtonArray[(int) type].AddClickListener(() => OnEditTypeMenuClick(t));
             }
-
+            //激活
             var list = _cachedView.ActiveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _activeMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -129,6 +138,18 @@ namespace GameA
                 _activeMenuList[i] = button;
                 _activeMenuList[i].AddClickListener(() => OnActiveMenuClick(inx));
             }
+            //Npc类型
+            list = _cachedView.NpcTypeDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _npcTypeMenuList = new USCtrlUnitPropertyEditButton[list.Length];
+            for (int i = 0; i < list.Length; i++)
+            {
+                var inx = i;
+                var button = new USCtrlUnitPropertyEditButton();
+                button.Init(list[i]);
+                _npcTypeMenuList[i] = button;
+                _npcTypeMenuList[i].AddClickListener(() => OnNpcTypeMenuClick(inx));
+            }
+            //朝向
             list = _cachedView.ForwardDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _forwardMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -152,6 +173,7 @@ namespace GameA
                     button.SetBgImageAngle(45 + 90 * (i - 4));
                 }
             }
+            // 装弹
             list = _cachedView.PayloadDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _payloadMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -162,6 +184,7 @@ namespace GameA
                 _payloadMenuList[i] = button;
                 _payloadMenuList[i].AddClickListener(() => OnPayloadMenuClick(inx));
             }
+            // 移动方向
             list = _cachedView.MoveDirectionDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _moveDirectionMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -181,6 +204,7 @@ namespace GameA
                     button.SetBgImageAngle(90 * (i - 1));
                 }
             }
+            // 旋转方向
             list = _cachedView.RotateModeDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -191,6 +215,7 @@ namespace GameA
                 _rotateMenuList[i] = button;
                 _rotateMenuList[i].AddClickListener(() => OnRotateMenuClick(inx));
             }
+            // 旋转结束方向
             list = _cachedView.RotateEndDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateEndMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -209,6 +234,7 @@ namespace GameA
                     button.SetPosAngle(45 + 90 * (i - 4), RotateEndOptionsPosRadius);
                 }
             }
+            //出发延迟
             list = _cachedView.TriggerDelayDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerDelayMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             var da = 360f / list.Length;
@@ -223,6 +249,7 @@ namespace GameA
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
+            // 触发间隔
             list = _cachedView.TriggerIntervalDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerIntervalMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             da = 360f / list.Length;
@@ -253,7 +280,7 @@ namespace GameA
                     new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * MenuArrowRadius;
                 menuArrow.rectTransform.localEulerAngles = new Vector3(0, 0, -45 * i);
             }
-
+            //阵营  
             list = _cachedView.CampDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _campMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             da = 360f / TeamManager.MaxTeamCount;
@@ -270,6 +297,7 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
+            // Npc任务
         }
 
         protected override void OnOpen(object parameter)
@@ -323,6 +351,18 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.Active].SetEnable(false);
+            }
+            //能编辑Npc/
+            if (_tableUnit.CanEdit((EEditType.NpcType)))
+            {
+                //类型
+                _validEditPropertyList.Add(EEditType.NpcType);
+                _menuButtonArray[(int) EEditType.NpcType].SetEnable(true);
+                RefreshNpcTypeMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.NpcType].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.Child))
             {
@@ -413,7 +453,18 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
-
+            //能编辑Npc/
+            if (_tableUnit.CanEdit((EEditType.NpcType)))
+            {
+                //任务
+                _validEditPropertyList.Add(EEditType.NpcTask);
+                _menuButtonArray[(int) EEditType.NpcTask].SetEnable(true);
+                RefreshNpcTypeMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.NpcType].SetEnable(false);
+            }
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
             var baseAngle = 180 + totalAngle / 2 - menuAngle / 2;
@@ -619,13 +670,13 @@ namespace GameA
             for (int i = 0; i < _campMenuList.Length; i++)
             {
                 _campMenuList[i].SetSelected(i == teamId);
-                if (i == 0) 
+                if (i == 0)
                 {
-                    _campMenuList[i].SetEnable(!isSpawn);//玩家没有Team0
+                    _campMenuList[i].SetEnable(!isSpawn); //玩家没有Team0
                 }
-                else if (i > 1) 
+                else if (i > 1)
                 {
-                    _campMenuList[i].SetEnable(isMulti || !isSpawn);//玩家多人只有Team1
+                    _campMenuList[i].SetEnable(isMulti || !isSpawn); //玩家多人只有Team1
                 }
             }
             if (isMulti || !isSpawn)
@@ -645,6 +696,17 @@ namespace GameA
         {
             _cachedView.TextInput.text = _originData.UnitExtra.Msg;
             _cachedView.TextInput.characterLimit = MessageStringCountMax;
+        }
+
+        private void RefreshNpcTypeMenu()
+        {
+            var val = Mathf.Clamp(EditData.UnitExtra.NpcType, 0, 1);
+            for (int i = 0; i < _npcTypeMenuList.Length; i++)
+            {
+                _npcTypeMenuList[i].SetSelected(i == val);
+            }
+            _menuButtonArray[(int) EEditType.NpcType]
+                .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
         }
 
         private void OnActiveMenuClick(int inx)
@@ -707,6 +769,12 @@ namespace GameA
             RefreshCampMenu();
         }
 
+        private void OnNpcTypeMenuClick(int inx)
+        {
+            EditData.UnitExtra.NpcType = (byte) inx;
+            RefreshNpcTypeMenu();
+        }
+
         private void OnCloseBtnClick()
         {
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -762,6 +830,13 @@ namespace GameA
             else
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
+            }
+            if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
+            {
+                if (!_openSequence.IsPlaying())
+                {
+                    _upCtrlUnitPropertyEditNpcTask.OpenMenu(UPCtrlUnitPropertyEditNpcTask.EMenu.Task);
+                }
             }
         }
 

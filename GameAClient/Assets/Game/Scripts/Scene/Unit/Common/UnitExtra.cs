@@ -48,6 +48,11 @@ namespace GameA.Game
         public ushort JumpAbility;
         public byte InjuredReduce;
         public ushort CureIncrease;
+        public byte NpcType;
+        public string NpcName;
+        public string NpcDialog;
+        public ushort NpcShowType;
+        public ushort NpcShowInterval;
 
         public bool IsDynamic()
         {
@@ -406,6 +411,8 @@ namespace GameA.Game
         Text,
         Camp,
         Style,
+        NpcType,
+        NpcTask,
         Max,
     }
 
@@ -426,6 +433,7 @@ namespace GameA.Game
         ChargeTime,
         InjuredReduce,
         CureIncrease,
+        NpcIntervalTiem,
         Max
     }
 }
