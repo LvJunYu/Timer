@@ -55,7 +55,7 @@ namespace GameA.Game
 	    public void OnMapChanged()
 	    {
 		    _validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
-		    CalcMoveRect();
+		    CalcAndSpringBack();
 	    }
 	    
 	    public void SetPos(Vector2 pos)
@@ -96,9 +96,8 @@ namespace GameA.Game
 			_startTime = Time.realtimeSinceStartup;
 		}
 
-	    public void OnOrthoSizeChange(float orthoSize)
+	    private void CalcAndSpringBack()
 	    {
-		    _orthoSize = orthoSize;
 		    CalcMoveRect();
 		    if (ESpingState.None == _curState)
 		    {
@@ -114,6 +113,12 @@ namespace GameA.Game
 		    {
 			    _springbackAimPos = ClampValidMoveRect(_springbackAimPos);
 		    }
+	    }
+
+	    public void OnOrthoSizeChange(float orthoSize)
+	    {
+		    _orthoSize = orthoSize;
+		    CalcAndSpringBack();
 	    }
 
 		public void Update()

@@ -30,7 +30,6 @@ namespace GameA.Game
         {
             if (!_mapReady) return;
             base.OnMapChanged();
-            InitEditorCameraStartParam();
             _positionSpringbackEffect.OnMapChanged();
             _orthoSizeSpringbackEffect.OnMapChanged();
         }

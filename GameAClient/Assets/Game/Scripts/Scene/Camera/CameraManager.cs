@@ -184,10 +184,6 @@ namespace GameA.Game
             {
                 _cameraCtrlEdit.OnMapChanged();
             }
-            if (_curCameraCtrl != null)
-            {
-                _curCameraCtrl.Enter();
-            }
         }
     }
 }

@@ -16,6 +16,7 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 30, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class BgItem : IPoolableObject
     {
+        protected GameObject _go;
         protected Table_Background _tableBg;
         protected Transform _trans;
         protected Vector3 _basePos;
@@ -64,13 +65,12 @@ namespace GameA.Game
             }
 
             _curPos = _basePos;
-            GameObject go;
-            if (!TryCreateObject(out go))
+            if (!TryCreateObject())
             {
                 return false;
             }
 
-            _trans = go.transform;
+            _trans = _go.transform;
             _trans.localPosition = _curPos;
             _trans.localScale = new Vector3(_node.Scale.x, _node.Scale.y, 1);
 
@@ -128,9 +128,8 @@ namespace GameA.Game
             return true;
         }
 
-        private bool TryCreateObject(out GameObject go)
+        private bool TryCreateObject()
         {
-            go = null;
             Sprite sprite;
             if (!JoyResManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
             {
@@ -138,8 +137,11 @@ namespace GameA.Game
                 return false;
             }
 
-            go = new GameObject();
-            _spriteRenderer = go.AddComponent<SpriteRenderer>();
+            if (_go == null)
+            {
+                _go = new GameObject();
+                _spriteRenderer = _go.AddComponent<SpriteRenderer>();
+            }
             _spriteRenderer.sprite = sprite;
             if (_tableBg.Alpha < 1)
             {
@@ -147,7 +149,7 @@ namespace GameA.Game
             }
 
             _spriteRenderer.sortingOrder = (int) ESortingOrder.Item;
-            go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
+            _go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;
         }
 
@@ -178,12 +180,16 @@ namespace GameA.Game
                 _trans.position = Vector3.zero;
                 _trans.rotation = Quaternion.identity;
                 _trans.localScale = Vector3.one;
-                _trans = null;
             }
         }
 
         public virtual void OnDestroyObject()
         {
+            if (_go != null)
+            {
+                Object.Destroy(_go);
+                _trans = null;
+            }
         }
     }
 }

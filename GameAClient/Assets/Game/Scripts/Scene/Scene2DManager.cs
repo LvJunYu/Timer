@@ -148,6 +148,7 @@ namespace GameA.Game
                     {
                         EditMode.Instance.OnMapReady();
                     }
+
                     Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
                 }
             }
@@ -308,6 +309,36 @@ namespace GameA.Game
                 new Vector2(1, size.y));
             var rightUnitDesc = new UnitDesc(MapConfig.TerrainItemId,
                 new IntVec3(validMapRect.Max.x + 1, validMapRect.Min.y, 0), 0, new Vector2(1, size.y));
+//            var tableUnit = UnitManager.Instance.GetTableUnit(MapConfig.TerrainItemId);
+//            var downGrid = tableUnit.GetDataGrid(downUnitDesc.Guid.x, downUnitDesc.Guid.y, 0, downUnitDesc.Scale);
+//            var upGrid = tableUnit.GetDataGrid(upUnitDesc.Guid.x, upUnitDesc.Guid.y, 0, upUnitDesc.Scale);
+//            var leftGrid = tableUnit.GetDataGrid(leftUnitDesc.Guid.x, leftUnitDesc.Guid.y, 0, leftUnitDesc.Scale);
+//            var rightGrid = tableUnit.GetDataGrid(rightUnitDesc.Guid.x, rightUnitDesc.Guid.y, 0, rightUnitDesc.Scale);
+//
+//            var castUnits = ColliderScene2D.GridCastAllReturnUnits(downGrid);
+//            for (int i = 0; i < castUnits.Count; i++)
+//            {
+//                EditMode.Instance.DeleteUnitWithCheck(castUnits[i].UnitDesc);
+//            }
+//
+//            castUnits = ColliderScene2D.GridCastAllReturnUnits(upGrid);
+//            for (int i = 0; i < castUnits.Count; i++)
+//            {
+//                EditMode.Instance.DeleteUnitWithCheck(castUnits[i].UnitDesc);
+//            }
+//
+//            castUnits = ColliderScene2D.GridCastAllReturnUnits(leftGrid);
+//            for (int i = 0; i < castUnits.Count; i++)
+//            {
+//                EditMode.Instance.DeleteUnitWithCheck(castUnits[i].UnitDesc);
+//            }
+//
+//            castUnits = ColliderScene2D.GridCastAllReturnUnits(rightGrid);
+//            for (int i = 0; i < castUnits.Count; i++)
+//            {
+//                EditMode.Instance.DeleteUnitWithCheck(castUnits[i].UnitDesc);
+//            }
+
             EditMode.Instance.AddUnitWithCheck(downUnitDesc,
                 EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
             EditMode.Instance.AddUnitWithCheck(upUnitDesc,
