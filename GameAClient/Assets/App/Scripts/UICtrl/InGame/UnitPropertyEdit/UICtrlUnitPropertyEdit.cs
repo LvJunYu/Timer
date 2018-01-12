@@ -86,6 +86,7 @@ namespace GameA
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
             _upCtrlUnitPropertyEditPreinstall.Init(this, _cachedView);
+            // npc任务
             _upCtrlUnitPropertyEditNpcTask = new UPCtrlUnitPropertyEditNpcTask();
             _upCtrlUnitPropertyEditNpcTask.Init(this, _cachedView);
 
@@ -297,7 +298,6 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
-            // Npc任务
         }
 
         protected override void OnOpen(object parameter)
@@ -463,7 +463,7 @@ namespace GameA
             }
             else
             {
-                _menuButtonArray[(int) EEditType.NpcType].SetEnable(false);
+                _menuButtonArray[(int) EEditType.NpcTask].SetEnable(false);
             }
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
@@ -844,6 +844,7 @@ namespace GameA
         {
             RefreshView();
             _upCtrlUnitPropertyEditAdvance.RefreshView();
+            _upCtrlUnitPropertyEditNpcTask.RefreshView();
         }
     }
 }

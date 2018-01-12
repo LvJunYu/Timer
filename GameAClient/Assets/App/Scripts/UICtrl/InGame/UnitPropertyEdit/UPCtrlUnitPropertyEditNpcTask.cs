@@ -26,31 +26,39 @@ namespace GameA
         private USCtrlUnitPropertyEditButton _npcCloseToShowBtn;
         private USCtrlUnitPropertyEditButton _npcIntervalShowBtn;
 
-        private EMenu _curMenu;
+        private USCtrlUnitPropertyEditButton[] _showTypeBtnGroup;
+//        private EMenu _curMenu;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.AdvancePannel.SetActive(false);
+            //显示时间的调整            
             _dialogShowIntervalTimeSetting = new USCtrlSliderSetting();
             _dialogShowIntervalTimeSetting.Init(_cachedView.DialogShowIntervalTimeSetting);
-
             UnitExtraHelper.SetUSCtrlSliderSetting(_dialogShowIntervalTimeSetting, EAdvanceAttribute.NpcIntervalTiem,
                 value => _mainCtrl.EditData.UnitExtra.NpcShowInterval = (ushort) value);
 
+            //显示类型选择
+            _showTypeBtnGroup = new USCtrlUnitPropertyEditButton[(int) ENpcTriggerType.Max];
             _npcCloseToShowBtn = new USCtrlUnitPropertyEditButton();
             _npcCloseToShowBtn.Init(_cachedView.NpcCloseToShowBtn);
             _npcCloseToShowBtn.AddClickListener(() =>
             {
-                _mainCtrl.EditData.UnitExtra.NpcShowType = (ushort) ENpcTriggerType.Close;
+                _mainCtrl.EditData.UnitExtra.NpcShowType = (byte) ENpcTriggerType.Close;
+                RefreshShowTypeMenu();
             });
-
+            _showTypeBtnGroup[(int) ENpcTriggerType.Close] = _npcCloseToShowBtn;
             _npcIntervalShowBtn = new USCtrlUnitPropertyEditButton();
             _npcIntervalShowBtn.Init(_cachedView.NpcIntervalShowBtn);
             _npcIntervalShowBtn.AddClickListener(() =>
             {
-                _mainCtrl.EditData.UnitExtra.NpcShowType = (ushort) ENpcTriggerType.Interval;
+                _mainCtrl.EditData.UnitExtra.NpcShowType = (byte) ENpcTriggerType.Interval;
+                RefreshShowTypeMenu();
             });
+            _showTypeBtnGroup[(int) ENpcTriggerType.Interval] = _npcIntervalShowBtn;
+
+            //text加检测
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcName);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcDialog);
         }
@@ -58,17 +66,19 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _cachedView.AdvancePannel.SetActive(true);
-            _cachedView.AdvanceContentRtf.anchoredPosition = Vector2.zero;
-            OpenAnimation();
+            _cachedView.NpcDiaLogDock.SetActive(true);
+//            OpenAnimation();
             RefreshView();
         }
 
         public void RefreshView()
         {
             if (!_isOpen) return;
-            var id = _mainCtrl.EditData.UnitDesc.Id;
-            var table = TableManager.Instance.GetUnit(id);
+//            var id = _mainCtrl.EditData.UnitDesc.Id;
+//            var table = TableManager.Instance.GetUnit(id);
+            _dialogShowIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.NpcShowInterval);
+            _cachedView.NpcName.text = _mainCtrl.EditData.UnitExtra.NpcName;
+            _cachedView.NpcDialog.text = _mainCtrl.EditData.UnitExtra.NpcDialog;
         }
 
         public override void Close()
@@ -147,7 +157,7 @@ namespace GameA
 
         public void OpenMenu(EMenu eMenu)
         {
-            _curMenu = eMenu;
+//            _curMenu = eMenu;
             Open();
         }
 
@@ -166,6 +176,15 @@ namespace GameA
 
         public void OnChildIdChanged()
         {
+        }
+
+        private void RefreshShowTypeMenu()
+        {
+            var val = Mathf.Clamp(_mainCtrl.EditData.UnitExtra.NpcShowType, 0, 1);
+            for (int i = 0; i < _showTypeBtnGroup.Length; i++)
+            {
+                _showTypeBtnGroup[i].SetSelected(i == val);
+            }
         }
     }
 }

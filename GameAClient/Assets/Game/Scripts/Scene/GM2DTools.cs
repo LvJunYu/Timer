@@ -399,7 +399,7 @@ namespace GameA.Game
 
         public static MapRect2D ToProto(SceneNode node)
         {
-           var mapRect2D = new MapRect2D
+            var mapRect2D = new MapRect2D
             {
                 XMin = node.Grid.XMin,
                 YMin = node.Grid.YMin,
@@ -408,7 +408,7 @@ namespace GameA.Game
                 Id = node.Id,
                 Rotation = node.Rotation
             };
-            if(node.Scale != Vector2.one)
+            if (node.Scale != Vector2.one)
             {
                 mapRect2D.Scale = ToProto(node.Scale);
             }
@@ -432,7 +432,7 @@ namespace GameA.Game
                 y = vec2Proto.Y
             };
         }
-        
+
         public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtra data)
         {
             var res = new UnitExtraKeyValuePair();
@@ -462,6 +462,7 @@ namespace GameA.Game
             res.Drops.AddRange(data.Drops.ToList());
             res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
             res.AddStates.AddRange(data.AddStates.ToList());
+            res.NpcTask = data.NpcTask.ToUnitExtraNpcTaskData();
             return res;
         }
 
@@ -848,6 +849,5 @@ namespace GameA.Game
             rotation = 0;
             return false;
         }
-
     }
 }

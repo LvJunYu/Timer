@@ -295,7 +295,9 @@ namespace GameA.Game
 
     public enum ENpcTriggerType
     {
+        None = -1,
         Close,
-        Interval
+        Interval,
+        Max
     }
 }

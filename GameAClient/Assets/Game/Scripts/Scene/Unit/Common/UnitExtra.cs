@@ -51,8 +51,9 @@ namespace GameA.Game
         public byte NpcType;
         public string NpcName;
         public string NpcDialog;
-        public ushort NpcShowType;
+        public byte NpcShowType;
         public ushort NpcShowInterval;
+        public NpcTask NpcTask;
 
         public bool IsDynamic()
         {
@@ -82,7 +83,13 @@ namespace GameA.Game
                    AddStates == other.AddStates &&
                    BulletSpeed == other.BulletSpeed &&
                    InjuredReduce == other.InjuredReduce &&
-                   CureIncrease == other.CureIncrease;
+                   CureIncrease == other.CureIncrease &&
+                   NpcShowInterval == other.NpcShowInterval &&
+                   NpcDialog == other.NpcDialog &&
+                   NpcName == other.NpcName &&
+                   NpcType == other.NpcType &&
+                   NpcShowType == other.NpcShowType &&
+                   NpcTask == other.NpcTask;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
@@ -118,20 +125,19 @@ namespace GameA.Game
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
-            msg.Data = GameMapDataSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
+            msg.Data = GameATools
             return msg;
         }
 
         public void Set(Preinstall data)
         {
-            var unitExtraKeyValuePair = GameMapDataSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
-            this = GM2DTools.ToEngine(unitExtraKeyValuePair);
         }
     }
 
     public class UnitExtraHelper
     {
-        public static int GetMin(EAdvanceAttribute eAdvanceAttribute, UPCtrlUnitPropertyEditAdvance.EMenu eMenu)
+        public static int GetMin(EAdvanceAttribute eAdvanceAttribute,
+            UPCtrlUnitPropertyEditAdvance.EMenu eMenu)
         {
             switch (eAdvanceAttribute)
             {
@@ -181,6 +187,8 @@ namespace GameA.Game
                     return 0;
                 case EAdvanceAttribute.CureIncrease:
                     return 0;
+                case EAdvanceAttribute.NpcIntervalTiem:
+                    return 0;
             }
             return 0;
         }
@@ -215,6 +223,8 @@ namespace GameA.Game
                     return 100;
                 case EAdvanceAttribute.CureIncrease:
                     return 500;
+                case EAdvanceAttribute.NpcIntervalTiem:
+                    return 10;
             }
             return 0;
         }
@@ -271,7 +281,8 @@ namespace GameA.Game
             EAdvanceAttribute eAdvanceAttribute, Action<int> callBack)
         {
             usCtrlSliderSetting.Set(GetMin(eAdvanceAttribute), GetMax(eAdvanceAttribute), callBack,
-                GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute), GetConvertValue(eAdvanceAttribute));
+                GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute),
+                GetConvertValue(eAdvanceAttribute));
         }
 
         public static bool CanEdit(EAdvanceAttribute eAdvanceAttribute, int id)
