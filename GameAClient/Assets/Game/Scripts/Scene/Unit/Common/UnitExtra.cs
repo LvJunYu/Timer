@@ -125,11 +125,14 @@ namespace GameA.Game
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
+            msg.Data = GameMapDataSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
             return msg;
         }
 
         public void Set(Preinstall data)
         {
+            var unitExtraKeyValuePair = GameMapDataSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
+            this = GM2DTools.ToEngine(unitExtraKeyValuePair);
         }
     }
 
