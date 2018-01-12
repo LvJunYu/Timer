@@ -125,7 +125,6 @@ namespace GameA.Game
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
-            msg.Data = GameATools
             return msg;
         }
 
