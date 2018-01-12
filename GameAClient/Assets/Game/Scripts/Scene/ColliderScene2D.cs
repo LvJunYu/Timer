@@ -409,6 +409,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             // Player会跨场景，特殊处理
             var players = PlayerManager.Instance.PlayerList;
             for (int i = 0; i < players.Count; i++)
@@ -932,7 +933,8 @@ namespace GameA.Game
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
             var start = unit.CenterDownPos;
-            var end = target.DownUnit == null ? target.CenterDownPos : target.DownUnit.CenterUpFloorPos;
+            bool useDownUnit = target.DownUnit != null && UnitDefine.TerrainId != target.DownUnit.Id;
+            var end = useDownUnit ? target.DownUnit.CenterUpFloorPos : target.CenterDownPos;
             //不在空中的时候
             if (!target.Grounded)
             {
