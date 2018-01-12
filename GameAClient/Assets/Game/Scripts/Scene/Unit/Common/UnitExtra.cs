@@ -113,61 +113,14 @@ namespace GameA.Game
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
-            msg.MoveDirection = (byte) MoveDirection;
-            msg.Active = Active;
-            msg.ChildId = ChildId;
-            msg.ChildRotation = ChildRotation;
-            msg.RotateMode = RotateMode;
-            msg.RotateValue = RotateValue;
-            msg.TimeDelay = TimeDelay;
-            msg.TimeInterval = TimeInterval;
-            msg.Msg = Msg;
-            msg.JumpAbility = JumpAbility;
-            msg.TeamId = TeamId;
-            msg.MaxHp = MaxHp;
-            msg.AttackPower = Damage;
-            msg.MoveSpeed = MaxSpeedX;
-            msg.EffectRange = EffectRange;
-            msg.CastRange = CastRange;
-            msg.ViewRange = ViewRange;
-            msg.BulletCount = BulletCount;
-            msg.CastSpeed = BulletSpeed;
-            msg.ChargeTime = ChargeTime;
-            msg.InjuredReduce = InjuredReduce;
-            msg.CureIncrease = CureIncrease;
-            msg.Drops.AddRange(Drops.ToList());
-            msg.KnockbackForces.AddRange(KnockbackForces.ToList());
-            msg.AddStates.AddRange(AddStates.ToList());
+            msg.Data = GameMapDataSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
             return msg;
         }
 
         public void Set(Preinstall data)
         {
-            MoveDirection = (EMoveDirection) data.MoveDirection;
-            Active = (byte) data.Active;
-            ChildId = (ushort) data.ChildId;
-            ChildRotation = (byte) data.ChildRotation;
-            RotateMode = (byte) data.RotateMode;
-            RotateValue = (byte) data.RotateValue;
-            TimeDelay = (ushort) data.TimeDelay;
-            TimeInterval = (ushort) data.TimeInterval;
-            Msg = data.Msg;
-            JumpAbility = (ushort) data.JumpAbility;
-            TeamId = (byte) data.TeamId;
-            MaxHp = (ushort) data.MaxHp;
-            Damage = (ushort) data.AttackPower;
-            MaxSpeedX = (ushort) data.MoveSpeed;
-            Drops.Set(data.Drops.ToArray());
-            EffectRange = (ushort) data.EffectRange;
-            CastRange = (ushort) data.CastRange;
-            ViewRange = (ushort) data.ViewRange;
-            BulletCount = (ushort) data.BulletCount;
-            BulletSpeed = (ushort) data.CastSpeed;
-            ChargeTime = (ushort) data.ChargeTime;
-            InjuredReduce = (byte) data.InjuredReduce;
-            CureIncrease = (ushort) data.CureIncrease;
-            KnockbackForces.Set(data.KnockbackForces.ToArray());
-            AddStates.Set(data.AddStates.ToArray());
+            var unitExtraKeyValuePair = GameMapDataSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
+            this = GM2DTools.ToEngine(unitExtraKeyValuePair);
         }
     }
 

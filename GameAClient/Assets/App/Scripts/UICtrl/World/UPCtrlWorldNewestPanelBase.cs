@@ -17,7 +17,6 @@ namespace GameA
 
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
-        protected bool _hasRequested;
 
         protected override void OnViewCreated()
         {
@@ -32,10 +31,7 @@ namespace GameA
             _unload = false;
             _cachedView.NewestPannels[(int) _menu].SetActiveEx(true);
             _cachedView.NewestGridDataScrollers[(int) _menu].SetActiveEx(true);
-            if (!_hasRequested)
-            {
-                RequestData();
-            }
+            RequestData();
             RefreshView();
         }
 
@@ -60,6 +56,7 @@ namespace GameA
                 _cachedView.NewestGridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
+
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
             for (int i = 0; i < _projectList.Count; i++)
             {
@@ -71,6 +68,7 @@ namespace GameA
                     _dict.Add(_projectList[i].ProjectId, w);
                 }
             }
+
             _cachedView.NewestGridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
@@ -80,9 +78,10 @@ namespace GameA
             {
                 return;
             }
+
             SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
         }
-        
+
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
@@ -104,6 +103,7 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+
                 item.Set(_contentList[inx]);
             }
         }
@@ -129,14 +129,13 @@ namespace GameA
 
         public virtual void Clear()
         {
-            _hasRequested = false;
             _unload = true;
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;
             _cachedView.NewestGridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
         }
-        
+
         private UMCtrlProject.ECurUI GetUMCurUI(UPCtrlWorldNewest.EMenu menu)
         {
             switch (menu)
@@ -146,8 +145,8 @@ namespace GameA
                 case UPCtrlWorldNewest.EMenu.Follow:
                     return UMCtrlProject.ECurUI.Follows;
             }
+
             return UMCtrlProject.ECurUI.None;
         }
-
     }
 }

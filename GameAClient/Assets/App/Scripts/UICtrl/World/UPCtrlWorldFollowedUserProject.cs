@@ -16,7 +16,6 @@ namespace GameA
             }
             _data.Request(startInx, _pageSize, () =>
             {
-                _hasRequested = true;
                 _projectList = _data.AllList;
                 if (_isOpen)
                 {
