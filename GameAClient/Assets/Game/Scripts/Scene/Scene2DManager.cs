@@ -321,7 +321,7 @@ namespace GameA.Game
             ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
         }
 
-        public void ActionFromOtherScene(int sceneIndex, Action action)
+        public void ActionFromOtherScene(int sceneIndex, Action action, EChangeSceneType eChangeSceneType = EChangeSceneType.None)
         {
             int curSceneIndex = CurSceneIndex;
             if (sceneIndex == curSceneIndex)
@@ -330,9 +330,9 @@ namespace GameA.Game
             }
             else
             {
-                ChangeScene(sceneIndex);
+                ChangeScene(sceneIndex, eChangeSceneType);
                 action.Invoke();
-                ChangeScene(curSceneIndex);
+                ChangeScene(curSceneIndex, eChangeSceneType);
             }
         }
     }

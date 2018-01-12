@@ -102,17 +102,16 @@ namespace GameA.Game
             {
                 return false;
             }
-            // 用于死亡后重新生成View时进行判断
-            if (_isAlive)
+            // 游戏时怪物死亡后，在Destroy前切换场景，切换回来会重新生成View，此时判断不显示View
+            if (!_isAlive && GameRun.Instance.IsPlaying)
+            {
+                _view.SetRendererEnabled(false);
+            }
+            else
             {
                 CreateStatusBar();
                 _statusBar.SetHPActive(true);
             }
-            else
-            {
-                _view.SetRendererEnabled(false);
-            }
-
             return true;
         }
 
@@ -367,15 +366,15 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
-            var drops = GetUnitExtra().Drops;
-            base.OnObjectDestroy();
             if (GameRun.Instance.IsPlaying)
             {
+                var drops = GetUnitExtra().Drops;
                 if (drops.HasContent)
                 {
                     PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
                 }
             }
+            base.OnObjectDestroy();
         }
 
         protected void SetInput(EInputType eInputType, bool value)

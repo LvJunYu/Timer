@@ -117,7 +117,15 @@ namespace GameA.Game
                     _monsterSpriteRenderers[i].SetActiveEx(i == _owner.TeamId);
                 }
             }
-            SetHP(EHPModifyCase.Set, 1, 1);
+
+            if (_owner.MaxHp != 0)
+            {
+                SetHP(EHPModifyCase.Set, _owner.Hp, _owner.MaxHp);
+            }
+            else
+            {
+                SetHP(EHPModifyCase.Set, 1, 1);
+            }
         }
 
         public void SetHP(EHPModifyCase modifyCase, int current, int max)
@@ -161,8 +169,8 @@ namespace GameA.Game
         {
             if (_owner != null)
             {
-                SetHP(EHPModifyCase.Set, 1, 1);
                 SetHPActive(true);
+                SetHP(EHPModifyCase.Set, 1, 1);
             }
         }
     }
