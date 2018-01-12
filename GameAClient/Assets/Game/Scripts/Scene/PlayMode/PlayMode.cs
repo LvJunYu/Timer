@@ -49,7 +49,6 @@ namespace GameA.Game
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
-            set { _mainPlayer = value; }
         }
 
         public int GameSuccessFrameCnt
@@ -318,7 +317,7 @@ namespace GameA.Game
             return true;
         }
 
-        private bool DeleteUnit(UnitBase unit)
+        public bool DeleteUnit(UnitBase unit)
         {
             return unit != null && DeleteUnit(unit.UnitDesc);
         }
@@ -458,7 +457,7 @@ namespace GameA.Game
                         var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].GetUpPos()) as ShadowUnit;
                         if (shadowUnit != null)
                         {
-                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
+                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
                             if (gameMode != null) shadowUnit.SetName(gameMode.ShadowName);
                         }
                     }
@@ -474,8 +473,11 @@ namespace GameA.Game
                     {
                         var mainGhost =
                             CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
-                        mainGhost.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[0].Guid));
-                        PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
+                        if (mainGhost != null)
+                        {
+                            mainGhost.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[0].Guid));
+                            PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
+                        }
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
 
@@ -509,17 +511,20 @@ namespace GameA.Game
             }
 
             var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
-            PlayerManager.Instance.Add(player, roomInx);
-            player.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[basicNum].Guid));
-            TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
-            if (main)
+            if (player != null)
             {
-                _mainPlayer = PlayerManager.Instance.MainPlayer;
-            }
+                PlayerManager.Instance.Add(player, roomInx);
+                player.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[basicNum].Guid));
+                TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
+                if (main)
+                {
+                    _mainPlayer = PlayerManager.Instance.MainPlayer;
+                }
 
-            if (_run)
-            {
-                player.OnPlay();
+                if (_run)
+                {
+                    player.OnPlay();
+                }
             }
         }
 
@@ -569,7 +574,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            Scene2DManager.Instance.PrepareStart();
+            Scene2DManager.Instance.BeforePlay();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
             BgScene2D.Instance.Reset();
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
@@ -588,30 +593,6 @@ namespace GameA.Game
 
         private void BeforePlay()
         {
-//            List<UnitDesc> deleteRopes = null;
-//            using (var iter = RopeManager.Instance.RopeUnits.GetEnumerator())
-//            {
-//                while (iter.MoveNext())
-//                {
-//                    if (!iter.Current.Value.Tied)
-//                    {
-//                        UnitDesc unitObject = iter.Current.Value.UnitDesc;
-//                        if (deleteRopes == null)
-//                        {
-//                            deleteRopes = new List<UnitDesc>();
-//                        }
-//                        deleteRopes.Add(unitObject);
-//                    }
-//                }
-//            }
-//            if (deleteRopes != null)
-//            {
-//                for (int i = 0; i < deleteRopes.Count; i++)
-//                {
-//                    DeleteUnit(deleteRopes[i]);
-//                }
-//                Messenger<string>.Broadcast(EMessengerType.GameLog, "已移除没有绑住的绳子~");
-//            }
             bool flag = false;
             using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())
             {

@@ -155,14 +155,6 @@ namespace GameA.Game
         {
             if (_validMapRect.Max == intRect.Max) return;
             _validMapRect = intRect;
-            //空气墙
-            var airWalls = ColliderScene2D.CurScene.AllAirWallUnits;
-            for (int i = airWalls.Count - 1; i >= 0; i--)
-            {
-                EditMode.Instance.DeleteUnitWithCheck(airWalls[i].UnitDesc);
-            }
-
-            Scene2DManager.Instance.CreateAirWall();
             if (MapManager.Instance.GenerateMapComplete)
             {
                 //相机和遮罩

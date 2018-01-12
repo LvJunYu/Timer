@@ -146,7 +146,7 @@ namespace GameA.Game
             _centerPos = validMapRect.center;
             _downCenterPos = new Vector2(validMapRect.x + validMapRect.width / 2f, validMapRect.y);
             _followRect = validMapRect;
-            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
+//            _followRect.width *= Mathf.Max(1, 1.6f * validMapRect.height / validMapRect.width); //横向拉伸，防止宽高比太小左右走光
             _followRect.width += 10;
             _followRect.height += 4; //地图编辑黑边有渐变 防止走光
             _followRect.center = _centerPos;

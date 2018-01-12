@@ -142,12 +142,9 @@ namespace GameA.Game
                 _go = new GameObject();
                 _spriteRenderer = _go.AddComponent<SpriteRenderer>();
             }
-            _spriteRenderer.sprite = sprite;
-            if (_tableBg.Alpha < 1)
-            {
-                _spriteRenderer.material.color = new Color(1, 1, 1, _tableBg.Alpha);
-            }
 
+            _spriteRenderer.sprite = sprite;
+            _spriteRenderer.material.color = new Color(1, 1, 1, _tableBg.Alpha);
             _spriteRenderer.sortingOrder = (int) ESortingOrder.Item;
             _go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;

@@ -240,6 +240,7 @@ namespace GameA.Game
 
             //在生成出生点之前，生成玩家通用属性
             DataScene2D.MainDataScene2D.InitDefaultPlayerUnitExtra();
+            Scene2DManager.Instance.CreateDefaultScene();
             GenerateMap(0);
         }
 

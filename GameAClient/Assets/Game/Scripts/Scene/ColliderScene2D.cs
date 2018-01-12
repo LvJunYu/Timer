@@ -403,14 +403,13 @@ namespace GameA.Game
             return !unit.IsFreezed;
         }
 
-        // Player会跨场景，特殊处理
         private bool TryGetUnitAndPlayer(IntVec3 guid, out UnitBase unit)
         {
             if (_units.TryGetValue(guid, out unit))
             {
                 return true;
             }
-
+            // Player会跨场景，特殊处理
             var players = PlayerManager.Instance.PlayerList;
             for (int i = 0; i < players.Count; i++)
             {
@@ -435,26 +434,6 @@ namespace GameA.Game
 
             return TryGetUnitAndPlayer(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
                 out unit);
-        }
-
-        #region AOI
-
-        public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
-        {
-            if (UpdateDynamicNode(unit.DynamicCollider))
-            {
-                if (unit.TableUnit.IsGround == 1)
-                {
-                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale,
-                        lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
-                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale,
-                        unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
-                }
-
-                return true;
-            }
-
-            return false;
         }
 
         public void Reset()
@@ -503,7 +482,23 @@ namespace GameA.Game
             _allColliderDescs.Clear();
         }
 
-        #region Comparison SortData
+        public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
+        {
+            if (UpdateDynamicNode(unit.DynamicCollider))
+            {
+                if (unit.TableUnit.IsGround == 1)
+                {
+                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale,
+                        lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
+                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale,
+                        unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
 
         public void SortData()
         {
@@ -528,7 +523,7 @@ namespace GameA.Game
             return v;
         }
 
-        #endregion
+        #region AOI
 
         private void OnAOISubscribe(NodeData[] nodes, Grid2D interGrid)
         {
