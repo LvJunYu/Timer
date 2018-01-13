@@ -31,11 +31,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _gameSituation = EGameSituation.World;
             if (Application.isEditor)
             {
                 Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
             }
+
             return true;
         }
 
@@ -45,6 +47,7 @@ namespace GameA.Game
             {
                 Messenger<string, bool>.RemoveListener(EMessengerType.OnTrigger, HandleHandbook);
             }
+
             return base.Stop();
         }
 
@@ -73,6 +76,7 @@ namespace GameA.Game
             {
                 _project.Name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
             }
+
             if (NeedSave || ELocalDataState.LDS_UnCreated == _project.LocalDataState)
             {
                 Save(
@@ -83,6 +87,7 @@ namespace GameA.Game
                         {
                             successCB.Invoke();
                         }
+
                         SocialApp.Instance.ReturnToApp();
                     }, result =>
                     {
@@ -91,6 +96,7 @@ namespace GameA.Game
                         {
                             failureCB.Invoke((int) result);
                         }
+
                         SocialGUIManager.ShowPopupDialog("关卡保存失败，是否放弃修改退出", null,
                             new KeyValuePair<string, Action>("取消", () => { }),
                             new KeyValuePair<string, Action>("确定", () => SocialApp.Instance.ReturnToApp()));
@@ -102,6 +108,7 @@ namespace GameA.Game
                 {
                     successCB.Invoke();
                 }
+
                 SocialApp.Instance.ReturnToApp();
             }
         }
@@ -114,19 +121,20 @@ namespace GameA.Game
                 {
                     successCallback.Invoke();
                 }
+
                 return;
             }
+
             if (_mode == EMode.EditTest)
             {
                 ChangeMode(EMode.Edit);
             }
+
             if (!EditMode.Instance.IsInState(EditModeState.Add.Instance))
             {
                 EditMode.Instance.StartAdd();
             }
-            EditMode.Instance.ChangeEditorLayer(EEditorLayer.Capture);
-            IconBytes = CaptureLevel();
-            EditMode.Instance.RevertEditorLayer();
+            GetCaptureIconBtyes();
             Loom.RunAsync(() =>
             {
                 byte[] mapDataBytes = MapManager.Instance.SaveMapData();
@@ -140,8 +148,10 @@ namespace GameA.Game
                         {
                             failedCallback.Invoke(EProjectOperateResult.POR_Error);
                         }
+
                         return;
                     }
+
                     bool passFlag = CheckCanPublish();
 
                     _project.Save(
@@ -184,8 +194,10 @@ namespace GameA.Game
                     _guideBase.Dispose();
                     _guideBase = null;
                 }
+
                 _handbookShowSet.Clear();
             }
+
             base.ChangeMode(mode);
         }
 
@@ -243,6 +255,7 @@ namespace GameA.Game
             {
                 recordData.ShadowData = ShadowData.GetRecShadowData();
             }
+
             recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
@@ -254,6 +267,7 @@ namespace GameA.Game
             {
                 record = MatrixProjectTools.CompressLZMA(recordByte);
             }
+
             return record;
         }
 
@@ -263,19 +277,23 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (!triggerName.StartsWith(HandbookEventPrefix))
             {
                 return;
             }
+
             int id;
             if (!int.TryParse(triggerName.Substring(HandbookEventPrefix.Length), out id))
             {
                 return;
             }
+
             if (_handbookShowSet.Contains(id))
             {
                 return;
             }
+
             _handbookShowSet.Add(id);
             SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(id);
         }

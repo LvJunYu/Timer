@@ -114,13 +114,17 @@ namespace GameA.Game
 
             if (index >= _sceneList.Count)
             {
-                if (eChangeSceneType == EChangeSceneType.EditCreated || eChangeSceneType == EChangeSceneType.ParseMap)
+                if (eChangeSceneType == EChangeSceneType.EditCreated) 
                 {
                     CreateScene();
+                    var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (gameModeEdit != null)
+                    {
+                        gameModeEdit.NeedSave = true;
+                    }
                 }
-                else
+                else if (eChangeSceneType == EChangeSceneType.ParseMap)
                 {
-                    LogHelper.Error("index is out of range");
                     CreateScene();
                 }
             }
@@ -135,19 +139,21 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-                if (MapManager.Instance.GenerateMapComplete)
-                {
-                    CameraManager.Instance.OnMapChanged();
-                    BgScene2D.Instance.OnMapChanged();
-                    _curScene.Enter();
-                    if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-                    {
-                        EditMode.Instance.OnMapReady();
-                    }
-
-                    Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
-                }
+                OnMapChanged();
+                _curScene.Enter();
             }
+        }
+
+        public void OnMapChanged(EChangeMapRectType eChangeMapRectType = EChangeMapRectType.None)
+        {
+            CameraManager.Instance.OnMapChanged(eChangeMapRectType); //相机
+            BgScene2D.Instance.OnMapChanged(); //背景
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode.Instance.OnMapReady(); //遮罩
+            }
+
+            Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
         }
 
         public void CreateScene()
@@ -307,32 +313,34 @@ namespace GameA.Game
             }
 
             ChangeScene(SqawnSceneIndex);
-            RopeManager.Instance.OnPlay();
         }
 
         public void BeforePlay()
         {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
                 _sceneList[i].BeforePlay();
             }
 
-            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+            ChangeScene(SqawnSceneIndex);
         }
 
-        public void ActionFromOtherScene(int sceneIndex, Action action, EChangeSceneType eChangeSceneType = EChangeSceneType.None)
+        public void ActionFromOtherScene(int sceneIndex, Action action,
+            EChangeSceneType eChangeSceneType = EChangeSceneType.None)
         {
-            int curSceneIndex = CurSceneIndex;
-            if (sceneIndex == curSceneIndex)
+            if (sceneIndex == _curSceneIndex)
             {
                 action.Invoke();
             }
             else
             {
+                int oriSceneIndex = _curSceneIndex;
                 ChangeScene(sceneIndex, eChangeSceneType);
                 action.Invoke();
-                ChangeScene(curSceneIndex, eChangeSceneType);
+                ChangeScene(oriSceneIndex, eChangeSceneType);
             }
         }
     }
@@ -420,7 +428,7 @@ namespace GameA.Game
 
             CreateAirWall();
         }
-        
+
         public void CreateAirWall()
         {
             var validMapRect = _dataScene.ValidMapRect;

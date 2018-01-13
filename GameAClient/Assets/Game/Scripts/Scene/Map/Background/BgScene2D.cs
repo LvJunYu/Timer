@@ -115,7 +115,7 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            RefreshRect();
+            CaculateRect();
             _parent = new GameObject("Background").transform;
             _parents = new Transform[(int) EBgDepth.Max];
             for (int i = 0; i < (int) EBgDepth.Max; i++)
@@ -138,7 +138,7 @@ namespace GameA.Game
             }
         }
 
-        private void RefreshRect()
+        private void CaculateRect()
         {
             var validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validTileRect = GM2DTools.ToGrid2D(validMapTileRect);
@@ -477,7 +477,7 @@ namespace GameA.Game
 
         public void OnMapChanged()
         {
-            RefreshRect();
+            CaculateRect();
             ReGenerateBackground();
         }
 

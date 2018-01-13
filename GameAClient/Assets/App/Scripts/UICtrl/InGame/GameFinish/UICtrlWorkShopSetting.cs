@@ -324,9 +324,11 @@ namespace GameA
                 if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
                 {
                     CurProject.Summary = content;
-                    var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                    if (gameModeWorkshopEdit != null)
-                        gameModeWorkshopEdit.NeedSave = true;
+                    var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (gameModeEdit != null)
+                    {
+                        gameModeEdit.NeedSave = true;
+                    }
                     Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
@@ -344,9 +346,11 @@ namespace GameA
                 if (testRes == CheckTools.ECheckProjectNameResult.Success)
                 {
                     CurProject.Name = content;
-                    var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                    if (gameModeWorkshopEdit != null)
-                        gameModeWorkshopEdit.NeedSave = true;
+                    var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (gameModeEdit != null)
+                    {
+                        gameModeEdit.NeedSave = true;
+                    }
                     Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else

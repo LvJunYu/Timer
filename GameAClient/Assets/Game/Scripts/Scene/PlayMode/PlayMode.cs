@@ -587,6 +587,7 @@ namespace GameA.Game
             _run = true;
             CrossPlatformInputManager.ClearVirtualInput();
             Scene2DManager.Instance.OnPlay();
+            RopeManager.Instance.OnPlay();
             BgScene2D.Instance.OnPlay();
             return true;
         }

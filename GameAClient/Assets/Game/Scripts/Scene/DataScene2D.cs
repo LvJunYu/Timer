@@ -24,7 +24,6 @@ namespace GameA.Game
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
         private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
-        private int _changeTitle = 10 * ConstDefineGM2D.ServerTileScale;
 
         /// <summary>
         /// 删除修改的物体堆栈
@@ -114,12 +113,12 @@ namespace GameA.Game
             if (_size == size) return;
             _size = size;
             var startPos = ConstDefineGM2D.MapStartPos;
-            OnMapRectChanged(new IntRect(startPos, startPos + _size - IntVec2.one));
+            _validMapRect = new IntRect(startPos, startPos + _size - IntVec2.one);
         }
 
         private void ChangeMapRect(IntRect changedTileSize)
         {
-            OnMapRectChanged(_validMapRect + changedTileSize);
+            _validMapRect += changedTileSize;
         }
 
         public void ChangeMapRect(bool add, bool horizontal)
@@ -129,43 +128,31 @@ namespace GameA.Game
             {
                 if (horizontal)
                 {
-                    changedTileSize.Max = IntVec2.right * _changeTitle;
+                    changedTileSize.Max = IntVec2.right * ConstDefineGM2D.MapChangeTitle;
                 }
                 else
                 {
-                    changedTileSize.Max = IntVec2.up * _changeTitle;
+                    changedTileSize.Max = IntVec2.up * ConstDefineGM2D.MapChangeTitle;
                 }
             }
             else
             {
                 if (horizontal)
                 {
-                    changedTileSize.Max = IntVec2.left * _changeTitle;
+                    changedTileSize.Max = IntVec2.left * ConstDefineGM2D.MapChangeTitle;
                 }
                 else
                 {
-                    changedTileSize.Max = IntVec2.down * _changeTitle;
+                    changedTileSize.Max = IntVec2.down * ConstDefineGM2D.MapChangeTitle;
                 }
             }
 
             ChangeMapRect(changedTileSize);
-        }
-
-        private void OnMapRectChanged(IntRect intRect)
-        {
-            if (_validMapRect.Max == intRect.Max) return;
-            _validMapRect = intRect;
-            if (MapManager.Instance.GenerateMapComplete)
+            Scene2DManager.Instance.OnMapChanged(horizontal ? EChangeMapRectType.Right : EChangeMapRectType.Top);
+            var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (gameModeEdit != null)
             {
-                //相机和遮罩
-                CameraManager.Instance.OnMapChanged();
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-                {
-                    EditMode.Instance.OnMapReady();
-                }
-                //背景
-                BgScene2D.Instance.OnMapChanged();
-                Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
+                gameModeEdit.NeedSave = true;
             }
         }
 
@@ -211,7 +198,6 @@ namespace GameA.Game
             int y = size.y > ConstDefineGM2D.ServerTileScale
                 ? (int) (tile.y * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
                 : (int) ((float) tile.y / size.y + 0.5f) * size.y;
-
             return new IntVec3(x, y, UnitManager.GetDepth(tableUnit));
         }
 
@@ -519,7 +505,6 @@ namespace GameA.Game
                             if (units[i] == oldUnitDesc.Guid)
                             {
                                 units[i] = newUnitDesc.Guid;
-
                                 Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                                     switchGuid, oldUnitDesc.Guid, false);
                                 Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
@@ -787,8 +772,14 @@ namespace GameA.Game
         }
     }
 
-#pragma warning disable 0660 0661
+    public enum EChangeMapRectType
+    {
+        None,
+        Right,
+        Top
+    }
 
+#pragma warning disable 0660 0661
     public struct UnitEditData : IEquatable<UnitEditData>
     {
         public UnitDesc UnitDesc;
@@ -815,7 +806,6 @@ namespace GameA.Game
             return (UnitDesc == other.UnitDesc) && (UnitExtra == other.UnitExtra);
         }
     }
-
 
     public struct ModifyData
     {
@@ -863,7 +853,6 @@ namespace GameA.Game
             origExtra.RotateValue = (byte) modifyItemData.OrigExtra.RotateValue;
             origExtra.TimeDelay = (ushort) modifyItemData.OrigExtra.TimeDelay;
             origExtra.TimeInterval = (ushort) modifyItemData.OrigExtra.TimeInterval;
-
             OrigUnit = new UnitEditData(origDesc, origExtra);
             UnitDesc modifiedDesc = new UnitDesc(
                 modifyItemData.ModifiedData.Id,
@@ -891,7 +880,6 @@ namespace GameA.Game
             mid.OrigData.YMin = OrigUnit.UnitDesc.Guid.y;
             mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
             mid.OrigExtra = GM2DTools.ToProto(OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
-
             mid.ModifiedData = new MapRect2D();
             mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
             mid.ModifiedData.Rotation = ModifiedUnit.UnitDesc.Rotation;
@@ -902,7 +890,6 @@ namespace GameA.Game
             mid.ModifiedData.XMax = ModifiedUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
             mid.ModifiedData.YMin = ModifiedUnit.UnitDesc.Guid.y;
             mid.ModifiedData.YMax = ModifiedUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
-
             return mid;
         }
     }

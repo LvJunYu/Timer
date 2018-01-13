@@ -11,6 +11,7 @@ namespace GameA.Game
 {
     public abstract class GameModeEdit : GameModeBase
     {
+        private const int _maxCameraOrthoSize = 16;
         protected EMode _mode = EMode.None;
         protected byte[] _recordBytes;
         protected bool _needSave;
@@ -363,59 +364,66 @@ namespace GameA.Game
             captureRect.width = imageWidth;
             captureRect.y = 0;
             captureRect.x = 0;
-            Texture2D t2 = null;
-            Scene2DManager.Instance.ActionFromOtherScene(0, () =>
+            var mapTiledRect = DataScene2D.CurScene.ValidMapRect;
+            mapTiledRect.Max += new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+            mapTiledRect.Min -= new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+            Rect mapRect = GM2DTools.TileRectToWorldRect(mapTiledRect);
+            float mapAspectRatio = mapRect.width / mapRect.height;
+            float oriCameraOrthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
+            Vector3 oriCameraPos = CameraManager.Instance.MainCameraPos;
+            float cameraOrthoSize;
+            Vector3 cameraPos = mapRect.min;
+            cameraPos.z = oriCameraPos.z;
+            float screenAspectRatio = 1f * Screen.width / Screen.height;
+            if (screenAspectRatio < imageAspectRatio)
             {
-                var mapTiledRect = DataScene2D.CurScene.ValidMapRect;
-                mapTiledRect.Max += new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
-                mapTiledRect.Min -= new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
-                Rect mapRect = GM2DTools.TileRectToWorldRect(mapTiledRect);
-                float mapAspectRatio = mapRect.width / mapRect.height;
-                float oriCameraOrthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
-                Vector3 oriCameraPos = CameraManager.Instance.MainCameraPos;
-                float cameraOrthoSize;
-                Vector3 cameraPos = mapRect.min;
-                cameraPos.z = oriCameraPos.z;
-                float screenAspectRatio = 1f * Screen.width / Screen.height;
-                if (screenAspectRatio < imageAspectRatio)
+                //设置截屏的区域大小
+                captureScreenSize.Set(imageWidth, Mathf.CeilToInt(imageWidth / screenAspectRatio));
+                if (mapAspectRatio > imageAspectRatio)
                 {
-                    //设置截屏的区域大小
-                    captureScreenSize.Set(imageWidth, Mathf.CeilToInt(imageWidth / screenAspectRatio));
-                    if (mapAspectRatio > imageAspectRatio)
-                    {
-                        cameraOrthoSize = Mathf.Min(mapRect.height * imageAspectRatio / screenAspectRatio / 2, 15);
-                    }
-                    else
-                    {
-                        cameraOrthoSize = Mathf.Min(mapRect.width / screenAspectRatio / 2, 15);
-                    }
+                    cameraOrthoSize = Mathf.Min(mapRect.height * imageAspectRatio / screenAspectRatio / 2,
+                        _maxCameraOrthoSize);
                 }
                 else
                 {
-                    captureScreenSize.Set(Mathf.CeilToInt(screenAspectRatio * imageHeight), imageHeight);
-                    if (mapAspectRatio > imageAspectRatio)
-                    {
-                        cameraOrthoSize = Mathf.Min(mapRect.height / 2, 15);
-                    }
-                    else
-                    {
-                        cameraOrthoSize = Mathf.Min(mapRect.width / imageAspectRatio / 2, 15);
-                    }
+                    cameraOrthoSize = Mathf.Min(mapRect.width / screenAspectRatio / 2, _maxCameraOrthoSize);
                 }
+            }
+            else
+            {
+                captureScreenSize.Set(Mathf.CeilToInt(screenAspectRatio * imageHeight), imageHeight);
+                if (mapAspectRatio > imageAspectRatio)
+                {
+                    cameraOrthoSize = Mathf.Min(mapRect.height / 2, _maxCameraOrthoSize);
+                }
+                else
+                {
+                    cameraOrthoSize = Mathf.Min(mapRect.width / imageAspectRatio / 2, _maxCameraOrthoSize);
+                }
+            }
 
-                cameraPos.x += cameraOrthoSize * screenAspectRatio;
-                cameraPos.y += cameraOrthoSize;
-                CameraManager.Instance.MainCameraPos = cameraPos;
-                CameraManager.Instance.RendererCamera.orthographicSize = cameraOrthoSize;
-                EditMode.Instance.CameraMask.Hide();
-                BgScene2D.Instance.UpdateLogic(cameraPos);
-                t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
-                CameraManager.Instance.MainCameraPos = oriCameraPos;
-                CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
-                BgScene2D.Instance.Reset();
-                EditMode.Instance.CameraMask.Show();
-            }, EChangeSceneType.ChangeScene);
+            cameraPos.x += cameraOrthoSize * screenAspectRatio;
+            cameraPos.y += cameraOrthoSize;
+            CameraManager.Instance.MainCameraPos = cameraPos;
+            CameraManager.Instance.RendererCamera.orthographicSize = cameraOrthoSize;
+            EditMode.Instance.CameraMask.Hide();
+            BgScene2D.Instance.UpdateLogic(cameraPos);
+            Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
+            CameraManager.Instance.MainCameraPos = oriCameraPos;
+            CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
+            BgScene2D.Instance.Reset();
+            EditMode.Instance.CameraMask.Show();
             return t2.EncodeToJPG(90);
+        }
+
+        protected void GetCaptureIconBtyes()
+        {
+            Scene2DManager.Instance.ActionFromOtherScene(0, () =>
+            {
+                EditMode.Instance.ChangeEditorLayer(EEditorLayer.Capture);
+                IconBytes = CaptureLevel();
+                EditMode.Instance.RevertEditorLayer();
+            }, EChangeSceneType.ChangeScene);
         }
 
         public virtual bool CheckCanPublish(bool showPrompt = false)

@@ -39,7 +39,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void OnMapChanged()
+        public virtual void OnMapChanged(EChangeMapRectType eChangeMapRectType)
         {
         }
 

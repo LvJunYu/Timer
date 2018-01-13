@@ -33,10 +33,10 @@ namespace GameA.Game
             _mapReady = true;
         }
 
-        public override void OnMapChanged()
+        public override void OnMapChanged(EChangeMapRectType eChangeMapRectType)
         {
             if (!_mapReady) return;
-            base.OnMapChanged();
+            base.OnMapChanged(eChangeMapRectType);
             InitMapCameraParam();
         }
 
