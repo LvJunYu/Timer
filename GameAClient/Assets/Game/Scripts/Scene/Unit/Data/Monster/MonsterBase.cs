@@ -18,6 +18,7 @@ namespace GameA.Game
         protected IntVec2 _clayPos;
         protected bool _isClayOnWall;
         protected UnitBase _attactTarget;
+        protected MonsterCave _monsterCave;
 
         public override bool IsMonster
         {
@@ -373,6 +374,11 @@ namespace GameA.Game
                 {
                     PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
                 }
+
+                if (_monsterCave != null)
+                {
+                    _monsterCave.OnMonsterDestroy(this);
+                }
             }
             base.OnObjectDestroy();
         }
@@ -408,6 +414,21 @@ namespace GameA.Game
             }
 
             return !IsSameTeam(unit.TeamId);
+        }
+        
+        public override UnitExtra GetUnitExtra()
+        {
+            if (_monsterCave != null)
+            {
+                return _monsterCave.GetUnitExtra();
+            }
+            return base.GetUnitExtra();
+        }
+
+        public void SetCave(MonsterCave monsterCave)
+        {
+            _monsterCave = monsterCave;
+            UpdateExtraData();
         }
     }
 }

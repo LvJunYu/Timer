@@ -34,6 +34,7 @@ namespace GameA.Game
         public const int MainPlayerId = 1002;
         public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
+        public const int MonsterDragonId = 2007;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
         public const int ClayId = 4011;
@@ -79,6 +80,11 @@ namespace GameA.Game
         public static bool IsMonster(int id)
         {
             return id > 2000 && id < 3000;
+        }
+
+        public static bool IsMonsterCave(int id)
+        {
+            return id == 5022;
         }
 
         public static bool IsJet(int id)

@@ -115,6 +115,8 @@ namespace GameA.Game
                     return TextState > 0;
                 case EEditType.Camp:
                     return UnitDefine.IsMonster(Id) || UnitDefine.IsSpawn(Id);
+                case EEditType.MonsterCave:
+                    return UnitDefine.IsMonsterCave(Id);
                 case EEditType.Style:
                     return Id == 4001;
             }

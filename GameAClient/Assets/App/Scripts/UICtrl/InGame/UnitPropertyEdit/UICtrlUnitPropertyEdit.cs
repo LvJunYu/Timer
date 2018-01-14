@@ -34,6 +34,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
+        private USCtrlUnitPropertyEditButton[] _monsterCaveMenuList;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
@@ -93,6 +94,7 @@ namespace GameA
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
             _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
             _rootArray[(int) EEditType.Camp] = _cachedView.CampDock;
+            _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -108,6 +110,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
             _menuButtonArray[(int) EEditType.Camp].Init(_cachedView.CampMenu);
+            _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -270,6 +273,20 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
+            
+            list = _cachedView.MonsterCaveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _monsterCaveMenuList = new USCtrlUnitPropertyEditButton[list.Length];
+            da = 360f / EditHelper.Monsters.Length;
+            for (int i = 0; i < list.Length; i++)
+            {
+                var inx = i;
+                var button = new USCtrlUnitPropertyEditButton();
+                button.Init(list[i]);
+                _monsterCaveMenuList[i] = button;
+                _monsterCaveMenuList[i].AddClickListener(() => OnMonsterCaveMenuClick(inx));
+                button.SetPosAngle(da * i, MenuOptionsPosRadius);
+                button.SetBgImageAngle(da * i);
+            }
         }
 
         protected override void OnOpen(object parameter)
@@ -413,6 +430,18 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
+
+            if (_tableUnit.CanEdit(EEditType.MonsterCave))
+            {
+                _validEditPropertyList.Add(EEditType.MonsterCave);
+                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(true);
+                RefreshMonsterCaveMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(false);
+            }
+
 
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
@@ -641,6 +670,26 @@ namespace GameA
             }
         }
 
+        private void RefreshMonsterCaveMenu()
+        {
+            var table = TableManager.Instance.GetUnit(EditData.UnitExtra.MonsterId);
+            if (table != null)
+            {
+                _menuButtonArray[(int) EEditType.MonsterCave].SetFgImage(JoyResManager.Instance.GetSprite(table.Icon));
+            }
+            else
+            {
+                EditData.UnitExtra.MonsterId = (ushort) EditHelper.Monsters[0];
+                EditData.UnitExtra.UpdateFromMonsterId();
+            }
+
+            var monsterId = EditData.UnitExtra.MonsterId;
+            for (int i = 0; i < _monsterCaveMenuList.Length; i++)
+            {
+                _monsterCaveMenuList[i].SetSelected(i < EditHelper.Monsters.Length && EditHelper.Monsters[i] == monsterId);
+            }
+        }
+
         private void RefreshTextDock()
         {
             _cachedView.TextInput.text = _originData.UnitExtra.Msg;
@@ -707,6 +756,27 @@ namespace GameA
             RefreshCampMenu();
         }
 
+        //todo 设置怪物属性
+        private void OnMonsterCaveMenuClick(int inx)
+        {
+            if (inx < EditHelper.Monsters.Length)
+            {
+                ushort monsterId =(ushort) EditHelper.Monsters[inx];
+                EditData.UnitExtra.MonsterId = monsterId;
+                if (UnitDefine.MonsterDragonId == monsterId)
+                {
+                    EditData.UnitExtra.ChildId = (ushort) TableManager.Instance.GetUnit(monsterId).ChildState[0];
+                    EditData.UnitExtra.UpdateFromMonsterId(true);
+                }
+                else
+                {
+                    EditData.UnitExtra.UpdateFromMonsterId();
+                }
+                _upCtrlUnitPropertyEditAdvance.OnMonsterIdChanged();
+                RefreshMonsterCaveMenu();
+            }
+        }
+
         private void OnCloseBtnClick()
         {
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -757,6 +827,13 @@ namespace GameA
                 if (!_openSequence.IsPlaying())
                 {
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+                }
+            }
+            else if (editType == EEditType.MonsterCave)
+            {
+                if (!_openSequence.IsPlaying())
+                {
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
                 }
             }
             else

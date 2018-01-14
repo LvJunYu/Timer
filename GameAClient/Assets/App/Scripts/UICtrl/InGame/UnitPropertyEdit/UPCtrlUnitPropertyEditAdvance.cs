@@ -11,6 +11,7 @@ namespace GameA
         {
             ActorSetting,
             WeaponSetting,
+            MonsterCave
         }
 
         private Sequence _openSequence;
@@ -30,6 +31,9 @@ namespace GameA
         private USCtrlSliderSetting _usChargeTimeSetting;
         private USCtrlSliderSetting _usInjuredReduceSetting;
         private USCtrlSliderSetting _usCurIncreaseSetting;
+        private USCtrlSliderSetting _usMonsterIntervalTimeSetting;
+        private USCtrlSliderSetting _usMaxCreatedMonsterSetting;
+        private USCtrlSliderSetting _usMaxAliveMonsterSetting;
         private USCtrlGameSettingItem _usCanMoveSetting;
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
@@ -51,6 +55,9 @@ namespace GameA
             _usChargeTimeSetting = new USCtrlSliderSetting();
             _usInjuredReduceSetting = new USCtrlSliderSetting();
             _usCurIncreaseSetting = new USCtrlSliderSetting();
+            _usMonsterIntervalTimeSetting = new USCtrlSliderSetting();
+            _usMaxCreatedMonsterSetting = new USCtrlSliderSetting();
+            _usMaxAliveMonsterSetting = new USCtrlSliderSetting();
             _usMaxHpSetting.Init(_cachedView.MaxHpSetting);
             _usJumpSetting.Init(_cachedView.JumpSetting);
             _usMoveSpeedSetting.Init(_cachedView.MoveSpeedSetting);
@@ -63,6 +70,10 @@ namespace GameA
             _usChargeTimeSetting.Init(_cachedView.ChargeTimeSetting);
             _usInjuredReduceSetting.Init(_cachedView.InjuredReduceSetting);
             _usCurIncreaseSetting.Init(_cachedView.CurIncreaseSetting);
+            _usMonsterIntervalTimeSetting.Init(_cachedView.MonsterIntervalTimeSetting);
+            _usMaxCreatedMonsterSetting.Init(_cachedView.MaxCreatedMonsterSetting);
+            _usMaxAliveMonsterSetting.Init(_cachedView.MaxAliveMonsterSetting);
+
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp,
                 value => _mainCtrl.EditData.UnitExtra.MaxHp = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpSetting, EAdvanceAttribute.JumpAbility,
@@ -94,6 +105,12 @@ namespace GameA
                 value => _mainCtrl.EditData.UnitExtra.InjuredReduce = (byte) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usCurIncreaseSetting, EAdvanceAttribute.CureIncrease,
                 value => _mainCtrl.EditData.UnitExtra.CureIncrease = (ushort) value);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMonsterIntervalTimeSetting, EAdvanceAttribute.MonsterIntervalTime,
+                value => _mainCtrl.EditData.UnitExtra.MonsterIntervalTime = (ushort) value);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxCreatedMonsterSetting, EAdvanceAttribute.MaxCreatedMonster,
+                value => _mainCtrl.EditData.UnitExtra.MaxCreatedMonster = (ushort) value);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxAliveMonsterSetting, EAdvanceAttribute.MaxAliveMonster,
+                value => _mainCtrl.EditData.UnitExtra.MaxAliveMonster = (byte) value);
             _usCanMoveSetting = new USCtrlGameSettingItem();
             _usCanMoveSetting.Init(_cachedView.CanMoveSetting);
             _usDropsSetting = new USCtrlAddItem();
@@ -140,6 +157,9 @@ namespace GameA
                                               UnitExtraHelper.CanEdit(EAdvanceAttribute.InjuredReduce, id));
             _usCurIncreaseSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                             UnitExtraHelper.CanEdit(EAdvanceAttribute.CureIncrease, id));
+            _usMonsterIntervalTimeSetting.SetEnable(_curMenu == EMenu.MonsterCave);
+            _usMaxCreatedMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
+            _usMaxAliveMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
             _usCanMoveSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
@@ -158,6 +178,7 @@ namespace GameA
                     maxSpeedX = (ushort) table.MaxSpeed;
                 }
             }
+
             _usMoveSpeedSetting.SetCur(maxSpeedX);
             _usDamageSetting.SetCur(_mainCtrl.EditData.UnitExtra.Damage);
             var minEffectRange = UnitExtraHelper.GetMin(EAdvanceAttribute.EffectRange, _curMenu);
@@ -170,6 +191,9 @@ namespace GameA
             _usChargeTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.ChargeTime);
             _usInjuredReduceSetting.SetCur(_mainCtrl.EditData.UnitExtra.InjuredReduce);
             _usCurIncreaseSetting.SetCur(_mainCtrl.EditData.UnitExtra.CureIncrease);
+            _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
+            _usMaxCreatedMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxCreatedMonster);
+            _usMaxAliveMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxAliveMonster);
             _usCanMoveSetting.SetData(_mainCtrl.EditData.UnitExtra.MaxSpeedX != ushort.MaxValue, value =>
             {
                 _usMoveSpeedSetting.SetEnable(value);
@@ -196,6 +220,7 @@ namespace GameA
             {
                 _cachedView.AdvancePannel.SetActiveEx(false);
             }
+
             base.Close();
         }
 
@@ -205,6 +230,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             _openSequence.Restart();
             _openAnim = true;
         }
@@ -215,6 +241,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             if (_completeAnim)
             {
                 _closeSequence.Complete(true);
@@ -224,6 +251,7 @@ namespace GameA
             {
                 _closeSequence.PlayForward();
             }
+
             _openAnim = false;
         }
 
@@ -281,6 +309,11 @@ namespace GameA
             _usBulletCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletCount);
             _usChargeTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.ChargeTime);
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
+        }
+
+        public void OnMonsterIdChanged()
+        {
+            
         }
     }
 }

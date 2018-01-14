@@ -24,6 +24,7 @@ namespace GameA
                     }
                     else
                     {
+                        UPCtrlUnitPropertyEditPreinstall.ShowFailDialog((EUnitPreinstallOperateResult) unitMsg.ResultCode);
                         if (failAction != null)
                         {
                             failAction.Invoke();

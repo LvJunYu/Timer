@@ -20,16 +20,6 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            var unitExtra = DataScene2D.CurScene.GetUnitExtra(_guid);
-            //todo 兼容老版本
-            if (unitExtra.ChildId < 1000)
-            {
-                _weaponId = unitExtra.ChildId / 100 * 1000 + unitExtra.ChildId % 100;
-            }
-            else
-            {
-                _weaponId = unitExtra.ChildId;
-            }
             SetWeapon(_weaponId);
         }
 
@@ -71,6 +61,22 @@ namespace GameA.Game
         {
             base.OnFire();
             SetInput(EInputType.Skill1, false);
+        }
+
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            //兼容老版本
+            if (unitExtra.ChildId < 1000)
+            {
+                _weaponId = unitExtra.ChildId / 100 * 1000 + unitExtra.ChildId % 100;
+            }
+            else
+            {
+                _weaponId = unitExtra.ChildId;
+            }
+
+            return unitExtra;
         }
     }
 }

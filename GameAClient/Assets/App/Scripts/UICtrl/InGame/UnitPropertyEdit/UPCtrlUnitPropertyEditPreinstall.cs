@@ -165,10 +165,28 @@ namespace GameA
                         HasChanged = false;
                         RefreshView();
                     }
-
-                    //todo
+                    else
+                    {
+                        ShowFailDialog((EUnitPreinstallOperateResult) unitMsg.ResultCode);
+                    }
                 },
                 res => { SocialGUIManager.ShowPopupDialog("创建预设失败"); });
+        }
+
+        public static void ShowFailDialog(EUnitPreinstallOperateResult resultCode)
+        {
+            if (resultCode == EUnitPreinstallOperateResult.UPOR_CountLimitExceeded)
+            {
+                SocialGUIManager.ShowPopupDialog("预设超过最大数量");
+            }
+            else if (resultCode == EUnitPreinstallOperateResult.UPOR_NameError)
+            {
+                SocialGUIManager.ShowPopupDialog("预设名字错误");
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("预设设置失败");
+            }
         }
 
         private void DeletePreinstall(int index, Action successCallBack)
@@ -186,8 +204,10 @@ namespace GameA
                         successCallBack.Invoke();
                     }
                 }
-
-                //todo
+                else
+                {
+                    ShowFailDialog((EUnitPreinstallOperateResult) unitMsg.ResultCode);
+                }
             }, res => { SocialGUIManager.ShowPopupDialog("删除预设失败"); });
         }
 

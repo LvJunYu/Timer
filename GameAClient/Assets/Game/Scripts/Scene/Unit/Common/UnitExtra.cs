@@ -48,6 +48,10 @@ namespace GameA.Game
         public ushort JumpAbility;
         public byte InjuredReduce;
         public ushort CureIncrease;
+        public ushort MonsterIntervalTime;
+        public ushort MaxCreatedMonster;
+        public byte MaxAliveMonster;
+        public ushort MonsterId;
 
         public bool IsDynamic()
         {
@@ -77,7 +81,11 @@ namespace GameA.Game
                    AddStates == other.AddStates &&
                    BulletSpeed == other.BulletSpeed &&
                    InjuredReduce == other.InjuredReduce &&
-                   CureIncrease == other.CureIncrease;
+                   CureIncrease == other.CureIncrease &&
+                   MonsterIntervalTime == other.MonsterIntervalTime &&
+                   MaxCreatedMonster == other.MaxCreatedMonster &&
+                   MaxAliveMonster == other.MaxAliveMonster &&
+                   MonsterId == other.MonsterId;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
@@ -109,6 +117,40 @@ namespace GameA.Game
                 AddStates.Set(skill.AddStates);
             }
         }
+        
+        public void UpdateFromMonsterId(bool userChild= false)
+        {
+            int skillId;
+            if (userChild)
+            {
+                skillId = TableManager.Instance.GetEquipment(ChildId).SkillId;
+            }
+            else
+            {
+                skillId = TableManager.Instance.GetUnit(MonsterId).SkillId;
+            }
+            var skill = TableManager.Instance.GetSkill(skillId);
+            Damage = (ushort) skill.Damage;
+            TimeInterval = (ushort) skill.CDTime;
+            BulletCount = (ushort) skill.BulletCount;
+            CastRange = (ushort) skill.CastRange;
+            ChargeTime = (ushort) skill.ChargeTime;
+            BulletSpeed = (ushort) skill.ProjectileSpeed;
+            if (skill.EffectValues != null)
+            {
+                EffectRange = (ushort) skill.EffectValues[0];
+            }
+            if (skill.KnockbackForces != null)
+            {
+                KnockbackForces.Set(skill.KnockbackForces);
+            }
+
+            if (skill.AddStates != null)
+            {
+                AddStates.Set(skill.AddStates);
+            }
+        }
+
 
         public Msg_Preinstall ToUnitPreInstall()
         {
@@ -135,14 +177,17 @@ namespace GameA.Game
                     {
                         return 10;
                     }
+
                     return GetMin(eAdvanceAttribute);
                 case EAdvanceAttribute.TimeInterval:
                     if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
                     {
                         return 800;
                     }
+
                     return GetMin(eAdvanceAttribute);
             }
+
             return GetMin(eAdvanceAttribute);
         }
 
@@ -176,7 +221,14 @@ namespace GameA.Game
                     return 0;
                 case EAdvanceAttribute.CureIncrease:
                     return 0;
+                case EAdvanceAttribute.MonsterIntervalTime:
+                    return 500;
+                case EAdvanceAttribute.MaxCreatedMonster:
+                    return 1;
+                case EAdvanceAttribute.MaxAliveMonster:
+                    return 1;
             }
+
             return 0;
         }
 
@@ -210,7 +262,14 @@ namespace GameA.Game
                     return 100;
                 case EAdvanceAttribute.CureIncrease:
                     return 500;
+                case EAdvanceAttribute.MonsterIntervalTime:
+                    return 5000;
+                case EAdvanceAttribute.MaxCreatedMonster:
+                    return 300;
+                case EAdvanceAttribute.MaxAliveMonster:
+                    return 10;
             }
+
             return 0;
         }
 
@@ -220,6 +279,7 @@ namespace GameA.Game
             {
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return 100;
                 case EAdvanceAttribute.Damage:
                 case EAdvanceAttribute.EffectRange:
@@ -232,8 +292,11 @@ namespace GameA.Game
                 case EAdvanceAttribute.JumpAbility:
                 case EAdvanceAttribute.InjuredReduce:
                 case EAdvanceAttribute.CureIncrease:
+                case EAdvanceAttribute.MaxCreatedMonster:
+                case EAdvanceAttribute.MaxAliveMonster:
                     return 1;
             }
+
             return 0;
         }
 
@@ -246,8 +309,10 @@ namespace GameA.Game
                     return "{0}%";
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return "{0:f1}秒";
             }
+
             return "{0}";
         }
 
@@ -257,8 +322,10 @@ namespace GameA.Game
             {
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return 1000;
             }
+
             return 1;
         }
 
@@ -277,6 +344,7 @@ namespace GameA.Game
                 LogHelper.Error("cant get unit which id == {0}", id);
                 return false;
             }
+
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.TimeInterval:
@@ -308,6 +376,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.CureIncrease:
                     return table.Hp > 0;
             }
+
             return false;
         }
     }
@@ -373,18 +442,22 @@ namespace GameA.Game
             {
                 list.Add(Param0);
             }
+
             if (Param1 != 0)
             {
                 list.Add(Param1);
             }
+
             if (Param2 != 0)
             {
                 list.Add(Param2);
             }
+
             if (Param3 != 0)
             {
                 list.Add(Param3);
             }
+
             return list;
         }
     }
@@ -405,6 +478,7 @@ namespace GameA.Game
         TimeInterval,
         Text,
         Camp,
+        MonsterCave,
         Style,
         Max,
     }
@@ -426,6 +500,9 @@ namespace GameA.Game
         ChargeTime,
         InjuredReduce,
         CureIncrease,
+        MonsterIntervalTime,
+        MaxCreatedMonster,
+        MaxAliveMonster,
         Max
     }
 }
