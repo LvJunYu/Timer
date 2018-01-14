@@ -30,7 +30,7 @@ namespace GameA.Game
         {
             if (!_mapReady) return;
             base.OnMapChanged(eChangeMapRectType);
-            _positionSpringbackEffect.OnMapChanged();
+            _positionSpringbackEffect.OnMapChanged(eChangeMapRectType);
             _orthoSizeSpringbackEffect.OnMapChanged(eChangeMapRectType);
         }
 

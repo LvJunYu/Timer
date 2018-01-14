@@ -146,14 +146,13 @@ namespace GameA.Game
 
         public void OnMapChanged(EChangeMapRectType eChangeMapRectType = EChangeMapRectType.None)
         {
+            Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
             CameraManager.Instance.OnMapChanged(eChangeMapRectType); //相机
             BgScene2D.Instance.OnMapChanged(); //背景
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.OnMapReady(); //遮罩
             }
-
-            Messenger.Broadcast(EMessengerType.OnValidMapRectChanged);
         }
 
         public void CreateScene()

@@ -35,8 +35,8 @@ namespace GameA
             Vector3 rightPos = CameraManager.Instance.RendererCamera.WorldToScreenPoint(_rightWorldPos);
             _cachedView.TopBtnRtf.position = _uiCamera.ScreenToWorldPoint(topPos);
             _cachedView.RightBtnRtf.position = _uiCamera.ScreenToWorldPoint(rightPos);
-//            _cachedView.TopBtnRtf.anchoredPosition = new Vector2(0, _cachedView.TopBtnRtf.anchoredPosition.y);
-//            _cachedView.RightBtnRtf.anchoredPosition = new Vector2(_cachedView.RightBtnRtf.anchoredPosition.x, 0);
+            _cachedView.TopBtnRtf.anchoredPosition = new Vector2(0, _cachedView.TopBtnRtf.anchoredPosition.y);
+            _cachedView.RightBtnRtf.anchoredPosition = new Vector2(_cachedView.RightBtnRtf.anchoredPosition.x, 0);
         }
 
         private void OnValidMapRectChanged()
@@ -111,8 +111,8 @@ namespace GameA
             //计算按钮位置
             var worldRect = GM2DTools.TileRectToWorldRect(validMapRect);
             var center = worldRect.center;
-            _topWorldPos = new Vector2(center.x, worldRect.bottom);
-            _rightWorldPos = new Vector2(worldRect.right, center.y);
+            _topWorldPos = new Vector2(center.x, worldRect.yMax);
+            _rightWorldPos = new Vector2(worldRect.xMax, center.y);
         }
 
         private void OnCreateSceneBtn()

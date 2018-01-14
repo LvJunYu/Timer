@@ -47,8 +47,15 @@ namespace GameA.Game
         {
             CalculateLimit();
             //OrthoSize变为最大值
-            var delta = _cameraManager.RendererCamera.orthographicSize - _curMaxCameraOrthoSizeLimited;
-            InitSpringbackState(delta);
+            if (eChangeMapRectType == EChangeMapRectType.None)
+            {
+                SetOrthoSize(_curMaxCameraOrthoSizeLimited);
+            }
+            else
+            {
+                var delta = _cameraManager.RendererCamera.orthographicSize - _curMaxCameraOrthoSizeLimited;
+                InitSpringbackState(delta);
+            }
         }
 
         private void CalculateLimit()
