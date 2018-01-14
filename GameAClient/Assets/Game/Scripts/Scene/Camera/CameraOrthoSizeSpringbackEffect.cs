@@ -53,6 +53,11 @@ namespace GameA.Game
             }
             else
             {
+                //让Pos按照最终的CameraOrthoSize计算速度
+                if (null != _onOrthoTargetSizeChangeCallback)
+                {
+                    _onOrthoTargetSizeChangeCallback.Invoke(_curMaxCameraOrthoSizeLimited);
+                }
                 var delta = _cameraManager.RendererCamera.orthographicSize - _curMaxCameraOrthoSizeLimited;
                 InitSpringbackState(delta);
             }

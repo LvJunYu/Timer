@@ -30,8 +30,8 @@ namespace GameA.Game
         {
             if (!_mapReady) return;
             base.OnMapChanged(eChangeMapRectType);
-            _positionSpringbackEffect.OnMapChanged(eChangeMapRectType);
             _orthoSizeSpringbackEffect.OnMapChanged(eChangeMapRectType);
+            _positionSpringbackEffect.OnMapChanged(eChangeMapRectType);
         }
 
         public override void Enter()
