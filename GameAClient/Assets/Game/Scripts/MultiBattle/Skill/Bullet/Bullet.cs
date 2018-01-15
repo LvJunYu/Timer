@@ -8,6 +8,8 @@ namespace GameA.Game
     public class Bullet : IPoolableObject
     {
         protected bool _run;
+        protected bool _zFront;
+
         protected Transform _trans;
         protected UnityNativeParticleItem _effectBullet;
         protected Table_Unit _tableUnit;
@@ -59,6 +61,7 @@ namespace GameA.Game
         public void OnFree()
         {
             _run = false;
+            _zFront = false;
             _skill = null;
             _direction = Vector2.zero;
             _angle = 0;
@@ -122,9 +125,9 @@ namespace GameA.Game
 
         protected float GetZ()
         {
-            return -(_curPos.x + _curPos.y * 1.5f) * UnitDefine.UnitSorttingLayerRatio;
+            return -(_curPos.x + _curPos.y) * UnitDefine.UnitSorttingLayerRatio + (_zFront ? -1.99f : 1.99f);
         }
-
+        
         public void UpdateLogic()
         {
             if (!_run)
@@ -149,6 +152,11 @@ namespace GameA.Game
                             {
                                 _targetUnit = unit;
                                 _curPos = hit.point;
+                                //如果打到左边或者下面 则层级放在前面，显示出来
+                                if (!_zFront && (hit.normal.x > 0 || hit.normal.y > 0))
+                                {
+                                    _zFront = true;
+                                }
                                 _destroy = 1;
                                 if (unit.Id == UnitDefine.MagicSwitchId)
                                 {

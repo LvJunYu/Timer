@@ -1055,7 +1055,6 @@ namespace GameA.Game
                                         ConstDefineGM2D.InverseTextureSize;
                         }
                     }
-
                     IntVec2 tileTextureSize = GM2DTools.WorldToTile(modelSize);
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, tileTextureSize, _tableUnit);
                 }
@@ -1064,18 +1063,15 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-
             var z = GetZ();
             if (UnitDefine.IsJet(Id))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
             }
-
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
-
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
@@ -1100,15 +1096,14 @@ namespace GameA.Game
                 z = Mathf.Clamp(z, min, max);
                 CheckClimbUnitZ(ref z);
             }
-
             return z;
         }
 
         protected float GetZ(IntVec2 pos)
         {
             //为了子弹
-            var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            var size = Mathf.Clamp(_tableUnit.Width/2, 0, ConstDefineGM2D.ServerTileScale);
+            return -(pos.x + pos.y+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
