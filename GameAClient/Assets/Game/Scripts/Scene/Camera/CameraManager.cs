@@ -100,7 +100,7 @@ namespace GameA.Game
         public void OnMapChanged(EChangeMapRectType eChangeMapRectType)
         {
             _cameraCtrlPlay.OnMapChanged(eChangeMapRectType);
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit && !GameRun.Instance.IsPlaying)
             {
                 _cameraCtrlEdit.OnMapChanged(eChangeMapRectType);
             }
