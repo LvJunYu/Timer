@@ -852,29 +852,32 @@ namespace GameA
 
         public void ReadPreinstall()
         {
-            RefreshView();
+            if (_curEnterType == EEnterType.FromMonsterCave)
+            {
+                OnBackToCaveBtn();
+            }
+            else
+            {
+                RefreshView();
+            }
             _upCtrlUnitPropertyEditAdvance.RefreshView();
         }
 
         public void OnMonsterSettingBtn()
         {
             _curEnterType = EEnterType.FromMonsterCave;
-            _upCtrlUnitPropertyEditPreinstall.Close();
             int monsterId = EditData.UnitExtra.MonsterId;
             _tableUnit = TableManager.Instance.GetUnit(monsterId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
-            _upCtrlUnitPropertyEditPreinstall.Open();
         }
         
         public void OnBackToCaveBtn()
         {
             _curEnterType = EEnterType.None;
-            _upCtrlUnitPropertyEditPreinstall.Close();
             _tableUnit = TableManager.Instance.GetUnit(UnitDefine.MonsterCaveId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
-            _upCtrlUnitPropertyEditPreinstall.Open();
         }
         
         public enum EEnterType

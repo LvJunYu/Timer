@@ -42,15 +42,7 @@ namespace GameA
         private void RequestData()
         {
             var list = LocalUser.Instance.UnitPreinstallList;
-            int id;
-            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave)
-            {
-                id = _mainCtrl.EditData.UnitExtra.MonsterId;
-            }
-            else
-            {
-                id = _mainCtrl.EditData.UnitDesc.Id;
-            }
+            int id = _mainCtrl.EditData.UnitDesc.Id;
             list.CheckLocalOrRequest(id, () =>
             {
                 _dataList = list.PreinstallsCache;

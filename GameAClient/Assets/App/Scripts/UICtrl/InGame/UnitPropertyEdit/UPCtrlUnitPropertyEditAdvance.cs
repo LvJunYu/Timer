@@ -174,7 +174,7 @@ namespace GameA
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
             _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
-            _cachedView.BackToCaveBtn.SetActiveEx(_curMenu == EMenu.ActorSetting && _mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
+            _cachedView.BackToCaveBtn.SetActiveEx(_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
 //            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
 //                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
 //            _usAddStatesSetting.SetEnable(b);
