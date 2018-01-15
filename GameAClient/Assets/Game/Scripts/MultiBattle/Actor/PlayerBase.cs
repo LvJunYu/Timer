@@ -449,31 +449,31 @@ namespace GameA.Game
             {
                 return;
             }
-
             if (GameModeNetPlay.DebugEnable())
             {
                 GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnDead",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
-
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             if (_gun != null)
             {
                 _gun.Stop();
             }
-
+            if (_box != null)
+            {
+                _box.IsHoldingByPlayer = false;
+                _box = null;
+            }
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
             {
                 LogHelper.Debug("GameOver!");
             }
-
             if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
             {
                 GM2DGame.Instance.GameMode.ShadowData.RecordDeath();
             }
-
             if (IsMain)
             {
                 Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
@@ -487,13 +487,11 @@ namespace GameA.Game
                 GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1}",
                     _roomUser == null ? -1 : _roomUser.Guid, _revivePos));
             }
-
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
                 GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
             }
-
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -511,19 +509,12 @@ namespace GameA.Game
 
                     OnHpChanged(_maxHp);
                     _dieTime = 0;
-                    if (_box != null)
-                    {
-                        _box.IsHoldingByPlayer = false;
-                        _box = null;
-                    }
-
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     SetPos(_revivePos);
                     if (IsMain)
                     {
                         PlayMode.Instance.UpdateWorldRegion(_curPos);
                     }
-
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
                     if (_gun != null)
@@ -531,19 +522,16 @@ namespace GameA.Game
                         _gun.Play();
                         _gun.Revive();
                     }
-
                     if (IsMain)
                     {
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                         Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                     }
-
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
                     }
-
                     if (PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime > 0)
                     {
                         AddStates(null, 61);
@@ -714,7 +702,6 @@ namespace GameA.Game
                             {
                                 TeamManager.Instance.ResetCameraPlayer();
                             }
-
                             OnRevive();
                         }
 

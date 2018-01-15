@@ -107,6 +107,7 @@ namespace GameA.Game
                 if (_timer == _crossTimer)
                 {
                     SetCross(true);
+                    SetEnabled(false);
                     //消失
                     PlayMode.Instance.Freeze(this);
                     Messenger.Broadcast(EMessengerType.OnTrampCloud);
@@ -125,6 +126,7 @@ namespace GameA.Game
             _timer = 0;
             PlayMode.Instance.UnFreeze(this);
             SetCross(false);
+            SetEnabled(true);
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);

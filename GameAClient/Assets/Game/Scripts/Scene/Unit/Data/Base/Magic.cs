@@ -64,7 +64,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
+            if (!CheckUseful())
             {
                 return;
             }
@@ -234,7 +234,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
+            if (!CheckUseful())
             {
                 return;
             }
@@ -269,9 +269,18 @@ namespace GameA.Game
             }
         }
 
+        private bool CheckUseful()
+        {
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
+            {
+                return false;
+            }
+            return true;
+        }
+
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            if (_eActiveState != EActiveState.Active || !UseMagic())
+            if (!CheckUseful())
             {
                 return IntVec2.zero;
             }
