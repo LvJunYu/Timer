@@ -9,6 +9,7 @@ namespace GameA.Game
         /// 大部分操作都是一条数据，这样节省内存
         /// </summary>
         private EditRecordData _firstRecordData;
+
         private List<EditRecordData> _listRecordData;
 
         public bool IsEmpty
@@ -24,7 +25,7 @@ namespace GameA.Game
             recordData.UnitExtra = unitExtra;
             AddRecordData(ref recordData);
         }
-        
+
         public void RecordRemoveUnit(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
         {
             EditRecordData recordData = new EditRecordData();
@@ -33,7 +34,7 @@ namespace GameA.Game
             recordData.UnitExtra = unitExtra;
             AddRecordData(ref recordData);
         }
-        
+
         public void RecordUpdateExtra(ref UnitDesc oldUnitDesc, ref UnitExtra oldUnitExtra,
             ref UnitDesc newUnitDesc, ref UnitExtra newUnitExtra)
         {
@@ -45,7 +46,17 @@ namespace GameA.Game
             recordData.UnitExtraOld = oldUnitExtra;
             AddRecordData(ref recordData);
         }
-        
+
+        public void RecordChangeMapRect(bool add, bool horizontal)
+        {
+            EditRecordData recordData = new EditRecordData();
+            recordData.ActionType = EditRecordData.EAction.ChangeMapRect;
+            int x = horizontal ? add ? 1 : -1 : 0;
+            int y = horizontal ? 0 : add ? 1 : -1;
+            recordData.SwitchGuid = new IntVec3(x, y, 0);
+            AddRecordData(ref recordData);
+        }
+
         public void RecordAddSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             EditRecordData recordData = new EditRecordData();
@@ -54,7 +65,7 @@ namespace GameA.Game
             recordData.SwitchGuid = switchGuid;
             AddRecordData(ref recordData);
         }
-        
+
         public void RecordRemoveSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             EditRecordData recordData = new EditRecordData();
@@ -63,13 +74,14 @@ namespace GameA.Game
             recordData.SwitchGuid = switchGuid;
             AddRecordData(ref recordData);
         }
-        
+
         public void Redo()
         {
             if (EditRecordData.EAction.None != _firstRecordData.ActionType)
             {
                 RedoRecordData(_firstRecordData);
             }
+
             if (null != _listRecordData)
             {
                 for (int i = 0; i < _listRecordData.Count; i++)
@@ -77,6 +89,7 @@ namespace GameA.Game
                     RedoRecordData(_listRecordData[i]);
                 }
             }
+
             // 开关模式不健壮，需要重刷
             if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
             {
@@ -89,15 +102,17 @@ namespace GameA.Game
         {
             if (null != _listRecordData)
             {
-                for (int i = _listRecordData.Count-1; i >= 0; i--)
+                for (int i = _listRecordData.Count - 1; i >= 0; i--)
                 {
                     UndoRecordData(_listRecordData[i]);
                 }
             }
+
             if (EditRecordData.EAction.None != _firstRecordData.ActionType)
             {
                 UndoRecordData(_firstRecordData);
             }
+
             // 开关模式不健壮，需要重刷
             if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
             {
@@ -125,6 +140,19 @@ namespace GameA.Game
                 case EditRecordData.EAction.RemoveSwitchConnection:
                     DataScene2D.CurScene.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
+                case EditRecordData.EAction.ChangeMapRect:
+                    bool horizontal = recordData.SwitchGuid.x != 0;
+                    bool add;
+                    if (horizontal)
+                    {
+                        add = recordData.SwitchGuid.x > 0;
+                    }
+                    else
+                    {
+                        add = recordData.SwitchGuid.y > 0;
+                    }
+                    DataScene2D.CurScene.ChangeMapRect(add, horizontal, false);
+                    break;
             }
         }
 
@@ -147,6 +175,19 @@ namespace GameA.Game
                 case EditRecordData.EAction.RemoveSwitchConnection:
                     DataScene2D.CurScene.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
                     break;
+                case EditRecordData.EAction.ChangeMapRect:
+                    bool horizontal = recordData.SwitchGuid.x != 0;
+                    bool add;
+                    if (horizontal)
+                    {
+                        add = recordData.SwitchGuid.x > 0;
+                    }
+                    else
+                    {
+                        add = recordData.SwitchGuid.y > 0;
+                    }
+                    DataScene2D.CurScene.ChangeMapRect(!add, horizontal, false);
+                    break;
             }
         }
 
@@ -162,9 +203,9 @@ namespace GameA.Game
                 {
                     _listRecordData = new List<EditRecordData>();
                 }
+
                 _listRecordData.Add(editRecordData);
             }
         }
-        
     }
 }

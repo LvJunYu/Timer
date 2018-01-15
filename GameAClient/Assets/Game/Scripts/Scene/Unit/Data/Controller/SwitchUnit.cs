@@ -30,7 +30,7 @@ namespace GameA.Game
         internal override bool InstantiateView()
         {
             // 游戏中重新生成View时
-            if (_switchTrigger == null)
+            if (GameRun.Instance.IsPlaying && _switchTrigger == null)
             {
                 CreateSwitchTrigger();
             }

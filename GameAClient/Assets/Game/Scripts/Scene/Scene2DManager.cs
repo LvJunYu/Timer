@@ -118,11 +118,6 @@ namespace GameA.Game
                 if (eChangeSceneType == EChangeSceneType.EditCreated) 
                 {
                     CreateScene();
-                    var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-                    if (gameModeEdit != null)
-                    {
-                        gameModeEdit.NeedSave = true;
-                    }
                 }
                 else if (eChangeSceneType == EChangeSceneType.ParseMap)
                 {
@@ -343,6 +338,30 @@ namespace GameA.Game
                 ChangeScene(oriSceneIndex, eChangeSceneType);
             }
         }
+        
+        public void Undo()
+        {
+            if (_curScene != null)
+            {
+                _curScene.Undo();
+            }
+        }
+
+        public void Redo()
+        {
+            if (_curScene != null)
+            {
+                _curScene.Redo();
+            }
+        }
+        
+        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
+        {
+            if (_curScene != null)
+            {
+                _curScene.CommitRecord(editRecordBatch);
+            }
+        }
     }
 
     public class Scene2DEntity : IDisposable
@@ -350,6 +369,7 @@ namespace GameA.Game
         private DataScene2D _dataScene = new DataScene2D();
         private ColliderScene2D _colliderScene = new ColliderScene2D();
         private IntVec2 _mapSize;
+        private EditRecordManager _editRecordManager;
 
         public DataScene2D DataScene
         {
@@ -365,12 +385,16 @@ namespace GameA.Game
         {
             _dataScene.Init(mapSize, sceneIndex);
             _colliderScene.Init(sceneIndex);
+            _editRecordManager = new EditRecordManager();
+            _editRecordManager.Init();
         }
 
         public void Dispose()
         {
             _dataScene.Dispose();
             _colliderScene.Dispose();
+            _editRecordManager.Clear();
+            _editRecordManager = null;
         }
 
         public void Exit()
@@ -449,6 +473,21 @@ namespace GameA.Game
             PlayMode.Instance.CreateUnit(upUnitDesc);
             PlayMode.Instance.CreateUnit(leftUnitDesc);
             PlayMode.Instance.CreateUnit(rightUnitDesc);
+        }
+        
+        public void Undo()
+        {
+            _editRecordManager.Undo();
+        }
+
+        public void Redo()
+        {
+            _editRecordManager.Redo();
+        }
+        
+        public void CommitRecord(EditRecordBatch editRecordBatch)
+        {
+            _editRecordManager.CommitRecord(editRecordBatch);
         }
     }
 

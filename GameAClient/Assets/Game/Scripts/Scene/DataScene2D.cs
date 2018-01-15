@@ -121,7 +121,7 @@ namespace GameA.Game
             _validMapRect += changedTileSize;
         }
 
-        public void ChangeMapRect(bool add, bool horizontal)
+        public void ChangeMapRect(bool add, bool horizontal, bool record = true)
         {
             var changedTileSize = new IntRect(IntVec2.zero, IntVec2.zero);
             if (add)
@@ -147,6 +147,13 @@ namespace GameA.Game
                 }
             }
 
+            if (record)
+            {
+                //记录
+                var recordBatch = new EditRecordBatch();
+                recordBatch.RecordChangeMapRect(add, horizontal);
+                Scene2DManager.Instance.CommitRecordBatch(recordBatch);
+            }
             ChangeMapRect(changedTileSize);
             Scene2DManager.Instance.OnMapChanged(horizontal ? EChangeMapRectType.Right : EChangeMapRectType.Top);
             var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;

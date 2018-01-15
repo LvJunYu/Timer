@@ -50,7 +50,6 @@ namespace GameA.Game
         private StateMachine<EditMode, EditModeState.Base> _stateMachine;
         private EditModeStateMachineHelper _stateMachineHelper;
         private BlackBoard _boardData;
-        private EditRecordManager _editRecordManager;
         private readonly MapStatistics _mapStatistics = new MapStatistics();
         [SerializeField]
         private GameObject _backgroundObject;
@@ -115,8 +114,7 @@ namespace GameA.Game
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
-                _editRecordManager.Clear();
-                _editRecordManager = null;
+                
                 _enable = false;
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
@@ -134,12 +132,10 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.None.Instance);
             _boardData = new BlackBoard();
             _boardData.Init();
-            _editRecordManager = new EditRecordManager();
-            _editRecordManager.Init();
             
             _backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
-            box.size = Vector2.one*1000;
+            box.size = Vector2.one * 1000;
             box.transform.position = Vector3.forward;
             
             InitMask();
@@ -279,16 +275,6 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.ModifyModify.Instance);
         }
 
-        public void Undo()
-        {
-            _editRecordManager.Undo();
-        }
-
-        public void Redo()
-        {
-            _editRecordManager.Redo();
-        }
-
         public void Update()
         {
             if (!_enable) return;
@@ -304,12 +290,6 @@ namespace GameA.Game
         #endregion
 
         #region PublicMethod
-
-        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
-        {
-            _editRecordManager.CommitRecord(editRecordBatch);
-        }
-
         /// <summary>
         /// 从地图文件反序列化时的处理方法
         /// </summary>

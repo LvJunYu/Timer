@@ -34,6 +34,10 @@ namespace GameA.Game
             /// 删除开关连接
             /// </summary>
             RemoveSwitchConnection,
+            /// <summary>
+            /// 修改场景大小
+            /// </summary>
+            ChangeMapRect,
         }
     }
 }
