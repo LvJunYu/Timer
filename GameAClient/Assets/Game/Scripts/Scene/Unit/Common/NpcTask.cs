@@ -6,8 +6,11 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SoyEngine;
 using SoyEngine.Proto;
+using Win32;
 
 #pragma warning disable 0660 0661
 namespace GameA.Game
@@ -19,18 +22,12 @@ namespace GameA.Game
     [StructLayout(LayoutKind.Sequential)]
     public struct NpcTask : IEquatable<NpcTask>
     {
-        public byte NpcType;
-        public string NpcName;
-        public string NpcDialog;
-        public byte NpcShowType;
+        public ushort NpcSerialNumber;
+        public MultiParamDia TaskBefore;
+        public MultiParamDia TaskMiddle;
+        public MultiParamDia TaskAfter;
+        public MultiParamTarget Targets;
 
-        public bool Equals(UnitExtra other)
-        {
-            return
-                NpcName == other.NpcName &&
-                NpcType == other.NpcType &&
-                NpcShowType == other.NpcShowType;
-        }
 
         public static bool operator ==(NpcTask a, NpcTask other)
         {
@@ -46,21 +43,229 @@ namespace GameA.Game
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
             var msg = new UnitExtraNpcTaskData();
-
+            msg.NpcSerialNumber = NpcSerialNumber;
+            msg.TaskBefore.AddRange(TaskBefore.ToList());
+            msg.TaskMiddle.AddRange(TaskMiddle.ToList());
+            msg.TaskAfter.AddRange(TaskAfter.ToList());
+            msg.TaskTarget.AddRange(Targets.ToProtoDataList());
             return msg;
         }
 
         public void Set(UnitExtraNpcTaskData data)
         {
+            NpcSerialNumber = (ushort) data.NpcSerialNumber;
+            TaskBefore.Set(data.TaskBefore.ToArray());
+            TaskMiddle.Set(data.TaskMiddle.ToArray());
+            TaskAfter.Set(data.TaskAfter.ToArray());
+            Targets.SetProtoData(data.TaskTarget.ToArray());
         }
 
         public bool Equals(NpcTask other)
         {
             return
-                NpcDialog == other.NpcDialog &&
-                NpcName == other.NpcName &&
-                NpcType == other.NpcType &&
-                NpcShowType == other.NpcShowType;
+                NpcSerialNumber == other.NpcSerialNumber &&
+                TaskBefore == other.TaskBefore &&
+                TaskMiddle == other.TaskMiddle &&
+                TaskAfter == other.TaskAfter;
+        }
+    }
+
+
+    public struct MultiParamDia : IEquatable<MultiParamDia>
+    {
+        public bool HasContent;
+        public string Param0;
+        public string Param1;
+        public string Param2;
+        public string Param3;
+        public string Param4;
+
+        public bool Equals(MultiParamDia other)
+        {
+            return Param0 == other.Param0 &&
+                   Param1 == other.Param1 &&
+                   Param2 == other.Param2 &&
+                   Param3 == other.Param3 &&
+                   Param4 == other.Param4;
+        }
+
+        public static bool operator ==(MultiParamDia a, MultiParamDia other)
+        {
+            return a.Equals(other);
+        }
+
+        public static bool operator !=(MultiParamDia a, MultiParamDia other)
+        {
+            return !(a == other);
+        }
+
+        public void Set(string[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasContent = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Param0 = (string) list[0];
+                        break;
+                    case 1:
+                        Param1 = (string) list[1];
+                        break;
+                    case 2:
+                        Param2 = (string) list[2];
+                        break;
+                    case 3:
+                        Param3 = (string) list[3];
+                        break;
+                    case 4:
+                        Param4 = (string) list[4];
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
+                }
+            }
+        }
+
+        public List<string> ToList()
+        {
+            List<string> list = new List<string>();
+            if (!HasContent) return list;
+            if (Param0 != null)
+            {
+                list.Add(Param0);
+            }
+            if (Param1 != null)
+            {
+                list.Add(Param1);
+            }
+            if (Param2 != null)
+            {
+                list.Add(Param2);
+            }
+            if (Param3 != null)
+            {
+                list.Add(Param3);
+            }
+            if (Param4 != null)
+            {
+                list.Add(Param4);
+            }
+            return list;
+        }
+    }
+
+    public struct MultiParamTarget : IEquatable<MultiParamTarget>
+    {
+        public bool HasContent;
+        public bool HasContentProtoData;
+        public NpcTaskTarget Param0;
+        public NpcTaskTarget Param1;
+        public NpcTaskTarget Param2;
+
+        public bool Equals(MultiParamTarget other)
+        {
+            return Param0 == other.Param0 &&
+                   Param1 == other.Param1 &&
+                   Param2 == other.Param2;
+        }
+
+        public static bool operator ==(MultiParamTarget a, MultiParamTarget other)
+        {
+            return a.Equals(other);
+        }
+
+        public static bool operator !=(MultiParamTarget a, MultiParamTarget other)
+        {
+            return !(a == other);
+        }
+
+        public void Set(NpcTaskTarget[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasContent = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Param0 = (NpcTaskTarget) list[0];
+                        break;
+                    case 1:
+                        Param1 = (NpcTaskTarget) list[1];
+                        break;
+                    case 2:
+                        Param2 = (NpcTaskTarget) list[2];
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
+                }
+            }
+        }
+
+        public List<NpcTaskTarget> ToList()
+        {
+            List<NpcTaskTarget> list = new List<NpcTaskTarget>();
+            if (!HasContent) return list;
+            if (Param0.TaskType != 0)
+            {
+                list.Add(Param0);
+            }
+            if (Param1.TaskType != 0)
+            {
+                list.Add(Param1);
+            }
+            if (Param2.TaskType != 0)
+            {
+                list.Add(Param2);
+            }
+            return list;
+        }
+
+        public void SetProtoData(UnitExtraNpcTaskTarget[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasContentProtoData = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Param0.Set(list[0]);
+                        break;
+                    case 1:
+                        Param1.Set(list[1]);
+                        break;
+                    case 2:
+                        Param2.Set(list[2]);
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
+                }
+            }
+        }
+
+        public List<UnitExtraNpcTaskTarget> ToProtoDataList()
+        {
+            List<UnitExtraNpcTaskTarget> list = new List<UnitExtraNpcTaskTarget>();
+            if (!HasContentProtoData) return list;
+            if (Param0.TaskType != 0)
+            {
+                list.Add(Param0.ToUnitExtraNpcTaskTarget());
+            }
+            if (Param1.TaskType != 0)
+            {
+                list.Add(Param1.ToUnitExtraNpcTaskTarget());
+            }
+            if (Param2.TaskType != 0)
+            {
+                list.Add(Param2.ToUnitExtraNpcTaskTarget());
+            }
+            return list;
         }
     }
 }

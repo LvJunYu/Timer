@@ -462,7 +462,12 @@ namespace GameA.Game
             res.Drops.AddRange(data.Drops.ToList());
             res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
             res.AddStates.AddRange(data.AddStates.ToList());
-            res.NpcTask = data.NpcTask.ToUnitExtraNpcTaskData();
+            //Npc相关数据
+            res.NpcType = data.NpcType;
+            res.NpcName = data.NpcName;
+            res.NpcShowType = data.NpcShowType;
+            res.NpcShowInterval = data.NpcShowInterval;
+            res.NpcTask.AddRange(data.NpcTask.ToListData());
             return res;
         }
 
@@ -495,6 +500,12 @@ namespace GameA.Game
             unitExtra.CureIncrease = (ushort) data.CureIncrease;
             unitExtra.KnockbackForces.Set(data.KnockbackForces.ToArray());
             unitExtra.AddStates.Set(data.AddStates.ToArray());
+            //Npc相关数据
+            unitExtra.NpcType = (byte) data.NpcType;
+            unitExtra.NpcName = (string) data.NpcName;
+            unitExtra.NpcShowType = (byte) data.NpcShowType;
+            unitExtra.NpcShowInterval = (ushort) data.NpcShowInterval;
+            unitExtra.NpcTask.Set(data.NpcTask.ToArray());
             return unitExtra;
         }
 
@@ -734,7 +745,7 @@ namespace GameA.Game
         {
             Vector3 offsetInWorld = Vector3.zero;
             Vector3 modelSizeInWorld = TileToWorld(modelSize);
-            // 这里只能假设物体都是一个方块大小，不然锚点没有参照物
+// 这里只能假设物体都是一个方块大小，不然锚点没有参照物
             Vector3 dataSizeInWorld = TileToWorld(dataSize);
             EAnchore anchor = tableUnit.EModelAnchore;
             switch (anchor)

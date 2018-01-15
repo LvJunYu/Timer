@@ -48,12 +48,16 @@ namespace GameA.Game
         public ushort JumpAbility;
         public byte InjuredReduce;
         public ushort CureIncrease;
+
+        //Npc相关
+
         public byte NpcType;
         public string NpcName;
         public string NpcDialog;
         public byte NpcShowType;
         public ushort NpcShowInterval;
-        public NpcTask NpcTask;
+        public MultiParamTask NpcTask;
+
 
         public bool IsDynamic()
         {
@@ -407,6 +411,117 @@ namespace GameA.Game
         }
     }
 
+    public struct MultiParamTask : IEquatable<MultiParamTask>
+    {
+        public bool HasContent;
+        public NpcTask Param0;
+        public NpcTask Param1;
+        public NpcTask Param2;
+
+        public bool Equals(MultiParamTask other)
+        {
+            return Param0 == other.Param0 &&
+                   Param1 == other.Param1 &&
+                   Param2 == other.Param2;
+        }
+
+        public static bool operator ==(MultiParamTask a, MultiParamTask other)
+        {
+            return a.Equals(other);
+        }
+
+        public static bool operator !=(MultiParamTask a, MultiParamTask other)
+        {
+            return !(a == other);
+        }
+
+        public void Set(NpcTask[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasContent = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Param0 = (NpcTask) list[0];
+                        break;
+                    case 1:
+                        Param1 = (NpcTask) list[1];
+                        break;
+                    case 2:
+                        Param2 = (NpcTask) list[2];
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
+                }
+            }
+        }
+
+        public void Set(UnitExtraNpcTaskData[] list)
+        {
+            if (list == null || list.Length == 0) return;
+            HasContent = true;
+            for (int i = 0; i < list.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Param0.Set(list[0]);
+                        break;
+                    case 1:
+                        Param1.Set(list[1]);
+                        break;
+                    case 2:
+                        Param2.Set(list[2]);
+                        break;
+                    default:
+                        LogHelper.Error("list's length is bigger than param count");
+                        break;
+                }
+            }
+        }
+
+        public List<UnitExtraNpcTaskData> ToListData()
+        {
+            List<UnitExtraNpcTaskData> list = new List<UnitExtraNpcTaskData>();
+            if (!HasContent) return list;
+            if (Param0.NpcSerialNumber > 0)
+            {
+                list.Add(Param0.ToUnitExtraNpcTaskData());
+            }
+            if (Param1.NpcSerialNumber > 0)
+            {
+                list.Add(Param1.ToUnitExtraNpcTaskData());
+            }
+            if (Param2.NpcSerialNumber > 0)
+            {
+                list.Add(Param2.ToUnitExtraNpcTaskData());
+            }
+            return list;
+        }
+
+        public List<NpcTask> ToList()
+        {
+            List<NpcTask> list = new List<NpcTask>();
+            if (!HasContent) return list;
+            if (Param0.NpcSerialNumber > 0)
+            {
+                list.Add(Param0);
+            }
+            if (Param1.NpcSerialNumber > 0)
+            {
+                list.Add(Param1);
+            }
+            if (Param2.NpcSerialNumber > 0)
+            {
+                list.Add(Param2);
+            }
+            return list;
+        }
+    }
+
     public enum EEditType
     {
         None = -1,
@@ -427,6 +542,7 @@ namespace GameA.Game
         NpcType,
         NpcTask,
         Max,
+      
     }
 
     public enum EAdvanceAttribute

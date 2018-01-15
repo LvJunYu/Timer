@@ -40,7 +40,8 @@ namespace GameA
         private float _posTweenFactor;
         private EEditType _curEditType;
 
-        private UPCtrlUnitPropertyEditNpcTask _upCtrlUnitPropertyEditNpcTask;
+        private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
+        private UPCtrlUnitPropertyEditNpcTaskType _upCtrlUnitPropertyEditNpcTaskType;
 
         protected override void InitGroupId()
         {
@@ -86,9 +87,12 @@ namespace GameA
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
             _upCtrlUnitPropertyEditPreinstall.Init(this, _cachedView);
-            // npc任务
-            _upCtrlUnitPropertyEditNpcTask = new UPCtrlUnitPropertyEditNpcTask();
-            _upCtrlUnitPropertyEditNpcTask.Init(this, _cachedView);
+            // npc对话类
+            _upCtrlUnitPropertyEditNpcDiaType = new UPCtrlUnitPropertyEditNpcDiaType();
+            _upCtrlUnitPropertyEditNpcDiaType.Init(this, _cachedView);
+            //任务类
+            _upCtrlUnitPropertyEditNpcTaskType = new UPCtrlUnitPropertyEditNpcTaskType();
+            _upCtrlUnitPropertyEditNpcTaskType.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -831,12 +835,17 @@ namespace GameA
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
             }
+
+            //任务型npc
+
             if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
             {
-                if (!_openSequence.IsPlaying())
-                {
-                    _upCtrlUnitPropertyEditNpcTask.OpenMenu(UPCtrlUnitPropertyEditNpcTask.EMenu.Task);
-                }
+                _upCtrlUnitPropertyEditNpcDiaType.Close();
+                _upCtrlUnitPropertyEditNpcTaskType.Open();
+            }
+            else
+            {
+                _upCtrlUnitPropertyEditNpcTaskType.Close();
             }
         }
 
@@ -844,7 +853,7 @@ namespace GameA
         {
             RefreshView();
             _upCtrlUnitPropertyEditAdvance.RefreshView();
-            _upCtrlUnitPropertyEditNpcTask.RefreshView();
+            _upCtrlUnitPropertyEditNpcDiaType.RefreshView();
         }
     }
 }
