@@ -404,6 +404,18 @@ namespace GameA.Game
 
             UnitManager.Instance.FreeUnitView(unit);
         }
+        
+        public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
+        {
+            var tableUnit = UnitManager.Instance.GetTableUnit(colliderNode.Id);
+            if (tableUnit == null)
+            {
+                unit = null;
+                return false;
+            }
+            return TryGetUnit(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
+                out unit);
+        }
 
         public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
         {
@@ -411,7 +423,6 @@ namespace GameA.Game
             {
                 return false;
             }
-
             return !unit.IsFreezed;
         }
 
@@ -421,7 +432,6 @@ namespace GameA.Game
             {
                 return true;
             }
-
             // Player会跨场景，特殊处理
             var players = PlayerManager.Instance.PlayerList;
             for (int i = 0; i < players.Count; i++)
@@ -432,21 +442,7 @@ namespace GameA.Game
                     return true;
                 }
             }
-
             return false;
-        }
-
-        public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
-        {
-            var tableUnit = UnitManager.Instance.GetTableUnit(colliderNode.Id);
-            if (tableUnit == null)
-            {
-                unit = null;
-                return false;
-            }
-
-            return TryGetUnitAndPlayer(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
-                out unit);
         }
 
         public void Reset()
