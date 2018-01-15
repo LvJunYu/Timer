@@ -238,8 +238,20 @@ namespace GameA.Game
 
             if (tableUnit.IsGround == 1)
             {
-                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale,
-                    unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                if (unitDesc.Scale != Vector2.one)
+                {
+                    for (int i = 0; i < unit.Scale.x; i++)
+                    {
+                        for (int j = 0; j < unit.Scale.y; j++)
+                        {
+                            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale + i, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale + j] = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                }
             }
 
             if (UnitDefine.IsSwitchTrigger(unit.Id))
