@@ -49,6 +49,7 @@ namespace GameA.Game
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
+        public const int MonsterCaveId = 5022;
         public const int BillboardId = 7001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;
@@ -80,11 +81,6 @@ namespace GameA.Game
         public static bool IsMonster(int id)
         {
             return id > 2000 && id < 3000;
-        }
-
-        public static bool IsMonsterCave(int id)
-        {
-            return id == 5022;
         }
 
         public static bool IsJet(int id)

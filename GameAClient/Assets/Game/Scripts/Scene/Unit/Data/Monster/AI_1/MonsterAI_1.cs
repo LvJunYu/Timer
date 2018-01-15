@@ -20,7 +20,7 @@ namespace GameA.Game
             Seek,
             Attack,
         }
-        
+
         protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 PathRange = new IntVec2(3, 2);
         protected const int MaxStuckFrames = 30;
@@ -29,19 +29,20 @@ namespace GameA.Game
 
         protected IntVec2 _lastMonsterPos;
         protected EAIState _eState;
-        
+
         protected int _thinkTimer;
         protected int _stuckTimer;
         protected int _reSeekTimer;
-        
+
         protected int _currentNodeId;
-        
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
             {
                 return false;
             }
+
             //AI 最大速度>=50. 碰撞高度<=520
 //            _maxSpeedX = 50;
             return true;
@@ -50,7 +51,7 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-            if (unitExtra.MaxSpeedX > 0)
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;
             }
@@ -62,6 +63,7 @@ namespace GameA.Game
             {
                 _maxSpeedX = 50;
             }
+
             return unitExtra;
         }
 
@@ -76,7 +78,7 @@ namespace GameA.Game
             _currentNodeId = 0;
             base.Clear();
         }
-        
+
         protected virtual void ChangeState(EAIState state)
         {
             _eState = state;
@@ -85,7 +87,7 @@ namespace GameA.Game
                 GameModeNetPlay.WriteDebugData(string.Format("MonsterAi_1 ChangeState {0}", _eState.ToString()));
             }
         }
-        
+
         protected override void UpdateMonsterAI()
         {
             base.UpdateMonsterAI();
@@ -93,6 +95,7 @@ namespace GameA.Game
             {
                 _thinkTimer--;
             }
+
             ChangeState(EAIState.Idle);
             IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
             if (AttackTarget.CanMove)
@@ -101,22 +104,24 @@ namespace GameA.Game
                 {
                     ChangeState(EAIState.Attack);
                 }
-                else if(ConditionSeek(rel))
+                else if (ConditionSeek(rel))
                 {
                     ChangeState(EAIState.Seek);
                 }
-                else if(ConditionThink(rel))
+                else if (ConditionThink(rel))
                 {
                     ChangeState(EAIState.Think);
                 }
             }
+
             if (_eState != EAIState.Seek)
             {
                 SetInput(EInputType.Right, false);
                 SetInput(EInputType.Left, false);
             }
+
             SetInput(EInputType.Skill1, false);
-            
+
             switch (_eState)
             {
                 case EAIState.Think:
@@ -134,7 +139,8 @@ namespace GameA.Game
             {
                 for (int i = 0; i < _path.Count - 1; i++)
                 {
-                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f), new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
+                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f),
+                        new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
                 }
             }
 #endif
@@ -165,6 +171,7 @@ namespace GameA.Game
                     return;
                 }
             }
+
             _lastMonsterPos = _curPos;
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
             IntVec2 distance = (_path[_path.Count - 1] - AttackTarget.CurPos) / ConstDefineGM2D.ServerTileScale;
@@ -185,7 +192,7 @@ namespace GameA.Game
             var pathPos = _moveDirection == EMoveDirection.Right
                 ? _curPos
                 : _curPos + new IntVec2(GetDataSize().x, 0);
-            
+
             IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
             GetContext(ref pathPos, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
@@ -194,6 +201,7 @@ namespace GameA.Game
                 FindPath();
                 return;
             }
+
             //到达路径点
             if (reachedX && reachedY)
             {
@@ -205,12 +213,15 @@ namespace GameA.Game
                     _path.Clear();
                     return;
                 }
+
                 if (_grounded)
                 {
                     SpeedY = GetJumpSpeedForNode(lastNodeId);
                 }
+
                 return;
             }
+
             if (_curBanInputTime > 0)
             {
                 SetInput(EInputType.Left, false);
@@ -277,17 +288,19 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         protected virtual bool ConditionAttack(IntVec2 rel)
         {
             if (!CanAttack)
             {
                 return false;
             }
+
             if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
                 return false;
             }
+
             return true;
         }
 
@@ -297,32 +310,37 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (_path.Count <= 1)
             {
                 return false;
             }
+
             return true;
         }
-        
+
         protected virtual bool ConditionThink(IntVec2 rel)
         {
             if (!CanMove)
             {
                 return false;
             }
+
             if (_thinkTimer > 0)
             {
                 return false;
             }
+
             _thinkTimer = 50;
             if (Mathf.Abs(rel.x) > SeekRange.x || Mathf.Abs(rel.y) > SeekRange.y)
             {
-                UpdateAttackTarget();//目标在视野外
+                UpdateAttackTarget(); //目标在视野外
                 return false;
             }
+
             return true;
         }
-        
+
         protected void FindPath()
         {
             _lastMonsterPos = _curPos;
@@ -338,6 +356,7 @@ namespace GameA.Game
                 {
                     _path.Add(path[i]);
                 }
+
                 SpeedY = GetJumpSpeedForNode(0);
             }
             else
@@ -345,6 +364,7 @@ namespace GameA.Game
                 SetInput(EInputType.Left, false);
                 SetInput(EInputType.Right, false);
             }
+
             if (GameModeNetPlay.DebugEnable())
             {
                 GameModeNetPlay.WriteDebugData(string.Format("FindPath {0}", _path.Count));
@@ -363,12 +383,15 @@ namespace GameA.Game
                     {
                         jumpHeight = _path[i].y - _path[lastNodeId].y;
                     }
-                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.CurScene.IsGround(_path[i].x, _path[i].y - 1))
+
+                    if (_path[i].y - _path[lastNodeId].y < jumpHeight ||
+                        ColliderScene2D.CurScene.IsGround(_path[i].x, _path[i].y - 1))
                     {
                         return GetJumpSpeed(jumpHeight);
                     }
                 }
             }
+
             return 0;
         }
 
@@ -378,6 +401,7 @@ namespace GameA.Game
             {
                 return 0;
             }
+
             switch (jumpHeight)
             {
                 case 1:
@@ -387,14 +411,15 @@ namespace GameA.Game
                 case 3:
                     return 220;
             }
+
             return 0;
         }
 
         private void GetContext(ref IntVec2 pathPos, out IntVec2 currentDest, out IntVec2 nextDest,
-       out bool destOnGround, out bool reachedX, out bool reachedY)
+            out bool destOnGround, out bool reachedX, out bool reachedY)
         {
             int halfSize = (int) (0.5f * ConstDefineGM2D.ServerTileScale);
-            currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale ;
+            currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale;
             currentDest.x += halfSize;
             nextDest = currentDest;
             if (_path.Count > _currentNodeId + 1)
@@ -402,6 +427,7 @@ namespace GameA.Game
                 nextDest = _path[_currentNodeId + 1] * ConstDefineGM2D.ServerTileScale;
                 nextDest.x += halfSize;
             }
+
             destOnGround = false;
             for (int i = _path[_currentNodeId].x; i < _path[_currentNodeId].x + 1; ++i)
             {
@@ -411,6 +437,7 @@ namespace GameA.Game
                     break;
                 }
             }
+
             var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
             lastDest.x += halfSize;
             reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
@@ -419,6 +446,7 @@ namespace GameA.Game
             {
                 reachedY = false;
             }
+
 //            if (!reachedX)
 //            {
 //                if (_moveDirection == EMoveDirection.Left)

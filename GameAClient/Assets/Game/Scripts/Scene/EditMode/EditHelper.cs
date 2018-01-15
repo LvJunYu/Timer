@@ -263,7 +263,7 @@ namespace GameA.Game
                 {
                     unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
-
+                unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
                 unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);

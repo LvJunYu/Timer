@@ -39,6 +39,12 @@ namespace GameA
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
         private EEditType _curEditType;
+        private EEnterType _curEnterType;
+
+        public EEnterType CurEnterType
+        {
+            get { return _curEnterType; }
+        }
 
         protected override void InitGroupId()
         {
@@ -295,6 +301,7 @@ namespace GameA
             _startPos = SocialGUIManager.ScreenToRectLocal(pos, _cachedView.Trans);
             base.OnOpen(parameter);
             _originData = (UnitEditData) parameter;
+            _curEnterType = EEnterType.None;
             EditData = _originData;
             _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
             if (UnitDefine.IsMonster(_tableUnit.Id))
@@ -331,7 +338,7 @@ namespace GameA
         {
             _validEditPropertyList.Clear();
 
-            if (_tableUnit.CanEdit(EEditType.Active))
+            if (_tableUnit.CanEdit(EEditType.Active) && _curEnterType != EEnterType.FromMonsterCave)
             {
                 _validEditPropertyList.Add(EEditType.Active);
                 _menuButtonArray[(int) EEditType.Active].SetEnable(true);
@@ -369,7 +376,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
             }
-            if (_tableUnit.CanEdit(EEditType.Direction))
+            if (_tableUnit.CanEdit(EEditType.Direction) && _curEnterType != EEnterType.FromMonsterCave)
             {
                 _validEditPropertyList.Add(EEditType.Direction);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(true);
@@ -430,7 +437,6 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
-
             if (_tableUnit.CanEdit(EEditType.MonsterCave))
             {
                 _validEditPropertyList.Add(EEditType.MonsterCave);
@@ -441,7 +447,6 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(false);
             }
-
 
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
@@ -723,7 +728,6 @@ namespace GameA
         {
             EditData.UnitExtra.MoveDirection = (EMoveDirection) inx;
             RefreshMoveDirectionMenu();
-            _upCtrlUnitPropertyEditAdvance.Close();
         }
 
         private void OnRotateMenuClick(int inx)
@@ -756,17 +760,21 @@ namespace GameA
             RefreshCampMenu();
         }
 
-        //todo 设置怪物属性
         private void OnMonsterCaveMenuClick(int inx)
         {
             if (inx < EditHelper.Monsters.Length)
             {
                 ushort monsterId =(ushort) EditHelper.Monsters[inx];
+                if (EditData.UnitExtra.MonsterId == monsterId)
+                {
+                    return;
+                }
                 EditData.UnitExtra.MonsterId = monsterId;
                 if (UnitDefine.MonsterDragonId == monsterId)
                 {
                     EditData.UnitExtra.ChildId = (ushort) TableManager.Instance.GetUnit(monsterId).ChildState[0];
-                    EditData.UnitExtra.UpdateFromMonsterId(true);
+                    EditData.UnitExtra.UpdateFromMonsterId();
+                    EditData.UnitExtra.UpdateFromChildId();
                 }
                 else
                 {
@@ -846,6 +854,33 @@ namespace GameA
         {
             RefreshView();
             _upCtrlUnitPropertyEditAdvance.RefreshView();
+        }
+
+        public void OnMonsterSettingBtn()
+        {
+            _curEnterType = EEnterType.FromMonsterCave;
+            _upCtrlUnitPropertyEditPreinstall.Close();
+            int monsterId = EditData.UnitExtra.MonsterId;
+            _tableUnit = TableManager.Instance.GetUnit(monsterId);
+            RefreshView();
+            OnEditTypeMenuClick(_validEditPropertyList[0]);
+            _upCtrlUnitPropertyEditPreinstall.Open();
+        }
+        
+        public void OnBackToCaveBtn()
+        {
+            _curEnterType = EEnterType.None;
+            _upCtrlUnitPropertyEditPreinstall.Close();
+            _tableUnit = TableManager.Instance.GetUnit(UnitDefine.MonsterCaveId);
+            RefreshView();
+            OnEditTypeMenuClick(_validEditPropertyList[0]);
+            _upCtrlUnitPropertyEditPreinstall.Open();
+        }
+        
+        public enum EEnterType
+        {
+            None,
+            FromMonsterCave,
         }
     }
 }

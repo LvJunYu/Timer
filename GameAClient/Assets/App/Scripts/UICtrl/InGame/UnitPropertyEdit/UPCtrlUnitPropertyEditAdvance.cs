@@ -11,7 +11,7 @@ namespace GameA
         {
             ActorSetting,
             WeaponSetting,
-            MonsterCave
+            MonsterCave,
         }
 
         private Sequence _openSequence;
@@ -117,6 +117,8 @@ namespace GameA
             _usDropsSetting.Init(_cachedView.DropsSetting);
             _usAddStatesSetting = new USCtrlAddItem();
             _usAddStatesSetting.Init(_cachedView.AddStatesSetting);
+            _cachedView.MonsterSettingBtn.onClick.AddListener(OnMonsterSettingBtn);
+            _cachedView.BackToCaveBtn.onClick.AddListener(OnBackToCaveBtn);
         }
 
         public override void Open()
@@ -131,7 +133,15 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
-            var id = _mainCtrl.EditData.UnitDesc.Id;
+            int id;
+            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave)
+            {
+                id = _mainCtrl.EditData.UnitExtra.MonsterId;
+            }
+            else
+            {
+                id = _mainCtrl.EditData.UnitDesc.Id;
+            }
             var table = TableManager.Instance.GetUnit(id);
             _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                       UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxHp, id));
@@ -163,6 +173,8 @@ namespace GameA
             _usCanMoveSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
+            _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
+            _cachedView.BackToCaveBtn.SetActiveEx(_curMenu == EMenu.ActorSetting && _mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
 //            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
 //                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
 //            _usAddStatesSetting.SetEnable(b);
@@ -267,6 +279,7 @@ namespace GameA
                 {
                     _closeSequence.Complete(true);
                 }
+                _cachedView.AdvancePannel.SetActiveEx(true);
             });
             _closeSequence.Append(_cachedView.AdvancePannel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
                     .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
@@ -314,6 +327,16 @@ namespace GameA
         public void OnMonsterIdChanged()
         {
             
+        }
+        
+        private void OnBackToCaveBtn()
+        {
+            _mainCtrl.OnBackToCaveBtn();
+        }
+
+        private void OnMonsterSettingBtn()
+        {
+            _mainCtrl.OnMonsterSettingBtn();
         }
     }
 }

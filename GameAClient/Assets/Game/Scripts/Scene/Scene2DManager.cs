@@ -79,6 +79,7 @@ namespace GameA.Game
             _curSceneIndex = -1;
             for (int i = 0; i < _sceneList.Count; i++)
             {
+                ChangeScene(i);
                 _sceneList[i].Dispose();
             }
 

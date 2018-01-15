@@ -118,50 +118,46 @@ namespace GameA.Game
             }
         }
         
-        public void UpdateFromMonsterId(bool userChild= false)
+        public void UpdateFromMonsterId()
         {
-            int skillId;
-            if (userChild)
-            {
-                skillId = TableManager.Instance.GetEquipment(ChildId).SkillId;
-            }
-            else
-            {
-                skillId = TableManager.Instance.GetUnit(MonsterId).SkillId;
-            }
+            var monsterTable = TableManager.Instance.GetUnit(MonsterId);
+            MaxHp = (ushort) monsterTable.Hp;
+            MaxSpeedX = (ushort) monsterTable.MaxSpeed;
+            InjuredReduce = 0;
+            CureIncrease = 0;
+            ChargeTime = 0;
+            int skillId = monsterTable.SkillId;
             var skill = TableManager.Instance.GetSkill(skillId);
-            Damage = (ushort) skill.Damage;
-            TimeInterval = (ushort) skill.CDTime;
-            BulletCount = (ushort) skill.BulletCount;
-            CastRange = (ushort) skill.CastRange;
-            ChargeTime = (ushort) skill.ChargeTime;
-            BulletSpeed = (ushort) skill.ProjectileSpeed;
-            if (skill.EffectValues != null)
+            if (skill != null)
             {
-                EffectRange = (ushort) skill.EffectValues[0];
-            }
-            if (skill.KnockbackForces != null)
-            {
-                KnockbackForces.Set(skill.KnockbackForces);
-            }
-
-            if (skill.AddStates != null)
-            {
-                AddStates.Set(skill.AddStates);
-            }
+                Damage = (ushort) skill.Damage;
+                TimeInterval = (ushort) skill.CDTime;
+                CastRange = (ushort) skill.CastRange;
+                if (skill.EffectValues != null && skill.EffectValues.Length > 0)
+                {
+                    EffectRange = (ushort) skill.EffectValues[0];
+                }
+                if (skill.KnockbackForces != null)
+                {
+                    KnockbackForces.Set(skill.KnockbackForces);
+                }
+                if (skill.AddStates != null)
+                {
+                    AddStates.Set(skill.AddStates);
+                }
+            }           
         }
-
 
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
-            msg.Data = GameMapDataSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
+            msg.Data = ClientProtoSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
             return msg;
         }
 
         public void Set(Preinstall data)
         {
-            var unitExtraKeyValuePair = GameMapDataSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
+            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
             this = GM2DTools.ToEngine(unitExtraKeyValuePair);
         }
     }

@@ -54,6 +54,10 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            if (_eActiveState != EActiveState.Active)
+            {
+                return;
+            }
             if (_timer > 0)
             {
                 _timer--;
