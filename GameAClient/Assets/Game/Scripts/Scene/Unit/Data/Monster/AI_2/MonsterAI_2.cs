@@ -121,6 +121,24 @@ namespace GameA.Game
         {
             _timerRun = RandomDependFrame(90, 140);
         }
+        
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 40;
+            }
+            return unitExtra;
+        }
 
         protected virtual void OnChangeStupid(Vector3 pos)
         {

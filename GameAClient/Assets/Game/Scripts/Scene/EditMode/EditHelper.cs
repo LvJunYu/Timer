@@ -24,6 +24,7 @@ namespace GameA.Game
             _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
+        public static int[] Monsters = {2001, 2002, 2003, 2005, 2007};
 
         public static Dictionary<int, int> UnitIndexCount
         {
@@ -262,7 +263,7 @@ namespace GameA.Game
                 {
                     unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
-
+                unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
                 unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
@@ -273,6 +274,15 @@ namespace GameA.Game
             {
                 unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
                 unitEditData.UnitExtra.TeamId = 1;
+            }
+
+            if (table.CanEdit(EEditType.MonsterCave))
+            {
+                unitEditData.UnitExtra.MonsterId = (ushort)Monsters[0];
+                unitEditData.UnitExtra.UpdateFromMonsterId();
+                unitEditData.UnitExtra.MonsterIntervalTime = 1000;
+                unitEditData.UnitExtra.MaxCreatedMonster = 100;
+                unitEditData.UnitExtra.MaxAliveMonster = 5;
             }
 
             return unitEditData;

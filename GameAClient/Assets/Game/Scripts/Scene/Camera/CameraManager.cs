@@ -97,6 +97,15 @@ namespace GameA.Game
             }
         }
 
+        public void OnMapChanged(EChangeMapRectType eChangeMapRectType)
+        {
+            _cameraCtrlPlay.OnMapChanged(eChangeMapRectType);
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit && !GameRun.Instance.IsPlaying)
+            {
+                _cameraCtrlEdit.OnMapChanged(eChangeMapRectType);
+            }
+        }
+
         /// <summary>
         /// 逻辑帧 和逻辑相关放这里
         /// </summary>
@@ -175,15 +184,6 @@ namespace GameA.Game
         {
             UnityEngine.Object.Destroy(_mainCamera.gameObject);
             _instance = null;
-        }
-
-        public void OnMapChanged()
-        {
-            _cameraCtrlPlay.OnMapChanged();
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                _cameraCtrlEdit.OnMapChanged();
-            }
         }
     }
 }

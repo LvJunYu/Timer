@@ -3,6 +3,7 @@ using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace GameA.Game
 {
@@ -96,9 +97,7 @@ namespace GameA.Game
             {
                 EditMode.Instance.StartAdd();
             }
-            EditMode.Instance.ChangeEditorLayer(EEditorLayer.Capture);
-            IconBytes = CaptureLevel();
-            EditMode.Instance.RevertEditorLayer();
+            GetCaptureIconBtyes();
             Loom.RunAsync(() =>
             {
                 byte[] mapDataBytes = MapManager.Instance.SaveMapData();

@@ -230,7 +230,7 @@ namespace GameA.Game
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GameRun.Instance.IsEdit)
+                if (GameRun.Instance.IsEdit && !GameRun.Instance.IsPlaying)
                 {
                     if (EditHelper.CheckCanEdit(tableUnit.Id))
                     {

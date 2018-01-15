@@ -279,12 +279,12 @@ namespace GameA
 
         private void OnUndo()
         {
-            EditMode.Instance.Undo();
+            Scene2DManager.Instance.Undo();
         }
 
         private void OnRedo()
         {
-            EditMode.Instance.Redo();
+            Scene2DManager.Instance.Redo();
         }
 
         private void OnClickHome()

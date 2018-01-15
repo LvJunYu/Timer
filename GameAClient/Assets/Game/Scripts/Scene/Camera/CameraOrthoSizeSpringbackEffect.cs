@@ -40,11 +40,30 @@ namespace GameA.Game
             _cameraManager = cameraManager;
             _onOrthoTargetSizeChangeCallback = action;
             _curState = ESpingState.None;
-
-            OnMapChanged();
+            CalculateLimit();
         }
 
-        public void OnMapChanged()
+        public void OnMapChanged(EChangeMapRectType eChangeMapRectType)
+        {
+            CalculateLimit();
+            //OrthoSize变为最大值
+            if (eChangeMapRectType == EChangeMapRectType.None)
+            {
+                SetOrthoSize(_curMaxCameraOrthoSizeLimited);
+            }
+            else
+            {
+                //让Pos按照最终的CameraOrthoSize计算速度
+                if (null != _onOrthoTargetSizeChangeCallback)
+                {
+                    _onOrthoTargetSizeChangeCallback.Invoke(_curMaxCameraOrthoSizeLimited);
+                }
+                var delta = _cameraManager.RendererCamera.orthographicSize - _curMaxCameraOrthoSizeLimited;
+                InitSpringbackState(delta);
+            }
+        }
+
+        private void CalculateLimit()
         {
             Rect mapValidRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
             float tmpAspectRatio = GM2DGame.Instance.GameScreenAspectRatio;

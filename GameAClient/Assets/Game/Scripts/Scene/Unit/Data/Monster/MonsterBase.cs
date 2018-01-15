@@ -18,6 +18,7 @@ namespace GameA.Game
         protected IntVec2 _clayPos;
         protected bool _isClayOnWall;
         protected UnitBase _attactTarget;
+        protected MonsterCave _monsterCave;
 
         public override bool IsMonster
         {
@@ -204,19 +205,6 @@ namespace GameA.Game
         public override UnitExtra UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
-            {
-                _maxSpeedX = unitExtra.MaxSpeedX;
-            }
-            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
-            {
-                _maxSpeedX = 0;
-            }
-            else
-            {
-                _maxSpeedX = 40;
-            }
-
             if (unitExtra.CastRange > 0)
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
@@ -373,6 +361,11 @@ namespace GameA.Game
                 {
                     PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
                 }
+
+                if (_monsterCave != null)
+                {
+                    _monsterCave.OnMonsterDestroy(this);
+                }
             }
             base.OnObjectDestroy();
         }
@@ -408,6 +401,28 @@ namespace GameA.Game
             }
 
             return !IsSameTeam(unit.TeamId);
+        }
+        
+        public override UnitExtra GetUnitExtra()
+        {
+            if (_monsterCave != null)
+            {
+                return _monsterCave.GetUnitExtra();
+            }
+            return base.GetUnitExtra();
+        }
+
+        public void SetCave(MonsterCave monsterCave)
+        {
+            _monsterCave = monsterCave;
+            UpdateExtraData();
+            _eActiveState = EActiveState.Active;
+            _moveDirection = EMoveDirection.Left;
+            //根据队伍刷新血条颜色
+            if (_statusBar != null)
+            {
+                _statusBar.RefreshBar();
+            }
         }
     }
 }

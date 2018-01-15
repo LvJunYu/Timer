@@ -34,6 +34,7 @@ namespace GameA.Game
         public const int MainPlayerId = 1002;
         public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
+        public const int MonsterDragonId = 2007;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
         public const int ClayId = 4011;
@@ -48,6 +49,7 @@ namespace GameA.Game
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
+        public const int MonsterCaveId = 5022;
         public const int BillboardId = 7001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;

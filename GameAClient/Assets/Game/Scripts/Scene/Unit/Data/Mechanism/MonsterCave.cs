@@ -1,13 +1,24 @@
 ﻿using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 5022, Type = typeof(MonsterCave))]
     public class MonsterCave : BlockBase
     {
-        private const int MaxCreateCount = 1;
-        private List<MonsterBase> _addedMonsters = new List<MonsterBase>(MaxCreateCount);
+        private int _maxCreateCount;
+        private int _maxAliveCount;
+        private int _monsterId;
+        private int _intervalTime;
+        private int _createdNum;
+        private List<MonsterBase> _addedMonsters = new List<MonsterBase>();
         private int _timer = -1;
+
+        public override bool UseMagic()
+        {
+            return true;
+        }
 
         protected override bool OnInit()
         {
@@ -23,7 +34,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            _timer = 50;
+            _timer = 0;
         }
 
         internal override bool InstantiateView()
@@ -43,19 +54,72 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            if (_eActiveState != EActiveState.Active)
+            {
+                return;
+            }
             if (_timer > 0)
             {
                 _timer--;
             }
             else
             {
-                if (_addedMonsters.Count < MaxCreateCount)
+                if (_addedMonsters.Count < _maxAliveCount && _createdNum < _maxCreateCount && CheckDoorSpace())
                 {
-                    CreateMonster(2001);
+                    CreateMonster(_monsterId);
                 }
             }
 
             base.UpdateLogic();
+        }
+
+        private void CreateMonster(int monsterId)
+        {
+            var monster = PlayMode.Instance.CreateRuntimeUnit(monsterId, _curPos) as MonsterBase;
+            if (monster != null)
+            {
+                monster.SetCave(this);
+                _addedMonsters.Add(monster);
+                _timer = _intervalTime;
+                monster.OnPlay();
+                _createdNum++;
+            }
+        }
+
+        private bool CheckDoorSpace()
+        {
+            var table = TableManager.Instance.GetUnit(_monsterId);
+            var grid = table.GetColliderGrid(_curPos.x, _curPos.y, 0, Vector2.one);
+            var colliderNode = NodeFactory.GetColliderNode(_unitDesc, _tableUnit);
+            SceneNode sceneNode;
+            return !ColliderScene2D.GridCast(grid, out sceneNode, JoyPhysics2D.LayMaskAll, float.MinValue,
+                float.MaxValue, colliderNode);
+        }
+
+        public override UnitExtra UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            _addedMonsters.Capacity = _maxAliveCount = unitExtra.MaxAliveMonster;
+            _maxCreateCount = unitExtra.MaxCreatedMonster;
+            _monsterId = unitExtra.MonsterId;
+            _intervalTime = TableConvert.GetTime(unitExtra.MonsterIntervalTime);
+            return unitExtra;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _createdNum = 0;
+            _timer = -1;
+            _addedMonsters.Clear();
+        }
+
+        public void OnMonsterDestroy(MonsterBase monster)
+        {
+            if (_addedMonsters.Contains(monster))
+            {
+                _addedMonsters.Remove(monster);
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -80,21 +144,6 @@ namespace GameA.Game
         {
             if (other.IsActor || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnRightHit(other, ref x, checkOnly);
-        }
-
-        private void CreateMonster(int monsterId)
-        {
-            var monster = PlayMode.Instance.CreateRuntimeUnit(monsterId, _curPos) as MonsterBase;
-            _addedMonsters.Add(monster);
-            _timer = 200;
-            monster.OnPlay();
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            _timer = -1;
-            _addedMonsters.Clear();
         }
     }
 }

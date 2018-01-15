@@ -285,7 +285,7 @@ namespace GameA.Game
                             else if (_eBrakeStage != EBrakeStage.Brake3)
                             {
                                 //Brake和Brake2动作翻转，第一帧不翻转
-                                Turnover();
+                                TurnOver();
                             }
                         }
                         else
@@ -304,7 +304,7 @@ namespace GameA.Game
             }
         }
 
-        private void Turnover()
+        private void TurnOver()
         {
             if (_view == null) return;
             Vector3 euler = _trans.eulerAngles;

@@ -48,6 +48,10 @@ namespace GameA.Game
         public ushort JumpAbility;
         public byte InjuredReduce;
         public ushort CureIncrease;
+        public ushort MonsterIntervalTime;
+        public ushort MaxCreatedMonster;
+        public byte MaxAliveMonster;
+        public ushort MonsterId;
 
         //Npc相关
 
@@ -93,7 +97,11 @@ namespace GameA.Game
                    NpcName == other.NpcName &&
                    NpcType == other.NpcType &&
                    NpcShowType == other.NpcShowType &&
-                   NpcTask == other.NpcTask;
+                   NpcTask == other.NpcTask &&
+                   MonsterIntervalTime == other.MonsterIntervalTime &&
+                   MaxCreatedMonster == other.MaxCreatedMonster &&
+                   MaxAliveMonster == other.MaxAliveMonster &&
+                   MonsterId == other.MonsterId;
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
@@ -126,16 +134,46 @@ namespace GameA.Game
             }
         }
 
+        public void UpdateFromMonsterId()
+        {
+            var monsterTable = TableManager.Instance.GetUnit(MonsterId);
+            MaxHp = (ushort) monsterTable.Hp;
+            MaxSpeedX = (ushort) monsterTable.MaxSpeed;
+            InjuredReduce = 0;
+            CureIncrease = 0;
+            ChargeTime = 0;
+            int skillId = monsterTable.SkillId;
+            var skill = TableManager.Instance.GetSkill(skillId);
+            if (skill != null)
+            {
+                Damage = (ushort) skill.Damage;
+                TimeInterval = (ushort) skill.CDTime;
+                CastRange = (ushort) skill.CastRange;
+                if (skill.EffectValues != null && skill.EffectValues.Length > 0)
+                {
+                    EffectRange = (ushort) skill.EffectValues[0];
+                }
+                if (skill.KnockbackForces != null)
+                {
+                    KnockbackForces.Set(skill.KnockbackForces);
+                }
+                if (skill.AddStates != null)
+                {
+                    AddStates.Set(skill.AddStates);
+                }
+            }
+        }
+
         public Msg_Preinstall ToUnitPreInstall()
         {
             var msg = new Msg_Preinstall();
-            msg.Data = GameMapDataSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
+            msg.Data = ClientProtoSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
             return msg;
         }
 
         public void Set(Preinstall data)
         {
-            var unitExtraKeyValuePair = GameMapDataSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
+            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
             this = GM2DTools.ToEngine(unitExtraKeyValuePair);
         }
     }
@@ -152,14 +190,17 @@ namespace GameA.Game
                     {
                         return 10;
                     }
+
                     return GetMin(eAdvanceAttribute);
                 case EAdvanceAttribute.TimeInterval:
                     if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
                     {
                         return 800;
                     }
+
                     return GetMin(eAdvanceAttribute);
             }
+
             return GetMin(eAdvanceAttribute);
         }
 
@@ -195,7 +236,14 @@ namespace GameA.Game
                     return 0;
                 case EAdvanceAttribute.NpcIntervalTiem:
                     return 0;
+                case EAdvanceAttribute.MonsterIntervalTime:
+                    return 500;
+                case EAdvanceAttribute.MaxCreatedMonster:
+                    return 1;
+                case EAdvanceAttribute.MaxAliveMonster:
+                    return 1;
             }
+
             return 0;
         }
 
@@ -231,7 +279,14 @@ namespace GameA.Game
                     return 500;
                 case EAdvanceAttribute.NpcIntervalTiem:
                     return 10;
+                case EAdvanceAttribute.MonsterIntervalTime:
+                    return 5000;
+                case EAdvanceAttribute.MaxCreatedMonster:
+                    return 300;
+                case EAdvanceAttribute.MaxAliveMonster:
+                    return 10;
             }
+
             return 0;
         }
 
@@ -241,6 +296,7 @@ namespace GameA.Game
             {
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return 100;
                 case EAdvanceAttribute.Damage:
                 case EAdvanceAttribute.EffectRange:
@@ -253,8 +309,11 @@ namespace GameA.Game
                 case EAdvanceAttribute.JumpAbility:
                 case EAdvanceAttribute.InjuredReduce:
                 case EAdvanceAttribute.CureIncrease:
+                case EAdvanceAttribute.MaxCreatedMonster:
+                case EAdvanceAttribute.MaxAliveMonster:
                     return 1;
             }
+
             return 0;
         }
 
@@ -267,8 +326,10 @@ namespace GameA.Game
                     return "{0}%";
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return "{0:f1}秒";
             }
+
             return "{0}";
         }
 
@@ -278,8 +339,10 @@ namespace GameA.Game
             {
                 case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.ChargeTime:
+                case EAdvanceAttribute.MonsterIntervalTime:
                     return 1000;
             }
+
             return 1;
         }
 
@@ -299,6 +362,7 @@ namespace GameA.Game
                 LogHelper.Error("cant get unit which id == {0}", id);
                 return false;
             }
+
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.TimeInterval:
@@ -330,6 +394,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.CureIncrease:
                     return table.Hp > 0;
             }
+
             return false;
         }
     }
@@ -395,18 +460,22 @@ namespace GameA.Game
             {
                 list.Add(Param0);
             }
+
             if (Param1 != 0)
             {
                 list.Add(Param1);
             }
+
             if (Param2 != 0)
             {
                 list.Add(Param2);
             }
+
             if (Param3 != 0)
             {
                 list.Add(Param3);
             }
+
             return list;
         }
     }
@@ -538,11 +607,11 @@ namespace GameA.Game
         TimeInterval,
         Text,
         Camp,
+        MonsterCave,
         Style,
         NpcType,
         NpcTask,
         Max,
-      
     }
 
     public enum EAdvanceAttribute
@@ -563,6 +632,9 @@ namespace GameA.Game
         InjuredReduce,
         CureIncrease,
         NpcIntervalTiem,
+        MonsterIntervalTime,
+        MaxCreatedMonster,
+        MaxAliveMonster,
         Max
     }
 }

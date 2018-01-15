@@ -26,12 +26,12 @@ namespace GameA.Game
             _mapReady = true;
         }
 
-        public override void OnMapChanged()
+        public override void OnMapChanged(EChangeMapRectType eChangeMapRectType)
         {
             if (!_mapReady) return;
-            base.OnMapChanged();
-            _positionSpringbackEffect.OnMapChanged();
-            _orthoSizeSpringbackEffect.OnMapChanged();
+            base.OnMapChanged(eChangeMapRectType);
+            _orthoSizeSpringbackEffect.OnMapChanged(eChangeMapRectType);
+            _positionSpringbackEffect.OnMapChanged(eChangeMapRectType);
         }
 
         public override void Enter()

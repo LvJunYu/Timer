@@ -459,6 +459,10 @@ namespace GameA.Game
             res.ChargeTime = data.ChargeTime;
             res.InjuredReduce = data.InjuredReduce;
             res.CureIncrease = data.CureIncrease;
+            res.MonsterIntervalTime = data.MonsterIntervalTime;
+            res.MonsterId = data.MonsterId;
+            res.MaxAliveMonster = data.MaxAliveMonster;
+            res.MaxCreatedMonster = data.MaxCreatedMonster;
             res.Drops.AddRange(data.Drops.ToList());
             res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
             res.AddStates.AddRange(data.AddStates.ToList());
@@ -498,6 +502,10 @@ namespace GameA.Game
             unitExtra.ChargeTime = (ushort) data.ChargeTime;
             unitExtra.InjuredReduce = (byte) data.InjuredReduce;
             unitExtra.CureIncrease = (ushort) data.CureIncrease;
+            unitExtra.MonsterIntervalTime = (ushort) data.MonsterIntervalTime;
+            unitExtra.MonsterId = (ushort) data.MonsterId;
+            unitExtra.MaxAliveMonster = (byte) data.MaxAliveMonster;
+            unitExtra.MaxCreatedMonster = (ushort) data.MaxCreatedMonster;
             unitExtra.KnockbackForces.Set(data.KnockbackForces.ToArray());
             unitExtra.AddStates.Set(data.AddStates.ToArray());
             //Npc相关数据
