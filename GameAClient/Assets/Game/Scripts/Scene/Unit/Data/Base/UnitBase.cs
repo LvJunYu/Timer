@@ -1088,7 +1088,7 @@ namespace GameA.Game
                     _colliderPos.y / ConstDefineGM2D.ServerTileScale);
                 z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
             }
-            else if (_deltaPos.y != 0 || IsClimbingVertical || !_grounded)
+            else if (!_grounded || _deltaPos.y != 0 ||  IsClimbingVertical)
             {
                 var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
                 var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
