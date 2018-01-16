@@ -832,6 +832,7 @@ namespace GameA
                 {
                     _extendData.FavoriteCount += favorite ? 1 : -1;
                 }
+                Messenger<Project, bool>.Broadcast(EMessengerType.OnProjectMyFavoriteChanged, this, _projectUserData.Favorite);
                 if (successCallback != null)
                 {
                     successCallback.Invoke();

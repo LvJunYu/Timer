@@ -90,6 +90,16 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
+            if (!Project.IsValid)
+            {
+                SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
+                if (Project.UserFavorite)
+                {
+                    Project.UpdateFavorite(false);
+                }
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                return;
+            }
             IsMulti = Project.IsMulti;
             Project.Request(Project.ProjectId, null, null);
             RefreshView();
@@ -481,7 +491,7 @@ namespace GameA
             {
                 _isRequestDownload = false;
                 RefreshBtns();
-                SocialGUIManager.ShowPopupDialog("关卡下载成功，请到工坊查看");
+                SocialGUIManager.ShowPopupDialog("关卡下载成功，请到工坊查看\n    (下载的地图不能发布)");
             }, code => { _isRequestDownload = false; });
         }
 
@@ -513,6 +523,16 @@ namespace GameA
         {
             if (_isOpen && Project != null && Project.ProjectId == projectId)
             {
+                if (!Project.IsValid)
+                {
+                    SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
+                    if (Project.UserFavorite)
+                    {
+                        Project.UpdateFavorite(false);
+                    }
+                    SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                    return;
+                }
                 RefreshView();
                 if (_curMenuCtrl != null)
                 {

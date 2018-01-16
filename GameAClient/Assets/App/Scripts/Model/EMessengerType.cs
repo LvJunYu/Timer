@@ -18,6 +18,7 @@ namespace GameA
         public static readonly int OnWorldFollowedUserProjectListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnProjectDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnProjectMyFavoriteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectCommentChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentCompleteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentPlayedChanged = SoyEngine.EMessengerType.NextId++;

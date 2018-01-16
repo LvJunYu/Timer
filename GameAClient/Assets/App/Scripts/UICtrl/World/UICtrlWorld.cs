@@ -92,6 +92,7 @@ namespace GameA
             RegisterEvent<Msg_MC_QueryRoom>(EMessengerType.OnQueryRoomRet, OnQueryRoomRet);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             RegisterEvent(EMessengerType.OnJoinRoomFail, OnJoinRoomFail);
+            RegisterEvent<Project, bool>(EMessengerType.OnProjectMyFavoriteChanged, OnProjectMyFavoriteChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -293,6 +294,14 @@ namespace GameA
             if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(roomId);
+            }
+        }
+
+        private void OnProjectMyFavoriteChanged(Project project, bool favorite)
+        {
+            if (_isOpen && _curMenu == EMenu.UserFavorite && _curMenuCtrl != null)
+            {
+                ((UPCtrlWorldUserFavorite) _curMenuCtrl).OnProjectMyFavoriteChanged(project, favorite);
             }
         }
 

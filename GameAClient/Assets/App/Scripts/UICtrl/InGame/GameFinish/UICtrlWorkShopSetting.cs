@@ -363,6 +363,11 @@ namespace GameA
         public void OnPublishBtn()
         {
             if (null == CurProject) return;
+            if (CurProject.ParentId != 0)
+            {
+                SocialGUIManager.ShowPopupDialog("下载的关卡不能发布喔~");
+                return;
+            }
             var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null == gameModeWorkshopEdit) return;
             if (gameModeWorkshopEdit.NeedSave)
