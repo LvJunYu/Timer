@@ -329,7 +329,7 @@ namespace GameA
                     {
                         gameModeEdit.NeedSave = true;
                     }
-                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+//                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
                 {
@@ -351,7 +351,7 @@ namespace GameA
                     {
                         gameModeEdit.NeedSave = true;
                     }
-                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
+//                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
                 {

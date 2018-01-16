@@ -33,6 +33,7 @@ namespace GameA
         public static readonly int OnWorkShopProjectCreated = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopDownloadListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectPublished = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnRequestStartGame = SoyEngine.EMessengerType.NextId++;

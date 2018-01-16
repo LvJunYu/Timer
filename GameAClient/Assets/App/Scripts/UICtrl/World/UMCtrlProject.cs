@@ -67,14 +67,12 @@ namespace GameA
                 return;
             }
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
-            _cachedView.PublishedObj.SetActiveEx(false);
+            _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.PublishTime != 0);
             _cachedView.MultiObj.SetActiveEx(_wrapper.Content.IsMulti);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
-            _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject &&
-                                                _wrapper.Content.ParentId != 0);
-            _cachedView.OriginalObj.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject &&
-                                                _wrapper.Content.ParentId == 0);
-            _cachedView.BottomObj.SetActiveEx(_eCurUI != ECurUI.Editing);
+            _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Download);
+            _cachedView.OriginalObj.SetActiveEx(false);
+            _cachedView.BottomObj.SetActiveEx(_eCurUI != ECurUI.Editing && _eCurUI != ECurUI.Download);
             _cachedView.EditImg.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject);
             _cachedView.NewEditObj.SetActiveEx(_eCurUI == ECurUI.Editing && emptyProject);
             if (emptyProject)
@@ -131,6 +129,7 @@ namespace GameA
             RankList,
             Search,
             Multi,
+            Download
         }
     }
 }

@@ -5,7 +5,7 @@ namespace GameA
 {
     public class UPCtrlWorkShopProjectPublished : UPCtrlWorkShopProjectBase
     {
-        private UserPublishedWorldProjectList _data;
+        private UserPublishedWorldProjectList _data = LocalUser.Instance.UserPublishedWorldProjectList;
 
         public override void RequestData(bool append = false)
         {
@@ -14,7 +14,6 @@ namespace GameA
             {
                 startInx = LocalUser.Instance.UserPublishedWorldProjectList.AllList.Count;
             }
-            _data = LocalUser.Instance.UserPublishedWorldProjectList;
             _data.Requset(startInx, _pageSize, () =>
             {
                 _projectList = _data.AllList;

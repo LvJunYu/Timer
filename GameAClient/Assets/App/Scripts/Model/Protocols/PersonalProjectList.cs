@@ -26,6 +26,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private EWorkShopProjectType _cs_type;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_startInx;
         /// <summary>
         /// 
@@ -78,6 +82,13 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public EWorkShopProjectType CS_Type { 
+            get { return _cs_type; }
+            set { _cs_type = value; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_StartInx { 
             get { return _cs_startInx; }
             set { _cs_startInx = value; }
@@ -122,11 +133,13 @@ namespace GameA
         /// <summary>
 		/// 工坊关卡
 		/// </summary>
+		/// <param name="type">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
 		/// <param name="orderBy">排序字段.</param>
 		/// <param name="orderType">升序降序.</param>
         public void Request (
+            EWorkShopProjectType type,
             int startInx,
             int maxCount,
             EPersonalProjectOrderBy orderBy,
@@ -134,6 +147,10 @@ namespace GameA
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
+                if (_cs_type != type) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -152,6 +169,7 @@ namespace GameA
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
+                _cs_type = type;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
                 _cs_orderBy = orderBy;
@@ -159,6 +177,7 @@ namespace GameA
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+                msg.Type = type;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
                 msg.OrderBy = orderBy;

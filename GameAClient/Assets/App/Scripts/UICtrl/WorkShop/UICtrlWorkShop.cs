@@ -9,7 +9,7 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
         private UPCtrlWorkShopProjectBase[] _menuCtrlArray;
-        private bool _pushGoldEnergyStyle;  
+        private bool _pushGoldEnergyStyle;
 
         protected override void OnViewCreated()
         {
@@ -28,6 +28,12 @@ namespace GameA
             upCtrlWorkShopProjectPublished.SetMenu(EMenu.PublishedProjects);
             upCtrlWorkShopProjectPublished.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.PublishedProjects] = upCtrlWorkShopProjectPublished;
+
+            var upCtrlWorkShopProjectDownload = new UPCtrlWorkShopProjectDownload();
+            upCtrlWorkShopProjectDownload.Set(ResScenary);
+            upCtrlWorkShopProjectDownload.SetMenu(EMenu.Downoad);
+            upCtrlWorkShopProjectDownload.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Downoad] = upCtrlWorkShopProjectDownload;
 
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
@@ -53,6 +59,7 @@ namespace GameA
             {
                 _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
+
             if (!_pushGoldEnergyStyle)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
@@ -69,6 +76,7 @@ namespace GameA
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -82,6 +90,7 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWorkShopProjectListChanged, OnEditingProjectsChanged);
+            RegisterEvent(EMessengerType.OnWorkShopDownloadListChanged, OnWorkShopDownloadListChanged);
             RegisterEvent(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnEditingProjectDataChanged);
         }
@@ -93,10 +102,12 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
                 _pushGoldEnergyStyle = false;
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();
             }
+
             base.OnClose();
         }
 
@@ -115,12 +126,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -146,9 +159,23 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu == EMenu.EditingProjects && _curMenuCtrl != null)
             {
                 ((UPCtrlWorkShopProjectEditing) _curMenuCtrl).RefreshView();
+            }
+        }
+
+        private void OnWorkShopDownloadListChanged()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            if (_curMenu == EMenu.Downoad && _curMenuCtrl != null)
+            {
+                ((UPCtrlWorkShopProjectDownload) _curMenuCtrl).RefreshView();
             }
         }
 
@@ -158,6 +185,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu == EMenu.EditingProjects && _curMenuCtrl != null)
             {
                 ((UPCtrlWorkShopProjectEditing) _curMenuCtrl).OnChangeHandler(project.ProjectId);
@@ -170,6 +198,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu == EMenu.PublishedProjects && _curMenuCtrl != null)
             {
                 ((UPCtrlWorkShopProjectPublished) _curMenuCtrl).RefreshView();
@@ -181,6 +210,7 @@ namespace GameA
             None = -1,
             EditingProjects,
             PublishedProjects,
+            Downoad,
             Max
         }
     }

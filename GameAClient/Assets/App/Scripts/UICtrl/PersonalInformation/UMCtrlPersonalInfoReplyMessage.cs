@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlPersonalInfoReplyMessage : UMCtrlBase<UMViewPersonalInfoReplyMessage>, IDataItemRenderer, IUMPool
+    public class UMCtrlPersonalInfoReplyMessage : UMCtrlBase<UMViewPersonalInfoReplyMessage>, IDataItemRenderer, IUMPoolable
     {
         protected static string _contentFormat = "<color=orange>{0}</color>: {1}";
         protected static string _contentReplyFormat = "<color=orange>{0}</color>回复<color=orange>{1}</color>: {2}";

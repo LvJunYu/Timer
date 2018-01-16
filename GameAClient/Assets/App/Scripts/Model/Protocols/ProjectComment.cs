@@ -31,6 +31,14 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private long _projectMainId;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _projectVersion;
+        /// <summary>
+        /// 
+        /// </summary>
         private long _createTime;
         /// <summary>
         /// 
@@ -104,6 +112,26 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public long ProjectMainId { 
+            get { return _projectMainId; }
+            set { if (_projectMainId != value) {
+                _projectMainId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ProjectVersion { 
+            get { return _projectVersion; }
+            set { if (_projectVersion != value) {
+                _projectVersion = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {
@@ -170,6 +198,8 @@ namespace GameA
             }
             _comment = msg.Comment;     
             _projectId = msg.ProjectId;     
+            _projectMainId = msg.ProjectMainId;     
+            _projectVersion = msg.ProjectVersion;     
             _createTime = msg.CreateTime;     
             _likeCount = msg.LikeCount;     
             _userLike = msg.UserLike;     
@@ -201,6 +231,8 @@ namespace GameA
             }
             _comment = msg.Comment;           
             _projectId = msg.ProjectId;           
+            _projectMainId = msg.ProjectMainId;           
+            _projectVersion = msg.ProjectVersion;           
             _createTime = msg.CreateTime;           
             _likeCount = msg.LikeCount;           
             _userLike = msg.UserLike;           
@@ -232,6 +264,8 @@ namespace GameA
             }
             _comment = obj.Comment;           
             _projectId = obj.ProjectId;           
+            _projectMainId = obj.ProjectMainId;           
+            _projectVersion = obj.ProjectVersion;           
             _createTime = obj.CreateTime;           
             _likeCount = obj.LikeCount;           
             _userLike = obj.UserLike;           

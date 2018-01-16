@@ -126,12 +126,16 @@ namespace SoyEngine
         public const string Record = "/record/get";
         // 获取关卡数据
         public const string Project = "/project/get";
+        // 通过主id和版本号获取关卡
+        public const string GetProjectByMainId = "/project/getByMainId";
         // 关卡扩展信息
         public const string ProjectExtend = "/project/getExtend";
         // 创建关卡
         public const string CreateProject = "/project/create";
         // 更新关卡
         public const string UpdateProject = "/project/update";
+        // 继续编辑关卡
+        public const string EditProject = "/project/edit";
         // 删除关卡
         public const string DeleteProject = "/project/delete";
         // 工坊关卡

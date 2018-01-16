@@ -54,14 +54,12 @@ namespace GameA.Game
         public ushort MonsterId;
 
         //Npc相关
-
         public byte NpcType;
         public string NpcName;
         public string NpcDialog;
         public byte NpcShowType;
         public ushort NpcShowInterval;
         public MultiParamTask NpcTask;
-
 
         public bool IsDynamic()
         {

@@ -141,6 +141,18 @@ namespace GameA
         /// 联机信息
         /// </summary>
         private NetBattleData _netData;
+        /// <summary>
+        /// 关卡主Id
+        /// </summary>
+        private long _mainId;
+        /// <summary>
+        /// 关卡版本号
+        /// </summary>
+        private int _projectVersion;
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        private int _newestProjectVersion;
 
         // cs fields----------------------------------
         /// <summary>
@@ -481,6 +493,36 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 关卡主Id
+        /// </summary>
+        public long MainId { 
+            get { return _mainId; }
+            set { if (_mainId != value) {
+                _mainId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 关卡版本号
+        /// </summary>
+        public int ProjectVersion { 
+            get { return _projectVersion; }
+            set { if (_projectVersion != value) {
+                _projectVersion = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        public int NewestProjectVersion { 
+            get { return _newestProjectVersion; }
+            set { if (_newestProjectVersion != value) {
+                _newestProjectVersion = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -594,6 +636,9 @@ namespace GameA
             } else {
                 _netData.OnSyncFromParent(msg.NetData);
             }
+            _mainId = msg.MainId;           
+            _projectVersion = msg.ProjectVersion;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
             OnSyncPartial(msg);
             return true;
         }
@@ -654,6 +699,9 @@ namespace GameA
                 }
                 _netData.CopyMsgData(msg.NetData);
             }
+            _mainId = msg.MainId;           
+            _projectVersion = msg.ProjectVersion;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
             return true;
         } 
 
@@ -713,6 +761,9 @@ namespace GameA
                 }
                 _netData.DeepCopy(obj.NetData);
             }
+            _mainId = obj.MainId;           
+            _projectVersion = obj.ProjectVersion;           
+            _newestProjectVersion = obj.NewestProjectVersion;           
             return true;
         }
 

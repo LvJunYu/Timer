@@ -10,6 +10,11 @@ namespace GameA
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         private Project _project;
+        private const string _publishConfirmTitle = "发布确认";
+        private const string _updateConfirmTitle = "更新确认";
+        private const string _publishConfirmDesc = "确定要这样发布吗？";
+        private const string _updateConfirmDesc = "更新会覆盖已发布关卡，确定要更新吗？";
+        
         private const string _winConditionStr = "胜利条件：";
         private const string _timeLimitFormat = "时间限制：{0}s";
         private const string _comma = "、";
@@ -73,6 +78,16 @@ namespace GameA
             _cachedView.DescField.text = _project.Summary;
             _cachedView.MultiObj.SetActive(_project.IsMulti);
             _cachedView.StandaloneObj.SetActive(!_project.IsMulti);
+            if (_project.PublishTime != 0)
+            {
+                _cachedView.TitleTxt.text = _updateConfirmTitle;
+                _cachedView.DescText.text = _updateConfirmDesc;
+            }
+            else
+            {
+                _cachedView.TitleTxt.text = _publishConfirmTitle;
+                _cachedView.DescText.text = _publishConfirmDesc;
+            }
             if (_project.IsMulti)
             {
                 RefreshMultiWinConditonText();
@@ -156,6 +171,12 @@ namespace GameA
 
         private void OnTitleEndEdit(string arg0)
         {
+            if (_project.PublishTime != 0)
+            {
+                SocialGUIManager.ShowPopupDialog("发布过的关卡不能修改关卡名称");
+                _cachedView.TitleField.text = _project.Name;
+                return;
+            }
             string newTitle = _cachedView.TitleField.text;
             if (string.IsNullOrEmpty(newTitle) || newTitle == _project.Name)
             {
@@ -211,7 +232,6 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     CommonTools.ShowPopupDialog("发布关卡成功");
-                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _project.ProjectId);
                     if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
                     {
                         GM2DGame.Instance.QuitGame(null, null);
@@ -253,7 +273,6 @@ namespace GameA
                 () =>
                 {
                     _needSave = false;
-                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
                     if (successAction != null)
                     {
                         successAction.Invoke();

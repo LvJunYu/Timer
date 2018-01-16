@@ -7,7 +7,7 @@ namespace GameA
     public class UMPoolManager : MonoBehaviour
     {
         private static UMPoolManager _instance;
-        private Dictionary<string, List<IUMPool>> _cacheDic = new Dictionary<string, List<IUMPool>>();
+        private Dictionary<string, List<IUMPoolable>> _cacheDic = new Dictionary<string, List<IUMPoolable>>();
 
         public static UMPoolManager Instance
         {
@@ -23,12 +23,12 @@ namespace GameA
             }
         }
 
-        public T Get<T>(RectTransform rectTransform, EResScenary resScenary) where T : class, IUMPool, new()
+        public T Get<T>(RectTransform rectTransform, EResScenary resScenary) where T : class, IUMPoolable, new()
         {
-            List<IUMPool> umCache;
+            List<IUMPoolable> umCache;
             if (!_cacheDic.TryGetValue(typeof(T).Name, out umCache))
             {
-                _cacheDic.Add(typeof(T).Name, new List<IUMPool>(16));
+                _cacheDic.Add(typeof(T).Name, new List<IUMPoolable>(16));
                 umCache = _cacheDic[typeof(T).Name];
             }
             var item = umCache.Find(p => !p.IsShow);
@@ -46,7 +46,7 @@ namespace GameA
             return item as T;
         }
 
-        public void Free<T>(T um) where T : IUMPool
+        public void Free<T>(T um) where T : IUMPoolable
         {
             um.Hide();
             um.SetParent(this.rectTransform());
@@ -63,7 +63,7 @@ namespace GameA
         }
     }
 
-    public interface IUMPool
+    public interface IUMPoolable
     {
         bool IsShow { get; }
         void Show();

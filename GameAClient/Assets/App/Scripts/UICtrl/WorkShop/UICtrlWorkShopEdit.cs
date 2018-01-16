@@ -8,14 +8,15 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>
     {
+        private string _updateStr = "更 新";
+        private string _publishStr = "发 布";
+        private string _editStr = "编 辑";
+        private string _glanceStr = "浏 览";
         private Project _project;
         private bool _isEditTitle;
         private bool _isEditDesc;
         private bool _needSave;
         private EEditState _editState;
-        private const string _hasPublishedStr = "已发布";
-        private const string _publishStr = "发 布";
-        private const string _editStr = "编 辑";
 
         protected override void OnViewCreated()
         {
@@ -24,12 +25,15 @@ namespace GameA
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.DownEditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
             _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
             _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
             _cachedView.TitleInput.onEndEdit.AddListener(msg => OnConfirmTitleBtn());
             _cachedView.DescInput.onEndEdit.AddListener(msg => OnConfirmDescBtn());
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+            _cachedView.FollowBtn.onClick.AddListener(OnFollowBtn);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInput);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TitleInput);
         }
@@ -39,6 +43,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnPersonalProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -50,6 +55,7 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
                 return;
             }
+
             RefreshView();
         }
 
@@ -59,6 +65,9 @@ namespace GameA
             _needSave = _isEditTitle = _isEditDesc = false;
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover,
                 _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.DownLoadCover,
+                _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultCoverTexture);
             _cachedView.Title.text = _cachedView.Desc.text = String.Empty;
             base.OnClose();
         }
@@ -77,30 +86,73 @@ namespace GameA
 
         private void RefreshView()
         {
-            if (_project == null)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
-                return;
-            }
             RefreshEditStateAndBtnName();
-            RefreshTitleDock();
+            _cachedView.DownLoadObj.SetActive(_editState == EEditState.DownLoad);
+            _cachedView.EdittingObj.SetActive(_editState != EEditState.DownLoad);
+            if (_editState == EEditState.DownLoad)
+            {
+                RefreshDownLoadDock();
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.DownLoadCover, _project.IconPath,
+                    _cachedView.DefaultCoverTexture);
+            }
+            else
+            {
+                RefreshTitleDock();
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                    _cachedView.DefaultCoverTexture);
+            }
+
             RefreshDescDock();
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+        }
+
+        private void RefreshDownLoadDock()
+        {
+            DictionaryTools.SetContentText(_cachedView.DownLoadTitle, _project.Name);
+            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ParentId.ToString());
+            UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
+            DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
+            DictionaryTools.SetContentText(_cachedView.AdvLevelText,
+                GameATools.GetLevelString(user.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.CreateLevelText,
+                GameATools.GetLevelString(user.LevelData.CreatorLevel));
+            bool myself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
+            bool hasFollowed = _project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            _cachedView.FollowBtn.SetActiveEx(!myself);
+            DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
+                hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultCoverTexture);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
         }
 
         private void RefreshEditStateAndBtnName()
         {
-            if (_project.PublishTime >= _project.UpdateTime)
+            if (_project.ParentId != 0)
             {
-                _editState = EEditState.HasPublished;
-                _cachedView.OKBtnTxt.text = _hasPublishedStr;
+                _editState = EEditState.DownLoad;
+                _cachedView.OKBtnTxt.text = _glanceStr;
+                return;
+            }
+
+            if (_project.PublishTime != 0)
+            {
+                if (_project.PassFlag)
+                {
+                    _editState = EEditState.UpdatingPassed;
+                    _cachedView.OKBtnTxt.text = _updateStr;
+                }
+                else
+                {
+                    _editState = EEditState.Updating;
+                    _cachedView.OKBtnTxt.text = _editStr;
+                }
             }
             else
             {
                 if (_project.PassFlag)
                 {
-                    _editState = EEditState.HasPassed;
+                    _editState = EEditState.EditingPassed;
                     _cachedView.OKBtnTxt.text = _publishStr;
                 }
                 else
@@ -124,7 +176,7 @@ namespace GameA
         {
             DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
             _cachedView.Desc.SetActiveEx(!_isEditDesc);
-            _cachedView.EditDescBtn.SetActiveEx(!_isEditDesc);
+            _cachedView.EditDescBtn.SetActiveEx(!_isEditDesc && _editState != EEditState.DownLoad);
             _cachedView.DescInput.SetActiveEx(_isEditDesc);
             _cachedView.ConfirmDescBtn.SetActiveEx(_isEditDesc);
         }
@@ -153,7 +205,6 @@ namespace GameA
                 () =>
                 {
                     _needSave = false;
-                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
                     if (successAction != null)
                     {
                         successAction.Invoke();
@@ -180,19 +231,30 @@ namespace GameA
             }
         }
 
+        private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
+        {
+            if (_project != null && userInfoDetail == _project.UserInfoDetail)
+            {
+                if (_isOpen)
+                {
+                    RefreshDownLoadDock();
+                }
+            }
+        }
+
         private void OnOKBtn()
         {
-            if (_editState == EEditState.HasPassed)
+            switch (_editState)
             {
-                OnPublish();
-            }
-            else if (_editState == EEditState.HasPublished)
-            {
-                SocialGUIManager.ShowPopupDialog("关卡已经发布。继续编辑");
-            }
-            else
-            {
-                OnEditBtn();
+                case EEditState.DownLoad:
+                case EEditState.Editing:
+                case EEditState.Updating:
+                    OnEditBtn();
+                    break;
+                case EEditState.EditingPassed:
+                case EEditState.UpdatingPassed:
+                    OnPublish();
+                    break;
             }
         }
 
@@ -205,6 +267,7 @@ namespace GameA
                     new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));
                 return;
             }
+
             if (_needSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
@@ -238,10 +301,9 @@ namespace GameA
                     RemoteCommands.DeleteProject(projList, msg =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_project);
                             _project.Delete();
                             _project = null;
-                            LocalUser.Instance.PersonalProjectList.Request();
+                            LocalUser.Instance.PersonalProjectList.Delete(_project);
                             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
                         },
                         code =>
@@ -273,7 +335,7 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
-                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                    SocialGUIManager.ShowPopupDialog("保存数据失败");
                 });
             }
             else
@@ -285,6 +347,12 @@ namespace GameA
         private void OnEditTitleBtn()
         {
             if (null == _project) return;
+            if (_project.PublishTime != 0)
+            {
+                SocialGUIManager.ShowPopupDialog("编辑发布过的关卡不能修改关卡名称");
+                return;
+            }
+
             _isEditTitle = true;
             RefreshTitleDock();
             _cachedView.TitleInput.text = _project.Name;
@@ -300,6 +368,7 @@ namespace GameA
                 RefreshTitleDock();
                 return;
             }
+
             var testRes = CheckTools.CheckProjectName(newTitle);
             if (testRes == CheckTools.ECheckProjectNameResult.Success)
             {
@@ -332,6 +401,7 @@ namespace GameA
                 RefreshDescDock();
                 return;
             }
+
             var testRes = CheckTools.CheckProjectDesc(newDesc);
             if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
             {
@@ -346,6 +416,27 @@ namespace GameA
             }
         }
 
+        private void OnFollowBtn()
+        {
+            if (_project == null) return;
+            if (_project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
+            {
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(_project.UserInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestFollowUser(_project.UserInfoDetail);
+            }
+        }
+
+        private void OnHeadBtn()
+        {
+            if (_project != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_project.UserInfoDetail);
+            }
+        }
+
         private void OnPersonalProjectDataChanged(Project p)
         {
             if (_isOpen && _project != null && p.ProjectId == _project.ProjectId)
@@ -357,8 +448,10 @@ namespace GameA
 
     public enum EEditState
     {
+        DownLoad,
         Editing,
-        HasPassed,
-        HasPublished
+        EditingPassed,
+        Updating,
+        UpdatingPassed
     }
 }

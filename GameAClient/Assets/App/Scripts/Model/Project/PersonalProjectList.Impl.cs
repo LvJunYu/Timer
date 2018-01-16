@@ -6,17 +6,42 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList{
+    public partial class PersonalProjectList
+    {
+        private readonly List<Project> _allEdittingList = new List<Project>();
+        private readonly List<Project> _allDownloadList = new List<Project>();
+        public bool EdittingIsEnd { get; private set; }
+        public bool DownloadIsEnd { get; private set; }
 
-        public void Request (
-            Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        public List<Project> AllEdittingList
         {
-            Request(0, int.MaxValue, EPersonalProjectOrderBy.PePOB_LastUpdateTime, EOrderType.OT_Desc, successCallback, failedCallback);
+            get { return _allEdittingList; }
+        }
+
+        public List<Project> AllDownloadList
+        {
+            get { return _allDownloadList; }
+        }
+
+        public void Request(EWorkShopProjectType eWorkShopProjectType, int min, int max, Action successCallback = null,
+            Action<ENetResultCode> failedCallback = null)
+        {
+            Request(eWorkShopProjectType, min, max, EPersonalProjectOrderBy.PePOB_LastUpdateTime, EOrderType.OT_Desc,
+                () =>
+                {
+                    OnSyncPartial(eWorkShopProjectType);
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                , failedCallback);
         }
 
         protected override void OnCreate()
@@ -24,35 +49,103 @@ namespace GameA
             Messenger<Project>.AddListener(EMessengerType.OnWorkShopProjectCreated, OnWorkShopProjectCreated);
             Messenger<Project>.AddListener(EMessengerType.OnWorkShopProjectDataChanged, OnWorkShopProjectDataChange);
         }
-        
-        protected override void OnSyncPartial()
+
+        private void OnSyncPartial(EWorkShopProjectType eWorkShopProjectType)
         {
-            base.OnSyncPartial();
-            Sort();
+            if (_resultCode == (int) ECachedDataState.CDS_None
+                || _resultCode == (int) ECachedDataState.CDS_Uptodate)
+            {
+                if (!_inited)
+                {
+                    if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Editting)
+                    {
+                        EdittingIsEnd = true;
+                    }
+                    else if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Download)
+                    {
+                        DownloadIsEnd = true;
+                    }
+                }
+                return;
+            }
+            if (_resultCode == (int) ECachedDataState.CDS_Recreate)
+            {
+                if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Editting)
+                {
+                    _allEdittingList.Clear();
+                }
+                else if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Download)
+                {
+                    _allDownloadList.Clear();
+                }
+            }
+            if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Editting)
+            {
+                _allEdittingList.AddRange(_projectList);
+                EdittingIsEnd = _projectList.Count < _cs_maxCount;
+            }
+            else if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Download)
+            {
+                _allDownloadList.AddRange(_projectList);
+                DownloadIsEnd = _projectList.Count < _cs_maxCount;
+            }
+            Sort(eWorkShopProjectType);
         }
 
-        public void LocalAdd(Project project)
+        public void LocalAddDownloadProject(Project project)
         {
-            _projectList.Add(project);
+            _allDownloadList.Add(project);
+            Sort(EWorkShopProjectType.WSPT_Download);
             _dirty = true;
-            Sort();
         }
 
-        public void Sort()
+        public void Delete(Project project)
         {
-            _projectList.Sort((p1, p2) => -p1.UpdateTime.CompareTo(p2.UpdateTime));
-            MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
+            if (project.ParentId != 0)
+            {
+                if (_allDownloadList.Contains(project))
+                {
+                    _allDownloadList.Remove(project);
+                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
+                }
+            }
+            else
+            {
+                if (_allEdittingList.Contains(project))
+                {
+                    _allEdittingList.Remove(project);
+                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopDownloadListChanged);
+                }
+            }
+
+            _dirty = true;
+        }
+        
+        public void Sort(EWorkShopProjectType eWorkShopProjectType = EWorkShopProjectType.WSPT_Editting)
+        {
+            if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Editting)
+            {
+                _allEdittingList.Sort((p1, p2) => -p1.UpdateTime.CompareTo(p2.UpdateTime));
+                MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
+            }
+            else if (eWorkShopProjectType == EWorkShopProjectType.WSPT_Download)
+            {
+                _allDownloadList.Sort((p1, p2) => -p1.UpdateTime.CompareTo(p2.UpdateTime));
+                MessengerAsync.Broadcast(EMessengerType.OnWorkShopDownloadListChanged);
+            }
         }
 
         private void OnWorkShopProjectDataChange(Project p)
         {
             Sort();
+            _dirty = true;
         }
 
         private void OnWorkShopProjectCreated(Project p)
         {
-            _projectList.Add(p);
+            _allEdittingList.Add(p);
             Sort();
+            _dirty = true;
         }
     }
 }

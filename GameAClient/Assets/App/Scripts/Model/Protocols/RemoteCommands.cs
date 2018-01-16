@@ -1133,10 +1133,10 @@ namespace GameA
         /// <summary>
 		/// 修改关卡收藏状态
 		/// </summary>
-		/// <param name="projectId">关卡Id</param>
+		/// <param name="projectMainId">关卡Id</param>
 		/// <param name="favoriteFlag"></param>
         public static void UpdateWorldProjectFavorite (
-            long projectId,
+            long projectMainId,
             bool favoriteFlag,
             Action<Msg_SC_CMD_UpdateWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1147,7 +1147,7 @@ namespace GameA
             _isRequstingUpdateWorldProjectFavorite = true;
             Msg_CS_CMD_UpdateWorldProjectFavorite msg = new Msg_CS_CMD_UpdateWorldProjectFavorite();
             // 修改关卡收藏状态
-            msg.ProjectId = projectId;
+            msg.ProjectMainId = projectMainId;
             msg.FavoriteFlag = favoriteFlag;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectFavorite>(
                 SoyHttpApiPath.UpdateWorldProjectFavorite, msg, ret => {
@@ -1173,9 +1173,9 @@ namespace GameA
         /// <summary>
 		/// 删除收藏关卡
 		/// </summary>
-		/// <param name="projectId">关卡Id</param>
+		/// <param name="projecMaintId">关卡Id</param>
         public static void DeleteWorldProjectFavorite (
-            List<long> projectId,
+            List<long> projecMaintId,
             Action<Msg_SC_CMD_DeleteWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1185,7 +1185,7 @@ namespace GameA
             _isRequstingDeleteWorldProjectFavorite = true;
             Msg_CS_CMD_DeleteWorldProjectFavorite msg = new Msg_CS_CMD_DeleteWorldProjectFavorite();
             // 删除收藏关卡
-            msg.ProjectId.AddRange(projectId);
+            msg.ProjecMaintId.AddRange(projecMaintId);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteWorldProjectFavorite>(
                 SoyHttpApiPath.DeleteWorldProjectFavorite, msg, ret => {
                     if (successCallback != null) {
@@ -1272,6 +1272,46 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingSearchWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingGetProjectByMainId {
+            get { return _isRequstingGetProjectByMainId; }
+        }
+        private static bool _isRequstingGetProjectByMainId = false;
+        /// <summary>
+		/// 通过主id和版本号获取关卡
+		/// </summary>
+		/// <param name="mainId">关卡Id</param>
+		/// <param name="version">特定版本号</param>
+        public static void GetProjectByMainId (
+            long mainId,
+            int version,
+            Action<Msg_SC_CMD_GetProjectByMainId> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingGetProjectByMainId) {
+                return;
+            }
+            _isRequstingGetProjectByMainId = true;
+            Msg_CS_CMD_GetProjectByMainId msg = new Msg_CS_CMD_GetProjectByMainId();
+            // 通过主id和版本号获取关卡
+            msg.MainId = mainId;
+            msg.Version = version;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GetProjectByMainId>(
+                SoyHttpApiPath.GetProjectByMainId, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingGetProjectByMainId = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetProjectByMainId", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingGetProjectByMainId = false;
                 },
                 form
             );
@@ -1406,6 +1446,43 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingUpdateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingEditProject {
+            get { return _isRequstingEditProject; }
+        }
+        private static bool _isRequstingEditProject = false;
+        /// <summary>
+		/// 继续编辑关卡
+		/// </summary>
+		/// <param name="projectMainId">关卡Id</param>
+        public static void EditProject (
+            long projectMainId,
+            Action<Msg_SC_CMD_EditProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingEditProject) {
+                return;
+            }
+            _isRequstingEditProject = true;
+            Msg_CS_CMD_EditProject msg = new Msg_CS_CMD_EditProject();
+            // 继续编辑关卡
+            msg.ProjectMainId = projectMainId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_EditProject>(
+                SoyHttpApiPath.EditProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingEditProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "EditProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingEditProject = false;
                 },
                 form
             );

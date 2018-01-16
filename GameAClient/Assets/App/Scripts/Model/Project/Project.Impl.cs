@@ -627,6 +627,7 @@ namespace GameA
                     if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
                         _publishTime = UpdateTime;
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, ret.ProjectData.ProjectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
                         //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
@@ -947,7 +948,7 @@ namespace GameA
                     Project p = new Project();
                     p._projectStatus = EProjectStatus.PS_Private;
                     p.OnSync(ret.ProjectData);
-                    LocalUser.Instance.PersonalProjectList.LocalAdd(p);
+                    LocalUser.Instance.PersonalProjectList.LocalAddDownloadProject(p);
                     if (successCallback != null)
                     {
                         successCallback.Invoke();

@@ -4,11 +4,11 @@ namespace GameA
 {
     public static class RelationCommonString
     {
-        public static string FollowedStr = "已关注";
-        public static string FollowStr = "关 注";
-        public static string BlockedStr = "已屏蔽";
-        public static string BlockStr = "屏蔽";
-        public static string FriendStr = "相互关注";
+        public const string FollowedStr = "已关注";
+        public const string FollowStr = "关 注";
+        public const string BlockedStr = "已屏蔽";
+        public const string BlockStr = "屏蔽";
+        public const string FriendStr = "相互关注";
     }
 
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]

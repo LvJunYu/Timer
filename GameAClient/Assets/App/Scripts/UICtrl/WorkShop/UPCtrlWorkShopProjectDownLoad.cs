@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorkShopProjectEditing : UPCtrlWorkShopProjectBase
+    public class UPCtrlWorkShopProjectDownload : UPCtrlWorkShopProjectBase
     {
         private bool _isRequesting;
         private PersonalProjectList _data = LocalUser.Instance.PersonalProjectList;
@@ -16,12 +16,12 @@ namespace GameA
             int startInx = 0;
             if (append)
             {
-                startInx = _data.AllEdittingList.Count;
+                startInx = _data.AllDownloadList.Count;
             }
 
-            _data.Request(EWorkShopProjectType.WSPT_Editting, startInx, _pageSize, () =>
+            _data.Request(EWorkShopProjectType.WSPT_Download, startInx, _pageSize, () =>
             {
-                _projectList = _data.AllEdittingList;
+                _projectList = _data.AllDownloadList;
                 if (_isOpen)
                 {
                     RefreshView();
@@ -33,11 +33,10 @@ namespace GameA
 
         public override void RefreshView()
         {
-            _projectList = _data.AllEdittingList;
+            _projectList = _data.AllDownloadList;
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
             _dict.Clear();
-            _contentList.Add(new CardDataRendererWrapper<Project>(Project.EmptyProject, OnNewItemClick));
             if (_projectList != null)
             {
                 _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count + 1);
@@ -49,7 +48,6 @@ namespace GameA
                     _dict.Add(_projectList[i].ProjectId, w);
                 }
             }
-
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
@@ -59,11 +57,6 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorkShopEdit>(item.Content);
             }
-        }
-
-        private void OnNewItemClick(CardDataRendererWrapper<Project> item)
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlSetProjectSize>();
         }
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -79,9 +72,8 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
-
                 item.Set(_contentList[inx]);
-                if (!_data.EdittingIsEnd)
+                if (!_data.DownloadIsEnd)
                 {
                     if (inx > _contentList.Count - 2)
                     {
@@ -90,11 +82,11 @@ namespace GameA
                 }
             }
         }
-
+        
         protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
-            item.SetCurUI(UMCtrlProject.ECurUI.Editing);
+            item.SetCurUI(UMCtrlProject.ECurUI.Download);
             item.Init(parent, _resScenary);
             return item;
         }

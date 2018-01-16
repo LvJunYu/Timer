@@ -20,7 +20,7 @@ namespace GameA
 
         public void RequestMyFriends(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, 100,
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, int.MaxValue,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -35,7 +35,7 @@ namespace GameA
 
         public void RequestMyFans(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, 100,
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, int.MaxValue,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -49,7 +49,7 @@ namespace GameA
 
         public void RequestMyFollows(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, 100,
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, int.MaxValue,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
@@ -63,7 +63,7 @@ namespace GameA
 
         public void RequestMyBlocks(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
-            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, 100,
+            Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, int.MaxValue,
                 ERelationUserOrderBy.RUOB_Friendliness,
                 EOrderType.OT_Asc, () =>
                 {
