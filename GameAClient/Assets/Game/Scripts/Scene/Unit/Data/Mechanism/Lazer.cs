@@ -20,6 +20,8 @@ namespace GameA.Game
 
         protected Vector3 _direction;
         protected int _distance;
+        protected IntVec2 _hitPoint;
+        protected bool _zFront;
 
         protected ERotateMode _eRotateType;
         protected float _endAngle;
@@ -68,6 +70,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _zFront = false;
             _curAngle = _angle;
             _direction = GM2DTools.GetDirection(_curAngle);
             if (_trans != null)
@@ -155,6 +158,8 @@ namespace GameA.Game
                             {
                                 _gridCheck.Do((SwitchTriggerPress) switchTrigger);
                                 _distance = hit.distance + 80;
+                                //如果打到左边或者下面 则层级放在前面，显示出来
+                                CheckZFront(ref hit);
                                 break;
                             }
                         }
@@ -165,6 +170,8 @@ namespace GameA.Game
                             if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
                             {
                                 _distance = hit.distance;
+                                //如果打到左边或者下面 则层级放在前面，显示出来
+                                CheckZFront(ref hit);
                                 flag = true;
                                 break;
                             }
@@ -202,10 +209,28 @@ namespace GameA.Game
                 {
                     _lazerEffectEnd.Play();
                     _lazerEffectEnd.Trans.position =
-                        GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) +
-                        distanceWorld * _direction;
+                        GM2DTools.TileToWorld(CenterPos, GetEffectZ(_hitPoint)) +distanceWorld * _direction;
                 }
             }
+        }
+
+        private void CheckZFront(ref RayHit2D hit)
+        {
+            _hitPoint = hit.point;
+            //如果打到左边或者下面 则层级放在前面，显示出来
+            if (hit.normal.x > 0 || hit.normal.y > 0)
+            {
+                _zFront = true;
+            }
+            else
+            {
+                _zFront = false;
+            }
+        }
+
+        protected  float GetEffectZ(IntVec2 point)
+        {
+            return -(point.x + point.y) * UnitDefine.UnitSorttingLayerRatio + (_zFront ? -1.99f : 1.99f);
         }
     }
 }
