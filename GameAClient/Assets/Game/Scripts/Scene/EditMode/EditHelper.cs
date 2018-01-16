@@ -308,14 +308,19 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
-
+            //检查在地图内
+            var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale);
+            if (!DataScene2D.CurScene.IsInTileMap(dataGrid))
+            {
+                return false;
+            }
             //绳子必须绑在石头上
             if (UnitDefine.RopeId == tableUnit.Id)
             {
                 var upUnit = RopeManager.Instance.GetUpFloorUnit(unitDesc, tableUnit);
                 if (upUnit == null)
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子只能绑在物体上喔~");
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "绳子只能绑在稳固的物体上喔~");
                     return false;
                 }
 
@@ -329,7 +334,6 @@ namespace GameA.Game
                     }
                 }
             }
-
             //怪物同屏数量不可过多
             {
                 if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)

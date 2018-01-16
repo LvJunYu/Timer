@@ -185,13 +185,13 @@ namespace GameA.Game
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     //检查是否覆盖了空气墙
-                    for (int i = 0; i < coverUnits.Count; i++)
-                    {
-                        if (UnitDefine.TerrainId == coverUnits[i].Id)
-                        {
-                            return;
-                        }
-                    }
+//                    for (int i = 0; i < coverUnits.Count; i++)
+//                    {
+//                        if (UnitDefine.TerrainId == coverUnits[i].Id)
+//                        {
+//                            return;
+//                        }
+//                    }
 
                     for (int i = 0; i < coverUnits.Count; i++)
                     {
