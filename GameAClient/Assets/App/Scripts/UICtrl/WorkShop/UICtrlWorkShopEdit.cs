@@ -25,7 +25,7 @@ namespace GameA
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
-            _cachedView.DownEditBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.DownloadEditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.EditTitleBtn.onClick.AddListener(OnEditTitleBtn);
             _cachedView.ConfirmTitleBtn.onClick.AddListener(OnConfirmTitleBtn);
             _cachedView.EditDescBtn.onClick.AddListener(OnEditDescBtn);

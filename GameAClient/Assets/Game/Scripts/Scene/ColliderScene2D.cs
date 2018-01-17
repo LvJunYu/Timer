@@ -453,21 +453,13 @@ namespace GameA.Game
                 DestroyView(unitDesc);
                 DeleteUnit(unitDesc, tableUnit);
             }
-
             _addedDatas.Clear();
-            for (int i = 0; i < _deletedDatas.Count; i++)
+            for (int i = 0; i < _allColliderDescs.Count; i++)
             {
-                UnitDesc unitDesc = _deletedDatas[i];
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI)
-                {
-                    InstantiateView(unitDesc, tableUnit);
-                }
+                DeleteCollider(_allColliderDescs[i]);
             }
-
-            _deletedDatas.Clear();
-            _waitDestroyUnits.Clear();
+            _allColliderDescs.Clear();
+            // 先删除、再重置地块、再添加
             for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
                 _allSwitchUnits[i].Reset();
@@ -482,13 +474,21 @@ namespace GameA.Game
             {
                 _allOtherUnits[i].Reset();
             }
-
-            for (int i = 0; i < _allColliderDescs.Count; i++)
+            
+            for (int i = 0; i < _deletedDatas.Count; i++)
             {
-                DeleteCollider(_allColliderDescs[i]);
+                UnitDesc unitDesc = _deletedDatas[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                AddUnit(unitDesc, tableUnit);
+                if (!MapConfig.UseAOI)
+                {
+                    InstantiateView(unitDesc, tableUnit);
+                }
             }
 
-            _allColliderDescs.Clear();
+            _deletedDatas.Clear();
+            _waitDestroyUnits.Clear();
+
         }
 
         public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
@@ -1009,6 +1009,10 @@ namespace GameA.Game
 
         public void Exit()
         {
+            if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+            {
+                EditMode.Instance.StopSwitch();
+            }
             _destroyDatas.Clear();
             foreach (UnitDesc unitDesc in _addedDatas)
             {

@@ -35,6 +35,8 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteTogValueChanged);
             _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtn);
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtn);
+            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
+            _cachedView.EditBtn.onClick.AddListener(OnEditBtn);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
@@ -78,6 +80,7 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+
             BadWordManger.Instance.InputFeidAddListen(_cachedView.CommentInput);
         }
 
@@ -90,6 +93,7 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
+
             if (!Project.IsValid)
             {
                 SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
@@ -97,9 +101,11 @@ namespace GameA
                 {
                     Project.UpdateFavorite(false);
                 }
+
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
+
             IsMulti = Project.IsMulti;
             Project.Request(Project.ProjectId, null, null);
             RefreshView();
@@ -113,8 +119,10 @@ namespace GameA
                 {
                     _curMenu = EMenu.Recent;
                 }
+
                 _lastProjectId = Project.ProjectId;
             }
+
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
@@ -124,6 +132,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             Clear();
             base.OnClose();
         }
@@ -159,6 +168,7 @@ namespace GameA
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -211,6 +221,7 @@ namespace GameA
             {
                 return true;
             }
+
             if (Project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.ShowPopupDialog(content, null,
@@ -218,6 +229,7 @@ namespace GameA
                     new KeyValuePair<string, Action>("进入", () => { OnPlayBtnClick(); }));
                 return false;
             }
+
             return true;
         }
 
@@ -242,6 +254,7 @@ namespace GameA
                 SetNull();
                 return;
             }
+
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!IsMulti);
@@ -274,6 +287,7 @@ namespace GameA
                 user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                     _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             }
+
             RefreshBtns();
             RefreshCommentCount(Project.TotalCommentCount);
         }
@@ -321,6 +335,10 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
                 string.Format(_countFormat, Project.LikeCount + Project.UnlikeCount));
+            _cachedView.EditBtn.SetActiveEx(myself);
+            _cachedView.DeleteBtn.SetActiveEx(myself);
+            _cachedView.FavoriteBtn.SetActiveEx(!myself);
+            _cachedView.DownloadBtn.SetActiveEx(!myself);
         }
 
         private void OnCreateBtn()
@@ -351,6 +369,7 @@ namespace GameA
                 Project.Request();
                 return;
             }
+
             if (!CheckPlayed("玩过才能评分哦~~现在进入关卡吗？"))
             {
                 _onlyChangeView = true;
@@ -358,6 +377,7 @@ namespace GameA
                 _onlyChangeView = false;
                 return;
             }
+
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_Unlike,
@@ -380,6 +400,7 @@ namespace GameA
                 Project.Request(Project.ProjectId, null, null);
                 return;
             }
+
             if (!CheckPlayed("玩过才能评分哦~~现在进入关卡吗？"))
             {
                 _onlyChangeView = true;
@@ -387,6 +408,7 @@ namespace GameA
                 _onlyChangeView = false;
                 return;
             }
+
             if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
             {
                 Project.UpdateLike(EProjectLikeState.PLS_Like,
@@ -415,14 +437,17 @@ namespace GameA
             {
                 return;
             }
+
             if (_isPostComment)
             {
                 return;
             }
+
             if (string.IsNullOrEmpty(_cachedView.CommentInput.text))
             {
                 return;
             }
+
             _isPostComment = true;
             Project.SendComment(_cachedView.CommentInput.text, flag =>
             {
@@ -436,6 +461,7 @@ namespace GameA
                         _curMenu = EMenu.Comment;
                         _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
                     }
+
                     Project.Request();
                 }
             });
@@ -462,12 +488,39 @@ namespace GameA
             }
         }
 
+        private void OnEditBtn()
+        {
+            Project.Edit();
+        }
+
+        private void OnDeleteBtn()
+        {
+            if (null == Project) return;
+            CommonTools.ShowPopupDialog(
+                string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", Project.Name), "删除提示",
+                new KeyValuePair<string, Action>("取消", () => { }),
+                new KeyValuePair<string, Action>("确定", () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
+                    Project.UnPublish(() =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                    }, () =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        CommonTools.ShowPopupDialog("删除关卡失败");
+                    });
+                }));
+        }
+
         private void OnFavoriteTogValueChanged()
         {
             if (Project == null || _isRequestFavorite)
             {
                 return;
             }
+
             _isRequestFavorite = true;
             Project.UpdateFavorite(!_collected, () =>
             {
@@ -482,10 +535,12 @@ namespace GameA
             {
                 return;
             }
+
             if (_isRequestDownload)
             {
                 return;
             }
+
             _isRequestDownload = true;
             Project.DownloadProject(() =>
             {
@@ -506,6 +561,7 @@ namespace GameA
             {
                 return;
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
             Project.RequestPlay(() =>
             {
@@ -530,9 +586,11 @@ namespace GameA
                     {
                         Project.UpdateFavorite(false);
                     }
+
                     SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                     return;
                 }
+
                 RefreshView();
                 if (_curMenuCtrl != null)
                 {
@@ -563,6 +621,7 @@ namespace GameA
             {
                 _menuCtrlArray[i].Clear();
             }
+
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = false;
             _cachedView.BadTog.isOn = false;
@@ -602,12 +661,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();

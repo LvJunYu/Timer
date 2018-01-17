@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -638,7 +639,7 @@ namespace GameA
                     }
                     else
                     {
-                        LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+                        LogHelper.Error("Publish project error, code: {0}", ret.ResultCode);
                         if (onError != null)
                         {
                             onError.Invoke((EProjectOperateResult) ret.ResultCode);
@@ -654,6 +655,58 @@ namespace GameA
                     }
                 });
         }
+        
+        public void UnPublish(Action onSuccess = null, Action onFail = null)
+        {
+            var projectList = new List<long> {_projectId};
+            RemoteCommands.UnpublishWorldProject(projectList, msg =>
+            {
+                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                {
+                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectUnPublished, _projectId);
+                    if (onSuccess != null)
+                    {
+                        onSuccess.Invoke();
+                    }
+                }
+                else
+                {
+                    LogHelper.Error("UnPublish project error, code: {0}", msg.ResultCode);
+                    if (onFail != null)
+                    {
+                        onFail.Invoke();
+                    }
+                }
+            },
+            code =>
+            {
+                SoyHttpClient.ShowErrorTip(code);
+                if (onFail != null)
+                {
+                    onFail.Invoke();
+                }
+            });
+        }
+
+        public void Edit()
+        {
+            RemoteCommands.EditProject(_mainId, msg =>
+            {
+                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                {
+                    AppLogicUtil.EditPersonalProject(new Project(msg.ProjectData));
+                }
+                else
+                {
+                    LogHelper.Error("Edit project error, code: {0}", msg.ResultCode);
+                }
+            },
+            code =>
+            {
+                SoyHttpClient.ShowErrorTip(code);
+            });
+        }
+
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
