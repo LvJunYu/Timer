@@ -201,7 +201,8 @@ namespace GameA.Game
             //多场景时空门
             if (unit.TableUnit.EPairType == EPairType.SpacetimeDoor)
             {
-                SpacetimeDoor.OnSpacetimeDoor(pairUnit, unit.Guid == pairUnit.UnitA.Guid);
+                SpacetimeDoor.OnSpacetimeDoor(pairUnit, unit.Guid == pairUnit.UnitA.Guid &&
+                                                        Scene2DManager.Instance.CurSceneIndex == pairUnit.UnitAScene);
                 return;
             }
 

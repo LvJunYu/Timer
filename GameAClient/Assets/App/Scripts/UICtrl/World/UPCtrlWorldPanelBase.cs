@@ -13,9 +13,7 @@ namespace GameA
             base.Open();
             _unload = false;
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            bool canSearch = _menu != UICtrlWorld.EMenu.RankList && _menu != UICtrlWorld.EMenu.Multi;
-            _cachedView.SearchBtn.SetActiveEx(canSearch);
-            _cachedView.SearchInputField.SetActiveEx(canSearch);
+            _cachedView.TopDock.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList && _menu != UICtrlWorld.EMenu.Multi);
         }
 
         public override void Close()

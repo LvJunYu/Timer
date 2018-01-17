@@ -695,7 +695,7 @@ namespace GameA.Game
             PoolFactory<Bullet>.Free(bullet);
         }
 
-        public void Clear()
+        public void ClearBullet()
         {
             for (int i = 0; i < _bullets.Count; i++)
             {

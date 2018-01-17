@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA
 {
@@ -45,6 +44,7 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.PraiseBtn.onClick.AddListener(OnPraiseBtn);
             _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
+            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             _cachedView.InputField.onEndEdit.AddListener(str =>
             {
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
@@ -56,13 +56,15 @@ namespace GameA
             _cachedView.MoreBtn.onClick.AddListener(OnMoreBtn);
             _cachedView.FoldBtn.onClick.AddListener(OnFoldBtn);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
-            InitFirstUM();
+            InitOnViewCreated();
         }
 
-        protected virtual void InitFirstUM()
+        protected virtual void InitOnViewCreated()
         {
             _firstReplay = new UMCtrlPersonalInfoReplyMessage();
             _firstReplay.Init(_cachedView.FirstReplyRtf, _resScenary);
+            Messenger<UserMessageReply, long>.AddListener(EMessengerType.OnDeleteUserMessageReply,
+                OnDeleteUserMessageReply);
         }
 
         public virtual void Set(object obj)
@@ -88,6 +90,7 @@ namespace GameA
             {
                 startInx = _dataList.Count;
             }
+
             _message.ReplyList.Request(_message.Id, startInx, pageSize, () =>
             {
                 _dataList = _message.ReplyList.AllList;
@@ -97,6 +100,8 @@ namespace GameA
 
         protected virtual void RefreshView()
         {
+            _cachedView.DeleteDock.SetActive(_message.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+                                             SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_message.LikeNum > 0);
             UserInfoSimple user = _message.UserInfoDetail.UserInfoSimple;
@@ -157,6 +162,18 @@ namespace GameA
             }
         }
 
+        private void OnDeleteUserMessageReply(UserMessageReply reply, long messageId)
+        {
+            if (_message != null && _message.Id == messageId)
+            {
+                if (_dataList.Contains(reply))
+                {
+                    _dataList.Remove(reply);
+                    RefreshReplyDock(true);
+                }
+            }
+        }
+
         private UMCtrlPersonalInfoReplyMessage GetItem()
         {
             var item = UMPoolManager.Instance.Get<UMCtrlPersonalInfoReplyMessage>(_cachedView.ReplayRtf, _resScenary);
@@ -187,6 +204,7 @@ namespace GameA
             {
                 _message.Reply(_cachedView.InputField.text);
             }
+
             SetPublishDock(false);
         }
 
@@ -198,6 +216,11 @@ namespace GameA
         protected virtual void OnPraiseBtn()
         {
             _message.LikeChanged(RefreshView);
+        }
+
+        protected virtual void OnDeleteBtn()
+        {
+            _message.Delete();
         }
 
         protected virtual void OnHeadBtn()
@@ -236,7 +259,14 @@ namespace GameA
             _cachedView.HeadBtn.onClick.RemoveAllListeners();
             _cachedView.PraiseBtn.onClick.RemoveAllListeners();
             _cachedView.ReplayBtn.onClick.RemoveAllListeners();
+            ClearOnDestroy();
             base.OnDestroy();
+        }
+
+        protected virtual void ClearOnDestroy()
+        {
+            Messenger<UserMessageReply, long>.RemoveListener(EMessengerType.OnDeleteUserMessageReply,
+                OnDeleteUserMessageReply);
         }
 
         public virtual void Unload()

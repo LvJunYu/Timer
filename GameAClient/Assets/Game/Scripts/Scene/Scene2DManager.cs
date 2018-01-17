@@ -109,6 +109,11 @@ namespace GameA.Game
             {
                 if (_curScene != null)
                 {
+                    if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+                    {
+                        EditMode.Instance.StopSwitch();
+                    }
+                    PlayMode.Instance.ClearBullet();
                     _curScene.Exit();
                 }
             }

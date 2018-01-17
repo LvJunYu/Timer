@@ -39,6 +39,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
+
             _mainCtrl.Project.RequestCommentList(startInx, _pageSize, () =>
             {
                 _contentList = _data.AllList;
@@ -81,6 +82,7 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)
                 {
@@ -101,12 +103,21 @@ namespace GameA
                 _cachedView.CommentTableScroller.RefreshCurrent();
             }
         }
-        
+
         public override void Clear()
         {
             _cachedView.CommentInput.text = string.Empty;
             _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
         }
 
+        public void OnDeleteUserMessage(ProjectComment comment)
+        {
+            if (_data != null && _data.AllList.Contains(comment))
+            {
+                _data.AllList.Remove(comment);
+                _contentList = _data.AllList;
+                RefreshView();
+            }
+        }
     }
 }

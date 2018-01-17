@@ -27,7 +27,7 @@ namespace GameA
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
 
-            var upCtrlWorldNewest = new UPCtrlWorldNewest();
+            var upCtrlWorldNewest = new UPCtrlWorldAllNewestProject();
             upCtrlWorldNewest.Set(ResScenary);
             upCtrlWorldNewest.SetMenu(EMenu.NewestProject);
             upCtrlWorldNewest.Init(this, _cachedView);
@@ -45,6 +45,12 @@ namespace GameA
             upCtrlWorldUserFavorite.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserFavorite] = upCtrlWorldUserFavorite;
 
+            var upCtrlWorldFollowedUserProject = new UPCtrlWorldFollowedUserProject();
+            upCtrlWorldFollowedUserProject.Set(ResScenary);
+            upCtrlWorldFollowedUserProject.SetMenu(EMenu.Collect);
+            upCtrlWorldFollowedUserProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Collect] = upCtrlWorldFollowedUserProject;
+            
             var uPCtrlWorldRanklistPanel = new UPCtrlWorldRanklistPanel();
             uPCtrlWorldRanklistPanel.Set(ResScenary);
             uPCtrlWorldRanklistPanel.SetMenu(EMenu.RankList);
@@ -61,6 +67,18 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+
+            for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+            {
+                _cachedView.ProjectTypeTogs[i].onValueChanged.AddListener(b =>
+                {
+                    if (_isOpen && _curMenuCtrl is UPCtrlWorldProjectBase)
+                    {
+                        ((UPCtrlWorldProjectBase)_curMenuCtrl).OnProjectTypesChanged();
+                    }
+                });
+            }
+            
             BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchRoomInputField);
         }
@@ -312,6 +330,7 @@ namespace GameA
             NewestProject,
             Multi,
             UserFavorite,
+            Collect,
             RankList,
             Max
         }

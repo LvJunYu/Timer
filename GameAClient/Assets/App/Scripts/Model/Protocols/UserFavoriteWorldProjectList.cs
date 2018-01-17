@@ -36,6 +36,10 @@ namespace GameA
         /// </summary>
         private int _cs_maxCount;
         /// <summary>
+        /// 
+        /// </summary>
+        private int _cs_projectTypeMask;
+        /// <summary>
         /// 排序字段
         /// </summary>
         private EFavoriteProjectOrderBy _cs_orderBy;
@@ -101,6 +105,13 @@ namespace GameA
             set { _cs_maxCount = value; }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        public int CS_ProjectTypeMask { 
+            get { return _cs_projectTypeMask; }
+            set { _cs_projectTypeMask = value; }
+        }
+        /// <summary>
         /// 排序字段
         /// </summary>
         public EFavoriteProjectOrderBy CS_OrderBy { 
@@ -136,12 +147,14 @@ namespace GameA
 		/// <param name="userId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
+		/// <param name="projectTypeMask">.</param>
 		/// <param name="orderBy">排序字段.</param>
 		/// <param name="orderType">升序降序.</param>
         public void Request (
             long userId,
             int startInx,
             int maxCount,
+            int projectTypeMask,
             EFavoriteProjectOrderBy orderBy,
             EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
@@ -159,6 +172,10 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
+                if (_cs_projectTypeMask != projectTypeMask) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 if (_cs_orderBy != orderBy) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -172,6 +189,7 @@ namespace GameA
                 _cs_userId = userId;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
+                _cs_projectTypeMask = projectTypeMask;
                 _cs_orderBy = orderBy;
                 _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
@@ -180,6 +198,7 @@ namespace GameA
                 msg.UserId = userId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
+                msg.ProjectTypeMask = projectTypeMask;
                 msg.OrderBy = orderBy;
                 msg.OrderType = orderType;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserFavoriteWorldProjectList>(

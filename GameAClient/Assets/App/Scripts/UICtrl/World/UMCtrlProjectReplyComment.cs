@@ -26,6 +26,8 @@ namespace GameA
 
         protected override void RefreshView()
         {
+            _cachedView.DeleteDock.SetActive(_reply.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+                                             SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.CreateTime,
@@ -60,6 +62,11 @@ namespace GameA
                 Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, reply.CommentId, reply);
             }
             SetPublishDock(false);
+        }
+        
+        protected override void OnDeleteBtn()
+        {
+            _reply.Delete();
         }
     }
 }

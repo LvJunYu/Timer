@@ -67,5 +67,16 @@ namespace GameA
                 }
             }
         }
+
+        public void Delete()
+        {
+            RemoteCommands.DeleteProjectCommentReply(_id, msg =>
+            {
+                if (msg.ResultCode == (int) EDeleteProjectCommentReplyCode.DPCPC_Success)
+                {
+                    Messenger<ProjectCommentReply, long>.Broadcast(EMessengerType.OnDeleteProjectCommentReply, this, _commentId);
+                }
+            }, null);
+        }
     }
 }

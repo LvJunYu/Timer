@@ -35,7 +35,8 @@ namespace GameA
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
-                        Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _id, new UserMessageReply(res.Data));
+                        Messenger<long, UserMessageReply>.Broadcast(EMessengerType.OnReplyUserMessage, _id,
+                            new UserMessageReply(res.Data));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
@@ -102,6 +103,17 @@ namespace GameA
                     failAction.Invoke();
                 }
             });
+        }
+
+        public void Delete()
+        {
+            RemoteCommands.DeleteUserMessage(_id, msg =>
+            {
+                if (msg.ResultCode == (int) EDeleteUserMessageCode.DUMC_Success)
+                {
+                    Messenger<UserMessage>.Broadcast(EMessengerType.OnDeleteUserMessage, this);
+                }
+            }, null);
         }
     }
 }

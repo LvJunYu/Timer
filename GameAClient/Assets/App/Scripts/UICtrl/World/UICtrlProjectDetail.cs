@@ -14,6 +14,7 @@ namespace GameA
         public const string _countFormat = "({0})";
         private const string _maxShow = "(999+)";
         public Project Project;
+        public bool IsMyself;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
         private bool _onlyChangeView;
@@ -106,6 +107,7 @@ namespace GameA
                 return;
             }
 
+            IsMyself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             IsMulti = Project.IsMulti;
             Project.Request(Project.ProjectId, null, null);
             RefreshView();
@@ -157,6 +159,7 @@ namespace GameA
             RegisterEvent<UserInfoDetail>(EMessengerType.OnRelationShipChanged, OnRelationShipChanged);
             RegisterEvent(EMessengerType.OnPublishDockActiveChanged, OnMessageBoardElementSizeChanged);
             RegisterEvent<long, ProjectCommentReply>(EMessengerType.OnReplyProjectComment, OnReplyProjectComment);
+            RegisterEvent<ProjectComment>(EMessengerType.OnDeleteProjectComment, OnDeleteProjectComment);
         }
 
         protected override void OnDestroy()
@@ -254,13 +257,16 @@ namespace GameA
                 SetNull();
                 return;
             }
-
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!IsMulti);
             _cachedView.StandalonePannel.SetActive(!IsMulti);
             _cachedView.MultiPannel.SetActive(IsMulti);
             _cachedView.CreateBtn.SetActiveEx(IsMulti);
+            _cachedView.EditBtn.SetActiveEx(IsMyself);
+            _cachedView.DeleteBtn.SetActiveEx(IsMyself);
+            _cachedView.FavoriteBtn.SetActiveEx(!IsMyself);
+            _cachedView.DownloadBtn.SetActiveEx(!IsMyself);
             if (IsMulti)
             {
                 RefreshRoomInfo();
@@ -319,9 +325,8 @@ namespace GameA
         private void RefreshBtns()
         {
             if (Project == null) return;
-            bool myself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             bool hasFollowed = Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            _cachedView.FollowBtn.SetActiveEx(!myself);
+            _cachedView.FollowBtn.SetActiveEx(!IsMyself);
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _collected = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
@@ -335,10 +340,6 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
                 string.Format(_countFormat, Project.LikeCount + Project.UnlikeCount));
-            _cachedView.EditBtn.SetActiveEx(myself);
-            _cachedView.DeleteBtn.SetActiveEx(myself);
-            _cachedView.FavoriteBtn.SetActiveEx(!myself);
-            _cachedView.DownloadBtn.SetActiveEx(!myself);
         }
 
         private void OnCreateBtn()
@@ -612,6 +613,14 @@ namespace GameA
             if (_curMenu == EMenu.Comment)
             {
                 ((UPCtrlProjectComment) _curMenuCtrl).OnReplyProjectComment(commentId, reply);
+            }
+        }
+
+        private void OnDeleteProjectComment(ProjectComment comment)
+        {
+            if (_isOpen && _curMenu == EMenu.Comment)
+            {
+                ((UPCtrlProjectComment) _curMenuCtrl).OnDeleteUserMessage(comment);
             }
         }
 
