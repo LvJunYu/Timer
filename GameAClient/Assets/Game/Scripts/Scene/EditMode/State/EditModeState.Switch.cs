@@ -52,6 +52,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 OnDragEnd(null);
+                boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 OnExitSwitchMode(boardData, data);
                 owner.RevertEditorLayer();
                 base.Exit(owner);
@@ -161,7 +162,6 @@ namespace GameA.Game
                         }
                     }
                 }
-                boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 if (null != data.CurrentConnectionUI)
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().FreeEditingConnection();
