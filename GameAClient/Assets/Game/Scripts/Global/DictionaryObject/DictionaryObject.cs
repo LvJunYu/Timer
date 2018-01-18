@@ -179,7 +179,10 @@ namespace SoyEngine
 
         public override bool IsEmpty
         {
-            get { return _dict == null || _dict.Count == 0; }
+            get
+            {
+                return _dict == null || _dict.Count == 0;
+            }
         }
 
         public override int Count
@@ -198,26 +201,56 @@ namespace SoyEngine
             {
                 throw new ArgumentException();
             }
+            
+            if (_dict == null)
+            {
+                _dict = new Dictionary<int, object>();
+            }
 
-            object o;
+            bool needReturnRet = startInx == keySeq.Length - 1;
             var curKey = keySeq[startInx];
-            if (_dict == null || !_dict.TryGetValue(curKey, out o))
+            bool needAdd = false;
+            object fieldVal;
+            if (!_dict.TryGetValue(curKey, out fieldVal))
             {
-                return default(TK);
+                fieldVal = GetFieldDefaultValue(curKey);
+                needAdd = true;
+            }
+            
+            if (fieldVal == null)
+            {
+                if (needReturnRet)
+                {
+                    return default(TK);
+                }
+
+                throw new ArgumentException();
             }
 
-            if (startInx == keySeq.Length - 1)
+            if (IsAtomic(fieldVal.GetType()))
             {
-                return (TK) o;
+                if (needReturnRet)
+                {
+                    return (TK) fieldVal;
+                }
+                
+                throw new ArgumentException();
             }
 
-            var dictionaryObject = o as DictionaryObjectBase;
-            if (dictionaryObject != null)
+            if (needAdd)
             {
-                return dictionaryObject.InternalGet<TK>(startInx + 1, keySeq);
+                if (!(this is DictionaryListObject))
+                {
+                    _dict.Add(curKey, fieldVal);
+                }
             }
 
-            throw new ArgumentException();
+            if (needReturnRet)
+            {
+                return (TK) fieldVal;
+            }
+
+            return ((DictionaryObjectBase) fieldVal).InternalGet<TK>(startInx + 1, keySeq);
         }
 
         public override bool Has(params int[] keySeq)
@@ -384,11 +417,6 @@ namespace SoyEngine
                         }
 
                         dictionaryObject.InternalRemove(startInx + 1, keySeq);
-                        //当这个孩子空了 移除
-                        if (dictionaryObject.IsEmpty)
-                        {
-                            _dict.Remove(key);
-                        }
                     }
                 }
             }
@@ -561,6 +589,17 @@ namespace SoyEngine
 
             return (DictionaryObjectBase) Activator.CreateInstance(fieldDefine.FieldType);
         }
+        
+        protected virtual object GetFieldDefaultValue(int fieldTag)
+        {
+            var fieldDefine = GetDefine(GetType(), fieldTag);
+            if (fieldDefine.EType == EType.List)
+            {
+                return new DictionaryListObject(fieldDefine.ChildType, fieldDefine.Dimension - 1);
+            }
+
+            return Activator.CreateInstance(fieldDefine.FieldType);
+        }
 
         public override string ToString()
         {
@@ -584,6 +623,12 @@ namespace SoyEngine
 
         protected void InternalToString(int level, StringBuilder stringBuilder)
         {
+            if (_dict == null)
+            {
+                StringBuildTab(level, stringBuilder);
+                stringBuilder.AppendLine();
+                return;
+            }
             foreach (var entry in _dict)
             {
                 StringBuildTab(level, stringBuilder);
@@ -882,6 +927,21 @@ namespace SoyEngine
                 }
 
                 return (DictionaryObjectBase) Activator.CreateInstance(_childType);
+            }
+
+            return new DictionaryListObject(_childType, _leftDimension - 1);
+        }
+
+        protected override object GetFieldDefaultValue(int fieldTag)
+        {
+            if (_leftDimension == 0)
+            {
+                if (IsAtomic(_childType))
+                {
+                    return Activator.CreateInstance(_childType);
+                }
+
+                return null;
             }
 
             return new DictionaryListObject(_childType, _leftDimension - 1);
