@@ -886,6 +886,10 @@ namespace SoyEngine
         public List<T> ToList<T>()
         {
             List<T> list = new List<T>(Count);
+            if (Count == 0)
+            {
+                return list;
+            }
             for (int i = 0, len = list.Capacity; i < len; i++)
             {
                 list.Add(default(T));

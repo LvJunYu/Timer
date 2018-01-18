@@ -267,8 +267,14 @@ namespace GameA.Game
                 unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
-                unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
-                unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
+                for (int i = 0; i < skill.KnockbackForces.Length; i++)
+                {
+                    unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);
+                }
+                for (int i = 0; i < skill.AddStates.Length; i++)
+                {
+                    unitEditData.UnitExtra.Set((ushort) skill.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+                }
             }
 
             if (table.CanEdit(EEditType.Spawn))

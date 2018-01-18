@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    public class PlayerUnitExtraDynamic : DictionaryObject<NpcTaskDynamic>
+    public class PlayerUnitExtraDynamic : DictionaryObject<PlayerUnitExtraDynamic>
     {
         static PlayerUnitExtraDynamic()
         {

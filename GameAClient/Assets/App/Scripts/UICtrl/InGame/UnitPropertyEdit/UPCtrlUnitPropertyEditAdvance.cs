@@ -125,12 +125,11 @@ namespace GameA
                 int teamId = i + 1;
                 _usSpawnSetting.SetSprite(i, TeamManager.GetSpawnSprite(teamId));
             }
-
-            _usSpawnSetting.Set(value =>
+            _usSpawnSetting.AddOnTeamChangedListener(index =>
             {
                 _mainCtrl.EditData.UnitExtra.PlayerUnitExtras
                     .Get<PlayerUnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex)
-                    .TeamId = (byte) value;
+                    .TeamId = (byte) (index + 1);
             });
             _cachedView.MonsterSettingBtn.onClick.AddListener(() => _mainCtrl.OnMonsterSettingBtn());
             _cachedView.BackToCaveBtn.onClick.AddListener(() => _mainCtrl.OnBackToCaveBtn());

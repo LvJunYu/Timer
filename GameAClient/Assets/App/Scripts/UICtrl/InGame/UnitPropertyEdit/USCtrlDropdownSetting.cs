@@ -7,7 +7,7 @@ namespace GameA
 {
     public class USCtrlDropdownSetting : USCtrlBase<USViewDropdownSetting>
     {
-        private int _teamId;
+        private int _curIndex;
         private bool _dropdown;
         private Action<int> _onIndexChanged;
         private Toggle[] _toggles;
@@ -18,22 +18,6 @@ namespace GameA
             _cachedView.Btn.onClick.AddListener(OnOpenDropdownBtn);
             _cachedView.BgBtn.onClick.AddListener(CloseDropdown);
             _toggles = _cachedView.DropdownObj.GetComponentsInChildren<Toggle>();
-            for (int i = 0; i < _toggles.Length; i++)
-            {
-                var inx = i;
-                _toggles[i].onValueChanged.AddListener(value =>
-                {
-                    if (value && _teamId != inx)
-                    {
-                        SetCur(inx);
-                        CloseDropdown();
-                        if (_onIndexChanged != null)
-                        {
-                            _onIndexChanged(_teamId);
-                        }
-                    }
-                });
-            }
         }
 
         public void SetSprite(int index, Sprite sprite)
@@ -48,17 +32,29 @@ namespace GameA
             }
         }
 
-        public void Set(Action<int> onIndexChanged)
+        public void AddOnTeamChangedListener(Action<int> onIndexChanged)
         {
-            _onIndexChanged = onIndexChanged;
+            for (int i = 0; i < _toggles.Length; i++)
+            {
+                var inx = i;
+                _toggles[i].onValueChanged.AddListener(value =>
+                {
+                    if (value && _curIndex != inx)
+                    {
+                        SetCur(inx);
+                        CloseDropdown();
+                        onIndexChanged(inx);
+                    }
+                });
+            }
         }
 
         public void SetCur(int teamId)
         {
-            _teamId = teamId;
-            if (_teamId - 1 < _cachedView.ItemImages.Length)
+            _curIndex = teamId;
+            if (_curIndex < _cachedView.ItemImages.Length)
             {
-                _cachedView.CurImg.sprite = _cachedView.ItemImages[_teamId - 1].sprite;
+                _cachedView.CurImg.sprite = _cachedView.ItemImages[_curIndex].sprite;
             }
         }
 
@@ -88,7 +84,7 @@ namespace GameA
                 _cachedView.DropdownObj.transform.rectTransform().position = _cachedView.DropdownRtf.position;
                 for (int i = 0; i < _toggles.Length; i++)
                 {
-                    _toggles[i].isOn = i == _teamId - 1;
+                    _toggles[i].isOn = i == _curIndex;
                 }
             }
         }
