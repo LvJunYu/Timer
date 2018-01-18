@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -15,15 +16,17 @@ namespace GameA
     public class UICtrlEditSwitch : UICtrlInGameBase<UIViewEditSwitch>
     {
         #region 常量与字段
+
         private readonly Dictionary<IntVec3, UMCtrlEditSwitchCount> _umCountDict =
             new Dictionary<IntVec3, UMCtrlEditSwitchCount>();
 
         private readonly Dictionary<int, UMCtrlEditSwitchConnection> _umConnectionDict =
             new Dictionary<int, UMCtrlEditSwitchConnection>();
-        
+
         private readonly Stack<UMCtrlEditSwitchCount> _umCountPool = new Stack<UMCtrlEditSwitchCount>();
         private readonly Stack<UMCtrlEditSwitchConnection> _umConnectionPool = new Stack<UMCtrlEditSwitchConnection>();
         private UMCtrlEditSwitchConnection _editingConnection;
+
         #endregion
 
         #region 属性
@@ -60,9 +63,9 @@ namespace GameA
             RefreshView(unitList);
         }
 
-        protected override void OnClose ()
+        protected override void OnClose()
         {
-            base.OnClose ();
+            base.OnClose();
             FreeAll();
         }
 
@@ -80,6 +83,7 @@ namespace GameA
 
         public void AddConnection(int inx, IntVec3 switchGuid, IntVec3 unitGuid)
         {
+            
             var um = GetUmConnection();
             um.SetButtonShow(true);
             um.Set(inx, GM2DTools.TileToWorld(switchGuid), GM2DTools.TileToWorld(unitGuid));
@@ -106,27 +110,33 @@ namespace GameA
 
         private void RefreshView(List<IntVec3> unitList)
         {
-            if (null != unitList) {
+            if (null != unitList)
+            {     
                 for (int i = 0; i < unitList.Count; i++)
                 {
                     var umCount = GetUmCount();
                     _umCountDict.Add(unitList[i], umCount);
                     umCount.Set(GM2DTools.TileToWorld(unitList[i]));
                     umCount.SetCount(0);
-                    var list = DataScene2D.CurScene.GetControlledUnits (unitList [i]);
-                    if (null != list) {
+                    var list = DataScene2D.CurScene.GetControlledUnits(unitList[i]);
+                    if (null != list)
+                    {
                         umCount.SetCount(list.Count);
-                    } else {
-                        var list2 = DataScene2D.CurScene.GetSwitchUnitsConnected (unitList [i]);
-                        if (null != list2) {
+                    }
+                    else
+                    {
+                        var list2 = DataScene2D.CurScene.GetSwitchUnitsConnected(unitList[i]);
+                        if (null != list2)
+                        {
                             umCount.SetCount(list2.Count);
                         }
                     }
                 }
             }
         }
-        
-        private void OnCameraPosChanged () {
+
+        private void OnCameraPosChanged()
+        {
             if (!_isOpen)
             {
                 return;
@@ -151,7 +161,8 @@ namespace GameA
             }
         }
 
-        private void OnSwitchConnectionChanged (IntVec3 a, IntVec3 b, bool isAdd) {
+        private void OnSwitchConnectionChanged(IntVec3 a, IntVec3 b, bool isAdd)
+        {
             if (!_isOpen)
             {
                 return;
@@ -199,7 +210,7 @@ namespace GameA
             um.MoveOut();
             _umConnectionPool.Push(um);
         }
-        
+
         private UMCtrlEditSwitchCount GetUmCount()
         {
             if (_umCountPool.Count > 0)
@@ -216,6 +227,7 @@ namespace GameA
             um.MoveOut();
             _umCountPool.Push(um);
         }
-		#endregion
-	}
+
+        #endregion
+    }
 }

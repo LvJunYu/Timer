@@ -6,6 +6,7 @@ namespace GameA.Game
         private bool _trigger;
         private UnitBase _unit;
         private int _time;
+        
 
         protected override bool IsCheckClimb()
         {

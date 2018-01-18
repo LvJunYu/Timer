@@ -243,6 +243,7 @@ namespace GameA.Game
 
         public void StartSwitch()
         {
+            
             _stateMachine.ChangeState(EditModeState.Switch.Instance);
         }
 

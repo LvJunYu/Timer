@@ -96,7 +96,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id > 8101 && id <= 8200 || id == 9003;
+            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002;
         }
 
         public static bool IsSwitchTrigger(int id)
@@ -191,6 +191,11 @@ namespace GameA.Game
         public static bool IsLadder(int id)
         {
             return id == 4016;
+        }
+
+        public static bool IsNpc(int id)
+        {
+            return id == 30001 || id == 30002;
         }
     }
 }
