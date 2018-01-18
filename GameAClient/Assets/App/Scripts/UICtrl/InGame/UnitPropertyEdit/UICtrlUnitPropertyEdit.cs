@@ -946,8 +946,7 @@ namespace GameA
                 {
                     EditData.UnitExtra.UpdateFromMonsterId();
                 }
-
-                _upCtrlUnitPropertyEditAdvance.OnMonsterIdChanged();
+                
                 RefreshMonsterCaveMenu();
             }
         }
