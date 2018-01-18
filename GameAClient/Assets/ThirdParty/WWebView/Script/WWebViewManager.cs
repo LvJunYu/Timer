@@ -4,6 +4,7 @@ using GameA;
 using GameA.Game;
 using UnityEngine;
 
+#pragma warning disable 0660 0661 0414 0219
 public sealed class WWebViewManager : MonoBehaviour
 {
     private static WWebViewManager _instance;
@@ -58,7 +59,9 @@ public sealed class WWebViewManager : MonoBehaviour
             _top = _bottom = (ScreenResolutionManager.Instance.CurRealResolution.height - Height) / 2;
             _left = _right = (ScreenResolutionManager.Instance.CurRealResolution.width - Width) / 2;
 //            _top = 30;
+#if UNITY_STANDALONE_WIN
             WWebViewPlugin.Init(gameObject.name, _top, _left, _bottom, _right);
+#endif
 #endif
             initialize = true;
         }
@@ -81,7 +84,9 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Load(gameObject.name, url);
 #else
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.Load(gameObject.name, url);
+#endif
 #endif
         Show();
     }
@@ -95,7 +100,10 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.LoadHTMLString(gameObject.name, html, string.Empty);
 #else
+        
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.LoadHTMLString(gameObject.name, html, string.Empty);
+#endif
 #endif
         Show();
     }
@@ -124,7 +132,10 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Load(gameObject.name, localFile);
 #else
+        
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.Load(gameObject.name, localFile);
+#endif
 #endif
         Show();
     }
@@ -136,7 +147,10 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Reload(gameObject.name);
 #else
+        
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.Reload(gameObject.name);
+#endif
 #endif
         Show();
     }
@@ -148,7 +162,9 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.GoBack(gameObject.name);
 #else
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.GoBack(gameObject.name);
+#endif
 #endif
         Show();
     }
@@ -159,7 +175,7 @@ public sealed class WWebViewManager : MonoBehaviour
         UniWebViewInterface.GoForward(gameObject.name);
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.GoForward(gameObject.name);
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.GoForward(gameObject.name);
 #endif
         Show();
@@ -171,7 +187,7 @@ public sealed class WWebViewManager : MonoBehaviour
         UniWebViewInterface.Stop(gameObject.name);
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Stop(gameObject.name);
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.Stop(gameObject.name);
 #endif
         Show();
@@ -191,7 +207,7 @@ public sealed class WWebViewManager : MonoBehaviour
         UniWebViewInterface.Show(gameObject.name, false, 0, 0f, string.Empty);
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Show(gameObject.name, false, 0, 0f);
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.Show(gameObject.name, false, 0, 0f);
 #endif
         showFlag = true;
@@ -204,7 +220,7 @@ public sealed class WWebViewManager : MonoBehaviour
         UniWebViewInterface.Hide(gameObject.name, false, 0, 0f, string.Empty);
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.Hide(gameObject.name, false, 0, 0f);
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.Hide(gameObject.name, false, 0, 0f);
 #endif
         showFlag = false;
@@ -213,7 +229,9 @@ public sealed class WWebViewManager : MonoBehaviour
 
     public void Destroy()
     {
+#if UNITY_STANDALONE_WIN
         WWebViewPlugin.Destroy(gameObject.name);
+#endif
         initialize = false;
     }
 
@@ -227,7 +245,7 @@ public sealed class WWebViewManager : MonoBehaviour
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.SetUserAgent(userAgent);
         UniWebViewPlugin.Load(gameObject.name, "http://whatsmyuseragent.com");
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.SetUserAgent(userAgent);
         WWebViewPlugin.Load(gameObject.name, "http://whatsmyuseragent.com");
 #endif
@@ -270,7 +288,7 @@ public sealed class WWebViewManager : MonoBehaviour
         #else
         Debug.Assert(false);
         #endif
-#else
+#elif UNITY_STANDALONE_WIN
         Texture2D texture = new Texture2D(
             WWebViewPlugin.GetActualWidth(gameObject.name),
             WWebViewPlugin.GetActualHeight(gameObject.name),
@@ -302,7 +320,7 @@ public sealed class WWebViewManager : MonoBehaviour
         UniWebViewInterface.SetWebViewAlpha(gameObject.name, 0.5f);
 #elif UNIWEBVIEW2_SUPPORTED
         UniWebViewPlugin.SetAlpha(gameObject.name, 0.5f);
-#else
+#elif UNITY_STANDALONE_WIN
         WWebViewPlugin.SetAlpha(gameObject.name, 0.5f);
 #endif
         Show();

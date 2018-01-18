@@ -7,11 +7,11 @@ using SoyEngine;
 using Microsoft.Win32;
 #endif
 
+#pragma warning disable 0649
 namespace GameA
 {
     public class ChannelQQGame : PublishChannel
     {
-#if UNITY_STANDALONE_WIN
         private string _openId;
         private string _openKey;
         private string _procParam;
@@ -22,6 +22,7 @@ namespace GameA
             get { return _openId; }
         }
 
+#if UNITY_STANDALONE_WIN
         protected override void Init()
         {
             base.Init();

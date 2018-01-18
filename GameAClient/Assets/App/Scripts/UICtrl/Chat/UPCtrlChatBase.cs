@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-
+/*
 namespace GameA
 {
     public class UPCtrlChatBase : UPCtrlBase<UICtrlChat, UIViewChat>
@@ -88,3 +88,4 @@ namespace GameA
 
     }
 }
+*/
