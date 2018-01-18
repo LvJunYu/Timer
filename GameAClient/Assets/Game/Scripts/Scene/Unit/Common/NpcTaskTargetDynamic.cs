@@ -23,7 +23,7 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.TargetUnitID, "TargetUnitID");
             DefineField<IntVec3>(FieldTag.TargetGuid, "TargetGuid");
         }
-        
+
         public class FieldTag
         {
             private static int _nextId;
@@ -33,26 +33,29 @@ namespace GameA.Game
             public static readonly int TargetGuid = _nextId++;
         }
 
-        
+
         public byte TaskType
         {
             get { return Get<byte>(FieldTag.TaskType); }
-            set { Set(value, FieldTag.TaskType);}
+            set { Set(value, FieldTag.TaskType); }
         }
+
         public ushort ColOrKillNum
         {
             get { return Get<ushort>(FieldTag.ColOrKillNum); }
-            set { Set(value, FieldTag.ColOrKillNum);}
+            set { Set(value, FieldTag.ColOrKillNum); }
         }
+
         public ushort TargetUnitID
         {
             get { return Get<ushort>(FieldTag.TargetUnitID); }
-            set { Set(value, FieldTag.TargetUnitID);}
+            set { Set(value, FieldTag.TargetUnitID); }
         }
+
         public IntVec3 TargetGuid
         {
             get { return Get<IntVec3>(FieldTag.TargetGuid); }
-            set { Set(value, FieldTag.TargetGuid);}
+            set { Set(value, FieldTag.TargetGuid); }
         }
 
         public UnitExtraNpcTaskTarget ToUnitExtraNpcTaskTarget()
@@ -73,7 +76,7 @@ namespace GameA.Game
             TargetGuid = GM2DTools.ToEngine(data.TargetGuid);
         }
 
-        public bool Equals(NpcTaskTarget other)
+        public bool Equals(NpcTaskTargetDynamic other)
         {
             return
                 TaskType == other.TaskType &&
@@ -83,7 +86,7 @@ namespace GameA.Game
         }
     }
 
-    public enum NpcTaskType
+    public enum ENpcTaskType
     {
         None = 0,
         Colltion,
