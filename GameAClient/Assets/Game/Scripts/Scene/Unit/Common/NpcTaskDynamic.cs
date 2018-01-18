@@ -103,6 +103,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.TaskAfter); }
         }
 
+        public DictionaryListObject Targets
+        {
+            get { return Get<DictionaryListObject>(FieldTag.Targets); }
+
+            set { Set(value, FieldTag.Targets); }
+        }
+
         public DictionaryListObject TaskFinishAward
         {
             get { return Get<DictionaryListObject>(FieldTag.TaskFinishAward); }
@@ -121,21 +128,51 @@ namespace GameA.Game
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
             var msg = new UnitExtraNpcTaskData();
-//            msg.NpcSerialNumber = NpcSerialNumber;
-//            msg.TaskBefore.AddRange(TaskBefore.ToList());
-//            msg.TaskMiddle.AddRange(TaskMiddle.ToList());
-//            msg.TaskAfter.AddRange(TaskAfter.ToList());
-//            msg.TaskTarget.AddRange(Targets.ToProtoDataList());
+            msg.NpcSerialNumber = NpcSerialNumber;
+            msg.TriggerTaskNumber = TriggerTaskNumber;
+            msg.TriggerColOrKillNum = TriggerColOrKillNum;
+            msg.TriggerType = TriggerType;
+            msg.TargetUnitID = TargetUnitID;
+            msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
+            msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
+            msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
+            msg.TaskTarget.AddRange(Targets.ToList<UnitExtraNpcTaskTarget>());
+            msg.BeforeTaskAward.AddRange(BeforeTaskAward.ToList<UnitExtraNpcTaskTarget>());
+            msg.TaskFinishAward.AddRange(TaskFinishAward.ToList<UnitExtraNpcTaskTarget>());
             return msg;
         }
 
         public void Set(UnitExtraNpcTaskData data)
         {
-//            NpcSerialNumber = (ushort) data.NpcSerialNumber;
-//            TaskBefore.Set(data.TaskBefore.ToArray());
-//            TaskMiddle.Set(data.TaskMiddle.ToArray());
-//            TaskAfter.Set(data.TaskAfter.ToArray());
-//            Targets.SetProtoData(data.TaskTarget.ToArray());
+            NpcSerialNumber = (ushort) data.NpcSerialNumber;
+            TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
+            TriggerColOrKillNum = (ushort) data.TriggerColOrKillNum;
+            TriggerType = (ushort) data.TriggerType;
+            TargetUnitID = (ushort) data.TargetUnitID;
+            for (int i = 0; i < data.TaskBefore.Count; i++)
+            {
+                Set(data.TaskBefore[i], FieldTag.TaskBefore, i);
+            }
+            for (int i = 0; i < data.TaskMiddle.Count; i++)
+            {
+                Set(data.TaskMiddle[i], FieldTag.TaskMiddle, i);
+            }
+            for (int i = 0; i < data.TaskAfter.Count; i++)
+            {
+                Set(data.TaskAfter[i], FieldTag.TaskAfter, i);
+            }
+            for (int i = 0; i < data.TaskTarget.Count; i++)
+            {
+                Set(data.TaskTarget[i], FieldTag.Targets, i);
+            }
+            for (int i = 0; i < data.BeforeTaskAward.Count; i++)
+            {
+                Set(data.BeforeTaskAward[i], FieldTag.BeforeTaskAward, i);
+            }
+            for (int i = 0; i < data.TaskFinishAward.Count; i++)
+            {
+                Set(data.TaskFinishAward[i], FieldTag.TaskFinishAward, i);
+            }
         }
     }
 }
