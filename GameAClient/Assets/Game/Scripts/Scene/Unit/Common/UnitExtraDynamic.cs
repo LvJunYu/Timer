@@ -39,8 +39,8 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
-            DefineField<string>(FieldTag.NpcDialog, "NpcDialog");
             DefineField<byte>(FieldTag.NpcShowType, "NpcShowType");
+            DefineField<string>(FieldTag.NpcDialog, "NpcDialog");
             DefineField<ushort>(FieldTag.NpcShowInterval, "NpcShowInterval");
             DefineFieldList<NpcTaskDynamic>(FieldTag.NpcTask, "NpcTask");
             DefineFieldList<PlayerUnitExtraDynamic>(FieldTag.PlayerUnitExtras, "NpcTask");
