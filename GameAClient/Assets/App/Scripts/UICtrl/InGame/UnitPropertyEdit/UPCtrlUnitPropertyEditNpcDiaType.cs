@@ -94,7 +94,7 @@ namespace GameA
 
         private void RefreshShowTypeMenu()
         {
-            var val = Mathf.Clamp(_mainCtrl.EditData.UnitExtra.NpcShowType, 0, 1);
+            var val = Mathf.Clamp(_mainCtrl.EditData.UnitExtra.NpcShowType - 1, 0, 1);
             for (int i = 0;
                 i < _showTypeBtnGroup.Length;
                 i++)

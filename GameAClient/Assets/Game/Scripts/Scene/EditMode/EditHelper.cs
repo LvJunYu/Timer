@@ -203,6 +203,7 @@ namespace GameA.Game
             unitEditData.UnitDesc.Guid = DefaultUnitGuid;
             unitEditData.UnitDesc.Id = id;
             unitEditData.UnitDesc.Scale = Vector2.one;
+            unitEditData.UnitExtra = new UnitExtraDynamic();
             var table = TableManager.Instance.GetUnit(id);
             if (null == table)
             {
@@ -570,7 +571,7 @@ namespace GameA.Game
             return true;
         }
 
-        public static UnitExtra CheckUnitExtra(int id, UnitExtra unitExtra)
+        public static UnitExtraDynamic CheckUnitExtra(int id, UnitExtraDynamic unitExtra)
         {
             var defaultUnitExtra = GetUnitDefaultData(id).UnitExtra;
             if (unitExtra.Damage == 0)

@@ -192,7 +192,7 @@ namespace GameA.Game
                 {
                     var unitDesc = _unit.UnitDesc;
                     var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
-                    _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                    _propertyViewWrapper.Show(ref unitDesc, unitExtra);
                 }
                 else
                 {
@@ -240,7 +240,7 @@ namespace GameA.Game
                         }
                         var unitDesc = _unit.UnitDesc;
                         var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
-                        _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                        _propertyViewWrapper.Show(ref unitDesc, unitExtra);
                     }
                 }
             }

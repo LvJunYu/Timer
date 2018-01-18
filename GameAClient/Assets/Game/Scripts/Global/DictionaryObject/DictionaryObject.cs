@@ -28,6 +28,8 @@ namespace SoyEngine
             Dictionary,
             List,
         }
+        
+        protected Dictionary<int, object> _dict;
 
 //        protected static bool IsGenericList(object o)
 //        {
@@ -38,6 +40,7 @@ namespace SoyEngine
         public abstract void Clear();
 
         public abstract bool IsEmpty { get; }
+        public abstract int Count { get; }
 
         public abstract TK Get<TK>(params int[] keySeq);
 
@@ -169,8 +172,6 @@ namespace SoyEngine
         protected static readonly Dictionary<int, String> FieldNameDict =
             new Dictionary<int, String>();
 
-        private Dictionary<int, object> _dict;
-
         public override void Clear()
         {
             _dict.Clear();
@@ -179,6 +180,11 @@ namespace SoyEngine
         public override bool IsEmpty
         {
             get { return _dict == null || _dict.Count == 0; }
+        }
+
+        public override int Count
+        {
+            get { return _dict == null ? 0 : _dict.Count; }
         }
 
         public override TK Get<TK>(params int[] keySeq)
@@ -762,10 +768,81 @@ namespace SoyEngine
         {
         }
 
+        public override int Count
+        {
+            get
+            {
+                if (_dict.Count == 0)
+                {
+                    return 0;
+                }
+
+                int maxInx = 0;
+                foreach (var entry in _dict)
+                {
+                    if (entry.Key > maxInx)
+                    {
+                        maxInx = entry.Key;
+                    }
+                }
+                return maxInx+1;
+            }
+        }
+
         public DictionaryListObject(Type childType, int leftDimension)
         {
             _childType = childType;
             _leftDimension = leftDimension;
+        }
+
+        public void Add<TK>(TK val)
+        {
+            Set(val, Count);
+        }
+
+        public void RemoveAt(int inx)
+        {
+            if (IsEmpty)
+            {
+                return;
+            }
+            List<int> idList = new List<int>(_dict.Count);
+            foreach (var entry in _dict)
+            {
+                if (entry.Key > inx)
+                {
+                    idList.Add(entry.Key);
+                }
+            }
+
+            if (_dict.ContainsKey(inx))
+            {
+                _dict.Remove(inx);
+            }
+            idList.Sort();
+            for (int i = 0; i < idList.Count; i++)
+            {
+                var id = idList[i];
+                var obj = _dict[id];
+                _dict.Remove(id);
+                _dict.Add(id-1, obj);
+            }
+        }
+
+        public List<T> ToList<T>()
+        {
+            List<T> list = new List<T>(Count);
+            for (int i = 0, len = list.Capacity; i < len; i++)
+            {
+                list.Add(default(T));
+            }
+
+            foreach (var entry in _dict)
+            {
+                list[entry.Key] = (T) entry.Value;
+            }
+
+            return list;
         }
 
         protected internal override DictionaryObjectBase InternalClone()

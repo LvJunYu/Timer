@@ -5,8 +5,10 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
+using System;
 using GameA.Game;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {

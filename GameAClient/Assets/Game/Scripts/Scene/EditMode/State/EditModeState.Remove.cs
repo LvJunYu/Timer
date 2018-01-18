@@ -88,7 +88,7 @@ namespace GameA.Game
                     var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(unitDesc))
                     {
-                        GetRecordBatch().RecordRemoveUnit(ref unitDesc, ref unitExtra);
+                        GetRecordBatch().RecordRemoveUnit(ref unitDesc, unitExtra);
                         DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(unitDesc, GetRecordBatch());
                     }
                 }

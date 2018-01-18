@@ -202,7 +202,7 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             if (unitExtra.CastRange > 0)
@@ -357,9 +357,9 @@ namespace GameA.Game
             if (GameRun.Instance.IsPlaying)
             {
                 var drops = GetUnitExtra().Drops;
-                if (drops.HasContent)
+                if (!drops.IsEmpty)
                 {
-                    PlayMode.Instance.CreateRuntimeUnit(drops.Param0, _curPos);
+                    PlayMode.Instance.CreateRuntimeUnit(drops.Get<ushort>(0), _curPos);
                 }
 
                 if (_monsterCave != null)
@@ -403,7 +403,7 @@ namespace GameA.Game
             return !IsSameTeam(unit.TeamId);
         }
         
-        public override UnitExtra GetUnitExtra()
+        public override UnitExtraDynamic GetUnitExtra()
         {
             if (_monsterCave != null)
             {

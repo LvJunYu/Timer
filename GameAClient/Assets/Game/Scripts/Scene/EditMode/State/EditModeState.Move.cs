@@ -19,7 +19,7 @@ namespace GameA.Game
                 /// <summary>
                 /// 正在拖拽的地块的Extra
                 /// </summary>
-                public UnitExtra DragUnitExtra;
+                public UnitExtraDynamic DragUnitExtra;
             }
 
             public override bool CanRevertTo()
@@ -45,7 +45,7 @@ namespace GameA.Game
                         var oriUnitExtra = DataScene2D.CurScene.GetUnitExtra(oriUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(oriUnitDesc))
                         {
-                            GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, ref oriUnitExtra);
+                            GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, oriUnitExtra);
                         }
                     }
 
@@ -161,7 +161,7 @@ namespace GameA.Game
                 }
 
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                stateData.DragUnitExtra = UnitExtra.zero;
+                stateData.DragUnitExtra = null;
                 EditMode.Instance.StateMachine.RevertToPreviousState();
             }
 
@@ -199,7 +199,7 @@ namespace GameA.Game
                         var deleteUnitExtra = DataScene2D.CurScene.GetUnitExtra(deleteUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(deleteUnitDesc))
                         {
-                            recordBatch.RecordRemoveUnit(ref deleteUnitDesc, ref deleteUnitExtra);
+                            recordBatch.RecordRemoveUnit(ref deleteUnitDesc, deleteUnitExtra);
                             DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
                         }
                     }
@@ -214,7 +214,7 @@ namespace GameA.Game
                         var needReplaceUnitExtra = DataScene2D.CurScene.GetUnitExtra(needReplaceUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
                         {
-                            recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
+                            recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, needReplaceUnitExtra);
                             DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                         }
                     });
@@ -224,7 +224,7 @@ namespace GameA.Game
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     var extra = stateData.DragUnitExtra;
-                    recordBatch.RecordAddUnit(ref unitDesc, ref extra);
+                    recordBatch.RecordAddUnit(ref unitDesc, extra);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
                         DataScene2D.CurScene.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc,

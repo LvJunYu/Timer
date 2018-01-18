@@ -23,11 +23,19 @@ namespace GameA.Game
     public struct NpcTask : IEquatable<NpcTask>
     {
         public ushort NpcSerialNumber;
+        public ushort TriggerTaskNumber;
+        public ushort TriggerColOrKillNum;
+        public ushort TargetUnitID;
+        public byte TriggerType;
+        
+        
         public MultiParamDia TaskBefore;
         public MultiParamDia TaskMiddle;
         public MultiParamDia TaskAfter;
+        
         public MultiParamTarget Targets;
-
+        public MultiParamTarget TaskFinishAward;
+        public MultiParamTarget BeforeTaskAward;
 
         public static bool operator ==(NpcTask a, NpcTask other)
         {
@@ -48,6 +56,12 @@ namespace GameA.Game
             msg.TaskMiddle.AddRange(TaskMiddle.ToList());
             msg.TaskAfter.AddRange(TaskAfter.ToList());
             msg.TaskTarget.AddRange(Targets.ToProtoDataList());
+            msg.TargetUnitID = TargetUnitID;
+            msg.TriggerType = TriggerType;
+            msg.TriggerColOrKillNum = TriggerColOrKillNum;
+            msg.TriggerTaskNumber = TriggerTaskNumber;
+            msg.BeforeTaskAward.AddRange(BeforeTaskAward.ToProtoDataList());
+            msg.TaskFinishAward.AddRange(TaskFinishAward.ToProtoDataList());
             return msg;
         }
 
@@ -58,6 +72,12 @@ namespace GameA.Game
             TaskMiddle.Set(data.TaskMiddle.ToArray());
             TaskAfter.Set(data.TaskAfter.ToArray());
             Targets.SetProtoData(data.TaskTarget.ToArray());
+            TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
+            TriggerType = (byte) data.TriggerType;
+            TargetUnitID = (ushort) data.TargetUnitID;
+            TriggerColOrKillNum = (ushort) data.TriggerColOrKillNum;
+            BeforeTaskAward.SetProtoData(data.BeforeTaskAward.ToArray());
+            TaskFinishAward.SetProtoData(data.TaskFinishAward.ToArray());
         }
 
         public bool Equals(NpcTask other)
@@ -66,10 +86,15 @@ namespace GameA.Game
                 NpcSerialNumber == other.NpcSerialNumber &&
                 TaskBefore == other.TaskBefore &&
                 TaskMiddle == other.TaskMiddle &&
-                TaskAfter == other.TaskAfter;
+                TaskAfter == other.TaskAfter &&
+                TriggerType == other.TriggerType &&
+                TargetUnitID == other.TargetUnitID &&
+                TriggerTaskNumber == other.TriggerTaskNumber &&
+                TriggerColOrKillNum == other.TriggerColOrKillNum &&
+                TaskFinishAward == other.TaskFinishAward &&
+                BeforeTaskAward == other.BeforeTaskAward;
         }
     }
-
 
     public struct MultiParamDia : IEquatable<MultiParamDia>
     {
@@ -161,6 +186,7 @@ namespace GameA.Game
     {
         public bool HasContent;
         public bool HasContentProtoData;
+        private const int _sum = 3;
         public NpcTaskTarget Param0;
         public NpcTaskTarget Param1;
         public NpcTaskTarget Param2;
@@ -186,18 +212,39 @@ namespace GameA.Game
         {
             if (list == null || list.Length == 0) return;
             HasContent = true;
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < _sum; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        Param0 = (NpcTaskTarget) list[0];
+                        if (i < list.Length)
+                        {
+                            Param0 = list[0];
+                        }
+                        else
+                        {
+                            Param0 = new NpcTaskTarget();
+                        }
                         break;
                     case 1:
-                        Param1 = (NpcTaskTarget) list[1];
+                        if (i < list.Length)
+                        {
+                            Param0 = list[1];
+                        }
+                        else
+                        {
+                            Param1 = new NpcTaskTarget();
+                        }
                         break;
                     case 2:
-                        Param2 = (NpcTaskTarget) list[2];
+                        if (i < list.Length)
+                        {
+                            Param2 = list[2];
+                        }
+                        else
+                        {
+                            Param2 = new NpcTaskTarget();
+                        }
                         break;
                     default:
                         LogHelper.Error("list's length is bigger than param count");
@@ -229,18 +276,39 @@ namespace GameA.Game
         {
             if (list == null || list.Length == 0) return;
             HasContentProtoData = true;
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < _sum; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        Param0.Set(list[0]);
+                        if (i < list.Length)
+                        {
+                            Param0.Set(list[0]);
+                        }
+                        else
+                        {
+                            Param0 = new NpcTaskTarget();
+                        }
                         break;
                     case 1:
-                        Param1.Set(list[1]);
+                        if (i < list.Length)
+                        {
+                            Param1.Set(list[1]);
+                        }
+                        else
+                        {
+                            Param1 = new NpcTaskTarget();
+                        }
                         break;
                     case 2:
-                        Param2.Set(list[2]);
+                        if (i < list.Length)
+                        {
+                            Param2.Set(list[2]);
+                        }
+                        else
+                        {
+                            Param2 = new NpcTaskTarget();
+                        }
                         break;
                     default:
                         LogHelper.Error("list's length is bigger than param count");
@@ -267,5 +335,12 @@ namespace GameA.Game
             }
             return list;
         }
+    }
+
+    public enum TrrigerTaskType
+    {
+        None = 0,
+        KillOrGet = 1,
+        FinishOtherTask = 2
     }
 }

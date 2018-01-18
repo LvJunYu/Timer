@@ -953,7 +953,7 @@ namespace GameA.Game
         /// <summary>
         /// 更新额外信息e
         /// </summary>
-        public virtual UnitExtra UpdateExtraData()
+        public virtual UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = GetUnitExtra();
             _moveDirection = unitExtra.MoveDirection;
@@ -983,7 +983,7 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public virtual UnitExtra GetUnitExtra()
+        public virtual UnitExtraDynamic GetUnitExtra()
         {
             return DataScene2D.CurScene.GetUnitExtra(_guid);
         }
@@ -1872,7 +1872,7 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int weaponId, UnitExtra unitExtra = default(UnitExtra))
+        public virtual bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null)
         {
             return true;
         }

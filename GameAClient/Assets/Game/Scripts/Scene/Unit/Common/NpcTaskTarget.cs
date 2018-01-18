@@ -67,7 +67,7 @@ namespace GameA.Game
         }
     }
 
-    public enum NpcTaskType
+    public enum ENpcTaskType
     {
         None = 0,
         Colltion,

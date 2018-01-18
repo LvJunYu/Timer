@@ -96,7 +96,7 @@ namespace GameA.Game
                 float.MaxValue, colliderNode);
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             _addedMonsters.Capacity = _maxAliveCount = unitExtra.MaxAliveMonster;

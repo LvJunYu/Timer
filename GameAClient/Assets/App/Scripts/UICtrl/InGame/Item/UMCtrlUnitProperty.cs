@@ -12,7 +12,7 @@ namespace GameA
             get { return _cachedView.Trans; }
         }
         
-        public void SetData(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
+        public void SetData(ref UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             var table = TableManager.Instance.GetUnit(unitDesc.Id);
             if (table == null)
@@ -24,7 +24,7 @@ namespace GameA
                 if (table.CanEdit(type))
                 {
                     SetPropertyEnable(type, true);
-                    SetView(type, ref unitDesc, ref unitExtra);
+                    SetView(type, ref unitDesc, unitExtra);
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace GameA
             }
         }
 
-        private void SetView(EEditType editType, ref UnitDesc unitDesc, ref UnitExtra unitExtra)
+        private void SetView(EEditType editType, ref UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             switch (editType)
             {

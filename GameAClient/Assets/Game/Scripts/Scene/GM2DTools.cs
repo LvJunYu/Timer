@@ -433,7 +433,7 @@ namespace GameA.Game
             };
         }
 
-        public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtra data)
+        public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtraDynamic data)
         {
             var res = new UnitExtraKeyValuePair();
             res.Guid = ToProto(index);
@@ -463,22 +463,50 @@ namespace GameA.Game
             res.MonsterId = data.MonsterId;
             res.MaxAliveMonster = data.MaxAliveMonster;
             res.MaxCreatedMonster = data.MaxCreatedMonster;
-            res.Drops.AddRange(data.Drops.ToList());
-            res.KnockbackForces.AddRange(data.KnockbackForces.ToList());
-            res.AddStates.AddRange(data.AddStates.ToList());
+            var drops = data.Drops;
+            for (int i = 0, count=drops.Count; i < count; i++)
+            {
+                ushort val = drops.Get<ushort>();
+                if (val != 0)
+                {
+                    res.Drops.Add(val);
+                }
+            }
+            var knockbackForces = data.KnockbackForces;
+            for (int i = 0, count=knockbackForces.Count; i < count; i++)
+            {
+                ushort val = knockbackForces.Get<ushort>();
+                if (val != 0)
+                {
+                    res.KnockbackForces.Add(val);
+                }
+            }
+            var addStates = data.AddStates;
+            for (int i = 0, count=addStates.Count; i < count; i++)
+            {
+                ushort val = addStates.Get<ushort>();
+                if (val != 0)
+                {
+                    res.AddStates.Add(val);
+                }
+            }
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
             res.NpcShowType = data.NpcShowType;
             res.NpcShowInterval = data.NpcShowInterval;
-            res.NpcTask.AddRange(data.NpcTask.ToListData());
+            //TODO 恢复
+//            res.NpcTask.AddRange(data.NpcTask.ToListData());
             return res;
         }
 
-        public static UnitExtra ToEngine(UnitExtraKeyValuePair data)
+        public static UnitExtraDynamic ToEngine(UnitExtraKeyValuePair data, UnitExtraDynamic unitExtra = null)
         {
-            if (null == data) return UnitExtra.zero;
-            var unitExtra = new UnitExtra();
+            if (null == data) return null;
+            if (unitExtra == null)
+            {
+                unitExtra = new UnitExtraDynamic();
+            }
             unitExtra.MoveDirection = (EMoveDirection) data.MoveDirection;
             unitExtra.Active = (byte) data.Active;
             unitExtra.ChildId = (ushort) data.ChildId;
@@ -493,7 +521,10 @@ namespace GameA.Game
             unitExtra.MaxHp = (ushort) data.Life;
             unitExtra.Damage = (ushort) data.AttackPower;
             unitExtra.MaxSpeedX = (ushort) data.MoveSpeed;
-            unitExtra.Drops.Set(data.Drops.ToArray());
+            for (int i = 0; i < data.Drops.Count; i++)
+            {
+                unitExtra.Set(data.Drops[i], UnitExtraDynamic.FieldTag.Drops, i);
+            }
             unitExtra.EffectRange = (ushort) data.EffectRange;
             unitExtra.CastRange = (ushort) data.CastRange;
             unitExtra.ViewRange = (ushort) data.ViewRange;
@@ -506,14 +537,21 @@ namespace GameA.Game
             unitExtra.MonsterId = (ushort) data.MonsterId;
             unitExtra.MaxAliveMonster = (byte) data.MaxAliveMonster;
             unitExtra.MaxCreatedMonster = (ushort) data.MaxCreatedMonster;
-            unitExtra.KnockbackForces.Set(data.KnockbackForces.ToArray());
-            unitExtra.AddStates.Set(data.AddStates.ToArray());
+            for (int i = 0; i < data.KnockbackForces.Count; i++)
+            {
+                unitExtra.Set(data.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);
+            }
+            for (int i = 0; i < data.AddStates.Count; i++)
+            {
+                unitExtra.Set(data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+            }
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;
-            unitExtra.NpcName = (string) data.NpcName;
+            unitExtra.NpcName = data.NpcName;
             unitExtra.NpcShowType = (byte) data.NpcShowType;
             unitExtra.NpcShowInterval = (ushort) data.NpcShowInterval;
-            unitExtra.NpcTask.Set(data.NpcTask.ToArray());
+            //TODO 恢复
+//            unitExtra.NpcTask.Set(data.NpcTask.ToArray());
             return unitExtra;
         }
 

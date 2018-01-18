@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using GameA.Game;
+﻿using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
@@ -29,24 +28,27 @@ namespace GameA
             _cachedView.SelectDockBtn.SetActiveEx(_isSelecting);
         }
 
-        public void Set(MultiParam data, EItemType eItemType)
+        public void Set(DictionaryListObject data, EItemType eItemType)
         {
             _isSelecting = false;
             _cachedView.SelectDockBtn.SetActiveEx(false);
             _eItemType = eItemType;
-            List<int> dataList = data.ToList();
+            int count = data == null ? 0 : data.Count;
             for (int i = 0; i < _cachedView.ItemBtn.Length; i++)
             {
-                if (i < dataList.Count)
+                if (i < count)
                 {
                     Sprite sprite = null;
                     switch (_eItemType)
                     {
                         case EItemType.Drops:
-                            var table = TableManager.Instance.GetUnit(dataList[i]);
-                            if (table != null)
+                            if (data != null)
                             {
-                                sprite = JoyResManager.Instance.GetSprite(table.Icon);
+                                var table = TableManager.Instance.GetUnit(data.Get<int>(i));
+                                if (table != null)
+                                {
+                                    sprite = JoyResManager.Instance.GetSprite(table.Icon);
+                                }
                             }
                             break;
                         case EItemType.States:

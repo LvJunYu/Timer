@@ -32,7 +32,7 @@ namespace GameA.Game
             return true;
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             if (unitExtra.MaxSpeedX > 0)

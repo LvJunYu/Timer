@@ -289,13 +289,14 @@ namespace GameA.Game
 
     public enum ENpcType
     {
+        None,
         Dialog,
         Task
     }
 
     public enum ENpcTriggerType
     {
-        None = -1,
+        None,
         Close,
         Interval,
         Max

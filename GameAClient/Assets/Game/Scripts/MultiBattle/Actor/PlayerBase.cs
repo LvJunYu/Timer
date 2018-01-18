@@ -17,7 +17,7 @@ namespace GameA.Game
         protected Gun _gun;
 
         protected RoomUser _roomUser;
-        protected UnitExtra _unitExtra;
+        protected UnitExtraDynamic _unitExtra;
         protected bool _siTouLe;
         protected float _curRopeProgress;
         protected IntVec2 _ropeOffset;
@@ -152,7 +152,7 @@ namespace GameA.Game
             _lastSlot = -1;
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             base.UpdateExtraData();
             //玩家的UnitExtra来自复活点的Extra
@@ -193,7 +193,7 @@ namespace GameA.Game
             return _unitExtra;
         }
 
-        public override bool SetWeapon(int weaponId, UnitExtra unitExtra = default(UnitExtra))
+        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
             if (tableEquipment == null)
@@ -1076,7 +1076,7 @@ namespace GameA.Game
             return "Victory";
         }
 
-        public void SetUnitExtra(UnitExtra unitExtra)
+        public void SetUnitExtra(UnitExtraDynamic unitExtra)
         {
             _unitExtra = unitExtra;
             UpdateExtraData();
@@ -1087,8 +1087,12 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtra GetUnitExtra()
+        public override UnitExtraDynamic GetUnitExtra()
         {
+            if (_unitExtra == null)
+            {
+                _unitExtra = new UnitExtraDynamic();
+            }
             return _unitExtra;
         }
 

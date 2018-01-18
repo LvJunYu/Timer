@@ -6,6 +6,16 @@ using UnityEngine;
 
 namespace GameA
 {
+    public enum ExplantionIndex
+    {
+        Role = 1,
+        Earth = 2,
+        Mechanism = 3,
+        Collection = 4,
+        Decoration = 5,
+        Controller = 6
+    }
+
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook>
     {

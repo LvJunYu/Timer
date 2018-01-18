@@ -2,6 +2,7 @@
 using HedgehogTeam.EasyTouch;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA.Game
 {
@@ -142,12 +143,20 @@ namespace GameA.Game
                             }
                             else
                             {
-                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                    coverUnits[0].Guid);
+                                if (UnitDefine.IsNpc(boardData.CurrentTouchUnitDesc.Id) &&
+                                    NpcTaskDataTemp.Intance.IsEditNpcTarget())
+                                {
+                                    AddSwitchConnection(coverUnits[0].Guid,
+                                        boardData.CurrentTouchUnitDesc.Guid);
+
+                                    NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                }
+                                else
+                                {
+                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                        coverUnits[0].Guid);
+                                }
                             }
-                        }
-                        else
-                        {
                         }
                     }
                     else
@@ -157,8 +166,18 @@ namespace GameA.Game
                         }
                         else
                         {
-                            AddSwitchConnection(coverUnits[0].Guid,
-                                boardData.CurrentTouchUnitDesc.Guid);
+                            if (UnitDefine.IsNpc(boardData.CurrentTouchUnitDesc.Id) &&
+                                NpcTaskDataTemp.Intance.IsEditNpcBerOrAfter())
+                            {
+                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                    coverUnits[0].Guid);
+                                NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                            }
+                            else
+                            {
+                                AddSwitchConnection(coverUnits[0].Guid,
+                                    boardData.CurrentTouchUnitDesc.Guid);
+                            }
                         }
                     }
                 }
@@ -183,6 +202,20 @@ namespace GameA.Game
                 UnitDesc outValue;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), EEditorLayer.None, out outValue))
                 {
+                    //非选中的npc不可以编辑
+                    if (UnitDefine.IsNpc(outValue.Id))
+                    {
+                        if (NpcTaskDataTemp.Intance.IsEditNpcData &&
+                            outValue.Guid == NpcTaskDataTemp.Intance.NpcIntVec3)
+                        {
+                            SelectUnit(outValue);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                     if (UnitDefine.IsSwitch(outValue.Id))
                     {
                         SelectUnit(outValue);
@@ -342,7 +375,35 @@ namespace GameA.Game
                             }
                             else
                             {
-                                allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                if (!NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+                                    {
+                                        itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                    }
+                                    else
+                                    {
+                                        allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                    }
+                                }
+                                else
+                                {
+                                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+                                    {
+                                        if (itor.Current.Value.Guid == NpcTaskDataTemp.Intance.NpcIntVec3)
+                                        {
+                                            allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                        }
+                                        else
+                                        {
+                                            itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                    }
+                                }
                             }
                         }
                     }
@@ -366,6 +427,8 @@ namespace GameA.Game
                         }
                     }
                 }
+                //退出连线模式
+                NpcTaskDataTemp.Intance.IsEditNpcData = false;
                 SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch>();
             }
 
