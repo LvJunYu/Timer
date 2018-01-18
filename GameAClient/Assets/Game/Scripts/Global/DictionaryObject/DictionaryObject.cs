@@ -174,6 +174,10 @@ namespace SoyEngine
 
         public override void Clear()
         {
+            if (_dict == null)
+            {
+                return;
+            }
             _dict.Clear();
         }
 
@@ -598,6 +602,11 @@ namespace SoyEngine
                 return new DictionaryListObject(fieldDefine.ChildType, fieldDefine.Dimension - 1);
             }
 
+            if (fieldDefine.FieldType == typeof(string))
+            {
+                return null;
+            }
+
             return Activator.CreateInstance(fieldDefine.FieldType);
         }
 
@@ -817,7 +826,7 @@ namespace SoyEngine
         {
             get
             {
-                if (_dict.Count == 0)
+                if (_dict == null || _dict.Count == 0)
                 {
                     return 0;
                 }
@@ -877,6 +886,10 @@ namespace SoyEngine
         public List<T> ToList<T>()
         {
             List<T> list = new List<T>(Count);
+            if (Count == 0)
+            {
+                return list;
+            }
             for (int i = 0, len = list.Capacity; i < len; i++)
             {
                 list.Add(default(T));

@@ -38,6 +38,7 @@ namespace GameA
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
         private USCtrlDropdownSetting _usSpawnSetting;
+        private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
 
         protected override void OnViewCreated()
@@ -74,7 +75,6 @@ namespace GameA
             _usMonsterIntervalTimeSetting.Init(_cachedView.MonsterIntervalTimeSetting);
             _usMaxCreatedMonsterSetting.Init(_cachedView.MaxCreatedMonsterSetting);
             _usMaxAliveMonsterSetting.Init(_cachedView.MaxAliveMonsterSetting);
-
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp,
                 value => _mainCtrl.EditData.UnitExtra.MaxHp = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpSetting, EAdvanceAttribute.JumpAbility,
@@ -120,8 +120,27 @@ namespace GameA
             _usAddStatesSetting.Init(_cachedView.AddStatesSetting);
             _usSpawnSetting = new USCtrlDropdownSetting();
             _usSpawnSetting.Init(_cachedView.SpawnSetting);
-            _cachedView.MonsterSettingBtn.onClick.AddListener(OnMonsterSettingBtn);
-            _cachedView.BackToCaveBtn.onClick.AddListener(OnBackToCaveBtn);
+            for (int i = 0; i < TeamManager.MaxTeamCount; i++)
+            {
+                int teamId = i + 1;
+                _usSpawnSetting.SetSprite(i, TeamManager.GetSpawnSprite(teamId));
+            }
+            _usSpawnSetting.AddOnTeamChangedListener(index =>
+            {
+                _mainCtrl.EditData.UnitExtra.PlayerUnitExtras
+                    .Get<PlayerUnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex)
+                    .TeamId = (byte) (index + 1);
+            });
+            _cachedView.MonsterSettingBtn.onClick.AddListener(() => _mainCtrl.OnMonsterSettingBtn());
+            _cachedView.BackToCaveBtn.onClick.AddListener(() => _mainCtrl.OnBackToCaveBtn());
+            _usPlayerWeaponSetting = new USCtrSetItem();
+            _usPlayerWeaponSetting.Init(_cachedView.PlayerWeaponSetting);
+            _usPlayerWeaponSetting.AddItemClickListener(index => _mainCtrl.OnPlayerWeaponSettingBtn(index));
+            _usPlayerWeaponSetting.AddDeleteItemBtnListener
+            (
+                index => _mainCtrl.EditData.UnitExtra.PlayerUnitExtras.Set(0, _mainCtrl.CurSelectedPlayerIndex,
+                    PlayerUnitExtraDynamic.FieldTag.Weapons, index)
+            );
         }
 
         public override void Open()
@@ -145,6 +164,7 @@ namespace GameA
             {
                 id = _mainCtrl.EditData.UnitDesc.Id;
             }
+
             var table = TableManager.Instance.GetUnit(id);
             _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                       UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxHp, id));
@@ -177,12 +197,14 @@ namespace GameA
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
             _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
-            _cachedView.BackToCaveBtn.SetActiveEx(_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
+            _cachedView.BackToCaveBtn.SetActiveEx(_mainCtrl.CurEnterType ==
+                                                  UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
 //            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
 //                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
 //            _usAddStatesSetting.SetEnable(b);
             _usAddStatesSetting.SetEnable(false);
             _usDropsSetting.SetEnable(false);
+            _usPlayerWeaponSetting.SetEnable(UnitExtraHelper.CanEdit(EAdvanceAttribute.Spawn, id));
             _usSpawnSetting.SetEnable(UnitExtraHelper.CanEdit(EAdvanceAttribute.Spawn, id));
             _usMaxHpSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
@@ -283,6 +305,7 @@ namespace GameA
                 {
                     _closeSequence.Complete(true);
                 }
+
                 _cachedView.AdvancePannel.SetActiveEx(true);
             });
             _closeSequence.Append(_cachedView.AdvancePannel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
@@ -328,14 +351,24 @@ namespace GameA
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
         }
 
-        private void OnBackToCaveBtn()
+        public void OnSpawnMenuClick(PlayerUnitExtraDynamic playerUnitExtra)
         {
-            _mainCtrl.OnBackToCaveBtn();
-        }
+            if (!_isOpen)
+            {
+                OpenMenu(EMenu.ActorSetting);
+            }
 
-        private void OnMonsterSettingBtn()
-        {
-            _mainCtrl.OnMonsterSettingBtn();
+            if (playerUnitExtra == null)
+            {
+                LogHelper.Error("OnSpawnMenuClick, but PlayerUnitExtraDynamic is null");
+                return;
+            }
+
+            _usSpawnSetting.SetCur(playerUnitExtra.TeamId);
+            _usMaxHpSetting.SetCur(playerUnitExtra.MaxHp);
+            _usInjuredReduceSetting.SetCur(playerUnitExtra.InjuredReduce);
+            _usCurIncreaseSetting.SetCur(playerUnitExtra.CureIncrease);
+            _usPlayerWeaponSetting.SetCur(playerUnitExtra.Weapons.ToList<ushort>());
         }
     }
 }

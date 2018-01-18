@@ -302,11 +302,11 @@ namespace GameA.Game
             get { return Get<DictionaryListObject>(FieldTag.NpcTask); }
             set { Set(value, FieldTag.NpcTask); }
         }
-        
+
         public DictionaryListObject PlayerUnitExtras
         {
             get { return Get<DictionaryListObject>(FieldTag.PlayerUnitExtras); }
-            set { Set(value, FieldTag.PlayerUnitExtras);}
+            set { Set(value, FieldTag.PlayerUnitExtras); }
         }
 
         public bool IsDynamic()
@@ -333,9 +333,10 @@ namespace GameA.Game
 
                 for (int i = 0; i < skill.KnockbackForces.Length; i++)
                 {
-                    Set(skill.KnockbackForces[i], FieldTag.KnockbackForces, i);
+                    Set((ushort) skill.KnockbackForces[i], FieldTag.KnockbackForces, i);
                 }
             }
+
             if (skill.AddStates != null)
             {
                 if (AddStates != null)
@@ -345,7 +346,7 @@ namespace GameA.Game
 
                 for (int i = 0; i < skill.AddStates.Length; i++)
                 {
-                    Set(skill.AddStates[i], FieldTag.AddStates, i);
+                    Set((ushort) skill.AddStates[i], FieldTag.AddStates, i);
                 }
             }
         }
@@ -369,13 +370,21 @@ namespace GameA.Game
                 {
                     EffectRange = (ushort) skill.EffectValues[0];
                 }
+
                 if (skill.KnockbackForces != null)
                 {
-                    KnockbackForces.Set(skill.KnockbackForces);
+                    for (int i = 0; i < skill.KnockbackForces.Length; i++)
+                    {
+                        Set((ushort) skill.KnockbackForces[i], FieldTag.KnockbackForces, i);
+                    }
                 }
+
                 if (skill.AddStates != null)
                 {
-                    AddStates.Set(skill.AddStates);
+                    for (int i = 0; i < skill.AddStates.Length; i++)
+                    {
+                        Set((ushort) skill.AddStates[i], FieldTag.AddStates, i);
+                    }
                 }
             }
         }
@@ -600,7 +609,7 @@ namespace GameA.Game
                     return table.ChildState != null;
                 case EAdvanceAttribute.BulletCount:
                 case EAdvanceAttribute.ChargeTime:
-                    return UnitDefine.IsEnergyPool(id);
+                    return UnitDefine.EnergyPoolId == id;
                 case EAdvanceAttribute.AddStates:
                     return table.SkillId > 0 || table.ChildState != null;
                 case EAdvanceAttribute.MaxHp:

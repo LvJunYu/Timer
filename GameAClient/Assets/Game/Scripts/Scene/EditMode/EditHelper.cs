@@ -122,6 +122,7 @@ namespace GameA.Game
             if (UnitDefine.IsEarth(unitDesc.Id))
             {
                 var origin = unitEditData;
+                unitEditData.UnitExtra = origin.UnitExtra.Clone();
                 unitEditData.UnitExtra.ChildId = (ushort) (Mathf.Clamp(unitEditData.UnitExtra.ChildId, 1, 2) % 2 + 1);
                 EditModeState.Global.Instance.ModifyUnitData(origin.UnitDesc, origin.UnitExtra, unitEditData.UnitDesc,
                     unitEditData.UnitExtra);
@@ -266,14 +267,20 @@ namespace GameA.Game
                 unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
-                unitEditData.UnitExtra.KnockbackForces.Set(skill.KnockbackForces);
-                unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
+                for (int i = 0; i < skill.KnockbackForces.Length; i++)
+                {
+                    unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);
+                }
+                for (int i = 0; i < skill.AddStates.Length; i++)
+                {
+                    unitEditData.UnitExtra.Set((ushort) skill.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+                }
             }
 
-            if (table.CanEdit(EEditType.MonsterCave))
+            if (table.CanEdit(EEditType.Spawn))
             {
-                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
-                unitEditData.UnitExtra.TeamId = 1;
+//                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
+                unitEditData.UnitExtra.PlayerUnitExtras.Add(PlayerUnitExtraDynamic.GetDefaultValue());
             }
 
             if (table.CanEdit(EEditType.MonsterCave))

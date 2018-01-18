@@ -52,6 +52,7 @@ namespace GameA.Game
         public const int RollerId = 5005;
         public const int MonsterCaveId = 5022;
         public const int BillboardId = 7001;
+        public const int EnergyPoolId = 8001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;
         public const int SwitchTriggerId = 8100;
@@ -87,11 +88,6 @@ namespace GameA.Game
         public static bool IsJet(int id)
         {
             return id == 5015 || id == 5016;
-        }
-
-        public static bool IsEnergyPool(int id)
-        {
-            return id == 8001;
         }
 
         public static bool IsSwitch(int id)
@@ -169,7 +165,7 @@ namespace GameA.Game
                 return false;
             }
             return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) &&
-                    !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == 8001 ||
+                    !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == EnergyPoolId ||
                    tableUnit.Id == FinalDoorId;
         }
 

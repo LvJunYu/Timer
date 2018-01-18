@@ -18,24 +18,6 @@ namespace GameA
             _cachedView.Btn.onClick.AddListener(OnOpenDropdownBtn);
             _cachedView.BgBtn.onClick.AddListener(CloseDropdown);
             _toggles = _cachedView.DropdownObj.GetComponentsInChildren<Toggle>();
-            for (int i = 0; i < _toggles.Length; i++)
-            {
-                var inx = i;
-                _toggles[i].onValueChanged.AddListener(value =>
-                {
-                    if (value && _curIndex != inx)
-                    {
-                        _curIndex = inx;
-                        if (_onIndexChanged != null)
-                        {
-                            _onIndexChanged(_curIndex);
-                        }
-
-                        RefreshCurImg();
-                        CloseDropdown();
-                    }
-                });
-            }
         }
 
         public void SetSprite(int index, Sprite sprite)
@@ -50,11 +32,30 @@ namespace GameA
             }
         }
 
-        public void Set(int index, Action<int> onIndexChanged)
+        public void AddOnTeamChangedListener(Action<int> onIndexChanged)
         {
-            _curIndex = index;
-            _onIndexChanged = onIndexChanged;
-            RefreshCurImg();
+            for (int i = 0; i < _toggles.Length; i++)
+            {
+                var inx = i;
+                _toggles[i].onValueChanged.AddListener(value =>
+                {
+                    if (value && _curIndex != inx)
+                    {
+                        SetCur(inx);
+                        CloseDropdown();
+                        onIndexChanged(inx);
+                    }
+                });
+            }
+        }
+
+        public void SetCur(int teamId)
+        {
+            _curIndex = teamId;
+            if (_curIndex < _cachedView.ItemImages.Length)
+            {
+                _cachedView.CurImg.sprite = _cachedView.ItemImages[_curIndex].sprite;
+            }
         }
 
         public void SetEnable(bool value)
@@ -73,14 +74,6 @@ namespace GameA
         {
             _dropdown = false;
             RefreshDropDownView();
-        }
-
-        private void RefreshCurImg()
-        {
-            if (_curIndex < _cachedView.ItemImages.Length)
-            {
-                _cachedView.CurImg.sprite = _cachedView.ItemImages[_curIndex].sprite;
-            }
         }
 
         private void RefreshDropDownView()

@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    public class PlayerUnitExtraDynamic : DictionaryObject<NpcTaskDynamic>
+    public class PlayerUnitExtraDynamic : DictionaryObject<PlayerUnitExtraDynamic>
     {
         static PlayerUnitExtraDynamic()
         {
@@ -47,6 +47,15 @@ namespace GameA.Game
         {
             get { return Get<DictionaryListObject>(FieldTag.Weapons); }
             set { Set(value, FieldTag.Weapons);}
+        }
+
+        public static PlayerUnitExtraDynamic GetDefaultValue()
+        {
+            var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
+            var playerUnitExtraDynamic = new PlayerUnitExtraDynamic();
+            playerUnitExtraDynamic.TeamId = 1;
+            playerUnitExtraDynamic.MaxHp = (ushort) table.Hp;
+            return playerUnitExtraDynamic;
         }
     }
 }
