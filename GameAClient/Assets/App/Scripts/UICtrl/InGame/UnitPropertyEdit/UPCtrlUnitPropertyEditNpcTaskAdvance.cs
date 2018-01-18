@@ -18,8 +18,8 @@ namespace GameA
         private Sequence _closeSequence;
         private bool _openAnim;
         private bool _completeAnim;
-        private UnitExtraNpcTaskTarget _npcTaskTarget;
-        private UnitExtraNpcTaskData _npcTaskData = new UnitExtraNpcTaskData();
+        private NpcTaskTargetDynamic _npcTaskTarget;
+        private NpcTaskDynamic _npcTaskData = new NpcTaskDynamic();
         private int _taskindex;
         private int _taskTargetindex;
         private List<int> _colletionList = new List<int>();
@@ -42,7 +42,7 @@ namespace GameA
                 int num = i;
                 SelectNpcTaskTargetBtns[i].AddNewTarget(() =>
                 {
-                    UnitExtraNpcTaskTarget target = CreataNewTarget((ENpcTaskType) (num + 1));
+                    NpcTaskTargetDynamic target = CreataNewTarget((ENpcTaskType) (num + 1));
                     OpenMenu(target);
                 });
             }
@@ -139,7 +139,7 @@ namespace GameA
             base.Close();
         }
 
-        public void OpenMenu(UnitExtraNpcTaskTarget target)
+        public void OpenMenu(NpcTaskTargetDynamic target)
         {
             _npcTaskTarget = target;
             _type = (ENpcTaskType) _npcTaskTarget.TaskType;
@@ -275,9 +275,9 @@ namespace GameA
             }
         }
 
-        private UnitExtraNpcTaskTarget CreataNewTarget(ENpcTaskType type)
+        private NpcTaskTargetDynamic CreataNewTarget(ENpcTaskType type)
         {
-            UnitExtraNpcTaskTarget target = new UnitExtraNpcTaskTarget();
+            NpcTaskTargetDynamic target = new NpcTaskTargetDynamic();
             switch (type)
             {
                 case ENpcTaskType.Moster:
@@ -285,13 +285,13 @@ namespace GameA
                     target.TaskType = (int) ENpcTaskType.Moster;
                     //默认的怪兽
                     target.TargetUnitID = 11000;
-                    _npcTaskData.TaskTarget.Add(target);
+                    _npcTaskData.Targets.Add(target);
                     RefrewTaskData();
                     break;
                 case ENpcTaskType.Colltion:
                     target.ColOrKillNum = 1;
                     target.TaskType = (int) ENpcTaskType.Colltion;
-                    _npcTaskData.TaskTarget.Add(target);
+                    _npcTaskData.Targets.Add(target);
                     RefrewTaskData();
                     //默认的收集奖励
                     target.TargetUnitID = 11000;

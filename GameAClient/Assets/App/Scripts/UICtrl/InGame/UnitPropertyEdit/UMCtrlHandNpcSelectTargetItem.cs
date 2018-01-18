@@ -18,7 +18,7 @@ namespace GameA
         private int _unitId;
         private Sprite _unitIcon;
         private Table_Unit _uint;
-        private UnitExtraNpcTaskTarget _taskTarget;
+        private NpcTaskTargetDynamic _taskTarget;
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace GameA
 
         #region 方法
 
-        public void IintItem(int unitID, UnitExtraNpcTaskTarget taskTarget)
+        public void IintItem(int unitID, NpcTaskTargetDynamic taskTarget)
         {
             _unitId = unitID;
             _uint = TableManager.Instance.GetUnit(unitID);

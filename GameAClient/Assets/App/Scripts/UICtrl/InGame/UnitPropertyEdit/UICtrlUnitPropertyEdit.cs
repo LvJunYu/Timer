@@ -45,7 +45,7 @@ namespace GameA
         private EEnterType _curEnterType;
 
         //npc 之间的引用数据类型
-        public List<UnitExtraNpcTaskData> NpcTaskDatas;
+        public List<NpcTaskDynamic> NpcTaskDatas;
 
 
         public EEnterType CurEnterType
@@ -959,7 +959,7 @@ namespace GameA
                 {
                     EditData.UnitExtra.UpdateFromMonsterId();
                 }
-                
+
                 RefreshMonsterCaveMenu();
             }
         }

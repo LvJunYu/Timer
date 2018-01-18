@@ -12,23 +12,31 @@ namespace GameA
         private Sprite _sprite;
         private int _targetIndex;
         private ENpcTaskType _type;
-        private UnitExtraNpcTaskTarget _targetData;
-        private UnitExtraNpcTaskData _taskData;
+        public NpcTaskTargetDynamic TargetData { get; private set; }
+        public NpcTaskDynamic TaskData { get; private set; }
 
         public USViewUnitNpcTaskTarget View
         {
             get { return _cachedView; }
         }
 
-        public void SetSelectTarget(UnitExtraNpcTaskTarget targetData, UnitExtraNpcTaskData taskData,
+        public void SetSelectTarget(NpcTaskTargetDynamic targetData, NpcTaskDynamic taskData,
             SeletTaskTargetType callback, UnityAction refresh)
         {
-            _targetData = targetData;
-            _taskData = taskData;
+            TargetData = targetData;
+            TaskData = taskData;
             _cachedView.ChoseBtn.onClick.AddListener(() => { callback.Invoke(targetData); });
             _cachedView.DelteBtn.onClick.AddListener(() =>
             {
-                taskData.TaskTarget.Remove(targetData);
+                int index = 0;
+                for (int i = 0; i < taskData.Targets.Count; i++)
+                {
+                    if (taskData.Targets.ToList<NpcTaskTargetDynamic>()[i].Equals(targetData))
+                    {
+                        index = i;
+                    }
+                }
+                taskData.Targets.Remove(index);
                 refresh.Invoke();
             });
         }

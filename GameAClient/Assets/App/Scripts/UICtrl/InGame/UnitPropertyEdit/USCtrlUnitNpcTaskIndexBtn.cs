@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using GameA.Game;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,14 +8,14 @@ namespace GameA
 {
     public class USCtrlUnitNpcTaskIndexBtn : USCtrlBase<USViewUnitNpcTaskIndexBtn>
     {
-        private UnitExtraNpcTaskData _taskData;
+        private NpcTaskDynamic _taskData;
 
         public USViewUnitNpcTaskIndexBtn View
         {
             get { return _cachedView; }
         }
 
-        public void SetSelectTask(UnitExtraNpcTaskData taskdata, SeletTaskType task)
+        public void SetSelectTask(NpcTaskDynamic taskdata, SeletTaskType task)
         {
             _taskData = taskdata;
             _cachedView.ChoseBtn.onClick.AddListener(() => { task.Invoke(_taskData); });
