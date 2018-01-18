@@ -46,7 +46,13 @@ namespace GameA
                     CardDataRendererWrapper<Project> w =
                         new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
                     _contentList.Add(w);
-                    _dict.Add(_projectList[i].ProjectId, w);
+                    if (_dict.ContainsKey(_projectList[i].ProjectId))
+                    {
+                    }
+                    else
+                    {
+                        _dict.Add(_projectList[i].ProjectId, w);
+                    }
                 }
             }
 

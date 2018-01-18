@@ -88,16 +88,16 @@ namespace GameA.Game
             _mapProcess = 0f;
             var timer = new GameTimer();
             //先读取获得玩家通用属性
-            var playerUnitExtra = GM2DTools.ToEngine(mapData.PlayerUnitExtra);
+//            var playerUnitExtra = GM2DTools.ToEngine(mapData.PlayerUnitExtra);
             //兼容老地图
-            if (playerUnitExtra.MaxHp == 0)
-            {
-                Scene2DManager.Instance.MainDataScene2D.InitDefaultPlayerUnitExtra();
-            }
-            else
-            {
-                Scene2DManager.Instance.MainDataScene2D.SetPlayerExtra(playerUnitExtra);
-            }
+//            if (playerUnitExtra.MaxHp == 0)
+//            {
+//                Scene2DManager.Instance.MainDataScene2D.InitDefaultPlayerUnitExtra();
+//            }
+//            else
+//            {
+//                Scene2DManager.Instance.MainDataScene2D.SetPlayerExtra(playerUnitExtra);
+//            }
 
             var childList = mapData.UnitExtraInfos;
             ParseUnitExtraInfo(childList);

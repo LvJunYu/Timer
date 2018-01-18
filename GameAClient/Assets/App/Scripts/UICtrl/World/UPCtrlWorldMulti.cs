@@ -95,7 +95,13 @@ namespace GameA
                     CardDataRendererWrapper<RoomInfo> w =
                         new CardDataRendererWrapper<RoomInfo>(_roomList[i], OnItemClick);
                     _contentList.Add(w);
-                    _dict.Add(_roomList[i].RoomId, w);
+                    if (_dict.ContainsKey(_roomList[i].RoomId))
+                    {
+                    }
+                    else
+                    {
+                        _dict.Add(_roomList[i].RoomId, w);
+                    }
                 }
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
