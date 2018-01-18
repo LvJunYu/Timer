@@ -61,38 +61,38 @@ namespace GameA
             IntVec3Proto newpos = GM2DTools.ToProto(newUnitDesc.Guid);
             using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
             {
-                while (itor.MoveNext())
-                {
-                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
-                    {
-                        List<UnitExtraNpcTaskData> taskData =
-                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
-                        for (int i = 0; i < taskData.Count; i++)
-                        {
-                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
-                            {
-                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
-                                {
-                                    taskData[i].BeforeTaskAward[i].TargetGuid = newpos;
-                                }
-                            }
-                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
-                            {
-                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
-                                {
-                                    taskData[i].TaskFinishAward[i].TargetGuid = newpos;
-                                }
-                            }
-                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
-                            {
-                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
-                                {
-                                    taskData[i].TaskTarget[i].TargetGuid = newpos;
-                                }
-                            }
-                        }
-                    }
-                }
+//                while (itor.MoveNext())
+//                {
+//                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+//                    {
+//                        List<UnitExtraNpcTaskData> taskData =
+//                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
+//                        for (int i = 0; i < taskData.Count; i++)
+//                        {
+//                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
+//                            {
+//                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].BeforeTaskAward[i].TargetGuid = newpos;
+//                                }
+//                            }
+//                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
+//                            {
+//                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].TaskFinishAward[i].TargetGuid = newpos;
+//                                }
+//                            }
+//                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
+//                            {
+//                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].TaskTarget[i].TargetGuid = newpos;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
 
@@ -105,34 +105,34 @@ namespace GameA
                 {
                     if (UnitDefine.IsNpc(itor.Current.Value.Id))
                     {
-                        List<UnitExtraNpcTaskData> taskData =
-                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
-                        for (int i = 0;
-                            i < taskData.Count;
-                            i++)
-                        {
-                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
-                            {
-                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
-                                {
-                                    taskData[i].BeforeTaskAward.Remove(taskData[i].BeforeTaskAward[i]);
-                                }
-                            }
-                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
-                            {
-                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
-                                {
-                                    taskData[i].TaskFinishAward.Remove(taskData[i].TaskFinishAward[i]);
-                                }
-                            }
-                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
-                            {
-                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
-                                {
-                                    taskData[i].TaskTarget.Remove(taskData[i].TaskTarget[i]);
-                                }
-                            }
-                        }
+//                        List<UnitExtraNpcTaskData> taskData =
+//                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
+//                        for (int i = 0;
+//                            i < taskData.Count;
+//                            i++)
+//                        {
+//                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
+//                            {
+//                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].BeforeTaskAward.Remove(taskData[i].BeforeTaskAward[i]);
+//                                }
+//                            }
+//                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
+//                            {
+//                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].TaskFinishAward.Remove(taskData[i].TaskFinishAward[i]);
+//                                }
+//                            }
+//                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
+//                            {
+//                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
+//                                {
+//                                    taskData[i].TaskTarget.Remove(taskData[i].TaskTarget[i]);
+//                                }
+//                            }
+//                        }
                     }
                 }
             }

@@ -19,45 +19,104 @@ namespace GameA.Game
         static NpcTaskDynamic()
         {
             DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
+            DefineField<ushort>(FieldTag.TriggerTaskNumber, "TriggerTaskNumber");
+            DefineField<ushort>(FieldTag.TriggerColOrKillNum, "TriggerColOrKillNum");
+            DefineField<ushort>(FieldTag.TargetUnitID, "TargetUnitID");
+            DefineField<byte>(FieldTag.TriggerType, "TriggerType");
             DefineFieldList<string>(FieldTag.TaskBefore, "TaskBefore");
             DefineFieldList<string>(FieldTag.TaskMiddle, "TaskMiddle");
             DefineFieldList<string>(FieldTag.TaskAfter, "TaskAfter");
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.Targets, "Targets");
+            DefineFieldList<NpcTaskTargetDynamic>(FieldTag.TaskFinishAward, "TaskFinishAward");
+            DefineFieldList<NpcTaskTargetDynamic>(FieldTag.BeforeTaskAward, "BeforeTaskAward");
         }
+
         public class FieldTag
         {
             private static int _nextId;
             public static readonly int NpcSerialNumber = _nextId++;
+            public static readonly int TriggerTaskNumber = _nextId++;
+            public static readonly int TriggerColOrKillNum = _nextId++;
+            public static readonly int TargetUnitID = _nextId++;
+            public static readonly int TriggerType = _nextId++;
             public static readonly int TaskBefore = _nextId++;
             public static readonly int TaskMiddle = _nextId++;
             public static readonly int TaskAfter = _nextId++;
             public static readonly int Targets = _nextId++;
+            public static readonly int TaskFinishAward = _nextId++;
+            public static readonly int BeforeTaskAward = _nextId++;
         }
+
         public ushort NpcSerialNumber
         {
             get { return Get<ushort>(FieldTag.NpcSerialNumber); }
-            set { Set(value, FieldTag.NpcSerialNumber);}
+
+            set { Set(value, FieldTag.NpcSerialNumber); }
         }
+
+        public ushort TriggerTaskNumber
+        {
+            get { return Get<ushort>(FieldTag.TriggerTaskNumber); }
+
+            set { Set(value, FieldTag.NpcSerialNumber); }
+        }
+
+        public ushort TriggerColOrKillNum
+        {
+            get { return Get<ushort>(FieldTag.TriggerColOrKillNum); }
+
+            set { Set(value, FieldTag.TriggerColOrKillNum); }
+        }
+
+        public ushort TargetUnitID
+        {
+            get { return Get<ushort>(FieldTag.TargetUnitID); }
+
+            set { Set(value, FieldTag.TargetUnitID); }
+        }
+
+        public ushort TriggerType
+        {
+            get { return Get<ushort>(FieldTag.TriggerType); }
+
+            set { Set(value, FieldTag.TriggerType); }
+        }
+
         public DictionaryListObject TaskBefore
         {
             get { return Get<DictionaryListObject>(FieldTag.TaskBefore); }
-            set { Set(value, FieldTag.TaskBefore);}
+
+            set { Set(value, FieldTag.TaskBefore); }
         }
+
         public DictionaryListObject TaskMiddle
         {
             get { return Get<DictionaryListObject>(FieldTag.TaskMiddle); }
-            set { Set(value, FieldTag.TaskMiddle);}
+
+            set { Set(value, FieldTag.TaskMiddle); }
         }
+
         public DictionaryListObject TaskAfter
         {
             get { return Get<DictionaryListObject>(FieldTag.TaskAfter); }
-            set { Set(value, FieldTag.TaskAfter);}
+
+            set { Set(value, FieldTag.TaskAfter); }
         }
-        public DictionaryListObject Targets
+
+        public DictionaryListObject TaskFinishAward
         {
-            get { return Get<DictionaryListObject>(FieldTag.Targets); }
-            set { Set(value, FieldTag.Targets);}
+            get { return Get<DictionaryListObject>(FieldTag.TaskFinishAward); }
+
+            set { Set(value, FieldTag.TaskFinishAward); }
         }
+
+        public DictionaryListObject BeforeTaskAward
+        {
+            get { return Get<DictionaryListObject>(FieldTag.BeforeTaskAward); }
+
+            set { Set(value, FieldTag.BeforeTaskAward); }
+        }
+
 
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {

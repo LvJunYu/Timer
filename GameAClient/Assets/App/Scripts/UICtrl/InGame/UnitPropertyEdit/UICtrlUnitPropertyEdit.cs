@@ -44,13 +44,18 @@ namespace GameA
         private EEditType _curEditType;
         private EEnterType _curEnterType;
 
+        //npc 之间的引用数据类型
+        public List<UnitExtraNpcTaskData> NpcTaskDatas;
+
+
         public EEnterType CurEnterType
         {
             get { return _curEnterType; }
         }
 
         private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
-        private UPCtrlUnitPropertyEditNpcTaskType _upCtrlUnitPropertyEditNpcTaskType;
+        public UPCtrlUnitPropertyEditNpcTaskType UpCtrlUnitPropertyEditNpcTaskType;
+        public UPCtrlUnitPropertyEditNpcTaskAdvance UpCtrlUnitPropertyEditNpcTaskAdvance;
 
         protected override void InitGroupId()
         {
@@ -100,8 +105,11 @@ namespace GameA
             _upCtrlUnitPropertyEditNpcDiaType = new UPCtrlUnitPropertyEditNpcDiaType();
             _upCtrlUnitPropertyEditNpcDiaType.Init(this, _cachedView);
             //任务类
-            _upCtrlUnitPropertyEditNpcTaskType = new UPCtrlUnitPropertyEditNpcTaskType();
-            _upCtrlUnitPropertyEditNpcTaskType.Init(this, _cachedView);
+            UpCtrlUnitPropertyEditNpcTaskType = new UPCtrlUnitPropertyEditNpcTaskType();
+            UpCtrlUnitPropertyEditNpcTaskType.Init(this, _cachedView);
+            //任务细分面板
+            UpCtrlUnitPropertyEditNpcTaskAdvance = new UPCtrlUnitPropertyEditNpcTaskAdvance();
+            UpCtrlUnitPropertyEditNpcTaskAdvance.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -383,6 +391,10 @@ namespace GameA
         protected override void OnClose()
         {
             EditMode.Instance.OpenUnitPropertyEdit = false;
+            _upCtrlUnitPropertyEditAdvance.Close();
+            _upCtrlUnitPropertyEditNpcDiaType.Close();
+            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
+            UpCtrlUnitPropertyEditNpcTaskType.Close();
             _upCtrlUnitPropertyEditPreinstall.Close();
             base.OnClose();
         }
@@ -984,6 +996,7 @@ namespace GameA
             }
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
+            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1041,15 +1054,15 @@ namespace GameA
             }
 
             //任务型npc
-
+            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
             if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
             {
                 _upCtrlUnitPropertyEditNpcDiaType.Close();
-                _upCtrlUnitPropertyEditNpcTaskType.Open();
+                UpCtrlUnitPropertyEditNpcTaskType.Open();
             }
             else
             {
-                _upCtrlUnitPropertyEditNpcTaskType.Close();
+                UpCtrlUnitPropertyEditNpcTaskType.Close();
             }
         }
 

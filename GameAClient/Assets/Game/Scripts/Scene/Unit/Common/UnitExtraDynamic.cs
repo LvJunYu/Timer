@@ -621,6 +621,7 @@ namespace GameA.Game
         MonsterIntervalTime,
         MaxCreatedMonster,
         MaxAliveMonster,
+        MaxTaskKillOrColltionNum,
         Max
     }
 }

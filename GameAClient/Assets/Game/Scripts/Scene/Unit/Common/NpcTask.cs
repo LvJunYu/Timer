@@ -27,9 +27,12 @@ namespace GameA.Game
         public ushort TriggerColOrKillNum;
         public ushort TargetUnitID;
         public byte TriggerType;
+        
+        
         public MultiParamDia TaskBefore;
         public MultiParamDia TaskMiddle;
         public MultiParamDia TaskAfter;
+        
         public MultiParamTarget Targets;
         public MultiParamTarget TaskFinishAward;
         public MultiParamTarget BeforeTaskAward;
