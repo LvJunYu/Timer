@@ -29,11 +29,6 @@ namespace GameA
         private long _lastProjectId;
         private bool _isPostComment;
 
-        public bool IsMulti
-        {
-            get { return _isMulti; }
-        }
-
         public bool IsMyself
         {
             get { return _isMyself; }
@@ -105,31 +100,31 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _project = parameter as Project;
-            if (Project == null)
+            if (_project == null)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
 
-            if (!Project.IsValid)
+            if (!_project.IsValid)
             {
                 SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
-                if (Project.UserFavorite)
+                if (_project.UserFavorite)
                 {
-                    Project.UpdateFavorite(false);
+                    _project.UpdateFavorite(false);
                 }
 
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
 
-            _isMulti = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
-            _isMulti = Project.IsMulti;
-            Project.Request(Project.ProjectId, null, null);
+            _isMyself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
+            _isMulti = _project.IsMulti;
+            _project.Request(_project.ProjectId, null, null);
             RefreshView();
-            if (Project.ProjectId != _lastProjectId)
+            if (_project.ProjectId != _lastProjectId)
             {
-                if (IsMulti)
+                if (_isMulti)
                 {
                     _curMenu = EMenu.Room;
                 }
@@ -138,7 +133,7 @@ namespace GameA
                     _curMenu = EMenu.Recent;
                 }
 
-                _lastProjectId = Project.ProjectId;
+                _lastProjectId = _project.ProjectId;
             }
 
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
@@ -236,12 +231,12 @@ namespace GameA
 
         public bool CheckPlayed(string content)
         {
-            if (IsMulti)
+            if (_isMulti)
             {
                 return true;
             }
 
-            if (Project.ProjectUserData.PlayCount == 0)
+            if (_project.ProjectUserData.PlayCount == 0)
             {
                 SocialGUIManager.ShowPopupDialog(content, null,
                     new KeyValuePair<string, Action>("取消", null),
@@ -268,60 +263,60 @@ namespace GameA
 
         private void RefreshView()
         {
-            if (Project == null)
+            if (_project == null)
             {
                 SetNull();
                 return;
             }
 
-            _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(IsMulti);
-            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!IsMulti);
-            _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!IsMulti);
-            _cachedView.StandalonePannel.SetActive(!IsMulti);
-            _cachedView.MultiPannel.SetActive(IsMulti);
-            _cachedView.CreateBtn.SetActiveEx(IsMulti);
-            _cachedView.EditBtn.SetActiveEx(IsMyself);
-            _cachedView.DeleteBtn.SetActiveEx(IsMyself);
-            _cachedView.FavoriteBtn.SetActiveEx(!IsMyself);
-            _cachedView.DownloadBtn.SetActiveEx(!IsMyself);
-            if (IsMulti)
+            _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(_isMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!_isMulti);
+            _cachedView.StandalonePannel.SetActive(!_isMulti);
+            _cachedView.MultiPannel.SetActive(_isMulti);
+            _cachedView.CreateBtn.SetActiveEx(_isMulti);
+            _cachedView.EditBtn.SetActiveEx(_isMyself);
+            _cachedView.DeleteBtn.SetActiveEx(_isMyself);
+            _cachedView.FavoriteBtn.SetActiveEx(!_isMyself);
+            _cachedView.DownloadBtn.SetActiveEx(!_isMyself);
+            if (_isMulti)
             {
                 RefreshRoomInfo();
             }
             else
             {
-                UserInfoSimple user = Project.UserInfoDetail.UserInfoSimple;
-                DictionaryTools.SetContentText(_cachedView.ProjectId, Project.ShortId.ToString());
-                DictionaryTools.SetContentText(_cachedView.TitleText, Project.Name);
-                DictionaryTools.SetContentText(_cachedView.Desc, Project.Summary);
+                UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
+                DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
+                DictionaryTools.SetContentText(_cachedView.TitleText, _project.Name);
+                DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
                 DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
                 DictionaryTools.SetContentText(_cachedView.AdvLevelText,
                     GameATools.GetLevelString(user.LevelData.PlayerLevel));
                 DictionaryTools.SetContentText(_cachedView.CreateLevelText,
                     GameATools.GetLevelString(user.LevelData.CreatorLevel));
                 DictionaryTools.SetContentText(_cachedView.PlayCountText,
-                    Project.ExtendReady ? Project.PlayCount.ToString() : EmptyStr);
+                    _project.ExtendReady ? _project.PlayCount.ToString() : EmptyStr);
                 DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
-                    GameATools.FormatServerDateString(Project.CreateTime));
+                    GameATools.FormatServerDateString(_project.CreateTime));
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                     _cachedView.DefaultCoverTexture);
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, Project.IconPath,
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
                     _cachedView.DefaultCoverTexture);
                 user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                     _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             }
 
             RefreshBtns();
-            RefreshCommentCount(Project.TotalCommentCount);
+            RefreshCommentCount(_project.TotalCommentCount);
         }
 
         private void RefreshRoomInfo()
         {
-            if (Project == null) return;
-            var netData = Project.NetData;
+            if (_project == null) return;
+            var netData = _project.NetData;
             if (netData == null) return;
-            _cachedView.TitleTxt.text = Project.Name;
-            _cachedView.DescTxt.text = Project.Summary;
+            _cachedView.TitleTxt.text = _project.Name;
+            _cachedView.DescTxt.text = _project.Summary;
             _cachedView.PlayerCount.text = netData.PlayerCount.ToString();
             _cachedView.LifeCount.text = netData.GetLifeCount();
             _cachedView.ReviveTime.text = netData.GetReviveTime();
@@ -341,29 +336,29 @@ namespace GameA
 
         private void RefreshBtns()
         {
-            if (Project == null) return;
-            bool hasFollowed = Project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            _cachedView.FollowBtn.SetActiveEx(!IsMyself);
+            if (_project == null) return;
+            bool hasFollowed = _project.UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            _cachedView.FollowBtn.SetActiveEx(!_isMyself);
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
-            _collected = Project.ProjectUserData != null && Project.ProjectUserData.Favorite;
+            _collected = _project.ProjectUserData != null && _project.ProjectUserData.Favorite;
             _cachedView.FavoriteTxt.text = _collected ? "已收藏" : "收藏";
             _onlyChangeView = true;
-            _cachedView.GoodTog.isOn = Project.ProjectUserData != null &&
-                                       Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
-            _cachedView.BadTog.isOn = Project.ProjectUserData != null &&
-                                      Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
+            _cachedView.GoodTog.isOn = _project.ProjectUserData != null &&
+                                       _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
+            _cachedView.BadTog.isOn = _project.ProjectUserData != null &&
+                                      _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike;
             _onlyChangeView = false;
-            DictionaryTools.SetContentText(_cachedView.ScoreTxt, Project.ScoreFormat);
+            DictionaryTools.SetContentText(_cachedView.ScoreTxt, _project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
-                string.Format(_countFormat, Project.LikeCount + Project.UnlikeCount));
+                string.Format(_countFormat, _project.LikeCount + _project.UnlikeCount));
         }
 
         private void OnCreateBtn()
         {
-            if (IsMulti)
+            if (_isMulti)
             {
-                RoomManager.Instance.SendRequestCreateRoom(Project.ProjectId);
+                RoomManager.Instance.SendRequestCreateRoom(_project.ProjectId);
             }
         }
 
@@ -381,10 +376,10 @@ namespace GameA
         private void OnBadTogValueChanged(bool value)
         {
             if (_onlyChangeView) return;
-            if (Project == null) return;
-            if (Project.ProjectUserData == null)
+            if (_project == null) return;
+            if (_project.ProjectUserData == null)
             {
-                Project.Request();
+                _project.Request();
                 return;
             }
 
@@ -396,26 +391,26 @@ namespace GameA
                 return;
             }
 
-            if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
+            if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
             {
-                Project.UpdateLike(EProjectLikeState.PLS_Unlike,
-                    () => { Project.Request(); });
+                _project.UpdateLike(EProjectLikeState.PLS_Unlike,
+                    () => { _project.Request(); });
             }
-            else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike &&
+            else if (!value && _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Unlike &&
                      !_cachedView.GoodTog.isOn)
             {
-                Project.UpdateLike(EProjectLikeState.PLS_AllRight,
-                    () => { Project.Request(); });
+                _project.UpdateLike(EProjectLikeState.PLS_AllRight,
+                    () => { _project.Request(); });
             }
         }
 
         private void OnGoodTogValueChanged(bool value)
         {
             if (_onlyChangeView) return;
-            if (Project == null) return;
-            if (Project.ProjectUserData == null)
+            if (_project == null) return;
+            if (_project.ProjectUserData == null)
             {
-                Project.Request(Project.ProjectId, null, null);
+                _project.Request(_project.ProjectId, null, null);
                 return;
             }
 
@@ -427,16 +422,16 @@ namespace GameA
                 return;
             }
 
-            if (value && Project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
+            if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
             {
-                Project.UpdateLike(EProjectLikeState.PLS_Like,
-                    () => { Project.Request(); });
+                _project.UpdateLike(EProjectLikeState.PLS_Like,
+                    () => { _project.Request(); });
             }
-            else if (!value && Project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like &&
+            else if (!value && _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like &&
                      !_cachedView.BadTog.isOn)
             {
-                Project.UpdateLike(EProjectLikeState.PLS_AllRight,
-                    () => { Project.Request(); });
+                _project.UpdateLike(EProjectLikeState.PLS_AllRight,
+                    () => { _project.Request(); });
             }
         }
 

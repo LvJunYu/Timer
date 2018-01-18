@@ -88,6 +88,7 @@ namespace GameA
             _cachedView.DropdownObj.SetActiveEx(_dropdown);
             if (_dropdown)
             {
+                _cachedView.DropdownObj.transform.rectTransform().position = _cachedView.DropdownRtf.position;
                 for (int i = 0; i < _toggles.Length; i++)
                 {
                     _toggles[i].isOn = i == _curIndex;

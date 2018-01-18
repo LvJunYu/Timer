@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -44,6 +43,7 @@ namespace GameA.Game
             DefineField<string>(FieldTag.NpcDialog, "NpcDialog");
             DefineField<ushort>(FieldTag.NpcShowInterval, "NpcShowInterval");
             DefineFieldList<NpcTaskDynamic>(FieldTag.NpcTask, "NpcTask");
+            DefineFieldList<PlayerUnitExtraDynamic>(FieldTag.PlayerUnitExtras, "NpcTask");
         }
 
         public class FieldTag
@@ -84,6 +84,7 @@ namespace GameA.Game
             public static readonly int NpcShowType = _nextId++;
             public static readonly int NpcShowInterval = _nextId++;
             public static readonly int NpcTask = _nextId++;
+            public static readonly int PlayerUnitExtras = _nextId++;
         }
 
         public EMoveDirection MoveDirection
@@ -301,7 +302,12 @@ namespace GameA.Game
             get { return Get<DictionaryListObject>(FieldTag.NpcTask); }
             set { Set(value, FieldTag.NpcTask); }
         }
-
+        
+        public DictionaryListObject PlayerUnitExtras
+        {
+            get { return Get<DictionaryListObject>(FieldTag.PlayerUnitExtras); }
+            set { Set(value, FieldTag.PlayerUnitExtras);}
+        }
 
         public bool IsDynamic()
         {
@@ -600,13 +606,15 @@ namespace GameA.Game
                 case EAdvanceAttribute.MaxHp:
                     return table.Hp > 0;
                 case EAdvanceAttribute.MaxSpeedX:
-                    return table.MaxSpeed > 0 && !UnitDefine.IsPlayer(id);
+                    return table.MaxSpeed > 0 && !UnitDefine.IsSpawn(id);
                 case EAdvanceAttribute.JumpAbility:
-                    return table.JumpAbility > 0 && !UnitDefine.IsPlayer(id);
+                    return table.JumpAbility > 0 && !UnitDefine.IsSpawn(id);
                 case EAdvanceAttribute.InjuredReduce:
                     return table.Hp > 0;
                 case EAdvanceAttribute.CureIncrease:
                     return table.Hp > 0;
+                case EAdvanceAttribute.Spawn:
+                    return UnitDefine.IsSpawn(id);
             }
 
             return false;
@@ -659,6 +667,7 @@ namespace GameA.Game
         MaxCreatedMonster,
         MaxAliveMonster,
         MaxTaskKillOrColltionNum,
+        Spawn,
         Max
     }
 }

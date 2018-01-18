@@ -78,12 +78,11 @@ namespace GameA
                     {
                         if (msg.ResultCode == (int) EPublishUserMessageCode.PUMC_Success)
                         {
-                            _cachedView.InputField.text = String.Empty;
+                            _cachedView.InputField.text = string.Empty;
                             _dataList.Add(new UserMessage(msg.Data));
                             _dataList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
                             RefreshView();
-                            _mainCtrl.MessageCount++;
-                            _mainCtrl.RefreshMessageNum(_mainCtrl.MessageCount);
+                            _mainCtrl.OnPublishUserMessage();
                         }
                         else
                         {

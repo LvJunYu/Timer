@@ -12,7 +12,6 @@ namespace GameA
             ActorSetting,
             WeaponSetting,
             MonsterCave,
-            Spawn
         }
 
         private Sequence _openSequence;
@@ -184,7 +183,7 @@ namespace GameA
 //            _usAddStatesSetting.SetEnable(b);
             _usAddStatesSetting.SetEnable(false);
             _usDropsSetting.SetEnable(false);
-            _usSpawnSetting.SetEnable(_curMenu == EMenu.Spawn);
+            _usSpawnSetting.SetEnable(UnitExtraHelper.CanEdit(EAdvanceAttribute.Spawn, id));
             _usMaxHpSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;
