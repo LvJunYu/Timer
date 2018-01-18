@@ -2,13 +2,13 @@
 using UnityEngine;
 
 namespace GameA
-{
+{/*
     public class UMCtrlChatFriendItem : UMCtrlBase<UMViewChatFriendItem>, IDataItemRenderer
     {
         private static string _onlineStr = "在线";
         private static string _outlineStr = "离线";
         private UserInfoDetail _userInfoDetail;
-        private UPCtrlChatFriend _upCtrlChatFriend;
+        //private UPCtrlChatFriend _upCtrlChatFriend;
 
         public RectTransform Transform
         {
@@ -52,7 +52,6 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshSelectStatus();
         }
-
         public void RefreshSelectStatus()
         {
             _cachedView.SelectedObj.SetActive(_userInfoDetail != null &&
@@ -75,4 +74,5 @@ namespace GameA
             _upCtrlChatFriend = upCtrlChatFriend;
         }
     }
+    */
 }

@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace GameA
 {
-    public delegate void SeletTaskTargetType(UnitExtraNpcTaskTarget target);
+    public delegate void SeletTaskTargetType(NpcTaskTargetDynamic target);
 
-    public delegate void SeletTaskType(UnitExtraNpcTaskData task);
+    public delegate void SeletTaskType(NpcTaskDynamic task);
 
     public class UPCtrlUnitPropertyEditNpcTaskType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
@@ -19,14 +19,14 @@ namespace GameA
         private USCtrlUnitNpcTaskIndexBtn[] _usCtrlUnitNpcTaskIndexGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _usCtrlUnitNpcTargetGroup;
         private USCtrlUnitNpcTaskTargetBtn _usCtrlUnitAddNpcTarget;
-        public UnitExtraNpcTaskData CurExtraNpcTaskData;
+        public NpcTaskDynamic CurExtraNpcTaskData;
 
         //和任务有关的
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            CurExtraNpcTaskData = new UnitExtraNpcTaskData();
+            CurExtraNpcTaskData = new NpcTaskDynamic();
 
             //任务按钮
             _usCtrlUnitNpcTaskIndexGroup = new USCtrlUnitNpcTaskIndexBtn[_cachedView.IndexBtnGroup.Length];
@@ -46,7 +46,7 @@ namespace GameA
             //添加任务按钮
             _usCtrlUnitAddNpcTarget = new USCtrlUnitNpcTaskTargetBtn();
             _usCtrlUnitAddNpcTarget.Init(_cachedView.AddTargetBtn);
-            _usCtrlUnitAddNpcTarget.AddNewTarget(() => { OpenAdvencePanel(new UnitExtraNpcTaskTarget()); });
+            _usCtrlUnitAddNpcTarget.AddNewTarget(() => { OpenAdvencePanel(new NpcTaskTargetDynamic()); });
 
 
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TaskNpcName);
@@ -95,13 +95,14 @@ namespace GameA
             List<ENpcTaskType> listType = new List<ENpcTaskType>();
             for (int i = 0; i < _usCtrlUnitNpcTargetGroup.Length; i++)
             {
-                if (i < CurExtraNpcTaskData.TaskTarget.Count)
+                if (i < CurExtraNpcTaskData.Targets.Count)
                 {
                     _usCtrlUnitNpcTargetGroup[i].SetEnable(true);
-                    _usCtrlUnitNpcTargetGroup[i].SetSelectTarget(CurExtraNpcTaskData.TaskTarget[i],
+                    _usCtrlUnitNpcTargetGroup[i].SetSelectTarget(
+                        CurExtraNpcTaskData.Targets.ToList<NpcTaskTargetDynamic>()[i],
                         CurExtraNpcTaskData,
                         OpenAdvencePanel, RefreshView);
-                    listType.Add((ENpcTaskType) CurExtraNpcTaskData.TaskTarget[i].TaskType);
+                    listType.Add((ENpcTaskType) CurExtraNpcTaskData.Targets.ToList<NpcTaskTargetDynamic>()[i].TaskType);
                 }
                 else
                 {
@@ -143,13 +144,13 @@ namespace GameA
             base.Close();
         }
 
-        private void RefreshTask(UnitExtraNpcTaskData taskData)
+        private void RefreshTask(NpcTaskDynamic taskData)
         {
             CurExtraNpcTaskData = taskData;
             RefreshView();
         }
 
-        private void OpenAdvencePanel(UnitExtraNpcTaskTarget target)
+        private void OpenAdvencePanel(NpcTaskTargetDynamic target)
         {
             _mainCtrl.UpCtrlUnitPropertyEditNpcTaskAdvance.OpenMenu(target);
         }

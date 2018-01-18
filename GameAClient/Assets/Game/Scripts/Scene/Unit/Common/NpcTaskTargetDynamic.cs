@@ -82,13 +82,13 @@ namespace GameA.Game
                 TargetGuid == other.TargetGuid;
         }
     }
-//
-//    public enum NpcTaskType
-//    {
-//        None = 0,
-//        Colltion,
-//        Moster,
-//        Dialog,
-//        Contorl
-//    }
+
+    public enum NpcTaskType
+    {
+        None = 0,
+        Colltion,
+        Moster,
+        Dialog,
+        Contorl
+    }
 }

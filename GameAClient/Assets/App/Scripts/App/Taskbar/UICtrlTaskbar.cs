@@ -434,7 +434,7 @@ namespace GameA
 
         private void OnChatBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+           // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
         }
 
         private void OnAnnoncementBtn()

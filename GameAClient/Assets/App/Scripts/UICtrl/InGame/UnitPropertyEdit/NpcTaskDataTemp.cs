@@ -23,8 +23,8 @@ namespace GameA
         public IntVec3 NpcIntVec3 { get; set; }
         public ETaskContype TaskType { get; set; }
 
-        public UnitExtraNpcTaskData TaskData { get; set; }
-        public UnitExtraNpcTaskTarget TaskTargetData { get; set; }
+        public NpcTaskDynamic TaskData { get; set; }
+        public NpcTaskTargetDynamic TaskTargetData { get; set; }
         public bool IsEditNpcData { get; set; }
 
         public bool IsEditNpcBerOrAfter()
@@ -37,10 +37,9 @@ namespace GameA
             return IsEditNpcData && TaskType == ETaskContype.Task;
         }
 
-        public void FinishAddTarget(IntVec3 Pos)
+        public void FinishAddTarget(IntVec3 guid)
         {
-            TaskTargetData.TargetGuid =
-                GM2DTools.ToProto(Pos);
+            TaskTargetData.TargetGuid = guid;
             switch (TaskType)
             {
                 case ETaskContype.AfterTask:
@@ -50,89 +49,85 @@ namespace GameA
                     TaskData.BeforeTaskAward.Add(TaskTargetData);
                     break;
                 case ETaskContype.Task:
-                    TaskData.TaskTarget.Add(TaskTargetData);
+                    TaskData.Targets.Add(TaskTargetData);
                     break;
             }
         }
 
+        //开关改变是查找npc改变目标guid
         public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc)
         {
-            IntVec3Proto pos = GM2DTools.ToProto(oldUnitDesc.Guid);
-            IntVec3Proto newpos = GM2DTools.ToProto(newUnitDesc.Guid);
-            using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
-            {
-//                while (itor.MoveNext())
-//                {
-//                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
-//                    {
-//                        List<UnitExtraNpcTaskData> taskData =
-//                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
-//                        for (int i = 0; i < taskData.Count; i++)
-//                        {
-//                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
-//                            {
-//                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].BeforeTaskAward[i].TargetGuid = newpos;
-//                                }
-//                            }
-//                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
-//                            {
-//                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].TaskFinishAward[i].TargetGuid = newpos;
-//                                }
-//                            }
-//                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
-//                            {
-//                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].TaskTarget[i].TargetGuid = newpos;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-            }
-        }
-
-        public void OnUnitDelteUpdateSwitchData(UnitDesc unitDesc)
-        {
-            IntVec3Proto pos = GM2DTools.ToProto(unitDesc.Guid);
+            IntVec3 oldGuid = oldUnitDesc.Guid;
+            IntVec3 newGuid = newUnitDesc.Guid;
             using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
             {
                 while (itor.MoveNext())
                 {
                     if (UnitDefine.IsNpc(itor.Current.Value.Id))
                     {
-//                        List<UnitExtraNpcTaskData> taskData =
-//                            itor.Current.Value.GetUnitExtra().NpcTask.ToListData();
-//                        for (int i = 0;
-//                            i < taskData.Count;
-//                            i++)
-//                        {
-//                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
-//                            {
-//                                if (taskData[i].BeforeTaskAward[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].BeforeTaskAward.Remove(taskData[i].BeforeTaskAward[i]);
-//                                }
-//                            }
-//                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
-//                            {
-//                                if (taskData[i].TaskFinishAward[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].TaskFinishAward.Remove(taskData[i].TaskFinishAward[i]);
-//                                }
-//                            }
-//                            for (int j = 0; j < taskData[i].TaskTarget.Count; j++)
-//                            {
-//                                if (taskData[i].TaskTarget[i].TargetGuid == pos)
-//                                {
-//                                    taskData[i].TaskTarget.Remove(taskData[i].TaskTarget[i]);
-//                                }
-//                            }
-//                        }
+                        List<NpcTaskDynamic> taskData =
+                            itor.Current.Value.GetUnitExtra().NpcTask.ToList<NpcTaskDynamic>();
+                        for (int i = 0; i < taskData.Count; i++)
+                        {
+                            var beforeTaskAward = taskData[i].BeforeTaskAward.ToList<NpcTaskTargetDynamic>();
+                            ChangeGuid(oldGuid, newGuid, beforeTaskAward);
+                            var TaskFinishAward = taskData[i].TaskFinishAward.ToList<NpcTaskTargetDynamic>();
+                            ChangeGuid(oldGuid, newGuid, TaskFinishAward);
+                            var TaskTarget = taskData[i].Targets.ToList<NpcTaskTargetDynamic>();
+                            ChangeGuid(oldGuid, newGuid, TaskTarget);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ChangeGuid(IntVec3 oldGuid, IntVec3 newGuid, List<NpcTaskTargetDynamic> targetDynamics)
+        {
+            for (int i = 0; i < targetDynamics.Count; i++)
+            {
+                if (targetDynamics[i].TargetGuid == oldGuid)
+                {
+                    targetDynamics[i].TargetGuid = newGuid;
+                }
+            }
+        }
+
+        //去除npc关联的开关的方法
+        public void OnUnitDelteUpdateSwitchData(UnitDesc unitDesc)
+        {
+            IntVec3 guid = unitDesc.Guid;
+            using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
+            {
+                while (itor.MoveNext())
+                {
+                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+                    {
+                        List<NpcTaskDynamic> taskData =
+                            itor.Current.Value.GetUnitExtra().NpcTask.ToList<NpcTaskDynamic>();
+                        for (int i = 0; i < taskData.Count; i++)
+                        {
+                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
+                            {
+                                if (taskData[i].BeforeTaskAward.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                {
+                                    taskData[i].BeforeTaskAward.Remove(j);
+                                }
+                            }
+                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
+                            {
+                                if (taskData[i].TaskFinishAward.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                {
+                                    taskData[i].TaskFinishAward.Remove(j);
+                                }
+                            }
+                            for (int j = 0; j < taskData[i].Targets.Count; j++)
+                            {
+                                if (taskData[i].Targets.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                {
+                                    taskData[i].Targets.Remove(j);
+                                }
+                            }
+                        }
                     }
                 }
             }

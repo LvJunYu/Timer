@@ -103,6 +103,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.TaskAfter); }
         }
 
+        public DictionaryListObject Targets
+        {
+            get { return Get<DictionaryListObject>(FieldTag.Targets); }
+
+            set { Set(value, FieldTag.Targets); }
+        }
+
         public DictionaryListObject TaskFinishAward
         {
             get { return Get<DictionaryListObject>(FieldTag.TaskFinishAward); }
@@ -121,21 +128,82 @@ namespace GameA.Game
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
             var msg = new UnitExtraNpcTaskData();
-//            msg.NpcSerialNumber = NpcSerialNumber;
-//            msg.TaskBefore.AddRange(TaskBefore.ToList());
-//            msg.TaskMiddle.AddRange(TaskMiddle.ToList());
-//            msg.TaskAfter.AddRange(TaskAfter.ToList());
-//            msg.TaskTarget.AddRange(Targets.ToProtoDataList());
+            msg.NpcSerialNumber = NpcSerialNumber;
+            msg.TriggerTaskNumber = TriggerTaskNumber;
+            msg.TriggerColOrKillNum = TriggerColOrKillNum;
+            msg.TriggerType = TriggerType;
+            msg.TargetUnitID = TargetUnitID;
+            msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
+            msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
+            msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
+            //清一下列表
+            msg.TaskTarget.Clear();
+            for (int i = 0, count = Targets.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = Targets.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.TaskTarget.Add(val);
+                }
+            }
+            msg.BeforeTaskAward.Clear();
+            for (int i = 0, count = BeforeTaskAward.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = BeforeTaskAward.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.BeforeTaskAward.Add(val);
+                }
+            }
+            msg.TaskFinishAward.Clear();
+            for (int i = 0, count = TaskFinishAward.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = TaskFinishAward.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.TaskFinishAward.Add(val);
+                }
+            }
             return msg;
         }
 
         public void Set(UnitExtraNpcTaskData data)
         {
-//            NpcSerialNumber = (ushort) data.NpcSerialNumber;
-//            TaskBefore.Set(data.TaskBefore.ToArray());
-//            TaskMiddle.Set(data.TaskMiddle.ToArray());
-//            TaskAfter.Set(data.TaskAfter.ToArray());
-//            Targets.SetProtoData(data.TaskTarget.ToArray());
+            NpcSerialNumber = (ushort) data.NpcSerialNumber;
+            TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
+            TriggerColOrKillNum = (ushort) data.TriggerColOrKillNum;
+            TriggerType = (ushort) data.TriggerType;
+            TargetUnitID = (ushort) data.TargetUnitID;
+            for (int i = 0; i < data.TaskBefore.Count; i++)
+            {
+                Set(data.TaskBefore[i], FieldTag.TaskBefore, i);
+            }
+            for (int i = 0; i < data.TaskMiddle.Count; i++)
+            {
+                Set(data.TaskMiddle[i], FieldTag.TaskMiddle, i);
+            }
+            for (int i = 0; i < data.TaskAfter.Count; i++)
+            {
+                Set(data.TaskAfter[i], FieldTag.TaskAfter, i);
+            }
+            for (int i = 0; i < data.TaskTarget.Count; i++)
+            {
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.Targets, i);
+            }
+            for (int i = 0; i < data.BeforeTaskAward.Count; i++)
+            {
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.BeforeTaskAward, i);
+            }
+            for (int i = 0; i < data.TaskFinishAward.Count; i++)
+            {
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.TaskFinishAward, i);
+            }
         }
     }
 }

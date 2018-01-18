@@ -45,7 +45,7 @@ namespace GameA.Game
             DefineFieldList<NpcTaskDynamic>(FieldTag.NpcTask, "NpcTask");
             DefineFieldList<PlayerUnitExtraDynamic>(FieldTag.PlayerUnitExtras, "NpcTask");
         }
-        
+
         public class FieldTag
         {
             private static int _nextId;
@@ -90,185 +90,219 @@ namespace GameA.Game
         public EMoveDirection MoveDirection
         {
             get { return Get<EMoveDirection>(FieldTag.MoveDirection); }
-            set { Set(value, FieldTag.MoveDirection);}
+            set { Set(value, FieldTag.MoveDirection); }
         }
+
         public byte Active
         {
             get { return Get<byte>(FieldTag.Active); }
-            set { Set(value, FieldTag.Active);}
+            set { Set(value, FieldTag.Active); }
         }
-        
+
         public ushort ChildId
         {
             get { return Get<ushort>(FieldTag.ChildId); }
-            set { Set(value, FieldTag.ChildId);}
+            set { Set(value, FieldTag.ChildId); }
         }
+
         public byte ChildRotation
         {
             get { return Get<byte>(FieldTag.ChildRotation); }
-            set { Set(value, FieldTag.ChildRotation);}
+            set { Set(value, FieldTag.ChildRotation); }
         }
+
         public byte RotateMode
         {
             get { return Get<byte>(FieldTag.RotateMode); }
-            set { Set(value, FieldTag.RotateMode);}
+            set { Set(value, FieldTag.RotateMode); }
         }
+
         public byte RotateValue
         {
             get { return Get<byte>(FieldTag.RotateValue); }
-            set { Set(value, FieldTag.RotateValue);}
+            set { Set(value, FieldTag.RotateValue); }
         }
+
         public ushort TimeDelay
         {
             get { return Get<ushort>(FieldTag.TimeDelay); }
-            set { Set(value, FieldTag.TimeDelay);}
+            set { Set(value, FieldTag.TimeDelay); }
         }
+
         public ushort TimeInterval
         {
             get { return Get<ushort>(FieldTag.TimeInterval); }
-            set { Set(value, FieldTag.TimeInterval);}
+            set { Set(value, FieldTag.TimeInterval); }
         }
+
         public string Msg
         {
             get { return Get<string>(FieldTag.Msg); }
-            set { Set(value, FieldTag.Msg);}
+            set { Set(value, FieldTag.Msg); }
         }
+
         public byte TeamId
         {
             get { return Get<byte>(FieldTag.TeamId); }
-            set { Set(value, FieldTag.TeamId);}
+            set { Set(value, FieldTag.TeamId); }
         }
+
         public ushort Damage
         {
             get { return Get<ushort>(FieldTag.Damage); }
-            set { Set(value, FieldTag.Damage);}
+            set { Set(value, FieldTag.Damage); }
         }
+
         public DictionaryListObject Drops
         {
             get { return Get<DictionaryListObject>(FieldTag.Drops); }
-            set { Set(value, FieldTag.Drops);}
+            set { Set(value, FieldTag.Drops); }
         }
+
         /// <summary>
         /// 技能作用范围
         /// </summary>
         public ushort EffectRange
         {
             get { return Get<ushort>(FieldTag.EffectRange); }
-            set { Set(value, FieldTag.EffectRange);}
+            set { Set(value, FieldTag.EffectRange); }
         }
+
         /// <summary>
         /// 子弹射程
         /// </summary>
         public ushort CastRange
         {
             get { return Get<ushort>(FieldTag.CastRange); }
-            set { Set(value, FieldTag.CastRange);}
+            set { Set(value, FieldTag.CastRange); }
         }
+
         public ushort ViewRange
         {
             get { return Get<ushort>(FieldTag.ViewRange); }
-            set { Set(value, FieldTag.ViewRange);}
+            set { Set(value, FieldTag.ViewRange); }
         }
+
         public ushort BulletCount
         {
             get { return Get<ushort>(FieldTag.BulletCount); }
-            set { Set(value, FieldTag.BulletCount);}
+            set { Set(value, FieldTag.BulletCount); }
         }
+
         public DictionaryListObject KnockbackForces
         {
             get { return Get<DictionaryListObject>(FieldTag.KnockbackForces); }
-            set { Set(value, FieldTag.KnockbackForces);}
+            set { Set(value, FieldTag.KnockbackForces); }
         }
+
         public DictionaryListObject AddStates
         {
             get { return Get<DictionaryListObject>(FieldTag.AddStates); }
-            set { Set(value, FieldTag.AddStates);}
+            set { Set(value, FieldTag.AddStates); }
         }
+
         public ushort BulletSpeed
         {
             get { return Get<ushort>(FieldTag.BulletSpeed); }
-            set { Set(value, FieldTag.BulletSpeed);}
+            set { Set(value, FieldTag.BulletSpeed); }
         }
+
         public ushort ChargeTime
         {
             get { return Get<ushort>(FieldTag.ChargeTime); }
-            set { Set(value, FieldTag.ChargeTime);}
+            set { Set(value, FieldTag.ChargeTime); }
         }
+
         public ushort MaxHp
         {
             get { return Get<ushort>(FieldTag.MaxHp); }
-            set { Set(value, FieldTag.MaxHp);}
+            set { Set(value, FieldTag.MaxHp); }
         }
+
         public ushort MaxSpeedX
         {
             get { return Get<ushort>(FieldTag.MaxSpeedX); }
-            set { Set(value, FieldTag.MaxSpeedX);}
+            set { Set(value, FieldTag.MaxSpeedX); }
         }
+
         public ushort JumpAbility
         {
             get { return Get<ushort>(FieldTag.JumpAbility); }
-            set { Set(value, FieldTag.JumpAbility);}
+            set { Set(value, FieldTag.JumpAbility); }
         }
+
         public byte InjuredReduce
         {
             get { return Get<byte>(FieldTag.InjuredReduce); }
-            set { Set(value, FieldTag.InjuredReduce);}
+            set { Set(value, FieldTag.InjuredReduce); }
         }
+
         public ushort CureIncrease
         {
             get { return Get<ushort>(FieldTag.CureIncrease); }
-            set { Set(value, FieldTag.CureIncrease);}
+            set { Set(value, FieldTag.CureIncrease); }
         }
+
         public ushort MonsterIntervalTime
         {
             get { return Get<ushort>(FieldTag.MonsterIntervalTime); }
-            set { Set(value, FieldTag.MonsterIntervalTime);}
+            set { Set(value, FieldTag.MonsterIntervalTime); }
         }
+
         public ushort MaxCreatedMonster
         {
             get { return Get<ushort>(FieldTag.MaxCreatedMonster); }
-            set { Set(value, FieldTag.MaxCreatedMonster);}
+            set { Set(value, FieldTag.MaxCreatedMonster); }
         }
+
         public byte MaxAliveMonster
         {
             get { return Get<byte>(FieldTag.MaxAliveMonster); }
-            set { Set(value, FieldTag.MaxAliveMonster);}
+            set { Set(value, FieldTag.MaxAliveMonster); }
         }
+
         public ushort MonsterId
         {
             get { return Get<ushort>(FieldTag.MonsterId); }
-            set { Set(value, FieldTag.MonsterId);}
+            set { Set(value, FieldTag.MonsterId); }
         }
+
         public byte NpcType
         {
             get { return Get<byte>(FieldTag.NpcType); }
-            set { Set(value, FieldTag.NpcType);}
+            set { Set(value, FieldTag.NpcType); }
         }
+
         public string NpcName
         {
             get { return Get<string>(FieldTag.NpcName); }
-            set { Set(value, FieldTag.NpcName);}
+            set { Set(value, FieldTag.NpcName); }
         }
+
         public string NpcDialog
         {
             get { return Get<string>(FieldTag.NpcDialog); }
-            set { Set(value, FieldTag.NpcDialog);}
+            set { Set(value, FieldTag.NpcDialog); }
         }
+
         public byte NpcShowType
         {
             get { return Get<byte>(FieldTag.NpcShowType); }
-            set { Set(value, FieldTag.NpcShowType);}
+            set { Set(value, FieldTag.NpcShowType); }
         }
+
         public ushort NpcShowInterval
         {
             get { return Get<ushort>(FieldTag.NpcShowInterval); }
-            set { Set(value, FieldTag.NpcShowInterval);}
+            set { Set(value, FieldTag.NpcShowInterval); }
         }
+
         public DictionaryListObject NpcTask
         {
             get { return Get<DictionaryListObject>(FieldTag.NpcTask); }
-            set { Set(value, FieldTag.NpcTask);}
+            set { Set(value, FieldTag.NpcTask); }
         }
+        
         public DictionaryListObject PlayerUnitExtras
         {
             get { return Get<DictionaryListObject>(FieldTag.PlayerUnitExtras); }
@@ -424,6 +458,8 @@ namespace GameA.Game
                     return 1;
                 case EAdvanceAttribute.MaxAliveMonster:
                     return 1;
+                case EAdvanceAttribute.MaxTaskKillOrColltionNum:
+                    return 1;
             }
 
             return 0;
@@ -467,6 +503,8 @@ namespace GameA.Game
                     return 300;
                 case EAdvanceAttribute.MaxAliveMonster:
                     return 10;
+                case EAdvanceAttribute.MaxTaskKillOrColltionNum:
+                    return 99;
             }
 
             return 0;
