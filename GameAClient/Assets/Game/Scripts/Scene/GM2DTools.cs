@@ -464,27 +464,27 @@ namespace GameA.Game
             res.MaxAliveMonster = data.MaxAliveMonster;
             res.MaxCreatedMonster = data.MaxCreatedMonster;
             var drops = data.Drops;
-            for (int i = 0, count=drops.Count; i < count; i++)
+            for (int i = 0, count = drops.Count; i < count; i++)
             {
-                ushort val = drops.Get<ushort>();
+                ushort val = drops.Get<ushort>(i);
                 if (val != 0)
                 {
                     res.Drops.Add(val);
                 }
             }
             var knockbackForces = data.KnockbackForces;
-            for (int i = 0, count=knockbackForces.Count; i < count; i++)
+            for (int i = 0, count = knockbackForces.Count; i < count; i++)
             {
-                ushort val = knockbackForces.Get<ushort>();
+                ushort val = knockbackForces.Get<ushort>(i);
                 if (val != 0)
                 {
                     res.KnockbackForces.Add(val);
                 }
             }
             var addStates = data.AddStates;
-            for (int i = 0, count=addStates.Count; i < count; i++)
+            for (int i = 0, count = addStates.Count; i < count; i++)
             {
-                ushort val = addStates.Get<ushort>();
+                ushort val = addStates.Get<ushort>(i);
                 if (val != 0)
                 {
                     res.AddStates.Add(val);
@@ -495,8 +495,15 @@ namespace GameA.Game
             res.NpcName = data.NpcName;
             res.NpcShowType = data.NpcShowType;
             res.NpcShowInterval = data.NpcShowInterval;
-            //TODO 恢复
-//            res.NpcTask.AddRange(data.NpcTask.ToListData());
+            var npcTask = data.NpcTask;
+            for (int i = 0, count = npcTask.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskData val = npcTask.Get<NpcTaskDynamic>(i).ToUnitExtraNpcTaskData();
+                if (val != null)
+                {
+                    res.NpcTask.Add(val);
+                }
+            }
             return res;
         }
 
@@ -550,8 +557,12 @@ namespace GameA.Game
             unitExtra.NpcName = data.NpcName;
             unitExtra.NpcShowType = (byte) data.NpcShowType;
             unitExtra.NpcShowInterval = (ushort) data.NpcShowInterval;
-            //TODO 恢复
-//            unitExtra.NpcTask.Set(data.NpcTask.ToArray());
+            for (int i = 0; i < data.NpcTask.Count; i++)
+            {
+                var npctaskDynamic = new NpcTaskDynamic();
+                npctaskDynamic.Set(data.NpcTask[i]);
+                unitExtra.Set(npctaskDynamic, UnitExtraDynamic.FieldTag.NpcTask, i);
+            }
             return unitExtra;
         }
 

@@ -136,9 +136,34 @@ namespace GameA.Game
             msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
             msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
             msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
-            msg.TaskTarget.AddRange(Targets.ToList<UnitExtraNpcTaskTarget>());
-            msg.BeforeTaskAward.AddRange(BeforeTaskAward.ToList<UnitExtraNpcTaskTarget>());
-            msg.TaskFinishAward.AddRange(TaskFinishAward.ToList<UnitExtraNpcTaskTarget>());
+            //清一下列表
+            msg.TaskTarget.Clear();
+            for (int i = 0, count = Targets.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = Targets.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.TaskTarget.Add(val);
+                }
+            }
+            msg.BeforeTaskAward.Clear();
+            for (int i = 0, count = BeforeTaskAward.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = BeforeTaskAward.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.BeforeTaskAward.Add(val);
+                }
+            }
+            msg.TaskFinishAward.Clear();
+            for (int i = 0, count = TaskFinishAward.Count; i < count; i++)
+            {
+                UnitExtraNpcTaskTarget val = TaskFinishAward.Get<NpcTaskTargetDynamic>(i).ToUnitExtraNpcTaskTarget();
+                if (val != null)
+                {
+                    msg.TaskFinishAward.Add(val);
+                }
+            }
             return msg;
         }
 
@@ -163,15 +188,21 @@ namespace GameA.Game
             }
             for (int i = 0; i < data.TaskTarget.Count; i++)
             {
-                Set(data.TaskTarget[i], FieldTag.Targets, i);
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.Targets, i);
             }
             for (int i = 0; i < data.BeforeTaskAward.Count; i++)
             {
-                Set(data.BeforeTaskAward[i], FieldTag.BeforeTaskAward, i);
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.BeforeTaskAward, i);
             }
             for (int i = 0; i < data.TaskFinishAward.Count; i++)
             {
-                Set(data.TaskFinishAward[i], FieldTag.TaskFinishAward, i);
+                var taskTarget = new NpcTaskTarget();
+                taskTarget.Set(data.TaskTarget[i]);
+                Set(taskTarget, FieldTag.TaskFinishAward, i);
             }
         }
     }
