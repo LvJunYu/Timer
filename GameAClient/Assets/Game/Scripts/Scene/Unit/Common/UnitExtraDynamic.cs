@@ -563,9 +563,9 @@ namespace GameA.Game
                 case EAdvanceAttribute.MaxHp:
                     return table.Hp > 0;
                 case EAdvanceAttribute.MaxSpeedX:
-                    return table.MaxSpeed > 0;
+                    return table.MaxSpeed > 0 && !UnitDefine.IsPlayer(id);
                 case EAdvanceAttribute.JumpAbility:
-                    return table.JumpAbility > 0;
+                    return table.JumpAbility > 0 && !UnitDefine.IsPlayer(id);
                 case EAdvanceAttribute.InjuredReduce:
                     return table.Hp > 0;
                 case EAdvanceAttribute.CureIncrease:
@@ -593,6 +593,7 @@ namespace GameA.Game
         Text,
         Camp,
         MonsterCave,
+        Spawn,
         Style,
         NpcType,
         NpcTask,

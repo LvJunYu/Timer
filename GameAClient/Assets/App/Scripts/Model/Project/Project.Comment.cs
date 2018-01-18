@@ -6,10 +6,7 @@
   ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
 using SoyEngine.Proto;
-using UnityEngine;
-using SoyEngine;
 
 namespace GameA
 {
@@ -72,7 +69,6 @@ namespace GameA
                 }
             });
         }
-
 
         public void RequestCommentList (
             int startInx,

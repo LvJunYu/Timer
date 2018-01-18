@@ -100,6 +100,7 @@ namespace GameA
             RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
             RegisterEvent(EMessengerType.OnPublishDockActiveChanged, OnMessageBoardElementSizeChanged);
             RegisterEvent<long, UserMessageReply>(EMessengerType.OnReplyUserMessage, OnReplyMessage);
+            RegisterEvent<UserMessage>(EMessengerType.OnDeleteUserMessage, OnDeleteUserMessage);
         }
 
         protected override void OnOpen(object parameter)
@@ -279,6 +280,14 @@ namespace GameA
             if (userInfoDetail == UserInfoDetail)
             {
                 RefreshBtns();
+            }
+        }
+
+        private void OnDeleteUserMessage(UserMessage message)
+        {
+            if (_isOpen && _curMenu == EMenu.MessageBoard)
+            {
+                ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnDeleteUserMessage(message);
             }
         }
 

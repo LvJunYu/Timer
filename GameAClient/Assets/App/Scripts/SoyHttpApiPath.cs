@@ -83,11 +83,15 @@ namespace SoyEngine
         // 获取世界关卡评论列表
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
         // 获取关卡评论回复
-        public const string ProjectCommentReplyData = "/user/getProjectCommentReplyData";
+        public const string ProjectCommentReplyData = "/world/getProjectCommentReplyData";
         // 回复关卡评论
-        public const string ReplyProjectComment = "/user/replyProjectComment";
+        public const string ReplyProjectComment = "/world/replyProjectComment";
         // 提交世界关卡评论
         public const string PostWorldProjectComment = "/world/postProjectComment";
+        // 删除关卡评论
+        public const string DeleteProjectComment = "/world/deleteProjectComment";
+        // 删除关卡评论回复
+        public const string DeleteProjectCommentReply = "/world/deleteProjectCommentReply";
         // 修改评论赞
         public const string UpdateWorldProjectCommentLike = "/world/updateProjectCommentLike";
         // 修改关卡顶踩
@@ -218,6 +222,10 @@ namespace SoyEngine
         public const string ReplyUserMessage = "/home/replyUserMessage";
         // 回复留言
         public const string UpdateUserMessageLike = "/home/updateUserMessageLike";
+        // 删除留言
+        public const string DeleteUserMessage = "/home/deleteUserMessage";
+        // 删除留言回复
+        public const string DeleteUserMessageReply = "/home/deleteUserMessageReply";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

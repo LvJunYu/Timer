@@ -227,7 +227,7 @@ namespace GameA
             if (UnitDefine.IsSpawn(_table.Id))
             {
                 var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
-                _cachedView.SpriteIcon.sprite = UnitHelper.GetSpawnSprite(define.UnitExtra.TeamId);
+                _cachedView.SpriteIcon.sprite = TeamManager.GetSpawnSprite(define.UnitExtra.TeamId);
             }
             else
             {

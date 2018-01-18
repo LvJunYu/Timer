@@ -165,14 +165,14 @@ using SoyEngine.Proto;
 //        public Msg_Preinstall ToUnitPreInstall()
 //        {
 //            var msg = new Msg_Preinstall();
-////            msg.Data = ClientProtoSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
+//            msg.Data = ClientProtoSerializer.Instance.Serialize(GM2DTools.ToProto(IntVec3.zero, this));
 //            return msg;
 //        }
 //
 //        public void Set(Preinstall data)
 //        {
 //            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
-////            this = GM2DTools.ToEngine(unitExtraKeyValuePair, this);
+//            this = GM2DTools.ToEngine(unitExtraKeyValuePair);
 //        }
 //    }
 //
@@ -384,9 +384,9 @@ using SoyEngine.Proto;
 //                case EAdvanceAttribute.MaxHp:
 //                    return table.Hp > 0;
 //                case EAdvanceAttribute.MaxSpeedX:
-//                    return table.MaxSpeed > 0;
+//                    return table.MaxSpeed > 0 && !UnitDefine.IsPlayer(id);
 //                case EAdvanceAttribute.JumpAbility:
-//                    return table.JumpAbility > 0;
+//                    return table.JumpAbility > 0 && !UnitDefine.IsPlayer(id);
 //                case EAdvanceAttribute.InjuredReduce:
 //                    return table.Hp > 0;
 //                case EAdvanceAttribute.CureIncrease:
@@ -606,6 +606,7 @@ using SoyEngine.Proto;
 //        Text,
 //        Camp,
 //        MonsterCave,
+//        Spawn,
 //        Style,
 //        NpcType,
 //        NpcTask,

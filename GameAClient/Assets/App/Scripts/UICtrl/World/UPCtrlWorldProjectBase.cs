@@ -15,7 +15,24 @@ namespace GameA
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
+        protected int _mask;
+        
+        public int ProjectTypes {
+            get
+            {
+                int mask = 0;
+                for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+                {
+                    if (_cachedView.ProjectTypeTogs[i].isOn)
+                    {
+                        mask &= 1 << i;
+                    }
+                }
 
+                return mask;
+            }
+        }
+        
         public override void Open()
         {
             base.Open();
@@ -102,6 +119,12 @@ namespace GameA
         {
         }
 
+        public virtual void OnProjectTypesChanged()
+        {
+            _mask = ProjectTypes;
+            RequestData();
+        }
+        
         public override void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;

@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    public class UPCtrlWorldAllNewestProject : UPCtrlWorldNewestPanelBase
+    public class UPCtrlWorldAllNewestProject : UPCtrlWorldProjectBase
     {
         private WorldNewestProjectList _data;
 
@@ -14,7 +14,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(startInx, _pageSize, () =>
+            _data.Request(startInx, _pageSize, _mask, () =>
             {
                 _projectList = _data.AllList;
                 if (_isOpen)

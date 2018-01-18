@@ -15,7 +15,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize,
+            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, Project.ProjectTypeAllMask,
                 EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
                     _projectList = _data.AllList;

@@ -42,6 +42,8 @@ namespace GameA
 
         public static Project EmptyProject = new Project();
 
+        public static int ProjectTypeAllMask = 1 & (1<<1) & (1<<2);
+
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
@@ -265,6 +267,9 @@ namespace GameA
         }
 
         public Msg_SC_DAT_ShadowBattleData ShadowBattleParam { get; private set; }
+        public bool IsMulti {
+            get { return _projectType > EProjectType.PT_Single; }
+        }
 
         #endregion 属性
 
@@ -487,7 +492,7 @@ namespace GameA
                     timeLimit,
                     winCondition,
                     GetMsgProjectUploadParam(),
-                    isMulti,
+                    _projectType,
                     ToMsg(netBattleData),
                     msg =>
                     {

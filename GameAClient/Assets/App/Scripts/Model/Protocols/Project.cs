@@ -134,9 +134,9 @@ namespace GameA
         /// </summary>
         private long _parentId;
         /// <summary>
-        /// 是否多人关卡
+        /// 关卡类型
         /// </summary>
-        private bool _isMulti;
+        private EProjectType _projectType;
         /// <summary>
         /// 联机信息
         /// </summary>
@@ -474,12 +474,12 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 是否多人关卡
+        /// 关卡类型
         /// </summary>
-        public bool IsMulti { 
-            get { return _isMulti; }
-            set { if (_isMulti != value) {
-                _isMulti = value;
+        public EProjectType ProjectType { 
+            get { return _projectType; }
+            set { if (_projectType != value) {
+                _projectType = value;
                 SetDirty();
             }}
         }
@@ -630,7 +630,7 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
-            _isMulti = msg.IsMulti;           
+            _projectType = msg.ProjectType;           
             if (null == _netData) {
                 _netData = new NetBattleData(msg.NetData);
             } else {
@@ -692,7 +692,7 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
-            _isMulti = msg.IsMulti;           
+            _projectType = msg.ProjectType;           
             if(null != msg.NetData){
                 if (null == _netData){
                     _netData = new NetBattleData(msg.NetData);
@@ -754,7 +754,7 @@ namespace GameA
             _updateTime = obj.UpdateTime;           
             _publishTime = obj.PublishTime;           
             _parentId = obj.ParentId;           
-            _isMulti = obj.IsMulti;           
+            _projectType = obj.ProjectType;           
             if(null != obj.NetData){
                 if (null == _netData){
                     _netData = new NetBattleData();

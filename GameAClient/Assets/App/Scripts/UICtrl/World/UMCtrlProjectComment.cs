@@ -17,10 +17,12 @@ namespace GameA
             get { return _comment; }
         }
 
-        protected override void InitFirstUM()
+        protected override void InitOnViewCreated()
         {
             _firstReplay = new UMCtrlProjectReplyComment();
             _firstReplay.Init(_cachedView.FirstReplyRtf, _resScenary);
+            Messenger<ProjectCommentReply, long>.AddListener(EMessengerType.OnDeleteProjectCommentReply,
+                OnDeleteProjectCommentReply);
         }
 
         public override void Set(object obj)
@@ -41,7 +43,6 @@ namespace GameA
         {
             if (_comment == null) return;
             if (_comment.ReplyList.IsEnd) return;
-//            TempData();
             int startInx = 0;
             if (append)
             {
@@ -50,12 +51,14 @@ namespace GameA
             _comment.ReplyList.Request(_comment.Id, startInx, pageSize, () =>
             {
                 _dataList = _comment.ReplyList.AllList;
-                RefreshReplyDock();
+                RefreshReplyDock(true);
             }, code => { SocialGUIManager.ShowPopupDialog("获取数据失败。"); });
         }
 
         protected override void RefreshView()
         {
+            _cachedView.DeleteDock.SetActive(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+                                             SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
             _cachedView.ReplayBtn.SetActiveEx(false);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
@@ -151,6 +154,29 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_comment.UserInfoDetail);
             }
+        }
+        
+        protected override void OnDeleteBtn()
+        {
+            _comment.Delete();
+        }
+        
+        private void OnDeleteProjectCommentReply(ProjectCommentReply reply, long messageId)
+        {
+            if (_comment != null && _comment.Id == messageId)
+            {
+                if (_dataList.Contains(reply))
+                {
+                    _dataList.Remove(reply);
+                    RefreshReplyDock(true);
+                }
+            }
+        }
+
+        protected override void ClearOnDestroy()
+        {
+            Messenger<ProjectCommentReply, long>.RemoveListener(EMessengerType.OnDeleteProjectCommentReply,
+                OnDeleteProjectCommentReply);
         }
 
         private UMCtrlProjectReplyComment GetItem()

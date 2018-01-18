@@ -30,6 +30,7 @@ namespace GameA
             _cachedView.ReplayBtn.onClick.AddListener(OnReplyBtn);
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.InputField.onEndEdit.AddListener(OnInputEndEdit);
+            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
         }
 
@@ -47,6 +48,8 @@ namespace GameA
 
         protected virtual void RefreshView()
         {
+            _cachedView.DeleteDock.SetActive(_reply.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+                                             SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.CreateTime,
@@ -84,6 +87,11 @@ namespace GameA
         protected virtual void OnReplyBtn()
         {
             SetPublishDock(!_openPublishDock);
+        }
+        
+        protected virtual void OnDeleteBtn()
+        {
+            _reply.Delete();
         }
 
         protected virtual void SetPublishDock(bool value)

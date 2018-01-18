@@ -31,6 +31,10 @@ namespace GameA
         /// 
         /// </summary>
         private int _cs_maxCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _cs_projectTypeMask;
         #endregion
 
         #region 属性
@@ -81,6 +85,13 @@ namespace GameA
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CS_ProjectTypeMask { 
+            get { return _cs_projectTypeMask; }
+            set { _cs_projectTypeMask = value; }
+        }
 
         public override bool IsDirty {
             get {
@@ -102,9 +113,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
+		/// <param name="projectTypeMask">.</param>
         public void Request (
             int startInx,
             int maxCount,
+            int projectTypeMask,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
@@ -116,15 +129,21 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
+                if (_cs_projectTypeMask != projectTypeMask) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 OnRequest (successCallback, failedCallback);
             } else {
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
+                _cs_projectTypeMask = projectTypeMask;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_WorldFollowedUserProjectList msg = new Msg_CS_DAT_WorldFollowedUserProjectList();
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
+                msg.ProjectTypeMask = projectTypeMask;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_WorldFollowedUserProjectList>(
                     SoyHttpApiPath.WorldFollowedUserProjectList, msg, ret => {
                         if (OnSync(ret)) {

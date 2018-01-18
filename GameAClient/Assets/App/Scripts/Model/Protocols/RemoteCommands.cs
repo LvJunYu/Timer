@@ -1046,6 +1046,80 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingDeleteProjectComment {
+            get { return _isRequstingDeleteProjectComment; }
+        }
+        private static bool _isRequstingDeleteProjectComment = false;
+        /// <summary>
+		/// 删除关卡评论
+		/// </summary>
+		/// <param name="commentId">评论Id</param>
+        public static void DeleteProjectComment (
+            long commentId,
+            Action<Msg_SC_CMD_DeleteProjectComment> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProjectComment) {
+                return;
+            }
+            _isRequstingDeleteProjectComment = true;
+            Msg_CS_CMD_DeleteProjectComment msg = new Msg_CS_CMD_DeleteProjectComment();
+            // 删除关卡评论
+            msg.CommentId = commentId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProjectComment>(
+                SoyHttpApiPath.DeleteProjectComment, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProjectComment = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProjectComment", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProjectComment = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteProjectCommentReply {
+            get { return _isRequstingDeleteProjectCommentReply; }
+        }
+        private static bool _isRequstingDeleteProjectCommentReply = false;
+        /// <summary>
+		/// 删除关卡评论回复
+		/// </summary>
+		/// <param name="replyId">评论回复Id</param>
+        public static void DeleteProjectCommentReply (
+            long replyId,
+            Action<Msg_SC_CMD_DeleteProjectCommentReply> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProjectCommentReply) {
+                return;
+            }
+            _isRequstingDeleteProjectCommentReply = true;
+            Msg_CS_CMD_DeleteProjectCommentReply msg = new Msg_CS_CMD_DeleteProjectCommentReply();
+            // 删除关卡评论回复
+            msg.ReplyId = replyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProjectCommentReply>(
+                SoyHttpApiPath.DeleteProjectCommentReply, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProjectCommentReply = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProjectCommentReply", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProjectCommentReply = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateWorldProjectCommentLike {
             get { return _isRequstingUpdateWorldProjectCommentLike; }
         }
@@ -1053,7 +1127,7 @@ namespace GameA
         /// <summary>
 		/// 修改评论赞
 		/// </summary>
-		/// <param name="commentId">关卡Id</param>
+		/// <param name="commentId">评论Id</param>
 		/// <param name="likeFlag"></param>
         public static void UpdateWorldProjectCommentLike (
             long commentId,
@@ -1333,7 +1407,7 @@ namespace GameA
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
-		/// <param name="isMulti">是否多人关卡</param>
+		/// <param name="projectType">关卡类型</param>
 		/// <param name="netData">联机信息</param>
         public static void CreateProject (
             string name,
@@ -1345,7 +1419,7 @@ namespace GameA
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
-            bool isMulti,
+            EProjectType projectType,
             Msg_NetBattleData netData,
             Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1365,7 +1439,7 @@ namespace GameA
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
-            msg.IsMulti = isMulti;
+            msg.ProjectType = projectType;
             msg.NetData = netData;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
                 SoyHttpApiPath.CreateProject, msg, ret => {
@@ -2323,6 +2397,80 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingUpdateUserMessageLike = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUserMessage {
+            get { return _isRequstingDeleteUserMessage; }
+        }
+        private static bool _isRequstingDeleteUserMessage = false;
+        /// <summary>
+		/// 删除留言
+		/// </summary>
+		/// <param name="messageId">留言Id</param>
+        public static void DeleteUserMessage (
+            long messageId,
+            Action<Msg_SC_CMD_DeleteUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUserMessage) {
+                return;
+            }
+            _isRequstingDeleteUserMessage = true;
+            Msg_CS_CMD_DeleteUserMessage msg = new Msg_CS_CMD_DeleteUserMessage();
+            // 删除留言
+            msg.MessageId = messageId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUserMessage>(
+                SoyHttpApiPath.DeleteUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUserMessage = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUserMessageReply {
+            get { return _isRequstingDeleteUserMessageReply; }
+        }
+        private static bool _isRequstingDeleteUserMessageReply = false;
+        /// <summary>
+		/// 删除留言回复
+		/// </summary>
+		/// <param name="replyId">留言回复Id</param>
+        public static void DeleteUserMessageReply (
+            long replyId,
+            Action<Msg_SC_CMD_DeleteUserMessageReply> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUserMessageReply) {
+                return;
+            }
+            _isRequstingDeleteUserMessageReply = true;
+            Msg_CS_CMD_DeleteUserMessageReply msg = new Msg_CS_CMD_DeleteUserMessageReply();
+            // 删除留言回复
+            msg.ReplyId = replyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUserMessageReply>(
+                SoyHttpApiPath.DeleteUserMessageReply, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUserMessageReply = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUserMessageReply", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUserMessageReply = false;
                 },
                 form
             );

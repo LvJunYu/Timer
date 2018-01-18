@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -10,14 +11,22 @@ namespace GameA
         private static int[] HorizontalSizes = {20, 30, 40, 50, 60};
         private static int[] VerticalSizes = {10, 20, 30};
         private IntVec2 _selectedIdx;
-        private bool _multi;
+        private EProjectType _projectType;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
-            _cachedView.StandaloneTog.onValueChanged.AddListener(OnStandaloneTogValueChanged);
+            for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+            {
+                var inx = i;
+                _cachedView.ProjectTypeTogs[i].onValueChanged.AddListener(value => {
+                    if (value)
+                    {
+                        _projectType = (EProjectType) inx;
+                    } });
+            }
             for (int y = 0; y < VerticalSizes.Length; y++)
             {
                 for (int x = 0; x < HorizontalSizes.Length; x++)
@@ -40,8 +49,7 @@ namespace GameA
         protected override void OnClose()
         {
             _cachedView.Max.isOn = false;
-            _cachedView.StandaloneTog.isOn = true;
-            _cachedView.MultiTog.isOn = false;
+            _cachedView.ProjectTypeTogs[0].isOn = true;
             base.OnClose();
         }
 
@@ -117,11 +125,6 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlSetProjectSize>();
         }
 
-        private void OnStandaloneTogValueChanged(bool value)
-        {
-            _multi = !value;
-        }
-
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlSetProjectSize>();
@@ -145,7 +148,7 @@ namespace GameA
         {
             Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
-            if (_multi)
+            if (_projectType > EProjectType.PT_Single)
             {
                 GameManager.Instance.RequestCreateMulti(project);
             }

@@ -175,9 +175,12 @@ namespace GameA
 
         //留言板
         public static readonly int OnPublishDockActiveChanged = SoyEngine.EMessengerType.NextId++;
-
         public static readonly int OnReplyUserMessage = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnReplyProjectComment = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteUserMessage = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteUserMessageReply = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteProjectComment = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteProjectCommentReply = SoyEngine.EMessengerType.NextId++;
 
         //乱入
         public static readonly int OnShadowBattleStart = SoyEngine.EMessengerType.NextId++;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA
 {
@@ -145,6 +144,16 @@ namespace GameA
             {
                 message.LocalAddReply(reply);
                 _cachedView.MessageTableDataScroller.RefreshCurrent();
+            }
+        }
+
+        public void OnDeleteUserMessage(UserMessage message)
+        {
+            if (_data.AllList.Contains(message))
+            {
+                _data.AllList.Remove(message);
+                _dataList = _data.AllList;
+                RefreshView();
             }
         }
     }

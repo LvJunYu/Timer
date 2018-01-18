@@ -7,7 +7,7 @@ namespace GameA.Game
     {
         protected PlayerBase _player;
         protected string _lastModelName;
-        protected const float _duration = 0.5f;
+        protected const float _duration = 0.35f;
         protected const float _mixDuration = 0.2f;
         protected Bone _bone;
         protected Bone _headBone;

@@ -1009,10 +1009,6 @@ namespace GameA.Game
 
         public void Exit()
         {
-            if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
-            {
-                EditMode.Instance.StopSwitch();
-            }
             _destroyDatas.Clear();
             foreach (UnitDesc unitDesc in _addedDatas)
             {
