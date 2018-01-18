@@ -600,7 +600,7 @@ namespace GameA.Game
                     return table.ChildState != null;
                 case EAdvanceAttribute.BulletCount:
                 case EAdvanceAttribute.ChargeTime:
-                    return UnitDefine.IsEnergyPool(id);
+                    return UnitDefine.EnergyPoolId == id;
                 case EAdvanceAttribute.AddStates:
                     return table.SkillId > 0 || table.ChildState != null;
                 case EAdvanceAttribute.MaxHp:

@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine;
@@ -490,15 +491,15 @@ namespace GameA.Game
                     res.AddStates.Add(val);
                 }
             }
-//            var playerUnitExtras = data.PlayerUnitExtras;
-//            for (int i = 0, count = playerUnitExtras.Count; i < count; i++)
-//            {
-//                ushort val = playerUnitExtras.Get<ushort>();
-//                if (val != 0)
-//                {
-//                    res.PlayerUnitExtras.Add(val);
-//                }
-//            }
+            var playerUnitExtras = data.PlayerUnitExtras;
+            for (int i = 0, count = playerUnitExtras.Count; i < count; i++)
+            {
+                var val = ToProto(playerUnitExtras.Get<PlayerUnitExtraDynamic>(i));
+                if (val != null)
+                {
+                    res.PlayerUnitExtras.Add(val);
+                }
+            }
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
@@ -514,6 +515,20 @@ namespace GameA.Game
                 }
             }
             return res;
+        }
+
+        private static PlayerUnitExtrasData ToProto(PlayerUnitExtraDynamic playerUnitExtraDynamic)
+        {
+            var data = new PlayerUnitExtrasData();
+            data.TeamId = playerUnitExtraDynamic.TeamId;
+            data.MaxHp = playerUnitExtraDynamic.MaxHp;
+            data.CureIncrease = playerUnitExtraDynamic.CureIncrease;
+            data.InjuredReduce = playerUnitExtraDynamic.InjuredReduce;
+            for (int i = 0; i < playerUnitExtraDynamic.Weapons.Count; i++)
+            {
+                data.Weapons.Add(playerUnitExtraDynamic.Weapons.Get<ushort>(i));
+            }
+            return data;
         }
 
         public static UnitExtraDynamic ToEngine(UnitExtraKeyValuePair data, UnitExtraDynamic unitExtra = null)
@@ -560,6 +575,10 @@ namespace GameA.Game
             for (int i = 0; i < data.AddStates.Count; i++)
             {
                 unitExtra.Set(data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+            }
+            for (int i = 0; i < data.PlayerUnitExtras.Count; i++)
+            {
+                unitExtra.Set(data.PlayerUnitExtras[i], UnitExtraDynamic.FieldTag.PlayerUnitExtras, i);
             }
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;

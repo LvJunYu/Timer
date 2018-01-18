@@ -7,7 +7,7 @@ namespace GameA
 {
     public class USCtrlDropdownSetting : USCtrlBase<USViewDropdownSetting>
     {
-        private int _curIndex;
+        private int _teamId;
         private bool _dropdown;
         private Action<int> _onIndexChanged;
         private Toggle[] _toggles;
@@ -23,16 +23,14 @@ namespace GameA
                 var inx = i;
                 _toggles[i].onValueChanged.AddListener(value =>
                 {
-                    if (value && _curIndex != inx)
+                    if (value && _teamId != inx)
                     {
-                        _curIndex = inx;
+                        SetCur(inx);
+                        CloseDropdown();
                         if (_onIndexChanged != null)
                         {
-                            _onIndexChanged(_curIndex);
+                            _onIndexChanged(_teamId);
                         }
-
-                        RefreshCurImg();
-                        CloseDropdown();
                     }
                 });
             }
@@ -50,11 +48,18 @@ namespace GameA
             }
         }
 
-        public void Set(int index, Action<int> onIndexChanged)
+        public void Set(Action<int> onIndexChanged)
         {
-            _curIndex = index;
             _onIndexChanged = onIndexChanged;
-            RefreshCurImg();
+        }
+
+        public void SetCur(int teamId)
+        {
+            _teamId = teamId;
+            if (_teamId - 1 < _cachedView.ItemImages.Length)
+            {
+                _cachedView.CurImg.sprite = _cachedView.ItemImages[_teamId - 1].sprite;
+            }
         }
 
         public void SetEnable(bool value)
@@ -75,14 +80,6 @@ namespace GameA
             RefreshDropDownView();
         }
 
-        private void RefreshCurImg()
-        {
-            if (_curIndex < _cachedView.ItemImages.Length)
-            {
-                _cachedView.CurImg.sprite = _cachedView.ItemImages[_curIndex].sprite;
-            }
-        }
-
         private void RefreshDropDownView()
         {
             _cachedView.DropdownObj.SetActiveEx(_dropdown);
@@ -91,7 +88,7 @@ namespace GameA
                 _cachedView.DropdownObj.transform.rectTransform().position = _cachedView.DropdownRtf.position;
                 for (int i = 0; i < _toggles.Length; i++)
                 {
-                    _toggles[i].isOn = i == _curIndex;
+                    _toggles[i].isOn = i == _teamId - 1;
                 }
             }
         }

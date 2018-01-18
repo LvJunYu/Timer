@@ -75,5 +75,15 @@ namespace GameA
         {
             _cachedView.BgImage.color = color;
         }
+
+        public void AddDeleteBtnListener(UnityAction callback)
+        {
+            _cachedView.DeleteBtn.onClick.AddListener(callback);
+        }
+
+        public void SetDeleteBtnActive(bool value)
+        {
+            _cachedView.DeleteBtn.SetActiveEx(value);
+        }
     }
 }

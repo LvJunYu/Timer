@@ -270,10 +270,10 @@ namespace GameA.Game
                 unitEditData.UnitExtra.AddStates.Set(skill.AddStates);
             }
 
-            if (table.CanEdit(EEditType.MonsterCave))
+            if (table.CanEdit(EEditType.Spawn))
             {
-                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
-                unitEditData.UnitExtra.TeamId = 1;
+//                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
+                unitEditData.UnitExtra.PlayerUnitExtras.Add(PlayerUnitExtraDynamic.GetDefaultValue());
             }
 
             if (table.CanEdit(EEditType.MonsterCave))

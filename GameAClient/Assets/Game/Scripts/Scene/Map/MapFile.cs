@@ -314,7 +314,7 @@ namespace GameA.Game
                 gm2DMapData.Data.Add(GM2DTools.ToProto(nodes[i]));
             }
 
-            gm2DMapData.PlayerUnitExtra = GM2DTools.ToProto(IntVec3.zero, DataScene2D.CurScene.PlayerExtra);
+//            gm2DMapData.PlayerUnitExtra = GM2DTools.ToProto(IntVec3.zero, DataScene2D.CurScene.PlayerExtra);
             using (var enumerator = mainDataScene2D.UnitExtras.GetEnumerator())
             {
                 while (enumerator.MoveNext())

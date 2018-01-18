@@ -43,14 +43,20 @@ namespace GameA
         private float _posTweenFactor;
         private EEditType _curEditType;
         private EEnterType _curEnterType;
+        private int _curSelectedPlayerIndex;
+        private Project _project;
 
         //npc 之间的引用数据类型
         public List<NpcTaskDynamic> NpcTaskDatas;
 
-
         public EEnterType CurEnterType
         {
             get { return _curEnterType; }
+        }
+
+        public int CurSelectedPlayerIndex
+        {
+            get { return _curSelectedPlayerIndex; }
         }
 
         private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
@@ -362,6 +368,7 @@ namespace GameA
                 button.Init(list[i]);
                 _spawnMenuList[i] = button;
                 _spawnMenuList[i].AddClickListener(() => OnSpawnMenuClick(inx));
+                _spawnMenuList[i].AddDeleteBtnListener(() => OnSpawnMenuDelete(inx));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
@@ -380,6 +387,12 @@ namespace GameA
             if (UnitDefine.IsMonster(_tableUnit.Id))
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
+            }
+            _project = GM2DGame.Instance.GameMode.Project;
+            if (_project == null)
+            {
+                LogHelper.Error("RefreshSpawmMenu, but project is null");
+                return;
             }
 
             RefreshView();
@@ -835,25 +848,33 @@ namespace GameA
 
         private void RefreshSpawmMenu()
         {
-            var project = GM2DGame.Instance.GameMode.Project;
-            if (project == null)
-            {
-                LogHelper.Error("RefreshSpawmMenu, but project is null");
-                return;
-            }
-
-            var projectType = project.ProjectType;
+            var projectType = _project.ProjectType;
             for (int i = 0; i < _spawnMenuList.Length; i++)
             {
-                _campMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
-                if (projectType == EProjectType.PT_Cooperation)
+                _spawnMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
+                _spawnMenuList[i].SetSelected(i == _curSelectedPlayerIndex);
+                if (projectType != EProjectType.PT_Single)
                 {
-                    _campMenuList[i].SetColor(Color.green);
+                    if (projectType == EProjectType.PT_Cooperation)
+                    {
+                        _spawnMenuList[i].SetColor(Color.green);
+                    }
+                    else if (projectType == EProjectType.PT_Cooperation)
+                    {
+                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(i));
+                    }
+                    if (EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(i) == null)
+                    {
+                        _spawnMenuList[i].SetDeleteBtnActive(false);
+                        _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("icon_add"));
+                    }
+                    else
+                    {
+                        _spawnMenuList[i].SetDeleteBtnActive(true);
+                        _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("SMainBoy0Icon"));
+                    }
                 }
-                else if (projectType == EProjectType.PT_Cooperation)
-                {
-                    _campMenuList[i].SetColor(TeamManager.GetTeamColor(i));
-                }
+                
             }
 
             _cachedView.CharacterRawImage.texture =
@@ -966,6 +987,27 @@ namespace GameA
 
         private void OnSpawnMenuClick(int inx)
         {
+            var playerUnitExtra = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(inx);
+            if (playerUnitExtra == null)
+            {
+                playerUnitExtra = PlayerUnitExtraDynamic.GetDefaultValue();
+                EditData.UnitExtra.PlayerUnitExtras.Set(playerUnitExtra, inx);
+            }
+
+            _curSelectedPlayerIndex = inx;
+            RefreshSpawmMenu();
+            _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(playerUnitExtra);
+        }
+
+        private void OnSpawnMenuDelete(int inx)
+        {
+            EditData.UnitExtra.PlayerUnitExtras.Set<PlayerUnitExtraDynamic>(null, inx);
+            if (inx == _curSelectedPlayerIndex)
+            {
+                _curSelectedPlayerIndex = -1;
+                _upCtrlUnitPropertyEditAdvance.Close();
+            }
+            RefreshSpawmMenu();
         }
 
         private void OnCloseBtnClick()
@@ -1040,12 +1082,9 @@ namespace GameA
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
                 }
             }
-            else if (editType == EEditType.Spawn)
+            else if (editType == EEditType.Spawn && _project.ProjectType == EProjectType.PT_Single)
             {
-                if (!_openSequence.IsPlaying())
-                {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-                }
+                OnSpawnMenuClick(0);
             }
             else
             {
@@ -1097,11 +1136,21 @@ namespace GameA
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
+        public void OnPlayerWeaponSettingBtn(int index)
+        {
+            _curEnterType = EEnterType.FromSpawn;
+            int weaponId = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(_curSelectedPlayerIndex).Weapons.Get<ushort>(index);
+            _tableUnit = TableManager.Instance.GetUnit(UnitDefine.EnergyPoolId);
+            RefreshView();
+            OnEditTypeMenuClick(_validEditPropertyList[0]);
+        }
+        
         public enum EEnterType
         {
             Normal,
             FromMonsterCave,
             FromSpawn
         }
+
     }
 }
