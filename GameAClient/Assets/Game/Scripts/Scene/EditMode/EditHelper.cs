@@ -122,6 +122,7 @@ namespace GameA.Game
             if (UnitDefine.IsEarth(unitDesc.Id))
             {
                 var origin = unitEditData;
+                unitEditData.UnitExtra = origin.UnitExtra.Clone();
                 unitEditData.UnitExtra.ChildId = (ushort) (Mathf.Clamp(unitEditData.UnitExtra.ChildId, 1, 2) % 2 + 1);
                 EditModeState.Global.Instance.ModifyUnitData(origin.UnitDesc, origin.UnitExtra, unitEditData.UnitDesc,
                     unitEditData.UnitExtra);
