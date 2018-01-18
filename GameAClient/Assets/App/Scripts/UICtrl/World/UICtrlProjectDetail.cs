@@ -13,8 +13,10 @@ namespace GameA
         public static string EmptyStr = "-";
         public const string _countFormat = "({0})";
         private const string _maxShow = "(999+)";
-        public Project Project;
-        public bool IsMyself;
+        private Project _project;
+        private bool _isMyself = false;
+        private bool _isMulti;
+
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
         private bool _onlyChangeView;
@@ -26,7 +28,21 @@ namespace GameA
         private UPCtrlProjectDetailBase[] _menuCtrlArray;
         private long _lastProjectId;
         private bool _isPostComment;
-        public bool IsMulti;
+
+        public bool IsMulti
+        {
+            get { return _isMulti; }
+        }
+
+        public bool IsMyself
+        {
+            get { return _isMyself; }
+        }
+
+        public Project Project
+        {
+            get { return _project; }
+        }
 
         protected override void OnViewCreated()
         {
@@ -88,7 +104,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            Project = parameter as Project;
+            _project = parameter as Project;
             if (Project == null)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
@@ -107,8 +123,8 @@ namespace GameA
                 return;
             }
 
-            IsMyself = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
-            IsMulti = Project.IsMulti;
+            _isMulti = Project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
+            _isMulti = Project.IsMulti;
             Project.Request(Project.ProjectId, null, null);
             RefreshView();
             if (Project.ProjectId != _lastProjectId)
@@ -257,6 +273,7 @@ namespace GameA
                 SetNull();
                 return;
             }
+
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!IsMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!IsMulti);

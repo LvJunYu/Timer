@@ -38,6 +38,7 @@ namespace GameA
         private USCtrlGameSettingItem _usCanMoveSetting;
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
+        private USCtrlDropdownSetting _usSpawnSetting;
         private EMenu _curMenu;
 
         protected override void OnViewCreated()
@@ -118,6 +119,8 @@ namespace GameA
             _usDropsSetting.Init(_cachedView.DropsSetting);
             _usAddStatesSetting = new USCtrlAddItem();
             _usAddStatesSetting.Init(_cachedView.AddStatesSetting);
+            _usSpawnSetting = new USCtrlDropdownSetting();
+            _usSpawnSetting.Init(_cachedView.SpawnSetting);
             _cachedView.MonsterSettingBtn.onClick.AddListener(OnMonsterSettingBtn);
             _cachedView.BackToCaveBtn.onClick.AddListener(OnBackToCaveBtn);
         }
@@ -181,6 +184,7 @@ namespace GameA
 //            _usAddStatesSetting.SetEnable(b);
             _usAddStatesSetting.SetEnable(false);
             _usDropsSetting.SetEnable(false);
+            _usSpawnSetting.SetEnable(_curMenu == EMenu.Spawn);
             _usMaxHpSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;
@@ -325,11 +329,6 @@ namespace GameA
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
         }
 
-        public void OnMonsterIdChanged()
-        {
-            
-        }
-        
         private void OnBackToCaveBtn()
         {
             _mainCtrl.OnBackToCaveBtn();
