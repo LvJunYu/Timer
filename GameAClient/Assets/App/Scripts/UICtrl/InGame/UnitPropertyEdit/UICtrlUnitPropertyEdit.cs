@@ -3,6 +3,7 @@ using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +37,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _campMenuList;
         private USCtrlUnitPropertyEditButton[] _npcTypeMenuList;
         private USCtrlUnitPropertyEditButton[] _monsterCaveMenuList;
+        private USCtrlUnitPropertyEditButton[] _spawnMenuList;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
@@ -114,6 +116,7 @@ namespace GameA
             _rootArray[(int) EEditType.NpcType] = _cachedView.NpcTypeDock;
             _rootArray[(int) EEditType.NpcTask] = _cachedView.NpcDiaLogDock;
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
+            _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -133,6 +136,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.NpcType].Init(_cachedView.NpcTypeMenu);
             _menuButtonArray[(int) EEditType.NpcTask].Init(_cachedView.NpcTaskSettingMenu);
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
+            _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -141,8 +145,10 @@ namespace GameA
                 {
                     continue;
                 }
+
                 _menuButtonArray[(int) type].AddClickListener(() => OnEditTypeMenuClick(t));
             }
+
             //激活
             var list = _cachedView.ActiveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _activeMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -154,6 +160,7 @@ namespace GameA
                 _activeMenuList[i] = button;
                 _activeMenuList[i].AddClickListener(() => OnActiveMenuClick(inx));
             }
+
             //Npc类型
             list = _cachedView.NpcTypeDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _npcTypeMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -165,6 +172,7 @@ namespace GameA
                 _npcTypeMenuList[i] = button;
                 _npcTypeMenuList[i].AddClickListener(() => OnNpcTypeMenuClick(inx));
             }
+
             //朝向
             list = _cachedView.ForwardDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _forwardMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -189,6 +197,7 @@ namespace GameA
                     button.SetBgImageAngle(45 + 90 * (i - 4));
                 }
             }
+
             // 装弹
             list = _cachedView.PayloadDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _payloadMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -200,6 +209,7 @@ namespace GameA
                 _payloadMenuList[i] = button;
                 _payloadMenuList[i].AddClickListener(() => OnPayloadMenuClick(inx));
             }
+
             // 移动方向
             list = _cachedView.MoveDirectionDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _moveDirectionMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -220,6 +230,7 @@ namespace GameA
                     button.SetBgImageAngle(90 * (i - 1));
                 }
             }
+
             // 旋转方向
             list = _cachedView.RotateModeDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -231,6 +242,7 @@ namespace GameA
                 _rotateMenuList[i] = button;
                 _rotateMenuList[i].AddClickListener(() => OnRotateMenuClick(inx));
             }
+
             // 旋转结束方向
             list = _cachedView.RotateEndDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateEndMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -250,6 +262,7 @@ namespace GameA
                     button.SetPosAngle(45 + 90 * (i - 4), RotateEndOptionsPosRadius);
                 }
             }
+
             //出发延迟
             list = _cachedView.TriggerDelayDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerDelayMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -265,6 +278,7 @@ namespace GameA
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
+
             // 触发间隔
             list = _cachedView.TriggerIntervalDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerIntervalMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -280,6 +294,7 @@ namespace GameA
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
+
             _optionRotateArrowList = _cachedView.RotateArrowDock.GetComponentsInChildren<Image>();
             _menuRotateArrowList = _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows
                 .GetComponentsInChildren<Image>();
@@ -296,6 +311,7 @@ namespace GameA
                     new Vector2(Mathf.Sin(rad), Mathf.Cos(rad)) * MenuArrowRadius;
                 menuArrow.rectTransform.localEulerAngles = new Vector3(0, 0, -45 * i);
             }
+
             //阵营  
             list = _cachedView.CampDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _campMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -316,7 +332,7 @@ namespace GameA
 
             list = _cachedView.MonsterCaveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _monsterCaveMenuList = new USCtrlUnitPropertyEditButton[list.Length];
-            da = 360f / EditHelper.Monsters.Length;
+            da = 360f / UnitDefine.MonstersInCave.Length;
             for (int i = 0; i < list.Length; i++)
             {
                 var inx = i;
@@ -324,6 +340,20 @@ namespace GameA
                 button.Init(list[i]);
                 _monsterCaveMenuList[i] = button;
                 _monsterCaveMenuList[i].AddClickListener(() => OnMonsterCaveMenuClick(inx));
+                button.SetPosAngle(da * i, MenuOptionsPosRadius);
+                button.SetBgImageAngle(da * i);
+            }
+
+            list = _cachedView.SpawnDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _spawnMenuList = new USCtrlUnitPropertyEditButton[list.Length];
+            da = 360f / list.Length;
+            for (int i = 0; i < list.Length; i++)
+            {
+                var inx = i;
+                var button = new USCtrlUnitPropertyEditButton();
+                button.Init(list[i]);
+                _spawnMenuList[i] = button;
+                _spawnMenuList[i].AddClickListener(() => OnSpawnMenuClick(inx));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
@@ -335,13 +365,14 @@ namespace GameA
             _startPos = SocialGUIManager.ScreenToRectLocal(pos, _cachedView.Trans);
             base.OnOpen(parameter);
             _originData = (UnitEditData) parameter;
-            _curEnterType = EEnterType.None;
+            _curEnterType = EEnterType.Normal;
             EditData = _originData;
             _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
             if (UnitDefine.IsMonster(_tableUnit.Id))
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
+
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
             _upCtrlUnitPropertyEditPreinstall.Open();
@@ -382,6 +413,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Active].SetEnable(false);
             }
+
             //能编辑Npc/
             if (_tableUnit.CanEdit((EEditType.NpcType)))
             {
@@ -394,6 +426,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.NpcType].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.Child))
             {
                 _validEditPropertyList.Add(EEditType.Child);
@@ -406,12 +439,14 @@ namespace GameA
                             .GetEquipment(_tableUnit.ChildState[i]).Icon));
                     _payloadMenuList[i].SetPosAngle(da * i, MenuOptionsPosRadius);
                 }
+
                 RefreshPayloadMenu();
             }
             else
             {
                 _menuButtonArray[(int) EEditType.Child].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.Camp))
             {
                 _validEditPropertyList.Add(EEditType.Camp);
@@ -422,6 +457,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.Direction) && _curEnterType != EEnterType.FromMonsterCave)
             {
                 _validEditPropertyList.Add(EEditType.Direction);
@@ -432,6 +468,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.MoveDirection))
             {
                 _validEditPropertyList.Add(EEditType.MoveDirection);
@@ -442,6 +479,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.MoveDirection].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
                 _validEditPropertyList.Add(EEditType.Rotate);
@@ -453,6 +491,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Rotate].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.Text))
             {
                 _validEditPropertyList.Add(EEditType.Text);
@@ -463,6 +502,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Text].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.TimeDelay))
             {
                 _validEditPropertyList.Add(EEditType.TimeDelay);
@@ -473,6 +513,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeDelay].SetEnable(false);
             }
+
             if (_tableUnit.CanEdit(EEditType.TimeInterval) && _tableUnit.ChildState == null)
             {
                 _validEditPropertyList.Add(EEditType.TimeInterval);
@@ -507,6 +548,18 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(false);
             }
+
+            if (_tableUnit.CanEdit(EEditType.Spawn))
+            {
+                _validEditPropertyList.Add(EEditType.Spawn);
+                _menuButtonArray[(int) EEditType.Spawn].SetEnable(true);
+                RefreshSpawmMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Spawn].SetEnable(false);
+            }
+
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
             var baseAngle = 180 + totalAngle / 2 - menuAngle / 2;
@@ -525,6 +578,7 @@ namespace GameA
             {
                 _activeMenuList[i].SetSelected(i == val);
             }
+
             _menuButtonArray[(int) EEditType.Active]
                 .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
         }
@@ -544,6 +598,7 @@ namespace GameA
                     _forwardMenuList[i].SetEnable(false);
                 }
             }
+
             _menuButtonArray[(int) EEditType.Direction].View.FgImage.rectTransform.localEulerAngles =
                 _forwardMenuList[val].View.FgImage.rectTransform.localEulerAngles;
 
@@ -566,6 +621,7 @@ namespace GameA
                 EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
                 EditData.UnitExtra.UpdateFromChildId();
             }
+
             var totalCount = _tableUnit.ChildState.Length;
             var da = 360f / totalCount;
             for (int i = 0; i < _payloadMenuList.Length; i++)
@@ -607,6 +663,7 @@ namespace GameA
                     }
                 }
             }
+
             if (val == -1)
             {
                 val = defaultVal;
@@ -615,6 +672,7 @@ namespace GameA
                     _moveDirectionMenuList[val].SetSelected(true);
                 }
             }
+
             var menuBtn = _menuButtonArray[(int) EEditType.MoveDirection];
             var optionBtn = _moveDirectionMenuList[val];
 
@@ -630,6 +688,7 @@ namespace GameA
             {
                 _rotateMenuList[i].SetSelected(i == val);
             }
+
             RefreshRotateEndMenu();
         }
 
@@ -643,6 +702,7 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.FgImage.SetActiveEx(true);
                 return;
             }
+
             _cachedView.RotateEndDock.SetActiveEx(true);
             _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.FgImage.SetActiveEx(false);
             _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateDock.SetActiveEx(true);
@@ -665,6 +725,7 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows.transform.localEulerAngles =
                     new Vector3(0, 180, 0);
             }
+
             int count = (end + 7 - start) % 8 + 1;
 
             for (int i = 0; i < _rotateEndMenuList.Length; i++)
@@ -676,6 +737,7 @@ namespace GameA
                 _optionRotateArrowList[inx].SetActiveEx(i < count);
                 _menuRotateArrowList[inx].SetActiveEx(i < count);
             }
+
             _cachedView.RotateViewImage.fillAmount = 1f * count / 8;
             _cachedView.RotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * start / 8);
             var menuRotateViewImage = _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateView;
@@ -689,6 +751,7 @@ namespace GameA
             {
                 _triggerDelayMenuList[i].SetSelected(i * 500 == EditData.UnitExtra.TimeDelay);
             }
+
             _menuButtonArray[(int) EEditType.TimeDelay]
                 .SetText2((EditData.UnitExtra.TimeDelay * 0.001f).ToString("F1"));
         }
@@ -699,6 +762,7 @@ namespace GameA
             {
                 _triggerIntervalMenuList[i].SetSelected(i * 500 == EditData.UnitExtra.TimeInterval);
             }
+
             _menuButtonArray[(int) EEditType.TimeInterval]
                 .SetText2((EditData.UnitExtra.TimeInterval * 0.001f).ToString("F1"));
         }
@@ -706,7 +770,7 @@ namespace GameA
         private void RefreshCampMenu()
         {
             var teamId = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
-            _menuButtonArray[(int) EEditType.Camp].SetFgImage(UnitHelper.GetSpawnSprite(teamId));
+            _menuButtonArray[(int) EEditType.Camp].SetFgImage(TeamManager.GetSpawnSprite(teamId));
             bool isMulti = GM2DGame.Instance.GameMode.IsMulti;
             bool isSpawn = UnitDefine.IsSpawn(EditData.UnitDesc.Id);
             for (int i = 0; i < _campMenuList.Length; i++)
@@ -721,6 +785,7 @@ namespace GameA
                     _campMenuList[i].SetEnable(isMulti || !isSpawn); //玩家多人只有Team1
                 }
             }
+
             if (isMulti || !isSpawn)
             {
                 var da = 360f / TeamManager.MaxTeamCount;
@@ -743,7 +808,7 @@ namespace GameA
             }
             else
             {
-                EditData.UnitExtra.MonsterId = (ushort) EditHelper.Monsters[0];
+                EditData.UnitExtra.MonsterId = (ushort) UnitDefine.MonstersInCave[0];
                 EditData.UnitExtra.UpdateFromMonsterId();
             }
 
@@ -751,8 +816,35 @@ namespace GameA
             for (int i = 0; i < _monsterCaveMenuList.Length; i++)
             {
                 _monsterCaveMenuList[i]
-                    .SetSelected(i < EditHelper.Monsters.Length && EditHelper.Monsters[i] == monsterId);
+                    .SetSelected(i < UnitDefine.MonstersInCave.Length && UnitDefine.MonstersInCave[i] == monsterId);
             }
+        }
+
+        private void RefreshSpawmMenu()
+        {
+            var project = GM2DGame.Instance.GameMode.Project;
+            if (project == null)
+            {
+                LogHelper.Error("RefreshSpawmMenu, but project is null");
+                return;
+            }
+
+            var projectType = project.ProjectType;
+            for (int i = 0; i < _spawnMenuList.Length; i++)
+            {
+                _campMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
+                if (projectType == EProjectType.PT_Cooperation)
+                {
+                    _campMenuList[i].SetColor(Color.green);
+                }
+                else if (projectType == EProjectType.PT_Cooperation)
+                {
+                    _campMenuList[i].SetColor(TeamManager.GetTeamColor(i));
+                }
+            }
+
+            _cachedView.CharacterRawImage.texture =
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
         }
 
         private void RefreshTextDock()
@@ -768,6 +860,7 @@ namespace GameA
             {
                 _npcTypeMenuList[i].SetSelected(i == val);
             }
+
             _menuButtonArray[(int) EEditType.NpcType]
                 .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
         }
@@ -792,6 +885,7 @@ namespace GameA
                 EditData.UnitExtra.UpdateFromChildId();
                 _upCtrlUnitPropertyEditAdvance.OnChildIdChanged();
             }
+
             RefreshPayloadMenu();
         }
 
@@ -833,13 +927,14 @@ namespace GameA
 
         private void OnMonsterCaveMenuClick(int inx)
         {
-            if (inx < EditHelper.Monsters.Length)
+            if (inx < UnitDefine.MonstersInCave.Length)
             {
-                ushort monsterId = (ushort) EditHelper.Monsters[inx];
+                ushort monsterId = (ushort) UnitDefine.MonstersInCave[inx];
                 if (EditData.UnitExtra.MonsterId == monsterId)
                 {
                     return;
                 }
+
                 EditData.UnitExtra.MonsterId = monsterId;
                 if (UnitDefine.MonsterDragonId == monsterId)
                 {
@@ -851,9 +946,14 @@ namespace GameA
                 {
                     EditData.UnitExtra.UpdateFromMonsterId();
                 }
+
                 _upCtrlUnitPropertyEditAdvance.OnMonsterIdChanged();
                 RefreshMonsterCaveMenu();
             }
+        }
+
+        private void OnSpawnMenuClick(int inx)
+        {
         }
 
         private void OnCloseBtnClick()
@@ -862,6 +962,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_tableUnit.CanEdit(EEditType.Text))
             {
                 if (_cachedView.TextInput.text != EditData.UnitExtra.Msg)
@@ -869,6 +970,7 @@ namespace GameA
                     EditData.UnitExtra.Msg = _cachedView.TextInput.text;
                 }
             }
+
             if (_originData != EditData)
             {
                 if (UnitDefine.IsMonster(_tableUnit.Id))
@@ -876,8 +978,10 @@ namespace GameA
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
                 }
+
                 EditHelper.CompleteEditUnitData(_originData, EditData);
             }
+
             _upCtrlUnitPropertyEditAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
@@ -888,7 +992,6 @@ namespace GameA
             RefreshNpcTypeMenu();
         }
 
-
         private void OnEditTypeMenuClick(EEditType editType)
         {
             _curEditType = editType;
@@ -898,9 +1001,11 @@ namespace GameA
                 {
                     continue;
                 }
+
                 _menuButtonArray[(int) type].SetSelected(type == editType);
                 _rootArray[(int) type].SetActiveEx(type == editType);
             }
+
             if (editType == EEditType.Camp)
             {
                 if (!_openSequence.IsPlaying())
@@ -920,6 +1025,13 @@ namespace GameA
                 if (!_openSequence.IsPlaying())
                 {
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
+                }
+            }
+            else if (editType == EEditType.Spawn)
+            {
+                if (!_openSequence.IsPlaying())
+                {
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Spawn);
                 }
             }
             else
@@ -950,6 +1062,7 @@ namespace GameA
             {
                 RefreshView();
             }
+
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             _upCtrlUnitPropertyEditNpcDiaType.RefreshView();
         }
@@ -965,7 +1078,7 @@ namespace GameA
 
         public void OnBackToCaveBtn()
         {
-            _curEnterType = EEnterType.None;
+            _curEnterType = EEnterType.Normal;
             _tableUnit = TableManager.Instance.GetUnit(UnitDefine.MonsterCaveId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
@@ -973,8 +1086,9 @@ namespace GameA
 
         public enum EEnterType
         {
-            None,
+            Normal,
             FromMonsterCave,
+            FromSpawn
         }
     }
 }

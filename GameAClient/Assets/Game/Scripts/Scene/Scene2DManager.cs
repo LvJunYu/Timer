@@ -109,7 +109,7 @@ namespace GameA.Game
             {
                 if (_curScene != null)
                 {
-                    if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit && EditMode.Instance.IsInState(EditModeState.Switch.Instance))
                     {
                         EditMode.Instance.StopSwitch();
                     }

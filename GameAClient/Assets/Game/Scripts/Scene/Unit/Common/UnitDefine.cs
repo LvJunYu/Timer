@@ -15,6 +15,7 @@ namespace GameA.Game
     {
         public static Vector2 HidePos = Vector3.one * -5;
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
+        public static int[] MonstersInCave = {2001, 2002, 2003, 2005, 2007};
 
         public const float UnitSorttingLayerRatio = 0.0015625f;
 
@@ -190,36 +191,6 @@ namespace GameA.Game
         public static bool IsLadder(int id)
         {
             return id == 4016;
-        }
-    }
-
-    public class UnitHelper
-    {
-        public static Sprite GetSpawnSprite(int teamId)
-        {
-            return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
-        }
-
-        public static Color GetTeamColor(byte teamId)
-        {
-            switch (teamId)
-            {
-                case 0:
-                    return Color.red;
-                case 1:
-                    return Color.green;
-                case 2:
-                    return new Color(1, 164 / (float) 255, 0);
-                case 3:
-                    return Color.yellow;
-                case 4:
-                    return new Color(0, 1, 200 / (float) 255);
-                case 5:
-                    return new Color(0, 110 / (float) 255, 1);
-                case 6:
-                    return Color.magenta;
-            }
-            return Color.red;
         }
     }
 }

@@ -70,5 +70,10 @@ namespace GameA
         {
             _cachedView.SetActiveEx(enable);
         }
+
+        public void SetColor(Color color)
+        {
+            _cachedView.BgImage.color = color;
+        }
     }
 }

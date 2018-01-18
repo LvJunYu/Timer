@@ -12,6 +12,7 @@ namespace GameA
             ActorSetting,
             WeaponSetting,
             MonsterCave,
+            Spawn
         }
 
         private Sequence _openSequence;

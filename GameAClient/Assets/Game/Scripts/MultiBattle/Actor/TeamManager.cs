@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -306,6 +308,33 @@ namespace GameA.Game
         public void GameOver(ENetBattleTimeResult eNetBattleTimeResult)
         {
             _eNetBattleTimeResult = eNetBattleTimeResult;
+        }
+        
+        public static Sprite GetSpawnSprite(int teamId)
+        {
+            return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
+        }
+
+        public static Color GetTeamColor(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return Color.red;
+                case 1:
+                    return Color.green;
+                case 2:
+                    return new Color(1, 164 / (float) 255, 0);
+                case 3:
+                    return Color.yellow;
+                case 4:
+                    return new Color(0, 1, 200 / (float) 255);
+                case 5:
+                    return new Color(0, 110 / (float) 255, 1);
+                case 6:
+                    return Color.magenta;
+            }
+            return Color.red;
         }
     }
 }
