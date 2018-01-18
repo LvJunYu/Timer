@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.Networking;
-using YIMEngine;
-using NetworkManager = SoyEngine.NetworkManager;
 
 namespace GameA
 {

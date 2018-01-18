@@ -93,13 +93,14 @@ namespace GameA
                 if (inx >= 0)
                 {
                     CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-                    {
+                    {/*
                         SocialGUIManager.Instance.OpenUI<UICtrlChat>(UICtrlChat.EMenu.Friend);
                         SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(inx, FriendList);
                         if (successAction != null)
                         {
                             successAction.Invoke();
                         }
+                        */
                     }));
                 }
                 else
