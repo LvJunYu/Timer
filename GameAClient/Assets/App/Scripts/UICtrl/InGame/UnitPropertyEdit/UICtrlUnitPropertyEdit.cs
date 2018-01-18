@@ -1044,7 +1044,7 @@ namespace GameA
             {
                 if (!_openSequence.IsPlaying())
                 {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Spawn);
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
                 }
             }
             else

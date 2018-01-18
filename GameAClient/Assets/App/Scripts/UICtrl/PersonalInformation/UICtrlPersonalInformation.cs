@@ -5,16 +5,26 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlPersonalInformation : UICtrlAnimationBase<UIViewPersonalInformation>, ICheckOverlay
     {
-        public UserInfoDetail UserInfoDetail;
-        public bool IsMyself;
+        private UserInfoDetail _userInfoDetail;
+        private bool _isMyself;
         private long _lastUserId = -1;
+        private int _messageCount;
         private EMenu _curMenu = EMenu.None;
         private const string _numFormat = "({0})";
         private const string _maxShow = "(99+)";
         private const string _maxShowLong = "(999+)";
         private UPCtrlPersonalInfoBase _curMenuCtrl;
         private UPCtrlPersonalInfoBase[] _menuCtrlArray;
-        public int MessageCount;
+
+        public UserInfoDetail UserInfoDetail
+        {
+            get { return _userInfoDetail; }
+        }
+
+        public bool IsMyself
+        {
+            get { return _isMyself; }
+        }
 
         protected override void OnViewCreated()
         {
@@ -70,6 +80,7 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DescInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NameInputField);
@@ -84,6 +95,7 @@ namespace GameA
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -106,21 +118,23 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            UserInfoDetail = parameter as UserInfoDetail;
-            if (null == UserInfoDetail)
+            _userInfoDetail = parameter as UserInfoDetail;
+            if (null == _userInfoDetail)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
                 return;
             }
-            UserInfoDetail.Request(UserInfoDetail.UserInfoSimple.UserId, RefreshView, null);
+
+            _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);
             RefreshView();
-            if (UserInfoDetail.UserInfoSimple.UserId != _lastUserId)
+            if (_userInfoDetail.UserInfoSimple.UserId != _lastUserId)
             {
                 _curMenu = EMenu.BasicInfo;
-                _lastUserId = UserInfoDetail.UserInfoSimple.UserId;
+                _lastUserId = _userInfoDetail.UserInfoSimple.UserId;
             }
+
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
@@ -130,6 +144,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             Clear();
             base.OnClose();
         }
@@ -143,10 +158,10 @@ namespace GameA
 
         private void RefreshView()
         {
-            MessageCount = UserInfoDetail.MessageCount;
-            RefreshMessageNum(MessageCount);
-            IsMyself = UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
-            _cachedView.BtnsObj.SetActiveEx(!IsMyself);
+            _messageCount = _userInfoDetail.MessageCount;
+            RefreshMessageNum(_messageCount);
+            _isMyself = _userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
+            _cachedView.BtnsObj.SetActiveEx(!_isMyself);
             _cachedView.AvatarRawImage.texture =
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
             RefreshBtns();
@@ -176,14 +191,21 @@ namespace GameA
             }
         }
 
+        public void OnPublishUserMessage()
+        {
+            _messageCount++;
+            RefreshMessageNum(_messageCount);
+        }
+
         private void OnUserInfoChanged(UserInfoDetail user)
         {
-            if (_isOpen && user == UserInfoDetail)
+            if (_isOpen && user == _userInfoDetail)
             {
                 if (_curMenu == EMenu.BasicInfo)
                 {
                     _curMenuCtrl.RefreshView();
                 }
+
 //                int count = UserInfoDetail.MessageCount;
 //                RefreshMessageNum(count);
             }
@@ -208,12 +230,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -230,9 +254,9 @@ namespace GameA
 
         private void RefreshBtns()
         {
-            if (IsMyself) return;
-            bool block = UserInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
-            bool follow = UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            if (_isMyself) return;
+            bool block = _userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
+            bool follow = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
 
             _cachedView.FollowBtnTxt.text = follow ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr;
             _cachedView.BlockBtnTxt.text = block ? RelationCommonString.BlockedStr : RelationCommonString.BlockStr;
@@ -247,25 +271,25 @@ namespace GameA
 
         private void OnFollowBtn()
         {
-            if (UserInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
+            if (_userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
             {
-                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(UserInfoDetail);
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(_userInfoDetail);
             }
             else
             {
-                LocalUser.Instance.RelationUserList.RequestFollowUser(UserInfoDetail);
+                LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
             }
         }
 
         private void OnBlockBtn()
         {
-            if (UserInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe)
+            if (_userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe)
             {
-                LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(UserInfoDetail);
+                LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
             }
             else
             {
-                LocalUser.Instance.RelationUserList.RequestBlockUser(UserInfoDetail);
+                LocalUser.Instance.RelationUserList.RequestBlockUser(_userInfoDetail);
             }
         }
 
@@ -277,7 +301,7 @@ namespace GameA
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
         {
-            if (userInfoDetail == UserInfoDetail)
+            if (userInfoDetail == _userInfoDetail)
             {
                 RefreshBtns();
             }

@@ -69,6 +69,14 @@ namespace GameA
             }
         }
 
+        public void SetSprite(int index, Sprite sprite)
+        {
+            if (index < _cachedView.Imgs.Length)
+            {
+                _cachedView.Imgs[index].sprite = sprite;
+            }
+        }
+
         public enum EItemType
         {
             Drops,

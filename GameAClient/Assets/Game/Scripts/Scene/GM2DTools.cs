@@ -490,6 +490,15 @@ namespace GameA.Game
                     res.AddStates.Add(val);
                 }
             }
+//            var playerUnitExtras = data.PlayerUnitExtras;
+//            for (int i = 0, count = playerUnitExtras.Count; i < count; i++)
+//            {
+//                ushort val = playerUnitExtras.Get<ushort>();
+//                if (val != 0)
+//                {
+//                    res.PlayerUnitExtras.Add(val);
+//                }
+//            }
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
