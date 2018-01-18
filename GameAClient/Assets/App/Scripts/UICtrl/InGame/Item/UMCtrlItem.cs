@@ -113,7 +113,7 @@ namespace GameA
                     _checkBehaviour = ECheckBehaviour.Drag;
                     var current = EditHelper.GetUnitDefaultData(_table.Id);
                     EDirectionType rotate = EDirectionType.Up;
-                    UnitExtra unitExtra = current.UnitExtra;
+                    var unitExtra = current.UnitExtra;
                     if (_table.CanEdit(EEditType.Direction))
                     {
                         rotate = (EDirectionType) current.UnitDesc.Rotation;
@@ -280,7 +280,7 @@ namespace GameA
             _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
             _umCtrlUnitProperty.UITran.localScale = Vector3.one * 0.47f;
             var unitDefaultData = EditHelper.GetUnitDefaultData(_table.Id);
-            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, ref unitDefaultData.UnitExtra);
+            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, unitDefaultData.UnitExtra);
         }
 
         private void OnUnitAddedInEditMode(int id)

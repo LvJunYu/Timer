@@ -33,7 +33,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool SetWeapon(int id, UnitExtra unitExtra = default(UnitExtra))
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null)
         {
             if (id == 0)
             {
@@ -63,7 +63,7 @@ namespace GameA.Game
             SetInput(EInputType.Skill1, false);
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             //兼容老版本

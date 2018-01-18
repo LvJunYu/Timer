@@ -18,8 +18,8 @@ namespace GameA.Game
     {
         [SerializeField] private IntRect _validMapRect;
         private int _sceneIndex;
-        protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
-        private UnitExtra _playerExtra;
+        protected Dictionary<IntVec3, UnitExtraDynamic> _unitExtras = new Dictionary<IntVec3, UnitExtraDynamic>();
+        private UnitExtraDynamic _playerExtra;
         private IntVec2 _size = ConstDefineGM2D.DefaultValidMapRectSize;
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
@@ -60,7 +60,7 @@ namespace GameA.Game
             get { return _validMapRect; }
         }
 
-        public Dictionary<IntVec3, UnitExtra> UnitExtras
+        public Dictionary<IntVec3, UnitExtraDynamic> UnitExtras
         {
             get { return _unitExtras; }
         }
@@ -80,7 +80,7 @@ namespace GameA.Game
             get { return _addedUnits; }
         }
 
-        public UnitExtra PlayerExtra
+        public UnitExtraDynamic PlayerExtra
         {
             get { return _playerExtra; }
         }
@@ -252,19 +252,27 @@ namespace GameA.Game
 
         #region ExtraData&Advanced
 
-        public bool TryGetUnitExtra(IntVec3 guid, out UnitExtra unitExtra)
+        public bool TryGetUnitExtra(IntVec3 guid, out UnitExtraDynamic unitExtra)
         {
             return _unitExtras.TryGetValue(guid, out unitExtra);
         }
 
-        public UnitExtra GetUnitExtra(IntVec3 guid)
+        public UnitExtraDynamic GetUnitExtra(IntVec3 guid)
         {
-            UnitExtra unitExtra;
-            TryGetUnitExtra(guid, out unitExtra);
+            UnitExtraDynamic unitExtra;
+            if (!TryGetUnitExtra(guid, out unitExtra))
+            {
+                unitExtra = new UnitExtraDynamic();
+            }
+
+            if (unitExtra == null)
+            {
+                throw new Exception();
+            }
             return unitExtra;
         }
 
-        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra, EditRecordBatch editRecordBatch = null)
+        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtraDynamic unitExtra, EditRecordBatch editRecordBatch = null)
         {
             UnitBase unit;
             bool canSwitch = false;
@@ -280,7 +288,7 @@ namespace GameA.Game
                     needCreate = true;
                 }
 
-                if (unitExtra.Equals(UnitExtra.zero))
+                if (unitExtra == null)
                 {
                     DeleteUnitExtra(unitDesc.Guid);
                 }
@@ -312,7 +320,15 @@ namespace GameA.Game
             }
             else
             {
-                _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                if (unitExtra == null)
+                {
+                    DeleteUnitExtra(unitDesc.Guid);
+                }
+                else
+                {
+                    _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                }
+
                 // 更新unit
                 if (ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
                 {
@@ -321,7 +337,7 @@ namespace GameA.Game
             }
         }
 
-        public void SetPlayerExtra(UnitExtra unitExtra)
+        public void SetPlayerExtra(UnitExtraDynamic unitExtra)
         {
             _playerExtra = unitExtra;
         }
@@ -641,31 +657,6 @@ namespace GameA.Game
 
         #endregion
 
-        public void SetPlayerCommonValue<T>(string fieldName, T value) where T : IEquatable<T>
-        {
-            var field = typeof(UnitExtra).GetField(fieldName);
-            T original = (T) field.GetValue(_playerExtra);
-            if (original.Equals(value)) return;
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                EditMode.Instance.MapStatistics.NeedSave = true;
-                for (int i = 0; i < _spawnDatas.Count; i++)
-                {
-                    var unitExtra = GetUnitExtra(_spawnDatas[i].Guid);
-                    if (((T) field.GetValue(unitExtra)).Equals(original))
-                    {
-                        object unitExtraObj = unitExtra;
-                        field.SetValue(unitExtraObj, value);
-                        _unitExtras.AddOrReplace(_spawnDatas[i].Guid, (UnitExtra) unitExtraObj);
-                    }
-                }
-            }
-
-            object playerExtraObj = _playerExtra;
-            field.SetValue(playerExtraObj, value);
-            _playerExtra = (UnitExtra) playerExtraObj;
-        }
-
         public void SetPlayerMaxHp(int value)
         {
             if (_playerExtra.MaxHp == value) return;
@@ -769,7 +760,7 @@ namespace GameA.Game
         public void InitDefaultPlayerUnitExtra()
         {
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
-            var unitExtra = new UnitExtra();
+            var unitExtra = new UnitExtraDynamic();
             unitExtra.MaxHp = (ushort) table.Hp;
             unitExtra.MaxSpeedX = (ushort) table.MaxSpeed;
             unitExtra.JumpAbility = (ushort) table.JumpAbility;
@@ -790,9 +781,9 @@ namespace GameA.Game
     public struct UnitEditData : IEquatable<UnitEditData>
     {
         public UnitDesc UnitDesc;
-        public UnitExtra UnitExtra;
+        public UnitExtraDynamic UnitExtra;
 
-        public UnitEditData(UnitDesc unitDesc, UnitExtra unitExtra)
+        public UnitEditData(UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             UnitDesc = unitDesc;
             UnitExtra = unitExtra;
@@ -851,7 +842,7 @@ namespace GameA.Game
                 new Vector2(modifyItemData.OrigData.Scale == null ? 1 : modifyItemData.OrigData.Scale.X,
                     modifyItemData.OrigData.Scale == null ? 1 : modifyItemData.OrigData.Scale.Y)
             );
-            UnitExtra origExtra = new UnitExtra();
+            var origExtra = new UnitExtraDynamic();
             origExtra.MoveDirection = (EMoveDirection) modifyItemData.OrigExtra.MoveDirection;
             origExtra.Active = (byte) modifyItemData.OrigExtra.Active;
             origExtra.ChildId = (ushort) modifyItemData.OrigExtra.ChildId;
@@ -868,7 +859,7 @@ namespace GameA.Game
                 new Vector2(modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.X,
                     modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.Y)
             );
-            UnitExtra modifiedExtra;
+            UnitExtraDynamic modifiedExtra;
             DataScene2D.CurScene.TryGetUnitExtra(modifiedDesc.Guid, out modifiedExtra);
             ModifiedUnit = new UnitEditData(modifiedDesc, modifiedExtra);
         }

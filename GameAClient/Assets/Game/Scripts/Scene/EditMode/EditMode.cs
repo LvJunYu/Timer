@@ -485,7 +485,7 @@ namespace GameA.Game
         /// <param name="unitId"></param>
         /// <param name="rotate"></param>
         /// <param name="unitExtra"></param>
-        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
+        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtraDynamic unitExtra)
         {
             if (IsInState(EditModeState.Move.Instance))
             {
@@ -520,7 +520,7 @@ namespace GameA.Game
         /// <param name="unitDesc"></param>
         /// <param name="unitExtra"></param>
         /// <returns></returns>
-        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtra unitExtra)
+        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             Table_Unit tableUnit;
             if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
@@ -528,7 +528,7 @@ namespace GameA.Game
                 return false;
             }
             EditHelper.BeforeAddUnit(tableUnit);
-            UnitExtra oldExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+            var oldExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
             DataScene2D.CurScene.ProcessUnitExtra(unitDesc, unitExtra);
             if (!AddUnit(unitDesc))
             {

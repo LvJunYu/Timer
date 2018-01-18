@@ -337,6 +337,7 @@ namespace GameA
             _originData = (UnitEditData) parameter;
             _curEnterType = EEnterType.None;
             EditData = _originData;
+            EditData.UnitExtra = _originData.UnitExtra.Clone();
             _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
             if (UnitDefine.IsMonster(_tableUnit.Id))
             {

@@ -109,14 +109,14 @@ namespace GameA
             _uiCtrlUnitProperty = null;
         }
 
-        public void Show(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
+        public void Show(ref UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             if (_uiCtrlUnitProperty == null)
             {
                 _uiCtrlUnitProperty = SocialGUIManager.Instance.GetUI<UICtrlGameUnitPropertyContainer>()
                     .Add(unitDesc.Guid);
             }
-            _uiCtrlUnitProperty.SetData(ref unitDesc, ref unitExtra);
+            _uiCtrlUnitProperty.SetData(ref unitDesc, unitExtra);
         }
     }
 }

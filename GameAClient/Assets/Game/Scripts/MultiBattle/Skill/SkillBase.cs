@@ -84,7 +84,7 @@ namespace GameA.Game
             get { return _eWeaponInputType; }
         }
 
-        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType, UnitExtra unitExtra)
+        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType, UnitExtraDynamic unitExtra)
         {
             _eWeaponInputType = eWeaponInputType;
             _owner = ower;
@@ -113,8 +113,12 @@ namespace GameA.Game
             _targetType = GetHitLayer();
         }
 
-        private void SetDataFromExtra(UnitExtra extra)
+        private void SetDataFromExtra(UnitExtraDynamic extra)
         {
+            if (extra == null)
+            {
+                extra = new UnitExtraDynamic();
+            }
             if (extra.TimeInterval > 0)
             {
                 _cdTime = TableConvert.GetTime(extra.TimeInterval);
@@ -174,17 +178,17 @@ namespace GameA.Game
             {
                 _totalBulletCount = _tableSkill.BulletCount;
             }
-            if (extra.KnockbackForces.HasContent)
+            if (extra.KnockbackForces != null && !extra.KnockbackForces.IsEmpty)
             {
-                _knockbackForces = extra.KnockbackForces.ToList().ToArray();
+                _knockbackForces = extra.KnockbackForces.ToList<int>().ToArray();
             }
             else
             {
                 _knockbackForces = _tableSkill.KnockbackForces;
             }
-            if (extra.AddStates.HasContent)
+            if (extra.AddStates != null && !extra.AddStates.IsEmpty)
             {
-                _addStates = extra.AddStates.ToList().ToArray();
+                _addStates = extra.AddStates.ToList<int>().ToArray();
             }
             else
             {

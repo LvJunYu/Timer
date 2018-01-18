@@ -64,7 +64,7 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             //todo 兼容老版本
@@ -133,7 +133,7 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override bool SetWeapon(int id, UnitExtra unitExtra = default(UnitExtra))
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null)
         {
             if (id == 0)
             {

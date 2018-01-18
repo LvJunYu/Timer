@@ -102,8 +102,8 @@ namespace GameA.Game
                         {
                             var newUnitDesc = unit.UnitDesc;
                             var newUnitExtra = DataScene2D.CurScene.GetUnitExtra(newUnitDesc.Guid);
-                            GetRecordBatch().RecordUpdateExtra(ref touchedUnitDesc, ref touchedUnitExtra,
-                                ref newUnitDesc, ref newUnitExtra);
+                            GetRecordBatch().RecordUpdateExtra(ref touchedUnitDesc, touchedUnitExtra,
+                                ref newUnitDesc, newUnitExtra);
                             CommitRecordBatch();
                         }
                         else
@@ -170,7 +170,7 @@ namespace GameA.Game
                             var extra = DataScene2D.CurScene.GetUnitExtra(desc.Guid);
                             if(EditMode.Instance.DeleteUnitWithCheck(coverUnits[j]))
                             {
-                                recordBatch.RecordRemoveUnit(ref desc, ref extra);
+                                recordBatch.RecordRemoveUnit(ref desc, extra);
                             }
                         }
                     }
@@ -188,7 +188,7 @@ namespace GameA.Game
                         var needReplaceUnitExtra = DataScene2D.CurScene.GetUnitExtra(needReplaceUnitDesc.Guid);
                         if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
                         {
-                            recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
+                            recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, needReplaceUnitExtra);
                             DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                         }
                     });
@@ -197,7 +197,7 @@ namespace GameA.Game
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc, unitExtra))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
-                    recordBatch.RecordAddUnit(ref unitDesc, ref unitExtra);
+                    recordBatch.RecordAddUnit(ref unitDesc, unitExtra);
                 }
             }
         }

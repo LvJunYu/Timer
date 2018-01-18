@@ -39,7 +39,7 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtra UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
             _eActiveState = EActiveState.Deactive;

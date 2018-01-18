@@ -29,7 +29,7 @@ namespace GameA.Game
                     isDynamic = true;
                     break;
                 case EColliderType.Static:
-                    UnitExtra unitExtra;
+                    UnitExtraDynamic unitExtra;
                     if (DataScene2D.CurScene.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                     {
                         isDynamic = unitExtra.IsDynamic();

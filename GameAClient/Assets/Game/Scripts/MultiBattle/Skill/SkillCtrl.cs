@@ -40,7 +40,7 @@ namespace GameA.Game
         }
 
         public virtual bool SetSkill(int id, EWeaponInputType eWeaponInputType = EWeaponInputType.GetKey, int slot = 0,
-            UnitExtra unitExtra = default(UnitExtra))
+            UnitExtraDynamic unitExtra = null)
         {
             if (!CheckValid(slot))
             {

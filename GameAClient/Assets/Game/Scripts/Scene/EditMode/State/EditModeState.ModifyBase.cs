@@ -21,7 +21,7 @@ namespace GameA.Game
                 /// <summary>
                 /// 正在拖拽的地块的Extra
                 /// </summary>
-                public UnitExtra DragUnitExtra { get; set; }
+                public UnitExtraDynamic DragUnitExtra { get; set; }
             }
 
             private static readonly Vector2 MaskEffectOffset = new Vector2(0.35f, 0.4f);

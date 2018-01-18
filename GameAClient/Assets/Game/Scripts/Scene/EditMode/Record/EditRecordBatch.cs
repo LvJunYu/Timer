@@ -17,7 +17,7 @@ namespace GameA.Game
             get { return EditRecordData.EAction.None == _firstRecordData.ActionType; }
         }
 
-        public void RecordAddUnit(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
+        public void RecordAddUnit(ref UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.AddUnit;
@@ -26,7 +26,7 @@ namespace GameA.Game
             AddRecordData(ref recordData);
         }
 
-        public void RecordRemoveUnit(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
+        public void RecordRemoveUnit(ref UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.RemoveUnit;
@@ -35,8 +35,8 @@ namespace GameA.Game
             AddRecordData(ref recordData);
         }
 
-        public void RecordUpdateExtra(ref UnitDesc oldUnitDesc, ref UnitExtra oldUnitExtra,
-            ref UnitDesc newUnitDesc, ref UnitExtra newUnitExtra)
+        public void RecordUpdateExtra(ref UnitDesc oldUnitDesc, UnitExtraDynamic oldUnitExtra,
+            ref UnitDesc newUnitDesc, UnitExtraDynamic newUnitExtra)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.UpdateExtra;
