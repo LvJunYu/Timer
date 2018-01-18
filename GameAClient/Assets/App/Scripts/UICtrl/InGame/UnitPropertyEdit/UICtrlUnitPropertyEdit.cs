@@ -645,7 +645,7 @@ namespace GameA
             else
             {
                 EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
-                EditData.UnitExtra.UpdateFromChildId();
+                EditData.UnitExtra.UpdateDefaultValueFromChildId();
             }
 
             var totalCount = _tableUnit.ChildState.Length;
@@ -916,7 +916,7 @@ namespace GameA
             if (EditData.UnitExtra.ChildId != _tableUnit.ChildState[inx])
             {
                 EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
-                EditData.UnitExtra.UpdateFromChildId();
+                EditData.UnitExtra.UpdateDefaultValueFromChildId();
                 _upCtrlUnitPropertyEditAdvance.OnChildIdChanged();
             }
 
@@ -974,7 +974,7 @@ namespace GameA
                 {
                     EditData.UnitExtra.ChildId = (ushort) TableManager.Instance.GetUnit(monsterId).ChildState[0];
                     EditData.UnitExtra.UpdateFromMonsterId();
-                    EditData.UnitExtra.UpdateFromChildId();
+                    EditData.UnitExtra.UpdateDefaultValueFromChildId();
                 }
                 else
                 {
@@ -1139,7 +1139,7 @@ namespace GameA
         public void OnPlayerWeaponSettingBtn(int index)
         {
             _curEnterType = EEnterType.FromSpawn;
-            int weaponId = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(_curSelectedPlayerIndex).Weapons.Get<ushort>(index);
+//            int weaponId = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(_curSelectedPlayerIndex).Weapons.Get<ushort>(index);
             _tableUnit = TableManager.Instance.GetUnit(UnitDefine.EnergyPoolId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);

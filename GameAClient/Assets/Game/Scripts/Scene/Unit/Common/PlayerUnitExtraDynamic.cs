@@ -10,7 +10,7 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.MaxHp, "MaxHp");
             DefineField<byte>(FieldTag.InjuredReduce, "InjuredReduce");
             DefineField<ushort>(FieldTag.CureIncrease, "CureIncrease");
-            DefineFieldList<ushort>(FieldTag.Weapons, "Weapons");
+            DefineFieldList<WeaponExtraDynamic>(FieldTag.Weapons, "Weapons");
         }
 
         public class FieldTag

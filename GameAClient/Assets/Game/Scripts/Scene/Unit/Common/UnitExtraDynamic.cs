@@ -314,7 +314,7 @@ namespace GameA.Game
             return MoveDirection != EMoveDirection.None;
         }
 
-        public void UpdateFromChildId()
+        public void UpdateDefaultValueFromChildId()
         {
             int skillId = TableManager.Instance.GetEquipment(ChildId).SkillId;
             var skill = TableManager.Instance.GetSkill(skillId);

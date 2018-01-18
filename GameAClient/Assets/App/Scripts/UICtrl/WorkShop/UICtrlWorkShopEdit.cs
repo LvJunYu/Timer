@@ -301,9 +301,9 @@ namespace GameA
                     RemoteCommands.DeleteProject(projList, msg =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            LocalUser.Instance.PersonalProjectList.Delete(_project);
                             _project.Delete();
                             _project = null;
-                            LocalUser.Instance.PersonalProjectList.Delete(_project);
                             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
                         },
                         code =>

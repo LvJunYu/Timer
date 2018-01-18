@@ -30,7 +30,7 @@ namespace GameA.Game
 
         public const int FanRange = 30;
         public const int FanForce = 20;
-
+        public const int WaterGun = 101;
         public const int SpawnId = 1001;
         public const int MainPlayerId = 1002;
         public const int OtherPlayerId = 1003;
@@ -59,7 +59,7 @@ namespace GameA.Game
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
         public const int ShadowId = 65535;
-
+        
         public static bool IsSpawn(int id)
         {
             return id == SpawnId;

@@ -220,7 +220,7 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Child))
             {
                 unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
-                unitEditData.UnitExtra.UpdateFromChildId();
+                unitEditData.UnitExtra.UpdateDefaultValueFromChildId();
             }
 
             if (table.CanEdit(EEditType.Direction))
