@@ -435,11 +435,12 @@ namespace GameA.Game
 
         public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtraDynamic data)
         {
+            var res = new UnitExtraKeyValuePair();
             if (data == null)
             {
-                return null;
+                res.IsNull = true;
+                return res;
             }
-            var res = new UnitExtraKeyValuePair();
             res.Guid = ToProto(index);
             res.MoveDirection = (byte) data.MoveDirection;
             res.Active = data.Active;
@@ -589,7 +590,7 @@ namespace GameA.Game
 
         public static UnitExtraDynamic ToEngine(UnitExtraKeyValuePair data, UnitExtraDynamic unitExtra = null)
         {
-            if (null == data)
+            if (null == data || data.IsNull)
             {
                 return null;
             }

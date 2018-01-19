@@ -133,7 +133,7 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null)
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1)
         {
             if (id == 0)
             {

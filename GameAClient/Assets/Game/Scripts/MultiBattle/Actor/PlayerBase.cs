@@ -193,7 +193,7 @@ namespace GameA.Game
             return _unitExtra;
         }
 
-        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null)
+        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
             if (tableEquipment == null)
@@ -218,8 +218,7 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.RemoveSkill(skillId);
-            int slot;
-            if (!_skillCtrl.HasEmptySlot(out slot))
+            if (slot == -1 && !_skillCtrl.HasEmptySlot(out slot))
             {
                 slot = _lastSlot + 1;
                 _lastSlot = slot;
@@ -228,7 +227,6 @@ namespace GameA.Game
                     _lastSlot = -1;
                 }
             }
-
             if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra))
             {
                 return false;
@@ -305,6 +303,15 @@ namespace GameA.Game
             {
                 GameParticleManager.Instance.Emit("M1EffectSpawn",
                     new Vector3(_trans.position.x, _trans.position.y - 0.5f, -100));
+            }
+
+            var weapons = _unitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
+            for (int i = 0; i < weapons.Count; i++)
+            {
+                if (weapons[i] != null)
+                {
+                    SetWeapon(weapons[i].ChildId, weapons[i], i);
+                }
             }
         }
 

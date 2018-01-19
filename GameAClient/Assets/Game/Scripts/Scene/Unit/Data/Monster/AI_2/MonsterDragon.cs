@@ -33,7 +33,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null)
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1)
         {
             if (id == 0)
             {
