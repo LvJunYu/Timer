@@ -1713,6 +1713,120 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCreateNpcDialogPreinstall {
+            get { return _isRequstingCreateNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingCreateNpcDialogPreinstall = false;
+        /// <summary>
+		/// 创建预设Npc对话
+		/// </summary>
+		/// <param name="data">预设数据</param>
+        public static void CreateNpcDialogPreinstall (
+            string data,
+            Action<Msg_SC_CMD_CreateNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingCreateNpcDialogPreinstall = true;
+            Msg_CS_CMD_CreateNpcDialogPreinstall msg = new Msg_CS_CMD_CreateNpcDialogPreinstall();
+            // 创建预设Npc对话
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateNpcDialogPreinstall>(
+                SoyHttpApiPath.CreateNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateNpcDialogPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateNpcDialogPreinstall {
+            get { return _isRequstingUpdateNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingUpdateNpcDialogPreinstall = false;
+        /// <summary>
+		/// 更新预设Npc对话
+		/// </summary>
+		/// <param name="id">预设Id</param>
+		/// <param name="data">数据</param>
+        public static void UpdateNpcDialogPreinstall (
+            long id,
+            string data,
+            Action<Msg_SC_CMD_UpdateNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingUpdateNpcDialogPreinstall = true;
+            Msg_CS_CMD_UpdateNpcDialogPreinstall msg = new Msg_CS_CMD_UpdateNpcDialogPreinstall();
+            // 更新预设Npc对话
+            msg.Id = id;
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateNpcDialogPreinstall>(
+                SoyHttpApiPath.UpdateNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateNpcDialogPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteNpcDialogPreinstall {
+            get { return _isRequstingDeleteNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingDeleteNpcDialogPreinstall = false;
+        /// <summary>
+		/// 删除预设Npc对话
+		/// </summary>
+		/// <param name="idList">预设Id</param>
+        public static void DeleteNpcDialogPreinstall (
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingDeleteNpcDialogPreinstall = true;
+            Msg_CS_CMD_DeleteNpcDialogPreinstall msg = new Msg_CS_CMD_DeleteNpcDialogPreinstall();
+            // 删除预设Npc对话
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteNpcDialogPreinstall>(
+                SoyHttpApiPath.DeleteNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteNpcDialogPreinstall = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUseProps {
             get { return _isRequstingUseProps; }
         }

@@ -14,9 +14,11 @@ namespace GameA
     public class UICtrlShowNpcDia : UICtrlAnimationBase<UIViewShowNpcDia>
     {
         private int _index = 0;
-        private List<string> _diaList = new List<string>();
+        private List<string> _diaList;
         NpcDia diaData = new NpcDia();
         private Sprite _faceSprite;
+        private string _colorName;
+        private Color _textColor;
 
         public Sprite FaceSprite
         {
@@ -81,6 +83,8 @@ namespace GameA
 
         private void ShowOneDia(int index)
         {
+            _cachedView.NpcIcon.GetComponent<Animation>().Stop();
+            _cachedView.NpcIconLeft.GetComponent<Animation>().Stop();
             diaData.AnalysisNpcDia(_diaList[index]);
             if (diaData.NpcId == Enpc.Lead)
             {
@@ -92,6 +96,22 @@ namespace GameA
                 JoyResManager.Instance.TryGetSprite(diaData.NpcFaceSpriteName, out _faceSprite);
                 _cachedView.NpcIcon.sprite = _faceSprite;
                 _cachedView.DiaText.text = diaData.Dia;
+                _colorName = diaData.Color;
+                ColorUtility.TryParseHtmlString(_colorName, out _textColor);
+                _cachedView.DiaText.color = _textColor;
+                switch (diaData.EnpcWaggle)
+                {
+                    case EnpcWaggle.None:
+
+
+                        break;
+                    case EnpcWaggle.LR:
+                        _cachedView.NpcIcon.GetComponent<Animation>().Play("UICtrlShowBoyLeftRight");
+                        break;
+                    case EnpcWaggle.UD:
+                        _cachedView.NpcIcon.GetComponent<Animation>().Play("UICtrlShowBoyUpDown");
+                        break;
+                }
             }
             else
             {
@@ -104,7 +124,21 @@ namespace GameA
                     _cachedView.NpcNameLeft.text = diaData.NpcName;
                     JoyResManager.Instance.TryGetSprite(diaData.NpcFaceSpriteName, out _faceSprite);
                     _cachedView.NpcIconLeft.sprite = _faceSprite;
-                    _cachedView.DiaText.text = diaData.Dia;
+                    _cachedView.DiaTextLeft.text = diaData.Dia;
+                    _colorName = diaData.Color;
+                    ColorUtility.TryParseHtmlString(_colorName, out _textColor);
+                    _cachedView.DiaTextLeft.color = _textColor;
+                    switch (diaData.EnpcWaggle)
+                    {
+                        case EnpcWaggle.None:
+                            break;
+                        case EnpcWaggle.LR:
+                            _cachedView.NpcIconLeft.GetComponent<Animation>().Play("UICtrlShowNpcDiaLeftRight");
+                            break;
+                        case EnpcWaggle.UD:
+                            _cachedView.NpcIconLeft.GetComponent<Animation>().Play("UICtrlShowNpcDiaLeftRight");
+                            break;
+                    }
                 }
                 else
                 {
@@ -116,34 +150,70 @@ namespace GameA
 
     public class NpcDia
     {
+        public const string brown = "#745334";
+        public const string green = "#42ac37";
+        public const string blue = "#2f73ff";
+        public const string red = "#ff343a";
         private Enpc _npcId;
         private ENpcFace _faceId;
         private string _dia;
         private string _npcName;
         private string _npcFaceSpriteName;
+        private string _color;
+
+        public NpcDia()
+        {
+            _npcId = Enpc.Lead;
+            _faceId = ENpcFace.Happy;
+            _dia = "你好";
+            _npcName = "";
+            _npcFaceSpriteName = GetNpcFaceSpriteName(_npcId, _faceId);
+            _color = brown;
+        }
+
+        private EnpcWaggle _enpcWaggle;
+
+        public EnpcWaggle EnpcWaggle
+        {
+            get { return _enpcWaggle; }
+            set { _enpcWaggle = value; }
+        }
+
+        public string Color
+        {
+            get { return _color; }
+            set { _color = value; }
+        }
 
         public string NpcFaceSpriteName
         {
+            set { _npcFaceSpriteName = value; }
             get { return _npcFaceSpriteName; }
         }
 
         public string NpcName
         {
+            set { _npcName = value; }
             get { return _npcName; }
         }
 
         public Enpc NpcId
         {
+            set { _npcId = value; }
+
             get { return _npcId; }
         }
 
         public ENpcFace FaceId
         {
+            set { _faceId = value; }
             get { return _faceId; }
         }
 
         public string Dia
         {
+            set { _dia = value; }
+
             get { return _dia; }
         }
 
@@ -155,15 +225,24 @@ namespace GameA
             _dia = dataList[2];
             _npcName = dataList[3];
             _npcFaceSpriteName = GetNpcFaceSpriteName((Enpc) _npcId, _faceId);
+            _color = dataList[4];
+            _enpcWaggle = (EnpcWaggle) Convert.ToInt32(dataList[5]);
         }
 
-        public static string SetDiaData(int npcid, int faceid, string dia, string npcName)
+        public override string ToString()
         {
-            string diaData = String.Format("{0}*{1}*{2}*{3}", npcid, faceid, dia, npcName);
+            string diaData = String.Format("{0}*{1}*{2}*{3}*{4}*{5}", _npcId, _faceId, _dia, _npcName, _color,
+                _enpcWaggle);
             return diaData;
         }
 
-        public string GetNpcFaceSpriteName(Enpc npc, ENpcFace face)
+        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, string waggle)
+        {
+            string diaData = String.Format("{0}*{1}*{2}*{3}*{4}*{5}", npcid, faceid, dia, npcName, color, waggle);
+            return diaData;
+        }
+
+        public static string GetNpcFaceSpriteName(Enpc npc, ENpcFace face)
         {
             string faceSpreteNmae = String.Format("{0}_{1}", npc.ToString(), face.ToString());
             return faceSpreteNmae;
@@ -196,12 +275,16 @@ namespace GameA
         Usual,
 
         //微笑
-        Smile
+        Smile,
+        Max
     }
 
     public enum Enpc
     {
         None,
+
+        //主角
+        Lead = 1,
 
         // 老头
         NpcOldMan,
@@ -211,8 +294,16 @@ namespace GameA
 
         // 女孩
         NpcGirl,
+    }
 
-        //主角
-        Lead
+    public enum EnpcWaggle
+    {
+        None,
+
+        //左右
+        LR = 1,
+
+        // 上下
+        UD
     }
 }

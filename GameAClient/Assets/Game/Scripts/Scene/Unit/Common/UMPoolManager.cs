@@ -19,6 +19,7 @@ namespace GameA
                         .AddComponent<UMPoolManager>();
                     _instance.gameObject.name = "UMPoolManager";
                 }
+
                 return _instance;
             }
         }
@@ -48,8 +49,8 @@ namespace GameA
 
         public void Free<T>(T um) where T : IUMPoolable
         {
-            um.Hide();
             um.SetParent(this.rectTransform());
+            um.Hide();
         }
 
         private void OnDestroy()

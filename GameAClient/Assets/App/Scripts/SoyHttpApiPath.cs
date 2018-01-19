@@ -145,15 +145,25 @@ namespace SoyEngine
         // 工坊关卡
         public const string PersonalProjectList = "/project/getPersonalList";
         // 获取预设列表
-        public const string UnitPreinstallList = "/project/getUnitPreinstallList";
+        public const string UnitPreinstallList = "/workshop/getUnitPreinstallList";
         // 获取物体预设数据
-        public const string UnitPreinstall = "/project/getUnitPreinstall";
+        public const string UnitPreinstall = "/workshop/getUnitPreinstall";
         // 创建预设
-        public const string CreateUnitPreinstall = "/project/createUnitPreinstall";
+        public const string CreateUnitPreinstall = "/workshop/createUnitPreinstall";
         // 更新预设
-        public const string UpdateUnitPreinstall = "/project/updateUnitPreinstall";
+        public const string UpdateUnitPreinstall = "/workshop/updateUnitPreinstall";
         // 删除预设
-        public const string DeleteUnitPreinstall = "/project/deleteUnitPreinstall";
+        public const string DeleteUnitPreinstall = "/workshop/deleteUnitPreinstall";
+        // 获取预设NPC对话列表
+        public const string NpcDialogPreinstallList = "/workshop/getNpcDialogPreinstallList";
+        // 预设Npc对话
+        public const string NpcDialogPreinstall = "/workshop/getNpcDialogPreinstall";
+        // 创建预设Npc对话
+        public const string CreateNpcDialogPreinstall = "/workshop/createNpcDialogPreinstall";
+        // 更新预设Npc对话
+        public const string UpdateNpcDialogPreinstall = "/workshop/updateNpcDialogPreinstall";
+        // 删除预设Npc对话
+        public const string DeleteNpcDialogPreinstall = "/workshop/deleteNpcDialogPreinstall";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
