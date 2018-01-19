@@ -11,7 +11,7 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
-            if (_data.IsInited && !_data.IsDirty || _isRequesting) return;
+            if (_hasRequested && !append || _isRequesting) return;
             _isRequesting = true;
             int startInx = 0;
             if (append)
@@ -27,6 +27,7 @@ namespace GameA
                     RefreshView();
                 }
 
+                _hasRequested = true;
                 _isRequesting = false;
             }, code => _isRequesting = false);
         }

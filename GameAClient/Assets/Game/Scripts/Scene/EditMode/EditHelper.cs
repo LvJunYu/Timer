@@ -280,7 +280,7 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Spawn))
             {
 //                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
-                unitEditData.UnitExtra.PlayerUnitExtras.Add(PlayerUnitExtraDynamic.GetDefaultValue());
+                unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
             }
 
             if (table.CanEdit(EEditType.MonsterCave))

@@ -95,6 +95,7 @@ namespace GameA.Game
                 LogHelper.Error("GetSkill Failed, {0}", id);
                 return;
             }
+
             _epaintType = (EPaintType) _tableSkill.PaintType;
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             if (_owner.IsPlayer)
@@ -105,6 +106,7 @@ namespace GameA.Game
             {
                 SetDataFromExtra(_owner.GetUnitExtra());
             }
+
             SetTimerCD(0);
             SetBullet(_totalBulletCount);
             _timerCD = 0;
@@ -119,6 +121,7 @@ namespace GameA.Game
             {
                 extra = new UnitExtraDynamic();
             }
+
             if (extra.TimeInterval > 0)
             {
                 _cdTime = TableConvert.GetTime(extra.TimeInterval);
@@ -127,6 +130,7 @@ namespace GameA.Game
             {
                 _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             }
+
             if (extra.Damage > 0)
             {
                 _damage = extra.Damage;
@@ -135,6 +139,7 @@ namespace GameA.Game
             {
                 _damage = _tableSkill.Damage;
             }
+
             if (extra.EffectRange > 0)
             {
                 _effectRange = extra.EffectRange;
@@ -146,6 +151,7 @@ namespace GameA.Game
                     _effectRange = _tableSkill.EffectValues[0];
                 }
             }
+
             if (extra.CastRange > 0)
             {
                 _castRange = TableConvert.GetRange(extra.CastRange);
@@ -154,6 +160,7 @@ namespace GameA.Game
             {
                 _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             }
+
             if (extra.BulletSpeed > 0)
             {
                 _projectileSpeed = TableConvert.GetSpeed(extra.BulletSpeed);
@@ -162,6 +169,7 @@ namespace GameA.Game
             {
                 _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
             }
+
             if (extra.ChargeTime > 0)
             {
                 _chargeTime = TableConvert.GetTime(extra.ChargeTime);
@@ -170,6 +178,7 @@ namespace GameA.Game
             {
                 _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             }
+
             if (extra.BulletCount > 0)
             {
                 _totalBulletCount = extra.BulletCount;
@@ -178,17 +187,20 @@ namespace GameA.Game
             {
                 _totalBulletCount = _tableSkill.BulletCount;
             }
+
             if (extra.KnockbackForces != null && !extra.KnockbackForces.IsEmpty)
             {
-                _knockbackForces = extra.KnockbackForces.ToList<int>().ToArray();
+                _knockbackForces =
+                    Array.ConvertAll(extra.KnockbackForces.ToList<ushort>().ToArray(), item => (int) item);
             }
             else
             {
                 _knockbackForces = _tableSkill.KnockbackForces;
             }
+
             if (extra.AddStates != null && !extra.AddStates.IsEmpty)
             {
-                _addStates = extra.AddStates.ToList<int>().ToArray();
+                _addStates = Array.ConvertAll(extra.AddStates.ToList<ushort>().ToArray(), item => (int) item);
             }
             else
             {
@@ -220,6 +232,7 @@ namespace GameA.Game
                     SetTimerCharge(_timerCharge - 1);
                 }
             }
+
             if (_timerCD > 0)
             {
                 SetTimerCD(_timerCD - 1);
@@ -229,6 +242,7 @@ namespace GameA.Game
                     SetTimerCharge(_chargeTime);
                 }
             }
+
             if (_timerSing > 0)
             {
                 _timerSing--;
@@ -247,27 +261,33 @@ namespace GameA.Game
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
                 }
+
                 return false;
             }
+
             if (_timerCD > 0)
             {
                 return false;
             }
+
             SetTimerCD(_cdTime);
             if (_timerSing > 0)
             {
                 return false;
             }
+
             _owner.StartSkill();
             _timerSing = _singTime;
             if (_timerSing == 0)
             {
                 OnSkillCast();
             }
+
             if (_owner.IsPlayer)
             {
                 SetBullet(_currentBulletCount - 1);
             }
+
             return true;
         }
 
@@ -293,6 +313,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _timerCD = value;
             if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
             {
@@ -306,6 +327,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _timerCharge = value;
             if (_timerCharge == 0)
             {
@@ -313,6 +335,7 @@ namespace GameA.Game
                 _startCharge = false;
                 _timerCharge = _chargeTime;
             }
+
             if (_owner.IsMain)
             {
                 Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillChargeTime, _slot, _timerCharge,
@@ -326,6 +349,7 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioFire);
             }
+
             if (UnitDefine.UseRayBullet(projectileId))
             {
                 var bullet = PoolFactory<Bullet>.Get();
@@ -333,6 +357,7 @@ namespace GameA.Game
                 PlayMode.Instance.AddBullet(bullet);
                 return;
             }
+
             {
                 var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
                 if (bullet != null)
@@ -348,11 +373,13 @@ namespace GameA.Game
             {
                 return _owner.CenterPos;
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
                 return IntVec2.zero;
             }
+
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.CenterPos - dataSize * 0.5f;
         }
@@ -433,6 +460,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             PlayMode.Instance.DeleteBullet(bullet);
         }
 
@@ -466,6 +494,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             var canHarm = _owner.CanHarm(actor);
             //击退
             if (canHarm && !actor.IsInvincible)
@@ -482,6 +511,7 @@ namespace GameA.Game
                     {
                         actor.ExtraSpeed.x = -_knockbackForces[0];
                     }
+
                     if (direction.y > 0)
                     {
                         actor.ExtraSpeed.y = _knockbackForces[1];
@@ -490,18 +520,21 @@ namespace GameA.Game
                     {
                         actor.ExtraSpeed.y = -_knockbackForces[1];
                     }
+
                     if (_owner.IsPlayer)
                     {
                         actor.AddBreaker(_owner as PlayerBase);
                     }
                 }
             }
+
             //触发状态
             if (canHarm)
             {
                 actor.AddStates(_owner, _addStates);
                 actor.OnHpChanged(-_damage, _owner);
             }
+
             actor.RemoveStates(_tableSkill.RemoveStates);
         }
 
@@ -516,6 +549,7 @@ namespace GameA.Game
                         _cacheUnits.Add(hitUnit);
                         return _cacheUnits;
                     }
+
                     break;
                 case EEffcetMode.TargetCircle:
                 {
@@ -547,6 +581,7 @@ namespace GameA.Game
                             units.RemoveAt(i);
                         }
                     }
+
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
@@ -554,6 +589,7 @@ namespace GameA.Game
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }
+
             return null;
         }
 
@@ -566,20 +602,24 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioDestroy);
             }
+
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
             }
+
             if (hitUnit == null || hitUnit.DynamicCollider != null)
             {
                 return;
             }
+
             byte rotation;
             if (!GM2DTools.GetRotation4((int) angle, out rotation))
             {
                 return;
             }
+
             if (_tableSkill.CreateUnitId > 0)
             {
                 var tableUnit = UnitManager.Instance.GetTableUnit(_tableSkill.CreateUnitId);
@@ -587,6 +627,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 IntVec2 pos = IntVec2.zero;
                 var size = tableUnit.GetDataSize(rotation, Vector2.one);
                 switch ((EDirectionType) rotation)
@@ -604,6 +645,7 @@ namespace GameA.Game
                         pos = new IntVec2(hitPos.x - size.x, hitPos.y - size.y / 2);
                         break;
                 }
+
                 var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, pos, rotation);
                 if (unit != null)
                 {
@@ -619,22 +661,27 @@ namespace GameA.Game
             {
                 layer |= EnvManager.ItemLayer;
             }
+
             if (HasTargetType(ETargetType.Monster))
             {
                 layer |= EnvManager.MonsterLayer;
             }
+
             if (HasTargetType(ETargetType.MainPlayer))
             {
                 layer |= EnvManager.MainPlayerLayer;
             }
+
             if (HasTargetType(ETargetType.RemotePlayer))
             {
                 layer |= EnvManager.RemotePlayer;
             }
+
             if (HasTargetType(ETargetType.Self))
             {
 //                layer |= EnvManager.ItemLayer;
             }
+
             return layer;
         }
 
@@ -664,6 +711,7 @@ namespace GameA.Game
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Up);
                 }
             }
+
             if (centerPos.x <= target.ColliderGrid.XMin)
             {
                 if (!ColliderScene2D.CurScene.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
@@ -700,6 +748,7 @@ namespace GameA.Game
                         end = target.ColliderGrid.YMin + paintDepth;
                         target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                     }
+
                     if (end >= target.ColliderGrid.XMax)
                     {
                         start = target.ColliderGrid.YMin;
@@ -719,6 +768,7 @@ namespace GameA.Game
                         end = target.ColliderGrid.YMax;
                         target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                     }
+
                     if (end >= target.ColliderGrid.XMax)
                     {
                         start = target.ColliderGrid.YMax - paintDepth;
@@ -738,6 +788,7 @@ namespace GameA.Game
                         end = target.ColliderGrid.XMax;
                         target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                     }
+
                     if (end >= target.ColliderGrid.YMax)
                     {
                         start = target.ColliderGrid.XMax - paintDepth;
@@ -757,6 +808,7 @@ namespace GameA.Game
                         end = target.ColliderGrid.XMin + paintDepth;
                         target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                     }
+
                     if (end >= target.ColliderGrid.YMax)
                     {
                         start = target.ColliderGrid.XMin;

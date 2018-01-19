@@ -43,7 +43,7 @@ namespace GameA.Game
             DefineField<string>(FieldTag.NpcDialog, "NpcDialog");
             DefineField<ushort>(FieldTag.NpcShowInterval, "NpcShowInterval");
             DefineFieldList<NpcTaskDynamic>(FieldTag.NpcTask, "NpcTask");
-            DefineFieldList<PlayerUnitExtraDynamic>(FieldTag.PlayerUnitExtras, "NpcTask");
+            DefineFieldList<UnitExtraDynamic>(FieldTag.InternalUnitExtras, "InternalUnitExtras");
         }
 
         public class FieldTag
@@ -84,7 +84,7 @@ namespace GameA.Game
             public static readonly int NpcShowType = _nextId++;
             public static readonly int NpcShowInterval = _nextId++;
             public static readonly int NpcTask = _nextId++;
-            public static readonly int PlayerUnitExtras = _nextId++;
+            public static readonly int InternalUnitExtras = _nextId++;
         }
 
         public EMoveDirection MoveDirection
@@ -303,10 +303,10 @@ namespace GameA.Game
             set { Set(value, FieldTag.NpcTask); }
         }
 
-        public DictionaryListObject PlayerUnitExtras
+        public DictionaryListObject InternalUnitExtras
         {
-            get { return Get<DictionaryListObject>(FieldTag.PlayerUnitExtras); }
-            set { Set(value, FieldTag.PlayerUnitExtras); }
+            get { return Get<DictionaryListObject>(FieldTag.InternalUnitExtras); }
+            set { Set(value, FieldTag.InternalUnitExtras); }
         }
 
         public bool IsDynamic()
@@ -400,6 +400,18 @@ namespace GameA.Game
         {
             var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
             GM2DTools.ToEngine(unitExtraKeyValuePair, this);
+        }
+
+        public static UnitExtraDynamic GetDefaultPlayerValue(UnitExtraDynamic unitExtraDynamic = null)
+        {
+            var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
+            if (unitExtraDynamic == null)
+            {
+                unitExtraDynamic = new UnitExtraDynamic();
+            }
+            unitExtraDynamic.TeamId = 1;
+            unitExtraDynamic.MaxHp = (ushort) table.Hp;
+            return unitExtraDynamic;
         }
     }
 

@@ -40,6 +40,7 @@ namespace GameA
         private USCtrlDropdownSetting _usSpawnSetting;
         private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
+        private UnitExtraDynamic _curUnitExtra;
 
         protected override void OnViewCreated()
         {
@@ -76,13 +77,13 @@ namespace GameA
             _usMaxCreatedMonsterSetting.Init(_cachedView.MaxCreatedMonsterSetting);
             _usMaxAliveMonsterSetting.Init(_cachedView.MaxAliveMonsterSetting);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp,
-                value => _mainCtrl.EditData.UnitExtra.MaxHp = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().MaxHp = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpSetting, EAdvanceAttribute.JumpAbility,
-                value => _mainCtrl.EditData.UnitExtra.JumpAbility = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().JumpAbility = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMoveSpeedSetting, EAdvanceAttribute.MaxSpeedX,
-                value => _mainCtrl.EditData.UnitExtra.MaxSpeedX = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().MaxSpeedX = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usDamageSetting, EAdvanceAttribute.Damage,
-                value => _mainCtrl.EditData.UnitExtra.Damage = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().Damage = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usEffectRangeSetting, EAdvanceAttribute.EffectRange,
                 value =>
                 {
@@ -93,19 +94,19 @@ namespace GameA
                     }
                 });
             UnitExtraHelper.SetUSCtrlSliderSetting(_usCastRangeSetting, EAdvanceAttribute.CastRange,
-                value => _mainCtrl.EditData.UnitExtra.CastRange = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().CastRange = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usDamageIntervalSetting, EAdvanceAttribute.TimeInterval,
-                value => _mainCtrl.EditData.UnitExtra.TimeInterval = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().TimeInterval = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usBulletSpeedSetting, EAdvanceAttribute.BulletSpeed,
-                value => _mainCtrl.EditData.UnitExtra.BulletSpeed = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().BulletSpeed = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usBulletCountSetting, EAdvanceAttribute.BulletCount,
-                value => _mainCtrl.EditData.UnitExtra.BulletCount = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().BulletCount = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usChargeTimeSetting, EAdvanceAttribute.ChargeTime,
-                value => _mainCtrl.EditData.UnitExtra.ChargeTime = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().ChargeTime = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usInjuredReduceSetting, EAdvanceAttribute.InjuredReduce,
-                value => _mainCtrl.EditData.UnitExtra.InjuredReduce = (byte) value);
+                value => _mainCtrl.GetCurUnitExtra().InjuredReduce = (byte) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usCurIncreaseSetting, EAdvanceAttribute.CureIncrease,
-                value => _mainCtrl.EditData.UnitExtra.CureIncrease = (ushort) value);
+                value => _mainCtrl.GetCurUnitExtra().CureIncrease = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMonsterIntervalTimeSetting, EAdvanceAttribute.MonsterIntervalTime,
                 value => _mainCtrl.EditData.UnitExtra.MonsterIntervalTime = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxCreatedMonsterSetting, EAdvanceAttribute.MaxCreatedMonster,
@@ -125,22 +126,26 @@ namespace GameA
                 int teamId = i + 1;
                 _usSpawnSetting.SetSprite(i, TeamManager.GetSpawnSprite(teamId));
             }
+
             _usSpawnSetting.AddOnTeamChangedListener(index =>
             {
-                _mainCtrl.EditData.UnitExtra.PlayerUnitExtras
-                    .Get<PlayerUnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex)
+                _mainCtrl.EditData.UnitExtra.InternalUnitExtras
+                    .Get<UnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex)
                     .TeamId = (byte) (index + 1);
             });
             _cachedView.MonsterSettingBtn.onClick.AddListener(() => _mainCtrl.OnMonsterSettingBtn());
-            _cachedView.BackToCaveBtn.onClick.AddListener(() => _mainCtrl.OnBackToCaveBtn());
+            _cachedView.BackBtn.onClick.AddListener(() => _mainCtrl.OnBackBtn());
             _usPlayerWeaponSetting = new USCtrSetItem();
             _usPlayerWeaponSetting.Init(_cachedView.PlayerWeaponSetting);
             _usPlayerWeaponSetting.AddItemClickListener(index => _mainCtrl.OnPlayerWeaponSettingBtn(index));
             _usPlayerWeaponSetting.AddDeleteItemBtnListener
             (
-                index => _mainCtrl.EditData.UnitExtra.PlayerUnitExtras.Set(0, _mainCtrl.CurSelectedPlayerIndex,
-                    PlayerUnitExtraDynamic.FieldTag.Weapons, index)
-            );
+                index =>
+                {
+                    var playerUnitExtra = _mainCtrl.EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex);
+                    playerUnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, index);
+                    _usPlayerWeaponSetting.SetCur(playerUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>());
+                });
         }
 
         public override void Open()
@@ -156,9 +161,13 @@ namespace GameA
         {
             if (!_isOpen) return;
             int id;
-            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave)
+            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.MonsterSettingFromMonsterCave)
             {
                 id = _mainCtrl.EditData.UnitExtra.MonsterId;
+            }
+            else if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.WeaponSettingFromSpawn)
+            {
+                id = UnitDefine.EnergyPoolId;
             }
             else
             {
@@ -197,8 +206,7 @@ namespace GameA
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
             _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
-            _cachedView.BackToCaveBtn.SetActiveEx(_mainCtrl.CurEnterType ==
-                                                  UICtrlUnitPropertyEdit.EEnterType.FromMonsterCave);
+            _cachedView.BackBtn.SetActiveEx(_mainCtrl.CurEnterType != UICtrlUnitPropertyEdit.EEnterType.Normal);
 //            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
 //                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
 //            _usAddStatesSetting.SetEnable(b);
@@ -218,15 +226,15 @@ namespace GameA
             }
 
             _usMoveSpeedSetting.SetCur(maxSpeedX);
-            _usDamageSetting.SetCur(_mainCtrl.EditData.UnitExtra.Damage);
+            _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
             var minEffectRange = UnitExtraHelper.GetMin(EAdvanceAttribute.EffectRange, _curMenu);
             _usEffectRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.EffectRange, true, minEffectRange);
-            _usCastRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.CastRange);
+            _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
             var minAttackInterval = UnitExtraHelper.GetMin(EAdvanceAttribute.TimeInterval, _curMenu);
-            _usDamageIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimeInterval, true, minAttackInterval);
-            _usBulletSpeedSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletSpeed);
-            _usBulletCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletCount);
-            _usChargeTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.ChargeTime);
+            _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval, true, minAttackInterval);
+            _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
+            _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
+            _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
             _usInjuredReduceSetting.SetCur(_mainCtrl.EditData.UnitExtra.InjuredReduce);
             _usCurIncreaseSetting.SetCur(_mainCtrl.EditData.UnitExtra.CureIncrease);
             _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
@@ -269,6 +277,12 @@ namespace GameA
                 CreateSequences();
             }
 
+            if (_closeSequence.IsPlaying())
+            {
+                _closeSequence.Complete(true);
+            }
+
+            _cachedView.AdvancePannel.SetActiveEx(true);
             _openSequence.Restart();
             _openAnim = true;
         }
@@ -278,6 +292,11 @@ namespace GameA
             if (null == _closeSequence)
             {
                 CreateSequences();
+            }
+
+            if (_openSequence.IsPlaying())
+            {
+                _openSequence.Complete(true);
             }
 
             if (_completeAnim)
@@ -299,24 +318,9 @@ namespace GameA
             _closeSequence = DOTween.Sequence();
             _openSequence.Append(
                 _cachedView.AdvancePannel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f).From()
-                    .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
-            {
-                if (_closeSequence.IsPlaying())
-                {
-                    _closeSequence.Complete(true);
-                }
-
-                _cachedView.AdvancePannel.SetActiveEx(true);
-            });
+                    .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause();
             _closeSequence.Append(_cachedView.AdvancePannel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
-                    .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() =>
-                {
-                    if (_openSequence.IsPlaying())
-                    {
-                        _openSequence.Complete(true);
-                    }
-                });
+                .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
         }
 
         public void OpenMenu(EMenu eMenu)
@@ -342,33 +346,43 @@ namespace GameA
 
         public void OnChildIdChanged()
         {
-            _usDamageSetting.SetCur(_mainCtrl.EditData.UnitExtra.Damage);
-            _usCastRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.CastRange);
-            _usDamageIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimeInterval);
-            _usBulletSpeedSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletSpeed);
-            _usBulletCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.BulletCount);
-            _usChargeTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.ChargeTime);
-            _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
+            _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
+            _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
+            _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval);
+            _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
+            _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
+            _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
+            _usAddStatesSetting.Set(_mainCtrl.GetCurUnitExtra().AddStates, USCtrlAddItem.EItemType.States);
         }
 
-        public void OnSpawnMenuClick(PlayerUnitExtraDynamic playerUnitExtra)
+        public void OnSpawnMenuClick(int index)
         {
-            if (!_isOpen)
+            if (index < 0)
             {
-                OpenMenu(EMenu.ActorSetting);
+                return;
             }
 
+            var playerUnitExtra = _mainCtrl.EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
+            if (playerUnitExtra != null)
+            {
+                OnSpawnMenuClick(playerUnitExtra);
+            }
+        }
+
+        public void OnSpawnMenuClick(UnitExtraDynamic playerUnitExtra)
+        {
             if (playerUnitExtra == null)
             {
                 LogHelper.Error("OnSpawnMenuClick, but PlayerUnitExtraDynamic is null");
                 return;
             }
 
+            OpenMenu(EMenu.ActorSetting);
             _usSpawnSetting.SetCur(playerUnitExtra.TeamId);
             _usMaxHpSetting.SetCur(playerUnitExtra.MaxHp);
             _usInjuredReduceSetting.SetCur(playerUnitExtra.InjuredReduce);
             _usCurIncreaseSetting.SetCur(playerUnitExtra.CureIncrease);
-            _usPlayerWeaponSetting.SetCur(playerUnitExtra.Weapons.ToList<ushort>());
+            _usPlayerWeaponSetting.SetCur(playerUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>());
         }
     }
 }

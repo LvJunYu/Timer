@@ -7,6 +7,7 @@ namespace GameA
     public abstract class UPCtrlWorkShopProjectBase : UPCtrlBase<UICtrlWorkShop, UIViewWorkShop>,
         IOnChangeHandler<long>
     {
+        protected bool _hasRequested;
         protected const int _pageSize = 21;
         protected List<Project> _projectList;
         protected EResScenary _resScenary;

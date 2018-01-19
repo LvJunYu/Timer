@@ -45,6 +45,7 @@ namespace GameA
         private EEnterType _curEnterType;
         private int _curSelectedPlayerIndex;
         private Project _project;
+        private UnitExtraDynamic _curWeaponExtra;
 
         //npc 之间的引用数据类型
         public List<NpcTaskDynamic> NpcTaskDatas;
@@ -343,7 +344,7 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
-
+            //怪物洞穴
             list = _cachedView.MonsterCaveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _monsterCaveMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             da = 360f / UnitDefine.MonstersInCave.Length;
@@ -357,7 +358,7 @@ namespace GameA
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
-
+            //出生点
             list = _cachedView.SpawnDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _spawnMenuList = new USCtrlUnitPropertyEditButton[list.Length];
             da = 360f / list.Length;
@@ -370,7 +371,6 @@ namespace GameA
                 _spawnMenuList[i].AddClickListener(() => OnSpawnMenuClick(inx));
                 _spawnMenuList[i].AddDeleteBtnListener(() => OnSpawnMenuDelete(inx));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
-                button.SetBgImageAngle(da * i);
             }
         }
 
@@ -388,7 +388,9 @@ namespace GameA
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
+
             _project = GM2DGame.Instance.GameMode.Project;
+//            _project.ProjectType = EProjectType.PS_Compete;//todo 临时
             if (_project == null)
             {
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
@@ -423,13 +425,47 @@ namespace GameA
             {
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
             }
+            else if (_curEditType == EEditType.MonsterCave)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
+            }
+            else if (_curEditType == EEditType.Spawn)
+            {
+                _curPlayerExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
+                if (_curPlayerExtra != null)
+                {
+                    _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
+                }
+            }
         }
 
         private void RefreshView()
         {
             _validEditPropertyList.Clear();
 
-            if (_tableUnit.CanEdit(EEditType.Active) && _curEnterType != EEnterType.FromMonsterCave)
+            if (_tableUnit.CanEdit(EEditType.MonsterCave))
+            {
+                _validEditPropertyList.Add(EEditType.MonsterCave);
+                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(true);
+                RefreshMonsterCaveMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Spawn))
+            {
+                _validEditPropertyList.Add(EEditType.Spawn);
+                _menuButtonArray[(int) EEditType.Spawn].SetEnable(true);
+                RefreshSpawmMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Spawn].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Active) && _curEnterType == EEnterType.Normal)
             {
                 _validEditPropertyList.Add(EEditType.Active);
                 _menuButtonArray[(int) EEditType.Active].SetEnable(true);
@@ -484,7 +520,7 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Camp].SetEnable(false);
             }
 
-            if (_tableUnit.CanEdit(EEditType.Direction) && _curEnterType != EEnterType.FromMonsterCave)
+            if (_tableUnit.CanEdit(EEditType.Direction) && _curEnterType == EEnterType.Normal)
             {
                 _validEditPropertyList.Add(EEditType.Direction);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(true);
@@ -495,7 +531,7 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(false);
             }
 
-            if (_tableUnit.CanEdit(EEditType.MoveDirection))
+            if (_tableUnit.CanEdit(EEditType.MoveDirection) && _curEnterType == EEnterType.Normal)
             {
                 _validEditPropertyList.Add(EEditType.MoveDirection);
                 _menuButtonArray[(int) EEditType.MoveDirection].SetEnable(true);
@@ -564,28 +600,6 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.NpcTask].SetEnable(false);
             }
 
-            if (_tableUnit.CanEdit(EEditType.MonsterCave))
-            {
-                _validEditPropertyList.Add(EEditType.MonsterCave);
-                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(true);
-                RefreshMonsterCaveMenu();
-            }
-            else
-            {
-                _menuButtonArray[(int) EEditType.MonsterCave].SetEnable(false);
-            }
-
-            if (_tableUnit.CanEdit(EEditType.Spawn))
-            {
-                _validEditPropertyList.Add(EEditType.Spawn);
-                _menuButtonArray[(int) EEditType.Spawn].SetEnable(true);
-                RefreshSpawmMenu();
-            }
-            else
-            {
-                _menuButtonArray[(int) EEditType.Spawn].SetEnable(false);
-            }
-
             const int menuAngle = 20;
             var totalAngle = menuAngle * _validEditPropertyList.Count;
             var baseAngle = 180 + totalAngle / 2 - menuAngle / 2;
@@ -636,7 +650,7 @@ namespace GameA
 
         private void RefreshPayloadMenu()
         {
-            var table = TableManager.Instance.GetEquipment(EditData.UnitExtra.ChildId);
+            var table = TableManager.Instance.GetEquipment(GetCurUnitExtra().ChildId);
             if (table != null)
             {
                 _menuButtonArray[(int) EEditType.Child].SetFgImage(
@@ -644,8 +658,8 @@ namespace GameA
             }
             else
             {
-                EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
-                EditData.UnitExtra.UpdateDefaultValueFromChildId();
+                GetCurUnitExtra().ChildId = (ushort) _tableUnit.ChildState[0];
+                GetCurUnitExtra().UpdateDefaultValueFromChildId();
             }
 
             var totalCount = _tableUnit.ChildState.Length;
@@ -657,7 +671,7 @@ namespace GameA
                     _payloadMenuList[i].SetEnable(true);
                     _payloadMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite(
                         TableManager.Instance.GetEquipment(_tableUnit.ChildState[i]).Icon));
-                    _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == EditData.UnitExtra.ChildId);
+                    _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == GetCurUnitExtra().ChildId);
                     _payloadMenuList[i].SetBgImageAngle(da * i);
                 }
                 else
@@ -859,11 +873,12 @@ namespace GameA
                     {
                         _spawnMenuList[i].SetColor(Color.green);
                     }
-                    else if (projectType == EProjectType.PT_Cooperation)
+                    else if (projectType == EProjectType.PS_Compete)
                     {
-                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(i));
+                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(i + 1));
                     }
-                    if (EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(i) == null)
+
+                    if (EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(i) == null)
                     {
                         _spawnMenuList[i].SetDeleteBtnActive(false);
                         _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("icon_add"));
@@ -874,7 +889,6 @@ namespace GameA
                         _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("SMainBoy0Icon"));
                     }
                 }
-                
             }
 
             _cachedView.CharacterRawImage.texture =
@@ -913,10 +927,11 @@ namespace GameA
 
         private void OnPayloadMenuClick(int inx)
         {
-            if (EditData.UnitExtra.ChildId != _tableUnit.ChildState[inx])
+            var curUnitExtra = GetCurUnitExtra();
+            if (curUnitExtra.ChildId != _tableUnit.ChildState[inx])
             {
-                EditData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
-                EditData.UnitExtra.UpdateDefaultValueFromChildId();
+                curUnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
+                curUnitExtra.UpdateDefaultValueFromChildId();
                 _upCtrlUnitPropertyEditAdvance.OnChildIdChanged();
             }
 
@@ -987,26 +1002,28 @@ namespace GameA
 
         private void OnSpawnMenuClick(int inx)
         {
-            var playerUnitExtra = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(inx);
+            var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(inx);
             if (playerUnitExtra == null)
             {
-                playerUnitExtra = PlayerUnitExtraDynamic.GetDefaultValue();
-                EditData.UnitExtra.PlayerUnitExtras.Set(playerUnitExtra, inx);
+                playerUnitExtra = UnitExtraDynamic.GetDefaultPlayerValue();
+                EditData.UnitExtra.InternalUnitExtras.Set(playerUnitExtra, inx);
             }
 
             _curSelectedPlayerIndex = inx;
+            _curPlayerExtra = playerUnitExtra;
+            _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
             RefreshSpawmMenu();
-            _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(playerUnitExtra);
         }
 
         private void OnSpawnMenuDelete(int inx)
         {
-            EditData.UnitExtra.PlayerUnitExtras.Set<PlayerUnitExtraDynamic>(null, inx);
+            EditData.UnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, inx);
             if (inx == _curSelectedPlayerIndex)
             {
                 _curSelectedPlayerIndex = -1;
                 _upCtrlUnitPropertyEditAdvance.Close();
             }
+
             RefreshSpawmMenu();
         }
 
@@ -1082,9 +1099,16 @@ namespace GameA
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
                 }
             }
-            else if (editType == EEditType.Spawn && _project.ProjectType == EProjectType.PT_Single)
+            else if (editType == EEditType.Spawn)
             {
-                OnSpawnMenuClick(0);
+                if (!_openSequence.IsPlaying())
+                {
+                    _curPlayerExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
+                    if (_curPlayerExtra != null)
+                    {
+                        _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
+                    }
+                }
             }
             else
             {
@@ -1106,9 +1130,9 @@ namespace GameA
 
         public void ReadPreinstall()
         {
-            if (_curEnterType == EEnterType.FromMonsterCave)
+            if (_curEnterType != EEnterType.Normal)
             {
-                OnBackToCaveBtn();
+                OnBackBtn();
             }
             else
             {
@@ -1121,36 +1145,67 @@ namespace GameA
 
         public void OnMonsterSettingBtn()
         {
-            _curEnterType = EEnterType.FromMonsterCave;
+            _curEnterType = EEnterType.MonsterSettingFromMonsterCave;
             int monsterId = EditData.UnitExtra.MonsterId;
             _tableUnit = TableManager.Instance.GetUnit(monsterId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
-        public void OnBackToCaveBtn()
+        public void OnBackBtn()
         {
+            if (_curEnterType == EEnterType.WeaponSettingFromSpawn)
+            {
+                EditData.UnitExtra.InternalUnitExtras.Set(_curWeaponExtra, _curSelectedPlayerIndex,
+                    UnitExtraDynamic.FieldTag.InternalUnitExtras, _curSettingWeaponIndex);
+            }
+
             _curEnterType = EEnterType.Normal;
-            _tableUnit = TableManager.Instance.GetUnit(UnitDefine.MonsterCaveId);
+            _tableUnit = TableManager.Instance.GetUnit(EditData.UnitDesc.Id);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
+        private int _curSettingWeaponIndex;
+        private UnitExtraDynamic _curPlayerExtra;
+
         public void OnPlayerWeaponSettingBtn(int index)
         {
-            _curEnterType = EEnterType.FromSpawn;
-//            int weaponId = EditData.UnitExtra.PlayerUnitExtras.Get<PlayerUnitExtraDynamic>(_curSelectedPlayerIndex).Weapons.Get<ushort>(index);
+            _curSettingWeaponIndex = index;
+            var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(CurSelectedPlayerIndex);
+            _curWeaponExtra = playerUnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
+            if (_curWeaponExtra == null)
+            {
+                _curWeaponExtra = new UnitExtraDynamic();
+                _curWeaponExtra.ChildId = UnitDefine.WaterGun;
+                _curWeaponExtra.UpdateDefaultValueFromChildId();
+            }
+
+            _curEnterType = EEnterType.WeaponSettingFromSpawn;
             _tableUnit = TableManager.Instance.GetUnit(UnitDefine.EnergyPoolId);
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
-        
+
+        public UnitExtraDynamic GetCurUnitExtra()
+        {
+            if (_curEnterType == EEnterType.WeaponSettingFromSpawn)
+            {
+                return _curWeaponExtra;
+            }
+
+            if (_curEditType == EEditType.Spawn)
+            {
+                return _curPlayerExtra;
+            }
+            return EditData.UnitExtra;
+        }
+
         public enum EEnterType
         {
             Normal,
-            FromMonsterCave,
-            FromSpawn
+            MonsterSettingFromMonsterCave,
+            WeaponSettingFromSpawn
         }
-
     }
 }

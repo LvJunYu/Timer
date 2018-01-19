@@ -28,13 +28,13 @@ namespace GameA
             }
         }
 
-        public void SetCur(List<ushort> weapons)
+        public void SetCur(List<UnitExtraDynamic> weaponExtras)
         {
             for (int i = 0; i < _cachedView.Imgs.Length; i++)
             {
-                if (weapons != null && i < weapons.Count && weapons[i] != 0)
+                if (weaponExtras != null && i < weaponExtras.Count && weaponExtras[i] != null)
                 {
-                    var table = TableManager.Instance.GetEquipment(weapons[i]);
+                    var table = TableManager.Instance.GetEquipment(weaponExtras[i].ChildId);
                     if (table != null)
                     {
                         _cachedView.Imgs[i].sprite = JoyResManager.Instance.GetSprite(table.Icon);

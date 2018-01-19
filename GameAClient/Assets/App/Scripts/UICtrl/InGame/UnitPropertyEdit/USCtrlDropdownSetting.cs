@@ -16,7 +16,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.Btn.onClick.AddListener(OnOpenDropdownBtn);
-            _cachedView.BgBtn.onClick.AddListener(CloseDropdown);
+            _cachedView.BgBtn.onClick.AddListener(() => SetDropdown(false));
             _toggles = _cachedView.DropdownObj.GetComponentsInChildren<Toggle>();
         }
 
@@ -42,7 +42,7 @@ namespace GameA
                     if (value && _curIndex != inx)
                     {
                         SetCur(inx);
-                        CloseDropdown();
+                        SetDropdown(false);
                         onIndexChanged(inx);
                     }
                 });
@@ -60,19 +60,18 @@ namespace GameA
 
         public void SetEnable(bool value)
         {
-            CloseDropdown();
+            SetDropdown(false);
             _cachedView.SetActiveEx(value);
         }
 
         private void OnOpenDropdownBtn()
         {
-            _dropdown = !_dropdown;
-            RefreshDropDownView();
+            SetDropdown(!_dropdown);
         }
 
-        private void CloseDropdown()
+        private void SetDropdown(bool value)
         {
-            _dropdown = false;
+            _dropdown = value;
             RefreshDropDownView();
         }
 

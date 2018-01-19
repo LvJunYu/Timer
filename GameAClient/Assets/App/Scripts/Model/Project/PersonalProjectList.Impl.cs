@@ -106,7 +106,7 @@ namespace GameA
                 if (_allDownloadList.Contains(project))
                 {
                     _allDownloadList.Remove(project);
-                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
+                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopDownloadListChanged);
                 }
             }
             else
@@ -114,7 +114,7 @@ namespace GameA
                 if (_allEdittingList.Contains(project))
                 {
                     _allEdittingList.Remove(project);
-                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopDownloadListChanged);
+                    MessengerAsync.Broadcast(EMessengerType.OnWorkShopProjectListChanged);
                 }
             }
 
