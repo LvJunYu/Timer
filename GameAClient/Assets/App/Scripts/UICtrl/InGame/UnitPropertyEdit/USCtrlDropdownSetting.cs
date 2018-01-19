@@ -1,4 +1,6 @@
 ﻿using System;
+using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,7 +43,7 @@ namespace GameA
                 {
                     if (value && _curIndex != inx)
                     {
-                        SetCur(inx);
+                        SetCur(inx + 1);
                         SetDropdown(false);
                         onIndexChanged(inx);
                     }
@@ -51,11 +53,7 @@ namespace GameA
 
         public void SetCur(int teamId)
         {
-            _curIndex = teamId;
-            if (_curIndex < _cachedView.ItemImages.Length)
-            {
-                _cachedView.CurImg.sprite = _cachedView.ItemImages[_curIndex].sprite;
-            }
+            _cachedView.CurImg.sprite = TeamManager.GetSpawnSprite(teamId);
         }
 
         public void SetEnable(bool value)

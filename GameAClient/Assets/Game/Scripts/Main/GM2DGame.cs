@@ -49,8 +49,9 @@ namespace GameA.Game
 
         /// <summary>
         /// 地图数据版本号 地图数据含义改变时变化 比如原来记录碰撞体区域，现在改为数据区域
+        /// 2: 出生点属性兼容判断
         /// </summary>
-        public const int MapVersion = 1;
+        public const int MapVersion = 2;
 
         public const string GameName = "GameMaker2D";
         private GameModeBase _gameMode;

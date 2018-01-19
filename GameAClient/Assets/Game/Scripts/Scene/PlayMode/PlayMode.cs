@@ -432,7 +432,7 @@ namespace GameA.Game
 
         private bool CheckPlayerValid(bool run = true)
         {
-            var spawnDatas = Scene2DManager.Instance.SpawnDatas;
+            var spawnDatas = Scene2DManager.Instance.GetSpawnData(GM2DGame.Instance.GameMode.Project.ProjectType);
             if (spawnDatas.Count == 0)
             {
                 if (run)
@@ -454,7 +454,7 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                     {
                         var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
-                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].GetUpPos()) as ShadowUnit;
+                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
                         if (shadowUnit != null)
                         {
                             shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
@@ -472,18 +472,19 @@ namespace GameA.Game
                     else
                     {
                         var mainGhost =
-                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].GetUpPos()) as MainPlayer;
+                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].UnitDesc.GetUpPos()) as MainPlayer;
                         if (mainGhost != null)
                         {
-                            mainGhost.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[0].Guid));
+                            mainGhost.SetUnitExtra(spawnDatas[0].UnitExtra);
                             PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
                         }
+
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
 
                     for (int i = 0; i < spawnDatas.Count; i++)
                     {
-                        byte team = DataScene2D.CurScene.GetUnitExtra(spawnDatas[i].Guid).TeamId;
+                        byte team = DataScene2D.CurScene.GetUnitExtra(spawnDatas[i].UnitDesc.Guid).TeamId;
                         TeamManager.Instance.AddTeam(team);
                     }
                 }
@@ -495,9 +496,8 @@ namespace GameA.Game
         ///多人模式下，basicNum是服务器随机的初始位置序号        
         public void AddPlayer(int basicNum, bool main = true, int roomInx = 0)
         {
-            var spawnDatas = Scene2DManager.Instance.SpawnDatas;
-            int spwanCount = spawnDatas.Count;
-            if (spwanCount == 0)
+            var spawnDatas = Scene2DManager.Instance.GetSpawnData(GM2DGame.Instance.GameMode.Project.ProjectType);
+            if (spawnDatas.Count == 0)
             {
                 LogHelper.Error("can not find a spwan!");
                 return;
@@ -510,11 +510,11 @@ namespace GameA.Game
                 id = UnitDefine.OtherPlayerId;
             }
 
-            var player = CreateRuntimeUnit(id, spawnDatas[basicNum].GetUpPos()) as PlayerBase;
+            var player = CreateRuntimeUnit(id, spawnDatas[basicNum].UnitDesc.GetUpPos()) as PlayerBase;
             if (player != null)
             {
                 PlayerManager.Instance.Add(player, roomInx);
-                player.SetUnitExtra(DataScene2D.CurScene.GetUnitExtra(spawnDatas[basicNum].Guid));
+                player.SetUnitExtra(spawnDatas[basicNum].UnitExtra);
                 TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
                 if (main)
                 {
@@ -611,10 +611,8 @@ namespace GameA.Game
                                 bool unitAEmpty = pairUnit.UnitA == UnitDesc.zero;
                                 int sceneIndex = unitAEmpty ? pairUnit.UnitBScene : pairUnit.UnitAScene;
                                 UnitDesc unitObject = unitAEmpty ? pairUnit.UnitB : pairUnit.UnitA;
-                                Scene2DManager.Instance.ActionFromOtherScene(sceneIndex, () =>
-                                {
-                                    DeleteUnit(unitObject);
-                                });
+                                Scene2DManager.Instance.ActionFromOtherScene(sceneIndex,
+                                    () => { DeleteUnit(unitObject); });
                             }
                         }
                     }

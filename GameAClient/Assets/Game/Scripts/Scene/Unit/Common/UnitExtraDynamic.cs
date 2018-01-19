@@ -411,6 +411,8 @@ namespace GameA.Game
             }
             unitExtraDynamic.TeamId = 1;
             unitExtraDynamic.MaxHp = (ushort) table.Hp;
+            unitExtraDynamic.JumpAbility = (ushort) table.JumpAbility;
+            unitExtraDynamic.MaxSpeedX = (ushort) table.MaxSpeed;
             return unitExtraDynamic;
         }
     }
@@ -634,8 +636,6 @@ namespace GameA.Game
                     return table.Hp > 0;
                 case EAdvanceAttribute.CureIncrease:
                     return table.Hp > 0;
-                case EAdvanceAttribute.Spawn:
-                    return UnitDefine.IsSpawn(id);
             }
 
             return false;

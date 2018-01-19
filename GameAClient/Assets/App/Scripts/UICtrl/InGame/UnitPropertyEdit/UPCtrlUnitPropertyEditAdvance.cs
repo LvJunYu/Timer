@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -212,9 +213,9 @@ namespace GameA
 //            _usAddStatesSetting.SetEnable(b);
             _usAddStatesSetting.SetEnable(false);
             _usDropsSetting.SetEnable(false);
-            _usPlayerWeaponSetting.SetEnable(UnitExtraHelper.CanEdit(EAdvanceAttribute.Spawn, id));
-            _usSpawnSetting.SetEnable(UnitExtraHelper.CanEdit(EAdvanceAttribute.Spawn, id));
-            _usMaxHpSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxHp);
+            _usPlayerWeaponSetting.SetEnable(UnitDefine.IsSpawn(id));
+            _usSpawnSetting.SetEnable(UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PS_Compete);
+            _usMaxHpSetting.SetCur(_mainCtrl.GetCurUnitExtra().MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;
             if (maxSpeedX == ushort.MaxValue)
@@ -235,8 +236,8 @@ namespace GameA
             _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
             _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
             _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
-            _usInjuredReduceSetting.SetCur(_mainCtrl.EditData.UnitExtra.InjuredReduce);
-            _usCurIncreaseSetting.SetCur(_mainCtrl.EditData.UnitExtra.CureIncrease);
+            _usInjuredReduceSetting.SetCur(_mainCtrl.GetCurUnitExtra().InjuredReduce);
+            _usCurIncreaseSetting.SetCur(_mainCtrl.GetCurUnitExtra().CureIncrease);
             _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
             _usMaxCreatedMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxCreatedMonster);
             _usMaxAliveMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxAliveMonster);
@@ -254,6 +255,11 @@ namespace GameA
             });
             _usDropsSetting.Set(_mainCtrl.EditData.UnitExtra.Drops, USCtrlAddItem.EItemType.Drops);
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
+            if (_mainCtrl.CurEditType == EEditType.Spawn)
+            {
+                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId);
+                _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras.ToList<UnitExtraDynamic>());
+            }
         }
 
         public override void Close()
@@ -353,36 +359,6 @@ namespace GameA
             _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
             _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
             _usAddStatesSetting.Set(_mainCtrl.GetCurUnitExtra().AddStates, USCtrlAddItem.EItemType.States);
-        }
-
-        public void OnSpawnMenuClick(int index)
-        {
-            if (index < 0)
-            {
-                return;
-            }
-
-            var playerUnitExtra = _mainCtrl.EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
-            if (playerUnitExtra != null)
-            {
-                OnSpawnMenuClick(playerUnitExtra);
-            }
-        }
-
-        public void OnSpawnMenuClick(UnitExtraDynamic playerUnitExtra)
-        {
-            if (playerUnitExtra == null)
-            {
-                LogHelper.Error("OnSpawnMenuClick, but PlayerUnitExtraDynamic is null");
-                return;
-            }
-
-            OpenMenu(EMenu.ActorSetting);
-            _usSpawnSetting.SetCur(playerUnitExtra.TeamId);
-            _usMaxHpSetting.SetCur(playerUnitExtra.MaxHp);
-            _usInjuredReduceSetting.SetCur(playerUnitExtra.InjuredReduce);
-            _usCurIncreaseSetting.SetCur(playerUnitExtra.CureIncrease);
-            _usPlayerWeaponSetting.SetCur(playerUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>());
         }
     }
 }
