@@ -60,6 +60,16 @@ namespace GameA
             get { return _curSelectedPlayerIndex; }
         }
 
+        public Project Project
+        {
+            get { return _project; }
+        }
+
+        public EEditType CurEditType
+        {
+            get { return _curEditType; }
+        }
+
         private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
         public UPCtrlUnitPropertyEditNpcTaskType UpCtrlUnitPropertyEditNpcTaskType;
         public UPCtrlUnitPropertyEditNpcTaskAdvance UpCtrlUnitPropertyEditNpcTaskAdvance;
@@ -344,6 +354,7 @@ namespace GameA
                     button.SetBgImageAngle(da * i);
                 }
             }
+
             //怪物洞穴
             list = _cachedView.MonsterCaveDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _monsterCaveMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -358,6 +369,7 @@ namespace GameA
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
                 button.SetBgImageAngle(da * i);
             }
+
             //出生点
             list = _cachedView.SpawnDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _spawnMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -431,11 +443,7 @@ namespace GameA
             }
             else if (_curEditType == EEditType.Spawn)
             {
-                _curPlayerExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
-                if (_curPlayerExtra != null)
-                {
-                    _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
-                }
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
             }
         }
 
@@ -869,13 +877,13 @@ namespace GameA
                 _spawnMenuList[i].SetSelected(i == _curSelectedPlayerIndex);
                 if (projectType != EProjectType.PT_Single)
                 {
-                    if (projectType == EProjectType.PT_Cooperation)
-                    {
-                        _spawnMenuList[i].SetColor(Color.green);
-                    }
-                    else if (projectType == EProjectType.PS_Compete)
+                    if (projectType == EProjectType.PS_Compete)
                     {
                         _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(i + 1));
+                    }
+                    else
+                    {
+                        _spawnMenuList[i].SetColor(Color.white);
                     }
 
                     if (EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(i) == null)
@@ -1011,7 +1019,7 @@ namespace GameA
 
             _curSelectedPlayerIndex = inx;
             _curPlayerExtra = playerUnitExtra;
-            _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
+            _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
             RefreshSpawmMenu();
         }
 
@@ -1103,11 +1111,7 @@ namespace GameA
             {
                 if (!_openSequence.IsPlaying())
                 {
-                    _curPlayerExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
-                    if (_curPlayerExtra != null)
-                    {
-                        _upCtrlUnitPropertyEditAdvance.OnSpawnMenuClick(_curPlayerExtra);
-                    }
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
                 }
             }
             else
@@ -1132,7 +1136,7 @@ namespace GameA
         {
             if (_curEnterType != EEnterType.Normal)
             {
-                OnBackBtn();
+                OnBackBtn(false);
             }
             else
             {
@@ -1152,9 +1156,9 @@ namespace GameA
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
-        public void OnBackBtn()
+        public void OnBackBtn(bool CheckValue = true)
         {
-            if (_curEnterType == EEnterType.WeaponSettingFromSpawn)
+            if (CheckValue && _curEnterType == EEnterType.WeaponSettingFromSpawn)
             {
                 EditData.UnitExtra.InternalUnitExtras.Set(_curWeaponExtra, _curSelectedPlayerIndex,
                     UnitExtraDynamic.FieldTag.InternalUnitExtras, _curSettingWeaponIndex);
@@ -1172,7 +1176,7 @@ namespace GameA
         public void OnPlayerWeaponSettingBtn(int index)
         {
             _curSettingWeaponIndex = index;
-            var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(CurSelectedPlayerIndex);
+            var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
             _curWeaponExtra = playerUnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
             if (_curWeaponExtra == null)
             {
@@ -1196,8 +1200,16 @@ namespace GameA
 
             if (_curEditType == EEditType.Spawn)
             {
+                _curPlayerExtra =
+                    EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
+                if (_curPlayerExtra == null)
+                {
+                    LogHelper.Error("Get InternalUnitExtras, but _curPlayerExtra == null");
+                    _curPlayerExtra = new UnitExtraDynamic();
+                }
                 return _curPlayerExtra;
             }
+
             return EditData.UnitExtra;
         }
 

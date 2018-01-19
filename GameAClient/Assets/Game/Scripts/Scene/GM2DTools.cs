@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine;

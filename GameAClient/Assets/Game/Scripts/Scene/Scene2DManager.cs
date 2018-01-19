@@ -68,9 +68,29 @@ namespace GameA.Game
             }
         }
 
-        public List<UnitDesc> SpawnDatas
+        public List<UnitEditData> GetSpawnData(EProjectType projectType)
         {
-            get { return GetDataScene2D(SqawnSceneIndex).SpawnDatas; }
+            List<UnitEditData> data = new List<UnitEditData>();
+            var spawnDataScene = GetDataScene2D(SqawnSceneIndex);
+            var spawnDatas = spawnDataScene.SpawnDatas;
+            {
+                for (int i = 0; i < spawnDatas.Count; i++)
+                {
+                    var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
+                    var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
+                    for (int j = 0; j < playerUnitExtras.Count; j++)
+                    {
+                        if (playerUnitExtras[j] != null)
+                        {
+                            var unitEditData = new UnitEditData();
+                            unitEditData.UnitDesc = spawnDatas[i];
+                            unitEditData.UnitExtra = playerUnitExtras[j];
+                            data.Add(unitEditData);
+                        }
+                    }
+                }
+            }
+            return data;
         }
 
         public void Dispose()
@@ -109,10 +129,12 @@ namespace GameA.Game
             {
                 if (_curScene != null)
                 {
-                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit && EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit &&
+                        EditMode.Instance.IsInState(EditModeState.Switch.Instance))
                     {
                         EditMode.Instance.StopSwitch();
                     }
+
                     PlayMode.Instance.ClearBullet();
                     _curScene.Exit();
                 }
@@ -120,7 +142,7 @@ namespace GameA.Game
 
             if (index >= _sceneList.Count)
             {
-                if (eChangeSceneType == EChangeSceneType.EditCreated) 
+                if (eChangeSceneType == EChangeSceneType.EditCreated)
                 {
                     CreateScene();
                 }
@@ -343,7 +365,7 @@ namespace GameA.Game
                 ChangeScene(oriSceneIndex, eChangeSceneType);
             }
         }
-        
+
         public void Undo()
         {
             if (_curScene != null)
@@ -359,7 +381,7 @@ namespace GameA.Game
                 _curScene.Redo();
             }
         }
-        
+
         public void CommitRecordBatch(EditRecordBatch editRecordBatch)
         {
             if (_curScene != null)
@@ -479,7 +501,7 @@ namespace GameA.Game
             PlayMode.Instance.CreateUnit(leftUnitDesc);
             PlayMode.Instance.CreateUnit(rightUnitDesc);
         }
-        
+
         public void Undo()
         {
             _editRecordManager.Undo();
@@ -489,7 +511,7 @@ namespace GameA.Game
         {
             _editRecordManager.Redo();
         }
-        
+
         public void CommitRecord(EditRecordBatch editRecordBatch)
         {
             _editRecordManager.CommitRecord(editRecordBatch);

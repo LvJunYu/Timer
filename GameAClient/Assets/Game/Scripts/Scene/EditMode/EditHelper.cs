@@ -279,7 +279,7 @@ namespace GameA.Game
 
             if (table.CanEdit(EEditType.Spawn))
             {
-//                unitEditData.UnitExtra = DataScene2D.CurScene.PlayerExtra;
+//                UnitExtraDynamic.GetDefaultPlayerValue(unitEditData.UnitExtra);
                 unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
             }
 

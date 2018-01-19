@@ -19,7 +19,7 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
-        private List<UnitDesc> _unitDescs = new List<UnitDesc>(MaxTeamCount);
+        private List<UnitEditData> _unitDatas = new List<UnitEditData>(MaxTeamCount);
         private List<byte> _teams = new List<byte>(MaxTeamCount);
         private ENetBattleTimeResult _eNetBattleTimeResult;
         private int _bestScore;
@@ -111,11 +111,11 @@ namespace GameA.Game
             AddScore(unit, PlayMode.Instance.SceneState.GemScore);
         }
 
-        public void AddPlayer(PlayerBase player, UnitDesc spawnUnitDesc)
+        public void AddPlayer(PlayerBase player, UnitEditData unitEditData)
         {
-            if (!_unitDescs.Contains(spawnUnitDesc))
+            if (!_unitDatas.Contains(unitEditData))
             {
-                _unitDescs.Add(spawnUnitDesc);
+                _unitDatas.Add(unitEditData);
             }
             byte teamId = player.GetUnitExtra().TeamId;
             if (!_playerDic.ContainsKey(teamId))
@@ -235,7 +235,7 @@ namespace GameA.Game
             _scoreDic.Clear();
             _playerDic.Clear();
             Teams.Clear();
-            _unitDescs.Clear();
+            _unitDatas.Clear();
         }
 
         public void Dispose()
@@ -272,7 +272,7 @@ namespace GameA.Game
         }
 
         /// 根据当前队伍数匹配
-        public int GetSpawnIndex(List<UnitDesc> spawnDatas, int basicNum)
+        public int GetSpawnIndex(List<UnitEditData> spawnDatas, int basicNum)
         {
             int spwanCount = spawnDatas.Count;
             for (int teamCount = _curTeamCount; teamCount < MaxTeamCount; teamCount++)
@@ -291,15 +291,15 @@ namespace GameA.Game
             return 0;
         }
 
-        private bool CheckTeamerCount(UnitDesc spawnData, int checkTeamCount = 0, bool checkTeam = true)
+        private bool CheckTeamerCount(UnitEditData unitEditData, int checkTeamCount = 0, bool checkTeam = true)
         {
-            if (_unitDescs.Contains(spawnData))
+            if (_unitDatas.Contains(unitEditData))
             {
                 return false;
             }
             if (checkTeam)
             {
-                var teamId = DataScene2D.CurScene.GetUnitExtra(spawnData.Guid).TeamId;
+                var teamId = DataScene2D.CurScene.GetUnitExtra(unitEditData.UnitDesc.Guid).TeamId;
                 return !_playerDic.ContainsKey(teamId) || _playerDic[teamId].Count <= checkTeamCount;
             }
             return true;
