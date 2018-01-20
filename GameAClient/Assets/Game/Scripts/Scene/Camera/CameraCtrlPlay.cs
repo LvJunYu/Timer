@@ -10,6 +10,8 @@ namespace GameA.Game
         private IntVec2 _cameraViewTileSize;
         private IntVec2 _cameraViewHalfTileSize;
         private IntRect _validMapTileRect;
+        public PlayerBase _cameraPlayer;
+        private int _curCameraPlayerIndex;
 
         /// <summary>
         /// 屏幕底部中点
@@ -18,12 +20,25 @@ namespace GameA.Game
 
         [SerializeField] private IntVec2 _targetRollPos;
 
-
         // 注意！！这个接口只能新手引导用
         public IntVec2 CurRollPos
         {
             get { return _rollPos; }
             set { _rollPos = value; }
+        }
+
+        public PlayerBase CameraPlayer
+        {
+            set { _cameraPlayer = value; }
+            get
+            {
+                if (_cameraPlayer == null)
+                {
+                    _cameraPlayer = PlayMode.Instance.MainPlayer;
+                }
+
+                return _cameraPlayer;
+            }
         }
 
         public override void OnMapReady()
@@ -43,6 +58,8 @@ namespace GameA.Game
         public override void Enter()
         {
             base.Enter();
+            _curCameraPlayerIndex = 0;
+            _cameraPlayer = null;
             InnerCameraManager.RendererCamera.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
             UpdatePosByPlayer();
         }
@@ -64,7 +81,6 @@ namespace GameA.Game
             UpdatePosByPlayer();
         }
 
-
         private void InitMapCameraParam()
         {
             Vector2 cameraViewWorldSize =
@@ -77,10 +93,21 @@ namespace GameA.Game
             _validMapTileRect.Max += new IntVec2(5, 1) * ConstDefineGM2D.ServerTileScale;
             _validMapTileRect.Min -= new IntVec2(5, 3) * ConstDefineGM2D.ServerTileScale;
         }
+        
+        public void ResetCameraPlayer()
+        {
+            _curCameraPlayerIndex = 0;
+            _cameraPlayer = PlayMode.Instance.MainPlayer;
+        }
+
+        public void SetNextCameraPlayer()
+        {
+            _cameraPlayer = TeamManager.Instance.GetNextPlayer(ref _curCameraPlayerIndex);
+        }
 
         private void UpdatePosByPlayer()
         {
-            PlayerBase player = TeamManager.Instance.CameraPlayer;
+            PlayerBase player = CameraPlayer;
             if (null == player)
             {
                 return;

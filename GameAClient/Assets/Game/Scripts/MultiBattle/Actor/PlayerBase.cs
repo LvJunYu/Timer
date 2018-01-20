@@ -707,7 +707,7 @@ namespace GameA.Game
                         {
                             if (IsMain)
                             {
-                                TeamManager.Instance.ResetCameraPlayer();
+                                CameraManager.Instance.CameraCtrlPlay.ResetCameraPlayer();
                             }
                             OnRevive();
                         }
@@ -751,7 +751,7 @@ namespace GameA.Game
                 if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
                     UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
                 {
-                    TeamManager.Instance.SetNextCameraPlayer();
+                    CameraManager.Instance.CameraCtrlPlay.SetNextCameraPlayer();
                 }
             }
 

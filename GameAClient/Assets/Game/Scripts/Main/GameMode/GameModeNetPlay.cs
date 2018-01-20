@@ -250,7 +250,7 @@ namespace GameA.Game
                                 SetPhase(EPhase.Normal);
                             }
                         }
-                        PlayMode.Instance.AddPlayer(_bornSeed, isMain, commandData.UserRoomInx);
+                        PlayMode.Instance.AddPlayer(commandData.UserRoomInx, isMain);
                         break;
                 }
             }

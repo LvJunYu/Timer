@@ -218,6 +218,10 @@ namespace GameA
 
         private void Publsih()
         {
+            if (!PlayMode.Instance.CheckSpawn())
+            {
+                return;
+            }
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
             if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
             {

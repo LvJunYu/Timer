@@ -395,7 +395,7 @@ namespace GameA
             EditData = _originData;
             EditData.UnitExtra = _originData.UnitExtra.Clone();
             _project = GM2DGame.Instance.GameMode.Project;
-//            _project.ProjectType = EProjectType.PS_Compete;//todo 临时
+//            _project.ProjectType = EProjectType.PS_Compete; //todo 临时
             if (_project == null)
             {
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
@@ -846,31 +846,41 @@ namespace GameA
         private void RefreshSpawmMenu()
         {
             var projectType = _project.ProjectType;
+            var playersDic = TeamManager.Instance.PlayerUnitExtraDic;
             for (int i = 0; i < _spawnMenuList.Length; i++)
             {
                 _spawnMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
-                _spawnMenuList[i].SetSelected(i == _curSelectedPlayerIndex);
                 if (projectType != EProjectType.PT_Single)
                 {
-                    if (projectType == EProjectType.PS_Compete)
+                    _spawnMenuList[i].SetSelected(i == _curSelectedPlayerIndex);
+                    bool hasSet;
+                    var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(i);
+                    if (playerUnitExtra == null)
                     {
-                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(i + 1));
-                    }
-                    else
-                    {
-                        _spawnMenuList[i].SetColor(Color.white);
-                    }
+                        hasSet = playersDic.ContainsKey(i);
+                        if (hasSet)
+                        {
+                            _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(playersDic[i].TeamId));
+                        }
+                        else
+                        {
+                            _spawnMenuList[i].SetColor(Color.white);
+                        }
 
-                    if (EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(i) == null)
-                    {
+                        _spawnMenuList[i].SetBtnInteractable(!hasSet);
                         _spawnMenuList[i].SetDeleteBtnActive(false);
-                        _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("icon_add"));
                     }
                     else
                     {
+                        hasSet = true;
+                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(playerUnitExtra.TeamId));
+                        _spawnMenuList[i].SetBtnInteractable(true);
                         _spawnMenuList[i].SetDeleteBtnActive(true);
                         _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("SMainBoy0Icon"));
                     }
+
+                    _spawnMenuList[i]
+                        .SetFgImage(JoyResManager.Instance.GetSprite(hasSet ? "SMainBoy0Icon" : "icon_add"));
                 }
             }
 
@@ -985,15 +995,17 @@ namespace GameA
 
         private void OnSpawnMenuClick(int inx)
         {
-            if (inx == -1)
+            if (inx == -1 || !_spawnMenuList[inx].GetBtnInteractable())
             {
                 return;
             }
+
             var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(inx);
             if (playerUnitExtra == null)
             {
-                playerUnitExtra = UnitExtraDynamic.GetDefaultPlayerValue();
+                playerUnitExtra = UnitExtraDynamic.GetDefaultPlayerValue(inx, _project.ProjectType);
                 EditData.UnitExtra.InternalUnitExtras.Set(playerUnitExtra, inx);
+                TeamManager.Instance.SetPlayerUnitExtra(inx, playerUnitExtra);
             }
 
             _curSelectedPlayerIndex = inx;
@@ -1005,6 +1017,7 @@ namespace GameA
         private void OnSpawnMenuDelete(int inx)
         {
             EditData.UnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, inx);
+            TeamManager.Instance.SetPlayerUnitExtra(inx, null);
             if (inx == _curSelectedPlayerIndex)
             {
                 _curSelectedPlayerIndex = -1;
@@ -1141,12 +1154,19 @@ namespace GameA
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
+        public void OnTeamChanged(int teamId)
+        {
+            _curUnitExtra.TeamId = (byte) teamId;
+            _spawnMenuList[_curSelectedPlayerIndex].SetColor(TeamManager.GetTeamColor(teamId));
+        }
+        
         public UnitExtraDynamic GetCurUnitExtra()
         {
             if (_curEditType == EEditType.Spawn || _curEnterType == EEnterType.WeaponSettingFromSpawn)
             {
                 return _curUnitExtra;
             }
+
             return EditData.UnitExtra;
         }
 

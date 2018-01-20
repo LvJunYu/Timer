@@ -402,14 +402,24 @@ namespace GameA.Game
             GM2DTools.ToEngine(unitExtraKeyValuePair, this);
         }
 
-        public static UnitExtraDynamic GetDefaultPlayerValue(UnitExtraDynamic unitExtraDynamic = null)
+        public static UnitExtraDynamic GetDefaultPlayerValue(int index = 0,
+            EProjectType projectTpye = EProjectType.PT_Single, UnitExtraDynamic unitExtraDynamic = null)
         {
             var table = TableManager.Instance.GetUnit(UnitDefine.MainPlayerId);
             if (unitExtraDynamic == null)
             {
                 unitExtraDynamic = new UnitExtraDynamic();
             }
-            unitExtraDynamic.TeamId = 1;
+
+            if (projectTpye == EProjectType.PS_Compete)
+            {
+                unitExtraDynamic.TeamId = (byte) (index + 1);
+            }
+            else
+            {
+                unitExtraDynamic.TeamId = 1;
+            }
+
             unitExtraDynamic.MaxHp = (ushort) table.Hp;
             unitExtraDynamic.JumpAbility = (ushort) table.JumpAbility;
             unitExtraDynamic.MaxSpeedX = (ushort) table.MaxSpeed;

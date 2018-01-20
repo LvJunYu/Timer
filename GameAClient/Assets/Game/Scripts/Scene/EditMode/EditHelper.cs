@@ -182,13 +182,21 @@ namespace GameA.Game
 
         public static UnitEditData GetUnitDefaultData(int id)
         {
-            UnitEditData data;
-            if (!_unitDefaultDataDict.TryGetValue(id, out data))
+            UnitEditData defaultData;
+            if (!_unitDefaultDataDict.TryGetValue(id, out defaultData))
             {
-                data = InternalGetUnitDefaultData(id);
-                _unitDefaultDataDict.Add(id, data);
+                defaultData = InternalGetUnitDefaultData(id);
+                _unitDefaultDataDict.Add(id, defaultData);
             }
-
+            UnitEditData data = new UnitEditData();
+            data.UnitDesc = defaultData.UnitDesc;
+            data.UnitExtra = defaultData.UnitExtra.Clone();
+            //第一个出生点特殊处理
+            if (UnitDefine.IsSpawn(id) &&
+                Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex).SpawnDatas.Count == 0)
+            {
+                data.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
+            }
             //地块特殊处理
             if (UnitDefine.IsEarth(id))
             {
@@ -280,7 +288,11 @@ namespace GameA.Game
             if (table.CanEdit(EEditType.Spawn))
             {
 //                UnitExtraDynamic.GetDefaultPlayerValue(unitEditData.UnitExtra);
-                unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
+//                if (Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex).SpawnDatas.Count ==
+//                    0)
+//                {
+//                    unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
+//                }
             }
 
             if (table.CanEdit(EEditType.MonsterCave))
