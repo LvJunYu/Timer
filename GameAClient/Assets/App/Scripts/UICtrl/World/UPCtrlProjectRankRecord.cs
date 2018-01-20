@@ -41,7 +41,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(_mainCtrl.Project.ProjectId, startInx, _pageSize, () =>
+            _mainCtrl.Project.RequestRecordRankList(startInx, _pageSize, () =>
             {
                 _dataList = _data.AllList;
                 if (_isOpen)

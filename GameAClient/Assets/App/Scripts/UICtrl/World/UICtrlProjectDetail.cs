@@ -10,11 +10,11 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>, ICheckOverlay
     {
-        public static string EmptyStr = "-";
-        public const string _countFormat = "({0})";
-        private const string _maxShow = "(999+)";
+        private static string EmptyStr = "-";
+        private const string CountFormat = "({0})";
+        private const string MaxShow = "(999+)";
         private Project _project;
-        private bool _isMyself = false;
+        private bool _isMyself;
         private bool _isMulti;
 
         private bool _isRequestDownload;
@@ -85,8 +85,13 @@ namespace GameA
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
-                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
-                    b => ClickMenu(index, b));
+                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i], b =>
+                {
+                    if (b)
+                    {
+                        ChangeMenu((EMenu) index);
+                    }
+                });
                 if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
                 {
                     _menuCtrlArray[i].Close();
@@ -106,15 +111,8 @@ namespace GameA
                 return;
             }
 
-            if (!_project.IsValid)
+            if (!CheckProjectValid())
             {
-                SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
-                if (_project.UserFavorite)
-                {
-                    _project.UpdateFavorite(false);
-                }
-
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                 return;
             }
 
@@ -351,7 +349,7 @@ namespace GameA
             _onlyChangeView = false;
             DictionaryTools.SetContentText(_cachedView.ScoreTxt, _project.ScoreFormat);
             DictionaryTools.SetContentText(_cachedView.LikeCountTxt,
-                string.Format(_countFormat, _project.LikeCount + _project.UnlikeCount));
+                string.Format(CountFormat, _project.LikeCount + _project.UnlikeCount));
         }
 
         private void OnCreateBtn()
@@ -368,8 +366,8 @@ namespace GameA
             _cachedView.CommentSelectedCount.SetActiveEx(count > 0);
             if (count > 0)
             {
-                _cachedView.CommentCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
-                _cachedView.CommentSelectedCount.text = count < 1000 ? string.Format(_countFormat, count) : _maxShow;
+                _cachedView.CommentCount.text = count < 1000 ? string.Format(CountFormat, count) : MaxShow;
+                _cachedView.CommentSelectedCount.text = count < 1000 ? string.Format(CountFormat, count) : MaxShow;
             }
         }
 
@@ -445,7 +443,7 @@ namespace GameA
 
         private void OnPostCommentBtn()
         {
-            if (Project == null || Project.ProjectUserData == null) return;
+            if (_project == null || _project.ProjectUserData == null) return;
             if (!CheckPlayed("玩过才能评论哦~~现在进入关卡吗？"))
             {
                 return;
@@ -462,7 +460,7 @@ namespace GameA
             }
 
             _isPostComment = true;
-            Project.SendComment(_cachedView.CommentInput.text, flag =>
+            _project.SendComment(_cachedView.CommentInput.text, flag =>
             {
                 _isPostComment = false;
                 if (flag)
@@ -475,16 +473,16 @@ namespace GameA
                         _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
                     }
 
-                    Project.Request();
+                    _project.Request();
                 }
             });
         }
 
         private void OnHeadBtn()
         {
-            if (Project != null)
+            if (_project != null)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(Project.UserInfoDetail);
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_project.UserInfoDetail);
             }
         }
 
@@ -587,20 +585,30 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("进入关卡失败");
             });
         }
+        
+        private bool CheckProjectValid()
+        {
+            if (!_project.IsValid)
+            {
+                SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
+                if (_project.UserFavorite)
+                {
+                    _project.UpdateFavorite(false);
+                }
+
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
+                return false;
+            }
+
+            return true;
+        }
 
         private void OnProjectDataChanged(long projectId)
         {
-            if (_isOpen && Project != null && Project.ProjectId == projectId)
+            if (_isOpen && _project != null && _project.ProjectId == projectId)
             {
-                if (!Project.IsValid)
+                if (!CheckProjectValid())
                 {
-                    SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
-                    if (Project.UserFavorite)
-                    {
-                        Project.UpdateFavorite(false);
-                    }
-
-                    SocialGUIManager.Instance.CloseUI<UICtrlProjectDetail>();
                     return;
                 }
 
@@ -657,9 +665,9 @@ namespace GameA
 
         private void OnChangeToApp()
         {
-            if (_isOpen && Project != null)
+            if (_isOpen && _project != null)
             {
-                Project.Request();
+                _project.Request();
                 if (_curMenuCtrl != null)
                 {
                     _curMenuCtrl.OnChangeToApp();
@@ -669,8 +677,8 @@ namespace GameA
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
         {
-            if (Project == null) return;
-            if (userInfoDetail == Project.UserInfoDetail)
+            if (_project == null) return;
+            if (userInfoDetail == _project.UserInfoDetail)
             {
                 RefreshBtns();
             }
@@ -693,14 +701,6 @@ namespace GameA
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
-            }
-        }
-
-        private void ClickMenu(int selectInx, bool open)
-        {
-            if (open)
-            {
-                ChangeMenu((EMenu) selectInx);
             }
         }
 

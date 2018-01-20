@@ -53,6 +53,7 @@ namespace GameA.Game
                 {
                     _playerUnitExtraDic = GetPlayerUnitExtraDic();
                 }
+
                 return _playerUnitExtraDic;
             }
         }
@@ -123,6 +124,7 @@ namespace GameA.Game
             {
                 _playerUnitExtraDic = GetPlayerUnitExtraDic();
             }
+
             if (unitExtra == null)
             {
                 if (_playerUnitExtraDic.ContainsKey(index))
@@ -198,6 +200,29 @@ namespace GameA.Game
             }
 
             return Color.red;
+        }
+
+        public static string GetTeamColorName(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return "red";
+                case 1:
+                    return "green";
+                case 2:
+                    return "orange";
+                case 3:
+                    return "yellow";
+                case 4:
+                    return "cyan";
+                case 5:
+                    return "blue";
+                case 6:
+                    return "purple";
+            }
+
+            return "red";
         }
 
         public PlayerBase GetNextPlayer(ref int curCameraPlayerIndex)
