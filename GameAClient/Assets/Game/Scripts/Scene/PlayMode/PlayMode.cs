@@ -430,9 +430,25 @@ namespace GameA.Game
             _sceneState.MonsterKilled++;
         }
 
+        public bool CheckSpawn()
+        {
+            if (GM2DGame.Instance.GameMode.IsMulti)
+            {
+                var spawnDatas = Scene2DManager.Instance.GetSpawnData();
+                int minPlayerCount = _sceneState.Statistics.NetBattleMaxPlayerCount;
+                if (spawnDatas.Count < minPlayerCount)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog, string.Format("设置角色数不足{0}，无法发布", minPlayerCount));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
         private bool CheckPlayerValid(bool run = true)
         {
-            var spawnDatas = Scene2DManager.Instance.GetSpawnData(GM2DGame.Instance.GameMode.Project.ProjectType);
+            var spawnDatas = Scene2DManager.Instance.GetSpawnData();
             if (spawnDatas.Count == 0)
             {
                 if (run)
@@ -445,10 +461,10 @@ namespace GameA.Game
 
             if (run)
             {
-                if (!SceneState.IsMulti)
+                if (!_sceneState.IsMulti)
                 {
                     //单人
-                    AddPlayer(0);
+                    AddPlayer();
                     //乱入对决，创建影子Unit
                     if (GM2DGame.Instance.GameMode.PlayShadowData &&
                         GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
@@ -467,7 +483,7 @@ namespace GameA.Game
                     //多人
                     if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit)
                     {
-                        AddPlayer(0);
+                        AddPlayer();
                     }
                     else
                     {
@@ -484,7 +500,7 @@ namespace GameA.Game
 
                     for (int i = 0; i < spawnDatas.Count; i++)
                     {
-                        byte team = DataScene2D.CurScene.GetUnitExtra(spawnDatas[i].UnitDesc.Guid).TeamId;
+                        byte team = spawnDatas[i].UnitExtra.TeamId;
                         TeamManager.Instance.AddTeam(team);
                     }
                 }
@@ -494,28 +510,29 @@ namespace GameA.Game
         }
 
         ///多人模式下，basicNum是服务器随机的初始位置序号        
-        public void AddPlayer(int basicNum, bool main = true, int roomInx = 0)
+        public void AddPlayer(int roomInx = 0, bool main = true)
         {
-            var spawnDatas = Scene2DManager.Instance.GetSpawnData(GM2DGame.Instance.GameMode.Project.ProjectType);
+            var spawnDatas = Scene2DManager.Instance.GetSpawnData();
             if (spawnDatas.Count == 0)
             {
                 LogHelper.Error("can not find a spwan!");
                 return;
             }
-
-            basicNum = TeamManager.Instance.GetSpawnIndex(spawnDatas, basicNum);
-            int id = UnitDefine.MainPlayerId;
-            if (!main)
+            int id;
+            if (main)
+            {
+                id = UnitDefine.MainPlayerId;
+            }
+            else
             {
                 id = UnitDefine.OtherPlayerId;
             }
-
-            var player = CreateRuntimeUnit(id, spawnDatas[basicNum].UnitDesc.GetUpPos()) as PlayerBase;
+            var player = CreateRuntimeUnit(id, spawnDatas[roomInx].UnitDesc.GetUpPos()) as PlayerBase;
             if (player != null)
             {
                 PlayerManager.Instance.Add(player, roomInx);
-                player.SetUnitExtra(spawnDatas[basicNum].UnitExtra);
-                TeamManager.Instance.AddPlayer(player, spawnDatas[basicNum]);
+                player.SetUnitExtra(spawnDatas[roomInx].UnitExtra);
+                TeamManager.Instance.AddPlayer(player, spawnDatas[roomInx]);
                 if (main)
                 {
                     _mainPlayer = PlayerManager.Instance.MainPlayer;
@@ -530,11 +547,7 @@ namespace GameA.Game
 
         public bool StartEdit()
         {
-            if (!CheckPlayerValid(false))
-            {
-                return false;
-            }
-
+            CheckPlayerValid(false);
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
@@ -706,5 +719,6 @@ namespace GameA.Game
 
             _bullets.Clear();
         }
+
     }
 }

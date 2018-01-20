@@ -19,6 +19,7 @@ namespace GameA.Game
         private bool _run;
         private int _num;
         private int _totalCount;
+        private int _spawnIndex;
 
         public float MapProcess
         {
@@ -86,6 +87,7 @@ namespace GameA.Game
 
         private IEnumerator ParseData(GM2DMapData mapData, GameManager.EStartType startType)
         {
+            _spawnIndex = 0;
             _mapProcess = 0f;
             var timer = new GameTimer();
             //先读取获得玩家通用属性
@@ -275,8 +277,9 @@ namespace GameA.Game
                 {
                     var playerUnitExtra = unitExtra.Clone();
                     playerUnitExtra.MoveDirection = 0;
-                    unitExtra.InternalUnitExtras.Set(playerUnitExtra, 0);
+                    unitExtra.InternalUnitExtras.Set(playerUnitExtra, _spawnIndex);
                     unitExtra.TeamId = 0;
+                    _spawnIndex++;
                 }
             }
         }

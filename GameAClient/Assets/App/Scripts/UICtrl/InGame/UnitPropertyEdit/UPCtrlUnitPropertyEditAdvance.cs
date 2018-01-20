@@ -128,14 +128,9 @@ namespace GameA
                 _usSpawnSetting.SetSprite(i, TeamManager.GetSpawnSprite(teamId));
             }
 
-            _usSpawnSetting.AddOnTeamChangedListener(index =>
-            {
-                _mainCtrl.EditData.UnitExtra.InternalUnitExtras
-                    .Get<UnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex)
-                    .TeamId = (byte) (index + 1);
-            });
+            _usSpawnSetting.AddOnTeamChangedListener(index => _mainCtrl.OnTeamChanged(index + 1));
             _cachedView.MonsterSettingBtn.onClick.AddListener(() => _mainCtrl.OnMonsterSettingBtn());
-            _cachedView.BackBtn.onClick.AddListener(() => _mainCtrl.OnBackBtn());
+            _cachedView.BackBtn.onClick.AddListener(() => _mainCtrl.Reset());
             _usPlayerWeaponSetting = new USCtrSetItem();
             _usPlayerWeaponSetting.Init(_cachedView.PlayerWeaponSetting);
             _usPlayerWeaponSetting.AddItemClickListener(index => _mainCtrl.OnPlayerWeaponSettingBtn(index));
@@ -143,7 +138,9 @@ namespace GameA
             (
                 index =>
                 {
-                    var playerUnitExtra = _mainCtrl.EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_mainCtrl.CurSelectedPlayerIndex);
+                    var playerUnitExtra =
+                        _mainCtrl.EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_mainCtrl
+                            .CurSelectedPlayerIndex);
                     playerUnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, index);
                     _usPlayerWeaponSetting.SetCur(playerUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>());
                 });
@@ -161,20 +158,7 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
-            int id;
-            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.MonsterSettingFromMonsterCave)
-            {
-                id = _mainCtrl.EditData.UnitExtra.MonsterId;
-            }
-            else if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.WeaponSettingFromSpawn)
-            {
-                id = UnitDefine.EnergyPoolId;
-            }
-            else
-            {
-                id = _mainCtrl.EditData.UnitDesc.Id;
-            }
-
+            int id = _mainCtrl.CurId;
             var table = TableManager.Instance.GetUnit(id);
             _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                       UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxHp, id));
@@ -214,7 +198,8 @@ namespace GameA
             _usAddStatesSetting.SetEnable(false);
             _usDropsSetting.SetEnable(false);
             _usPlayerWeaponSetting.SetEnable(UnitDefine.IsSpawn(id));
-            _usSpawnSetting.SetEnable(UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PS_Compete);
+            _usSpawnSetting.SetEnable(
+                UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PS_Compete);
             _usMaxHpSetting.SetCur(_mainCtrl.GetCurUnitExtra().MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;
@@ -257,8 +242,9 @@ namespace GameA
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
             if (_mainCtrl.CurEditType == EEditType.Spawn)
             {
-                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId);
-                _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras.ToList<UnitExtraDynamic>());
+                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId - 1);
+                _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras
+                    .ToList<UnitExtraDynamic>());
             }
         }
 

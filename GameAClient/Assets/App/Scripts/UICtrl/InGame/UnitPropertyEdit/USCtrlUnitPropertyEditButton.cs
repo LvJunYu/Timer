@@ -97,5 +97,15 @@ namespace GameA
         {
             _cachedView.DeleteBtn.SetActiveEx(value);
         }
+
+        public void SetBtnInteractable(bool value)
+        {
+            _cachedView.Button.interactable = value;
+        }
+
+        public bool GetBtnInteractable()
+        {
+            return _cachedView.Button.interactable;
+        }
     }
 }

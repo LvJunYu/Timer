@@ -68,28 +68,27 @@ namespace GameA.Game
             }
         }
 
-        public List<UnitEditData> GetSpawnData(EProjectType projectType)
+        public List<UnitEditData> GetSpawnData()
         {
             List<UnitEditData> data = new List<UnitEditData>();
             var spawnDataScene = GetDataScene2D(SqawnSceneIndex);
             var spawnDatas = spawnDataScene.SpawnDatas;
+            for (int i = 0; i < spawnDatas.Count; i++)
             {
-                for (int i = 0; i < spawnDatas.Count; i++)
+                var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
+                var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
+                for (int j = 0; j < playerUnitExtras.Count; j++)
                 {
-                    var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
-                    var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
-                    for (int j = 0; j < playerUnitExtras.Count; j++)
+                    if (playerUnitExtras[j] != null)
                     {
-                        if (playerUnitExtras[j] != null)
-                        {
-                            var unitEditData = new UnitEditData();
-                            unitEditData.UnitDesc = spawnDatas[i];
-                            unitEditData.UnitExtra = playerUnitExtras[j];
-                            data.Add(unitEditData);
-                        }
+                        var unitEditData = new UnitEditData();
+                        unitEditData.UnitDesc = spawnDatas[i];
+                        unitEditData.UnitExtra = playerUnitExtras[j];
+                        data.Add(unitEditData);
                     }
                 }
             }
+
             return data;
         }
 
