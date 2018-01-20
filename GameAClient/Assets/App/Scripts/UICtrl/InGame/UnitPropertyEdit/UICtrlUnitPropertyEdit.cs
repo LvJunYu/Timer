@@ -985,6 +985,10 @@ namespace GameA
 
         private void OnSpawnMenuClick(int inx)
         {
+            if (inx == -1)
+            {
+                return;
+            }
             var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(inx);
             if (playerUnitExtra == null)
             {
@@ -1168,7 +1172,7 @@ namespace GameA
 
             if (_curEditType == EEditType.Spawn)
             {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                OnSpawnMenuClick(_curSelectedPlayerIndex);
                 return true;
             }
 
