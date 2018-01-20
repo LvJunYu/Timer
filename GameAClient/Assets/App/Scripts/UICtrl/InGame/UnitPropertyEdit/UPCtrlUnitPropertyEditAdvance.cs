@@ -158,20 +158,7 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
-            int id;
-            if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.MonsterSettingFromMonsterCave)
-            {
-                id = _mainCtrl.EditData.UnitExtra.MonsterId;
-            }
-            else if (_mainCtrl.CurEnterType == UICtrlUnitPropertyEdit.EEnterType.WeaponSettingFromSpawn)
-            {
-                id = UnitDefine.EnergyPoolId;
-            }
-            else
-            {
-                id = _mainCtrl.EditData.UnitDesc.Id;
-            }
-
+            int id = _mainCtrl.CurId;
             var table = TableManager.Instance.GetUnit(id);
             _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                       UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxHp, id));

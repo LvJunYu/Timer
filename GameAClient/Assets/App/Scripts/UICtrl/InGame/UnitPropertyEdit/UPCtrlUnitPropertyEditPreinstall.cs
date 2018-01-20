@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -42,7 +43,7 @@ namespace GameA
         private void RequestData()
         {
             var list = LocalUser.Instance.UnitPreinstallList;
-            int id = _mainCtrl.EditData.UnitDesc.Id;
+            int id = GetPreinstallUnitId();
             list.CheckLocalOrRequest(id, () =>
             {
                 _dataList = list.PreinstallsCache;
@@ -92,13 +93,24 @@ namespace GameA
             });
         }
 
+        private int GetPreinstallUnitId()
+        {
+            int id = _mainCtrl.EditData.UnitDesc.Id;
+            if (UnitDefine.IsSpawn(id))
+            {
+                id -= (int) _mainCtrl.Project.ProjectType;
+            }
+
+            return id;
+        }
+
         private void OnSavePreinstallBtn()
         {
             if (_curIndex == -1) return;
             Msg_Preinstall msg = _mainCtrl.EditData.UnitExtra.ToUnitPreInstall();
             msg.Rotation = _mainCtrl.EditData.UnitDesc.Rotation;
             msg.Name = _dataList[_curIndex].PreinstallData.Name;
-            msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
+            msg.UnitId = GetPreinstallUnitId();
             RemoteCommands.UpdateUnitPreinstall(_dataList[_curIndex].PreinstallId, msg, unitMsg =>
                 {
                     if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)
@@ -151,7 +163,7 @@ namespace GameA
             }
 
             msg.Name = string.Format("预设 {0}", index + 1);
-            msg.UnitId = _mainCtrl.EditData.UnitDesc.Id;
+            msg.UnitId = GetPreinstallUnitId();
             RemoteCommands.CreateUnitPreinstall(msg, unitMsg =>
                 {
                     if (unitMsg.ResultCode == (int) EUnitPreinstallOperateResult.UPOR_Success)

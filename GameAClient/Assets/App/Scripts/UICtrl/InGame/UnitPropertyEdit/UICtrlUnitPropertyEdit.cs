@@ -46,6 +46,7 @@ namespace GameA
         private int _curSelectedPlayerIndex;
         private Project _project;
         private UnitExtraDynamic _curUnitExtra;
+        private int _curId;
 
         //npc 之间的引用数据类型
         public List<NpcTaskDynamic> NpcTaskDatas;
@@ -68,6 +69,11 @@ namespace GameA
         public EEditType CurEditType
         {
             get { return _curEditType; }
+        }
+
+        public int CurId
+        {
+            get { return _curId; }
         }
 
         private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
@@ -1144,8 +1150,9 @@ namespace GameA
         private void Enter(EEnterType eEnterType, int unitId)
         {
             _curEnterType = eEnterType;
+            _curId = unitId;
             _tableUnit = TableManager.Instance.GetUnit(unitId);
-            if (_curEnterType == EEnterType.Normal && UnitDefine.IsMonster(_tableUnit.Id))
+            if (eEnterType == EEnterType.Normal && UnitDefine.IsMonster(_tableUnit.Id))
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
