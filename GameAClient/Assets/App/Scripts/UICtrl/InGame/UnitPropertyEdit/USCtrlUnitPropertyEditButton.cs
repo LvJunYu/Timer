@@ -15,7 +15,7 @@ namespace GameA
         {
             get { return _cachedView as USViewUnitPropertyEditRotateMenuButton; }
         }
-        
+
         public void AddClickListener(UnityAction callback)
         {
             _cachedView.Button.onClick.AddListener(callback);
@@ -30,6 +30,18 @@ namespace GameA
         public void SetFgImage(Sprite sprite)
         {
             _cachedView.FgImage.sprite = sprite;
+        }
+
+        public void SetFgImage(bool isRotation)
+        {
+            if (isRotation)
+            {
+                _cachedView.FgImage.rectTransform.localEulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                _cachedView.FgImage.rectTransform.localEulerAngles = new Vector3(0, 180, 0);
+            }
         }
 
         public void SetBgImage(Sprite sprite)
@@ -51,10 +63,10 @@ namespace GameA
         {
             DictionaryTools.SetContentText(_cachedView.FgText, text);
         }
-        
+
         public void SetText2(string text)
         {
-            USViewUnitPropertyEditMenuButton btn = _cachedView as  USViewUnitPropertyEditMenuButton;
+            USViewUnitPropertyEditMenuButton btn = _cachedView as USViewUnitPropertyEditMenuButton;
             if (btn != null)
             {
                 DictionaryTools.SetContentText(btn.FgText2, text);

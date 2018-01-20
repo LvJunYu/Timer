@@ -918,7 +918,7 @@ namespace GameA
             }
 
             _menuButtonArray[(int) EEditType.NpcType]
-                .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
+                .SetFgImage(val == 0);
         }
 
         private void OnActiveMenuClick(int inx)
