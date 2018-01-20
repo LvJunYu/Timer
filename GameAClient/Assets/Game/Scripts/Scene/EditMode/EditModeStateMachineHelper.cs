@@ -14,6 +14,7 @@ namespace GameA.Game
         private Gesture _lastDragGesture;
         private bool _pinchActive;
         private Gesture _lastPinchGesture;
+        private UICtrlUnitPropertyEdit _uiCtrlUnitPropertyEdit;
 
         public EditModeStateMachineHelper(StateMachine<EditMode, EditModeState.Base> stateMachine)
         {
@@ -358,7 +359,14 @@ namespace GameA.Game
             {
                 return;
             }
-            if (EditMode.Instance.OpenUnitPropertyEdit) return;
+            if (_uiCtrlUnitPropertyEdit == null)
+            {
+                _uiCtrlUnitPropertyEdit = SocialGUIManager.Instance.GetUI<UICtrlUnitPropertyEdit>();
+            }
+            if (_uiCtrlUnitPropertyEdit != null && _uiCtrlUnitPropertyEdit.IsOpen)
+            {
+                return;
+            }
             if (null != _stateMachine.GlobalState)
             {
                 _stateMachine.GlobalState.OnMouseWheelChange(arg1, arg2);

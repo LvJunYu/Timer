@@ -135,7 +135,7 @@ namespace GameA
                     .TeamId = (byte) (index + 1);
             });
             _cachedView.MonsterSettingBtn.onClick.AddListener(() => _mainCtrl.OnMonsterSettingBtn());
-            _cachedView.BackBtn.onClick.AddListener(() => _mainCtrl.OnBackBtn());
+            _cachedView.BackBtn.onClick.AddListener(() => _mainCtrl.Reset());
             _usPlayerWeaponSetting = new USCtrSetItem();
             _usPlayerWeaponSetting.Init(_cachedView.PlayerWeaponSetting);
             _usPlayerWeaponSetting.AddItemClickListener(index => _mainCtrl.OnPlayerWeaponSettingBtn(index));
@@ -257,7 +257,7 @@ namespace GameA
             _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
             if (_mainCtrl.CurEditType == EEditType.Spawn)
             {
-                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId);
+                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId - 1);
                 _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras.ToList<UnitExtraDynamic>());
             }
         }

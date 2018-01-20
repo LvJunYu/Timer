@@ -1,6 +1,5 @@
 ﻿using System;
 using GameA.Game;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +16,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Btn.onClick.AddListener(OnOpenDropdownBtn);
+            _cachedView.Btn.onClick.AddListener(() => SetDropdown(!_dropdown));
             _cachedView.BgBtn.onClick.AddListener(() => SetDropdown(false));
             _toggles = _cachedView.DropdownObj.GetComponentsInChildren<Toggle>();
         }
@@ -43,7 +42,7 @@ namespace GameA
                 {
                     if (value && _curIndex != inx)
                     {
-                        SetCur(inx + 1);
+                        SetCur(inx);
                         SetDropdown(false);
                         onIndexChanged(inx);
                     }
@@ -51,20 +50,16 @@ namespace GameA
             }
         }
 
-        public void SetCur(int teamId)
+        public void SetCur(int curIndex)
         {
-            _cachedView.CurImg.sprite = TeamManager.GetSpawnSprite(teamId);
+            _curIndex = curIndex;
+            _cachedView.CurImg.sprite = TeamManager.GetSpawnSprite(curIndex + 1);
         }
 
         public void SetEnable(bool value)
         {
             SetDropdown(false);
             _cachedView.SetActiveEx(value);
-        }
-
-        private void OnOpenDropdownBtn()
-        {
-            SetDropdown(!_dropdown);
         }
 
         private void SetDropdown(bool value)
@@ -78,7 +73,7 @@ namespace GameA
             _cachedView.DropdownObj.SetActiveEx(_dropdown);
             if (_dropdown)
             {
-                _cachedView.DropdownObj.transform.rectTransform().position = _cachedView.DropdownRtf.position;
+                _cachedView.DropdownObj.transform.position = _cachedView.DropdownRtf.position;
                 for (int i = 0; i < _toggles.Length; i++)
                 {
                     _toggles[i].isOn = i == _curIndex;

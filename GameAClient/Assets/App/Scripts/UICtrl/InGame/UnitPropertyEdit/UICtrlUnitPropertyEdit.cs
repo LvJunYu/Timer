@@ -17,7 +17,7 @@ namespace GameA
         private const float RotateEndOptionsPosRadius = 195;
         private const float OptionArrowRadius = 190;
         private const float MenuArrowRadius = 18;
-        public const int MessageStringCountMax = 45;
+        private const int MessageStringCountMax = 45;
         private UPCtrlUnitPropertyEditAdvance _upCtrlUnitPropertyEditAdvance;
         private UPCtrlUnitPropertyEditPreinstall _upCtrlUnitPropertyEditPreinstall;
         private UnitEditData _originData;
@@ -45,7 +45,7 @@ namespace GameA
         private EEnterType _curEnterType;
         private int _curSelectedPlayerIndex;
         private Project _project;
-        private UnitExtraDynamic _curWeaponExtra;
+        private UnitExtraDynamic _curUnitExtra;
 
         //npc 之间的引用数据类型
         public List<NpcTaskDynamic> NpcTaskDatas;
@@ -392,15 +392,8 @@ namespace GameA
             _startPos = SocialGUIManager.ScreenToRectLocal(pos, _cachedView.Trans);
             base.OnOpen(parameter);
             _originData = (UnitEditData) parameter;
-            _curEnterType = EEnterType.Normal;
             EditData = _originData;
             EditData.UnitExtra = _originData.UnitExtra.Clone();
-            _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
-            if (UnitDefine.IsMonster(_tableUnit.Id))
-            {
-                EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
-            }
-
             _project = GM2DGame.Instance.GameMode.Project;
 //            _project.ProjectType = EProjectType.PS_Compete;//todo 临时
             if (_project == null)
@@ -409,15 +402,12 @@ namespace GameA
                 return;
             }
 
-            RefreshView();
-            OnEditTypeMenuClick(_validEditPropertyList[0]);
+            Reset();
             _upCtrlUnitPropertyEditPreinstall.Open();
-            EditMode.Instance.OpenUnitPropertyEdit = true;
         }
 
         protected override void OnClose()
         {
-            EditMode.Instance.OpenUnitPropertyEdit = false;
             _upCtrlUnitPropertyEditAdvance.Close();
             _upCtrlUnitPropertyEditNpcDiaType.Close();
             UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
@@ -429,22 +419,7 @@ namespace GameA
         protected override void OnOpenAnimationComplete()
         {
             base.OnOpenAnimationComplete();
-            if (_curEditType == EEditType.Camp)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-            }
-            else if (_curEditType == EEditType.Child)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
-            }
-            else if (_curEditType == EEditType.MonsterCave)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
-            }
-            else if (_curEditType == EEditType.Spawn)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-            }
+            CheckOpenAdvanceEdit();
         }
 
         private void RefreshView()
@@ -1018,7 +993,7 @@ namespace GameA
             }
 
             _curSelectedPlayerIndex = inx;
-            _curPlayerExtra = playerUnitExtra;
+            _curUnitExtra = playerUnitExtra;
             _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
             RefreshSpawmMenu();
         }
@@ -1086,37 +1061,12 @@ namespace GameA
                 _rootArray[(int) type].SetActiveEx(type == editType);
             }
 
-            if (editType == EEditType.Camp)
+            if (!_openSequence.IsPlaying())
             {
-                if (!_openSequence.IsPlaying())
+                if (!CheckOpenAdvanceEdit())
                 {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                    _upCtrlUnitPropertyEditAdvance.Close();
                 }
-            }
-            else if (editType == EEditType.Child)
-            {
-                if (!_openSequence.IsPlaying())
-                {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
-                }
-            }
-            else if (editType == EEditType.MonsterCave)
-            {
-                if (!_openSequence.IsPlaying())
-                {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
-                }
-            }
-            else if (editType == EEditType.Spawn)
-            {
-                if (!_openSequence.IsPlaying())
-                {
-                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-                }
-            }
-            else
-            {
-                _upCtrlUnitPropertyEditAdvance.Close();
             }
 
             //任务型npc
@@ -1136,7 +1086,7 @@ namespace GameA
         {
             if (_curEnterType != EEnterType.Normal)
             {
-                OnBackBtn(false);
+                Reset();
             }
             else
             {
@@ -1147,70 +1097,82 @@ namespace GameA
             _upCtrlUnitPropertyEditNpcDiaType.RefreshView();
         }
 
+        public void Reset()
+        {
+            Enter(EEnterType.Normal, EditData.UnitDesc.Id);
+        }
+
         public void OnMonsterSettingBtn()
         {
-            _curEnterType = EEnterType.MonsterSettingFromMonsterCave;
-            int monsterId = EditData.UnitExtra.MonsterId;
-            _tableUnit = TableManager.Instance.GetUnit(monsterId);
-            RefreshView();
-            OnEditTypeMenuClick(_validEditPropertyList[0]);
+            Enter(EEnterType.MonsterSettingFromMonsterCave, EditData.UnitExtra.MonsterId);
         }
-
-        public void OnBackBtn(bool CheckValue = true)
-        {
-            if (CheckValue && _curEnterType == EEnterType.WeaponSettingFromSpawn)
-            {
-                EditData.UnitExtra.InternalUnitExtras.Set(_curWeaponExtra, _curSelectedPlayerIndex,
-                    UnitExtraDynamic.FieldTag.InternalUnitExtras, _curSettingWeaponIndex);
-            }
-
-            _curEnterType = EEnterType.Normal;
-            _tableUnit = TableManager.Instance.GetUnit(EditData.UnitDesc.Id);
-            RefreshView();
-            OnEditTypeMenuClick(_validEditPropertyList[0]);
-        }
-
-        private int _curSettingWeaponIndex;
-        private UnitExtraDynamic _curPlayerExtra;
 
         public void OnPlayerWeaponSettingBtn(int index)
         {
-            _curSettingWeaponIndex = index;
             var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
-            _curWeaponExtra = playerUnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
-            if (_curWeaponExtra == null)
+            var curWeaponExtra = playerUnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(index);
+            if (curWeaponExtra == null)
             {
-                _curWeaponExtra = new UnitExtraDynamic();
-                _curWeaponExtra.ChildId = UnitDefine.WaterGun;
-                _curWeaponExtra.UpdateDefaultValueFromChildId();
+                curWeaponExtra = new UnitExtraDynamic();
+                curWeaponExtra.ChildId = UnitDefine.WaterGun;
+                curWeaponExtra.UpdateDefaultValueFromChildId();
+                EditData.UnitExtra.InternalUnitExtras.Set(curWeaponExtra, _curSelectedPlayerIndex,
+                    UnitExtraDynamic.FieldTag.InternalUnitExtras, index);
             }
 
-            _curEnterType = EEnterType.WeaponSettingFromSpawn;
-            _tableUnit = TableManager.Instance.GetUnit(UnitDefine.EnergyPoolId);
+            _curUnitExtra = curWeaponExtra;
+            Enter(EEnterType.WeaponSettingFromSpawn, UnitDefine.EnergyPoolId);
+        }
+
+        private void Enter(EEnterType eEnterType, int unitId)
+        {
+            _curEnterType = eEnterType;
+            _tableUnit = TableManager.Instance.GetUnit(unitId);
+            if (_curEnterType == EEnterType.Normal && UnitDefine.IsMonster(_tableUnit.Id))
+            {
+                EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
+            }
+
             RefreshView();
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
 
         public UnitExtraDynamic GetCurUnitExtra()
         {
-            if (_curEnterType == EEnterType.WeaponSettingFromSpawn)
+            if (_curEditType == EEditType.Spawn || _curEnterType == EEnterType.WeaponSettingFromSpawn)
             {
-                return _curWeaponExtra;
+                return _curUnitExtra;
+            }
+            return EditData.UnitExtra;
+        }
+
+        private bool CheckOpenAdvanceEdit()
+        {
+            if (_curEditType == EEditType.Camp)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                return true;
+            }
+
+            if (_curEditType == EEditType.Child)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+                return true;
+            }
+
+            if (_curEditType == EEditType.MonsterCave)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
+                return true;
             }
 
             if (_curEditType == EEditType.Spawn)
             {
-                _curPlayerExtra =
-                    EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(_curSelectedPlayerIndex);
-                if (_curPlayerExtra == null)
-                {
-                    LogHelper.Error("Get InternalUnitExtras, but _curPlayerExtra == null");
-                    _curPlayerExtra = new UnitExtraDynamic();
-                }
-                return _curPlayerExtra;
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                return true;
             }
 
-            return EditData.UnitExtra;
+            return false;
         }
 
         public enum EEnterType
