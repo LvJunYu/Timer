@@ -12,6 +12,7 @@ namespace GameA.Game
         private IntRect _validMapTileRect;
         public PlayerBase _cameraPlayer;
         private int _curCameraPlayerIndex;
+        private CameraEffect _cameraEffect;
 
         /// <summary>
         /// 屏幕底部中点
@@ -39,6 +40,13 @@ namespace GameA.Game
 
                 return _cameraPlayer;
             }
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            _cameraEffect = new CameraEffect();
+            _cameraEffect.Init(InnerCameraManager.RendererCamera);
         }
 
         public override void OnMapReady()
@@ -79,6 +87,10 @@ namespace GameA.Game
         public override void UpdateLogic(float deltaTime)
         {
             UpdatePosByPlayer();
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.UpdateLogic(deltaTime);
+            }
         }
 
         private void InitMapCameraParam()
@@ -93,7 +105,7 @@ namespace GameA.Game
             _validMapTileRect.Max += new IntVec2(5, 1) * ConstDefineGM2D.ServerTileScale;
             _validMapTileRect.Min -= new IntVec2(5, 3) * ConstDefineGM2D.ServerTileScale;
         }
-        
+
         public void ResetCameraPlayer()
         {
             _curCameraPlayerIndex = 0;
@@ -183,6 +195,35 @@ namespace GameA.Game
 
             _rollPos.x = Mathf.Clamp(_rollPos.x, _validMapTileRect.Min.x + _cameraViewHalfTileSize.x,
                 _validMapTileRect.Max.x - _cameraViewHalfTileSize.x);
+        }
+
+        public void PlayEffect(Action changeAction, Action endAction)
+        {
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.Play(changeAction, endAction);
+            }
+            else
+            {
+                if (changeAction != null)
+                {
+                    changeAction.Invoke();
+                }
+
+                if (endAction != null)
+                {
+                    endAction.Invoke();
+                }
+            }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.Stop();
+            }
         }
     }
 }

@@ -185,5 +185,10 @@ namespace GameA.Game
             UnityEngine.Object.Destroy(_mainCamera.gameObject);
             _instance = null;
         }
+
+        public void Reset()
+        {
+            _cameraCtrlPlay.Reset();
+        }
     }
 }

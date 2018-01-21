@@ -109,6 +109,7 @@ namespace GameA.Game
             RopeManager.Instance.Reset();
             PlayerManager.Instance.Reset();
             TeamManager.Instance.Reset();
+            CameraManager.Instance.Reset();
             _sceneState.Reset();
 
             for (int i = 0; i < _traps.Count; i++)
@@ -448,6 +449,7 @@ namespace GameA.Game
         
         private bool CheckPlayerValid(bool run = true)
         {
+            Scene2DManager.Instance.ChangeScene(Scene2DManager.Instance.SqawnSceneIndex, EChangeSceneType.ChangeScene);
             var spawnDatas = Scene2DManager.Instance.GetSpawnData();
             if (spawnDatas.Count == 0)
             {

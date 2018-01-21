@@ -23,6 +23,7 @@ namespace GameA.Game
         protected IntVec2 _ropeOffset;
 
         [SerializeField] protected IntVec2 _revivePos;
+        protected int _reviveScene;
 
         protected Box _box;
         protected ReviveEffect _reviveEffect = new ReviveEffect();
@@ -289,6 +290,7 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
             _gun.Play();
             _revivePos = _curPos;
+            _reviveScene = Scene2DManager.Instance.CurSceneIndex;
             _siTouLe = false;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
@@ -491,8 +493,8 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1}",
-                    _roomUser == null ? -1 : _roomUser.Guid, _revivePos));
+                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
+                    _roomUser == null ? -1 : _roomUser.Guid, _revivePos, _reviveScene));
             }
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
@@ -500,6 +502,7 @@ namespace GameA.Game
                 GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
             }
             _eUnitState = EUnitState.Reviving;
+            Scene2DManager.Instance.ChangeScene(_reviveScene, EChangeSceneType.ChangeScene);
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                 GM2DTools.TileToWorld(_revivePos), 8, () =>
@@ -624,6 +627,7 @@ namespace GameA.Game
         public override void OnRevivePos(IntVec2 pos)
         {
             _revivePos = pos;
+            _reviveScene = Scene2DManager.Instance.CurSceneIndex;
         }
 
         public void Step(int stepY = 0)

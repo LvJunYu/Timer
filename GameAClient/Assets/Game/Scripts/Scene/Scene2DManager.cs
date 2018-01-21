@@ -141,11 +141,7 @@ namespace GameA.Game
 
             if (index >= _sceneList.Count)
             {
-                if (eChangeSceneType == EChangeSceneType.EditCreated)
-                {
-                    CreateScene();
-                }
-                else if (eChangeSceneType == EChangeSceneType.ParseMap)
+                if (eChangeSceneType == EChangeSceneType.EditCreated || eChangeSceneType == EChangeSceneType.ParseMap)
                 {
                     CreateScene();
                 }
@@ -161,8 +157,21 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-                OnMapChanged();
-                _curScene.Enter();
+//                if (GameRun.Instance.IsPlaying)
+//                {
+//                    GM2DGame.Instance.Pause();
+//                    CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
+//                    {
+//                        GM2DGame.Instance.Continue();
+//                        OnMapChanged();
+//                        _curScene.Enter();
+//                    });
+//                }
+//                else
+                {
+                    OnMapChanged();
+                    _curScene.Enter();
+                }
             }
         }
 
