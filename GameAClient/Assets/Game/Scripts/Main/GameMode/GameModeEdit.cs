@@ -320,6 +320,7 @@ namespace GameA.Game
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditMode();
                 SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                 InputManager.Instance.HideGameInput();
             }
         }
@@ -349,6 +350,7 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 //                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>();
             InputManager.Instance.ShowGameInput();
             GameRun.Instance.Playing();
         }

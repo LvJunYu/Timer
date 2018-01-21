@@ -1,5 +1,4 @@
-﻿using System;
-using GameA.Game;
+﻿using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
@@ -10,9 +9,8 @@ namespace GameA
     {
         private const string WaitingStr = "等待中...";
         private const string BgImgFormat = "img_room_{0}";
-        private const string SelectedImgFormat = "img_room_{0}_s";
-        private UserInfoDetail _userInfoDetail;
-        private int _index;
+//        private const string SelectedImgFormat = "img_room_{0}_s";
+        private RoomUser _user;
 
         public void SetState(EState eState)
         {
@@ -22,11 +20,14 @@ namespace GameA
             _cachedView.TitleTxt.text = GetTitle(eState);
             
             _cachedView.BgImage.SetActiveEx(eState != EState.Waiting && eState!= EState.Disable);
-            var dic = TeamManager.Instance.PlayerUnitExtraDic;
-            UnitExtraDynamic unitExtra;
-            if (dic.TryGetValue(_index, out unitExtra))
+            if (_user != null)
             {
-                _cachedView.BgImage.sprite = GetBgSprite(unitExtra.TeamId);
+                var dic = TeamManager.Instance.PlayerUnitExtraDic;
+                UnitExtraDynamic unitExtra;
+                if (dic.TryGetValue(_user.Inx, out unitExtra))
+                {
+                    _cachedView.BgImage.sprite = GetBgSprite(unitExtra.TeamId);
+                }
             }
         }
 
@@ -47,7 +48,7 @@ namespace GameA
             {
                 case EState.Owner:
                 case EState.Prepared:
-                    return _userInfoDetail.UserInfoSimple.NickName;
+                    return _user.Name;
                 case EState.Waiting:
                     return WaitingStr;
             }
@@ -62,6 +63,24 @@ namespace GameA
             UnPrepared,
             Waiting,
             Disable,
+        }
+
+        public void Set(RoomUser roomUser)
+        {
+            _user = roomUser;
+            RefreshView();
+        }
+
+        private void RefreshView()
+        {
+            if (_user == null)
+            {
+                SetState(EState.Waiting);
+            }
+            else
+            {
+                //todo
+            }
         }
     }
 }

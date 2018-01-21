@@ -296,6 +296,12 @@ namespace GameA.Game
             return true;
         }
 
+        protected override void InitUI()
+        {
+            base.InitUI();
+//            SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>();
+        }
+
         private void SetPhase(EPhase phase)
         {
             _ePhase = phase;
