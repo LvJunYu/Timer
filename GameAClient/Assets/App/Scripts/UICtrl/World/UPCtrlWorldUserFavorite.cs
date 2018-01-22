@@ -40,7 +40,7 @@ namespace GameA
                 startInx = _contentList.Count;
             }
 
-            _data.Request(LocalUser.Instance.Account.UserGuid, startInx, _pageSize, _mask,
+            _data.Request(LocalUser.Instance.Account.UserGuid, startInx, _pageSize, Mask,
                 EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
                     _projectList = _data.AllList;

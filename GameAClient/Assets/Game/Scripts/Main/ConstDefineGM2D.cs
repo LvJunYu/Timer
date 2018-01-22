@@ -32,6 +32,9 @@ namespace GameA.Game
 
         public const float InverseTextureSize = 0.0078125f;
 
+        public static int MinStarY = 250;
+        public static int MinGhostY = 100;
+        public static int MaxGhostHeight = 150;
         public static IntVec2 MaxSingleMapRectSize = new IntVec2(300, 300) * ServerTileScale;
         public static IntVec2 MaxMultiMapRectSize = new IntVec2(60, 30) * ServerTileScale;
         public static IntVec2 MinMapRectSize = new IntVec2(20, 10) * ServerTileScale;

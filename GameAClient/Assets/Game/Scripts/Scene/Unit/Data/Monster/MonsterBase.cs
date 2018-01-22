@@ -352,7 +352,7 @@ namespace GameA.Game
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
         }
 
-        internal override void OnObjectDestroy()
+        internal override void OnDispose()
         {
             if (GameRun.Instance.IsPlaying)
             {
@@ -361,13 +361,11 @@ namespace GameA.Game
                 {
                     PlayMode.Instance.CreateRuntimeUnit(drops.Get<ushort>(0), _curPos);
                 }
-
-                if (_monsterCave != null)
-                {
-                    _monsterCave.OnMonsterDestroy(this);
-                }
             }
-            base.OnObjectDestroy();
+            if (_monsterCave != null)
+            {
+                _monsterCave.OnMonsterDestroy(this);
+            }
         }
 
         protected void SetInput(EInputType eInputType, bool value)

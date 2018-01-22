@@ -43,27 +43,25 @@ namespace GameA.Game
             get { return _node; }
         }
 
-        public virtual bool Init(Table_Background table, SceneNode node)
+        public virtual bool Init(Table_Background table, SceneNode node, bool beforeScene = false, bool setCenter = false)
         {
             _tableBg = table;
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
             int zDepth = table.Depth + UnitDefine.ZOffsetBackground;
-            //草、藤蔓、前面的地面、左右柱子最前显示
-            if (table.Depth <= 4)
+            //最前显示
+            if (beforeScene)
             {
                 zDepth -= 850;
             }
-
             _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
-            //背景居中
-            if (table.Depth == 14)
+            //居中
+            if (setCenter)
             {
                 int offset = size.x / ConstDefineGM2D.ServerTileScale -
                              (int) BgScene2D.Instance.GetRect(table.Depth).width;
-                _basePos += new Vector3(-offset / 2, -20, 0);
+                _basePos += new Vector3(-offset / 2, -21, 0);
             }
-
             _curPos = _basePos;
             if (!TryCreateObject())
             {
@@ -91,9 +89,9 @@ namespace GameA.Game
             Update(_baseFollowPos);
         }
 
-        public virtual void ResetBasePos(Vector3 basePosOffset)
+        public virtual void SetBasePos(Vector3 basePos)
         {
-            _basePos += basePosOffset;
+            _basePos = new Vector3(basePos.x, basePos.y, _basePos.z);
         }
 
         public virtual void Update(Vector3 followPos)

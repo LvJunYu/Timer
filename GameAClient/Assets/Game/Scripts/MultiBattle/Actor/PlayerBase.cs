@@ -679,10 +679,15 @@ namespace GameA.Game
             _gun.Stop();
         }
 
-        internal override void OnObjectDestroy()
+        internal override void OnDispose()
         {
             Messenger.RemoveListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             Messenger.RemoveListener(EMessengerType.OnApplicationQuit, OnApplicationQuit);
+            base.OnDispose();
+        }
+
+        internal override void OnObjectDestroy()
+        {
             _gun.OnObjectDestroy();
             base.OnObjectDestroy();
             _reviveEffect.Free();

@@ -19,7 +19,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(startInx, _pageSize, _mask, () =>
+            _data.Request(startInx, _pageSize, Mask, () =>
                 {
                     _isRequesting = false;
                     _projectList = _data.AllList;
