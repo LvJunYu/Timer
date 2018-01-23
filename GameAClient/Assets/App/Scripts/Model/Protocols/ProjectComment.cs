@@ -19,10 +19,6 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private UserInfoSimple _targetUserInfo;
-        /// <summary>
-        /// 
-        /// </summary>
         private string _comment;
         /// <summary>
         /// 
@@ -76,16 +72,6 @@ namespace GameA
             get { return _userInfo; }
             set { if (_userInfo != value) {
                 _userInfo = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public UserInfoSimple TargetUserInfo { 
-            get { return _targetUserInfo; }
-            set { if (_targetUserInfo != value) {
-                _targetUserInfo = value;
                 SetDirty();
             }}
         }
@@ -191,11 +177,6 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            if (null == _targetUserInfo) {
-                _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
-            } else {
-                _targetUserInfo.OnSyncFromParent(msg.TargetUserInfo);
-            }
             _comment = msg.Comment;     
             _projectId = msg.ProjectId;     
             _projectMainId = msg.ProjectMainId;     
@@ -223,12 +204,6 @@ namespace GameA
                 }
                 _userInfo.CopyMsgData(msg.UserInfo);
             }
-            if(null != msg.TargetUserInfo){
-                if (null == _targetUserInfo){
-                    _targetUserInfo = new UserInfoSimple(msg.TargetUserInfo);
-                }
-                _targetUserInfo.CopyMsgData(msg.TargetUserInfo);
-            }
             _comment = msg.Comment;           
             _projectId = msg.ProjectId;           
             _projectMainId = msg.ProjectMainId;           
@@ -255,12 +230,6 @@ namespace GameA
                     _userInfo = new UserInfoSimple();
                 }
                 _userInfo.DeepCopy(obj.UserInfo);
-            }
-            if(null != obj.TargetUserInfo){
-                if (null == _targetUserInfo){
-                    _targetUserInfo = new UserInfoSimple();
-                }
-                _targetUserInfo.DeepCopy(obj.TargetUserInfo);
             }
             _comment = obj.Comment;           
             _projectId = obj.ProjectId;           
@@ -293,7 +262,6 @@ namespace GameA
 
         public ProjectComment () { 
             _userInfo = new UserInfoSimple();
-            _targetUserInfo = new UserInfoSimple();
             _firstReply = new ProjectCommentReply();
         }
         #endregion

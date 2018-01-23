@@ -15,11 +15,6 @@ namespace GameA
             get { return _userInfoDetail; }
         }
 
-        public UserInfoDetail TargetUserInfoDetail
-        {
-            get { return _targetUserInfoDetail; }
-        }
-
         public ProjectCommentReplyData ReplyList
         {
             get { return _replyList; }
@@ -68,7 +63,7 @@ namespace GameA
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
-            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
+//            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
         }
 
         public void Reply(string content, Action successCallback = null, Action failedCallback = null)
@@ -76,7 +71,7 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyProjectComment(_id, content, false, 0, res =>
+                RemoteCommands.ReplyProjectComment(_id, content, 0, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {

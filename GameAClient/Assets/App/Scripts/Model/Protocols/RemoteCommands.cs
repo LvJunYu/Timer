@@ -966,12 +966,10 @@ namespace GameA
 		/// </summary>
 		/// <param name="commentId"></param>
 		/// <param name="content">内容</param>
-		/// <param name="replyOther">是否回复他人</param>
 		/// <param name="targetReplyId">回复的回复ID</param>
         public static void ReplyProjectComment (
             long commentId,
             string content,
-            bool replyOther,
             long targetReplyId,
             Action<Msg_SC_CMD_ReplyProjectComment> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -984,7 +982,6 @@ namespace GameA
             // 回复关卡评论
             msg.CommentId = commentId;
             msg.Content = content;
-            msg.ReplyOther = replyOther;
             msg.TargetReplyId = targetReplyId;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReplyProjectComment>(
                 SoyHttpApiPath.ReplyProjectComment, msg, ret => {
