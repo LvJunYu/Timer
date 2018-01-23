@@ -11,6 +11,7 @@ namespace GameA
         private UMCtrlProjectReplyComment _firstReplay;
         private List<ProjectCommentReply> _dataList;
         private List<UMCtrlProjectReplyComment> _umCache = new List<UMCtrlProjectReplyComment>(8);
+        private bool _showVersionLine;
 
         public override object Data
         {
@@ -39,6 +40,11 @@ namespace GameA
             RefreshView();
         }
 
+        public void SetVersionLineEnable(bool value)
+        {
+            _showVersionLine = value;
+        }
+
         protected override void RequestData(bool append = false)
         {
             if (_comment == null) return;
@@ -59,7 +65,7 @@ namespace GameA
         {
             _cachedView.DeleteDock.SetActive(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
                                              SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
-            _cachedView.ReplayBtn.SetActiveEx(false);
+//            _cachedView.ReplayBtn.SetActiveEx(false);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
             UserInfoSimple user = _comment.UserInfoDetail.UserInfoSimple;
@@ -71,6 +77,8 @@ namespace GameA
                 string.Format(_contentFormat, user.NickName, _comment.Comment));
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultIconTexture);
+            _cachedView.VersionLineDock.SetActive(_showVersionLine);
+            _cachedView.Line.SetActive(!_showVersionLine);
             RefreshReplyDock();
             Canvas.ForceUpdateCanvases();
         }

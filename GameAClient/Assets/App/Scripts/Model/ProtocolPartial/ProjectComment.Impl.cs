@@ -7,7 +7,6 @@ namespace GameA
     public partial class ProjectComment
     {
         private UserInfoDetail _userInfoDetail;
-        private UserInfoDetail _targetUserInfoDetail;
         private ProjectCommentReplyData _replyList = new ProjectCommentReplyData();
 
         public UserInfoDetail UserInfoDetail
@@ -44,7 +43,7 @@ namespace GameA
                     return;
                 }
 
-                _userLike = like; 
+                CopyMsgData(ret.ProjectComment);
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -63,7 +62,6 @@ namespace GameA
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
-//            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
         }
 
         public void Reply(string content, Action successCallback = null, Action failedCallback = null)

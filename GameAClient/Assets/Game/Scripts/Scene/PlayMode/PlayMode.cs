@@ -431,22 +431,6 @@ namespace GameA.Game
             _sceneState.MonsterKilled++;
         }
 
-        public bool CheckSpawn()
-        {
-            if (GM2DGame.Instance.GameMode.IsMulti)
-            {
-                var spawnDatas = Scene2DManager.Instance.GetSpawnData();
-                int minPlayerCount = _sceneState.Statistics.NetBattleMaxPlayerCount;
-                if (spawnDatas.Count < minPlayerCount)
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog, string.Format("设置角色数不足{0}，无法发布", minPlayerCount));
-                    return false;
-                }
-            }
-
-            return true;
-        }
-        
         private bool CheckPlayerValid(bool run = true)
         {
             Scene2DManager.Instance.ChangeScene(Scene2DManager.Instance.SqawnSceneIndex, EChangeSceneType.ChangeScene);

@@ -93,6 +93,15 @@ namespace GameA
             RegisterEvent(EMessengerType.OnWorkShopDownloadListChanged, OnWorkShopDownloadListChanged);
             RegisterEvent(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnEditingProjectDataChanged);
+            RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
+        }
+
+        private void OnWorkShopProjectPublished(long projectId)
+        {
+            if (_isOpen && _curMenu == EMenu.EditingProjects  && _curMenuCtrl is UPCtrlWorkShopProjectEditing)
+            {
+                ((UPCtrlWorkShopProjectEditing) _curMenuCtrl).OnWorkShopProjectPublished(projectId);
+            }
         }
 
         protected override void OnClose()

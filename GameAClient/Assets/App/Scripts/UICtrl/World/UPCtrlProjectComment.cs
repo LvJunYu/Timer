@@ -82,7 +82,13 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
-
+                var um = item as UMCtrlProjectComment;
+                if (um != null)
+                {
+                    int newestVersion = _mainCtrl.Project.NewestProjectVersion;
+                    um.SetVersionLineEnable(inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == newestVersion &&
+                                            _contentList[inx].ProjectVersion < newestVersion);
+                }
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)
                 {

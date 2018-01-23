@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -587,7 +588,8 @@ namespace GameA
             var msg = new Msg_NetBattleData();
             msg.HarmType = netBattleData.HarmType;
             msg.TimeLimit = netBattleData.TimeLimit;
-            msg.PlayerCount = netBattleData.PlayerCount;
+            var spawns = Scene2DManager.Instance.GetSpawnData();
+            msg.PlayerCount = netBattleData.PlayerCount = spawns.Count;
             msg.LifeCount = netBattleData.LifeCount;
             msg.ReviveTime = netBattleData.ReviveTime;
             msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
@@ -641,6 +643,8 @@ namespace GameA
                         {
                             onSuccess.Invoke();
                         }
+                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(
+                            ProjectManager.Instance.UpdateData(ret.ProjectData));
                     }
                     else
                     {

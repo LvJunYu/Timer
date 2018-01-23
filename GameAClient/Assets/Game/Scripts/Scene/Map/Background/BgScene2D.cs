@@ -54,7 +54,7 @@ namespace GameA.Game
         private Grid2D _ghostTileRect;
         private Transform[] _parents;
         private Transform _parent;
-        private int _curBgGroup = 2;
+        private int _curBgGroup = 1;
         private BgItem _sun;
         private BgItem _seaLevel;
 

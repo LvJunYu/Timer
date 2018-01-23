@@ -105,5 +105,15 @@ namespace GameA
             item.Init(parent, _resScenary);
             return item;
         }
+
+        public void OnWorkShopProjectPublished(long projectId)
+        {
+            var project = _data.AllEdittingList.Find(p => p.ProjectId == projectId);
+            if (project != null)
+            {
+                _data.AllEdittingList.Remove(project);
+            }
+            RefreshView();
+        }
     }
 }

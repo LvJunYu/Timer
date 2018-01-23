@@ -226,7 +226,8 @@ namespace GameA
             {
                 if (_isOpen)
                 {
-                    RefreshEditStateAndBtnName();
+                    SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
+//                    RefreshEditStateAndBtnName();
                 }
             }
         }

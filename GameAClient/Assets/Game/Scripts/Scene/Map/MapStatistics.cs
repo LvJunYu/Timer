@@ -425,7 +425,7 @@ namespace GameA.Game
             SetHarmType(EHarmType.EnemyMonster, true, true);
             SetHarmType(EHarmType.EnemyPlayer, true, true);
             _netBattleData.TimeLimit = 180;
-            _netBattleData.PlayerCount = 6;
+            _netBattleData.PlayerCount = 1;
             _netBattleData.LifeCount = 10;
             _netBattleData.ReviveTime = 0;
             _netBattleData.ReviveInvincibleTime = 0;
