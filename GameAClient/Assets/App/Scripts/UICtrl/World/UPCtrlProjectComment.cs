@@ -86,7 +86,7 @@ namespace GameA
                 if (um != null)
                 {
                     int newestVersion = _mainCtrl.Project.NewestProjectVersion;
-                    um.SetVersionLineEnable(inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == newestVersion &&
+                    um.SetVersionLineEnable((inx == 0 || inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == newestVersion) &&
                                             _contentList[inx].ProjectVersion < newestVersion);
                 }
                 item.Set(_contentList[inx]);

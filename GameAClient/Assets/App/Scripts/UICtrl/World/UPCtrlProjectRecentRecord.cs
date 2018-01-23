@@ -103,7 +103,7 @@ namespace GameA
                 record.RequestPlay(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayRecord(_mainCtrl.Project, record);
+                    GameManager.Instance.RequestPlayRecord(project, record);
                     SocialApp.Instance.ChangeToGame();
                 }, error =>
                 {
@@ -142,8 +142,7 @@ namespace GameA
                 if (um != null)
                 {
                     int newestVersion = _mainCtrl.Project.NewestProjectVersion;
-                    um.SetVersionLineEnable(inx - 1 >= 0 &&
-                                            _contentList[inx - 1].Content.ProjectVersion == newestVersion &&
+                    um.SetVersionLineEnable((inx == 0 || inx - 1 >= 0 && _contentList[inx - 1].Content.ProjectVersion == newestVersion) &&
                                             _contentList[inx].Content.ProjectVersion < newestVersion);
                 }
 

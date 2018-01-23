@@ -591,6 +591,7 @@ namespace GameA
             if (!_project.IsValid)
             {
                 SocialGUIManager.ShowPopupDialog("关卡已被原作者删除");
+                Messenger.Broadcast(EMessengerType.OnProjectNotValid);
                 if (_project.UserFavorite)
                 {
                     _project.UpdateFavorite(false);

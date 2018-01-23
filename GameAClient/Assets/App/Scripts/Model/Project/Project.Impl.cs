@@ -635,10 +635,9 @@ namespace GameA
                     if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
                         _publishTime = UpdateTime;
-                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, ret.ProjectData.ProjectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _projectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
-                        //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
                         if (onSuccess != null)
                         {
                             onSuccess.Invoke();
@@ -1034,10 +1033,11 @@ namespace GameA
             });
         }
 
-        public static Project CreateWorkShopProject()
+        public static Project CreateWorkShopProject(EProjectType projectType)
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
+            p.ProjectType = projectType;
 //            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";

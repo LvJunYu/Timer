@@ -70,6 +70,11 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _cachedView.Trans.anchoredPosition = new Vector2(10000, 0);
+            if (GameRun.Instance != null)
+            {
+                GameRun.Instance.RegistSpineSkeletonAnimation(_cachedView.PlayerAvatarAnimation);
+            }
+            
         }
 
         protected override void OnDestroy()

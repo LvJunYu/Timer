@@ -80,7 +80,7 @@ namespace GameA
             _cachedView.DescField.text = _project.Summary;
             _cachedView.MultiObj.SetActive(_project.IsMulti);
             _cachedView.StandaloneObj.SetActive(!_project.IsMulti);
-            if (_project.PublishTime != 0)
+            if (_project.MainId != 0)
             {
                 _cachedView.TitleTxt.text = _updateConfirmTitle;
                 _cachedView.DescText.text = _updateConfirmDesc;
@@ -181,7 +181,7 @@ namespace GameA
 
         private void OnTitleEndEdit(string arg0)
         {
-            if (_project.PublishTime != 0)
+            if (_project.MainId != 0)
             {
                 SocialGUIManager.ShowPopupDialog("发布过的关卡不能修改关卡名称");
                 _cachedView.TitleField.text = _project.Name;
@@ -237,7 +237,8 @@ namespace GameA
 
             if (_project.IsMulti && _project.NetData != null && _project.NetData.PlayerCount == 0)
             {
-                Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏没有设置主角，无法发布");
+                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                SocialGUIManager.ShowPopupDialog("游戏没有设置主角，无法发布");
                 return;
             }
 

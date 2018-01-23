@@ -42,14 +42,12 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _selectedIdx = DefaultSelectedIdx;
-//            _cachedView.Max.SetActiveEx(false);
             RefreshView();
         }
 
         protected override void OnClose()
         {
             _cachedView.Max.isOn = false;
-            _cachedView.ProjectTypeTogs[0].isOn = true;
             base.OnClose();
         }
 
@@ -146,7 +144,7 @@ namespace GameA
 
         private void InternalCreate()
         {
-            Project project = Project.CreateWorkShopProject();
+            Project project = Project.CreateWorkShopProject(_projectType);
             MatrixProjectTools.SetProjectVersion(project);
             if (_projectType > EProjectType.PT_Single)
             {

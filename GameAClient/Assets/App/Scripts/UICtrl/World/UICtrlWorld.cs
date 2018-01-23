@@ -110,6 +110,7 @@ namespace GameA
             RegisterEvent<Msg_MC_QueryRoom>(EMessengerType.OnQueryRoomRet, OnQueryRoomRet);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             RegisterEvent(EMessengerType.OnJoinRoomFail, OnJoinRoomFail);
+            RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
             RegisterEvent<Project, bool>(EMessengerType.OnProjectMyFavoriteChanged, OnProjectMyFavoriteChanged);
         }
 
@@ -289,6 +290,14 @@ namespace GameA
         private void OnReturnBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
+        }
+
+        private void OnProjectNotValid()
+        {
+            if (_isOpen && _curMenuCtrl is UPCtrlWorldProjectBase)
+            {
+                ((UPCtrlWorldProjectBase) _curMenuCtrl).RequestData();
+            }
         }
 
         private void OnProjectDataChanged(long projectId)

@@ -67,7 +67,7 @@ namespace GameA
                 return;
             }
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
-            _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.PublishTime != 0);
+            _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.MainId != 0);
             _cachedView.MultiObj.SetActiveEx(_wrapper.Content.IsMulti);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
             _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Download);
