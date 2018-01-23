@@ -73,6 +73,8 @@ namespace GameA
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
+                        Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, _id,
+                            new ProjectCommentReply(res.Data));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
@@ -113,13 +115,22 @@ namespace GameA
 
         public void Delete()
         {
-            RemoteCommands.DeleteProjectCommentReply(_id, msg =>
+            RemoteCommands.DeleteProjectComment(_id, msg =>
             {
                 if (msg.ResultCode == (int) EDeleteProjectCommentCode.DPCC_Success)
                 {
                     Messenger<ProjectComment>.Broadcast(EMessengerType.OnDeleteProjectComment, this);
                 }
-            }, null);
+                else
+                {
+                    LogHelper.Error("DeleteProjectComment ResultCode = {0}", msg.ResultCode);
+                    SocialGUIManager.ShowPopupDialog("删除失败");
+                }
+            }, code =>
+            {
+                LogHelper.Error("DeleteProjectComment Fail code = {0}", code);
+                SocialGUIManager.ShowPopupDialog("删除失败");
+            });
         }
     }
 }

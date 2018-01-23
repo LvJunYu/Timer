@@ -32,7 +32,7 @@ namespace GameA
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.CreateTime,
                 DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_reply.CreateTime));
-            if (_reply.RelayOther)
+            if (_reply.TargetUserInfoDetail != null)
             {
                 DictionaryTools.SetContentText(_cachedView.Content, string.Format(_contentReplyFormat, user.NickName,
                     _reply.TargetUserInfoDetail.UserInfoSimple.NickName, _reply.Content));
@@ -50,16 +50,6 @@ namespace GameA
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
                 _reply.Reply(_cachedView.InputField.text);
-                //测试
-                var reply = new ProjectCommentReply();
-                reply.Content = _cachedView.InputField.text;
-                reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                reply.Id = 4000;
-                reply.CommentId = _reply.CommentId;
-                reply.RelayOther = true;
-                reply.UserInfoDetail = LocalUser.Instance.User;
-                reply.TargetUserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, reply.CommentId, reply);
             }
             SetPublishDock(false);
         }

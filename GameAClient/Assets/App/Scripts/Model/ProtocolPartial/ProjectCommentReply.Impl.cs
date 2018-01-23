@@ -13,13 +13,11 @@ namespace GameA
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
-            set { _userInfoDetail = value; } //测试用
         }
 
         public UserInfoDetail TargetUserInfoDetail
         {
             get { return _targetUserInfoDetail; }
-            set { _targetUserInfoDetail = value; } //测试用
         }
 
         protected override void OnSyncPartial(Msg_ProjectCommentReply msg)
@@ -38,6 +36,8 @@ namespace GameA
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
+                        Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, _commentId,
+                            new ProjectCommentReply(res.Data));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
@@ -76,7 +76,16 @@ namespace GameA
                 {
                     Messenger<ProjectCommentReply, long>.Broadcast(EMessengerType.OnDeleteProjectCommentReply, this, _commentId);
                 }
-            }, null);
+                else
+                {
+                    LogHelper.Error("DeleteProjectCommentReply ResultCode = {0}", msg.ResultCode);
+                    SocialGUIManager.ShowPopupDialog("删除失败");
+                }
+            }, code =>
+            {
+                LogHelper.Error("DeleteProjectCommentReply Fail code = {0}", code);
+                SocialGUIManager.ShowPopupDialog("删除失败");
+            });
         }
     }
 }

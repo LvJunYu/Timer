@@ -34,5 +34,11 @@ namespace GameA
             _dataList.Sort((r1, r2) => -r1.CreateTime.CompareTo(r2.CreateTime));
             IsEnd = _dataList.Count < _cs_maxCount;
         }
+
+        public void Clear()
+        {
+            IsEnd = false;
+            _allList.Clear();
+        }
     }
 }

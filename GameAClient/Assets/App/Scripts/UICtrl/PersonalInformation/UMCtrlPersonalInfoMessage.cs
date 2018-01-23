@@ -194,6 +194,7 @@ namespace GameA
 
         protected virtual void OnFoldBtn()
         {
+            _message.ReplyList.Clear();
             _dataList.Clear();
             RefreshReplyDock(true);
         }

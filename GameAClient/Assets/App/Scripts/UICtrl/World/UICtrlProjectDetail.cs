@@ -630,7 +630,7 @@ namespace GameA
 
         private void OnReplyProjectComment(long commentId, ProjectCommentReply reply)
         {
-            if (_curMenu == EMenu.Comment)
+            if (_isOpen && _curMenu == EMenu.Comment)
             {
                 ((UPCtrlProjectComment) _curMenuCtrl).OnReplyProjectComment(commentId, reply);
             }

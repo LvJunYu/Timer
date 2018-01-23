@@ -127,6 +127,7 @@ namespace GameA
 
         protected override void OnFoldBtn()
         {
+            _comment.ReplyList.Clear();
             _dataList.Clear();
             RefreshReplyDock(true);
         }
@@ -136,16 +137,7 @@ namespace GameA
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
                 _comment.Reply(_cachedView.InputField.text);
-                //测试
-                var reply = new ProjectCommentReply();
-                reply.Content = _cachedView.InputField.text;
-                reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                reply.Id = 3000;
-                reply.CommentId = _comment.Id;
-                reply.RelayOther = false;
-                reply.UserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, _comment.Id,
-                    reply);
+                
             }
             SetPublishDock(false);
         }
