@@ -237,8 +237,15 @@ namespace GameA.Game
 
         public void InitWithMapData(GM2DMapData mapData)
         {
-            _initialMapSize = GM2DTools.ToEngine(mapData.InitialMapSize);
             var mainRect = GM2DTools.ToEngine(mapData.ValidMapRect);
+            if (mapData.InitialMapSize != null)
+            {
+                _initialMapSize = GM2DTools.ToEngine(mapData.InitialMapSize);
+            }
+            else
+            {
+                _initialMapSize = mainRect.Max - mainRect.Min + IntVec2.one;
+            }
             MainDataScene2D.InitPlay(mainRect);
             for (int i = 0; i < mapData.OtherScenes.Count; i++)
             {

@@ -414,6 +414,7 @@ namespace GameA
 
         protected override void OnClose()
         {
+            SocialGUIManager.Instance.CloseUI<UICtrlFashionSpineExtra>();
             _upCtrlUnitPropertyEditAdvance.Close();
             _upCtrlUnitPropertyEditNpcDiaType.Close();
             UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
@@ -889,9 +890,13 @@ namespace GameA
                         .SetFgImage(JoyResManager.Instance.GetSprite(hasSet ? "SMainBoy0Icon" : "icon_add"));
                 }
             }
-
+            var uiCtrlFashionSpineExtra = SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>();
+            if (!uiCtrlFashionSpineExtra.IsOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlFashionSpineExtra>();
+            }
             _cachedView.CharacterRawImage.texture =
-                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>().AvatarRenderTexture;
         }
 
         private void RefreshTextDock()

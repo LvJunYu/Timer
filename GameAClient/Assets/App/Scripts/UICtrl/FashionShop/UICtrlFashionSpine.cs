@@ -161,7 +161,7 @@ namespace GameA
                     _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
                 };
             _timer = IntervalTime;
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
         private void OnDownBtn()
@@ -175,7 +175,7 @@ namespace GameA
                     _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle1", true);
                 };
             _timer = IntervalTime;
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
         public void Set(bool ifUsable)
