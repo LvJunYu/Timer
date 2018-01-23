@@ -19,8 +19,7 @@ namespace GameA.Game
         private int _curSceneIndex = -1;
         private Scene2DEntity _curScene;
         private List<Scene2DEntity> _sceneList = new List<Scene2DEntity>(3);
-
-        private IntVec2 _mapSize = ConstDefineGM2D.DefaultValidMapRectSize;
+        private IntVec2 _initialMapSize = ConstDefineGM2D.DefaultValidMapRectSize;
 
         public int CurSceneIndex
         {
@@ -66,6 +65,11 @@ namespace GameA.Game
 
                 return 0;
             }
+        }
+
+        public IntVec2 InitialMapSize
+        {
+            get { return _initialMapSize; }
         }
 
         public List<UnitEditData> GetSpawnData()
@@ -190,7 +194,7 @@ namespace GameA.Game
         {
             var scene = new Scene2DEntity();
             int sceneIndex = _sceneList.Count;
-            scene.Init(_mapSize, sceneIndex);
+            scene.Init(_initialMapSize, sceneIndex);
             _sceneList.Add(scene);
         }
 
@@ -200,7 +204,7 @@ namespace GameA.Game
         /// <param name="size"></param>
         public void SetMapSize(IntVec2 size)
         {
-            _mapSize = size;
+            _initialMapSize = size;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
@@ -233,8 +237,8 @@ namespace GameA.Game
 
         public void InitWithMapData(GM2DMapData mapData)
         {
+            _initialMapSize = GM2DTools.ToEngine(mapData.InitialMapSize);
             var mainRect = GM2DTools.ToEngine(mapData.ValidMapRect);
-            _mapSize = mainRect.Max - mainRect.Min + IntVec2.one;
             MainDataScene2D.InitPlay(mainRect);
             for (int i = 0; i < mapData.OtherScenes.Count; i++)
             {
