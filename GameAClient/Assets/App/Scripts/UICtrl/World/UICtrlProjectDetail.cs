@@ -551,8 +551,7 @@ namespace GameA
             }
             if (_isMulti)
             {
-                //todo 当前关卡快速开始
-                RoomManager.Instance.SendRequestQuickPlay();
+                RoomManager.Instance.SendRequestQuickPlay(_project.ProjectId);
             }
             else
             {

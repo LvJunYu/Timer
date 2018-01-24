@@ -55,7 +55,19 @@ namespace GameA.Game
         {
         }
 
-        public void Set(Msg_RC_RoomUserInfo roomUserInfo)
+        public RoomUser()
+        {
+        }
+        
+        public RoomUser(Msg_MC_RoomUserInfo roomUserInfo)
+        {
+            _guid = roomUserInfo.UserGuid;
+            _name = roomUserInfo.NickName;
+            _ready = roomUserInfo.Ready == 1;
+            _inx = roomUserInfo.inx;
+        }
+
+        public RoomUser(Msg_RC_RoomUserInfo roomUserInfo)
         {
             _guid = roomUserInfo.UserGuid;
             _name = roomUserInfo.NickName;

@@ -181,7 +181,7 @@ namespace GameA.Game
             SendToMSServer(msg);
         }
 
-        public void SendRequestQuickPlay()
+        public void SendRequestQuickPlay(long projectId = 1)
         {
             if (!_msClient.IsConnected())
             {
@@ -190,7 +190,7 @@ namespace GameA.Game
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入");
             var msg = new Msg_CM_QuickPlay();
-            msg.Flag = 1;
+            msg.ProjectId = projectId;
             SendToMSServer(msg);
         }
         
@@ -236,9 +236,23 @@ namespace GameA.Game
                 _roomList.Clear();
             }
             data.MaxCount = UPCtrlWorldMulti.PageSize;
-            MsClient.Write(data);
+            SendToMSServer(data);
         }
 
+        public void SendDeletePlayer(long userId)
+        {
+            var data = new Msg_CR_Kick();
+            data.UserGuid = userId;
+            SendToRSServer(data);
+        }
+        
+        public void SendExitRoom()
+        {
+            var data = new Msg_CR_UserExit();
+            data.Flag = 1;
+            SendToRSServer(data);
+        }
+        
         #endregion
 
         #region Room Receive
@@ -351,6 +365,14 @@ namespace GameA.Game
             }
         }
 
+        public void OnDeletePlayerRet(Msg_RC_Kick msg)
+        {
+        }
+
+        public void OnUserExit(Msg_RC_UserExit msg)
+        {
+        }
+        
         #endregion
 
     }

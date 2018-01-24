@@ -64,7 +64,7 @@ namespace GameA
         {
             base.Close();
             _cachedView.NetBattlePlayerSettingPannel.SetActiveEx(false);
-            Save();
+//            Save();
         }
 
         public void Save()

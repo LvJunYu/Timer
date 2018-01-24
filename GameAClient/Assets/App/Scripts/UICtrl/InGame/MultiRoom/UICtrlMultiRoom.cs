@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +18,7 @@ namespace GameA
         private USCtrlMultiRoomRawSlot[] _usCtrlMultiRoomRawSlots;
         private Sequence _openSequence;
         private Sequence _closeSequence;
+        private List<UnitExtraDynamic> _roomPlayerUnitExtras = new List<UnitExtraDynamic>();
 
         protected override void InitGroupId()
         {
@@ -61,7 +62,6 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _roomInfo = parameter as RoomInfo;
-//            _roomInfo = new RoomInfo(new Msg_MC_RoomInfo()); //todo 临时
             _project = GM2DGame.Instance.GameMode.Project;
             if (_roomInfo == null || _project == null)
             {
@@ -70,8 +70,57 @@ namespace GameA
                 return;
             }
 
-            _openState = false;
+            if (!GetRoomPlayerUnitExtras())
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
+                return;
+            }
+
+            _openState = true;
             RefrshView();
+        }
+
+        private bool GetRoomPlayerUnitExtras()
+        {
+            var dic = TeamManager.Instance.GetPlayerUnitExtraDic();
+            _roomPlayerUnitExtras.Clear();
+            for (int i = 0; i < TeamManager.MaxTeamCount; i++)
+            {
+                UnitExtraDynamic unitExtra;
+                if (dic.TryGetValue(i, out unitExtra))
+                {
+                    _roomPlayerUnitExtras.Add(unitExtra);
+                }
+            }
+            if (_project.NetData == null || _project.NetData.PlayerCount != _roomPlayerUnitExtras.Count)
+            {
+                LogHelper.Error("_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count");
+                return false;
+            }
+
+            for (int i = 0; i < _usCtrlMultiRoomSlots.Length; i++)
+            {
+                if (i < _roomPlayerUnitExtras.Count)
+                {
+                    _usCtrlMultiRoomSlots[i].SetUnitExtra(_roomPlayerUnitExtras[i]);
+                }
+                else
+                {
+                    _usCtrlMultiRoomSlots[i].SetUnitExtra(null);
+                }
+            }
+            for (int i = 0; i < _usCtrlMultiRoomRawSlots.Length; i++)
+            {
+                if (i < _roomPlayerUnitExtras.Count)
+                {
+                    _usCtrlMultiRoomRawSlots[i].SetUnitExtra(_roomPlayerUnitExtras[i]);
+                }
+                else
+                {
+                    _usCtrlMultiRoomRawSlots[i].SetUnitExtra(null);
+                }
+            }
+            return true;
         }
 
         private void RefrshView()
@@ -104,14 +153,18 @@ namespace GameA
 
         private void RefreshPlayerInfo()
         {
-            var users = PlayerManager.Instance.RoomUsers;
+            var userArray = _roomInfo.RoomUserArray;
             if (_openState)
             {
                 for (int i = 0; i < _usCtrlMultiRoomSlots.Length; i++)
                 {
-                    if (i < users.Length)
+                    if (i < userArray.Length)
                     {
-                        _usCtrlMultiRoomSlots[i].Set(users[i]);
+                        _usCtrlMultiRoomSlots[i].Set(userArray[i]);
+                    }
+                    else
+                    {
+                        _usCtrlMultiRoomRawSlots[i].Set(null);
                     }
                 }
             }
@@ -119,9 +172,9 @@ namespace GameA
             {
                 for (int i = 0; i < _usCtrlMultiRoomRawSlots.Length; i++)
                 {
-                    if (i < users.Length)
+                    if (i < userArray.Length)
                     {
-                        _usCtrlMultiRoomRawSlots[i].Set(users[i]);
+                        _usCtrlMultiRoomRawSlots[i].Set(userArray[i]);
                     }
                 }
             }
@@ -157,7 +210,7 @@ namespace GameA
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause();
             _closeSequence.Append(_cachedView.OpenPannel.DOBlendableMoveBy(Vector3.left * 800, 0.3f)
                 .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
-            
+
             Image img = _cachedView.MaskRtf.GetComponent<Image>();
             if (img != null)
             {
