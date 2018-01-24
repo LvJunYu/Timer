@@ -882,7 +882,7 @@ namespace GameA.Game
             }
         }
 
-        protected void ClearRunTime()
+        protected virtual void ClearRunTime()
         {
             Speed = IntVec2.zero;
             ExtraSpeed = IntVec2.zero;

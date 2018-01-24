@@ -275,7 +275,8 @@ namespace GameA
             }
             _winConditionItemDict.Clear();
             _cachedView.CollectionRoot.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
-            _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
+            _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0 ||
+                                              PlayMode.Instance.SceneState.MonsterCaveCount > 0);
             _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
 
             var hasOtherLimit = false;

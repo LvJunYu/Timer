@@ -519,6 +519,7 @@ namespace GameA.Game
 
                     OnHpChanged(_maxHp);
                     _dieTime = 0;
+                    _moveDirection = EMoveDirection.Right;
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     SetPos(_revivePos);
                     if (IsMain)
@@ -582,6 +583,7 @@ namespace GameA.Game
                 {
                     _eUnitState = EUnitState.Normal;
                     PlayMode.Instance.UnFreeze(this);
+                    _moveDirection = EMoveDirection.Right;
                     _trans.eulerAngles = new Vector3(0, 0, 0);
                     Speed = speed;
                     SetPos(targetPos);
@@ -1263,6 +1265,15 @@ namespace GameA.Game
             }
 
             base.UpdateView(deltaTime);
+        }
+
+        protected override void ClearRunTime()
+        {
+            base.ClearRunTime();
+            if (_eClimbState > EClimbState.None)
+            {
+                SetClimbState(EClimbState.None);
+            }
         }
     }
 }

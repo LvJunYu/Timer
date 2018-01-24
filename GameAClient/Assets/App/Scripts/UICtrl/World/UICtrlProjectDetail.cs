@@ -285,7 +285,7 @@ namespace GameA
             UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
             DictionaryTools.SetContentText(_cachedView.TitleText, _project.Name);
-            DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
+            DictionaryTools.SetContentText(_cachedView.Desc, _project.ShowSummary);
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,
                 GameATools.GetLevelString(user.LevelData.PlayerLevel));

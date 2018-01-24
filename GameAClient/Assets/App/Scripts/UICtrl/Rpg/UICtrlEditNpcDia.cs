@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
-using SoyEngine.Proto;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Apple.TV;
 using UnityEngine.UI;
-using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {

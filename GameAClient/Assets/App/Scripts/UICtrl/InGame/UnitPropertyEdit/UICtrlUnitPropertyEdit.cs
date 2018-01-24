@@ -407,7 +407,7 @@ namespace GameA
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
                 return;
             }
-
+            _curSelectedPlayerIndex = 0;
             Reset();
             _upCtrlUnitPropertyEditPreinstall.Open();
         }
@@ -853,7 +853,7 @@ namespace GameA
         private void RefreshSpawmMenu()
         {
             var projectType = _project.ProjectType;
-            var playersDic = TeamManager.Instance.PlayerUnitExtraDic;
+            var playersDic = TeamManager.Instance.GetPlayerUnitExtraDic(EditData.UnitDesc);
             for (int i = 0; i < _spawnMenuList.Length; i++)
             {
                 _spawnMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
@@ -1004,7 +1004,7 @@ namespace GameA
             }
         }
 
-        private void OnSpawnMenuClick(int inx)
+        private void OnSpawnMenuClick(int inx, bool init = false)
         {
             if (inx == -1 || !_spawnMenuList[inx].GetBtnInteractable())
             {
@@ -1014,9 +1014,13 @@ namespace GameA
             var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(inx);
             if (playerUnitExtra == null)
             {
+                if (init)
+                {
+                    _upCtrlUnitPropertyEditAdvance.Close();
+                    return;
+                }
                 playerUnitExtra = UnitExtraDynamic.GetDefaultPlayerValue(inx, _project.ProjectType);
                 EditData.UnitExtra.InternalUnitExtras.Set(playerUnitExtra, inx);
-                TeamManager.Instance.SetPlayerUnitExtra(inx, playerUnitExtra);
             }
 
             _curSelectedPlayerIndex = inx;
@@ -1028,7 +1032,6 @@ namespace GameA
         private void OnSpawnMenuDelete(int inx)
         {
             EditData.UnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, inx);
-            TeamManager.Instance.SetPlayerUnitExtra(inx, null);
             if (inx == _curSelectedPlayerIndex)
             {
                 _curSelectedPlayerIndex = -1;
@@ -1119,8 +1122,11 @@ namespace GameA
             else
             {
                 RefreshView();
+                if (_curEditType == EEditType.Spawn)
+                {
+                    OnSpawnMenuClick(_curSelectedPlayerIndex, true);
+                }
             }
-
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             _upCtrlUnitPropertyEditNpcDiaType.RefreshView();
         }
@@ -1204,7 +1210,7 @@ namespace GameA
 
             if (_curEditType == EEditType.Spawn)
             {
-                OnSpawnMenuClick(_curSelectedPlayerIndex);
+                OnSpawnMenuClick(_curSelectedPlayerIndex, true);
                 return true;
             }
 

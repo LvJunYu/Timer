@@ -28,6 +28,10 @@ namespace GameA
                     }
                 }
 
+                if (mask == 0)
+                {
+                    mask = Project.ProjectTypeAllMask;
+                }
                 return mask;
             }
         }

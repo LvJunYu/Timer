@@ -322,7 +322,7 @@ namespace GameA.Game
         {
             return unit != null && DeleteUnit(unit.UnitDesc);
         }
-
+        
         private bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
@@ -341,7 +341,6 @@ namespace GameA.Game
             {
                 return false;
             }
-
             return true;
         }
 
@@ -546,8 +545,10 @@ namespace GameA.Game
 
         public bool StartPlay()
         {
+            DeleteUnitsOutofMap();
             if (!CheckPlayerValid())
             {
+                AddUnitsOutofMap();
                 return false;
             }
 
@@ -558,8 +559,10 @@ namespace GameA.Game
         public bool RePlay()
         {
             Reset();
+            DeleteUnitsOutofMap();
             if (!CheckPlayerValid())
             {
+                AddUnitsOutofMap();
                 return false;
             }
 
@@ -568,12 +571,22 @@ namespace GameA.Game
             return true;
         }
 
+        public void AddUnitsOutofMap()
+        {
+            Scene2DManager.Instance.AddUnitsOutofMap();
+        }
+
+        private void DeleteUnitsOutofMap()
+        {
+            Scene2DManager.Instance.DeleteUnitsOutofMap();
+        }
+
         private void PreparePlay()
         {
             _run = false;
-            BeforePlay();
+            CheckPairUnit();
             _sceneState.StartPlay();
-            Scene2DManager.Instance.BeforePlay();
+            Scene2DManager.Instance.CreateAirWall();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
             BgScene2D.Instance.Reset();
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
@@ -591,7 +604,7 @@ namespace GameA.Game
             return true;
         }
 
-        private void BeforePlay()
+        private void CheckPairUnit()
         {
             bool flag = false;
             using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())

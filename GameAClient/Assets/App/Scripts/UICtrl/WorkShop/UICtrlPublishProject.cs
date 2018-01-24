@@ -12,6 +12,8 @@ namespace GameA
         private Project _project;
         private const string _publishConfirmTitle = "发布确认";
         private const string _updateConfirmTitle = "更新确认";
+        private const string _publishOkStr = "立即发布";
+        private const string _updateOkStr = "更新发布";
         private const string _publishConfirmDesc = "确定要这样发布吗？";
         private const string _updateConfirmDesc = "更新会覆盖已发布关卡，确定要更新吗？";
 
@@ -84,11 +86,13 @@ namespace GameA
             {
                 _cachedView.TitleTxt.text = _updateConfirmTitle;
                 _cachedView.DescText.text = _updateConfirmDesc;
+                _cachedView.OKBtnTxt.text = _updateOkStr;
             }
             else
             {
                 _cachedView.TitleTxt.text = _publishConfirmTitle;
                 _cachedView.DescText.text = _publishConfirmDesc;
+                _cachedView.OKBtnTxt.text = _publishOkStr;
             }
 
             if (_project.IsMulti)

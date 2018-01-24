@@ -517,77 +517,6 @@ namespace GameA.Game
             return res;
         }
 
-//
-//        private static PlayerUnitExtrasData ToProto(PlayerUnitExtraDynamic playerUnitExtraDynamic)
-//        {
-//            if (null == playerUnitExtraDynamic)
-//            {
-//                return null;
-//            }
-//            var data = new PlayerUnitExtrasData();
-//            data.TeamId = playerUnitExtraDynamic.TeamId;
-//            data.MaxHp = playerUnitExtraDynamic.MaxHp;
-//            data.CureIncrease = playerUnitExtraDynamic.CureIncrease;
-//            data.InjuredReduce = playerUnitExtraDynamic.InjuredReduce;
-//            for (int i = 0; i < playerUnitExtraDynamic.Weapons.Count; i++)
-//            {
-//                data.WeaponData.Add(ToProto(playerUnitExtraDynamic.Weapons.Get<WeaponExtraDynamic>(i)));
-//            }
-//            return data;
-//        }
-//
-//        private static PlayerWeaponsData ToProto(WeaponExtraDynamic weaponExtraDynamic)
-//        {
-//            if (weaponExtraDynamic == null)
-//            {
-//                return null;
-//            }
-//            var data = new PlayerWeaponsData();
-//            data.ChildId = weaponExtraDynamic.ChildId;
-//            data.Damage = weaponExtraDynamic.Damage;
-//            data.CastRange = weaponExtraDynamic.CastRange;
-//            data.AttackInterval = weaponExtraDynamic.AttackInterval;
-//            data.BulletCount = weaponExtraDynamic.BulletCount;
-//            data.BulletSpeed = weaponExtraDynamic.BulletSpeed;
-//            data.ChargeTime = weaponExtraDynamic.ChargeTime;
-//            return data;
-//        }
-//
-//        private static WeaponExtraDynamic ToEngine(PlayerWeaponsData playerUnitExtraDynamic)
-//        {
-//            if (null == playerUnitExtraDynamic)
-//            {
-//                return null;
-//            }
-//            var data = new WeaponExtraDynamic();
-//            data.ChildId = (ushort) playerUnitExtraDynamic.ChildId;
-//            data.Damage = (ushort) playerUnitExtraDynamic.Damage;
-//            data.CastRange = (ushort) playerUnitExtraDynamic.CastRange;
-//            data.AttackInterval = (ushort) playerUnitExtraDynamic.AttackInterval;
-//            data.BulletCount = (ushort) playerUnitExtraDynamic.BulletCount;
-//            data.BulletSpeed = (ushort) playerUnitExtraDynamic.BulletSpeed;
-//            data.ChargeTime = (ushort) playerUnitExtraDynamic.ChargeTime;
-//            return data;
-//        }
-//
-//        private static PlayerUnitExtraDynamic ToEngine(PlayerUnitExtrasData playerUnitExtrasData)
-//        {
-//            if (null == playerUnitExtrasData)
-//            {
-//                return null;
-//            }
-//            var data = new PlayerUnitExtraDynamic();
-//            data.TeamId = (byte) playerUnitExtrasData.TeamId;
-//            data.MaxHp = (ushort) playerUnitExtrasData.MaxHp;
-//            data.CureIncrease = (ushort) playerUnitExtrasData.CureIncrease;
-//            data.InjuredReduce = (byte) playerUnitExtrasData.InjuredReduce;
-//            for (int i = 0; i < playerUnitExtrasData.WeaponData.Count; i++)
-//            {
-//                data.Weapons.Set(ToEngine(playerUnitExtrasData.WeaponData[i]), i);
-//            }
-//            return data;
-//        }
-
         public static UnitExtraDynamic ToEngine(UnitExtraKeyValuePair data, UnitExtraDynamic unitExtra = null)
         {
             if (null == data || data.IsNull)
@@ -636,9 +565,16 @@ namespace GameA.Game
             {
                 unitExtra.Set((ushort)data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
             }
-            for (int i = 0; i < data.InternalUnitExtras.Count; i++)
+            for (int i = 0; i < TeamManager.MaxTeamCount; i++)
             {
-                unitExtra.Set(ToEngine(data.InternalUnitExtras[i]), UnitExtraDynamic.FieldTag.InternalUnitExtras, i);
+                if (i < data.InternalUnitExtras.Count)
+                {
+                    unitExtra.Set(ToEngine(data.InternalUnitExtras[i]), UnitExtraDynamic.FieldTag.InternalUnitExtras, i);
+                }
+                else
+                {
+                    unitExtra.Set<UnitExtraDynamic>(null, UnitExtraDynamic.FieldTag.InternalUnitExtras, i);
+                }
             }
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;

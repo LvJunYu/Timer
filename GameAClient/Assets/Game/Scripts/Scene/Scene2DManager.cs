@@ -356,14 +356,40 @@ namespace GameA.Game
             ChangeScene(SqawnSceneIndex);
         }
 
-        public void BeforePlay()
+        public void AddUnitsOutofMap()
         {
             ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
 
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
-                _sceneList[i].BeforePlay();
+                _sceneList[i].AddUnitsOutofMap();
+            }
+
+            ChangeScene(SqawnSceneIndex);
+        }
+        
+        public void DeleteUnitsOutofMap()
+        {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                ChangeScene(i);
+                _sceneList[i].DeleteUnitsOutofMap();
+            }
+
+            ChangeScene(SqawnSceneIndex);
+        }
+
+        public void CreateAirWall()
+        {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                ChangeScene(i);
+                _sceneList[i].CreateAirWall();
             }
 
             ChangeScene(SqawnSceneIndex);
@@ -408,6 +434,7 @@ namespace GameA.Game
                 _curScene.CommitRecord(editRecordBatch);
             }
         }
+
     }
 
     public class Scene2DEntity : IDisposable
@@ -483,7 +510,12 @@ namespace GameA.Game
             }
         }
 
-        public void BeforePlay()
+        public void AddUnitsOutofMap()
+        {
+            _colliderScene.AddUnitsOutofMap();
+        }
+        
+        public void DeleteUnitsOutofMap()
         {
             UnitBase[] units = _colliderScene.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
@@ -492,13 +524,11 @@ namespace GameA.Game
                 var unitDesc = unit.UnitDesc;
                 if (!_dataScene.IsInTileMap(unit.TableUnit.GetDataGrid(ref unitDesc)))
                 {
-                    PlayMode.Instance.DeleteUnit(unit);
+                    _colliderScene.DeleteUnitsOutofMap(unit);
                 }
             }
-
-            CreateAirWall();
         }
-
+        
         public void CreateAirWall()
         {
             var validMapRect = _dataScene.ValidMapRect;
@@ -535,6 +565,7 @@ namespace GameA.Game
         {
             _editRecordManager.CommitRecord(editRecordBatch);
         }
+
     }
 
     public enum EChangeSceneType

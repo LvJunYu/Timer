@@ -100,7 +100,7 @@ namespace GameA
 
         protected virtual void RefreshView()
         {
-            _cachedView.DeleteDock.SetActive(_message.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+            _cachedView.DeleteBtn.SetActiveEx(_message.UserInfo.UserId == LocalUser.Instance.UserGuid ||
                                              SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_message.LikeNum > 0);

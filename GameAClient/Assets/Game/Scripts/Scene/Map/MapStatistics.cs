@@ -27,6 +27,7 @@ namespace GameA.Game
         [SerializeField] private int _winCondition;
         private NetBattleData _netBattleData;
         private int _levelFinishCount;
+        private int _monsterCaveCount;
 
         public EReviveType ReviveType
         {
@@ -71,6 +72,11 @@ namespace GameA.Game
         public int MonsterCount
         {
             get { return _monsterCount; }
+        }
+        
+        public int MonsterCaveCount
+        {
+            get { return _monsterCaveCount; }
         }
 
         public int HeroCageCount
@@ -485,6 +491,10 @@ namespace GameA.Game
             else if (tableUnit.Id == 6001)
             {
                 _gemCount = value ? ++_gemCount : --_gemCount;
+            }
+            else if (tableUnit.Id == UnitDefine.MonsterCaveId)
+            {
+                _monsterCaveCount = value ? ++_monsterCaveCount : --_monsterCaveCount;
             }
         }
 

@@ -48,7 +48,7 @@ namespace GameA
 
         protected virtual void RefreshView()
         {
-            _cachedView.DeleteDock.SetActive(_reply.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+            _cachedView.DeleteBtn.SetActiveEx(_reply.UserInfo.UserId == LocalUser.Instance.UserGuid ||
                                              SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             UserInfoSimple user = _reply.UserInfoDetail.UserInfoSimple;

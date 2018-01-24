@@ -19,6 +19,7 @@ namespace GameA.Game
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
         private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
         private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
+        private readonly List<UnitDesc> _unitsOutofMap = new List<UnitDesc>();
         private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private readonly List<UnitDesc> _destroyDatas = new List<UnitDesc>();
 
@@ -244,13 +245,15 @@ namespace GameA.Game
                     {
                         for (int j = 0; j < unit.Scale.y; j++)
                         {
-                            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale + i, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale + j] = 0;
+                            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale + i,
+                                unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale + j] = 0;
                         }
                     }
                 }
                 else
                 {
-                    _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                    _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale,
+                        unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
                 }
             }
 
@@ -404,7 +407,7 @@ namespace GameA.Game
 
             UnitManager.Instance.FreeUnitView(unit);
         }
-        
+
         public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(colliderNode.Id);
@@ -413,6 +416,7 @@ namespace GameA.Game
                 unit = null;
                 return false;
             }
+
             return TryGetUnit(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
                 out unit);
         }
@@ -423,6 +427,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return !unit.IsFreezed;
         }
 
@@ -432,6 +437,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             // Player会跨场景，特殊处理
             var players = PlayerManager.Instance.PlayerList;
             for (int i = 0; i < players.Count; i++)
@@ -442,6 +448,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -453,11 +460,13 @@ namespace GameA.Game
                 DestroyView(unitDesc);
                 DeleteUnit(unitDesc, tableUnit);
             }
+
             _addedDatas.Clear();
             for (int i = 0; i < _allColliderDescs.Count; i++)
             {
                 DeleteCollider(_allColliderDescs[i]);
             }
+
             _allColliderDescs.Clear();
             // 先删除、再重置地块、再添加
             for (int i = 0; i < _allSwitchUnits.Count; i++)
@@ -474,7 +483,7 @@ namespace GameA.Game
             {
                 _allOtherUnits[i].Reset();
             }
-            
+
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
                 UnitDesc unitDesc = _deletedDatas[i];
@@ -486,9 +495,9 @@ namespace GameA.Game
                 }
             }
 
+            AddUnitsOutofMap();
             _deletedDatas.Clear();
             _waitDestroyUnits.Clear();
-
         }
 
         public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
@@ -1038,6 +1047,45 @@ namespace GameA.Game
         public void Enter()
         {
             InitCreateArea(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos));
+        }
+
+        public void AddUnitsOutofMap()
+        {
+            for (int i = 0; i < _unitsOutofMap.Count; i++)
+            {
+                UnitDesc unitDesc = _unitsOutofMap[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                AddUnit(unitDesc, tableUnit);
+                if (!MapConfig.UseAOI)
+                {
+                    InstantiateView(unitDesc, tableUnit);
+                }
+
+                DataScene2D.CurScene.AfterAddData(unitDesc, tableUnit);
+                PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, true, true);
+            }
+
+            _unitsOutofMap.Clear();
+        }
+
+        public bool DeleteUnitsOutofMap(UnitBase unit)
+        {
+            UnitDesc unitDesc = unit.UnitDesc;
+            Table_Unit tableUnit = unit.TableUnit;
+            if (!DestroyView(unitDesc))
+            {
+                return false;
+            }
+
+            if (!DeleteUnit(unitDesc, tableUnit))
+            {
+                return false;
+            }
+
+            _unitsOutofMap.Add(unitDesc);
+            DataScene2D.CurScene.AfterDeleteData(unitDesc, tableUnit);
+            PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, false, true);
+            return true;
         }
     }
 }

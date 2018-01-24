@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA

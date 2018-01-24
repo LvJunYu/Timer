@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using SoyEngine;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 

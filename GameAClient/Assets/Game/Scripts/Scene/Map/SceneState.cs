@@ -98,6 +98,11 @@ namespace GameA.Game
         {
             get { return Statistics.MonsterCount; }
         }
+        
+        public int MonsterCaveCount
+        {
+            get { return Statistics.MonsterCaveCount; }
+        }
 
         public int HeroCageCount
         {

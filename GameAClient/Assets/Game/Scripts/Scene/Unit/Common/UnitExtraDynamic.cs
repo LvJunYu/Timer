@@ -396,9 +396,8 @@ namespace GameA.Game
             return msg;
         }
 
-        public void Set(Preinstall data)
+        public void Set(UnitExtraKeyValuePair unitExtraKeyValuePair)
         {
-            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(data.Data);
             GM2DTools.ToEngine(unitExtraKeyValuePair, this);
         }
 

@@ -20,6 +20,7 @@ namespace GameA
     {
         #region 变量
 
+        private static string _emptySummary = "没有留下任何描述的神秘关卡";
         private static string _scoreFormat = "{0:F1}";
         private static string _fullScore = "10";
         private long _guid;
@@ -53,6 +54,19 @@ namespace GameA
         public AdventureLevelRankList AdventureLevelRankList
         {
             get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
+        }
+
+        public string ShowSummary
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_summary))
+                {
+                    return _emptySummary;
+                }
+
+                return _summary;
+            }
         }
 
         public float Score

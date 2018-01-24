@@ -157,7 +157,7 @@ namespace GameA
             if (project == null) return;
             var netData = project.NetData;
             if (netData == null) return;
-            _cachedView.DescTxt.text = project.Summary;
+            _cachedView.DescTxt.text = project.ShowSummary;
             _cachedView.PlayerCount.text = CurSelectRoom.Content.MaxUserCount.ToString();
             _cachedView.LifeCount.text = netData.GetLifeCount();
             _cachedView.ReviveTime.text = netData.GetReviveTime();

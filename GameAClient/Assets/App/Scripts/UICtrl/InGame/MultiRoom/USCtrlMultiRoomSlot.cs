@@ -22,7 +22,7 @@ namespace GameA
             _cachedView.BgImage.SetActiveEx(eState != EState.Waiting && eState!= EState.Disable);
             if (_user != null)
             {
-                var dic = TeamManager.Instance.PlayerUnitExtraDic;
+                var dic = TeamManager.Instance.GetPlayerUnitExtraDic();
                 UnitExtraDynamic unitExtra;
                 if (dic.TryGetValue(_user.Inx, out unitExtra))
                 {

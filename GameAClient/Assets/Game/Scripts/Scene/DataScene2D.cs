@@ -225,11 +225,8 @@ namespace GameA.Game
                 return false;
             }
 
-            if (UnitDefine.IsSpawn(tableUnit.Id))
-            {
-                _spawnDatas.Add(unitDesc);
-            }
-
+            AfterAddData(unitDesc, tableUnit);
+            
             return true;
         }
 
@@ -242,12 +239,24 @@ namespace GameA.Game
             }
 
             DeleteUnitExtra(unitDesc.Guid);
+            AfterDeleteData(unitDesc, tableUnit);
+            return true;
+        }
+
+        public void AfterAddData(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            if (UnitDefine.IsSpawn(tableUnit.Id))
+            {
+                _spawnDatas.Add(unitDesc);
+            }
+        }
+
+        public void AfterDeleteData(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Remove(unitDesc);
             }
-
-            return true;
         }
 
         #region ExtraData&Advanced
