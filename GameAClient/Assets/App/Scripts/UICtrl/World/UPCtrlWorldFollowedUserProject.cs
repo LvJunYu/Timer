@@ -21,7 +21,7 @@ namespace GameA
                 {
                     RefreshView();
                 }
-            }, code => { });
+            }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
         }
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)

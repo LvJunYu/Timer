@@ -85,9 +85,9 @@ namespace GameA
                 var um = item as UMCtrlProjectComment;
                 if (um != null)
                 {
-                    int newestVersion = _mainCtrl.Project.NewestProjectVersion;
-                    um.SetVersionLineEnable((inx == 0 || inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == newestVersion) &&
-                                            _contentList[inx].ProjectVersion < newestVersion);
+                    int curVersion = _mainCtrl.Project.ProjectVersion;
+                    um.SetVersionLineEnable((inx == 0 || inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == curVersion) &&
+                                            _contentList[inx].ProjectVersion < curVersion);
                 }
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)

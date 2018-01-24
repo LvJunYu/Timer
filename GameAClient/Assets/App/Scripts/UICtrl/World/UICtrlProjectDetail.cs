@@ -82,6 +82,12 @@ namespace GameA
             upCtrlProjectRankRecord.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Rank] = upCtrlProjectRankRecord;
 
+            var upCtrlProjectMultiDetail = new UPCtrlProjectMultiDetail();
+            upCtrlProjectMultiDetail.SetResScenary(ResScenary);
+            upCtrlProjectMultiDetail.SetMenu(EMenu.MultiDetail);
+            upCtrlProjectMultiDetail.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MultiDetail] = upCtrlProjectMultiDetail;
+            
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
@@ -270,66 +276,33 @@ namespace GameA
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!_isMulti);
-            _cachedView.StandalonePannel.SetActive(!_isMulti);
-            _cachedView.MultiPannel.SetActive(_isMulti);
+            _cachedView.MenuButtonAry[(int) EMenu.MultiDetail].SetActiveEx(_isMulti);
             _cachedView.CreateBtn.SetActiveEx(_isMulti);
             _cachedView.EditBtn.SetActiveEx(_isMyself);
             _cachedView.DeleteBtn.SetActiveEx(_isMyself);
             _cachedView.FavoriteBtn.SetActiveEx(!_isMyself);
             _cachedView.DownloadBtn.SetActiveEx(!_isMyself);
-            if (_isMulti)
-            {
-                RefreshRoomInfo();
-            }
-            else
-            {
-                UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
-                DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
-                DictionaryTools.SetContentText(_cachedView.TitleText, _project.Name);
-                DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
-                DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
-                DictionaryTools.SetContentText(_cachedView.AdvLevelText,
-                    GameATools.GetLevelString(user.LevelData.PlayerLevel));
-                DictionaryTools.SetContentText(_cachedView.CreateLevelText,
-                    GameATools.GetLevelString(user.LevelData.CreatorLevel));
-                DictionaryTools.SetContentText(_cachedView.PlayCountText,
-                    _project.ExtendReady ? _project.PlayCount.ToString() : EmptyStr);
-                DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
-                    GameATools.FormatServerDateString(_project.CreateTime));
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
-                    _cachedView.DefaultCoverTexture);
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
-                    _cachedView.DefaultCoverTexture);
-                user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
-                    _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
-            }
-
+            UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
+            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
+            DictionaryTools.SetContentText(_cachedView.TitleText, _project.Name);
+            DictionaryTools.SetContentText(_cachedView.Desc, _project.Summary);
+            DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
+            DictionaryTools.SetContentText(_cachedView.AdvLevelText,
+                GameATools.GetLevelString(user.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.CreateLevelText,
+                GameATools.GetLevelString(user.LevelData.CreatorLevel));
+            DictionaryTools.SetContentText(_cachedView.PlayCountText,
+                _project.ExtendReady ? _project.PlayCount.ToString() : EmptyStr);
+            DictionaryTools.SetContentText(_cachedView.ProjectCreateDate,
+                GameATools.FormatServerDateString(_project.CreateTime));
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
+                _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                _cachedView.DefaultCoverTexture);
+            user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshBtns();
             RefreshCommentCount(_project.TotalCommentCount);
-        }
-
-        private void RefreshRoomInfo()
-        {
-            if (_project == null) return;
-            var netData = _project.NetData;
-            if (netData == null) return;
-            _cachedView.TitleTxt.text = _project.Name;
-            _cachedView.DescTxt.text = _project.Summary;
-            _cachedView.PlayerCount.text = netData.PlayerCount.ToString();
-            _cachedView.LifeCount.text = netData.GetLifeCount();
-            _cachedView.ReviveTime.text = netData.GetReviveTime();
-            _cachedView.ReviveProtectTime.text = netData.GetReviveProtectTime();
-            _cachedView.TimeLimit.text = netData.GetTimeLimit();
-            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
-            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
-            _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
-            _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
-            _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
-            _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
-            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
-//            _cachedView.ArriveScore.SetActiveEx(Game.PlayMode.Instance.SceneState.FinalCount > 0);
-//            _cachedView.CollectGemScore.SetActiveEx(Game.PlayMode.Instance.SceneState.TotalGem > 0);
-//            _cachedView.KillMonsterScore.SetActiveEx(Game.PlayMode.Instance.SceneState.MonsterCount > 0);
         }
 
         private void RefreshBtns()
@@ -537,7 +510,11 @@ namespace GameA
             {
                 _isRequestFavorite = false;
                 RefreshBtns();
-            }, code => { _isRequestFavorite = false; });
+            }, code =>
+            {
+                _isRequestFavorite = false;
+                SocialGUIManager.ShowPopupDialog("收藏关卡失败");
+            });
         }
 
         private void OnDownloadBtn()
@@ -568,24 +545,31 @@ namespace GameA
 
         private void OnPlayBtnClick()
         {
-            if (Project == null || Project.IsMulti)
+            if (_project == null)
             {
                 return;
             }
-
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
-            Project.RequestPlay(() =>
+            if (_isMulti)
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                GameManager.Instance.RequestPlay(Project);
-                SocialApp.Instance.ChangeToGame();
-            }, error =>
+                //todo 当前关卡快速开始
+                RoomManager.Instance.SendRequestQuickPlay();
+            }
+            else
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("进入关卡失败");
-            });
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求进入关卡");
+                _project.RequestPlay(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    GameManager.Instance.RequestPlay(_project);
+                    SocialApp.Instance.ChangeToGame();
+                }, error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                }); 
+            }
         }
-        
+
         private bool CheckProjectValid()
         {
             if (!_project.IsValid)
@@ -656,7 +640,6 @@ namespace GameA
             _cachedView.GoodTog.isOn = false;
             _cachedView.BadTog.isOn = false;
             _onlyChangeView = false;
-//            Project = null;
         }
 
         private void OnCloseBtn()
@@ -703,6 +686,7 @@ namespace GameA
             {
                 _curMenuCtrl.Open();
             }
+            _cachedView.DownDock.SetActive(_curMenu != EMenu.MultiDetail);
         }
 
         public enum EMenu
@@ -712,6 +696,7 @@ namespace GameA
             Recent,
             Comment,
             Rank,
+            MultiDetail,
             Max
         }
     }

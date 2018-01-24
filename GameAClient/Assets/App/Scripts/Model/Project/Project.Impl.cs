@@ -879,6 +879,7 @@ namespace GameA
             {
                 if (ret.ResultCode != (int) EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                 {
+                    LogHelper.Error("UpdateWorldProjectFavorite fail, ResultCode = {0}", ret.ResultCode);
                     if (failedCallback != null)
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
@@ -900,6 +901,7 @@ namespace GameA
                 }
             }, code =>
             {
+                LogHelper.Error("UpdateWorldProjectFavorite fail, code = {0}", code);
                 if (failedCallback != null)
                 {
                     failedCallback.Invoke(code);

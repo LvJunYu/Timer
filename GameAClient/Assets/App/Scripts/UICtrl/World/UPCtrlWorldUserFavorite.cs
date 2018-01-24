@@ -48,7 +48,7 @@ namespace GameA
                     {
                         RefreshView();
                     }
-                }, code => { });
+                }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
         }
 
         public void OnProjectMyFavoriteChanged(Project project, bool favorite)

@@ -14,6 +14,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
+
             _data.Request(startInx, _pageSize, Mask, () =>
             {
                 _projectList = _data.AllList;
@@ -21,7 +22,7 @@ namespace GameA
                 {
                     RefreshView();
                 }
-            }, code => { });
+            }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
         }
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -37,6 +38,7 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)
                 {
