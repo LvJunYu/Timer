@@ -248,6 +248,7 @@ namespace GameA.Game
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Add(unitDesc);
+                Messenger.Broadcast(EMessengerType.OnSpawnDataChanged);
             }
         }
 

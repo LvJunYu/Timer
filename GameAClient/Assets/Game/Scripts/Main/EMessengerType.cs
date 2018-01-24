@@ -59,7 +59,8 @@ namespace GameA
 		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnEditCameraOrthoSizeChange = SoyEngine.EMessengerType.NextId++;
-		public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
+	    public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
+	    public static int OnSpawnDataChanged = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
 	    // 到达终点
