@@ -292,6 +292,7 @@ namespace GameA
 
         private void OnStartBtn()
         {
+            RoomManager.Instance.SendRoomOpen();
         }
 
         private void OnPrepareBtn()

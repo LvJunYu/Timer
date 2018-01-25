@@ -25,15 +25,13 @@ namespace GameA.Game
         protected float _frameLeftTime;
         protected int _curServerFrame;
         protected EPhase _ePhase;
-        protected int _bornSeed;
         protected int _recentServerFrame;
         protected bool _loadingHasClosed;
-        protected bool _localMyPlayerStarted;
-        protected bool _serverMyPlayerStarted;
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
         private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
         private RoomInfo _roomInfo;
         private EGamePhase _curGamePhase;
+        private bool _loadComplete;
 
         public override bool IsMulti
         {
@@ -85,10 +83,7 @@ namespace GameA.Game
         {
             _debugFile.Close();
             _debugClientData.Close();
-            if (!_loadingHasClosed)
-            {
-                base.OnGameStart();
-            }
+            TryCloseLoading();
 
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
@@ -103,27 +98,20 @@ namespace GameA.Game
 
         public override void OnGameSuccess()
         {
-            if (!_loadingHasClosed)
-            {
-                base.OnGameStart();
-            }
+            TryCloseLoading();
 
             SetPhase(EPhase.Succeed);
         }
 
         public override void OnGameFailed()
         {
-            if (!_loadingHasClosed)
-            {
-                base.OnGameStart();
-            }
+            TryCloseLoading();
 
             SetPhase(EPhase.Failed);
         }
 
         public override void OnGameStart()
         {
-            
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
         }
@@ -132,18 +120,16 @@ namespace GameA.Game
         {
             yield return null;
             _run = true;
+            _loadComplete = true;
+            //TODO 创建玩家
             GameRun.Instance.Playing();
             if (_curGamePhase == EGamePhase.Battle)
             {
-                _ePhase = EPhase.Simulation;
+                SetPhase(EPhase.Simulation);
             }
-            else if (_curGamePhase == EGamePhase.CountDown)
+            else
             {
-                _ePhase = EPhase.CountDown;
-            }
-            else if (_curGamePhase == EGamePhase.Wait)
-            {
-                _ePhase = EPhase.WaitStart;
+                SetPhase(EPhase.Normal);
             }
         }
 
@@ -200,7 +186,7 @@ namespace GameA.Game
 
                 if (_serverInputFrameQueue.Count == 0)
                 {
-                    SetPhase(EPhase.RequestStartBattle);
+                    SendLoadComplete();
                 }
             }
             else if (_ePhase == EPhase.Close)
@@ -271,35 +257,6 @@ namespace GameA.Game
                 _debugFile.WriteLine(JsonConvert.SerializeObject(frameData));
             }
 
-//            PlayerManager pm = PlayerManager.Instance;
-//            for (int i = 0; i < frameData.CommandDatas.Count; i++)
-//            {
-//                var commandData = frameData.CommandDatas[i];
-//                ERoomUserCommand cmd = (ERoomUserCommand) commandData.Command;
-//                switch (cmd)
-//                {
-//                    case ERoomUserCommand.ERUC_None:
-//                        break;
-//                    case ERoomUserCommand.ERUC_JoinRoom:
-//                        pm.JoinRoom(commandData.UserData);
-//                        break;
-//                    case ERoomUserCommand.ERUC_StartBattle:
-//                        var roomUser = pm.GetRoomUserByInx(commandData.UserRoomInx);
-//                        bool isMain = false;
-//                        if (roomUser.Guid == LocalUser.Instance.UserGuid)
-//                        {
-//                            isMain = true;
-//                            _serverMyPlayerStarted = true;
-//                            if (_localMyPlayerStarted)
-//                            {
-//                                SetPhase(EPhase.Normal);
-//                            }
-//                        }
-//                        PlayMode.Instance.AddPlayer(commandData.UserRoomInx, isMain);
-//                        break;
-//                }
-//            }
-
             ApplyFrameInputData(frameData.UserInputDatas);
             _curServerFrame++;
         }
@@ -362,34 +319,61 @@ namespace GameA.Game
             RoomManager.Instance.SendExitRoom();
         }
 
+        private void SetGamePhase(EGamePhase gamePhase)
+        {
+            switch (_curGamePhase)
+            {
+                case EGamePhase.None:
+                    break;
+                case EGamePhase.Wait:
+                    _serverInputFrameQueue.Clear();
+                    _serverStartInputFrameList.Clear();
+                    _recentServerFrame = 0;
+                    _curServerFrame = 0;
+                    if (_loadComplete)
+                    {
+                        GameRun.Instance.RePlay();
+                    }
+                    break;
+                case EGamePhase.CountDown:
+                    break;
+                case EGamePhase.Battle:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("gamePhase", gamePhase, null);
+            }
+            
+            _curGamePhase = gamePhase;
+            
+            switch (_curGamePhase)
+            {
+                case EGamePhase.None:
+                    break;
+                case EGamePhase.Wait:
+                    break;
+                case EGamePhase.CountDown:
+                    break;
+                case EGamePhase.Battle:
+                    SetPhase(EPhase.Normal);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("gamePhase", gamePhase, null);
+            }
+        }
+
         private void SetPhase(EPhase phase)
         {
             _ePhase = phase;
             switch (_ePhase)
             {
                 case EPhase.None:
-                case EPhase.WaitStart:
-                case EPhase.CountDown:
                     break;
                 case EPhase.Simulation:
                     break;
                 case EPhase.Pursue:
                     break;
-                case EPhase.RequestStartBattle:
-                    if (_serverMyPlayerStarted)
-                    {
-                        SetPhase(EPhase.Normal);
-                    }
-                    else
-                    {
-                        SendLoadComplete();
-                    }
-
-                    _localMyPlayerStarted = true;
-                    break;
                 case EPhase.Normal:
-                    base.OnGameStart();
-                    _loadingHasClosed = true;
+                    TryCloseLoading();
                     break;
                 case EPhase.Succeed:
                 {
@@ -540,6 +524,14 @@ namespace GameA.Game
 
         internal void OnInputDatas(Msg_RC_FrameDataArray msg)
         {
+            if (_curGamePhase == EGamePhase.CountDown)
+            {
+                if (msg.FrameDatas[0].FrameInx != 0)
+                {
+                    return;
+                }
+                SetGamePhase(EGamePhase.Battle);
+            }
             if (msg.FrameDatas[0].FrameInx >= _preServerFrameCount)
             {
                 for (int i = 0; i < msg.FrameDatas.Count; i++)
@@ -565,7 +557,6 @@ namespace GameA.Game
                 case EPhase.None:
                 case EPhase.Simulation:
                 case EPhase.Pursue:
-                case EPhase.RequestStartBattle:
                 {
                     switch (code)
                     {
@@ -650,18 +641,20 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
+        protected void TryCloseLoading()
+        {
+            if (!_loadingHasClosed)
+            {
+                base.OnGameStart();
+                _loadingHasClosed = true;
+            }
+        }
+
         #endregion
 
         protected enum EPhase
         {
             None,
-            WaitStart,
-
-            /// <summary>
-            /// 倒计时
-            /// </summary>
-            CountDown,
-
             /// <summary>
             /// 模拟进入房间前的数据指令
             /// </summary>
@@ -671,11 +664,6 @@ namespace GameA.Game
             /// 追赶进入房间后的指令
             /// </summary>
             Pursue,
-
-            /// <summary>
-            /// 请求开始
-            /// </summary>
-            RequestStartBattle,
 
             /// <summary>
             /// 正常运行

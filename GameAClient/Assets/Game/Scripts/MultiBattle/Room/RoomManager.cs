@@ -164,8 +164,11 @@ namespace GameA.Game
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在创建房间");
             _msgCreateRoom.ProjectId = projectGuid;
-            _msgCreateRoom.MaxUserCount = 6;
-            SendToMSServer(_msgCreateRoom);
+            ProjectManager.Instance.GetDataOnAsync(projectGuid, p =>
+            {
+                _msgCreateRoom.MaxUserCount = p.NetData.PlayerCount;
+                SendToMSServer(_msgCreateRoom);
+            });
         }
 
         public void SendRequestJoinRoom(long roomId)
@@ -264,6 +267,13 @@ namespace GameA.Game
         {
             var data = new Msg_CR_UserReadyInfo();
             data.ReadyFlag = value;
+            SendToRSServer(data);
+        }
+
+        public void SendRoomOpen()
+        {
+            var data = new Msg_CR_RoomOpen();
+            data.Flag = 1;
             SendToRSServer(data);
         }
         
