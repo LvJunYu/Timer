@@ -339,6 +339,8 @@ namespace GameA.Game
                     if (_loadComplete)
                     {
                         GameRun.Instance.RePlay();
+                        GameRun.Instance.Playing();
+                        base.OnGameStart();
                     }
                     break;
                 case EGamePhase.CountDown:
