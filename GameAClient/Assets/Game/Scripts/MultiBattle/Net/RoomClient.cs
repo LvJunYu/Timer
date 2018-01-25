@@ -84,7 +84,7 @@ namespace GameA.Game
                 });
             }
         }
-
+        
         private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
             _modeNetPlay = null;
@@ -128,6 +128,7 @@ namespace GameA.Game
 
         public void OnDisconnect()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
             if (_modeNetPlay != null)
             {
                 _modeNetPlay.OnDisconnected();

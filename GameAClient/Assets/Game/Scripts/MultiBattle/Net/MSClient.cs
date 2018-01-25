@@ -6,6 +6,8 @@ namespace SoyEngine.MasterServer
 {
     public class MSClient : JoyTCPClient
     {
+        private float HeartBeatIntervalSecond = 50;
+        private GameTimer _heartBeatGameTimer = new GameTimer();
         private int _reconnectAttempts;
         
         public MSClient()
@@ -13,6 +15,13 @@ namespace SoyEngine.MasterServer
             _handler = new MSHandler();
             _serializer = new ClientProtoSerializer(typeof(ECMMsgType), ProtoSerializer.ProtoNameSpace,
                 new GeneratedClientSerializer());
+            StartHeartBeatCheck();
+        }
+
+        public override void Write(object obj)
+        {
+            _heartBeatGameTimer.Reset();
+            base.Write(obj);
         }
 
         public void ConnectWithRetry(string ip, ushort port)
@@ -31,6 +40,7 @@ namespace SoyEngine.MasterServer
 
         protected override void OnDisconnected(int code = 0)
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
             base.OnDisconnected(code);
             LogHelper.Debug("MSClient OnDisConnected");
             Loom.QueueOnMainThread(Reconnect);
@@ -50,6 +60,29 @@ namespace SoyEngine.MasterServer
         private void Reconnect()
         {
             Connect(_ip, _port, null, exception => TryReconnect(), 5000);
+        }
+        
+        private void StartHeartBeatCheck()
+        {
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(
+                HeartBeatIntervalSecond + 1 - (float) _heartBeatGameTimer.GetIntervalSeconds(),
+                () =>
+                {
+                    if (IsConnected())
+                    {
+                        if (_heartBeatGameTimer.PassedSeconds(HeartBeatIntervalSecond))
+                        {
+                            Msg_CM_ImAlive msgCmImAlive = new Msg_CM_ImAlive();
+                            msgCmImAlive.Flag = 1;
+                            Write(msgCmImAlive);
+                        }
+                    }
+                    else
+                    {
+                        _heartBeatGameTimer.Reset();
+                    }
+                    StartHeartBeatCheck();
+                }));
         }
     }
 
