@@ -193,12 +193,12 @@ namespace GameA
         public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
         {
             RoomUser user = new RoomUser(msg);
+            _users.Add(user);
+            SortRoomUsers();
             if (PlayMode.Instance.HasCreatedPlayer)
             {
                 user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
             }
-            _users.Add(user);
-            SortRoomUsers();
         }
     }
 }

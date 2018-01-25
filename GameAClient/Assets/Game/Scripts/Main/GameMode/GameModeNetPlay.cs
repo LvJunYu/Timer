@@ -620,6 +620,7 @@ namespace GameA.Game
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
         {
             _roomInfo = new RoomInfo(msg);
+            PlayerManager.Instance.SetRoomInfo(_roomInfo);
             _curGamePhase = (EGamePhase) msg.Phase;
             if (_curGamePhase == EGamePhase.Battle)
             {

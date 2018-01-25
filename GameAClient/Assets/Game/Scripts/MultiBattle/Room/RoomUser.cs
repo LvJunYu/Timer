@@ -10,7 +10,6 @@ using SoyEngine.Proto;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 100, PreferedPoolSize = 1000, MaxPoolSize = 10000)]
     public class RoomUser : IPoolableObject
     {
         protected long _guid;
