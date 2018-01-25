@@ -20,8 +20,7 @@ namespace GameA.Game
         {
             DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
             DefineField<ushort>(FieldTag.TriggerTaskNumber, "TriggerTaskNumber");
-            DefineField<ushort>(FieldTag.TriggerColOrKillNum, "TriggerColOrKillNum");
-            DefineField<ushort>(FieldTag.TargetUnitID, "TargetUnitID");
+            DefineField<NpcTaskTargetDynamic>(FieldTag.TriggerTask, "TriggerTask");
             DefineField<byte>(FieldTag.TriggerType, "TriggerType");
             DefineFieldList<string>(FieldTag.TaskBefore, "TaskBefore");
             DefineFieldList<string>(FieldTag.TaskMiddle, "TaskMiddle");
@@ -36,8 +35,7 @@ namespace GameA.Game
             private static int _nextId;
             public static readonly int NpcSerialNumber = _nextId++;
             public static readonly int TriggerTaskNumber = _nextId++;
-            public static readonly int TriggerColOrKillNum = _nextId++;
-            public static readonly int TargetUnitID = _nextId++;
+            public static readonly int TriggerTask = _nextId++;
             public static readonly int TriggerType = _nextId++;
             public static readonly int TaskBefore = _nextId++;
             public static readonly int TaskMiddle = _nextId++;
@@ -54,6 +52,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.NpcSerialNumber); }
         }
 
+        public NpcTaskTargetDynamic TriggerTask
+        {
+            get { return Get<NpcTaskTargetDynamic>(FieldTag.TriggerTask); }
+
+            set { Set(value, FieldTag.TriggerTask); }
+        }
+
         public ushort TriggerTaskNumber
         {
             get { return Get<ushort>(FieldTag.TriggerTaskNumber); }
@@ -61,23 +66,10 @@ namespace GameA.Game
             set { Set(value, FieldTag.NpcSerialNumber); }
         }
 
-        public ushort TriggerColOrKillNum
+
+        public byte TriggerType
         {
-            get { return Get<ushort>(FieldTag.TriggerColOrKillNum); }
-
-            set { Set(value, FieldTag.TriggerColOrKillNum); }
-        }
-
-        public ushort TargetUnitID
-        {
-            get { return Get<ushort>(FieldTag.TargetUnitID); }
-
-            set { Set(value, FieldTag.TargetUnitID); }
-        }
-
-        public ushort TriggerType
-        {
-            get { return Get<ushort>(FieldTag.TriggerType); }
+            get { return Get<byte>(FieldTag.TriggerType); }
 
             set { Set(value, FieldTag.TriggerType); }
         }
@@ -130,9 +122,8 @@ namespace GameA.Game
             var msg = new UnitExtraNpcTaskData();
             msg.NpcSerialNumber = NpcSerialNumber;
             msg.TriggerTaskNumber = TriggerTaskNumber;
-            msg.TriggerColOrKillNum = TriggerColOrKillNum;
+            msg.TriggerTask = TriggerTask.ToUnitExtraNpcTaskTarget();
             msg.TriggerType = TriggerType;
-            msg.TargetUnitID = TargetUnitID;
             msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
             msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
             msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
@@ -171,9 +162,8 @@ namespace GameA.Game
         {
             NpcSerialNumber = (ushort) data.NpcSerialNumber;
             TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
-            TriggerColOrKillNum = (ushort) data.TriggerColOrKillNum;
-            TriggerType = (ushort) data.TriggerType;
-            TargetUnitID = (ushort) data.TargetUnitID;
+            TriggerTask.Set(data.TriggerTask);
+            TriggerType = (byte) data.TriggerType;
             for (int i = 0; i < data.TaskBefore.Count; i++)
             {
                 Set(data.TaskBefore[i], FieldTag.TaskBefore, i);
@@ -210,7 +200,8 @@ namespace GameA.Game
     public enum TrrigerTaskType
     {
         None = 0,
-        KillOrGet = 1,
-        FinishOtherTask = 2
+        Kill = 1,
+        Colltion = 2,
+        FinishOtherTask = 3
     }
 }

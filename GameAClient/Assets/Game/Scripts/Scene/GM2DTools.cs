@@ -503,6 +503,7 @@ namespace GameA.Game
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
+            res.NpcSerialNumber = data.NpcSerialNumber;
             res.NpcShowType = data.NpcShowType;
             res.NpcShowInterval = data.NpcShowInterval;
             var npcTask = data.NpcTask;
@@ -634,7 +635,7 @@ namespace GameA.Game
             }
             for (int i = 0; i < data.AddStates.Count; i++)
             {
-                unitExtra.Set((ushort)data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+                unitExtra.Set((ushort) data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
             }
             for (int i = 0; i < data.InternalUnitExtras.Count; i++)
             {
@@ -643,6 +644,7 @@ namespace GameA.Game
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;
             unitExtra.NpcName = data.NpcName;
+            unitExtra.NpcSerialNumber = (ushort) data.NpcSerialNumber;
             unitExtra.NpcShowType = (byte) data.NpcShowType;
             unitExtra.NpcShowInterval = (ushort) data.NpcShowInterval;
             for (int i = 0; i < data.NpcTask.Count; i++)

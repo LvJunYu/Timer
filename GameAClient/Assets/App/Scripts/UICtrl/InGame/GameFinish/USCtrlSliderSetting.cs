@@ -79,6 +79,10 @@ namespace GameA
             {
                 _cur = cur;
             }
+            else
+            {
+                OnSliderValueChanged(((float) _cur / (float) _max));
+            }
             _cachedView.Slider.value = cur;
             _cachedView.Num.text = CurNumString;
         }

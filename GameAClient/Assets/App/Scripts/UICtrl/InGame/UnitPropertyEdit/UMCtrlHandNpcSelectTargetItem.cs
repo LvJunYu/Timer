@@ -7,15 +7,24 @@ using SoyEngine;
 using GameA;
 using GameA.Game;
 using SoyEngine.Proto;
+using UnityEngine.Events;
 
 namespace GameA
 {
-    public class UMCtrlHandNpcSelectTargetItem : UMCtrlBase<UMViewHandBookItem>
+    public class UMCtrlHandNpcSelectTargetItem : UMCtrlBase<UMViewHandNpcSelectTargetItem>
     {
         #region 变量
 
         private string _unitIconName = null;
         private int _unitId;
+        private UnityAction _callback;
+
+        public int UnitId
+        {
+            get { return _unitId; }
+            set { _unitId = value; }
+        }
+
         private Sprite _unitIcon;
         private Table_Unit _uint;
         private NpcTaskTargetDynamic _taskTarget;
@@ -28,7 +37,7 @@ namespace GameA
 
         #region 方法
 
-        public void IintItem(int unitID, NpcTaskTargetDynamic taskTarget)
+        public void IintItem(int unitID, NpcTaskTargetDynamic taskTarget, UnityAction callback)
         {
             _unitId = unitID;
             _uint = TableManager.Instance.GetUnit(unitID);
@@ -39,11 +48,32 @@ namespace GameA
             }
             _cachedView.ExplantionBtn.onClick.AddListener(OnBtn);
             _taskTarget = taskTarget;
+            _callback = callback;
         }
+
+//        public void IintItem(int unitID, NpcTaskTargetDynamic taskTarget)
+//        {
+//            _unitId = unitID;
+//            _uint = TableManager.Instance.GetUnit(unitID);
+//            _unitIconName = _uint.Icon;
+//            if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
+//            {
+//                _cachedView.Icon.sprite = _unitIcon;
+//            }
+//            _cachedView.ExplantionBtn.onClick.AddListener(OnBtn);
+//            _taskTarget = taskTarget;
+//        }
 
         public void OnBtn()
         {
             _taskTarget.TargetUnitID = (ushort) _unitId;
+            _callback.Invoke();
+        }
+
+
+        public void SetSelected(bool selected)
+        {
+            _cachedView.ExplantionBtn.interactable = !selected;
         }
 
         #endregion

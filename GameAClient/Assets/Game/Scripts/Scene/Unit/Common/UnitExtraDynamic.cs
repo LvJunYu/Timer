@@ -39,6 +39,7 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
+            DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
             DefineField<byte>(FieldTag.NpcShowType, "NpcShowType");
             DefineField<string>(FieldTag.NpcDialog, "NpcDialog");
             DefineField<ushort>(FieldTag.NpcShowInterval, "NpcShowInterval");
@@ -80,6 +81,7 @@ namespace GameA.Game
             public static readonly int MonsterId = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
+            public static readonly int NpcSerialNumber = _nextId++;
             public static readonly int NpcDialog = _nextId++;
             public static readonly int NpcShowType = _nextId++;
             public static readonly int NpcShowInterval = _nextId++;
@@ -277,6 +279,12 @@ namespace GameA.Game
         {
             get { return Get<string>(FieldTag.NpcName); }
             set { Set(value, FieldTag.NpcName); }
+        }
+
+        public ushort NpcSerialNumber
+        {
+            get { return Get<ushort>(FieldTag.NpcSerialNumber); }
+            set { Set(value, FieldTag.NpcSerialNumber); }
         }
 
         public string NpcDialog
@@ -581,6 +589,8 @@ namespace GameA.Game
                 case EAdvanceAttribute.ChargeTime:
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return "{0:f1}秒";
+                case EAdvanceAttribute.NpcIntervalTiem:
+                    return "{0}秒";
             }
 
             return "{0}";

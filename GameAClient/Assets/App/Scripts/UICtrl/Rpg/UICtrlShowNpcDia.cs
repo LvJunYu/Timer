@@ -251,7 +251,7 @@ namespace GameA
 
     public enum ENpcFace
     {
-        None,
+        None = -1,
 
         //高兴
         Happy,

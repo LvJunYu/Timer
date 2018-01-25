@@ -20,8 +20,9 @@ namespace GameA.Game
         {
             DefineField<byte>(FieldTag.TaskType, "TaskType");
             DefineField<ushort>(FieldTag.ColOrKillNum, "ColOrKillNum");
-            DefineField<ushort>(FieldTag.TargetUnitID, "TargetUnitID");
+            DefineField<ushort>(FieldTag.TargetUnitID, "TriggerUnitID");
             DefineField<IntVec3>(FieldTag.TargetGuid, "TargetGuid");
+            DefineField<ushort>(FieldTag.TargetNpcNum, "TargetNpcNum");
         }
 
         public class FieldTag
@@ -31,6 +32,7 @@ namespace GameA.Game
             public static readonly int ColOrKillNum = _nextId++;
             public static readonly int TargetUnitID = _nextId++;
             public static readonly int TargetGuid = _nextId++;
+            public static readonly int TargetNpcNum = _nextId++;
         }
 
 
@@ -52,6 +54,12 @@ namespace GameA.Game
             set { Set(value, FieldTag.TargetUnitID); }
         }
 
+        public ushort TargetNpcNum
+        {
+            get { return Get<ushort>(FieldTag.TargetNpcNum); }
+            set { Set(value, FieldTag.TargetNpcNum); }
+        }
+
         public IntVec3 TargetGuid
         {
             get { return Get<IntVec3>(FieldTag.TargetGuid); }
@@ -65,6 +73,7 @@ namespace GameA.Game
             msg.TargetUnitID = TargetUnitID;
             msg.ColOrKillNum = ColOrKillNum;
             msg.TaskType = TaskType;
+            msg.TargetNpcNum = TargetNpcNum;
             return msg;
         }
 
@@ -74,6 +83,7 @@ namespace GameA.Game
             ColOrKillNum = (ushort) data.ColOrKillNum;
             TargetUnitID = (byte) data.TargetUnitID;
             TargetGuid = GM2DTools.ToEngine(data.TargetGuid);
+            TargetNpcNum = (ushort) data.TargetNpcNum;
         }
 
         public bool Equals(NpcTaskTargetDynamic other)
@@ -82,15 +92,16 @@ namespace GameA.Game
                 TaskType == other.TaskType &&
                 ColOrKillNum == other.ColOrKillNum &&
                 TargetUnitID == other.TargetUnitID &&
-                TargetGuid == other.TargetGuid;
+                TargetGuid == other.TargetGuid &&
+                TargetNpcNum == other.TargetNpcNum;
         }
     }
 
-    public enum ENpcTaskType
+    public enum ENpcTargetType
     {
         None = 0,
-        Colltion,
         Moster,
+        Colltion,
         Dialog,
         Contorl
     }

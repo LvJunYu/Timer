@@ -9,9 +9,10 @@ using UnityEngine;
 
 namespace GameA
 {
+    //选择npc任务种类
     public class UPCtrlUnitPropertyEditNpcTaskAdvance : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
-        private ENpcTaskType _type;
+        private ENpcTargetType _type;
         private GameObject _panel;
         private RectTransform _contentRtf;
         private Sequence _openSequence;
@@ -42,48 +43,49 @@ namespace GameA
                 int num = i;
                 SelectNpcTaskTargetBtns[i].AddNewTarget(() =>
                 {
-                    NpcTaskTargetDynamic target = CreataNewTarget((ENpcTaskType) (num + 1));
+                    NpcTaskTargetDynamic target = CreataNewTarget((ENpcTargetType) (num + 1));
                     OpenMenu(target);
                 });
             }
-            _panel = _cachedView.NpcTaskSelectTypePanel;
-            _contentRtf = _cachedView.NpcTaskSelectTypeContentRtf;
+            _panel = _cachedView.NpcTaskTypePanel;
+            _contentRtf = _cachedView.NpcTaskTypeContentRtf;
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DiaTargetNpcNum);
             _panel.SetActiveEx(false);
-            _cachedView.NpcTaskMonsterOrColPanel.SetActiveEx(false);
+            _cachedView.NpcTaskColltionPanel.SetActiveEx(false);
             _cachedView.NpcTaskDiaPanel.SetActiveEx(false);
             InitData();
             _collOrKillNumSetting = new USCtrlSliderSetting();
-            _collOrKillNumSetting.Init(_cachedView.CollOrKillNumSetting);
+            _collOrKillNumSetting.Init(_cachedView.ColltionNumSetting);
             UnitExtraHelper.SetUSCtrlSliderSetting(_collOrKillNumSetting, EAdvanceAttribute.MaxTaskKillOrColltionNum,
                 value => _npcTaskTarget.ColOrKillNum = (ushort) value);
         }
 
         public override void Open()
         {
+            _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            _npcTaskData = _mainCtrl.UpCtrlUnitPropertyEditNpcTaskType.CurExtraNpcTaskData;
+            _npcTaskData = _mainCtrl.EditNpcTaskDock.CurExtraNpcTaskData;
             _panel.SetActive(false);
             switch (_type)
             {
-                case ENpcTaskType.None:
-                    _panel = _cachedView.NpcTaskSelectTypePanel;
-                    _contentRtf = _cachedView.NpcTaskSelectTypeContentRtf;
+                case ENpcTargetType.None:
+                    _panel = _cachedView.NpcTaskTypePanel;
+                    _contentRtf = _cachedView.NpcTaskTypeContentRtf;
                     break;
-                case ENpcTaskType.Colltion:
-                    _panel = _cachedView.NpcTaskMonsterOrColPanel;
-                    _contentRtf = _cachedView.NpcTaskMonsterOrColContentRtf;
-                    CreateCollOrKillType(ENpcTaskType.Colltion);
+                case ENpcTargetType.Colltion:
+                    _panel = _cachedView.NpcTaskColltionPanel;
+                    _contentRtf = _cachedView.NpcTaskColltionContentRtf;
+                    CreateCollOrKillType(ENpcTargetType.Colltion);
                     break;
-                case ENpcTaskType.Moster:
-                    _panel = _cachedView.NpcTaskMonsterOrColPanel;
-                    _contentRtf = _cachedView.NpcTaskMonsterOrColContentRtf;
-                    CreateCollOrKillType(ENpcTaskType.Moster);
+                case ENpcTargetType.Moster:
+                    _panel = _cachedView.NpcTaskColltionPanel;
+                    _contentRtf = _cachedView.NpcTaskColltionContentRtf;
+                    CreateCollOrKillType(ENpcTargetType.Moster);
                     break;
-                case ENpcTaskType.Contorl:
+                case ENpcTargetType.Contorl:
 
                     break;
-                case ENpcTaskType.Dialog:
+                case ENpcTargetType.Dialog:
                     _panel = _cachedView.NpcTaskDiaPanel;
                     _contentRtf = _cachedView.NpcTaskDiaContentRtf;
                     break;
@@ -111,24 +113,24 @@ namespace GameA
             }
             switch (_type)
             {
-                case ENpcTaskType.None:
-                    _panel = _cachedView.NpcTaskSelectTypePanel;
-                    _contentRtf = _cachedView.NpcTaskSelectTypeContentRtf;
+                case ENpcTargetType.None:
+                    _panel = _cachedView.NpcTaskTypePanel;
+                    _contentRtf = _cachedView.NpcTaskTypeContentRtf;
                     break;
-                case ENpcTaskType.Colltion:
-                    _panel = _cachedView.NpcTaskMonsterOrColPanel;
-                    _contentRtf = _cachedView.NpcTaskMonsterOrColContentRtf;
-                    CreateCollOrKillType(ENpcTaskType.Colltion);
+                case ENpcTargetType.Colltion:
+                    _panel = _cachedView.NpcTaskColltionPanel;
+                    _contentRtf = _cachedView.NpcTaskColltionContentRtf;
+                    CreateCollOrKillType(ENpcTargetType.Colltion);
                     break;
-                case ENpcTaskType.Moster:
-                    _panel = _cachedView.NpcTaskMonsterOrColPanel;
-                    _contentRtf = _cachedView.NpcTaskMonsterOrColContentRtf;
-                    CreateCollOrKillType(ENpcTaskType.Moster);
+                case ENpcTargetType.Moster:
+                    _panel = _cachedView.NpcTaskColltionPanel;
+                    _contentRtf = _cachedView.NpcTaskColltionContentRtf;
+                    CreateCollOrKillType(ENpcTargetType.Moster);
                     break;
-                case ENpcTaskType.Contorl:
+                case ENpcTargetType.Contorl:
 
                     break;
-                case ENpcTaskType.Dialog:
+                case ENpcTargetType.Dialog:
                     if (_npcTaskTarget.TargetUnitID != Convert.ToInt32(_cachedView.DiaTargetNpcNum.text))
                     {
                         _npcTaskTarget.TargetUnitID = Convert.ToUInt16(_cachedView.DiaTargetNpcNum.text);
@@ -142,7 +144,7 @@ namespace GameA
         public void OpenMenu(NpcTaskTargetDynamic target)
         {
             _npcTaskTarget = target;
-            _type = (ENpcTaskType) _npcTaskTarget.TaskType;
+            _type = (ENpcTargetType) _npcTaskTarget.TaskType;
             Open();
         }
 
@@ -234,40 +236,40 @@ namespace GameA
         }
 
         //处理选择杀死和收集是的方法
-        private void CreateCollOrKillType(ENpcTaskType type)
+        private void CreateCollOrKillType(ENpcTargetType type)
         {
             int num = _umList.Count;
             switch (type)
             {
-                case ENpcTaskType.Colltion:
+                case ENpcTargetType.Colltion:
 
                     for (int i = 0; i < _colletionList.Count; i++)
                     {
                         if (i < num)
                         {
-                            _umList[i].IintItem(_colletionList[i], _npcTaskTarget);
+//                            _umList[i].IintItem(_colletionList[i], _npcTaskTarget);
                         }
                         else
                         {
                             UMCtrlHandNpcSelectTargetItem item = new UMCtrlHandNpcSelectTargetItem();
-                            item.Init(_cachedView.NpcTaskMonsterOrColContentRtf.rectTransform(), EResScenary.Game);
-                            item.IintItem(_colletionList[i], _npcTaskTarget);
+                            item.Init(_cachedView.NpcTaskColltionContentRtf.rectTransform(), EResScenary.Game);
+//                            item.IintItem(_colletionList[i], _npcTaskTarget);
                             _umList.Add(item);
                         }
                     }
                     break;
-                case ENpcTaskType.Moster:
+                case ENpcTargetType.Moster:
                     for (int i = 0; i < _mechanismList.Count; i++)
                     {
                         if (i < num)
                         {
-                            _umList[i].IintItem(_mechanismList[i], _npcTaskTarget);
+//                            _umList[i].IintItem(_mechanismList[i], _npcTaskTarget);
                         }
                         else
                         {
                             UMCtrlHandNpcSelectTargetItem item = new UMCtrlHandNpcSelectTargetItem();
-                            item.Init(_cachedView.NpcTaskMonsterOrColContentRtf.rectTransform(), EResScenary.Game);
-                            item.IintItem(_mechanismList[i], _npcTaskTarget);
+                            item.Init(_cachedView.NpcTaskColltionContentRtf.rectTransform(), EResScenary.Game);
+//                            item.IintItem(_mechanismList[i], _npcTaskTarget);
                             _umList.Add(item);
                         }
                     }
@@ -275,35 +277,35 @@ namespace GameA
             }
         }
 
-        private NpcTaskTargetDynamic CreataNewTarget(ENpcTaskType type)
+        private NpcTaskTargetDynamic CreataNewTarget(ENpcTargetType type)
         {
             NpcTaskTargetDynamic target = new NpcTaskTargetDynamic();
             switch (type)
             {
-                case ENpcTaskType.Moster:
+                case ENpcTargetType.Moster:
                     target.ColOrKillNum = 1;
-                    target.TaskType = (int) ENpcTaskType.Moster;
+                    target.TaskType = (int) ENpcTargetType.Moster;
                     //默认的怪兽
                     target.TargetUnitID = 11000;
                     _npcTaskData.Targets.Add(target);
                     RefrewTaskData();
                     break;
-                case ENpcTaskType.Colltion:
+                case ENpcTargetType.Colltion:
                     target.ColOrKillNum = 1;
-                    target.TaskType = (int) ENpcTaskType.Colltion;
+                    target.TaskType = (int) ENpcTargetType.Colltion;
                     _npcTaskData.Targets.Add(target);
                     RefrewTaskData();
                     //默认的收集奖励
                     target.TargetUnitID = 11000;
                     break;
-                case ENpcTaskType.Dialog:
+                case ENpcTargetType.Dialog:
 
-                    target.TaskType = (int) ENpcTaskType.Dialog;
+                    target.TaskType = (int) ENpcTargetType.Dialog;
                     break;
-                case ENpcTaskType.Contorl:
+                case ENpcTargetType.Contorl:
                     if (_mainCtrl.EditData.UnitDesc.Guid != IntVec3.zero)
                     {
-                        target.TaskType = (int) ENpcTaskType.Contorl;
+                        target.TaskType = (int) ENpcTargetType.Contorl;
                         NpcTaskDataTemp.Intance.TaskData = _npcTaskData;
                         NpcTaskDataTemp.Intance.TaskTargetData = _npcTaskTarget;
                         NpcTaskDataTemp.Intance.TaskType = ETaskContype.Task;
@@ -323,7 +325,7 @@ namespace GameA
         //刷新任务面板
         private void RefrewTaskData()
         {
-            _mainCtrl.UpCtrlUnitPropertyEditNpcTaskType.RefreshView();
+            _mainCtrl.EditNpcTaskDock.RefreshView();
         }
     }
 }

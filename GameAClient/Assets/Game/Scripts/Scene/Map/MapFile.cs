@@ -181,6 +181,8 @@ namespace GameA.Game
 
         private void ParseUnitExtraInfo(List<UnitExtraKeyValuePair> childList, int sceneIndex = 0)
         {
+            List<int> _npcTaskSeralNum = new List<int>();
+            List<int> _npcSeralNum = new List<int>();
             var dataScene2D = Scene2DManager.Instance.GetDataScene2D(sceneIndex);
             if (childList != null)
             {
@@ -191,11 +193,25 @@ namespace GameA.Game
                     {
                         Guid = GM2DTools.ToEngine(item.Guid),
                     }, GM2DTools.ToEngine(item));
+                    for (int j = 0;
+                        j < GM2DTools.ToEngine(item).NpcTask.ToList<NpcTaskDynamic>().Count;
+                        j++)
+                    {
+                        _npcTaskSeralNum.Add(GM2DTools.ToEngine(item).NpcTask.ToList<NpcTaskDynamic>()[i]
+                            .NpcSerialNumber);
+                    }
+                    if (GM2DTools.ToEngine(item).NpcSerialNumber != 0)
+                    {
+                        _npcSeralNum.Add(GM2DTools.ToEngine(item).NpcSerialNumber);
+                    }
                 }
             }
+            NpcTaskDataTemp.Intance.SetSecenAllTaskSerialNum(_npcTaskSeralNum);
+            NpcTaskDataTemp.Intance.SetSecenAllSerialNum(_npcSeralNum);
         }
-        
-        private IEnumerator ParseSceneData(List<MapRect2D> data, Dictionary<IntVec3, PairUnitData> pairUnits, int mapVersion,
+
+        private IEnumerator ParseSceneData(List<MapRect2D> data, Dictionary<IntVec3, PairUnitData> pairUnits,
+            int mapVersion,
             GameTimer timer, int sceneIndex = 0)
         {
             float ratio = 1f / _totalCount;
@@ -216,7 +232,7 @@ namespace GameA.Game
                 unitObject.Rotation = node.Direction;
                 var size = tableUnit.GetDataSize(node.Direction, node.Scale);
                 var count = tableUnit.GetDataCount(node);
-            
+
                 for (int j = 0; j < count.x; j++)
                 {
                     for (int k = 0; k < count.y; k++)
@@ -353,7 +369,7 @@ namespace GameA.Game
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;
             gm2DMapData.FinishCount = mapEditor.MapStatistics.LevelFinishCount;
             gm2DMapData.BgRandomSeed = BgScene2D.Instance.CurSeed;
-    
+
             Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             var mainDataScene2D = Scene2DManager.Instance.CurDataScene2D;
             gm2DMapData.ValidMapRect = GM2DTools.ToProto(mainDataScene2D.ValidMapRect);
@@ -370,7 +386,7 @@ namespace GameA.Game
                 }
             }
             mainDataScene2D.SaveSwitchUnitData(gm2DMapData.SwitchUnitDatas);
-            
+
             //子地图
             int sceneCount = Scene2DManager.Instance.SceneCount;
             for (int i = 1; i < sceneCount; i++)
@@ -434,9 +450,8 @@ namespace GameA.Game
                 gm2DMapData.ModifyDatas.Add(mid);
             }
             // -------------------------------------
-            
+
             return GameMapDataSerializer.Instance.Serialize(gm2DMapData);
         }
-
     }
 }

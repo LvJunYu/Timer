@@ -38,15 +38,18 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
 		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
-		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
+		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
 		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
+		public readonly Dictionary<int,Table_NpcTaskTargetColltion> Table_NpcTaskTargetColltionDic = new Dictionary<int, Table_NpcTaskTargetColltion>();
+		public readonly Dictionary<int,Table_NpcTaskTargetKill> Table_NpcTaskTargetKillDic = new Dictionary<int, Table_NpcTaskTargetKill>();
+		public readonly Dictionary<int,Table_NpcDefaultDia> Table_NpcDefaultDiaDic = new Dictionary<int, Table_NpcDefaultDia>();
 		[SerializeField] private Table_State[] _tableStates;
 		[SerializeField] private Table_Skill[] _tableSkills;
 		[SerializeField] private Table_Reward[] _tableRewards;
@@ -73,15 +76,18 @@ namespace GameA.Game
 		[SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
 		[SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
-		[SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[SerializeField] private Table_Matrix[] _tableMatrixs;
+		[SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[SerializeField] private Table_Morph[] _tableMorphs;
 		[SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
 		[SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[SerializeField] private Table_ModifyReward[] _tableModifyRewards;
 		[SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
 		[SerializeField] private Table_BoostItem[] _tableBoostItems;
+		[SerializeField] private Table_NpcTaskTargetColltion[] _tableNpcTaskTargetColltions;
+		[SerializeField] private Table_NpcTaskTargetKill[] _tableNpcTaskTargetKills;
+		[SerializeField] private Table_NpcDefaultDia[] _tableNpcDefaultDias;
 
 		#endregion
 		#region 属性
@@ -149,12 +155,12 @@ namespace GameA.Game
             _tablePuzzleUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleUpgrade[]>(PuzzleUpgradeJsonStr);
 			string PuzzleSlotJsonStr = JoyResManager.Instance.GetJson ("PuzzleSlot", (int) EResScenary.TableAsset);
             _tablePuzzleSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSlot[]>(PuzzleSlotJsonStr);
-			string AvatarSlotNameJsonStr = JoyResManager.Instance.GetJson ("AvatarSlotName", (int) EResScenary.TableAsset);
-            _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
 			string AvatarStructJsonStr = JoyResManager.Instance.GetJson ("AvatarStruct", (int) EResScenary.TableAsset);
             _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string MatrixJsonStr = JoyResManager.Instance.GetJson ("Matrix", (int) EResScenary.TableAsset);
             _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
+			string AvatarSlotNameJsonStr = JoyResManager.Instance.GetJson ("AvatarSlotName", (int) EResScenary.TableAsset);
+            _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
 			string MorphJsonStr = JoyResManager.Instance.GetJson ("Morph", (int) EResScenary.TableAsset);
             _tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphJsonStr);
 			string PlayerLvToModifyLimitJsonStr = JoyResManager.Instance.GetJson ("PlayerLvToModifyLimit", (int) EResScenary.TableAsset);
@@ -167,6 +173,12 @@ namespace GameA.Game
             _tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockJsonStr);
 			string BoostItemJsonStr = JoyResManager.Instance.GetJson ("BoostItem", (int) EResScenary.TableAsset);
             _tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemJsonStr);
+			string NpcTaskTargetColltionJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetColltion", (int) EResScenary.TableAsset);
+            _tableNpcTaskTargetColltions = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetColltion[]>(NpcTaskTargetColltionJsonStr);
+			string NpcTaskTargetKillJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetKill", (int) EResScenary.TableAsset);
+            _tableNpcTaskTargetKills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetKill[]>(NpcTaskTargetKillJsonStr);
+			string NpcDefaultDiaJsonStr = JoyResManager.Instance.GetJson ("NpcDefaultDia", (int) EResScenary.TableAsset);
+            _tableNpcDefaultDias = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcDefaultDia[]>(NpcDefaultDiaJsonStr);
 			JoyResManager.Instance.UnloadScenary((int) EResScenary.TableAsset);
 			for (int i = 0; i < _tableStates.Length; i++)
 			{
@@ -454,17 +466,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePuzzleSlots table.Id {0} is duplicated!", _tablePuzzleSlots[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableAvatarSlotNames.Length; i++)
-			{
-				if (!Table_AvatarSlotNameDic.ContainsKey(_tableAvatarSlotNames[i].Id))
-				{
-					Table_AvatarSlotNameDic.Add(_tableAvatarSlotNames[i].Id,_tableAvatarSlotNames[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableAvatarStructs.Length; i++)
 			{
 				if (!Table_AvatarStructDic.ContainsKey(_tableAvatarStructs[i].Id))
@@ -485,6 +486,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableMatrixs table.Id {0} is duplicated!", _tableMatrixs[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableAvatarSlotNames.Length; i++)
+			{
+				if (!Table_AvatarSlotNameDic.ContainsKey(_tableAvatarSlotNames[i].Id))
+				{
+					Table_AvatarSlotNameDic.Add(_tableAvatarSlotNames[i].Id,_tableAvatarSlotNames[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableMorphs.Length; i++)
@@ -551,6 +563,39 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableBoostItems table.Id {0} is duplicated!", _tableBoostItems[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableNpcTaskTargetColltions.Length; i++)
+			{
+				if (!Table_NpcTaskTargetColltionDic.ContainsKey(_tableNpcTaskTargetColltions[i].Id))
+				{
+					Table_NpcTaskTargetColltionDic.Add(_tableNpcTaskTargetColltions[i].Id,_tableNpcTaskTargetColltions[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcTaskTargetColltions table.Id {0} is duplicated!", _tableNpcTaskTargetColltions[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableNpcTaskTargetKills.Length; i++)
+			{
+				if (!Table_NpcTaskTargetKillDic.ContainsKey(_tableNpcTaskTargetKills[i].Id))
+				{
+					Table_NpcTaskTargetKillDic.Add(_tableNpcTaskTargetKills[i].Id,_tableNpcTaskTargetKills[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcTaskTargetKills table.Id {0} is duplicated!", _tableNpcTaskTargetKills[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableNpcDefaultDias.Length; i++)
+			{
+				if (!Table_NpcDefaultDiaDic.ContainsKey(_tableNpcDefaultDias[i].Id))
+				{
+					Table_NpcDefaultDiaDic.Add(_tableNpcDefaultDias[i].Id,_tableNpcDefaultDias[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcDefaultDias table.Id {0} is duplicated!", _tableNpcDefaultDias[i].Id);
 				}
 			}
 			
@@ -791,15 +836,6 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_AvatarSlotName GetAvatarSlotName(int key)
-		{
-			Table_AvatarSlotName tmp;
-			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_AvatarStruct GetAvatarStruct(int key)
 		{
 			Table_AvatarStruct tmp;
@@ -813,6 +849,15 @@ namespace GameA.Game
 		{
 			Table_Matrix tmp;
 			if (Table_MatrixDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_AvatarSlotName GetAvatarSlotName(int key)
+		{
+			Table_AvatarSlotName tmp;
+			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -867,6 +912,33 @@ namespace GameA.Game
 		{
 			Table_BoostItem tmp;
 			if (Table_BoostItemDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcTaskTargetColltion GetNpcTaskTargetColltion(int key)
+		{
+			Table_NpcTaskTargetColltion tmp;
+			if (Table_NpcTaskTargetColltionDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcTaskTargetKill GetNpcTaskTargetKill(int key)
+		{
+			Table_NpcTaskTargetKill tmp;
+			if (Table_NpcTaskTargetKillDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcDefaultDia GetNpcDefaultDia(int key)
+		{
+			Table_NpcDefaultDia tmp;
+			if (Table_NpcDefaultDiaDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

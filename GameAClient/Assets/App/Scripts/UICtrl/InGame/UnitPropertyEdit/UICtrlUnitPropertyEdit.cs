@@ -48,8 +48,11 @@ namespace GameA
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
 
+        public bool IsInMap
+        {
+            get { return EditData.UnitDesc.Guid == IntVec3.zero; }
+        }
         //npc 之间的引用数据类型
-        public List<NpcTaskDynamic> NpcTaskDatas;
 
         public EEnterType CurEnterType
         {
@@ -76,9 +79,18 @@ namespace GameA
             get { return _curId; }
         }
 
-        private UPCtrlUnitPropertyEditNpcDiaType _upCtrlUnitPropertyEditNpcDiaType;
-        public UPCtrlUnitPropertyEditNpcTaskType UpCtrlUnitPropertyEditNpcTaskType;
-        public UPCtrlUnitPropertyEditNpcTaskAdvance UpCtrlUnitPropertyEditNpcTaskAdvance;
+        public UPCtrlUnitPropertyEditNpcDiaType EditNpcDiaType;
+        public UPCtrlUnitPropertyEditNpcTaskDock EditNpcTaskDock;
+        public UPCtrlUnitPropertyEditNpcTaskMonsterAdvance EditNpcTaskMonsterType;
+        public UPCtrlUnitPropertyEditNpcTaskColltionAdvance EditNpcTaskColltionType;
+        public UPCtrlUnitPropertyEditNpcTaskTargetType EditNpcTaskTargetType;
+        public UpCtrlUnitPropertyEditNpcTaskDiaAdvance EditNpcTaregtDialog;
+        public UPCtrlUnitPropertyEditNpcTaskAddCondition EditNpcAddCondition;
+        public UPCtrlUnitPropertyEditNpcTaskConditionType EditNpcConditionType;
+        public UPCtrlUnitPropertyEditNpcTaskBeforeTask EditBeforeTask;
+        public UPCtrlUnitPropertyEditNpcTaskEditDia EditNpcDia;
+        public UPCtrlUnitPropertyEditNpcBeforeTaskAwardType EditBeforeTaskAward;
+        public UPCtrlUnitPropertyEditNpcFinishTaskAwardType EditFinishTaskAward;
 
         protected override void InitGroupId()
         {
@@ -125,14 +137,41 @@ namespace GameA
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
             _upCtrlUnitPropertyEditPreinstall.Init(this, _cachedView);
             // npc对话类
-            _upCtrlUnitPropertyEditNpcDiaType = new UPCtrlUnitPropertyEditNpcDiaType();
-            _upCtrlUnitPropertyEditNpcDiaType.Init(this, _cachedView);
+            EditNpcDiaType = new UPCtrlUnitPropertyEditNpcDiaType();
+            EditNpcDiaType.Init(this, _cachedView);
             //任务类
-            UpCtrlUnitPropertyEditNpcTaskType = new UPCtrlUnitPropertyEditNpcTaskType();
-            UpCtrlUnitPropertyEditNpcTaskType.Init(this, _cachedView);
-            //任务细分面板
-            UpCtrlUnitPropertyEditNpcTaskAdvance = new UPCtrlUnitPropertyEditNpcTaskAdvance();
-            UpCtrlUnitPropertyEditNpcTaskAdvance.Init(this, _cachedView);
+            EditNpcTaskDock = new UPCtrlUnitPropertyEditNpcTaskDock();
+            EditNpcTaskDock.Init(this, _cachedView);
+            //目标怪物
+            EditNpcTaskMonsterType = new UPCtrlUnitPropertyEditNpcTaskMonsterAdvance();
+            EditNpcTaskMonsterType.Init(this, _cachedView);
+            //目标收集
+            EditNpcTaskColltionType = new UPCtrlUnitPropertyEditNpcTaskColltionAdvance();
+            EditNpcTaskColltionType.Init(this, _cachedView);
+            //选择目标种类
+            EditNpcTaskTargetType = new UPCtrlUnitPropertyEditNpcTaskTargetType();
+            EditNpcTaskTargetType.Init(this, _cachedView);
+            //选择对话目标
+            EditNpcTaregtDialog = new UpCtrlUnitPropertyEditNpcTaskDiaAdvance();
+            EditNpcTaregtDialog.Init(this, _cachedView);
+            //添加条件
+            EditNpcAddCondition = new UPCtrlUnitPropertyEditNpcTaskAddCondition();
+            EditNpcAddCondition.Init(this, _cachedView);
+            //添加条件
+            EditNpcConditionType = new UPCtrlUnitPropertyEditNpcTaskConditionType();
+            EditNpcConditionType.Init(this, _cachedView);
+            //设置前置任务
+            EditBeforeTask = new UPCtrlUnitPropertyEditNpcTaskBeforeTask();
+            EditBeforeTask.Init(this, _cachedView);
+            //编辑对话界面
+            EditNpcDia = new UPCtrlUnitPropertyEditNpcTaskEditDia();
+            EditNpcDia.Init(this, _cachedView);
+            //任务前奖励的选择
+            EditBeforeTaskAward = new UPCtrlUnitPropertyEditNpcBeforeTaskAwardType();
+            EditBeforeTaskAward.Init(this, _cachedView);
+            //任务完成后的奖励
+            EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
+            EditFinishTaskAward.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
@@ -415,9 +454,9 @@ namespace GameA
         protected override void OnClose()
         {
             _upCtrlUnitPropertyEditAdvance.Close();
-            _upCtrlUnitPropertyEditNpcDiaType.Close();
-            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
-            UpCtrlUnitPropertyEditNpcTaskType.Close();
+            EditNpcDiaType.Close();
+//            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
+            EditNpcTaskDock.Close();
             _upCtrlUnitPropertyEditPreinstall.Close();
             base.OnClose();
         }
@@ -1060,7 +1099,7 @@ namespace GameA
             }
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
-            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
+//            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1072,6 +1111,7 @@ namespace GameA
 
         private void OnEditTypeMenuClick(EEditType editType)
         {
+            CloseUpCtrlPanel();
             _curEditType = editType;
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -1091,17 +1131,21 @@ namespace GameA
                     _upCtrlUnitPropertyEditAdvance.Close();
                 }
             }
-
+            if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Dialog)
+            {
+                EditNpcDiaType.Open();
+                EditNpcTaskDock.Close();
+            }
             //任务型npc
-            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
+//            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
             if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
             {
-                _upCtrlUnitPropertyEditNpcDiaType.Close();
-                UpCtrlUnitPropertyEditNpcTaskType.Open();
+                EditNpcDiaType.Close();
+                EditNpcTaskDock.Open();
             }
             else
             {
-                UpCtrlUnitPropertyEditNpcTaskType.Close();
+                EditNpcTaskDock.Close();
             }
         }
 
@@ -1117,7 +1161,7 @@ namespace GameA
             }
 
             _upCtrlUnitPropertyEditAdvance.RefreshView();
-            _upCtrlUnitPropertyEditNpcDiaType.RefreshView();
+            EditNpcDiaType.RefreshView();
         }
 
         public void Reset()
@@ -1166,7 +1210,7 @@ namespace GameA
             _curUnitExtra.TeamId = (byte) teamId;
             _spawnMenuList[_curSelectedPlayerIndex].SetColor(TeamManager.GetTeamColor(teamId));
         }
-        
+
         public UnitExtraDynamic GetCurUnitExtra()
         {
             if (_curEditType == EEditType.Spawn || _curEnterType == EEnterType.WeaponSettingFromSpawn)
@@ -1204,6 +1248,21 @@ namespace GameA
             }
 
             return false;
+        }
+
+        public void CloseUpCtrlPanel()
+        {
+            EditNpcTaskMonsterType.Close();
+            EditNpcTaskColltionType.Close();
+            EditNpcTaskTargetType.Close();
+            EditNpcTaregtDialog.Close();
+            EditNpcAddCondition.Close();
+            EditNpcConditionType.Close();
+            EditBeforeTask.Close();
+            EditNpcDia.Close();
+            EditBeforeTaskAward.Close();
+            EditFinishTaskAward.Close();
+            _upCtrlUnitPropertyEditAdvance.Close();
         }
 
         public enum EEnterType
