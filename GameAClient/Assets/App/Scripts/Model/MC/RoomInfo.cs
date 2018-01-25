@@ -132,7 +132,7 @@ namespace GameA
                 }
                 else
                 {
-                    LogHelper.Error("index >= _roomUsers.Length");
+                    LogHelper.Error("index {0} of _roomUserArray is not null", index);
                 }
             }
         }

@@ -123,7 +123,7 @@ namespace GameA.Game
             List<UnitEditData> data = new List<UnitEditData>();
             for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] != null)
+                if (array[i].UnitDesc.Id != 0)
                 {
                     data.Add(array[i]);
                 }
