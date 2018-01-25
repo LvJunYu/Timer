@@ -21,6 +21,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
             RegisterEvent(EMessengerType.OnEditCameraPosChange, OnEditCameraPosChange);
+            RegisterEvent(EMessengerType.OnSpawnDataChanged, RefreshHeads);
         }
 
         private void OnEditCameraPosChange()
@@ -41,6 +42,10 @@ namespace GameA
 
         private void OnValidMapRectChanged()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             RefreshBtns();
         }
 
@@ -80,6 +85,19 @@ namespace GameA
             RefreshView();
         }
 
+        private void RefreshHeads()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            int spawnIndex = Scene2DManager.Instance.SqawnSceneIndex;
+            for (int i = 0; i < _cachedView.Heads.Length; i++)
+            {
+                _cachedView.Heads[i].SetActive(i == spawnIndex);
+            }
+        }
+
         private void RefreshView()
         {
             _cachedView.SceneDock.SetActive(!GM2DGame.Instance.GameMode.IsMulti);
@@ -92,6 +110,7 @@ namespace GameA
                 _cachedView.SceneToggles[i].isOn = curSceneIndex == i;
             }
 
+            RefreshHeads();
             RefreshBtns();
         }
 
@@ -104,6 +123,10 @@ namespace GameA
                 ? ConstDefineGM2D.MaxMultiMapRectSize
                 : ConstDefineGM2D.MaxSingleMapRectSize;
             var minSize = ConstDefineGM2D.MinMapRectSize;
+            _cachedView.TopAddBtn.SetActiveEx(size.y < maxSize.y);
+            _cachedView.TopLessBtn.SetActiveEx(size.y > minSize.y);
+            _cachedView.RightAddBtn.SetActiveEx(size.x < maxSize.x);
+            _cachedView.RightLessBtn.SetActiveEx(size.x > minSize.x);
             _cachedView.TopAddDiableBtn.SetActiveEx(size.y >= maxSize.y);
             _cachedView.TopLessDiableBtn.SetActiveEx(size.y <= minSize.y);
             _cachedView.RightAddDiableBtn.SetActiveEx(size.x >= maxSize.x);

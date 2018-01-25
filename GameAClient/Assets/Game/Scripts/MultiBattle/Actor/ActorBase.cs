@@ -390,7 +390,7 @@ namespace GameA.Game
                     }
                 }
             }
-
+            //如果掉下梯子时按上下则重新上梯子
             if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
                 _input.GetKeyUpApplied(EInputType.Up))
             {

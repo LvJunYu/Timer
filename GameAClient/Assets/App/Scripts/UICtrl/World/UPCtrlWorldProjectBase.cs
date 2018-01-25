@@ -15,9 +15,8 @@ namespace GameA
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
-        protected int _mask;
         
-        public int ProjectTypes {
+        public int Mask {
             get
             {
                 int mask = 0;
@@ -25,10 +24,14 @@ namespace GameA
                 {
                     if (_cachedView.ProjectTypeTogs[i].isOn)
                     {
-                        mask &= 1 << i;
+                        mask |= 1 << i;
                     }
                 }
 
+                if (mask == 0)
+                {
+                    mask = Project.ProjectTypeAllMask;
+                }
                 return mask;
             }
         }
@@ -127,7 +130,6 @@ namespace GameA
 
         public virtual void OnProjectTypesChanged()
         {
-            _mask = ProjectTypes;
             RequestData();
         }
         

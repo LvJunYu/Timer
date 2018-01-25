@@ -142,8 +142,9 @@ namespace GameA
                     _cachedView.ReturnBtn.SetActiveEx(false);
                     _cachedView.RetryBtn.SetActiveEx(false);
                     _cachedView.ContinueEditBtn.SetActiveEx(true);
-                    _cachedView.PublishBtn.SetActiveEx(showState == EShowState.Win && _project.ParentId != 0);
-                    if (showState == EShowState.Win)
+                    bool canPublish = showState == EShowState.Win && _project.ParentId == 0;
+                    _cachedView.PublishBtn.SetActiveEx(canPublish);
+                    if (canPublish)
                     {
                         _cachedView.WinContent.text = "恭喜成功通关，现在可以发布您的关卡啦！";
                     }

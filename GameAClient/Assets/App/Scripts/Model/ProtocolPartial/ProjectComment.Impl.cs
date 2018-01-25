@@ -7,17 +7,11 @@ namespace GameA
     public partial class ProjectComment
     {
         private UserInfoDetail _userInfoDetail;
-        private UserInfoDetail _targetUserInfoDetail;
         private ProjectCommentReplyData _replyList = new ProjectCommentReplyData();
 
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
-        }
-
-        public UserInfoDetail TargetUserInfoDetail
-        {
-            get { return _targetUserInfoDetail; }
         }
 
         public ProjectCommentReplyData ReplyList
@@ -49,7 +43,7 @@ namespace GameA
                     return;
                 }
 
-                _userLike = like; 
+                CopyMsgData(ret.ProjectComment);
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -68,7 +62,6 @@ namespace GameA
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
-            _targetUserInfoDetail = UserManager.Instance.UpdateData(msg.TargetUserInfo);
         }
 
         public void Reply(string content, Action successCallback = null, Action failedCallback = null)
@@ -76,10 +69,12 @@ namespace GameA
             var testRes = CheckTools.CheckMessage(content);
             if (testRes == CheckTools.ECheckMessageResult.Success)
             {
-                RemoteCommands.ReplyProjectComment(_id, content, false, 0, res =>
+                RemoteCommands.ReplyProjectComment(_id, content, 0, res =>
                 {
                     if (res.ResultCode == (int) EReplyUserMessageCode.RUMC_Success)
                     {
+                        Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, _id,
+                            new ProjectCommentReply(res.Data));
                         if (successCallback != null)
                         {
                             successCallback.Invoke();
@@ -120,13 +115,22 @@ namespace GameA
 
         public void Delete()
         {
-            RemoteCommands.DeleteProjectCommentReply(_id, msg =>
+            RemoteCommands.DeleteProjectComment(_id, msg =>
             {
                 if (msg.ResultCode == (int) EDeleteProjectCommentCode.DPCC_Success)
                 {
                     Messenger<ProjectComment>.Broadcast(EMessengerType.OnDeleteProjectComment, this);
                 }
-            }, null);
+                else
+                {
+                    LogHelper.Error("DeleteProjectComment ResultCode = {0}", msg.ResultCode);
+                    SocialGUIManager.ShowPopupDialog("删除失败");
+                }
+            }, code =>
+            {
+                LogHelper.Error("DeleteProjectComment Fail code = {0}", code);
+                SocialGUIManager.ShowPopupDialog("删除失败");
+            });
         }
     }
 }

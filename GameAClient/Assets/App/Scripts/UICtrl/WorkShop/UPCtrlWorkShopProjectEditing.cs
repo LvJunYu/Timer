@@ -11,7 +11,7 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
-            if (_hasRequested && !append || _isRequesting) return;
+            if ( _isRequesting) return;
             _isRequesting = true;
             int startInx = 0;
             if (append)
@@ -26,8 +26,6 @@ namespace GameA
                 {
                     RefreshView();
                 }
-
-                _hasRequested = true;
                 _isRequesting = false;
             }, code => _isRequesting = false);
         }
@@ -104,6 +102,16 @@ namespace GameA
             item.SetCurUI(UMCtrlProject.ECurUI.Editing);
             item.Init(parent, _resScenary);
             return item;
+        }
+
+        public void OnWorkShopProjectPublished(long projectId)
+        {
+            var project = _data.AllEdittingList.Find(p => p.ProjectId == projectId);
+            if (project != null)
+            {
+                _data.AllEdittingList.Remove(project);
+            }
+            RefreshView();
         }
     }
 }

@@ -226,8 +226,17 @@ namespace GameA
 
         private void ReadPreinstall(int index)
         {
+            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(_dataList[index].PreinstallData.Data);
+            if (UnitDefine.IsSpawn(_mainCtrl.EditData.UnitDesc.Id))
+            {
+                if (!TeamManager.Instance.CheckSpawnPreinstall(unitExtraKeyValuePair, _mainCtrl.EditData.UnitDesc))
+                {
+                    SocialGUIManager.ShowPopupDialog("预设中角色已经创建，无法读取");
+                    return;
+                }
+            }
             _curIndex = index;
-            _mainCtrl.EditData.UnitExtra.Set(_dataList[_curIndex].PreinstallData);
+            _mainCtrl.EditData.UnitExtra.Set(unitExtraKeyValuePair);
             _mainCtrl.EditData.UnitDesc.Rotation = (byte) _dataList[_curIndex].PreinstallData.Rotation;
             HasChanged = false;
             RefreshView();

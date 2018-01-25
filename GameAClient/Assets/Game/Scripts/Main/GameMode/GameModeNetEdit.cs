@@ -3,7 +3,6 @@ using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor;
 
 namespace GameA.Game
 {

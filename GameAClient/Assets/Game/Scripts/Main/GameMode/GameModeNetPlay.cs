@@ -32,10 +32,16 @@ namespace GameA.Game
         protected bool _serverMyPlayerStarted;
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
         private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
+        private RoomInfo _roomInfo;
 
         public override bool IsMulti
         {
             get { return true; }
+        }
+
+        public RoomInfo RoomInfo
+        {
+            get { return _roomInfo; }
         }
 
         public static bool DebugEnable()
@@ -296,6 +302,12 @@ namespace GameA.Game
             return true;
         }
 
+        protected override void InitUI()
+        {
+            base.InitUI();
+            SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
+        }
+
         private void SetPhase(EPhase phase)
         {
             _ePhase = phase;
@@ -489,6 +501,7 @@ namespace GameA.Game
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
         {
+            _roomInfo = new RoomInfo(msg);
             _bornSeed = msg.BornSeed;
             _preServerFrameCount = msg.CurrentRoomFrameCount;
             LogHelper.Info("RoomId: {0}", msg.RoomId);

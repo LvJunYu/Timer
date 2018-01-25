@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -67,11 +68,13 @@ namespace GameA
                 return;
             }
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
-            _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.PublishTime != 0);
-            _cachedView.MultiObj.SetActiveEx(_wrapper.Content.IsMulti);
+            _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.MainId != 0);
+            _cachedView.SingleObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Single && !emptyProject);
+            _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation && !emptyProject);
+            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PS_Compete && !emptyProject);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
-            _cachedView.DownloadObj.SetActiveEx(_eCurUI == ECurUI.Download);
-            _cachedView.OriginalObj.SetActiveEx(false);
+//            _cachedView.DownloadObj.SetActiveEx(false);
+//            _cachedView.OriginalObj.SetActiveEx(false);
             _cachedView.BottomObj.SetActiveEx(_eCurUI != ECurUI.Editing && _eCurUI != ECurUI.Download);
             _cachedView.EditImg.SetActiveEx(_eCurUI == ECurUI.Editing && !emptyProject);
             _cachedView.NewEditObj.SetActiveEx(_eCurUI == ECurUI.Editing && emptyProject);

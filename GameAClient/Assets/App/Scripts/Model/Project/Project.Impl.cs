@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace GameA
     {
         #region 变量
 
+        private static string _emptySummary = "没有留下任何描述的神秘关卡";
         private static string _scoreFormat = "{0:F1}";
         private static string _fullScore = "10";
         private long _guid;
@@ -52,6 +54,19 @@ namespace GameA
         public AdventureLevelRankList AdventureLevelRankList
         {
             get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
+        }
+
+        public string ShowSummary
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_summary))
+                {
+                    return _emptySummary;
+                }
+
+                return _summary;
+            }
         }
 
         public float Score
@@ -587,7 +602,8 @@ namespace GameA
             var msg = new Msg_NetBattleData();
             msg.HarmType = netBattleData.HarmType;
             msg.TimeLimit = netBattleData.TimeLimit;
-            msg.PlayerCount = netBattleData.PlayerCount;
+            var spawns = Scene2DManager.Instance.GetSpawnData();
+            msg.PlayerCount = netBattleData.PlayerCount = spawns.Count;
             msg.LifeCount = netBattleData.LifeCount;
             msg.ReviveTime = netBattleData.ReviveTime;
             msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
@@ -633,14 +649,15 @@ namespace GameA
                     if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
                         _publishTime = UpdateTime;
-                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, ret.ProjectData.ProjectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _projectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
-                        //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
                         if (onSuccess != null)
                         {
                             onSuccess.Invoke();
                         }
+                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(
+                            ProjectManager.Instance.UpdateData(ret.ProjectData));
                     }
                     else
                     {
@@ -876,6 +893,7 @@ namespace GameA
             {
                 if (ret.ResultCode != (int) EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                 {
+                    LogHelper.Error("UpdateWorldProjectFavorite fail, ResultCode = {0}", ret.ResultCode);
                     if (failedCallback != null)
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
@@ -897,6 +915,7 @@ namespace GameA
                 }
             }, code =>
             {
+                LogHelper.Error("UpdateWorldProjectFavorite fail, code = {0}", code);
                 if (failedCallback != null)
                 {
                     failedCallback.Invoke(code);
@@ -1030,10 +1049,11 @@ namespace GameA
             });
         }
 
-        public static Project CreateWorkShopProject()
+        public static Project CreateWorkShopProject(EProjectType projectType)
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
+            p.ProjectType = projectType;
 //            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";

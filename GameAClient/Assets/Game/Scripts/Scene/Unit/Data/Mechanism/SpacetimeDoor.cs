@@ -66,25 +66,37 @@ namespace GameA.Game
                 LogHelper.Error("The Spacetime Door is in the same scene");
                 return;
             }
-            Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ChangeScene);
-
+                    
+            if (!sender.EnterSpacetimeDoor())
+            {
+                return;
+            }
             UnitBase unit;
-            if (!Scene2DManager.Instance.CurColliderScene2D.TryGetUnit(unitDesc.Guid, out unit))
+            SpacetimeDoor spacetimeDoor = null;
+            CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
             {
-                LogHelper.Error("can not get unit");
-                return;
-            }
-
-            SpacetimeDoor spacetimeDoor = unit as SpacetimeDoor;
-            if (spacetimeDoor == null)
+                Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ChangeScene);
+                if (!Scene2DManager.Instance.CurColliderScene2D.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    LogHelper.Error("can not get unit");
+                    return;
+                }
+                spacetimeDoor = unit as SpacetimeDoor;
+                if (spacetimeDoor == null)
+                {
+                    LogHelper.Error("the out spacetimeDoor is null");
+                    return;
+                }
+                sender.SetPos(spacetimeDoor.CurPos); 
+            }, () =>
             {
-                LogHelper.Error("the out spacetimeDoor is null");
-                return;
-            }
-
-            sender.EnterSpacetimeDoor(spacetimeDoor.CurPos);
-            spacetimeDoor.OnUnitOut(sender);
-            pairUnit.Sender = null;
+                sender.OutSpacetimeDoor();
+                if (spacetimeDoor != null)
+                {
+                    spacetimeDoor.OnUnitOut(sender);
+                }
+                pairUnit.Sender = null;
+            });
         }
 
         private void OnUnitOut(UnitBase unit)
@@ -100,7 +112,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
+            if (other.IsActor || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -111,7 +123,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
+            if (other.IsActor || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -122,7 +134,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
+            if (other.IsActor || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -133,7 +145,7 @@ namespace GameA.Game
                 OnTrigger(other);
             }
 
-            if (other.IsPlayer || UnitDefine.IsBullet(other.Id)) return false;
+            if (other.IsActor || UnitDefine.IsBullet(other.Id)) return false;
             return base.OnRightHit(other, ref x, checkOnly);
         }
 

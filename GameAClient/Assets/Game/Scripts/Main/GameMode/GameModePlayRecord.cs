@@ -39,7 +39,6 @@ namespace GameA.Game
             yield return null;
         }
 
-
         public override void Update()
         {
             if (!_run)

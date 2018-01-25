@@ -14,14 +14,14 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(startInx, _pageSize, _mask, () =>
+            _data.Request(startInx, _pageSize, Mask, () =>
             {
                 _projectList = _data.AllList;
                 if (_isOpen)
                 {
                     RefreshView();
                 }
-            }, code => { });
+            }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
         }
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)

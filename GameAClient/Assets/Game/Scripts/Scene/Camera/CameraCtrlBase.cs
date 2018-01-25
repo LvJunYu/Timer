@@ -59,6 +59,10 @@ namespace GameA.Game
         {
         }
 
+        public virtual void Reset()
+        {
+        }
+
         public virtual void Destory()
         {
         }

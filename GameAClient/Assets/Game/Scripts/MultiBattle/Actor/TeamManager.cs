@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -19,7 +20,7 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
-        private Dictionary<int, UnitExtraDynamic> _playerUnitExtraDic;
+        private Dictionary<int, UnitExtraDynamic> _playerUnitExtraDic = new Dictionary<int, UnitExtraDynamic>(MaxTeamCount);
         private List<UnitEditData> _unitDatas = new List<UnitEditData>(MaxTeamCount);
         private List<byte> _teams = new List<byte>(MaxTeamCount);
         private ENetBattleTimeResult _eNetBattleTimeResult;
@@ -43,18 +44,6 @@ namespace GameA.Game
         public List<byte> Teams
         {
             get { return _teams; }
-        }
-
-        public Dictionary<int, UnitExtraDynamic> PlayerUnitExtraDic
-        {
-            get
-            {
-                if (null == _playerUnitExtraDic)
-                {
-                    _playerUnitExtraDic = GetPlayerUnitExtraDic();
-                }
-                return _playerUnitExtraDic;
-            }
         }
 
         private TeamManager()
@@ -104,7 +93,7 @@ namespace GameA.Game
             _playerDic.Clear();
             _teams.Clear();
             _unitDatas.Clear();
-            _playerUnitExtraDic = null;
+            _playerUnitExtraDic.Clear();
         }
 
         public void Dispose()
@@ -117,25 +106,6 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public void SetPlayerUnitExtra(int index, UnitExtraDynamic unitExtra)
-        {
-            if (_playerUnitExtraDic == null)
-            {
-                _playerUnitExtraDic = GetPlayerUnitExtraDic();
-            }
-            if (unitExtra == null)
-            {
-                if (_playerUnitExtraDic.ContainsKey(index))
-                {
-                    _playerUnitExtraDic.Remove(index);
-                }
-            }
-            else
-            {
-                _playerUnitExtraDic.AddOrReplace(index, unitExtra);
-            }
-        }
-
         public void AddTeam(byte team)
         {
             if (!_teams.Contains(team))
@@ -144,32 +114,50 @@ namespace GameA.Game
             }
         }
 
-        private Dictionary<int, UnitExtraDynamic> GetPlayerUnitExtraDic()
+        public Dictionary<int, UnitExtraDynamic> GetPlayerUnitExtraDic(UnitDesc? excludeUnitDesc = null)
         {
-            var playerUnitExtraDic = new Dictionary<int, UnitExtraDynamic>(MaxTeamCount);
+            _playerUnitExtraDic.Clear();
             var spawnDataScene = Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex);
             var spawnDatas = spawnDataScene.SpawnDatas;
             for (int i = 0; i < spawnDatas.Count; i++)
             {
+                if (excludeUnitDesc != null && spawnDatas[i].Guid == excludeUnitDesc.Value.Guid)
+                {
+                    continue;
+                }
                 var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
                 var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
                 for (int j = 0; j < playerUnitExtras.Count; j++)
                 {
                     if (playerUnitExtras[j] != null)
                     {
-                        if (playerUnitExtraDic.ContainsKey(j))
+                        if (_playerUnitExtraDic.ContainsKey(j))
                         {
                             LogHelper.Error("playerUnitExtraDic.ContainsKey(j)");
                         }
                         else
                         {
-                            playerUnitExtraDic.Add(j, playerUnitExtras[j]);
+                            _playerUnitExtraDic.Add(j, playerUnitExtras[j]);
                         }
                     }
                 }
             }
 
-            return playerUnitExtraDic;
+            return _playerUnitExtraDic;
+        }
+
+        public bool CheckSpawnPreinstall(UnitExtraKeyValuePair unitExtraKeyValuePair, UnitDesc unitDesc)
+        {
+            var playerUnitExtras = unitExtraKeyValuePair.InternalUnitExtras;
+            var dic = GetPlayerUnitExtraDic(unitDesc);
+            for (int i = 0; i < playerUnitExtras.Count; i++)
+            {
+                if (playerUnitExtras[i] != null && dic.ContainsKey(i))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public static Sprite GetSpawnSprite(int teamId)
@@ -198,6 +186,29 @@ namespace GameA.Game
             }
 
             return Color.red;
+        }
+
+        public static string GetTeamColorName(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return "red";
+                case 1:
+                    return "green";
+                case 2:
+                    return "orange";
+                case 3:
+                    return "yellow";
+                case 4:
+                    return "cyan";
+                case 5:
+                    return "blue";
+                case 6:
+                    return "purple";
+            }
+
+            return "red";
         }
 
         public PlayerBase GetNextPlayer(ref int curCameraPlayerIndex)

@@ -882,7 +882,7 @@ namespace GameA.Game
             }
         }
 
-        protected void ClearRunTime()
+        protected virtual void ClearRunTime()
         {
             Speed = IntVec2.zero;
             ExtraSpeed = IntVec2.zero;
@@ -1210,19 +1210,23 @@ namespace GameA.Game
         {
         }
 
-        public virtual void EnterSpacetimeDoor(IntVec2 targetPos)
+        public virtual bool EnterSpacetimeDoor()
         {
-            if (_eUnitState != EUnitState.Normal) return;
+            if (_eUnitState != EUnitState.Normal)
+            {
+                return false;
+            }
             _eUnitState = EUnitState.Spacetiming;
             PlayMode.Instance.Freeze(this);
             ClearRunTime();
-            PlayMode.Instance.RunNextLogic(() =>
-            {
-                _eUnitState = EUnitState.Normal;
-                PlayMode.Instance.UnFreeze(this);
-                Speed = IntVec2.zero;
-                SetPos(targetPos); 
-            });
+            return true;
+        }
+
+        public virtual void OutSpacetimeDoor()
+        {
+            _eUnitState = EUnitState.Normal;
+            PlayMode.Instance.UnFreeze(this);
+            Speed = IntVec2.zero;
         }
 
         public virtual void OnPortal(IntVec2 targetPos, IntVec2 speed)

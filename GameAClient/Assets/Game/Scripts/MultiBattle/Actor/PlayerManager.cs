@@ -24,8 +24,26 @@ namespace GameA.Game
         public const int MaxTeamCount = 6;
         private List<RoomUser> _userDataList = new List<RoomUser>(MaxTeamCount);
         private List<PlayerBase> _playerList = new List<PlayerBase>(MaxTeamCount); // 可能赋null，需要判空
+        private RoomUser[] _roomUsers;
 
         private MainPlayer _mainPlayer;
+
+        private int _curMinValidIndex
+        {
+            get
+            {
+                var users = RoomUsers;
+                for (int i = 0; i < users.Length; i++)
+                {
+                    if (users[i] == null)
+                    {
+                        return i;
+                    }
+                }
+                LogHelper.Error("Room is full");
+                return 0;
+            }    
+        }
 
         public MainPlayer MainPlayer
         {
@@ -42,17 +60,32 @@ namespace GameA.Game
             get { return _playerList; }
         }
 
+        public RoomUser[] RoomUsers
+        {
+            get
+            {
+                if (_roomUsers == null)
+                {
+                    GetRoomUserPosIndex();
+                }
+                return _roomUsers;
+            }
+        }
+
         public void SetUserData(List<RoomUser> users)
         {
             _userDataList = users;
+            GetRoomUserPosIndex();
         }
 
         public void JoinRoom(Msg_RC_RoomUserInfo msg)
         {
             var user = new RoomUser();
-            user.Init(msg.UserGuid, msg.NickName, true);
+            user.Init(msg.UserGuid, msg.NickName, true, _curMinValidIndex);
             _userDataList.Add(user);
             _playerList.Add(null);
+            _roomUsers[user.Inx] = user;
+            Messenger.Broadcast(EMessengerType.OnRoomInfoChanged);
         }
 
         public PlayerBase GetPlayerById(int id)
@@ -66,12 +99,46 @@ namespace GameA.Game
             {
                 return null;
             }
+
             return _playerList[inx];
         }
 
         public RoomUser GetRoomUserByInx(int inx)
         {
             return _userDataList[inx];
+        }
+
+        public void ChangeRoomUserIndex(int inx1, int inx2)
+        {
+            if (CheckIndexValid(inx1) && CheckIndexValid(inx2))
+            {
+                var users = RoomUsers;
+                var temp = users[inx1];
+                users[inx1] = users[inx2];
+                users[inx2] = temp;
+            }
+        }
+
+        private bool CheckIndexValid(int index)
+        {
+            return index >= 0 && index < MaxTeamCount;
+        }
+
+        private void GetRoomUserPosIndex()
+        {
+            _roomUsers = new RoomUser[MaxTeamCount];
+            for (int i = 0; i < _userDataList.Count; i++)
+            {
+                int index = _userDataList[i].Inx;
+                if (CheckIndexValid(index))
+                {
+                    if (_roomUsers[index] != null)
+                    {
+                        LogHelper.Error("two user has the same index");
+                    }
+                    _roomUsers[index] = _userDataList[i];
+                }
+            }
         }
 
         public void Add(PlayerBase player, int roomInx = 0)
@@ -88,6 +155,7 @@ namespace GameA.Game
                 {
                     roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
                 }
+
                 player.Set(roomUser);
                 player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
             }
@@ -107,14 +175,18 @@ namespace GameA.Game
                     }
                     else
                     {
-                        roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                        roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName,
+                            true, _curMinValidIndex);
                     }
+
                     player.Set(roomUser);
                 }
+
                 player.Setup(player.IsMain
                     ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
                     : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
             }
+
             if (roomInx < _playerList.Count)
             {
                 _playerList[roomInx] = player;
@@ -123,12 +195,14 @@ namespace GameA.Game
             {
                 _playerList.Add(player);
             }
+
             if (player.IsMain)
             {
                 if (_mainPlayer != null)
                 {
                     PlayMode.Instance.DestroyUnit(_mainPlayer);
                 }
+
                 _mainPlayer = player as MainPlayer;
             }
         }
@@ -162,6 +236,7 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             return true;
         }
     }

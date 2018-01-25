@@ -135,7 +135,7 @@ namespace GameA
                 return;
             }
 
-            if (_project.PublishTime != 0)
+            if (_project.MainId != 0)
             {
                 if (_project.PassFlag)
                 {
@@ -222,13 +222,17 @@ namespace GameA
 
         private void OnWorkShopProjectPublished(long projectId)
         {
-            if (_project != null && projectId == _project.ProjectId)
+            if (_isOpen)
             {
-                if (_isOpen)
-                {
-                    RefreshEditStateAndBtnName();
-                }
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopEdit>();
             }
+//            if (_project != null && projectId == _project.ProjectId)
+//            {
+//                if (_isOpen)
+//                {
+//                    RefreshEditStateAndBtnName();
+//                }
+//            }
         }
 
         private void OnRelationShipChanged(UserInfoDetail userInfoDetail)
@@ -347,7 +351,7 @@ namespace GameA
         private void OnEditTitleBtn()
         {
             if (null == _project) return;
-            if (_project.PublishTime != 0)
+            if (_project.MainId != 0)
             {
                 SocialGUIManager.ShowPopupDialog("编辑发布过的关卡不能修改关卡名称");
                 return;

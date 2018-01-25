@@ -19,8 +19,7 @@ namespace GameA.Game
         private int _curSceneIndex = -1;
         private Scene2DEntity _curScene;
         private List<Scene2DEntity> _sceneList = new List<Scene2DEntity>(3);
-
-        private IntVec2 _mapSize = ConstDefineGM2D.DefaultValidMapRectSize;
+        private IntVec2 _initialMapSize = ConstDefineGM2D.DefaultValidMapRectSize;
 
         public int CurSceneIndex
         {
@@ -66,6 +65,11 @@ namespace GameA.Game
 
                 return 0;
             }
+        }
+
+        public IntVec2 InitialMapSize
+        {
+            get { return _initialMapSize; }
         }
 
         public List<UnitEditData> GetSpawnData()
@@ -141,11 +145,7 @@ namespace GameA.Game
 
             if (index >= _sceneList.Count)
             {
-                if (eChangeSceneType == EChangeSceneType.EditCreated)
-                {
-                    CreateScene();
-                }
-                else if (eChangeSceneType == EChangeSceneType.ParseMap)
+                if (eChangeSceneType == EChangeSceneType.EditCreated || eChangeSceneType == EChangeSceneType.ParseMap)
                 {
                     CreateScene();
                 }
@@ -161,8 +161,21 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-                OnMapChanged();
-                _curScene.Enter();
+//                if (GameRun.Instance.IsPlaying)
+//                {
+//                    GM2DGame.Instance.Pause();
+//                    CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
+//                    {
+//                        GM2DGame.Instance.Continue();
+//                        OnMapChanged();
+//                        _curScene.Enter();
+//                    });
+//                }
+//                else
+                {
+                    OnMapChanged();
+                    _curScene.Enter();
+                }
             }
         }
 
@@ -181,7 +194,7 @@ namespace GameA.Game
         {
             var scene = new Scene2DEntity();
             int sceneIndex = _sceneList.Count;
-            scene.Init(_mapSize, sceneIndex);
+            scene.Init(_initialMapSize, sceneIndex);
             _sceneList.Add(scene);
         }
 
@@ -191,7 +204,7 @@ namespace GameA.Game
         /// <param name="size"></param>
         public void SetMapSize(IntVec2 size)
         {
-            _mapSize = size;
+            _initialMapSize = size;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
@@ -225,7 +238,14 @@ namespace GameA.Game
         public void InitWithMapData(GM2DMapData mapData)
         {
             var mainRect = GM2DTools.ToEngine(mapData.ValidMapRect);
-            _mapSize = mainRect.Max - mainRect.Min + IntVec2.one;
+            if (mapData.InitialMapSize != null)
+            {
+                _initialMapSize = GM2DTools.ToEngine(mapData.InitialMapSize);
+            }
+            else
+            {
+                _initialMapSize = mainRect.Max - mainRect.Min + IntVec2.one;
+            }
             MainDataScene2D.InitPlay(mainRect);
             for (int i = 0; i < mapData.OtherScenes.Count; i++)
             {
@@ -336,14 +356,40 @@ namespace GameA.Game
             ChangeScene(SqawnSceneIndex);
         }
 
-        public void BeforePlay()
+        public void AddUnitsOutofMap()
         {
             ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
 
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
-                _sceneList[i].BeforePlay();
+                _sceneList[i].AddUnitsOutofMap();
+            }
+
+            ChangeScene(SqawnSceneIndex);
+        }
+        
+        public void DeleteUnitsOutofMap()
+        {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                ChangeScene(i);
+                _sceneList[i].DeleteUnitsOutofMap();
+            }
+
+            ChangeScene(SqawnSceneIndex);
+        }
+
+        public void CreateAirWall()
+        {
+            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                ChangeScene(i);
+                _sceneList[i].CreateAirWall();
             }
 
             ChangeScene(SqawnSceneIndex);
@@ -388,6 +434,7 @@ namespace GameA.Game
                 _curScene.CommitRecord(editRecordBatch);
             }
         }
+
     }
 
     public class Scene2DEntity : IDisposable
@@ -463,7 +510,12 @@ namespace GameA.Game
             }
         }
 
-        public void BeforePlay()
+        public void AddUnitsOutofMap()
+        {
+            _colliderScene.AddUnitsOutofMap();
+        }
+        
+        public void DeleteUnitsOutofMap()
         {
             UnitBase[] units = _colliderScene.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
@@ -472,13 +524,11 @@ namespace GameA.Game
                 var unitDesc = unit.UnitDesc;
                 if (!_dataScene.IsInTileMap(unit.TableUnit.GetDataGrid(ref unitDesc)))
                 {
-                    PlayMode.Instance.DeleteUnit(unit);
+                    _colliderScene.DeleteUnitsOutofMap(unit);
                 }
             }
-
-            CreateAirWall();
         }
-
+        
         public void CreateAirWall()
         {
             var validMapRect = _dataScene.ValidMapRect;
@@ -515,6 +565,7 @@ namespace GameA.Game
         {
             _editRecordManager.CommitRecord(editRecordBatch);
         }
+
     }
 
     public enum EChangeSceneType

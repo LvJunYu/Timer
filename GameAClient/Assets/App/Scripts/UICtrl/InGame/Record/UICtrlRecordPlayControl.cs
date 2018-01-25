@@ -33,7 +33,8 @@ namespace GameA
             _speedLevel = 0;
             _cachedView.ContentDock.SetActiveEx(true);
             _gameModePlayRecord = GM2DGame.Instance.GameMode as GameModePlayRecord;
-            OnPlayBtnClick();
+            _cachedView.PlayButton.SetActiveEx(false);
+            _cachedView.PauseButton.SetActiveEx(true);
             RefreshView();
         }
 

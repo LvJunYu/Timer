@@ -11,6 +11,7 @@ namespace GameA
         private UMCtrlProjectReplyComment _firstReplay;
         private List<ProjectCommentReply> _dataList;
         private List<UMCtrlProjectReplyComment> _umCache = new List<UMCtrlProjectReplyComment>(8);
+        private bool _showVersionLine;
 
         public override object Data
         {
@@ -39,6 +40,11 @@ namespace GameA
             RefreshView();
         }
 
+        public void SetVersionLineEnable(bool value)
+        {
+            _showVersionLine = value;
+        }
+
         protected override void RequestData(bool append = false)
         {
             if (_comment == null) return;
@@ -57,9 +63,9 @@ namespace GameA
 
         protected override void RefreshView()
         {
-            _cachedView.DeleteDock.SetActive(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
+            _cachedView.DeleteBtn.SetActiveEx(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
                                              SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
-            _cachedView.ReplayBtn.SetActiveEx(false);
+//            _cachedView.ReplayBtn.SetActiveEx(false);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
             UserInfoSimple user = _comment.UserInfoDetail.UserInfoSimple;
@@ -71,6 +77,8 @@ namespace GameA
                 string.Format(_contentFormat, user.NickName, _comment.Comment));
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl,
                 _cachedView.DefaultIconTexture);
+            _cachedView.VersionLineDock.SetActive(_showVersionLine);
+            _cachedView.Line.SetActive(!_showVersionLine);
             RefreshReplyDock();
             Canvas.ForceUpdateCanvases();
         }
@@ -119,6 +127,7 @@ namespace GameA
 
         protected override void OnFoldBtn()
         {
+            _comment.ReplyList.Clear();
             _dataList.Clear();
             RefreshReplyDock(true);
         }
@@ -128,16 +137,7 @@ namespace GameA
             if (!string.IsNullOrEmpty(_cachedView.InputField.text))
             {
                 _comment.Reply(_cachedView.InputField.text);
-                //测试
-                var reply = new ProjectCommentReply();
-                reply.Content = _cachedView.InputField.text;
-                reply.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-                reply.Id = 3000;
-                reply.CommentId = _comment.Id;
-                reply.RelayOther = false;
-                reply.UserInfoDetail = LocalUser.Instance.User;
-                Messenger<long, ProjectCommentReply>.Broadcast(EMessengerType.OnReplyProjectComment, _comment.Id,
-                    reply);
+                
             }
             SetPublishDock(false);
         }

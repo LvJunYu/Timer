@@ -13,15 +13,15 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _usPlayerCountSetting = new USCtrlSliderSetting();
+//            _usPlayerCountSetting = new USCtrlSliderSetting();
             _usLifeCountSetting = new USCtrlSliderSetting();
             _usReviveTimeSetting = new USCtrlSliderSetting();
             _usReviveProtectTimeSetting = new USCtrlSliderSetting();
-            _usPlayerCountSetting.Init(_cachedView.PlayerCountSetting);
+//            _usPlayerCountSetting.Init(_cachedView.PlayerCountSetting);
             _usLifeCountSetting.Init(_cachedView.LifeCountSetting);
             _usReviveTimeSetting.Init(_cachedView.ReviveTimeSetting);
             _usReviveProtectTimeSetting.Init(_cachedView.ReviveProtectTimeSetting);
-            _usPlayerCountSetting.Set(1, 6, value => EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value);
+//            _usPlayerCountSetting.Set(1, 6, value => EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount = value);
             _usLifeCountSetting.Set(1, 20, value => EditMode.Instance.MapStatistics.NetBattleLifeCount = value);
             _usReviveTimeSetting.Set(0, 10, value => EditMode.Instance.MapStatistics.NetBattleReviveTime = value, 1,
                 "{0}秒");
@@ -67,7 +67,7 @@ namespace GameA
             {
                 _cachedView.HarmTypeTogs[i].isOn = EditMode.Instance.MapStatistics.CanHarmType((EHarmType) i);
             }
-            _usPlayerCountSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount);
+//            _usPlayerCountSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleMaxPlayerCount);
             _usLifeCountSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleLifeCount);
             _usReviveTimeSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleReviveTime);
             _usReviveProtectTimeSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleReviveInvincibleTime);
