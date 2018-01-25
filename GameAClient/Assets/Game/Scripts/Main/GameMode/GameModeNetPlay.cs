@@ -86,10 +86,15 @@ namespace GameA.Game
 
         public override bool Stop()
         {
+            Messenger<long>.RemoveListener(EMessengerType.OnUserExit, OnUserExit);
+            Messenger<long>.RemoveListener(EMessengerType.OnUserKick, OnUserKick);
+            Messenger<Msg_RC_ChangePos>.RemoveListener(EMessengerType.OnRoomChangePos, OnRoomChangePos);
+            Messenger<Msg_RC_UserReadyInfo>.RemoveListener(EMessengerType.OnRoomPlayerReadyChanged,
+                OnRoomPlayerReadyChanged);
+            Messenger<Msg_RC_RoomUserInfo>.RemoveListener(EMessengerType.OnRoomUserEnter, OnRoomUserEnter);
             _debugFile.Close();
             _debugClientData.Close();
             TryCloseLoading();
-
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
 
@@ -315,12 +320,6 @@ namespace GameA.Game
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
         {
-            Messenger<long>.RemoveListener(EMessengerType.OnUserExit, OnUserExit);
-            Messenger<long>.RemoveListener(EMessengerType.OnUserKick, OnUserKick);
-            Messenger<Msg_RC_ChangePos>.RemoveListener(EMessengerType.OnRoomChangePos, OnRoomChangePos);
-            Messenger<Msg_RC_UserReadyInfo>.RemoveListener(EMessengerType.OnRoomPlayerReadyChanged,
-                OnRoomPlayerReadyChanged);
-            Messenger<Msg_RC_RoomUserInfo>.RemoveListener(EMessengerType.OnRoomUserEnter, OnRoomUserEnter);
             base.QuitGame(successCB, failureCB, forceQuitWhenFailed);
             RoomManager.Instance.SendExitRoom();
         }
@@ -458,14 +457,10 @@ namespace GameA.Game
         {
             if (userId == LocalUser.Instance.UserGuid)
             {
+                _ePhase = EPhase.Close;
                 SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
                 {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-                    GM2DGame.Instance.QuitGame(
-                        () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                        code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                        true
-                    );
+                    SocialApp.Instance.ReturnToApp();
                 }));
             }
             else
@@ -648,7 +643,7 @@ namespace GameA.Game
             {
                 return;
             }
-
+            
             SocialGUIManager.ShowPopupDialog("联机服务异常，正在退出");
             SocialApp.Instance.ReturnToApp();
         }
