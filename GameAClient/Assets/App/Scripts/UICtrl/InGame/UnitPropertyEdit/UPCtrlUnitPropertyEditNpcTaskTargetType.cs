@@ -139,7 +139,7 @@ namespace GameA
             {
                 CreateSequences();
             }
-
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

@@ -28,10 +28,29 @@ namespace GameA
             _contentRtf = _cachedView.NpcTaskAddConditionContentRtf;
             _cachedView.TriggerCondtionBtn.onClick.AddListener(() =>
             {
-                _mainCtrl.EditNpcConditionType.OpenMenu(_taskData);
-                Close();
+                if (_taskData.TriggerType != (int) TrrigerTaskType.None)
+                {
+                    Close();
+                }
+                else
+                {
+                    _mainCtrl.EditNpcConditionType.OpenMenu(_taskData);
+                    Close();
+                }
             });
-            _cachedView.TaskTimeLimit.onClick.AddListener(() => { });
+            _cachedView.TaskTimeLimit.onClick.AddListener(() =>
+            {
+                if (_taskData.TaskimeLimit > 0)
+                {
+                    Close();
+                }
+                else
+                {
+                    _taskData.TaskimeLimit = (ushort) UnitExtraHelper.GetMin(EAdvanceAttribute.MaxTaskTimeLimit);
+                    _mainCtrl.EditNpcTaskDock.RefreshTask();
+                    Close();
+                }
+            });
         }
 
         public void OpenMenu(NpcTaskDynamic taskData)
@@ -42,8 +61,8 @@ namespace GameA
 
         public override void Open()
         {
-            _mainCtrl.CloseUpCtrlPanel();
             base.Open();
+            _mainCtrl.CloseUpCtrlPanel();
             OpenAnimation();
         }
 
@@ -71,6 +90,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

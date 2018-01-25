@@ -244,7 +244,7 @@ namespace GameA.Game
                     case ERoomUserCommand.ERUC_JoinRoom:
                         pm.JoinRoom(commandData.UserData);
                         break;
-                    case ERoomUserCommand.ERUC_StartBattle:
+//                    case ERoomUserCommand.ERUC_StartBattle:
                         var roomUser = pm.GetRoomUserByInx(commandData.UserRoomInx);
                         bool isMain = false;
                         if (roomUser.Guid == LocalUser.Instance.UserGuid)
@@ -382,9 +382,9 @@ namespace GameA.Game
 
         public void SendStartBattle()
         {
-            var msg = new Msg_CR_StartBattle();
-            msg.Flag = 1;
-            SendToServer(msg);
+//            var msg = new Msg_CR_StartBattle();
+//            msg.Flag = 1;
+//            SendToServer(msg);
         }
 
         public void SendInputDatas(int frameInx, List<int> datas)
@@ -502,8 +502,8 @@ namespace GameA.Game
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
         {
             _roomInfo = new RoomInfo(msg);
-            _bornSeed = msg.BornSeed;
-            _preServerFrameCount = msg.CurrentRoomFrameCount;
+//            _bornSeed = msg.BornSeed;
+//            _preServerFrameCount = msg.CurrentRoomFrameCount;
             LogHelper.Info("RoomId: {0}", msg.RoomId);
         }
 

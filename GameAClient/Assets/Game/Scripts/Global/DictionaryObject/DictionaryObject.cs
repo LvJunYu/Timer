@@ -28,7 +28,7 @@ namespace SoyEngine
             Dictionary,
             List,
         }
-        
+
         protected Dictionary<int, object> _dict;
 
 //        protected static bool IsGenericList(object o)
@@ -107,7 +107,7 @@ namespace SoyEngine
             {
                 return false;
             }
-            
+
             if (t == typeof(bool))
             {
                 return default(bool).Equals(v);
@@ -183,10 +183,7 @@ namespace SoyEngine
 
         public override bool IsEmpty
         {
-            get
-            {
-                return _dict == null || _dict.Count == 0;
-            }
+            get { return _dict == null || _dict.Count == 0; }
         }
 
         public override int Count
@@ -205,7 +202,7 @@ namespace SoyEngine
             {
                 throw new ArgumentException();
             }
-            
+
             if (_dict == null)
             {
                 _dict = new Dictionary<int, object>();
@@ -220,7 +217,7 @@ namespace SoyEngine
                 fieldVal = GetFieldDefaultValue(curKey);
                 needAdd = true;
             }
-            
+
             if (fieldVal == null)
             {
                 if (needReturnRet)
@@ -237,7 +234,7 @@ namespace SoyEngine
                 {
                     return (TK) fieldVal;
                 }
-                
+
                 throw new ArgumentException();
             }
 
@@ -593,7 +590,7 @@ namespace SoyEngine
 
             return (DictionaryObjectBase) Activator.CreateInstance(fieldDefine.FieldType);
         }
-        
+
         protected virtual object GetFieldDefaultValue(int fieldTag)
         {
             var fieldDefine = GetDefine(GetType(), fieldTag);
@@ -754,7 +751,6 @@ namespace SoyEngine
             {
                 throw new ArgumentException("Type not support, Only Support DictionaryObject and ValueType");
             }
-
         }
 
         private static void DefineField(int fieldTag, string fieldName, EType eType, Type fieldType,
@@ -839,7 +835,7 @@ namespace SoyEngine
                         maxInx = entry.Key;
                     }
                 }
-                return maxInx+1;
+                return maxInx + 1;
             }
         }
 
@@ -879,7 +875,7 @@ namespace SoyEngine
                 var id = idList[i];
                 var obj = _dict[id];
                 _dict.Remove(id);
-                _dict.Add(id-1, obj);
+                _dict.Add(id - 1, obj);
             }
         }
 

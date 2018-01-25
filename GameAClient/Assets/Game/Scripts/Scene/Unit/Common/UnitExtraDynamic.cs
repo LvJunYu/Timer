@@ -460,7 +460,7 @@ namespace GameA.Game
             return GetMin(eAdvanceAttribute);
         }
 
-        private static int GetMin(EAdvanceAttribute eAdvanceAttribute)
+        public static int GetMin(EAdvanceAttribute eAdvanceAttribute)
         {
             switch (eAdvanceAttribute)
             {
@@ -500,6 +500,8 @@ namespace GameA.Game
                     return 1;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 1;
+                case EAdvanceAttribute.MaxTaskTimeLimit:
+                    return 10;
             }
 
             return 0;
@@ -545,6 +547,8 @@ namespace GameA.Game
                     return 10;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 99;
+                case EAdvanceAttribute.MaxTaskTimeLimit:
+                    return 300;
             }
 
             return 0;
@@ -589,6 +593,8 @@ namespace GameA.Game
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return "{0:f1}秒";
                 case EAdvanceAttribute.NpcIntervalTiem:
+                    return "{0}秒";
+                case EAdvanceAttribute.MaxTaskTimeLimit:
                     return "{0}秒";
             }
 
@@ -707,6 +713,7 @@ namespace GameA.Game
         MaxCreatedMonster,
         MaxAliveMonster,
         MaxTaskKillOrColltionNum,
+        MaxTaskTimeLimit,
         Spawn,
         Max
     }

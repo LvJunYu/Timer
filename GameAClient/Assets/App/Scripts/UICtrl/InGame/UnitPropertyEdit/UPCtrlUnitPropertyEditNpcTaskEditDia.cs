@@ -12,17 +12,7 @@ namespace GameA
     public class
         UPCtrlUnitPropertyEditNpcTaskEditDia : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
-//        public RectTransform NpcTaskEditDiaContentRtf;
-//        public Button TaskDiaBeforeBtn;
-//        public Button TaskMidBeforeBtn;
-//        public Button TaskAfterBeforeBtn;
-//        public InputField TargetTaskNpc;
-//        public USViewUnitNpcTaskTarget[] BeforeTaskAward;
-//        public USViewUnitNpcTaskTarget[] FinishTaskAward;
-//        public Button AddBeforeTaskAwardBtn;
-//        public Button AddFinishTaskAwardBtn;
         private GameObject _panel;
-
         private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
@@ -55,16 +45,25 @@ namespace GameA
             _cachedView.TaskDiaBeforeBtn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
+                    .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
             });
             _cachedView.TaskMidBeforeBtn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
+                    .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
             });
             _cachedView.TaskAfterBeforeBtn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
+                    .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
             });
-            _cachedView.AddBeforeTaskAwardBtn.onClick.AddListener(() => { _mainCtrl.EditBeforeTask.OpenMenu(_task); });
+            _cachedView.AddBeforeTaskAwardBtn.onClick.AddListener(() =>
+            {
+                _mainCtrl.EditBeforeTaskAward.OpenMenu(_task);
+            });
             _cachedView.AddFinishTaskAwardBtn.onClick.AddListener(() =>
             {
                 _mainCtrl.EditFinishTaskAward.OpenMenu(_task);
@@ -82,6 +81,7 @@ namespace GameA
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
             OpenAnimation();
+            RefreshView();
         }
 
         private void RefreshTask(NpcTaskDynamic taskData = null)
@@ -106,21 +106,26 @@ namespace GameA
                     _beforeTaskAwardBtnGroup[i].SetEnable(false);
                 }
             }
+            _cachedView.AddBeforeTaskAwardBtn.SetActiveEx((_task.BeforeTaskAward.Count !=
+                                                           NpcTaskDynamic.MaxBeforeTasAwardCout));
+
             for (int i = 0; i < _cachedView.FinishTaskAward.Length; i++)
             {
                 if (i < _task.TaskFinishAward.Count)
                 {
                     _finishTaskAwardBtnGroup[i].SetEnable(true);
                     _finishTaskAwardBtnGroup[i].SetSelectTarget(
-                        _task.TaskFinishAward.ToList<NpcTaskTargetDynamic>()[i],
+                        _task.TaskFinishAward.Get<NpcTaskTargetDynamic>(i),
                         _task.TaskFinishAward,
                         OpenAdvencePanel, () => { RefreshTask(); });
                 }
                 else
                 {
-                    _beforeTaskAwardBtnGroup[i].SetEnable(false);
+                    _finishTaskAwardBtnGroup[i].SetEnable(false);
                 }
             }
+            _cachedView.AddFinishTaskAwardBtn.SetActiveEx((_task.TaskFinishAward.Count !=
+                                                           NpcTaskDynamic.MaxFinishTasAwardCout));
         }
 
         private void OpenAdvencePanel(NpcTaskTargetDynamic target)
@@ -144,6 +149,7 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
+            RefreshTask();
         }
 
         public override void Close()
@@ -165,6 +171,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

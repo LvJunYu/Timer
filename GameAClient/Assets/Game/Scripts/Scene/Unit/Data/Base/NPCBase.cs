@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 namespace GameA.Game
 {
     public class NPCBase : ActorBase
@@ -6,7 +7,10 @@ namespace GameA.Game
         private bool _trigger;
         private UnitBase _unit;
         private int _time;
-        
+        private UMCtrlNpcDiaPop _diaPop;
+        private int _showIntervalTime;
+        private int _timeIntervalDynamic;
+        private int _showTime = 150;
 
         protected override bool IsCheckClimb()
         {
@@ -28,6 +32,8 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            base.UpdateLogic();
+            _timeIntervalDynamic++;
             if (_trigger)
             {
                 _time++;
@@ -36,6 +42,42 @@ namespace GameA.Game
                     _trigger = false;
                     _unit = null;
                 }
+            }
+
+            if (GetUnitExtra().NpcType == (byte) ENpcType.Dialog)
+            {
+                if (_diaPop == null)
+                {
+                    _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
+                        .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                }
+                if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
+                {
+                    if (CheckPlayPos())
+                    {
+                        _diaPop.Show();
+                    }
+                    else
+                    {
+                        _diaPop.Hide();
+                    }
+                }
+                if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Interval)
+                {
+                    _showIntervalTime = GetUnitExtra().NpcShowInterval * 30;
+                    if (_timeIntervalDynamic > _showIntervalTime)
+                    {
+                        _diaPop.Show();
+                    }
+                    if (_timeIntervalDynamic > _showTime + _showIntervalTime)
+                    {
+                        _timeIntervalDynamic = 0;
+                        _diaPop.Hide();
+                    }
+                }
+            }
+            if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
+            {
             }
         }
 
@@ -51,8 +93,18 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _input = _input ?? new InputBase();
+            _input.Clear();
             _time = 0;
+            if (_diaPop != null)
+            {
+                UMPoolManager.Instance.Free(_diaPop);
+            }
             _trigger = false;
+            _diaPop = null;
+            _showIntervalTime = 0;
+            _timeIntervalDynamic = 0;
+
             _unit = null;
         }
 
@@ -64,6 +116,12 @@ namespace GameA.Game
                 _unit = other;
                 _time = 0;
             }
+        }
+
+        private bool CheckPlayPos()
+        {
+            float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
+            return x <= 50;
         }
     }
 }

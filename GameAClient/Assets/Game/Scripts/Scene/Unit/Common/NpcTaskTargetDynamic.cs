@@ -95,6 +95,8 @@ namespace GameA.Game
                 TargetGuid == other.TargetGuid &&
                 TargetNpcNum == other.TargetNpcNum;
         }
+
+       
     }
 
     public enum ENpcTargetType

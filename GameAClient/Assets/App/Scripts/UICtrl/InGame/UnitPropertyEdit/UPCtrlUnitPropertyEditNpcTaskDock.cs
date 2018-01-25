@@ -29,16 +29,18 @@ namespace GameA
         TrigerColltion,
     }
 
+//    public USViewSliderSetting TaskTimeLimitSetting;
+//    public Button RemoveTaskTimeLimitBtn;
     public class UPCtrlUnitPropertyEditNpcTaskDock : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private bool _hasChanged;
         private USCtrlUnitNpcTaskIndexBtn[] _usCtrlUnitNpcTaskIndexGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _usCtrlUnitNpcTargetGroup;
         private USCtrlUnitNpcTaskTargetBtn _usCtrlUnitNpcCondtionBtn;
-
+        private USCtrlSliderSetting _timeLimitSliderSetting;
         public NpcTaskDynamic CurExtraNpcTaskData;
 
-        public List<NpcTaskDynamic> NpcTaskDatas;
+        public DictionaryListObject NpcTaskDatas;
         //和任务有关的
 
         protected override void OnViewCreated()
@@ -87,17 +89,27 @@ namespace GameA
             //npc名字限制长度
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TaskNpcName);
             _cachedView.TaskNpcName.onValueChanged.AddListener(SetNameLength);
+            _cachedView.RemoveTaskTimeLimitBtn.onClick.AddListener(() =>
+            {
+                CurExtraNpcTaskData.TaskimeLimit = 0;
+                RefreshTask();
+            });
+            //任务限时
+            _timeLimitSliderSetting = new USCtrlSliderSetting();
+            _timeLimitSliderSetting.Init(_cachedView.TaskTimeLimitSetting);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_timeLimitSliderSetting, EAdvanceAttribute.MaxTaskTimeLimit,
+                value => { CurExtraNpcTaskData.TaskimeLimit = (ushort) value; });
         }
 
         public override void Open()
         {
-            _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            NpcTaskDatas = _mainCtrl.EditData.UnitExtra.NpcTask.ToList<NpcTaskDynamic>();
+            _mainCtrl.CloseUpCtrlPanel();
+            NpcTaskDatas = _mainCtrl.EditData.UnitExtra.NpcTask;
             _cachedView.NpcTaskDock.SetActiveEx(true);
             if (NpcTaskDatas.Count > 0)
             {
-                CurExtraNpcTaskData = NpcTaskDatas[0];
+                CurExtraNpcTaskData = NpcTaskDatas.Get<NpcTaskDynamic>(0);
             }
             else
             {
@@ -121,13 +133,15 @@ namespace GameA
                 if (i < taskNum)
                 {
                     _usCtrlUnitNpcTaskIndexGroup[i].SetEnable(true);
-                    _usCtrlUnitNpcTaskIndexGroup[i].InitData(RefreshTask, NpcTaskDatas, NpcTaskDatas[i]);
+                    _usCtrlUnitNpcTaskIndexGroup[i]
+                        .InitData(RefreshTask, NpcTaskDatas, NpcTaskDatas.Get<NpcTaskDynamic>(i));
                 }
                 else
                 {
                     _usCtrlUnitNpcTaskIndexGroup[i].InitData(RefreshTask, NpcTaskDatas);
                 }
             }
+
             RefreshTask();
         }
 
@@ -152,7 +166,7 @@ namespace GameA
         }
 
 
-        private void RefreshTask(NpcTaskDynamic taskData = null)
+        public void RefreshTask(NpcTaskDynamic taskData = null)
         {
             if (taskData != null)
             {
@@ -203,9 +217,37 @@ namespace GameA
             }
             else
             {
-//                _usCtrlUnitNpcCondtionBtn.SetConditon((ENpcTargetType) CurExtraNpcTaskData.TriggerType,
-//                    CurExtraNpcTaskData.TriggerColOrKillNum, CurExtraNpcTaskData.TriggerTaskNumber, CurExtraNpcTaskData,
-//                    RefreshView);
+                _cachedView.TriggerConditonObj.SetActiveEx(true);
+                _usCtrlUnitNpcCondtionBtn.SetTriggerCondition(CurExtraNpcTaskData,
+                    EditTriggerTaskEdit, () => { RefreshTask(); });
+            }
+            if (CurExtraNpcTaskData.TaskimeLimit == 0)
+            {
+                _cachedView.TaskTimeLimitObj.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.TaskTimeLimitObj.SetActiveEx(true);
+                _timeLimitSliderSetting.SetCur(CurExtraNpcTaskData.TaskimeLimit);
+            }
+            _cachedView.AddConditionBtn.SetActiveEx(!(CurExtraNpcTaskData.TriggerType != (int) ENpcTargetType.None &&
+                                                      CurExtraNpcTaskData.TaskimeLimit > 0));
+        }
+
+        private void EditTriggerTaskEdit(TrrigerTaskType type)
+        {
+            switch (type)
+            {
+                case TrrigerTaskType.Colltion:
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(CurExtraNpcTaskData.TriggerTask);
+                    break;
+                case TrrigerTaskType.Kill:
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(CurExtraNpcTaskData.TriggerTask);
+                    break;
+                case TrrigerTaskType.FinishOtherTask:
+                    _mainCtrl.EditBeforeTask.OpenMenu(CurExtraNpcTaskData);
+
+                    break;
             }
         }
 

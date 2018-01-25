@@ -10,7 +10,7 @@ namespace GameA
     public class USCtrlUnitNpcTaskIndexBtn : USCtrlBase<USViewUnitNpcTaskIndexBtn>
     {
         private NpcTaskDynamic _taskData;
-        private List<NpcTaskDynamic> _taskDataList;
+        private DictionaryListObject _taskDataList;
         private SeletNowTask _refreshcallback;
 
         public USViewUnitNpcTaskIndexBtn View
@@ -18,7 +18,7 @@ namespace GameA
             get { return _cachedView; }
         }
 
-        public void InitData(SeletNowTask refreshnowTask, List<NpcTaskDynamic> taskDataList,
+        public void InitData(SeletNowTask refreshnowTask, DictionaryListObject taskDataList,
             NpcTaskDynamic taskdata = null)
         {
             _taskData = taskdata;
@@ -51,18 +51,27 @@ namespace GameA
                 _cachedView.DelteBtn.SetActiveEx(false);
                 _cachedView.ChoseBtn.SetActiveEx(false);
                 _cachedView.AddBtn.SetActiveEx(true);
-                _taskDataList.Remove(_taskData);
+                int index = 0;
+                for (int i = 0; i < _taskDataList.Count; i++)
+                {
+                    if (_taskDataList.Get<NpcTaskDynamic>(i).Equals(_taskData))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                _taskDataList.RemoveAt(index);
                 NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(_taskData.NpcSerialNumber);
                 if (_taskDataList.Count > 0)
                 {
-                    _refreshcallback.Invoke(_taskDataList[0]);
+                    _refreshcallback.Invoke(_taskDataList.Get<NpcTaskDynamic>(0));
                 }
                 else
                 {
                     NpcTaskDynamic taskDta = new NpcTaskDynamic();
                     taskDta.NpcSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
                     _taskDataList.Add(taskDta);
-                    _refreshcallback.Invoke(_taskDataList[0]);
+                    _refreshcallback.Invoke(_taskDataList.Get<NpcTaskDynamic>(0));
                 }
             });
             _cachedView.RightClick.RightMouseCallback = (() =>

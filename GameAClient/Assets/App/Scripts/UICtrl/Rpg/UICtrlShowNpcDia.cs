@@ -245,11 +245,29 @@ namespace GameA
             string faceSpreteNmae = String.Format("{0}_{1}", npc.ToString(), face.ToString());
             return faceSpreteNmae;
         }
+
+        public static Enpc GetNpcType(int id)
+        {
+            Enpc type = Enpc.Lead;
+            switch (id)
+            {
+                case 30001:
+                    type = Enpc.NpcFishMan;
+                    break;
+                case 30002:
+                    type = Enpc.NpcGirl;
+                    break;
+                case 30003:
+                    type = Enpc.NpcOldMan;
+                    break;
+            }
+            return type;
+        }
     }
 
     public enum ENpcFace
     {
-        None = -1,
+        Nones,
 
         //高兴
         Happy,

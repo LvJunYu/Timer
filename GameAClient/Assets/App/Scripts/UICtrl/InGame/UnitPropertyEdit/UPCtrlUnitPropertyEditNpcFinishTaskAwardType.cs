@@ -11,10 +11,11 @@ using UnityEngine.Assertions.Must;
 namespace GameA
 {
     public class
-        //任务目标的选择
+        //任务后的奖励的选择
         UPCtrlUnitPropertyEditNpcFinishTaskAwardType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
+
         private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
@@ -23,7 +24,6 @@ namespace GameA
         private NpcTaskDynamic _taskDynamic;
         private NpcTaskTargetDynamic _target;
         private List<int> _colltionList = new List<int>();
-        private List<int> _killtionList = new List<int>();
 
         protected override void OnViewCreated()
         {
@@ -34,15 +34,19 @@ namespace GameA
             {
                 _colltionList.Add(VARIABLE.Key);
             }
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
+            for (int i = 0; i < _cachedView.FinishAwardTypeTypeBtnGroup.Length; i++)
             {
-                _killtionList.Add(VARIABLE.Key);
-            }
-
-            for (int i = 0; i < _cachedView.TargetTypeBtnGroup.Length; i++)
-            {
-                int index = i + 1;
-                _cachedView.TargetTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
+                int index = i;
+                switch (index)
+                {
+                    case 0:
+                        index = (int) ENpcTargetType.Colltion;
+                        break;
+                    case 1:
+                        index = (int) ENpcTargetType.Contorl;
+                        break;
+                }
+                _cachedView.FinishAwardTypeTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
         }
 
@@ -113,7 +117,7 @@ namespace GameA
             {
                 CreateSequences();
             }
-
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

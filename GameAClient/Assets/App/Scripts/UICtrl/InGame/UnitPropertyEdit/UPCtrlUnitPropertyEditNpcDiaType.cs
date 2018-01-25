@@ -26,7 +26,6 @@ namespace GameA
         private USCtrlSliderSetting _dialogShowIntervalTimeSetting;
         private USCtrlUnitPropertyEditButton _npcCloseToShowBtn;
         private USCtrlUnitPropertyEditButton _npcIntervalShowBtn;
-
         private USCtrlUnitPropertyEditButton[] _showTypeBtnGroup;
 
         protected override void OnViewCreated()
@@ -57,10 +56,11 @@ namespace GameA
                 RefreshShowTypeMenu();
             });
             _showTypeBtnGroup[(int) ENpcTriggerType.Interval] = _npcIntervalShowBtn;
-
             //text加检测
             _cachedView.NpcName.onValueChanged.AddListener(SetNameLength);
             _cachedView.NpcDialog.onValueChanged.AddListener(SetDiALength);
+            _cachedView.NpcName.onEndEdit.AddListener((string str) => { SaveData(); });
+            _cachedView.NpcDialog.onEndEdit.AddListener((string str) => { SaveData(); });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcName);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcDialog);
         }
@@ -77,20 +77,27 @@ namespace GameA
         {
             if (!_isOpen) return;
             _dialogShowIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.NpcShowInterval, false);
-
             string name = _mainCtrl.EditData.UnitExtra.NpcName;
             _cachedView.NpcName.onValueChanged.Invoke(name);
             _cachedView.NpcName.text = name;
             string dia = _mainCtrl.EditData.UnitExtra.NpcDialog;
             _cachedView.NpcDialog.onValueChanged.Invoke(dia);
+            _cachedView.NpcDialog.text = dia;
             RefreshShowTypeMenu();
         }
 
 
         public override void Close()
         {
-            // 关闭的时候设置名字和对话内容
+// 关闭的时候设置名字和对话内容
             _cachedView.NpcDiaLogDock.SetActiveEx(false);
+
+            SaveData();
+            base.Close();
+        }
+
+        private void SaveData()
+        {
             if (_cachedView.NpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
             {
                 _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.NpcName.text;
@@ -100,7 +107,6 @@ namespace GameA
                 _mainCtrl.EditData.UnitExtra.NpcDialog = _cachedView.NpcDialog.text;
             }
             _mainCtrl.EditData.UnitExtra.NpcShowInterval = (ushort) _dialogShowIntervalTimeSetting.Cur;
-            base.Close();
         }
 
         private void RefreshShowTypeMenu()
@@ -109,7 +115,6 @@ namespace GameA
             for (int i = 0;
                 i < _showTypeBtnGroup.Length;
                 i++)
-
             {
                 _showTypeBtnGroup[i].SetSelected(i == val);
             }

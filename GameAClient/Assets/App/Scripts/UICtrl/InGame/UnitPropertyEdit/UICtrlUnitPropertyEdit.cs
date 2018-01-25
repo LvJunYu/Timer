@@ -1173,6 +1173,17 @@ namespace GameA
             }
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             EditNpcDiaType.RefreshView();
+            EditNpcTaskMonsterType.RefreshView();
+            EditNpcTaskColltionType.RefreshView();
+            EditNpcTaskTargetType.RefreshView();
+            EditNpcTaregtDialog.RefreshView();
+            EditNpcAddCondition.RefreshView();
+            EditNpcConditionType.RefreshView();
+            EditBeforeTask.RefreshView();
+            EditNpcDia.RefreshView();
+            EditBeforeTaskAward.RefreshView();
+            EditFinishTaskAward.RefreshView();
+            _upCtrlUnitPropertyEditAdvance.RefreshView();
         }
 
         public void Reset()

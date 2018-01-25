@@ -58,7 +58,7 @@ namespace GameA
                     targetData.TargetUnitID = (ushort) _killtionList[0];
                     _taskDynamic.TriggerTask = targetData;
                     _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
-                    _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskDock.RefreshTask();
                     Close();
                     break;
                 case (int) TrrigerTaskType.Colltion:
@@ -69,7 +69,7 @@ namespace GameA
                     targetCol.TargetUnitID = (ushort) _colltionList[0];
                     _taskDynamic.TriggerTask = targetCol;
                     _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
-                    _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskDock.RefreshTask();
                     Close();
                     break;
                 case (int) TrrigerTaskType.FinishOtherTask:
@@ -119,7 +119,7 @@ namespace GameA
             {
                 CreateSequences();
             }
-
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

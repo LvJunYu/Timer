@@ -28,6 +28,7 @@ namespace GameA.Game
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.Targets, "Targets");
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.TaskFinishAward, "TaskFinishAward");
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.BeforeTaskAward, "BeforeTaskAward");
+            DefineField<ushort>(FieldTag.TaskimeLimit, "TaskimeLimit");
         }
 
         public class FieldTag
@@ -43,6 +44,7 @@ namespace GameA.Game
             public static readonly int Targets = _nextId++;
             public static readonly int TaskFinishAward = _nextId++;
             public static readonly int BeforeTaskAward = _nextId++;
+            public static readonly int TaskimeLimit = _nextId++;
         }
 
         public ushort NpcSerialNumber
@@ -116,6 +118,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.BeforeTaskAward); }
         }
 
+        public ushort TaskimeLimit
+        {
+            get { return Get<ushort>(FieldTag.TaskimeLimit); }
+
+            set { Set(value, FieldTag.TaskimeLimit); }
+        }
+
 
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
@@ -155,6 +164,7 @@ namespace GameA.Game
                     msg.TaskFinishAward.Add(val);
                 }
             }
+            msg.TaskimeLimit = TaskimeLimit;
             return msg;
         }
 
@@ -194,7 +204,11 @@ namespace GameA.Game
                 taskTarget.Set(data.TaskTarget[i]);
                 Set(taskTarget, FieldTag.TaskFinishAward, i);
             }
+            TaskimeLimit = (ushort) data.TaskimeLimit;
         }
+
+        public const int MaxBeforeTasAwardCout = 2;
+        public const int MaxFinishTasAwardCout = 3;
     }
 
     public enum TrrigerTaskType

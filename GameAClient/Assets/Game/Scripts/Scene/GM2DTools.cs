@@ -503,6 +503,7 @@ namespace GameA.Game
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
+            res.NpcDialog = data.NpcDialog;
             res.NpcSerialNumber = data.NpcSerialNumber;
             res.NpcShowType = data.NpcShowType;
             res.NpcShowInterval = data.NpcShowInterval;
@@ -570,7 +571,8 @@ namespace GameA.Game
             {
                 if (i < data.InternalUnitExtras.Count)
                 {
-                    unitExtra.Set(ToEngine(data.InternalUnitExtras[i]), UnitExtraDynamic.FieldTag.InternalUnitExtras, i);
+                    unitExtra.Set(ToEngine(data.InternalUnitExtras[i]), UnitExtraDynamic.FieldTag.InternalUnitExtras,
+                        i);
                 }
                 else
                 {
@@ -580,6 +582,7 @@ namespace GameA.Game
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;
             unitExtra.NpcName = data.NpcName;
+            unitExtra.NpcDialog = data.NpcDialog;
             unitExtra.NpcSerialNumber = (ushort) data.NpcSerialNumber;
             unitExtra.NpcShowType = (byte) data.NpcShowType;
             unitExtra.NpcShowInterval = (ushort) data.NpcShowInterval;

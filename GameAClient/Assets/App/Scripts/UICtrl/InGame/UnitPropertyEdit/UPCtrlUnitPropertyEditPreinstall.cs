@@ -226,7 +226,8 @@ namespace GameA
 
         private void ReadPreinstall(int index)
         {
-            var unitExtraKeyValuePair = ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(_dataList[index].PreinstallData.Data);
+            var unitExtraKeyValuePair =
+                ClientProtoSerializer.Instance.Deserialize<UnitExtraKeyValuePair>(_dataList[index].PreinstallData.Data);
             if (UnitDefine.IsSpawn(_mainCtrl.EditData.UnitDesc.Id))
             {
                 if (!TeamManager.Instance.CheckSpawnPreinstall(unitExtraKeyValuePair, _mainCtrl.EditData.UnitDesc))

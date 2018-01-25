@@ -105,14 +105,38 @@ namespace GameA
                 }
             });
             //创造动画
-            _cachedView.SlideDownBtn.onClick.AddListener(OpenWaggleAnimation);
+            _cachedView.SlideDownBtn.onClick.AddListener(
+                () =>
+                {
+                    if (_openWaggleAnim)
+                    {
+                        CloseWaggleAnimation();
+                    }
+                    else
+                    {
+                        OpenWaggleAnimation();
+                    }
+                }
+            );
             CreateWaggleSequences();
-            _cachedView.CommonUseBtn.onClick.AddListener(OpenCommonAnimation);
+
+            _cachedView.CommonUseBtn.onClick.AddListener(() =>
+                {
+                    if (_openCommonAnim)
+                    {
+                        CloseCommonAnimation();
+                    }
+                    else
+                    {
+                        OpenCommonAnimation();
+                    }
+                }
+            );
             CreateCommonSequences();
 
             //滑动
             _cachedView.CommonDiaUpBtn.onClick.AddListener(() => { _cachedView.Bar.value += 0.1f; });
-            _cachedView.CommonDiaUpBtn.onClick.AddListener(() => { _cachedView.Bar.value -= 0.1f; });
+            _cachedView.CommonDiaDownBtn.onClick.AddListener(() => { _cachedView.Bar.value -= 0.1f; });
         }
 
 
@@ -231,8 +255,8 @@ namespace GameA
             {
                 name = NpcDia.GetNpcFaceSpriteName(_curENpcType, (ENpcFace) i);
                 JoyResManager.Instance.TryGetSprite(name, out iconsprite);
-                _iconImages[i].sprite = iconsprite;
-                _iconSelectImages[i].sprite = iconsprite;
+                _iconImages[i - 1].sprite = iconsprite;
+                _iconSelectImages[i - 1].sprite = iconsprite;
             }
         }
 
@@ -281,7 +305,7 @@ namespace GameA
             }
             else if (_closeCommonSequence == null || !_closeCommonSequence.IsPlaying())
             {
-                _cachedView.CommonContentTrs.SetActiveEx(false);
+                _cachedView.CommonContentParentTrs.SetActiveEx(false);
             }
             base.Close();
             _npcDiaStrList.Clear();
@@ -407,6 +431,7 @@ namespace GameA
             }
 
             _completeCommonAnim = false;
+            _openCommonAnim = false;
         }
 
 
@@ -415,16 +440,16 @@ namespace GameA
             _openCommonSequence = DOTween.Sequence();
             _closeCommonSequence = DOTween.Sequence();
             _openCommonSequence.Append(
-                _cachedView.CommonContentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f).From()
+                _cachedView.CommonContentParentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
             {
                 if (_closeCommonSequence.IsPlaying())
                 {
                     _closeCommonSequence.Complete(true);
                 }
-                _cachedView.CommonContentTrs.SetActiveEx(true);
+                _cachedView.CommonContentParentTrs.SetActiveEx(true);
             });
-            _closeCommonSequence.Append(_cachedView.CommonContentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
+            _closeCommonSequence.Append(_cachedView.CommonContentParentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
                     .SetEase(Ease.InOutQuad)).OnComplete(OnCommonCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() =>
                 {
@@ -437,7 +462,7 @@ namespace GameA
 
         protected void OnCommonCloseAnimationComplete()
         {
-            _cachedView.CommonContentTrs.SetActiveEx(false);
+            _cachedView.CommonContentParentTrs.SetActiveEx(false);
             _closeCommonSequence.Rewind();
         }
 
@@ -463,13 +488,13 @@ namespace GameA
             for (int i = 0; i < _dialogPreinstallList.DataList.Count; i++)
             {
                 UMCtrlNpcInputDiaItem item =
-                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.CommonContentTrs,
+                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                         EResScenary.UIInGame);
                 item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions);
                 _inputItemList.Add(item);
             }
             UMCtrlNpcInputDiaItem additem =
-                UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.CommonContentTrs,
+                UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                     EResScenary.UIInGame);
             additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions);
             _inputItemList.Add(additem);

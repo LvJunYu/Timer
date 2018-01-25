@@ -15,6 +15,7 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcBeforeTaskAwardType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
+
         private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
@@ -39,10 +40,19 @@ namespace GameA
                 _killtionList.Add(VARIABLE.Key);
             }
 
-            for (int i = 0; i < _cachedView.TargetTypeBtnGroup.Length; i++)
+            for (int i = 0; i < _cachedView.BeforeAwardTypeTypeBtnGroup.Length; i++)
             {
-                int index = i + 1;
-                _cachedView.TargetTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
+                int index = i;
+                switch (index)
+                {
+                    case 0:
+                        index = (int) ENpcTargetType.Colltion;
+                        break;
+                    case 1:
+                        index = (int) ENpcTargetType.Contorl;
+                        break;
+                }
+                _cachedView.BeforeAwardTypeTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
         }
 
@@ -113,7 +123,7 @@ namespace GameA
             {
                 CreateSequences();
             }
-
+            _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
         }

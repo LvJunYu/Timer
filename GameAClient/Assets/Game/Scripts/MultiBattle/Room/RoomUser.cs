@@ -71,7 +71,7 @@ namespace GameA.Game
         {
             _guid = roomUserInfo.UserGuid;
             _name = roomUserInfo.NickName;
-            _ready = roomUserInfo.Ready == 1;
+//            _ready = roomUserInfo.Ready == 1;
             _inx = roomUserInfo.inx;
         }
         
