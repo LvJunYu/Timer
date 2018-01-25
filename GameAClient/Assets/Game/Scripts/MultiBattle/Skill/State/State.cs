@@ -146,7 +146,8 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ", _sender.Guid,
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ",
+                    _sender == null ? IntVec3.zero : _sender.Guid,
                     _target.Guid, _tableState.Name));
             }
 
