@@ -69,7 +69,10 @@ namespace GameA
 	        {
 		        return;
 	        }
-			SocialGUIManager.Instance.CloseUI<UICtrlEnterGameLoading>();
+	        if (_isOpen)
+	        {
+		        SocialGUIManager.Instance.CloseUI<UICtrlEnterGameLoading>();
+	        }
         }
 
         private void OnRequestStartGame()
