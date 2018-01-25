@@ -129,6 +129,7 @@ namespace GameA.Game
             }
             else
             {
+                SendLoadComplete();
                 SetPhase(EPhase.Normal);
             }
         }
