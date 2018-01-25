@@ -160,6 +160,10 @@ namespace GameA
 
         private void RefreshPlayerInfo()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             var userArray = _roomInfo.RoomUserArray;
             if (_openState)
             {
@@ -226,12 +230,20 @@ namespace GameA
 
         private void OnRoomPlayerInfoChanged()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             RefreshPlayerInfo();
             RefreshBtns();
         }
 
         private void RefreshBtns()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             bool isHost = _roomInfo.HostUserId == LocalUser.Instance.UserGuid;
             _cachedView.PrepareBtnTxt.text = _myRoomUser.Ready ? "取消准备" : "准  备";
             _cachedView.RawPrepareBtnTxt.text = _myRoomUser.Ready ? "取消" : "准备";

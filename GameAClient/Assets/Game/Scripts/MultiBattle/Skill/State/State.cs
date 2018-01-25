@@ -52,8 +52,8 @@ namespace GameA.Game
             if (GameModeNetPlay.DebugEnable())
             {
                 GameModeNetPlay.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1} ",
-                    _sender == null ? _sender.Guid : IntVec3.zero,
-                    _target.Guid, _tableState.Name));
+                    sender == null ? IntVec3.zero :sender.Guid,
+                    target.Guid, tableState.Name));
             }
 
             _run = true;

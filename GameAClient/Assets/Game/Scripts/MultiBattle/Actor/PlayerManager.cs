@@ -91,7 +91,6 @@ namespace GameA.Game
         {
             _playerList.Clear();
             _mainPlayer = null;
-            _roomInfo = null;
         }
 
         public void Dispose()
