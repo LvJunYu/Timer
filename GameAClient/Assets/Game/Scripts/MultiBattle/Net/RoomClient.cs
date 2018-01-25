@@ -84,32 +84,82 @@ namespace GameA.Game
 
         private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, object netlink)
         {
-            RoomManager.Instance.OnWarnningHost();
+//            RoomManager.Instance.OnWarnningHost();
         }
 
         private void Msg_RC_Kick(Msg_RC_Kick msg, object netlink)
         {
-            RoomManager.Instance.OnDeletePlayerRet(msg);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnUserKick(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_Kick(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_UserExit(Msg_RC_UserExit msg, object netlink)
         {
-            RoomManager.Instance.OnUserExitRet(msg);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnUserExit(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_UserExit(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_ChangePos(Msg_RC_ChangePos msg, object netlink)
         {
-            RoomManager.Instance.OnSendChangePosRet(msg);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomChangePos(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_ChangePos(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_UserReadyInfo(Msg_RC_UserReadyInfo msg, object netlink)
         {
-            RoomManager.Instance.OnSendRoomPrepareRet(msg);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomPlayerReadyChanged(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_UserReadyInfo(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_RoomUserEnter(Msg_RC_RoomUserEnter msg, object netlink)
         {
-            RoomManager.Instance.OnRoomUserEnterRet(msg);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomUserEnter(msg.UserInfo);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_RoomUserEnter(msg, netlink);
+                });
+            }
         }
 
         private void Msg_RC_FrameDataArray(Msg_RC_FrameDataArray msg, object netlink)

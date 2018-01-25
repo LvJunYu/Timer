@@ -10,7 +10,7 @@ namespace GameA
         private const string BgImgFormat = "img_board_{0}";
         private RoomUser _user;
         private UnitExtraDynamic _unitExtra;
-        private long _hostUserId;
+        private UICtrlMultiRoom _uiCtrlMultiRoom;
 
         public void Set(RoomUser roomUser)
         {
@@ -20,12 +20,6 @@ namespace GameA
 
         private void RefreshView()
         {
-            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
-            if (gameMode != null)
-            {
-                _hostUserId = gameMode.RoomInfo.HostUserId;
-            }
-
             if (_user == null)
             {
                 if (_unitExtra == null)
@@ -39,7 +33,15 @@ namespace GameA
             }
             else
             {
-                if (_user.Guid == _hostUserId)
+                if (_uiCtrlMultiRoom == null)
+                {
+                    _uiCtrlMultiRoom = SocialGUIManager.Instance.GetUI<UICtrlMultiRoom>();
+                }
+                if (!_uiCtrlMultiRoom.IsOpen)
+                {
+                    return;
+                }
+                if (_user.Guid == _uiCtrlMultiRoom.RoomInfo.HostUserId)
                 {
                     SetState(EState.Host);
                 }

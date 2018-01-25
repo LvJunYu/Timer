@@ -27,6 +27,7 @@ namespace GameA.Game
         protected EPhase _ePhase;
         protected int _recentServerFrame;
         protected bool _loadingHasClosed;
+        protected int _maxUserCount;
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
         private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
         private RoomInfo _roomInfo;
@@ -75,29 +76,17 @@ namespace GameA.Game
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
-            Messenger<long>.AddListener(EMessengerType.OnUserExit, OnUserExit);
-            Messenger<long>.AddListener(EMessengerType.OnUserKick, OnUserKick);
-            Messenger<Msg_RC_ChangePos>.AddListener(EMessengerType.OnRoomChangePos, OnRoomChangePos);
-            Messenger<Msg_RC_UserReadyInfo>.AddListener(EMessengerType.OnRoomPlayerReadyChanged,
-                OnRoomPlayerReadyChanged);
-            Messenger<Msg_RC_RoomUserInfo>.AddListener(EMessengerType.OnRoomUserEnter, OnRoomUserEnter);
+            _maxUserCount = project.NetData.PlayerCount;
             return base.Init(project, param, startType, corountineProxy);
         }
 
         public override bool Stop()
         {
-            Messenger<long>.RemoveListener(EMessengerType.OnUserExit, OnUserExit);
-            Messenger<long>.RemoveListener(EMessengerType.OnUserKick, OnUserKick);
-            Messenger<Msg_RC_ChangePos>.RemoveListener(EMessengerType.OnRoomChangePos, OnRoomChangePos);
-            Messenger<Msg_RC_UserReadyInfo>.RemoveListener(EMessengerType.OnRoomPlayerReadyChanged,
-                OnRoomPlayerReadyChanged);
-            Messenger<Msg_RC_RoomUserInfo>.RemoveListener(EMessengerType.OnRoomUserEnter, OnRoomUserEnter);
             _debugFile.Close();
             _debugClientData.Close();
             TryCloseLoading();
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
-
             if (!base.Stop())
             {
                 return false;
@@ -275,9 +264,9 @@ namespace GameA.Game
         private void ApplyFrameInputData(List<Msg_RC_UserInputData> frameDataList)
         {
             PlayerManager pm = PlayerManager.Instance;
-            for (int i = 0; i < pm.PlayerList.Count; i++)
+            for (int i = 0; i < _maxUserCount; i++)
             {
-                PlayerBase playerBase = pm.PlayerList[i];
+                PlayerBase playerBase = pm.GetPlayerByRoomIndex(i);
                 if (playerBase == null)
                 {
                     continue;
@@ -420,7 +409,7 @@ namespace GameA.Game
             }
         }
 
-        private void OnRoomChangePos(Msg_RC_ChangePos msg)
+        public void OnRoomChangePos(Msg_RC_ChangePos msg)
         {
             if (_roomInfo == null)
             {
@@ -431,7 +420,7 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
         }
 
-        private void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
+        public void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
         {
             if (_roomInfo == null)
             {
@@ -442,7 +431,7 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
         }
 
-        private void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
+        public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
         {
             if (_roomInfo == null)
             {
@@ -453,9 +442,9 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
         }
 
-        private void OnUserKick(long userId)
+        public void OnUserKick(Msg_RC_Kick msg)
         {
-            if (userId == LocalUser.Instance.UserGuid)
+            if (msg.UserGuid == LocalUser.Instance.UserGuid)
             {
                 _ePhase = EPhase.Close;
                 SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
@@ -470,15 +459,15 @@ namespace GameA.Game
                     return;
                 }
 
-                _roomInfo.OnUserExit(userId);
+                _roomInfo.OnUserExit(msg.UserGuid);
                 Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
             }
         }
 
-        private void OnUserExit(long userId)
+        public void OnUserExit(Msg_RC_UserExit msg)
         {
             if (_roomInfo == null) return;
-            _roomInfo.OnUserExit(userId);
+            _roomInfo.OnUserExit(msg);
             Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
         }
 

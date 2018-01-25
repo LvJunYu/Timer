@@ -16,6 +16,7 @@ namespace GameA
         private UnitExtraDynamic _unitExtra;
         private long _hostUserId;
         private EState _curState;
+        private UICtrlMultiRoom _uiCtrlMultiRoom;
 
         protected override void OnViewCreated()
         {
@@ -95,12 +96,15 @@ namespace GameA
 
         private void RefreshView()
         {
-            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
-            if (gameMode != null)
+            if (_uiCtrlMultiRoom == null)
             {
-                _hostUserId = gameMode.RoomInfo.HostUserId;
+                _uiCtrlMultiRoom = SocialGUIManager.Instance.GetUI<UICtrlMultiRoom>();
             }
-
+            if (!_uiCtrlMultiRoom.IsOpen)
+            {
+                return;
+            }
+            _hostUserId = _uiCtrlMultiRoom.RoomInfo.HostUserId;
             if (_user == null)
             {
                 if (_unitExtra == null)

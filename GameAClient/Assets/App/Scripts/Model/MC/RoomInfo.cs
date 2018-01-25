@@ -137,9 +137,10 @@ namespace GameA
             }
         }
 
-        public void OnUserExit(long userId)
+        public void OnUserExit(Msg_RC_UserExit msg)
         {
-            RoomUser user = _users.Find(p => p.Guid == userId);
+            RoomUser user = _users.Find(p => p.Guid == msg.UserGuid);
+            _hostUserId = msg.HostUserGuid;
             if (user != null)
             {
                 if (user.Player != null)
@@ -175,6 +176,7 @@ namespace GameA
                     {
                         user.Player.SetUnitExtra(unitExtra);
                     }
+
                     user.Player.Reset();
                     user.Player.OnPlay();
                 }
@@ -188,6 +190,21 @@ namespace GameA
             {
                 user.Ready = msg.ReadyFlag;
             }
+
+            Messenger<bool>.Broadcast(EMessengerType.OnRoomPlayerAllReadyChanged, user.Ready && CheckAllReady());
+        }
+
+        private bool CheckAllReady()
+        {
+            for (int i = 0; i < _users.Count; i++)
+            {
+                if (!_users[i].Ready && _users[i].Guid != _hostUserId)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)

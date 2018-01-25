@@ -19,6 +19,11 @@ namespace GameA
         private Sequence _closeSequence;
         private RoomUser _myRoomUser;
 
+        public RoomInfo RoomInfo
+        {
+            get { return _roomInfo; }
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameMainUI;
@@ -28,6 +33,16 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnRoomPlayerInfoChanged, OnRoomPlayerInfoChanged);
+            RegisterEvent<bool>(EMessengerType.OnRoomPlayerAllReadyChanged, OnRoomPlayerAllReadyChanged);
+        }
+
+        private void OnRoomPlayerAllReadyChanged(bool value)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            _cachedView.OpenBtn.interactable = value;
         }
 
         protected override void OnViewCreated()
@@ -85,10 +100,14 @@ namespace GameA
                 return;
             }
 
-            _openState = true;
-            _cachedView.OpenPannel.anchoredPosition = Vector2.zero;
-            _cachedView.MaskImage.color = new Color(0, 0, 0, 150 / (float) 255);
-            RefrshView();
+            if (!_openState)
+            {
+                OnOpenBtn();
+            }
+            else
+            {
+                RefrshView();
+            }
         }
 
         private bool SetRoomPlayerUnitExtras()
@@ -264,7 +283,6 @@ namespace GameA
             {
                 _openSequence.Complete(true);
             }
-
             _closeSequence.PlayForward();
         }
 
@@ -279,7 +297,6 @@ namespace GameA
             {
                 _closeSequence.Complete(true);
             }
-
             SetState(true);
             _openSequence.Restart();
         }
