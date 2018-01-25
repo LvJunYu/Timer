@@ -50,9 +50,66 @@ namespace GameA.Game
         protected override void InitHandler()
         {
             RegisterHandler<Msg_RC_LoginRet>(Msg_RC_LoginRet);
-
             RegisterHandler<Msg_RC_FrameDataArray>(Msg_RC_FrameDataArray);
             RegisterHandler<Msg_RC_RoomClose>(Msg_RC_RoomClose);
+            
+            RegisterHandler<Msg_RC_RoomUserEnter>(Msg_RC_RoomUserEnter);
+            RegisterHandler<Msg_RC_UserReadyInfo>(Msg_RC_UserReadyInfo);
+            RegisterHandler<Msg_RC_ChangePos>(Msg_RC_ChangePos);
+            RegisterHandler<Msg_RC_UserExit>(Msg_RC_UserExit);
+            RegisterHandler<Msg_RC_Kick>(Msg_RC_Kick);
+            RegisterHandler<Msg_RC_WarnningHost>(Msg_RC_WarnningHost);
+            RegisterHandler<Msg_RC_RoomOpen>(Msg_RC_RoomOpen);
+            RegisterHandler<Msg_RC_RoomChat>(Msg_RC_RoomChat);
+        }
+
+        private void Msg_RC_RoomChat(Msg_RC_RoomChat msg, object netlink)
+        {
+        }
+
+        private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomOpen();
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_RoomOpen(msg, netlink);
+                });
+            }
+        }
+
+        private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, object netlink)
+        {
+            RoomManager.Instance.OnWarnningHost();
+        }
+
+        private void Msg_RC_Kick(Msg_RC_Kick msg, object netlink)
+        {
+            RoomManager.Instance.OnDeletePlayerRet(msg);
+        }
+
+        private void Msg_RC_UserExit(Msg_RC_UserExit msg, object netlink)
+        {
+            RoomManager.Instance.OnUserExitRet(msg);
+        }
+
+        private void Msg_RC_ChangePos(Msg_RC_ChangePos msg, object netlink)
+        {
+            RoomManager.Instance.OnSendChangePosRet(msg);
+        }
+
+        private void Msg_RC_UserReadyInfo(Msg_RC_UserReadyInfo msg, object netlink)
+        {
+            RoomManager.Instance.OnSendRoomPrepareRet(msg);
+        }
+
+        private void Msg_RC_RoomUserEnter(Msg_RC_RoomUserEnter msg, object netlink)
+        {
+            RoomManager.Instance.OnRoomUserEnterRet(msg);
         }
 
         private void Msg_RC_FrameDataArray(Msg_RC_FrameDataArray msg, object netlink)
@@ -125,6 +182,7 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("联机失败");
             }
         }
+
 
         public void OnDisconnect()
         {

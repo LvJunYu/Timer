@@ -40,6 +40,7 @@ namespace GameA.Game
         }
 
         private int _curTeamCount;
+        private List<UnitExtraDynamic> _roomPlayerUnitExtras = new List<UnitExtraDynamic>();
 
         public List<byte> Teams
         {
@@ -112,6 +113,22 @@ namespace GameA.Game
             {
                 _teams.Add(team);
             }
+        }
+
+        public List<UnitExtraDynamic> GetSortPlayerUnitExtras()
+        {
+            _roomPlayerUnitExtras.Clear();
+            var dic = GetPlayerUnitExtraDic();
+            for (int i = 0; i < MaxTeamCount; i++)
+            {
+                UnitExtraDynamic unitExtra;
+                if (dic.TryGetValue(i, out unitExtra))
+                {
+                    _roomPlayerUnitExtras.Add(unitExtra);
+                }
+            }
+
+            return _roomPlayerUnitExtras;
         }
 
         public Dictionary<int, UnitExtraDynamic> GetPlayerUnitExtraDic(UnitDesc? excludeUnitDesc = null)

@@ -96,6 +96,41 @@ namespace GameA.Game
             return data;
         }
 
+        public List<UnitEditData> GetSortSpawnData()
+        {
+            UnitEditData[] array = new UnitEditData[TeamManager.MaxTeamCount];
+            var spawnDataScene = GetDataScene2D(SqawnSceneIndex);
+            var spawnDatas = spawnDataScene.SpawnDatas;
+            for (int i = 0; i < spawnDatas.Count; i++)
+            {
+                var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
+                var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
+                for (int j = 0; j < playerUnitExtras.Count; j++)
+                {
+                    if (playerUnitExtras[j] != null)
+                    {
+                        var unitEditData = new UnitEditData();
+                        unitEditData.UnitDesc = spawnDatas[i];
+                        unitEditData.UnitExtra = playerUnitExtras[j];
+                        if (j < array.Length)
+                        {
+                            array[j] = unitEditData;
+                        }
+                    }
+                }
+            }
+
+            List<UnitEditData> data = new List<UnitEditData>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] != null)
+                {
+                    data.Add(array[i]);
+                }
+            }
+            return data;
+        }
+
         public void Dispose()
         {
             _curScene = null;

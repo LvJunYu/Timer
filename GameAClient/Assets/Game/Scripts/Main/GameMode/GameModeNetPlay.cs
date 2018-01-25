@@ -681,5 +681,10 @@ namespace GameA.Game
             CountDown,
             Battle,
         }
+
+        public void OnRoomOpen()
+        {
+            SetGamePhase(EGamePhase.CountDown);
+        }
     }
 }

@@ -352,7 +352,7 @@ namespace GameA.Game
 
         internal void OnWarnningHost()
         {
-            _room.OnWarnningHost();
+//            _room.OnWarnningHost();
         }
 
         internal void OnOpenBattle()
@@ -413,8 +413,6 @@ namespace GameA.Game
         {
             Messenger<Msg_RC_RoomUserInfo>.Broadcast(EMessengerType.OnRoomUserEnter, msg.UserInfo);
         }
-
         #endregion
-
     }
 }

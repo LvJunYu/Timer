@@ -142,6 +142,11 @@ namespace GameA
             RoomUser user = _users.Find(p => p.Guid == userId);
             if (user != null)
             {
+                if (user.Player != null)
+                {
+                    PlayMode.Instance.DeleteUnit(user.Player);
+                }
+
                 _users.Remove(user);
                 SortRoomUsers();
             }
@@ -158,9 +163,21 @@ namespace GameA
                 {
                     LogHelper.Error("OnRoomChangePos, but targetPos != null");
                 }
+
                 user.Inx = targetInx;
                 _roomUserArray[targetInx] = _roomUserArray[oriInx];
                 _roomUserArray[oriInx] = null;
+                if (user.Player != null)
+                {
+                    var dic = TeamManager.Instance.GetPlayerUnitExtraDic();
+                    UnitExtraDynamic unitExtra;
+                    if (dic.TryGetValue(targetInx, out unitExtra))
+                    {
+                        user.Player.SetUnitExtra(unitExtra);
+                    }
+                    user.Player.Reset();
+                    user.Player.OnPlay();
+                }
             }
         }
 
@@ -175,7 +192,12 @@ namespace GameA
 
         public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
         {
-            _users.Add(new RoomUser(msg));
+            RoomUser user = new RoomUser(msg);
+            if (PlayMode.Instance.HasCreatedPlayer)
+            {
+                user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
+            }
+            _users.Add(user);
             SortRoomUsers();
         }
     }

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +17,6 @@ namespace GameA
         private USCtrlMultiRoomRawSlot[] _usCtrlMultiRoomRawSlots;
         private Sequence _openSequence;
         private Sequence _closeSequence;
-        private List<UnitExtraDynamic> _roomPlayerUnitExtras = new List<UnitExtraDynamic>();
         private RoomUser _myRoomUser;
 
         protected override void InitGroupId()
@@ -83,7 +79,7 @@ namespace GameA
                 return;
             }
 
-            if (!GetRoomPlayerUnitExtras())
+            if (!SetRoomPlayerUnitExtras())
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                 return;
@@ -93,20 +89,10 @@ namespace GameA
             RefrshView();
         }
 
-        private bool GetRoomPlayerUnitExtras()
+        private bool SetRoomPlayerUnitExtras()
         {
-            var dic = TeamManager.Instance.GetPlayerUnitExtraDic();
-            _roomPlayerUnitExtras.Clear();
-            for (int i = 0; i < TeamManager.MaxTeamCount; i++)
-            {
-                UnitExtraDynamic unitExtra;
-                if (dic.TryGetValue(i, out unitExtra))
-                {
-                    _roomPlayerUnitExtras.Add(unitExtra);
-                }
-            }
-
-            if (_project.NetData == null || _project.NetData.PlayerCount != _roomPlayerUnitExtras.Count)
+            var  roomPlayerUnitExtras = TeamManager.Instance.GetSortPlayerUnitExtras();
+            if (_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count)
             {
                 LogHelper.Error(
                     "_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count");
@@ -115,9 +101,9 @@ namespace GameA
 
             for (int i = 0; i < _usCtrlMultiRoomSlots.Length; i++)
             {
-                if (i < _roomPlayerUnitExtras.Count)
+                if (i < roomPlayerUnitExtras.Count)
                 {
-                    _usCtrlMultiRoomSlots[i].SetUnitExtra(_roomPlayerUnitExtras[i]);
+                    _usCtrlMultiRoomSlots[i].SetUnitExtra(roomPlayerUnitExtras[i]);
                 }
                 else
                 {
@@ -127,9 +113,9 @@ namespace GameA
 
             for (int i = 0; i < _usCtrlMultiRoomRawSlots.Length; i++)
             {
-                if (i < _roomPlayerUnitExtras.Count)
+                if (i < roomPlayerUnitExtras.Count)
                 {
-                    _usCtrlMultiRoomRawSlots[i].SetUnitExtra(_roomPlayerUnitExtras[i]);
+                    _usCtrlMultiRoomRawSlots[i].SetUnitExtra(roomPlayerUnitExtras[i]);
                 }
                 else
                 {

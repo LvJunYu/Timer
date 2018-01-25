@@ -17,6 +17,7 @@ namespace GameA.Game
         protected string _name;
         protected bool _ready;
         protected int _inx;
+        protected PlayerBase _player;
 
         public string Name
         {
@@ -38,6 +39,12 @@ namespace GameA.Game
         {
             get { return _inx; }
             set { _inx = value; }
+        }
+
+        public PlayerBase Player
+        {
+            get { return _player; }
+            set { _player = value; }
         }
 
         public void OnGet()
