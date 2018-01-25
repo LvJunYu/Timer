@@ -322,7 +322,8 @@ namespace GameA.Game
                 return false;
             }
 
-            if (!MapConfig.UseAOI)
+            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
+            if (!MapConfig.UseAOI || isMulti)
             {
                 if (!colliderScene2D.InstantiateView(unitDesc, tableUnit))
                 {

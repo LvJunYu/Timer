@@ -228,6 +228,10 @@ namespace GameA.Game
 
         private void UpdateTexture(ref Edge edge, float center, int maskRandom)
         {
+            if (_view == null)
+            {
+                return;
+            }
             if (_paintObject == null)
             {
                 CreatePaintObject();

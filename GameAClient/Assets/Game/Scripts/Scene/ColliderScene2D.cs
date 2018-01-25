@@ -121,7 +121,8 @@ namespace GameA.Game
             var width = ConstDefineGM2D.MapTileSize.x;
             var height = ConstDefineGM2D.MapTileSize.y;
             Init(width, height);
-            if (MapConfig.UseAOI)
+            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
+            if (MapConfig.UseAOI && !isMulti)
             {
                 InitRegions(regionTilesCount);
                 _interestArea = new InterestArea(ConstDefineGM2D.RegionTileSize * 1.5f,
@@ -484,12 +485,13 @@ namespace GameA.Game
                 _allOtherUnits[i].Reset();
             }
 
+            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
                 UnitDesc unitDesc = _deletedDatas[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI)
+                if (!MapConfig.UseAOI || isMulti)
                 {
                     InstantiateView(unitDesc, tableUnit);
                 }
@@ -1051,12 +1053,13 @@ namespace GameA.Game
 
         public void AddUnitsOutofMap()
         {
+            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
             for (int i = 0; i < _unitsOutofMap.Count; i++)
             {
                 UnitDesc unitDesc = _unitsOutofMap[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI)
+                if (!MapConfig.UseAOI || isMulti)
                 {
                     InstantiateView(unitDesc, tableUnit);
                 }
