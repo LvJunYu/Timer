@@ -96,8 +96,10 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender.Guid,
-                    _target.Guid, _tableState.Name));
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender == null ?  
+                       IntVec3.zero : _sender.Guid,
+                    _target.Guid,
+                    _tableState.Name));
             }
 
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)

@@ -715,7 +715,7 @@ namespace SoyEngine
 
                 if (dictionaryObjectBase.IsEmpty)
                 {
-                    return true;
+                    return false;
                 }
             }
 
