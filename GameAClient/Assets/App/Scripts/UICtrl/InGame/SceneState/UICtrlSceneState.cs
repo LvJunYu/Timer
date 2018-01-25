@@ -28,6 +28,7 @@ namespace GameA
         private int _showValue;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
 
+        private const int CountDownTime = 3;
         private const int _finalTimeMax = 10;
         private const int _HeartbeatTimeMax = 30;
         private const float _collectDelayTime = 1f;
@@ -38,7 +39,9 @@ namespace GameA
         protected Sequence _finalCountDownSequence;
         private bool _showStar;
         private bool _isMulti;
+        private float _countDownTimer;
         private USCtrlMultiScore[] _usCtrlMultiScores;
+        private bool _waiting;
 
         /// <summary>
         /// 冒险模式
@@ -48,6 +51,7 @@ namespace GameA
         private int[] _starValueAry;
 
         private float _showHelpTimer;
+        private bool _showCountDownTime;
 
         public bool ShowHelpPage3SecondsComplete
         {
@@ -97,6 +101,12 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _isMulti = GM2DGame.Instance.GameMode.IsMulti;
+            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+            if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
+            {
+                _waiting = true;
+                _cachedView.LeftTimeText.text = "等待中";
+            }
             Clear();
             UpdateAll();
         }
@@ -155,11 +165,25 @@ namespace GameA
         {
             base.OnUpdate();
 //            UpdateShowHelper();
+            
             UpdateTimeLimit();
-
+            
             if (_showStar)
             {
                 UpdateAdventurePlay();
+            }
+
+            if (_showCountDownTime)
+            {
+                _cachedView.CountDownTxt.text = Mathf.CeilToInt(_countDownTimer).ToString();
+                if (_countDownTimer > 0)
+                {
+                    _countDownTimer -= Time.deltaTime;
+                }
+                else
+                {
+                    ShowCountDown(false);
+                }
             }
         }
 
@@ -373,6 +397,10 @@ namespace GameA
 
         private void UpdateTimeLimit()
         {
+            if (_waiting)
+            {
+                return;
+            }
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
             if (curValue < _finalTimeMax)
             {
@@ -616,6 +644,7 @@ namespace GameA
             _lastValue = 0;
             _showValue = 0;
             _cachedView.ReviveDock.SetActive(false);
+            ShowCountDown(false);
         }
 
         private void ShowCollectionAnimation(Vector3 InitialPos)
@@ -670,6 +699,13 @@ namespace GameA
                 _umCtrlCollectionLifeItemCache.Add(umCtrlCollectionLifeItem);
             }
             return umCtrlCollectionLifeItem;
+        }
+        
+        public void ShowCountDown(bool value)
+        {
+            _showCountDownTime = value;
+            _countDownTimer = CountDownTime;
+            _cachedView.CountDownTxt.SetActiveEx(value);
         }
     }
 }

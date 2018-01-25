@@ -332,16 +332,6 @@ namespace GameA.Game
                 case EGamePhase.None:
                     break;
                 case EGamePhase.Wait:
-                    _serverInputFrameQueue.Clear();
-                    _serverStartInputFrameList.Clear();
-                    _recentServerFrame = 0;
-                    _curServerFrame = 0;
-                    if (_loadComplete)
-                    {
-                        GameRun.Instance.RePlay();
-                        GameRun.Instance.Playing();
-                        base.OnGameStart();
-                    }
                     break;
                 case EGamePhase.CountDown:
                     break;
@@ -360,9 +350,21 @@ namespace GameA.Game
                 case EGamePhase.Wait:
                     break;
                 case EGamePhase.CountDown:
+                    _serverInputFrameQueue.Clear();
+                    _serverStartInputFrameList.Clear();
+                    _recentServerFrame = 0;
+                    _curServerFrame = 0;
+                    if (_loadComplete)
+                    {
+                        GameRun.Instance.RePlay();
+                        GameRun.Instance.Playing();
+                        base.OnGameStart();
+                    }
+
+                    SocialGUIManager.Instance.GetUI<UICtrlSceneState>().ShowCountDown(true);
+                    SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                     break;
                 case EGamePhase.Battle:
-                    SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                     SetPhase(EPhase.Normal);
                     break;
                 default:

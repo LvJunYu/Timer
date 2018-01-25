@@ -549,6 +549,11 @@ namespace GameA.Game
 
         private void NetBattleWin(bool win, bool scoreWin = false)
         {
+            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+            if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
+            {
+                return;
+            }
             if (win)
             {
                 _runState = ESceneState.Win;
