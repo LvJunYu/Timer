@@ -398,6 +398,12 @@ namespace GameA.Game
         {
             Messenger<Msg_RC_UserReadyInfo>.Broadcast(EMessengerType.OnRoomPlayerReadyChanged, msg);
         }
+        
+        public void OnRoomUserEnterRet(Msg_RC_RoomUserEnter msg)
+        {
+            Messenger<Msg_RC_RoomUserInfo>.Broadcast(EMessengerType.OnRoomUserEnter, msg.UserInfo);
+        }
+
         #endregion
 
     }

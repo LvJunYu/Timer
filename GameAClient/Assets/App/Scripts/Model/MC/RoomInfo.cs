@@ -172,5 +172,11 @@ namespace GameA
                 user.Ready = msg.ReadyFlag;
             }
         }
+
+        public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
+        {
+            _users.Add(new RoomUser(msg));
+            SortRoomUsers();
+        }
     }
 }

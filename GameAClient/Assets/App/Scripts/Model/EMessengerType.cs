@@ -128,6 +128,9 @@ namespace GameA
         public static readonly int OnUserExit = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserKick = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomChangePos = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomPlayerInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomUserEnter = SoyEngine.EMessengerType.NextId++;
+        
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 

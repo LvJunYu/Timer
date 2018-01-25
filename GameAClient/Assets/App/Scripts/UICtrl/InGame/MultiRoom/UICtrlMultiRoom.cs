@@ -31,11 +31,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-//            RegisterEvent(EMessengerType.OnRoomInfoChanged, OnRoomInfoChanged);
-            RegisterEvent<long>(EMessengerType.OnUserExit, OnUserExit);
-            RegisterEvent<long>(EMessengerType.OnUserKick, OnUserKick);
-            RegisterEvent<Msg_RC_ChangePos>(EMessengerType.OnRoomChangePos, OnRoomChangePos);
-            RegisterEvent<Msg_RC_UserReadyInfo>(EMessengerType.OnRoomPlayerReadyChanged, OnRoomPlayerReadyChanged);
+            RegisterEvent(EMessengerType.OnRoomPlayerInfoChanged, OnRoomPlayerInfoChanged);
         }
 
         protected override void OnViewCreated()
@@ -240,25 +236,8 @@ namespace GameA
             SetState(false);
         }
 
-        private void OnRoomChangePos(Msg_RC_ChangePos msg)
+        private void OnRoomPlayerInfoChanged()
         {
-            if (!_isOpen)
-            {
-                return;
-            }
-
-            _roomInfo.OnRoomChangePos(msg);
-            RefreshPlayerInfo();
-        }
-
-        private void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-
-            _roomInfo.OnRoomPlayerReadyChanged(msg);
             RefreshPlayerInfo();
             RefreshBtns();
         }
@@ -272,43 +251,6 @@ namespace GameA
             _cachedView.RawPrepareBtn.SetActiveEx(!isHost);
             _cachedView.StartBtn.SetActiveEx(isHost);
             _cachedView.RawStartBtn.SetActiveEx(isHost);
-        }
-
-        private void OnUserKick(long userId)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-
-            if (userId == LocalUser.Instance.UserGuid)
-            {
-                SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-                    GM2DGame.Instance.QuitGame(
-                        () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                        code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                        true
-                    );
-                }));
-            }
-            else
-            {
-                _roomInfo.OnUserExit(userId);
-                RefreshPlayerInfo();
-            }
-        }
-
-        private void OnUserExit(long userId)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-
-            _roomInfo.OnUserExit(userId);
-            RefreshPlayerInfo();
         }
 
         private void OnCloseButton()
