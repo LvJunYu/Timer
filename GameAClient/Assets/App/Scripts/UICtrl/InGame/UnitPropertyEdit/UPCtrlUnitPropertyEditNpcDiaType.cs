@@ -8,6 +8,9 @@ namespace GameA
 {
     public class UPCtrlUnitPropertyEditNpcDiaType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
+        public const int NamMaxLength = 7;
+        public const int DiaMaxLength = 60;
+
         public enum EMenu
         {
             Dialog,
@@ -56,12 +59,15 @@ namespace GameA
             _showTypeBtnGroup[(int) ENpcTriggerType.Interval] = _npcIntervalShowBtn;
 
             //text加检测
+            _cachedView.NpcName.onValueChanged.AddListener(SetNameLength);
+            _cachedView.NpcDialog.onValueChanged.AddListener(SetDiALength);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcName);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.NpcDialog);
         }
 
         public override void Open()
         {
+            _mainCtrl.CloseUpCtrlPanel();
             base.Open();
             _cachedView.NpcDiaLogDock.SetActiveEx(true);
             RefreshView();
@@ -70,16 +76,21 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
-            _dialogShowIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.NpcShowInterval);
-            _cachedView.NpcName.text = _mainCtrl.EditData.UnitExtra.NpcName;
-            _cachedView.NpcDialog.text = _mainCtrl.EditData.UnitExtra.NpcDialog;
-            _cachedView.TaskNpcName.text = _mainCtrl.EditData.UnitExtra.NpcName;
+            _dialogShowIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.NpcShowInterval, false);
+
+            string name = _mainCtrl.EditData.UnitExtra.NpcName;
+            _cachedView.NpcName.onValueChanged.Invoke(name);
+            _cachedView.NpcName.text = name;
+            string dia = _mainCtrl.EditData.UnitExtra.NpcDialog;
+            _cachedView.NpcDialog.onValueChanged.Invoke(dia);
+            RefreshShowTypeMenu();
         }
 
 
         public override void Close()
         {
             // 关闭的时候设置名字和对话内容
+            _cachedView.NpcDiaLogDock.SetActiveEx(false);
             if (_cachedView.NpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
             {
                 _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.NpcName.text;
@@ -88,19 +99,37 @@ namespace GameA
             {
                 _mainCtrl.EditData.UnitExtra.NpcDialog = _cachedView.NpcDialog.text;
             }
-            _cachedView.NpcDiaLogDock.SetActiveEx(false);
+            _mainCtrl.EditData.UnitExtra.NpcShowInterval = (ushort) _dialogShowIntervalTimeSetting.Cur;
             base.Close();
         }
 
         private void RefreshShowTypeMenu()
         {
-            var val = Mathf.Clamp(_mainCtrl.EditData.UnitExtra.NpcShowType - 1, 0, 1);
+            var val = Mathf.Clamp(_mainCtrl.EditData.UnitExtra.NpcShowType, 0, 1);
             for (int i = 0;
                 i < _showTypeBtnGroup.Length;
                 i++)
 
             {
                 _showTypeBtnGroup[i].SetSelected(i == val);
+            }
+        }
+
+        private void SetNameLength(string str)
+        {
+            _cachedView.NameTextNum.text = String.Format("{0}/{1}", str.Length, NamMaxLength);
+            if (str.Length > NamMaxLength)
+            {
+                _cachedView.NpcName.text = str.Substring(0, NamMaxLength);
+            }
+        }
+
+        private void SetDiALength(string str)
+        {
+            _cachedView.DiaTextNum.text = String.Format("{0}/{1}", str.Length, DiaMaxLength);
+            if (str.Length > DiaMaxLength)
+            {
+                _cachedView.DiaTextNum.text = str.Substring(0, DiaMaxLength);
             }
         }
     }

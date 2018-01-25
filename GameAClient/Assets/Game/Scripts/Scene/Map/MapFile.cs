@@ -181,6 +181,8 @@ namespace GameA.Game
 
         private void ParseUnitExtraInfo(List<UnitExtraKeyValuePair> childList, int sceneIndex = 0)
         {
+            List<int> _npcTaskSeralNum = new List<int>();
+            List<int> _npcSeralNum = new List<int>();
             var dataScene2D = Scene2DManager.Instance.GetDataScene2D(sceneIndex);
             if (childList != null)
             {
@@ -191,8 +193,21 @@ namespace GameA.Game
                     {
                         Guid = GM2DTools.ToEngine(item.Guid),
                     }, GM2DTools.ToEngine(item));
+                    for (int j = 0;
+                        j < GM2DTools.ToEngine(item).NpcTask.ToList<NpcTaskDynamic>().Count;
+                        j++)
+                    {
+                        _npcTaskSeralNum.Add(GM2DTools.ToEngine(item).NpcTask.ToList<NpcTaskDynamic>()[i]
+                            .NpcSerialNumber);
+                    }
+                    if (GM2DTools.ToEngine(item).NpcSerialNumber != 0)
+                    {
+                        _npcSeralNum.Add(GM2DTools.ToEngine(item).NpcSerialNumber);
+                    }
                 }
             }
+            NpcTaskDataTemp.Intance.SetSecenAllTaskSerialNum(_npcTaskSeralNum);
+            NpcTaskDataTemp.Intance.SetSecenAllSerialNum(_npcSeralNum);
         }
 
         private IEnumerator ParseSceneData(List<MapRect2D> data, Dictionary<IntVec3, PairUnitData> pairUnits,
@@ -355,6 +370,7 @@ namespace GameA.Game
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;
             gm2DMapData.FinishCount = mapEditor.MapStatistics.LevelFinishCount;
             gm2DMapData.BgRandomSeed = BgScene2D.Instance.CurSeed;
+            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             gm2DMapData.InitialMapSize = GM2DTools.ToProto(Scene2DManager.Instance.InitialMapSize);
             int oriScene = Scene2DManager.Instance.CurSceneIndex;
             Scene2DManager.Instance.ChangeScene(0);
@@ -446,7 +462,6 @@ namespace GameA.Game
                     gm2DMapData.ModifyDatas.Add(mid);
                 }
             }
-            // -------------------------------------
             Scene2DManager.Instance.ChangeScene(oriScene);
             return GameMapDataSerializer.Instance.Serialize(gm2DMapData);
         }

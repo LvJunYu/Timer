@@ -11,7 +11,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
     public class UICtrlEditNpcDia : UICtrlGenericBase<UIViewEditNpcDia>
     {
-        private List<string> _npcDiaStrList = new List<string>();
+        private DictionaryListObject _npcDiaStrList;
         private List<NpcDia> _npcDiaList = new List<NpcDia>();
         private NpcDialogPreinstallList _dialogPreinstallList;
 
@@ -43,6 +43,17 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+
+            _cachedView.ExitBtn.onClick.AddListener(Close);
+            for (int i = 0; i < _cachedView.IconButtonAry.Length; i++)
+            {
+                _iconImages.Add(_cachedView.IconButtonAry[i].transform.GetChild(0).GetComponent<Image>());
+            }
+            for (int i = 0; i < _cachedView.IconSelectedButtonAry.Length; i++)
+            {
+                _iconSelectImages.Add(_cachedView.IconSelectedButtonAry[i].transform.GetChild(0)
+                    .GetComponent<Image>());
+            }
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DiaInputField);
             //Icon
             for (int i = 0; i < _cachedView.IconButtonAry.Length; i++)
@@ -108,7 +119,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _npcDiaStrList = (List<string>) parameter;
+            _npcDiaStrList = (DictionaryListObject) parameter;
             if (_npcDiaStrList.Count == 0)
             {
                 _curEditNpcDia = new NpcDia();
@@ -118,7 +129,7 @@ namespace GameA
                 for (int i = 0; i < _npcDiaStrList.Count; i++)
                 {
                     NpcDia item = new NpcDia();
-                    item.AnalysisNpcDia(_npcDiaStrList[i]);
+                    item.AnalysisNpcDia(_npcDiaStrList.ToList<string>()[i]);
                     _npcDiaList.Add(item);
                 }
                 _curEditNpcDia = _npcDiaList[0];
@@ -270,7 +281,7 @@ namespace GameA
             }
             else if (_closeCommonSequence == null || !_closeCommonSequence.IsPlaying())
             {
-                _cachedView.CommonPanelTrs.SetActiveEx(false);
+                _cachedView.CommonContentTrs.SetActiveEx(false);
             }
             base.Close();
             _npcDiaStrList.Clear();
@@ -404,16 +415,16 @@ namespace GameA
             _openCommonSequence = DOTween.Sequence();
             _closeCommonSequence = DOTween.Sequence();
             _openCommonSequence.Append(
-                _cachedView.CommonPanelTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f).From()
+                _cachedView.CommonContentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
             {
                 if (_closeCommonSequence.IsPlaying())
                 {
                     _closeCommonSequence.Complete(true);
                 }
-                _cachedView.CommonPanelTrs.SetActiveEx(true);
+                _cachedView.CommonContentTrs.SetActiveEx(true);
             });
-            _closeCommonSequence.Append(_cachedView.CommonPanelTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
+            _closeCommonSequence.Append(_cachedView.CommonContentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
                     .SetEase(Ease.InOutQuad)).OnComplete(OnCommonCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() =>
                 {
@@ -426,7 +437,7 @@ namespace GameA
 
         protected void OnCommonCloseAnimationComplete()
         {
-            _cachedView.CommonPanelTrs.SetActiveEx(false);
+            _cachedView.CommonContentTrs.SetActiveEx(false);
             _closeCommonSequence.Rewind();
         }
 

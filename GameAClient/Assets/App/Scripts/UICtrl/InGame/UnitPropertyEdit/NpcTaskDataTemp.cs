@@ -8,6 +8,9 @@ namespace GameA
 {
     public class NpcTaskDataTemp
     {
+        public const int MaxNpcTargetSerialNum = 99;
+        public const int NoneNumMark = -1;
+        public const int MaxNpcSerialNum = 99;
         private static NpcTaskDataTemp _intance;
 
         public static NpcTaskDataTemp Intance
@@ -17,6 +20,32 @@ namespace GameA
 
         private NpcTaskDataTemp()
         {
+            _npcTaskSerialNumberDic = new Dictionary<int, bool>();
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                _npcTaskSerialNumberDic.Add(i + 1, false);
+            }
+            _npcSerialNumberDic = new Dictionary<int, bool>();
+            for (int i = 0; i < MaxNpcSerialNum; i++)
+            {
+                _npcSerialNumberDic.Add(i + 1, false);
+            }
+        }
+
+        private Dictionary<int, bool> _npcTaskSerialNumberDic;
+
+        public Dictionary<int, bool> NpcTaskSerialNumberDic1
+        {
+            get { return _npcTaskSerialNumberDic; }
+            set { _npcTaskSerialNumberDic = value; }
+        }
+
+        private Dictionary<int, bool> _npcSerialNumberDic;
+
+        public Dictionary<int, bool> NpcSerialNumberDic
+        {
+            get { return _npcSerialNumberDic; }
+            set { _npcSerialNumberDic = value; }
         }
 
 
@@ -131,6 +160,145 @@ namespace GameA
                     }
                 }
             }
+        }
+
+        public int GetNpcTaskSerialNum()
+        {
+            int SerialNUm = NoneNumMark;
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                if (!_npcTaskSerialNumberDic[i + 1])
+                {
+                    SerialNUm = i + 1;
+                    break;
+                }
+            }
+            return SerialNUm;
+        }
+
+        public void RecycleNpcTaskSerialNum(int num)
+        {
+            _npcTaskSerialNumberDic[num] = false;
+        }
+
+        public bool SetNpcTaskSerialNum(int num)
+        {
+            bool sucess;
+            if (_npcTaskSerialNumberDic.ContainsKey(num))
+            {
+                _npcTaskSerialNumberDic[num] = true;
+                sucess = true;
+            }
+            else
+            {
+                sucess = false;
+            }
+            return sucess;
+        }
+
+        public bool SetSecenTaskSerialNum(int num)
+        {
+            bool sucess;
+            if (_npcTaskSerialNumberDic.ContainsKey(num))
+            {
+                _npcTaskSerialNumberDic[num] = true;
+                sucess = true;
+            }
+            else
+            {
+                sucess = false;
+            }
+            return sucess;
+        }
+
+        public bool SetSecenAllTaskSerialNum(List<int> numList)
+        {
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                _npcTaskSerialNumberDic[i + 1] = false;
+            }
+            bool sucess = true;
+            for (int i = 0; i < numList.Count; i++)
+            {
+                if (_npcTaskSerialNumberDic.ContainsKey(numList[i]))
+                {
+                    _npcTaskSerialNumberDic[numList[i]] = false;
+                }
+                else
+                {
+                    sucess = false;
+                    break;
+                }
+            }
+
+            return sucess;
+        }
+
+        public int GetNpcSerialNum()
+        {
+            int SerialNUm = NoneNumMark;
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                if (!_npcSerialNumberDic[i + 1])
+                {
+                    SerialNUm = i + 1;
+                    break;
+                }
+            }
+            return SerialNUm;
+        }
+
+        public bool SetNpcSerialNum(int num)
+        {
+            bool sucess;
+            if (_npcSerialNumberDic.ContainsKey(num))
+            {
+                _npcSerialNumberDic[num] = true;
+                sucess = true;
+            }
+            else
+            {
+                sucess = false;
+            }
+            return sucess;
+        }
+
+        public bool SetSecenSerialNum(int num)
+        {
+            bool sucess;
+            if (_npcSerialNumberDic.ContainsKey(num))
+            {
+                _npcSerialNumberDic[num] = true;
+                sucess = true;
+            }
+            else
+            {
+                sucess = false;
+            }
+            return sucess;
+        }
+
+        public bool SetSecenAllSerialNum(List<int> numList)
+        {
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                _npcSerialNumberDic[i + 1] = false;
+            }
+            bool sucess = true;
+            for (int i = 0; i < numList.Count; i++)
+            {
+                if (_npcSerialNumberDic.ContainsKey(numList[i]))
+                {
+                    _npcSerialNumberDic[numList[i]] = false;
+                }
+                else
+                {
+                    sucess = false;
+                    break;
+                }
+            }
+
+            return sucess;
         }
     }
 
