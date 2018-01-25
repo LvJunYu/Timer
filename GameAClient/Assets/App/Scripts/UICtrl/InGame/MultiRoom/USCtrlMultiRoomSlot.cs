@@ -11,23 +11,35 @@ namespace GameA
         private static readonly Color NormalColor = new Color(116 / (float) 255, 83 / (float) 255, 53 / (float) 255, 1);
         private const string WaitingStr = "等待中...";
         private const string BgImgFormat = "img_room_{0}";
-        private const string SelectedImgFormat = "img_room_{0}_s";
+        private int _index;
         private RoomUser _user;
         private UnitExtraDynamic _unitExtra;
         private long _hostUserId;
+        private EState _curState;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
+            _cachedView.ChangePosBtn.onClick.AddListener(OnChangePosBtn);
+        }
+
+        private void OnChangePosBtn()
+        {
+            if (_curState == EState.Waiting)
+            {
+                RoomManager.Instance.SendChangePos(_index);
+            }
         }
 
         private void OnDeleteBtn()
         {
+            RoomManager.Instance.SendDeletePlayer(_user.Guid);
         }
 
         public void SetState(EState eState)
         {
+            _curState = eState;
             bool isMyself = _user != null && _user.Guid == LocalUser.Instance.UserGuid;
             _cachedView.RoomHosterFlag.SetActive(eState == EState.Host);
             _cachedView.BgImage.SetActiveEx(eState != EState.Disable);
@@ -41,20 +53,13 @@ namespace GameA
             _cachedView.TitleTxt.color = isMyself ? MyColor : NormalColor;
         }
 
-        private Sprite GetBgSprite(int teamId, bool selected = false)
+        private Sprite GetBgSprite(int teamId)
         {
             if (teamId < 1 || teamId > TeamManager.MaxTeamCount)
             {
                 LogHelper.Error("teamId is out of range");
                 return null;
             }
-
-            if (selected)
-            {
-                return JoyResManager.Instance.GetSprite(string.Format(SelectedImgFormat,
-                    TeamManager.GetTeamColorName(teamId)));
-            }
-
             return JoyResManager.Instance.GetSprite(string.Format(BgImgFormat, TeamManager.GetTeamColorName(teamId)));
         }
 
@@ -130,8 +135,12 @@ namespace GameA
             if (_unitExtra != null)
             {
                 _cachedView.BgImage.sprite = GetBgSprite(_unitExtra.TeamId);
-                _cachedView.BgSelectedImg.sprite = GetBgSprite(_unitExtra.TeamId, true);
             }
+        }
+
+        public void SetIndex(int index)
+        {
+            _index = index;
         }
     }
 }

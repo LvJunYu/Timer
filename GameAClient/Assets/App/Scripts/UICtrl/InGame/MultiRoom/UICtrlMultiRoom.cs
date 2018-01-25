@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +21,7 @@ namespace GameA
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private List<UnitExtraDynamic> _roomPlayerUnitExtras = new List<UnitExtraDynamic>();
+        private RoomUser _myRoomUser;
 
         protected override void InitGroupId()
         {
@@ -28,7 +31,11 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnRoomInfoChanged, OnRoomInfoChanged);
+//            RegisterEvent(EMessengerType.OnRoomInfoChanged, OnRoomInfoChanged);
+            RegisterEvent<long>(EMessengerType.OnUserExit, OnUserExit);
+            RegisterEvent<long>(EMessengerType.OnUserKick, OnUserKick);
+            RegisterEvent<Msg_RC_ChangePos>(EMessengerType.OnRoomChangePos, OnRoomChangePos);
+            RegisterEvent<Msg_RC_UserReadyInfo>(EMessengerType.OnRoomPlayerReadyChanged, OnRoomPlayerReadyChanged);
         }
 
         protected override void OnViewCreated()
@@ -39,14 +46,16 @@ namespace GameA
             _cachedView.WorldRecruitBtn.onClick.AddListener(OnWorldRecruitBtn);
             _cachedView.InviteFriendBtn.onClick.AddListener(OnInviteFriendBtn);
             _cachedView.PrepareBtn.onClick.AddListener(OnPrepareBtn);
+            _cachedView.RawPrepareBtn.onClick.AddListener(OnPrepareBtn);
             _cachedView.StartBtn.onClick.AddListener(OnStartBtn);
-            _cachedView.RawStartBtn.onClick.AddListener(OnRawStartBtn);
+            _cachedView.RawStartBtn.onClick.AddListener(OnStartBtn);
             var list = _cachedView.OpenPannel.GetComponentsInChildren<USViewMultiRoomSlot>();
             _usCtrlMultiRoomSlots = new USCtrlMultiRoomSlot[list.Length];
             for (int i = 0; i < list.Length; i++)
             {
                 _usCtrlMultiRoomSlots[i] = new USCtrlMultiRoomSlot();
                 _usCtrlMultiRoomSlots[i].Init(list[i]);
+                _usCtrlMultiRoomSlots[i].SetIndex(i);
             }
 
             var rawList = _cachedView.ClosePannel.GetComponentsInChildren<USViewMultiRoomRawSlot>();
@@ -66,6 +75,14 @@ namespace GameA
             if (_roomInfo == null || _project == null)
             {
                 LogHelper.Error("Open UICtrlMultiRoom fail");
+                SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
+                return;
+            }
+
+            _myRoomUser = _roomInfo.Users.Find(p => p.Guid == LocalUser.Instance.UserGuid);
+            if (_myRoomUser == null)
+            {
+                LogHelper.Error("Open UICtrlMultiRoom fail, _myRoomUser == null");
                 SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                 return;
             }
@@ -92,9 +109,11 @@ namespace GameA
                     _roomPlayerUnitExtras.Add(unitExtra);
                 }
             }
+
             if (_project.NetData == null || _project.NetData.PlayerCount != _roomPlayerUnitExtras.Count)
             {
-                LogHelper.Error("_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count");
+                LogHelper.Error(
+                    "_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count");
                 return false;
             }
 
@@ -109,6 +128,7 @@ namespace GameA
                     _usCtrlMultiRoomSlots[i].SetUnitExtra(null);
                 }
             }
+
             for (int i = 0; i < _usCtrlMultiRoomRawSlots.Length; i++)
             {
                 if (i < _roomPlayerUnitExtras.Count)
@@ -120,6 +140,7 @@ namespace GameA
                     _usCtrlMultiRoomRawSlots[i].SetUnitExtra(null);
                 }
             }
+
             return true;
         }
 
@@ -136,6 +157,8 @@ namespace GameA
             {
                 RefreshClosePannel();
             }
+
+            RefreshBtns();
         }
 
         private void RefreshClosePannel()
@@ -180,14 +203,6 @@ namespace GameA
             }
         }
 
-        private void OnRoomInfoChanged()
-        {
-            if (_isOpen)
-            {
-                RefreshPlayerInfo();
-            }
-        }
-
         private void RefreshWinConditionView()
         {
             var netData = _project.NetData;
@@ -223,6 +238,77 @@ namespace GameA
         {
             _closeSequence.Rewind();
             SetState(false);
+        }
+
+        private void OnRoomChangePos(Msg_RC_ChangePos msg)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            _roomInfo.OnRoomChangePos(msg);
+            RefreshPlayerInfo();
+        }
+
+        private void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            _roomInfo.OnRoomPlayerReadyChanged(msg);
+            RefreshPlayerInfo();
+            RefreshBtns();
+        }
+
+        private void RefreshBtns()
+        {
+            bool isHost = _roomInfo.HostUserId == LocalUser.Instance.UserGuid;
+            _cachedView.PrepareBtnTxt.text = _myRoomUser.Ready ? "取消准备" : "准  备";
+            _cachedView.RawPrepareBtnTxt.text = _myRoomUser.Ready ? "取消" : "准备";
+            _cachedView.PrepareBtn.SetActiveEx(!isHost);
+            _cachedView.RawPrepareBtn.SetActiveEx(!isHost);
+            _cachedView.StartBtn.SetActiveEx(isHost);
+            _cachedView.RawStartBtn.SetActiveEx(isHost);
+        }
+
+        private void OnUserKick(long userId)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            if (userId == LocalUser.Instance.UserGuid)
+            {
+                SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+                    GM2DGame.Instance.QuitGame(
+                        () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                        code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                        true
+                    );
+                }));
+            }
+            else
+            {
+                _roomInfo.OnUserExit(userId);
+                RefreshPlayerInfo();
+            }
+        }
+
+        private void OnUserExit(long userId)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            _roomInfo.OnUserExit(userId);
+            RefreshPlayerInfo();
         }
 
         private void OnCloseButton()
@@ -262,16 +348,13 @@ namespace GameA
             RefrshView();
         }
 
-        private void OnRawStartBtn()
-        {
-        }
-
         private void OnStartBtn()
         {
         }
 
         private void OnPrepareBtn()
         {
+            RoomManager.Instance.SendRoomPrepare(!_myRoomUser.Ready);
         }
 
         private void OnInviteFriendBtn()

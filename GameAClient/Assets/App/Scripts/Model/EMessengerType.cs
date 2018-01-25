@@ -114,9 +114,7 @@ namespace GameA
         public static readonly int OnResourcesUpdateProgressUpdate = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnVersionUpdateStateChange = SoyEngine.EMessengerType.NextId++;
 
-        //PVP
-        public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
-
+        //多人房间
         public static readonly int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
@@ -126,7 +124,10 @@ namespace GameA
         public static readonly int OnQueryRoomRet = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnJoinRoomFail = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
-
+        public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserExit = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserKick = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomChangePos = SoyEngine.EMessengerType.NextId++;
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 

@@ -244,20 +244,20 @@ namespace GameA.Game
                     case ERoomUserCommand.ERUC_JoinRoom:
                         pm.JoinRoom(commandData.UserData);
                         break;
-                    case ERoomUserCommand.ERUC_StartBattle:
-                        var roomUser = pm.GetRoomUserByInx(commandData.UserRoomInx);
-                        bool isMain = false;
-                        if (roomUser.Guid == LocalUser.Instance.UserGuid)
-                        {
-                            isMain = true;
-                            _serverMyPlayerStarted = true;
-                            if (_localMyPlayerStarted)
-                            {
-                                SetPhase(EPhase.Normal);
-                            }
-                        }
-                        PlayMode.Instance.AddPlayer(commandData.UserRoomInx, isMain);
-                        break;
+//                    case ERoomUserCommand.ERUC_StartBattle:
+//                        var roomUser = pm.GetRoomUserByInx(commandData.UserRoomInx);
+//                        bool isMain = false;
+//                        if (roomUser.Guid == LocalUser.Instance.UserGuid)
+//                        {
+//                            isMain = true;
+//                            _serverMyPlayerStarted = true;
+//                            if (_localMyPlayerStarted)
+//                            {
+//                                SetPhase(EPhase.Normal);
+//                            }
+//                        }
+//                        PlayMode.Instance.AddPlayer(commandData.UserRoomInx, isMain);
+//                        break;
                 }
             }
             ApplyFrameInputData(frameData.UserInputDatas);
@@ -307,7 +307,13 @@ namespace GameA.Game
             base.InitUI();
             SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
         }
-
+        
+        public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
+        {
+            base.QuitGame(successCB, failureCB, forceQuitWhenFailed);
+            RoomManager.Instance.SendExitRoom();
+        }
+        
         private void SetPhase(EPhase phase)
         {
             _ePhase = phase;
@@ -326,7 +332,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        SendStartBattle();
+                        SendLoadComplete();
                     }
                     _localMyPlayerStarted = true;
                     break;
@@ -380,9 +386,9 @@ namespace GameA.Game
             }
         }
 
-        public void SendStartBattle()
+        public void SendLoadComplete()
         {
-            var msg = new Msg_CR_StartBattle();
+            var msg = new Msg_CR_LoadComplete();
             msg.Flag = 1;
             SendToServer(msg);
         }
@@ -502,8 +508,7 @@ namespace GameA.Game
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
         {
             _roomInfo = new RoomInfo(msg);
-            _bornSeed = msg.BornSeed;
-            _preServerFrameCount = msg.CurrentRoomFrameCount;
+//            _preServerFrameCount = msg.CurrentRoomFrameCount;
             LogHelper.Info("RoomId: {0}", msg.RoomId);
         }
 
@@ -524,7 +529,11 @@ namespace GameA.Game
         protected enum EPhase
         {
             None,
-
+            WaitStart,
+            /// <summary>
+            /// 倒计时
+            /// </summary>
+            CountDown,
             /// <summary>
             /// 模拟进入房间前的数据指令
             /// </summary>

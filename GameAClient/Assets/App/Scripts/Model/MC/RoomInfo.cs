@@ -79,6 +79,7 @@ namespace GameA
             {
                 _users.Add(new RoomUser(msg.Users[i]));
             }
+
             ProjectManager.Instance.GetDataOnAsync(_projectId, value =>
             {
                 _project = value;
@@ -86,7 +87,7 @@ namespace GameA
                 Messenger<long>.Broadcast(EMessengerType.OnRoomProjectInfoFinish, _roomId);
             });
         }
-        
+
         public RoomInfo(Msg_RC_RoomInfo msg)
         {
             if (null == msg) return;
@@ -109,12 +110,13 @@ namespace GameA
             });
         }
 
-        public void SortRoomUsers()
+        private void SortRoomUsers()
         {
             for (int i = 0; i < _roomUserArray.Length; i++)
             {
                 _roomUserArray[i] = null;
             }
+
             for (int i = 0; i < _users.Count; i++)
             {
                 int index = _users[i].Inx;
@@ -132,7 +134,43 @@ namespace GameA
                 {
                     LogHelper.Error("index >= _roomUsers.Length");
                 }
-            } 
+            }
+        }
+
+        public void OnUserExit(long userId)
+        {
+            RoomUser user = _users.Find(p => p.Guid == userId);
+            if (user != null)
+            {
+                _users.Remove(user);
+                SortRoomUsers();
+            }
+        }
+
+        public void OnRoomChangePos(Msg_RC_ChangePos msg)
+        {
+            RoomUser user = _users.Find(p => p.Guid == msg.UserGuid);
+            if (user != null)
+            {
+                int oriInx = user.Inx;
+                int targetInx = msg.PosInx;
+                if (_roomUserArray[targetInx] != null)
+                {
+                    LogHelper.Error("OnRoomChangePos, but targetPos != null");
+                }
+                user.Inx = targetInx;
+                _roomUserArray[targetInx] = _roomUserArray[oriInx];
+                _roomUserArray[oriInx] = null;
+            }
+        }
+
+        public void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
+        {
+            RoomUser user = _users.Find(p => p.Guid == msg.UserGuid);
+            if (user != null)
+            {
+                user.Ready = msg.ReadyFlag;
+            }
         }
     }
 }
