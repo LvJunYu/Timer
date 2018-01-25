@@ -459,7 +459,7 @@ namespace GameA.Game
                     return;
                 }
 
-                _roomInfo.OnUserExit(msg.UserGuid);
+                _roomInfo.OnUserLeave(msg.UserGuid);
                 Messenger.Broadcast(EMessengerType.OnRoomPlayerInfoChanged);
             }
         }
