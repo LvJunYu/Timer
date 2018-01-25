@@ -10,13 +10,13 @@ using SoyEngine.Proto;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 100, PreferedPoolSize = 1000, MaxPoolSize = 10000)]
     public class RoomUser : IPoolableObject
     {
         protected long _guid;
         protected string _name;
         protected bool _ready;
         protected int _inx;
+        protected PlayerBase _player;
 
         public string Name
         {
@@ -37,6 +37,13 @@ namespace GameA.Game
         public int Inx
         {
             get { return _inx; }
+            set { _inx = value; }
+        }
+
+        public PlayerBase Player
+        {
+            get { return _player; }
+            set { _player = value; }
         }
 
         public void OnGet()
@@ -71,7 +78,7 @@ namespace GameA.Game
         {
             _guid = roomUserInfo.UserGuid;
             _name = roomUserInfo.NickName;
-//            _ready = roomUserInfo.Ready == 1;
+            _ready = roomUserInfo.ReadyFlag;
             _inx = roomUserInfo.inx;
         }
         

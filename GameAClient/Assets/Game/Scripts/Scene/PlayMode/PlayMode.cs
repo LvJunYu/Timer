@@ -35,6 +35,7 @@ namespace GameA.Game
         private UnitUpdateManager _unitUpdateManager;
         private List<Trap> _traps = new List<Trap>();
         protected List<Bullet> _bullets = new List<Bullet>();
+        private bool _hasCreatedPlayer;
 
         public static PlayMode Instance
         {
@@ -70,6 +71,11 @@ namespace GameA.Game
         public GameStatistic Statistic
         {
             get { return _statistic; }
+        }
+
+        public bool HasCreatedPlayer
+        {
+            get { return _hasCreatedPlayer; }
         }
 
         public void Dispose()
@@ -129,6 +135,7 @@ namespace GameA.Game
             }
 
             _bullets.Clear();
+            _hasCreatedPlayer = false;
         }
 
         public void Pause()
@@ -472,15 +479,40 @@ namespace GameA.Game
                     }
                     else
                     {
-                        var mainGhost =
-                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].UnitDesc.GetUpPos()) as MainPlayer;
-                        if (mainGhost != null)
+//                        var mainGhost = 
+//                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].UnitDesc.GetUpPos()) as MainPlayer;
+//                        if (mainGhost != null)
+//                        {
+//                            mainGhost.SetUnitExtra(spawnDatas[0].UnitExtra);
+//                            PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
+//                        }
+
+                        var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                        if (gameMode == null)
                         {
-                            mainGhost.SetUnitExtra(spawnDatas[0].UnitExtra);
-                            PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
+                            LogHelper.Error("gameMode == null");
+                            return false;
+                        }
+
+                        var sortSpawnDatas = Scene2DManager.Instance.GetSortSpawnData();
+                        var userList = gameMode.RoomInfo.Users;
+                        for (int i = 0; i < userList.Count; i++)
+                        {
+                            bool isMain = userList[i].Guid == LocalUser.Instance.UserGuid;
+                            int inx = userList[i].Inx;
+                            if (inx < sortSpawnDatas.Count)
+                            {
+                                var player = AddPlayer(sortSpawnDatas[inx], inx, isMain);
+                                userList[i].Player = player;
+                            }
+                            else
+                            {
+                                LogHelper.Error("userInx is out of range");
+                            }
                         }
 
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
+                        _hasCreatedPlayer = true;
                     }
 
                     for (int i = 0; i < spawnDatas.Count; i++)
@@ -495,14 +527,20 @@ namespace GameA.Game
         }
 
         ///多人模式下，basicNum是服务器随机的初始位置序号        
-        public void AddPlayer(int roomInx = 0, bool main = true)
+        public PlayerBase AddPlayer(int roomInx = 0, bool main = true)
         {
-            var spawnDatas = Scene2DManager.Instance.GetSpawnData();
+            var spawnDatas = Scene2DManager.Instance.GetSortSpawnData();
             if (spawnDatas.Count == 0)
             {
                 LogHelper.Error("can not find a spwan!");
-                return;
+                return null;
             }
+
+            return AddPlayer(spawnDatas[roomInx], roomInx, main);
+        }
+
+        private PlayerBase AddPlayer(UnitEditData unitEditData, int roomInx, bool main)
+        {
             int id;
             if (main)
             {
@@ -512,12 +550,12 @@ namespace GameA.Game
             {
                 id = UnitDefine.OtherPlayerId;
             }
-            var player = CreateRuntimeUnit(id, spawnDatas[roomInx].UnitDesc.GetUpPos()) as PlayerBase;
+            var player = CreateRuntimeUnit(id, unitEditData.UnitDesc.GetUpPos()) as PlayerBase;
             if (player != null)
             {
                 PlayerManager.Instance.Add(player, roomInx);
-                player.SetUnitExtra(spawnDatas[roomInx].UnitExtra);
-                TeamManager.Instance.AddPlayer(player, spawnDatas[roomInx]);
+                player.SetUnitExtra(unitEditData.UnitExtra);
+                TeamManager.Instance.AddPlayer(player, unitEditData);
                 if (main)
                 {
                     _mainPlayer = PlayerManager.Instance.MainPlayer;
@@ -528,6 +566,8 @@ namespace GameA.Game
                     player.OnPlay();
                 }
             }
+
+            return player;
         }
 
         public bool StartEdit()

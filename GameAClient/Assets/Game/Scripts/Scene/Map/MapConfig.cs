@@ -12,7 +12,7 @@ namespace GameA.Game
         public static int FinalItemId;
         public static int SpawnId;
         public static int TerrainItemId;
-        public static bool UseAOI ;
+        public static bool UseAOI ; //还需要判断是多人也不用AOI
 
         public static bool Init()
         {

@@ -1119,7 +1119,7 @@ namespace GameA
 
         private void OnEditTypeMenuClick(EEditType editType)
         {
-            CloseUpCtrlPanel();
+            CloseUpCtrlPanel(false);
             _curEditType = editType;
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -1272,7 +1272,7 @@ namespace GameA
             return false;
         }
 
-        public void CloseUpCtrlPanel()
+        public void CloseUpCtrlPanel(bool closeAdvace = true)
         {
             EditNpcTaskMonsterType.Close();
             EditNpcTaskColltionType.Close();
@@ -1284,7 +1284,10 @@ namespace GameA
             EditNpcDia.Close();
             EditBeforeTaskAward.Close();
             EditFinishTaskAward.Close();
-            _upCtrlUnitPropertyEditAdvance.Close();
+            if (closeAdvace)
+            {
+                _upCtrlUnitPropertyEditAdvance.Close();
+            }
         }
 
         public enum EEnterType

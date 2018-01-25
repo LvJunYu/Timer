@@ -79,6 +79,7 @@ namespace GameA
             {
                 _users.Add(new RoomUser(msg.Users[i]));
             }
+
             ProjectManager.Instance.GetDataOnAsync(_projectId, value =>
             {
                 _project = value;
@@ -86,7 +87,7 @@ namespace GameA
                 Messenger<long>.Broadcast(EMessengerType.OnRoomProjectInfoFinish, _roomId);
             });
         }
-        
+
         public RoomInfo(Msg_RC_RoomInfo msg)
         {
             if (null == msg) return;
@@ -109,12 +110,13 @@ namespace GameA
             });
         }
 
-        public void SortRoomUsers()
+        private void SortRoomUsers()
         {
             for (int i = 0; i < _roomUserArray.Length; i++)
             {
                 _roomUserArray[i] = null;
             }
+
             for (int i = 0; i < _users.Count; i++)
             {
                 int index = _users[i].Inx;
@@ -130,9 +132,73 @@ namespace GameA
                 }
                 else
                 {
-                    LogHelper.Error("index >= _roomUsers.Length");
+                    LogHelper.Error("index {0} of _roomUserArray is not null", index);
                 }
-            } 
+            }
+        }
+
+        public void OnUserExit(long userId)
+        {
+            RoomUser user = _users.Find(p => p.Guid == userId);
+            if (user != null)
+            {
+                if (user.Player != null)
+                {
+                    PlayMode.Instance.DeleteUnit(user.Player);
+                }
+
+                _users.Remove(user);
+                SortRoomUsers();
+            }
+        }
+
+        public void OnRoomChangePos(Msg_RC_ChangePos msg)
+        {
+            RoomUser user = _users.Find(p => p.Guid == msg.UserGuid);
+            if (user != null)
+            {
+                int oriInx = user.Inx;
+                int targetInx = msg.PosInx;
+                if (_roomUserArray[targetInx] != null)
+                {
+                    LogHelper.Error("OnRoomChangePos, but targetPos != null");
+                }
+
+                user.Inx = targetInx;
+                _roomUserArray[targetInx] = _roomUserArray[oriInx];
+                _roomUserArray[oriInx] = null;
+                if (user.Player != null)
+                {
+                    var dic = TeamManager.Instance.GetPlayerUnitExtraDic();
+                    UnitExtraDynamic unitExtra;
+                    if (dic.TryGetValue(targetInx, out unitExtra))
+                    {
+                        user.Player.SetUnitExtra(unitExtra);
+                    }
+                    user.Player.Reset();
+                    user.Player.OnPlay();
+                }
+            }
+        }
+
+        public void OnRoomPlayerReadyChanged(Msg_RC_UserReadyInfo msg)
+        {
+            RoomUser user = _users.Find(p => p.Guid == msg.UserGuid);
+            if (user != null)
+            {
+                user.Ready = msg.ReadyFlag;
+            }
+        }
+
+        public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)
+        {
+            RoomUser user = new RoomUser(msg);
+            _users.Add(user);
+            SortRoomUsers();
+            if (PlayMode.Instance.HasCreatedPlayer)
+            {
+                user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
+            }
         }
     }
 }

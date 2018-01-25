@@ -149,7 +149,7 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _mainCtrl.CloseUpCtrlPanel();
+            _mainCtrl.CloseUpCtrlPanel(false);
             _cachedView.AdvancePannel.SetActive(true);
             _cachedView.AdvanceContentRtf.anchoredPosition = Vector2.zero;
             OpenAnimation();

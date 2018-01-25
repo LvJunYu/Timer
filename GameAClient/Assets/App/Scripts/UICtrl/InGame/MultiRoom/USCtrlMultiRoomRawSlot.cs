@@ -8,7 +8,6 @@ namespace GameA
     public class USCtrlMultiRoomRawSlot : USCtrlBase<USViewMultiRoomRawSlot>
     {
         private const string BgImgFormat = "img_board_{0}";
-        private const string SelectedImgFormat = "img_board_{0}_s";
         private RoomUser _user;
         private UnitExtraDynamic _unitExtra;
         private long _hostUserId;
@@ -65,21 +64,15 @@ namespace GameA
             _cachedView.BgSelectedImg.SetActiveEx(isMyself);
         }
 
-        private Sprite GetBgSprite(int teamId, bool selected = false)
+        private Sprite GetBgSprite(int teamId)
         {
             if (teamId < 1 || teamId > TeamManager.MaxTeamCount)
             {
                 LogHelper.Error("teamId is out of range");
                 return null;
             }
-
-            if (selected)
-            {
-                return JoyResManager.Instance.GetSprite(string.Format(SelectedImgFormat, TeamManager.GetTeamColorName(teamId)));
-            }
             return JoyResManager.Instance.GetSprite(string.Format(BgImgFormat, TeamManager.GetTeamColorName(teamId)));
         }
-
 
         public void SetUnitExtra(UnitExtraDynamic playerUnitExtra)
         {
@@ -87,7 +80,6 @@ namespace GameA
             if (_unitExtra != null)
             {
                 _cachedView.BgImage.sprite = GetBgSprite(_unitExtra.TeamId);
-                _cachedView.BgSelectedImg.sprite = GetBgSprite(_unitExtra.TeamId, true);
             }
         }
         

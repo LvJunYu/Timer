@@ -164,8 +164,11 @@ namespace GameA.Game
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在创建房间");
             _msgCreateRoom.ProjectId = projectGuid;
-            _msgCreateRoom.MaxUserCount = 6;
-            SendToMSServer(_msgCreateRoom);
+            ProjectManager.Instance.GetDataOnAsync(projectGuid, p =>
+            {
+                _msgCreateRoom.MaxUserCount = p.NetData.PlayerCount;
+                SendToMSServer(_msgCreateRoom);
+            });
         }
 
         public void SendRequestJoinRoom(long roomId)
@@ -191,7 +194,18 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入");
             var msg = new Msg_CM_QuickPlay();
             msg.ProjectId = projectId;
-            SendToMSServer(msg);
+            if (projectId == 1)
+            {
+                SendToMSServer(msg);
+            }
+            else
+            {
+                ProjectManager.Instance.GetDataOnAsync(projectId, p =>
+                {
+                    msg.MaxUserCount = p.NetData.PlayerCount;
+                    SendToMSServer(msg);
+                });
+            }
         }
         
         public void SendQueryRoom(long roomId)
@@ -249,6 +263,27 @@ namespace GameA.Game
         public void SendExitRoom()
         {
             var data = new Msg_CR_UserExit();
+            data.Flag = 1;
+            SendToRSServer(data);
+        }
+
+        public void SendChangePos(int index)
+        {
+            var data = new Msg_CR_ChangePos();
+            data.PosInx = index;
+            SendToRSServer(data);
+        }
+
+        public void SendRoomPrepare(bool value)
+        {
+            var data = new Msg_CR_UserReadyInfo();
+            data.ReadyFlag = value;
+            SendToRSServer(data);
+        }
+
+        public void SendRoomOpen()
+        {
+            var data = new Msg_CR_RoomOpen();
             data.Flag = 1;
             SendToRSServer(data);
         }
@@ -328,7 +363,7 @@ namespace GameA.Game
 
         internal void OnWarnningHost()
         {
-            _room.OnWarnningHost();
+//            _room.OnWarnningHost();
         }
 
         internal void OnOpenBattle()
@@ -367,13 +402,28 @@ namespace GameA.Game
 
         public void OnDeletePlayerRet(Msg_RC_Kick msg)
         {
+            Messenger<long>.Broadcast(EMessengerType.OnUserKick, msg.UserGuid);
         }
 
-        public void OnUserExit(Msg_RC_UserExit msg)
+        public void OnUserExitRet(Msg_RC_UserExit msg)
         {
+            Messenger<long>.Broadcast(EMessengerType.OnUserExit, msg.UserGuid);
+        }
+
+        public void OnSendChangePosRet(Msg_RC_ChangePos msg)
+        {
+            Messenger<Msg_RC_ChangePos>.Broadcast(EMessengerType.OnRoomChangePos, msg);
         }
         
+        public void OnSendRoomPrepareRet(Msg_RC_UserReadyInfo msg)
+        {
+            Messenger<Msg_RC_UserReadyInfo>.Broadcast(EMessengerType.OnRoomPlayerReadyChanged, msg);
+        }
+        
+        public void OnRoomUserEnterRet(Msg_RC_RoomUserEnter msg)
+        {
+            Messenger<Msg_RC_RoomUserInfo>.Broadcast(EMessengerType.OnRoomUserEnter, msg.UserInfo);
+        }
         #endregion
-
     }
 }

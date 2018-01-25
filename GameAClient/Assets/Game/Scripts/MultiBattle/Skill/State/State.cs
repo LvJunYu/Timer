@@ -51,8 +51,11 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1} ",
+                    sender == null ? IntVec3.zero :sender.Guid,
+                    target.Guid, tableState.Name));
             }
+
             _run = true;
             _tableState = tableState;
             _target = target;
@@ -64,8 +67,10 @@ namespace GameA.Game
                     _tableState.EffectValues.Length, _tableState.EffectIds.Length);
                 return false;
             }
+
             if (_tableState.Id == 61)
-            {//出生无敌
+            {
+                //出生无敌
                 _duration = PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime *
                             ConstDefineGM2D.FixedFrameCount;
             }
@@ -73,6 +78,7 @@ namespace GameA.Game
             {
                 _duration = TableConvert.GetTime(_tableState.Duration);
             }
+
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);
@@ -82,6 +88,7 @@ namespace GameA.Game
             {
                 _run = false;
             }
+
             return true;
         }
 
@@ -89,14 +96,19 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender == null ?  
+                       IntVec3.zero : _sender.Guid,
+                    _target.Guid,
+                    _tableState.Name));
             }
+
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
                 if (_tableState.EffectTypes[i] != (int) eEffectType)
                 {
                     continue;
                 }
+
                 var value = _tableState.EffectValues[i];
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
@@ -120,11 +132,13 @@ namespace GameA.Game
                         _target.AddEnvState(EEnvState.Stun);
                         break;
                 }
+
                 if (!_run)
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -132,8 +146,10 @@ namespace GameA.Game
         {
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ", _sender.Guid, _target.Guid, _tableState.Name));
+                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ", _sender.Guid,
+                    _target.Guid, _tableState.Name));
             }
+
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
                 var value = _tableState.EffectValues[i];
@@ -157,12 +173,14 @@ namespace GameA.Game
                         {
                             ((MonsterBase) _target).IsClayOnWall = false;
                         }
+
                         break;
                     case EEffectId.Stun:
                         _target.RemoveEnvState(EEnvState.Stun);
                         break;
                 }
             }
+
             OnRemovedView();
             Excute(EEffectType.End);
             return true;
@@ -175,6 +193,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_intervalTime > 0 && _timer % _intervalTime == 0)
             {
                 if (!Excute(EEffectType.Interval))
@@ -182,11 +201,13 @@ namespace GameA.Game
                     return;
                 }
             }
+
             if (_timer >= _curDuration)
             {
                 //移除
                 _target.RemoveStates(_tableState.Id);
             }
+
             _timer++;
         }
 
@@ -219,6 +240,7 @@ namespace GameA.Game
                     state._effectOverlapCount++;
                     break;
             }
+
             return state;
         }
 
@@ -242,11 +264,13 @@ namespace GameA.Game
                     state._effectOverlapCount--;
                     break;
             }
+
             if (state._curDuration <= 0 || state._effectOverlapCount < 0)
             {
                 state._target.RemoveState(state);
                 return null;
             }
+
             return state;
         }
 
@@ -287,6 +311,7 @@ namespace GameA.Game
                     path += "Down";
                 }
             }
+
             if (!string.IsNullOrEmpty(path))
             {
                 _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(path, _target.Trans);
@@ -295,12 +320,14 @@ namespace GameA.Game
                     _effect.Play();
                 }
             }
+
             if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) &&
                 _target.Animation.HasAnimation(_tableState.Animation))
             {
                 _target.Animation.Reset();
                 _target.Animation.PlayLoop(_tableState.Animation, 1, 1);
             }
+
             if (_tableState.StateType == (int) EStateType.Fire && _target.IsMain)
             {
                 _target.View.SetRendererColor(Color.grey);
@@ -314,10 +341,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_tableState.StateType == (int) EStateType.Invincible || _tableState.StateType == (int) EStateType.Fire)
             {
                 view.SetRendererColor(Color.white);
             }
+
             if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) &&
                 _target.Animation.HasAnimation(_tableState.Animation))
             {
@@ -334,6 +363,7 @@ namespace GameA.Game
                     Vector3.forward * (_target.MoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
                 _effect.Trans.rotation = Quaternion.identity;
             }
+
             if (_tableState.Id == 61)
             {
                 FlashRenderer();
@@ -351,6 +381,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             int t = _timer % 20;
             var a = t > 9 ? Mathf.Clamp01((t - 10) * 0.1f + 0.3f) : Mathf.Clamp01(1f - t * 0.1f + 0.3f);
             view.SetRendererColor(new Color(1f, 1f, 1f, a));
@@ -363,6 +394,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             var a = new Color(1f, 0.8235f, 0.804f, 0.804f);
             var b = new Color(0.9f, 0.41f, 0.804f, 0.804f);
             var c = new Color(1f, 0.745f, 0.63f, 0.804f);

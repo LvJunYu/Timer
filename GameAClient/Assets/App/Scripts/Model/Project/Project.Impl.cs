@@ -44,7 +44,7 @@ namespace GameA
 
         public static Project EmptyProject = new Project();
 
-        public static int ProjectTypeAllMask = 1 & (1<<1) & (1<<2);
+        public static int ProjectTypeAllMask = 1 | (1<<1) | (1<<2);
 
         public UserInfoDetail UserInfoDetail
         {
