@@ -45,21 +45,6 @@ namespace GameA.Game
             }
         }
 
-        public PlayerBase GetPlayerById(int id)
-        {
-            return _playerList.Find(p => p.Id == id);
-        }
-
-        public PlayerBase GetPlayerByInx(int inx)
-        {
-            if (inx < 0 || inx >= _playerList.Count)
-            {
-                return null;
-            }
-
-            return _playerList[inx];
-        }
-
         public void Add(PlayerBase player, int roomInx = 0)
         {
             if (!GM2DGame.Instance.GameMode.IsMulti)
