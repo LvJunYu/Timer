@@ -354,6 +354,7 @@ namespace GameA.Game
                 case EGamePhase.CountDown:
                     break;
                 case EGamePhase.Battle:
+                    SocialGUIManager.Instance.CloseUI<UICtrlMultiRoom>();
                     SetPhase(EPhase.Normal);
                     break;
                 default:

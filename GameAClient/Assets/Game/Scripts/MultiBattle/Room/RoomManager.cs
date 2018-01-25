@@ -194,7 +194,18 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入");
             var msg = new Msg_CM_QuickPlay();
             msg.ProjectId = projectId;
-            SendToMSServer(msg);
+            if (projectId == 1)
+            {
+                SendToMSServer(msg);
+            }
+            else
+            {
+                ProjectManager.Instance.GetDataOnAsync(projectId, p =>
+                {
+                    msg.MaxUserCount = p.NetData.PlayerCount;
+                    SendToMSServer(msg);
+                });
+            }
         }
         
         public void SendQueryRoom(long roomId)

@@ -86,12 +86,14 @@ namespace GameA
             }
 
             _openState = true;
+            _cachedView.OpenPannel.anchoredPosition = Vector2.zero;
+            _cachedView.MaskImage.color = new Color(0, 0, 0, 150 / (float) 255);
             RefrshView();
         }
 
         private bool SetRoomPlayerUnitExtras()
         {
-            var  roomPlayerUnitExtras = TeamManager.Instance.GetSortPlayerUnitExtras();
+            var roomPlayerUnitExtras = TeamManager.Instance.GetSortPlayerUnitExtras();
             if (_project.NetData == null || _project.NetData.PlayerCount != roomPlayerUnitExtras.Count)
             {
                 LogHelper.Error(
@@ -129,7 +131,7 @@ namespace GameA
         private void RefrshView()
         {
             _cachedView.OpenPannel.SetActiveEx(_openState);
-            _cachedView.MaskRtf.SetActiveEx(_openState);
+            _cachedView.MaskImage.SetActiveEx(_openState);
             _cachedView.ClosePannel.SetActiveEx(!_openState);
             if (_openState)
             {
@@ -208,7 +210,7 @@ namespace GameA
             _closeSequence.Append(_cachedView.OpenPannel.DOBlendableMoveBy(Vector3.left * 800, 0.3f)
                 .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
 
-            Image img = _cachedView.MaskRtf.GetComponent<Image>();
+            Image img = _cachedView.MaskImage;
             if (img != null)
             {
                 _openSequence.Join(img.DOFade(0, 0.3f).From().SetEase(Ease.OutQuad));
