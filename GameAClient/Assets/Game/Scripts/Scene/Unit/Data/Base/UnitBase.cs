@@ -311,14 +311,21 @@ namespace GameA.Game
                     return;
                 }
 
-                _life = value;
+                if (PlayMode.Instance.SceneState.Statistics.InfiniteLife)
+                {
+                    _life = 99;
+                }
+                else
+                {
+                    var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                    if (null != gameMode && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
+                    {
+                        _life = 99;
+                    }
+                    _life = value;
+                }
                 if (IsMain)
                 {
-                    if (PlayMode.Instance.SceneState.Statistics.InfiniteLife)
-                    {
-                        _life = PlayMode.Instance.SceneState.Life;
-                    }
-
                     Messenger.Broadcast(EMessengerType.OnLifeChanged);
                 }
             }

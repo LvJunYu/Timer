@@ -43,6 +43,11 @@ namespace GameA.Game
             get { return _roomInfo; }
         }
 
+        public EGamePhase CurGamePhase
+        {
+            get { return _curGamePhase; }
+        }
+
         public static bool DebugEnable()
         {
             if (_instance == null) return false;
@@ -677,7 +682,7 @@ namespace GameA.Game
             Close,
         }
 
-        protected enum EGamePhase
+        public enum EGamePhase
         {
             None,
             Wait,
