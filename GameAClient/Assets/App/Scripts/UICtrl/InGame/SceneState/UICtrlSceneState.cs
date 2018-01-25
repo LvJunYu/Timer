@@ -101,6 +101,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _isMulti = GM2DGame.Instance.GameMode.IsMulti;
+            _waiting = false;
             var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
             if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
             {
