@@ -322,7 +322,7 @@ namespace GameA.Game
                 return false;
             }
 
-            if (colliderScene2D.UseAoi)
+            if (!colliderScene2D.UseAoi)
             {
                 if (!colliderScene2D.InstantiateView(unitDesc, tableUnit))
                 {
