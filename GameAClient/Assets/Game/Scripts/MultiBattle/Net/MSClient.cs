@@ -65,6 +65,7 @@ namespace SoyEngine.MasterServer
         
         private void StartHeartBeatCheck()
         {
+            LogHelper.Debug("StartHeartBeatCheck TimerInterval: {0}", _heartBeatGameTimer.GetIntervalSeconds());
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(
                 Mathf.Max(0, HeartBeatIntervalSecond - (float) _heartBeatGameTimer.GetIntervalSeconds()) + 1,
                 () =>
