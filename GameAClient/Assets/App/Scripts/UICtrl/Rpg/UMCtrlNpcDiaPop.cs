@@ -18,7 +18,7 @@ namespace GameA
 
         public void SetStr(string dialog)
         {
-            _diaIsNull = dialog.Length <= 0;
+            _diaIsNull = string.IsNullOrEmpty(dialog);
             _cachedView.DiaText.text = dialog;
         }
 
