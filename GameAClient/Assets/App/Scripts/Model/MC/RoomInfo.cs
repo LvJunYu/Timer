@@ -137,7 +137,7 @@ namespace GameA
             }
         }
 
-        public void OnUserExit(long userId)
+        public void OnUserLeave(long userId)
         {
             RoomUser user = _users.Find(p => p.Guid == userId);
             if (user != null)
@@ -150,6 +150,12 @@ namespace GameA
                 _users.Remove(user);
                 SortRoomUsers();
             }
+        }
+
+        public void OnUserExit(Msg_RC_UserExit msg)
+        {
+            _hostUserId = msg.HostUserGuid;
+            OnUserLeave(msg.UserGuid);
         }
 
         public void OnRoomChangePos(Msg_RC_ChangePos msg)
@@ -175,6 +181,7 @@ namespace GameA
                     {
                         user.Player.SetUnitExtra(unitExtra);
                     }
+
                     user.Player.Reset();
                     user.Player.OnPlay();
                 }
@@ -188,6 +195,23 @@ namespace GameA
             {
                 user.Ready = msg.ReadyFlag;
             }
+        }
+
+        public bool CheckAllReady()
+        {
+            if (_project == null || _users.Count < _project.NetData.PlayerCount)
+            {
+                return false;
+            }
+            for (int i = 0; i < _users.Count; i++)
+            {
+                if (!_users[i].Ready && _users[i].Guid != _hostUserId)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public void OnRoomUserEnter(Msg_RC_RoomUserInfo msg)

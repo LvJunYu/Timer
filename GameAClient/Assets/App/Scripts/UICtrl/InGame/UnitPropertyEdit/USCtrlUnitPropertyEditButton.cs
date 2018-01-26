@@ -15,6 +15,11 @@ namespace GameA
         {
             get { return _cachedView as USViewUnitPropertyEditRotateMenuButton; }
         }
+        
+        public USViewUnitPropertyEditSpawnButton SpawnMenuView
+        {
+            get { return _cachedView as USViewUnitPropertyEditSpawnButton; }
+        }
 
         public void AddClickListener(UnityAction callback)
         {

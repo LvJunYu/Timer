@@ -19,6 +19,11 @@ namespace GameA
         private Sequence _closeSequence;
         private RoomUser _myRoomUser;
 
+        public RoomInfo RoomInfo
+        {
+            get { return _roomInfo; }
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameMainUI;
@@ -85,10 +90,14 @@ namespace GameA
                 return;
             }
 
-            _openState = true;
-            _cachedView.OpenPannel.anchoredPosition = Vector2.zero;
-            _cachedView.MaskImage.color = new Color(0, 0, 0, 150 / (float) 255);
-            RefrshView();
+            if (!_openState)
+            {
+                OnOpenBtn();
+            }
+            else
+            {
+                RefrshView();
+            }
         }
 
         private bool SetRoomPlayerUnitExtras()
@@ -131,7 +140,7 @@ namespace GameA
         private void RefrshView()
         {
             _cachedView.OpenPannel.SetActiveEx(_openState);
-            _cachedView.MaskImage.SetActiveEx(_openState);
+//            _cachedView.MaskImage.SetActiveEx(_openState);
             _cachedView.ClosePannel.SetActiveEx(!_openState);
             if (_openState)
             {
@@ -214,12 +223,12 @@ namespace GameA
             _closeSequence.Append(_cachedView.OpenPannel.DOBlendableMoveBy(Vector3.left * 800, 0.3f)
                 .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
 
-            Image img = _cachedView.MaskImage;
-            if (img != null)
-            {
-                _openSequence.Join(img.DOFade(0, 0.3f).From().SetEase(Ease.OutQuad));
-                _closeSequence.Join(img.DOFade(0, 0.3f).SetEase(Ease.Linear));
-            }
+//            Image img = _cachedView.MaskImage;
+//            if (img != null)
+//            {
+//                _openSequence.Join(img.DOFade(0, 0.3f).From().SetEase(Ease.OutQuad));
+//                _closeSequence.Join(img.DOFade(0, 0.3f).SetEase(Ease.Linear));
+//            }
         }
 
         private void OnCloseAnimationComplete()
@@ -251,6 +260,8 @@ namespace GameA
             _cachedView.RawPrepareBtn.SetActiveEx(!isHost);
             _cachedView.StartBtn.SetActiveEx(isHost);
             _cachedView.RawStartBtn.SetActiveEx(isHost);
+            bool allReady = _roomInfo.CheckAllReady();
+            _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = allReady;
         }
 
         private void OnCloseButton()
@@ -264,7 +275,6 @@ namespace GameA
             {
                 _openSequence.Complete(true);
             }
-
             _closeSequence.PlayForward();
         }
 
@@ -279,7 +289,6 @@ namespace GameA
             {
                 _closeSequence.Complete(true);
             }
-
             SetState(true);
             _openSequence.Restart();
         }

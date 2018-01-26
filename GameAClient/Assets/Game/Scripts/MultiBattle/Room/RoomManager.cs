@@ -399,31 +399,6 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("查找失败");
             }
         }
-
-        public void OnDeletePlayerRet(Msg_RC_Kick msg)
-        {
-            Messenger<long>.Broadcast(EMessengerType.OnUserKick, msg.UserGuid);
-        }
-
-        public void OnUserExitRet(Msg_RC_UserExit msg)
-        {
-            Messenger<long>.Broadcast(EMessengerType.OnUserExit, msg.UserGuid);
-        }
-
-        public void OnSendChangePosRet(Msg_RC_ChangePos msg)
-        {
-            Messenger<Msg_RC_ChangePos>.Broadcast(EMessengerType.OnRoomChangePos, msg);
-        }
-        
-        public void OnSendRoomPrepareRet(Msg_RC_UserReadyInfo msg)
-        {
-            Messenger<Msg_RC_UserReadyInfo>.Broadcast(EMessengerType.OnRoomPlayerReadyChanged, msg);
-        }
-        
-        public void OnRoomUserEnterRet(Msg_RC_RoomUserEnter msg)
-        {
-            Messenger<Msg_RC_RoomUserInfo>.Broadcast(EMessengerType.OnRoomUserEnter, msg.UserInfo);
-        }
         #endregion
     }
 }

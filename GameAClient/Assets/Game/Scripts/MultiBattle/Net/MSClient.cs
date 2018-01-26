@@ -1,6 +1,7 @@
 ﻿using GameA;
 using GameA.Game;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace SoyEngine.MasterServer
 {
@@ -64,8 +65,9 @@ namespace SoyEngine.MasterServer
         
         private void StartHeartBeatCheck()
         {
+            LogHelper.Debug("StartHeartBeatCheck TimerInterval: {0}", _heartBeatGameTimer.GetIntervalSeconds());
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(
-                HeartBeatIntervalSecond + 1 - (float) _heartBeatGameTimer.GetIntervalSeconds(),
+                Mathf.Max(0, HeartBeatIntervalSecond - (float) _heartBeatGameTimer.GetIntervalSeconds()) + 1,
                 () =>
                 {
                     if (IsConnected())

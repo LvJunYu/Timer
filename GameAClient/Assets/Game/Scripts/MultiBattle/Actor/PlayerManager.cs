@@ -19,14 +19,17 @@ namespace GameA.Game
         {
             get { return _instance ?? (_instance = new PlayerManager()); }
         }
+
         public const int MaxTeamCount = 6;
         private List<PlayerBase> _playerList = new List<PlayerBase>(MaxTeamCount); // 可能赋null，需要判空
         private MainPlayer _mainPlayer;
         private RoomInfo _roomInfo;
+
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
         }
+
         public List<PlayerBase> PlayerList
         {
             get { return _playerList; }
@@ -65,26 +68,51 @@ namespace GameA.Game
             }
             else
             {
-                var userArray = RoomUsers;
-                if (roomInx < userArray.Length && userArray[roomInx] != null)
+                if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit)
                 {
-                    player.Set(userArray[roomInx]);
+                    RoomUser roomUser = new RoomUser();
+                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                    player.Set(roomUser);
+                    player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
                 }
                 else
                 {
-                    LogHelper.Error("roomUser is null");
-                    return;
-                }
+                    var userArray = RoomUsers;
+                    if (roomInx < userArray.Length && userArray[roomInx] != null)
+                    {
+                        player.Set(userArray[roomInx]);
+                    }
+                    else
+                    {
+                        LogHelper.Error("roomUser is null");
+                        return;
+                    }
 
-                player.Setup(player.IsMain
-                    ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
-                    : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
+                    player.Setup(player.IsMain
+                        ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
+                        : GM2DGame.Instance.GameMode.GetOtherPlayerInput());   
+                }
             }
+
             _playerList.Add(player);
             if (player.IsMain)
             {
                 _mainPlayer = player as MainPlayer;
             }
+        }
+
+        public PlayerBase GetPlayerByRoomIndex(int index)
+        {
+            if (_roomInfo != null)
+            {
+                var roomUsers = _roomInfo.RoomUserArray;
+                if (index < roomUsers.Length && roomUsers[index] != null)
+                {
+                    return roomUsers[index].Player;
+                }
+            }
+
+            return null;
         }
 
         public void Reset()

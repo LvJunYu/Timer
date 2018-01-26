@@ -12,6 +12,10 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlUnitPropertyEdit : UICtrlInGameAnimationBase<UIViewUnitPropertyEdit>
     {
+        private const string SpawnDisableSpriteFormat = "icon_edit_img2_{0}_d";
+        private const string SpawnSpriteFormat = "icon_edit_img2_{0}";
+        private const string PlayerIcon = "icon_man";
+        private const string AddIcon = "icon_add3";
         private const float MenuPosRadius = 295;
         private const float MenuOptionsPosRadius = 180;
         private const float RotateEndOptionsPosRadius = 195;
@@ -898,35 +902,38 @@ namespace GameA
                 _spawnMenuList[i].SetEnable(projectType != EProjectType.PT_Single);
                 if (projectType != EProjectType.PT_Single)
                 {
-                    _spawnMenuList[i].SetSelected(i == _curSelectedPlayerIndex);
-                    bool hasSet;
+                    bool selected = i == _curSelectedPlayerIndex;
+                    _spawnMenuList[i].SetSelected(selected);
                     var playerUnitExtra = EditData.UnitExtra.InternalUnitExtras.Get<UnitExtraDynamic>(i);
+                    //当前没有设置
                     if (playerUnitExtra == null)
                     {
-                        hasSet = playersDic.ContainsKey(i);
+                        bool hasSet = playersDic.ContainsKey(i); //其它已设置
+                        _spawnMenuList[i].SetBtnInteractable(!hasSet);
+                        _spawnMenuList[i].SpawnMenuView.Bg3Image.SetActiveEx(hasSet);
+                        _spawnMenuList[i].SpawnMenuView.Bg2Image.SetActiveEx(false);
+                        _spawnMenuList[i].SetDeleteBtnActive(false);
+                        _spawnMenuList[i]
+                            .SetFgImage(JoyResManager.Instance.GetSprite(hasSet ? PlayerIcon : AddIcon));
+                        _spawnMenuList[i].View.FgImage.SetNativeSize();
                         if (hasSet)
                         {
-                            _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(playersDic[i].TeamId));
+                            _spawnMenuList[i].SpawnMenuView.Bg2Image.sprite = GetSpawnSprite(playersDic[i].TeamId);
+                            _spawnMenuList[i].SpawnMenuView.Bg3Image.sprite = GetSpawnSprite(playersDic[i].TeamId, true);
                         }
-                        else
-                        {
-                            _spawnMenuList[i].SetColor(Color.white);
-                        }
-
-                        _spawnMenuList[i].SetBtnInteractable(!hasSet);
-                        _spawnMenuList[i].SetDeleteBtnActive(false);
                     }
+                    //当前已经设置
                     else
                     {
-                        hasSet = true;
-                        _spawnMenuList[i].SetColor(TeamManager.GetTeamColor(playerUnitExtra.TeamId));
                         _spawnMenuList[i].SetBtnInteractable(true);
                         _spawnMenuList[i].SetDeleteBtnActive(true);
-                        _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite("SMainBoy0Icon"));
+                        _spawnMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite(PlayerIcon));
+                        _spawnMenuList[i].View.FgImage.SetNativeSize();
+                        _spawnMenuList[i].SpawnMenuView.Bg3Image.SetActiveEx(!selected);
+                        _spawnMenuList[i].SpawnMenuView.Bg2Image.SetActiveEx(selected);
+                        _spawnMenuList[i].SpawnMenuView.Bg2Image.sprite = GetSpawnSprite(playerUnitExtra.TeamId);
+                        _spawnMenuList[i].SpawnMenuView.Bg3Image.sprite = GetSpawnSprite(playerUnitExtra.TeamId, true);
                     }
-
-                    _spawnMenuList[i]
-                        .SetFgImage(JoyResManager.Instance.GetSprite(hasSet ? "SMainBoy0Icon" : "icon_add"));
                 }
             }
             var uiCtrlFashionSpineExtra = SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>();
@@ -936,6 +943,18 @@ namespace GameA
             }
             _cachedView.CharacterRawImage.texture =
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>().AvatarRenderTexture;
+        }
+
+        private Sprite GetSpawnSprite(int teamId, bool disable = false)
+        {
+            if (disable)
+            {
+                return JoyResManager.Instance.GetSprite(string.Format(SpawnDisableSpriteFormat,
+                    TeamManager.GetTeamColorName(teamId)));
+            }
+
+            return JoyResManager.Instance.GetSprite(string.Format(SpawnSpriteFormat,
+                TeamManager.GetTeamColorName(teamId)));
         }
 
         private void RefreshTextDock()
@@ -1244,7 +1263,8 @@ namespace GameA
         public void OnTeamChanged(int teamId)
         {
             _curUnitExtra.TeamId = (byte) teamId;
-            _spawnMenuList[_curSelectedPlayerIndex].SetColor(TeamManager.GetTeamColor(teamId));
+            _spawnMenuList[_curSelectedPlayerIndex].SpawnMenuView.Bg2Image.sprite = GetSpawnSprite(teamId);
+            _spawnMenuList[_curSelectedPlayerIndex].SpawnMenuView.Bg3Image.sprite = GetSpawnSprite(teamId, true);
         }
 
         public UnitExtraDynamic GetCurUnitExtra()
