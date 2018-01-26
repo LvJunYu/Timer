@@ -29,7 +29,7 @@ namespace GameA.Game
 
         public override bool CanControlledBySwitch
         {
-            get { return true; }
+            get { return false; }
         }
 
         public override void OnIntersect(UnitBase other)
@@ -64,7 +64,7 @@ namespace GameA.Game
                 SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
-                    if (CheckPlayPos())
+                    if (CheckPlayerPos())
                     {
                         _diaPop.Show();
                     }
@@ -122,7 +122,7 @@ namespace GameA.Game
             }
         }
 
-        private bool CheckPlayPos()
+        private bool CheckPlayerPos()
         {
             float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
             return x <= 50;
