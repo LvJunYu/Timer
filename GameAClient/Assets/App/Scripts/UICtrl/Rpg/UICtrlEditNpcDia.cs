@@ -504,14 +504,14 @@ namespace GameA
                         EResScenary.UIInGame);
                 item.InitItem(_cachedView.ConmmonContentTrs);
                 item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions,
-                    _cachedView.DiaInputField.onValueChanged.Invoke, RequestData);
+                    UseCommonDia, RequestData);
                 _inputItemList.Add(item);
             }
             UMCtrlNpcInputDiaItem additem =
                 UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                     EResScenary.UIInGame);
             additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions,
-                _cachedView.DiaInputField.onValueChanged.Invoke, RequestData);
+                UseCommonDia, RequestData);
             additem.InitItem(_cachedView.ConmmonContentTrs);
             _inputItemList.Add(additem);
         }
@@ -524,6 +524,12 @@ namespace GameA
             {
                 _cachedView.DiaInputField.text = str.Substring(0, DiaMaxLength);
             }
+        }
+
+        private void UseCommonDia(string str)
+        {
+            _cachedView.DiaInputField.onValueChanged.Invoke(str);
+            _cachedView.DiaInputField.onEndEdit.Invoke(str);
         }
     }
 }

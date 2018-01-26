@@ -25,10 +25,10 @@ namespace GameA
         public int GetUnitLimt(int unitId)
         {
             int limit;
-            if (unitId == 30001 || unitId == 30002)
-            {
-                return 500;
-            }
+//            if (unitId == 30001 || unitId == 30002)
+//            {
+//                return 500;
+//            }
             if (UnitDefine.IsSpawn(unitId))
             {
                 return EditHelper.GetTableUnit_Count(TableManager.Instance.GetUnit(unitId));

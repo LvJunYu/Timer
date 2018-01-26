@@ -68,6 +68,13 @@ namespace GameA
             return diaPop;
         }
 
+        public void SetDymicPos(UMCtrlNpcDiaPop pop, Vector3 pos)
+        {
+            Vector3 _pos = (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor;
+            _pos += new Vector3(0, 100, 0);
+            pop.SetDymicPos(_pos);
+        }
+
 
         public override void OnUpdate()
         {

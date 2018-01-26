@@ -30,7 +30,11 @@ namespace GameA
             Clear();
             _cachedView.InputField.onEndEdit.AddListener(OnEndSaveDia);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteDia);
-            _cachedView.InputField.onValueChanged.AddListener((str) => { _cachedView.AddImage.SetActiveEx(false); });
+            _cachedView.InputField.onValueChanged.AddListener((str) =>
+            {
+                SetNameLength(str);
+                _cachedView.AddImage.SetActiveEx(false);
+            });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
             _cachedView.ApplyBtn.onClick.AddListener(OnApplyBtn);
             Show();
@@ -78,7 +82,6 @@ namespace GameA
                     RemoteCommands.CreateNpcDialogPreinstall(data, code =>
                     {
                         SocialGUIManager.ShowPopupDialog("创建常用对话成功");
-                        _cachedView.InputField.text = _datalist.DataList[(int) _id].Data;
                         _isAdd = false;
                         Refresh();
                         _cachedView.ApplyBtn.SetActiveEx(true);
@@ -148,11 +151,13 @@ namespace GameA
             {
                 _cachedView.DeleteBtn.SetActiveEx(false);
                 _cachedView.ApplyBtn.SetActiveEx(false);
+                _cachedView.AddImage.SetActiveEx(true);
             }
             else
             {
                 _cachedView.DeleteBtn.SetActiveEx(true);
                 _cachedView.ApplyBtn.SetActiveEx(true);
+                _cachedView.AddImage.SetActiveEx(false);
             }
             _cachedView.SelectImage.SetActiveEx(false);
         }
@@ -174,5 +179,15 @@ namespace GameA
         {
             _cachedView.Trans.SetParent(rectTransform);
         }
+
+        private void SetNameLength(string str)
+        {
+            if (str.Length > DiaMaxLength)
+            {
+                _cachedView.InputField.text = str.Substring(0, DiaMaxLength);
+            }
+        }
+
+        public const int DiaMaxLength = 20;
     }
 }

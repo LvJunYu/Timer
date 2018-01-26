@@ -59,7 +59,7 @@ namespace GameA.Game
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
         public const int ShadowId = 65535;
-        
+
         public static bool IsSpawn(int id)
         {
             return id == SpawnId;
@@ -92,7 +92,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002;
+            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002 || id == 30003;
         }
 
         public static bool IsSwitchTrigger(int id)
@@ -191,7 +191,7 @@ namespace GameA.Game
 
         public static bool IsNpc(int id)
         {
-            return id == 30001 || id == 30002;
+            return id == 30001 || id == 30002 || id == 30003;
         }
     }
 }

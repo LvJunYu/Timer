@@ -50,7 +50,7 @@ namespace GameA
 
         public bool IsInMap
         {
-            get { return EditData.UnitDesc.Guid == IntVec3.zero; }
+            get { return !(EditData.UnitDesc.Guid == IntVec3.zero); }
         }
         //npc 之间的引用数据类型
 

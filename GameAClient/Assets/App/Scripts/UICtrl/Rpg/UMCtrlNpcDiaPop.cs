@@ -9,6 +9,7 @@ namespace GameA
     {
         public bool IsShow { get; private set; }
         private Vector3 _pos;
+        private bool _diaIsNull;
 
         public void SetPos(Vector3 pos)
         {
@@ -17,6 +18,7 @@ namespace GameA
 
         public void SetStr(string dialog)
         {
+            _diaIsNull = dialog.Length <= 0;
             _cachedView.DiaText.text = dialog;
         }
 
@@ -28,7 +30,17 @@ namespace GameA
 
         public void Show()
         {
+            if (_diaIsNull)
+            {
+                return;
+            }
             IsShow = true;
+            _cachedView.Trans.anchoredPosition = _pos;
+        }
+
+        public void SetDymicPos(Vector3 pos)
+        {
+            _pos = pos;
             _cachedView.Trans.anchoredPosition = _pos;
         }
 
