@@ -195,12 +195,14 @@ namespace GameA
             {
                 user.Ready = msg.ReadyFlag;
             }
-
-            Messenger<bool>.Broadcast(EMessengerType.OnRoomPlayerAllReadyChanged, user.Ready && CheckAllReady());
         }
 
-        private bool CheckAllReady()
+        public bool CheckAllReady()
         {
+            if (_project == null || _users.Count < _project.NetData.PlayerCount)
+            {
+                return false;
+            }
             for (int i = 0; i < _users.Count; i++)
             {
                 if (!_users[i].Ready && _users[i].Guid != _hostUserId)

@@ -132,6 +132,34 @@ namespace GameA
                 _pushGoldEnergyStyle = true;
             }
         }
+        
+        protected override void OnClose()
+        {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+
+            for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+            {
+                _cachedView.ProjectTypeTogs[i].isOn = false;
+            }
+            base.OnClose();
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, new Vector3(-200, 0, 0));
+            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
+            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+        }
 
         private void Clear()
         {
@@ -235,29 +263,6 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
             }
-        }
-
-        protected override void OnClose()
-        {
-            if (_pushGoldEnergyStyle)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
-                _pushGoldEnergyStyle = false;
-            }
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Close();
-            }
-            base.OnClose();
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
-            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, new Vector3(-200, 0, 0));
-            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
-            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }
 
         private void ChangeMenu(EMenu menu)
