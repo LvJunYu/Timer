@@ -163,7 +163,7 @@ namespace GameA
         {
             _npcId = Enpc.Lead;
             _faceId = ENpcFace.Happy;
-            _dia = "你好";
+            _dia = "";
             _npcName = "";
             _npcFaceSpriteName = GetNpcFaceSpriteName(_npcId, _faceId);
             _color = brown;

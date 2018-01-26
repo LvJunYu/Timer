@@ -25,7 +25,7 @@ namespace GameA.Game
         public const float ZOffsetBack = 0.99f;
         public const float ZOffsetFront = -0.99f;
 
-        public static float[] ZOffsetsPlant = new float[2] {ZOffsetFrontest, ZOffsetBack};
+        public static float[] ZOffsetsPlant = {ZOffsetFrontest, ZOffsetBack};
 
         public const int FanRange = 30;
         public const int FanForce = 20;
@@ -91,7 +91,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002;
+            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002 || id == 30003;
         }
 
         public static bool IsSwitchTrigger(int id)

@@ -56,14 +56,25 @@ namespace GameA
         public NpcTaskTargetDynamic TaskTargetData { get; set; }
         public bool IsEditNpcData { get; set; }
 
-        public bool IsEditNpcBerOrAfter()
+        public bool IsEditNpcBerOrAfter(IntVec3 guid)
         {
-            return IsEditNpcData && (TaskType == ETaskContype.BeforeTask || TaskType == ETaskContype.AfterTask);
+            return IsEditNpcData && (TaskType == ETaskContype.BeforeTask || TaskType == ETaskContype.AfterTask) &&
+                   guid == NpcIntVec3;
         }
 
-        public bool IsEditNpcTarget()
+        public bool IsEditNpcTarget(IntVec3 guid)
         {
-            return IsEditNpcData && TaskType == ETaskContype.Task;
+            return IsEditNpcData && TaskType == ETaskContype.Task && guid == NpcIntVec3;
+        }
+
+        public void StartEditTaskControl(NpcTaskDynamic task, IntVec3 guid, ETaskContype type)
+        {
+            TaskData = task;
+            TaskTargetData = new NpcTaskTargetDynamic();
+            IsEditNpcData = true;
+            TaskType = type;
+            NpcIntVec3 = guid;
+            EditMode.Instance.StartSwitch();
         }
 
         public void FinishAddTarget(IntVec3 guid)

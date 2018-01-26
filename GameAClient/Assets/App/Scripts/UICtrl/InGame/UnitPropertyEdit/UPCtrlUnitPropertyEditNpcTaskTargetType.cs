@@ -76,6 +76,10 @@ namespace GameA
                     //选择控制
                     if (_mainCtrl.IsInMap)
                     {
+                        _mainCtrl.Close();
+                        NpcTaskDataTemp.Intance.StartEditTaskControl(_taskDynamic, _mainCtrl.EditData.UnitDesc.Guid,
+                            ETaskContype.Task);
+
                         //打开连线界面
                     }
                     else

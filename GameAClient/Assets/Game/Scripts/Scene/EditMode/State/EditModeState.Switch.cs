@@ -133,6 +133,21 @@ namespace GameA.Game
                 }
                 else
                 {
+                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
+                    {
+                        UnitBase unit;
+                        if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
+                        {
+                            if (!unit.CanControlledBySwitch)
+                            {
+                            }
+                            else
+                            {
+                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                    coverUnits[0].Guid);
+                            }
+                        }
+                    }
                     if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
                         UnitBase unit;
@@ -143,19 +158,8 @@ namespace GameA.Game
                             }
                             else
                             {
-                                if (UnitDefine.IsNpc(boardData.CurrentTouchUnitDesc.Id) &&
-                                    NpcTaskDataTemp.Intance.IsEditNpcTarget())
-                                {
-                                    AddSwitchConnection(coverUnits[0].Guid,
-                                        boardData.CurrentTouchUnitDesc.Guid);
-
-                                    NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
-                                }
-                                else
-                                {
-                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                        coverUnits[0].Guid);
-                                }
+                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                    coverUnits[0].Guid);
                             }
                         }
                     }
@@ -166,18 +170,8 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (UnitDefine.IsNpc(boardData.CurrentTouchUnitDesc.Id) &&
-                                NpcTaskDataTemp.Intance.IsEditNpcBerOrAfter())
-                            {
-                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                    coverUnits[0].Guid);
-                                NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
-                            }
-                            else
-                            {
-                                AddSwitchConnection(coverUnits[0].Guid,
-                                    boardData.CurrentTouchUnitDesc.Guid);
-                            }
+                            AddSwitchConnection(coverUnits[0].Guid,
+                                boardData.CurrentTouchUnitDesc.Guid);
                         }
                     }
                 }
