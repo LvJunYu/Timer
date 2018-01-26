@@ -91,7 +91,7 @@ namespace GameA.Game
             {
                 return false;
             }
-
+            _instance = null;
             return true;
         }
 
@@ -187,6 +187,7 @@ namespace GameA.Game
                 if (_serverInputFrameQueue.Count == 0)
                 {
                     SendLoadComplete();
+                    SetPhase(EPhase.Normal);
                 }
             }
             else if (_ePhase == EPhase.Close)
