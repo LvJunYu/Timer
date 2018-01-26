@@ -51,6 +51,7 @@ namespace GameA.Game
                     _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
                         .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
                 }
+                SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
                     if (CheckPlayPos())
