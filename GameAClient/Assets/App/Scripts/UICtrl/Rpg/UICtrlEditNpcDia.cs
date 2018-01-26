@@ -11,6 +11,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
     public class UICtrlEditNpcDia : UICtrlGenericBase<UIViewEditNpcDia>
     {
+        public const int DiaMaxLength = 60;
         private DictionaryListObject _npcDiaStrList;
         private List<NpcDia> _npcDiaList = new List<NpcDia>();
         private NpcDialogPreinstallList _dialogPreinstallList;
@@ -55,6 +56,9 @@ namespace GameA
                     .GetComponent<Image>());
             }
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DiaInputField);
+            _cachedView.DiaInputField.onEndEdit.AddListener((string str) => { _curEditNpcDia.Dia = str; });
+            _cachedView.DiaInputField.onValueChanged.AddListener(SetNameLength);
+
             //Icon
             for (int i = 0; i < _cachedView.IconButtonAry.Length; i++)
             {
@@ -102,6 +106,9 @@ namespace GameA
                 if (_npcDiaList.Count <= 5)
                 {
                     _npcDiaList.Add(_curEditNpcDia);
+                    _curEditNpcDia = new NpcDia();
+                    RefreshCurDia();
+                    RefreshDiaList();
                 }
             });
             //创造动画
@@ -159,7 +166,7 @@ namespace GameA
                 _curEditNpcDia = _npcDiaList[0];
             }
             RefreshDiaList();
-            RefreshCurDia();
+
             RequestData();
         }
 
@@ -172,6 +179,10 @@ namespace GameA
                 {
                     _npcDiaItemList[i].setEenable();
                     _npcDiaItemList[i].Set(_npcDiaList[i], _npcDiaList, i, RefreshDiaList);
+                }
+                else
+                {
+                    _npcDiaItemList[i].setDiasble();
                 }
             }
         }
@@ -286,6 +297,7 @@ namespace GameA
             _oriENpcType = _enpc;
             _curENpcType = _oriENpcType;
             RefreshIconSprite();
+            RefreshCurDia();
         }
 
         public override void Close()
@@ -317,8 +329,8 @@ namespace GameA
 
         private void RefreshCurDia()
         {
-            _cachedView.TypeButtonAry[Mathf.Clamp((int) _curEditNpcDia.NpcId - 1, 0, 1)].onClick.Invoke();
-            _cachedView.IconButtonAry[Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 1)].onClick.Invoke();
+            _cachedView.NpcTypeTabGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.NpcId - 1, 0, 1), true);
+            _cachedView.IconGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 1), true);
             _cachedView.DiaInputField.text = _curEditNpcDia.Dia;
             int colorBtnIndex = 0;
             switch (_curEditNpcDia.Color)
@@ -336,7 +348,7 @@ namespace GameA
                     colorBtnIndex = 3;
                     break;
             }
-            _cachedView.ColorButtonAry[colorBtnIndex].onClick.Invoke();
+            _cachedView.ColorGroup.SelectIndex(colorBtnIndex, true);
         }
 
         private void OpenWaggleAnimation()
@@ -490,14 +502,28 @@ namespace GameA
                 UMCtrlNpcInputDiaItem item =
                     UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                         EResScenary.UIInGame);
-                item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions);
+                item.InitItem(_cachedView.ConmmonContentTrs);
+                item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions,
+                    _cachedView.DiaInputField.onValueChanged.Invoke, RequestData);
                 _inputItemList.Add(item);
             }
             UMCtrlNpcInputDiaItem additem =
                 UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                     EResScenary.UIInGame);
-            additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions);
+            additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions,
+                _cachedView.DiaInputField.onValueChanged.Invoke, RequestData);
+            additem.InitItem(_cachedView.ConmmonContentTrs);
             _inputItemList.Add(additem);
+        }
+
+        private void SetNameLength(string str)
+        {
+            _cachedView.StrLengthText.text =
+                String.Format("{0}/{1}", str.Length, DiaMaxLength);
+            if (str.Length > DiaMaxLength)
+            {
+                _cachedView.DiaInputField.text = str.Substring(0, DiaMaxLength);
+            }
         }
     }
 }

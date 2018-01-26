@@ -16,16 +16,50 @@ namespace GameA
         private int _index;
         private Action _callback;
 
+        private void Clear()
+        {
+            _cachedView.UpBtn.onClick.RemoveAllListeners();
+            _cachedView.DownBtn.onClick.RemoveAllListeners();
+            _cachedView.DelteBtn.onClick.RemoveAllListeners();
+        }
+
         public void Set(NpcDia dia, List<NpcDia> diaList, int index, Action callback)
         {
+            Clear();
+            _cachedView.DelteBtn.onClick.AddListener(OnDelBtn);
+            _cachedView.UpBtn.onClick.AddListener(OnUpBtn);
+            _cachedView.DownBtn.onClick.AddListener(OnDownBtn);
             _diaList = diaList;
             _index = index;
+            SetIndex(_index);
             _dia = dia;
             _callback = callback;
             string name = NpcDia.GetNpcFaceSpriteName(dia.NpcId, dia.FaceId);
             JoyResManager.Instance.TryGetSprite(name, out _sprite);
             _cachedView.IconImage.sprite = _sprite;
             _cachedView.DiaText.text = dia.Dia;
+        }
+
+        private void SetIndex(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    _cachedView.IndexText.text = "对话一";
+                    break;
+                case 1:
+                    _cachedView.IndexText.text = "对话二";
+                    break;
+                case 2:
+                    _cachedView.IndexText.text = "对话三";
+                    break;
+                case 3:
+                    _cachedView.IndexText.text = "对话四";
+                    break;
+                case 4:
+                    _cachedView.IndexText.text = "对话五";
+                    break;
+            }
         }
 
         private void OnDownBtn()
@@ -61,12 +95,14 @@ namespace GameA
 
         public void setDiasble()
         {
-            _cachedView.SetActiveEx(false);
+            _cachedView.DisableObj.SetActive(true);
+            _cachedView.EnableObj.SetActive(false);
         }
 
         public void setEenable()
         {
-            _cachedView.SetActiveEx(true);
+            _cachedView.DisableObj.SetActive(false);
+            _cachedView.EnableObj.SetActive(true);
         }
     }
 }

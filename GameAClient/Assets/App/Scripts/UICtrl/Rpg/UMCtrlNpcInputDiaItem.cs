@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
@@ -7,6 +9,7 @@ namespace GameA
 {
     public class UMCtrlNpcInputDiaItem : UMCtrlBase<UMViewNpcInputDiaItem>, IUMPoolable
     {
+        public const int MaxCommonUseDiaNum = 20;
         public bool IsShow { get; private set; }
         private List<UMCtrlNpcInputDiaItem> _list;
         private NpcDialogPreinstallList _datalist;
@@ -18,23 +21,31 @@ namespace GameA
         private Vector3 _pos;
         private bool _isofficial;
         private List<Action> _callbackList;
+        private Action<string> _addAction;
+        private Action _refresh;
 
-        protected override bool Init(RectTransform parent, Vector3 localpos, UIRoot uiRoot)
+        public void InitItem(RectTransform parent)
         {
             _parent = parent;
-            _uiRoot = uiRoot;
-            _pos = localpos;
+            Clear();
             _cachedView.InputField.onEndEdit.AddListener(OnEndSaveDia);
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteDia);
-            _cachedView.AddBtn.onClick.AddListener(OnAddBtn);
-            _cachedView.InputField.onValueChanged.AddListener((str) => { _cachedView.AddBtn.SetActiveEx(false); });
+            _cachedView.InputField.onValueChanged.AddListener((str) => { _cachedView.AddImage.SetActiveEx(false); });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
             _cachedView.ApplyBtn.onClick.AddListener(OnApplyBtn);
-            return base.Init(parent, localpos, uiRoot);
+            Show();
+        }
+
+        private void Clear()
+        {
+            _idList.Clear();
+            _cachedView.DeleteBtn.onClick.RemoveAllListeners();
+            _cachedView.InputField.onValueChanged.RemoveAllListeners();
+            _cachedView.ApplyBtn.onClick.RemoveAllListeners();
         }
 
         public void Set(int id, List<UMCtrlNpcInputDiaItem> list, NpcDialogPreinstallList datalist, bool isAdd,
-            bool isofficial, List<Action> callbackList)
+            bool isofficial, List<Action> callbackList, Action<string> addDiAction, Action refresh)
         {
             _list = list;
             _datalist = datalist;
@@ -43,22 +54,42 @@ namespace GameA
             _isofficial = isofficial;
             _callbackList = callbackList;
             _callbackList.Add(NoSelectBtn);
-            _idList.Add(id);
 
+            if (!isAdd)
+            {
+                _idList.Add(datalist.DataList[id].Id);
+                _cachedView.InputField.text = datalist.DataList[id].Data;
+            }
+            else
+            {
+                _cachedView.InputField.text = null;
+            }
+            _addAction = addDiAction;
+            _refresh = refresh;
             Refresh();
         }
 
         private void OnEndSaveDia(string data)
         {
-            if (_datalist == null)
+            if (data.Length > 0)
             {
-                RemoteCommands.CreateNpcDialogPreinstall(data, code =>
+                if (_datalist != null)
                 {
-                    SocialGUIManager.ShowPopupDialog("创建常用对话成功");
-                    _cachedView.InputField.text = _datalist.DataList[(int) _id].Data;
-                    _isAdd = false;
-                    Refresh();
-                }, code => { SocialGUIManager.ShowPopupDialog("创建常用对话失败"); });
+                    RemoteCommands.CreateNpcDialogPreinstall(data, code =>
+                    {
+                        SocialGUIManager.ShowPopupDialog("创建常用对话成功");
+                        _cachedView.InputField.text = _datalist.DataList[(int) _id].Data;
+                        _isAdd = false;
+                        Refresh();
+                        _cachedView.ApplyBtn.SetActiveEx(true);
+                        OnAddBtn();
+                        _refresh.Invoke();
+                    }, code => { SocialGUIManager.ShowPopupDialog("创建常用对话失败"); });
+                }
+            }
+            else
+            {
+                _cachedView.AddImage.SetActiveEx(true);
             }
         }
 
@@ -70,16 +101,21 @@ namespace GameA
                     _callbackList.Remove(NoSelectBtn);
                     UMPoolManager.Instance.Free(this);
                     SocialGUIManager.ShowPopupDialog("删除常用对话成功");
+                    _refresh.Invoke();
                 },
                 code => { SocialGUIManager.ShowPopupDialog("删除常用对话失败"); });
         }
 
         private void OnAddBtn()
         {
-            _cachedView.AddBtn.SetActiveEx(false);
-            UMCtrlNpcInputDiaItem item = new UMCtrlNpcInputDiaItem();
-            item.Init(_parent, _pos, _uiRoot);
-            item.Set(0, _list, _datalist, true, false, _callbackList);
+            if (_list.Count == MaxCommonUseDiaNum)
+            {
+                return;
+            }
+            _cachedView.AddImage.SetActiveEx(false);
+            UMCtrlNpcInputDiaItem item = UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_parent, EResScenary.Game);
+            item.InitItem(_parent);
+            item.Set(0, _list, _datalist, true, false, _callbackList, _addAction, _refresh);
             _list.Add(item);
         }
 
@@ -89,6 +125,7 @@ namespace GameA
             {
                 _callbackList[i].Invoke();
             }
+            _addAction.Invoke(_cachedView.InputField.text);
             _cachedView.SelectImage.SetActiveEx(true);
         }
 
@@ -117,10 +154,12 @@ namespace GameA
                 _cachedView.DeleteBtn.SetActiveEx(true);
                 _cachedView.ApplyBtn.SetActiveEx(true);
             }
+            _cachedView.SelectImage.SetActiveEx(false);
         }
 
         public void Hide()
         {
+            Clear();
             IsShow = false;
             _cachedView.Trans.anchoredPosition = new Vector2(100000, 0);
         }

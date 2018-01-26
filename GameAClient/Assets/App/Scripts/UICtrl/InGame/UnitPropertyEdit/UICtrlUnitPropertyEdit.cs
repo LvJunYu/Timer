@@ -1171,7 +1171,21 @@ namespace GameA
                     OnSpawnMenuClick(_curSelectedPlayerIndex, true);
                 }
             }
+
+            if (_curEditType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Dialog)
+            {
+                EditNpcDiaType.Open();
+                EditNpcTaskDock.Close();
+            }
+            //任务型npc
+//            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
+            if (_curEditType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
+            {
+                EditNpcDiaType.Close();
+                EditNpcTaskDock.Open();
+            }
             _upCtrlUnitPropertyEditAdvance.RefreshView();
+            EditNpcTaskDock.RefreshView();
             EditNpcDiaType.RefreshView();
             EditNpcTaskMonsterType.RefreshView();
             EditNpcTaskColltionType.RefreshView();
@@ -1272,7 +1286,7 @@ namespace GameA
             return false;
         }
 
-        public void CloseUpCtrlPanel(bool closeAdvace = true)
+        public void CloseUpCtrlPanel(bool closeAdvane = true)
         {
             EditNpcTaskMonsterType.Close();
             EditNpcTaskColltionType.Close();
@@ -1284,7 +1298,7 @@ namespace GameA
             EditNpcDia.Close();
             EditBeforeTaskAward.Close();
             EditFinishTaskAward.Close();
-            if (closeAdvace)
+            if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
             }
