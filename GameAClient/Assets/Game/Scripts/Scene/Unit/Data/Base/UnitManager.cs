@@ -329,7 +329,7 @@ namespace GameA.Game
             switch (unit.TableUnit.EGeneratedType)
             {
                 case EGeneratedType.Spine:
-                    if (unit.Id == 1001 || unit.Id == 1002 || unit.Id == 1003 || unit.Id == 65535)
+                    if (UnitDefine.IsSpawn(unit.Id) || UnitDefine.IsPlayer(unit.Id) || UnitDefine.IsShadow(unit.Id))
                     {
                         unitView = PoolFactory<ChangePartsSpineView>.Get();
                     }

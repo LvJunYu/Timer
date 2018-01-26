@@ -2,7 +2,6 @@ using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {

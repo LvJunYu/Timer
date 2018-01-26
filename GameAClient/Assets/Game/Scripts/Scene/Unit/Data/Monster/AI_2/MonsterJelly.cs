@@ -3,19 +3,14 @@
     [Unit(Id = 2004, Type = typeof(MonsterJelly))]
     public class MonsterJelly : MonsterAI_2
     {
+        public override bool IsMonster
+        {
+            get { return false; }
+        }
+
         public override bool IsInvincible
         {
             get { return true; }
-        }
-        
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-//            _maxSpeedX = 20;
-            return true;
         }
         
         public override UnitExtraDynamic UpdateExtraData()

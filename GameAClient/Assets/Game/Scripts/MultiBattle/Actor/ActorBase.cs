@@ -915,7 +915,7 @@ namespace GameA.Game
             }
         }
 
-        protected void CreateStatusBar()
+        protected virtual void CreateStatusBar()
         {
             if (null != _statusBar)
             {

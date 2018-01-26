@@ -246,7 +246,7 @@ namespace GameA.Game
         public UnitBase GetMonsterTarget(MonsterBase unit)
         {
             int curPlayerCount = Players.Count;
-            int curStartIndex = GameRun.Instance.LogicFrameCnt % curPlayerCount;
+            int curStartIndex = GameRun.Instance.LogicFrameCnt;
             for (int i = 0; i < Players.Count; i++)
             {
                 int index = (i + curStartIndex) % curPlayerCount;

@@ -253,13 +253,13 @@ namespace GameA.Game
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
 
-            if (UnitDefine.IsMonster(table.Id))
+            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsNpc(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
             }
 
-            if (UnitDefine.IsMonster(table.Id))
+            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsNpc(table.Id))
             {
                 unitEditData.UnitExtra.MaxHp = (ushort) table.Hp;
                 unitEditData.UnitExtra.MaxSpeedX = (ushort) table.MaxSpeed;

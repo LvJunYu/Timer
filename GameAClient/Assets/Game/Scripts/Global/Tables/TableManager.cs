@@ -15,9 +15,9 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
+		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
-		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
@@ -53,9 +53,9 @@ namespace GameA.Game
 		[SerializeField] private Table_State[] _tableStates;
 		[SerializeField] private Table_Skill[] _tableSkills;
 		[SerializeField] private Table_Reward[] _tableRewards;
+		[SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[SerializeField] private Table_Equipment[] _tableEquipments;
 		[SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
-		[SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[SerializeField] private Table_Trap[] _tableTraps;
 		[SerializeField] private Table_Unit[] _tableUnits;
 		[SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
@@ -109,12 +109,12 @@ namespace GameA.Game
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string RewardJsonStr = JoyResManager.Instance.GetJson ("Reward", (int) EResScenary.TableAsset);
             _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
+			string FashionShopJsonStr = JoyResManager.Instance.GetJson ("FashionShop", (int) EResScenary.TableAsset);
+            _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string EquipmentJsonStr = JoyResManager.Instance.GetJson ("Equipment", (int) EResScenary.TableAsset);
             _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
 			string EquipmentLevelJsonStr = JoyResManager.Instance.GetJson ("EquipmentLevel", (int) EResScenary.TableAsset);
             _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
-			string FashionShopJsonStr = JoyResManager.Instance.GetJson ("FashionShop", (int) EResScenary.TableAsset);
-            _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string TrapJsonStr = JoyResManager.Instance.GetJson ("Trap", (int) EResScenary.TableAsset);
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = JoyResManager.Instance.GetJson ("Unit", (int) EResScenary.TableAsset);
@@ -213,6 +213,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableFashionShops.Length; i++)
+			{
+				if (!Table_FashionShopDic.ContainsKey(_tableFashionShops[i].Id))
+				{
+					Table_FashionShopDic.Add(_tableFashionShops[i].Id,_tableFashionShops[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableEquipments.Length; i++)
 			{
 				if (!Table_EquipmentDic.ContainsKey(_tableEquipments[i].Id))
@@ -233,17 +244,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableEquipmentLevels table.Id {0} is duplicated!", _tableEquipmentLevels[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableFashionShops.Length; i++)
-			{
-				if (!Table_FashionShopDic.ContainsKey(_tableFashionShops[i].Id))
-				{
-					Table_FashionShopDic.Add(_tableFashionShops[i].Id,_tableFashionShops[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTraps.Length; i++)
@@ -629,6 +629,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_FashionShop GetFashionShop(int key)
+		{
+			Table_FashionShop tmp;
+			if (Table_FashionShopDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_Equipment GetEquipment(int key)
 		{
 			Table_Equipment tmp;
@@ -642,15 +651,6 @@ namespace GameA.Game
 		{
 			Table_EquipmentLevel tmp;
 			if (Table_EquipmentLevelDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_FashionShop GetFashionShop(int key)
-		{
-			Table_FashionShop tmp;
-			if (Table_FashionShopDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

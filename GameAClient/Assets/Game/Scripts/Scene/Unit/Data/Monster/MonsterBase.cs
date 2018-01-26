@@ -111,7 +111,10 @@ namespace GameA.Game
             else
             {
                 CreateStatusBar();
-                _statusBar.SetHPActive(true);
+                if (_statusBar != null)
+                {
+                    _statusBar.SetHPActive(true);
+                }
             }
             return true;
         }

@@ -1116,7 +1116,7 @@ namespace GameA
 
             if (_originData != EditData)
             {
-                if (UnitDefine.IsMonster(_tableUnit.Id))
+                if (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id))
                 {
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
@@ -1237,7 +1237,7 @@ namespace GameA
             _curEnterType = eEnterType;
             _curId = unitId;
             _tableUnit = TableManager.Instance.GetUnit(unitId);
-            if (eEnterType == EEnterType.Normal && UnitDefine.IsMonster(_tableUnit.Id))
+            if (eEnterType == EEnterType.Normal && (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id)))
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }

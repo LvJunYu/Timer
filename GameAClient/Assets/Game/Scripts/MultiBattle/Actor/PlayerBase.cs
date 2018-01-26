@@ -664,7 +664,10 @@ namespace GameA.Game
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect,
                 null, ESortingOrder.LazerEffect));
             CreateStatusBar();
-            _statusBar.SetHPActive(true);
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(true);
+            }
             return true;
         }
 

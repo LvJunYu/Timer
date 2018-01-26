@@ -5,7 +5,6 @@
 ** Summary : UnitDefine
 ***********************************************************************/
 
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
@@ -59,7 +58,7 @@ namespace GameA.Game
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
         public const int ShadowId = 65535;
-        
+
         public static bool IsSpawn(int id)
         {
             return id == SpawnId;
@@ -77,7 +76,7 @@ namespace GameA.Game
 
         public static bool IsHero(int id)
         {
-            return id < 3000;
+            return id < 3000 || IsNpc(id);
         }
 
         public static bool IsMonster(int id)
@@ -155,6 +154,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return tableUnit.IsBulletBlock == 1;
         }
 
@@ -164,6 +164,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) &&
                     !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == EnergyPoolId ||
                    tableUnit.Id == FinalDoorId;
@@ -191,7 +192,7 @@ namespace GameA.Game
 
         public static bool IsNpc(int id)
         {
-            return id == 30001 || id == 30002;
+            return id > 30000 && id < 31000;
         }
     }
 }

@@ -304,7 +304,10 @@ namespace GameA.Game
         protected override void InitUI()
         {
             base.InitUI();
-            SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
+            if (_curGamePhase <= EGamePhase.Wait)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
+            }
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)

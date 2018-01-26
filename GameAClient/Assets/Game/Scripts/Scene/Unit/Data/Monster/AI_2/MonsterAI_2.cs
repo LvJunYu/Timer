@@ -13,7 +13,7 @@ namespace GameA.Game
         protected int _timerAttack;
         protected int _timerRun;
         protected int _timerStupid;
-        protected int _intelligenc = 10; //智商，决定出问号概率，0每走几步就会出问好，10不会出问号
+        protected int _intelligenc = 11; //智商，决定出问号概率，0每走几步就会出问好，11不会出问号
 
         protected override void Clear()
         {

@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    public class NPCBase : ActorBase
+    public class NPCBase : MonsterAI_2
     {
         private bool _trigger;
         private UnitBase _unit;
@@ -15,6 +15,16 @@ namespace GameA.Game
         protected override bool IsCheckClimb()
         {
             return false;
+        }
+
+        public override bool IsMonster
+        {
+            get { return false; }
+        }
+
+        public override bool IsInvincible
+        {
+            get { return true; }
         }
 
         public override bool CanControlledBySwitch
@@ -51,6 +61,7 @@ namespace GameA.Game
                     _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
                         .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
                 }
+
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
                     if (CheckPlayPos())
@@ -62,6 +73,7 @@ namespace GameA.Game
                         _diaPop.Hide();
                     }
                 }
+
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Interval)
                 {
                     _showIntervalTime = GetUnitExtra().NpcShowInterval * 30;
@@ -69,6 +81,7 @@ namespace GameA.Game
                     {
                         _diaPop.Show();
                     }
+
                     if (_timeIntervalDynamic > _showTime + _showIntervalTime)
                     {
                         _timeIntervalDynamic = 0;
@@ -76,30 +89,21 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
             {
             }
         }
 
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            return true;
-        }
-
         protected override void Clear()
         {
             base.Clear();
-            _input = _input ?? new InputBase();
-            _input.Clear();
             _time = 0;
             if (_diaPop != null)
             {
                 UMPoolManager.Instance.Free(_diaPop);
             }
+
             _trigger = false;
             _diaPop = null;
             _showIntervalTime = 0;
@@ -122,6 +126,50 @@ namespace GameA.Game
         {
             float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
             return x <= 50;
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (eDirectionType == EDirectionType.Up || eDirectionType == EDirectionType.Down)
+            {
+                return;
+            }
+
+            if (unit.IsActor)
+            {
+                ChangeState(EMonsterState.Dialog);
+            }
+            else
+            {
+                ChangeState(EMonsterState.Bang);
+            }
+
+            switch (eDirectionType)
+            {
+                case EDirectionType.Left:
+                    SetNextMoveDirection(EMoveDirection.Right);
+                    break;
+                case EDirectionType.Right:
+                    SetNextMoveDirection(EMoveDirection.Left);
+                    break;
+            }
+        }
+
+        protected override void CreateStatusBar()
+        {
+        }
+
+        protected override void UpdateAttackTarget(UnitBase lastTarget = null)
+        {
+            if (_attactTarget == null)
+            {
+                _attactTarget = PlayMode.Instance.MainPlayer;
+            }
+        }
+
+        public override UnitExtraDynamic UpdateExtraData()
+        {
+            return base.UpdateExtraData();
         }
     }
 }
