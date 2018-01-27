@@ -128,6 +128,7 @@ namespace GameA.Game
                     {
                         if (unit.IsPlayer && CanHarm(unit))
                         {
+                            _attactTarget = unit;
                             if (_eMonsterState != EMonsterState.Chase)
                             {
                                 ChangeState(EMonsterState.Bang);

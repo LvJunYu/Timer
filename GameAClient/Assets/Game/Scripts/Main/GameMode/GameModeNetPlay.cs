@@ -60,11 +60,11 @@ namespace GameA.Game
             if (_instance == null) return;
             if (writeLine)
             {
-                _instance._debugClientData.WriteLine(string.Format("_curServerFrame  {0}", str));
+                _instance._debugClientData.WriteLine(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
             }
             else
             {
-                _instance._debugClientData.Write(string.Format("_curServerFrame  {0}  ", str));
+                _instance._debugClientData.Write(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
             }
         }
 

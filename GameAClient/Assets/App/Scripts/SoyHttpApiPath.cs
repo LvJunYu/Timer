@@ -126,6 +126,8 @@ namespace SoyEngine
         public const string WorldRankList = "/world/getRankList";
         // 搜索关卡
         public const string SearchWorldProject = "/world/searchProject";
+        // 获取官方多人关卡
+        public const string OfficialProjectList = "/world/getOfficialProjectList";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据

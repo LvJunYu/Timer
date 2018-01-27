@@ -23,7 +23,9 @@ namespace GameA
 
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
-        private bool _battleAvailable;
+        private bool _battleAvailable = true;
+        private bool _storyGameAvailable = false;
+        private bool _cooperationGameAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
@@ -90,6 +92,7 @@ namespace GameA
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
             _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
             _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
+            _cachedView.CooperationButton.onClick.AddListener(OnCooperationButton);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -119,6 +122,8 @@ namespace GameA
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
             SetLock(UIFunction.UI_Battle, _battleAvailable);
+            SetLock(UIFunction.UI_StoryGame, _storyGameAvailable);
+            SetLock(UIFunction.UI_CooperationGame, _cooperationGameAvailable);
             SetLock(UIFunction.UI_Weapon, _weaponAvailable);
             SetLock(UIFunction.UI_Chat, _chatAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
@@ -225,6 +230,19 @@ namespace GameA
                     _battleAvailable = ifunlock;
                 }
                     break;
+                case UIFunction.UI_StoryGame:
+                {
+                    _cachedView.StoryGameObj.SetActiveEx(ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
+                case UIFunction.UI_CooperationGame:
+                {
+                    _cachedView.Battle.SetActiveEx(ifunlock);
+                    _cachedView.BattleDisable.SetActiveEx(!ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
                 case UIFunction.UI_Lottery:
                 {
                     _cachedView.Lottery.SetActiveEx(ifunlock);
@@ -272,7 +290,9 @@ namespace GameA
             UI_Achievement = 9,
             UI_Weapon,
             UI_Chat,
-            UI_Battle
+            UI_Battle,
+            UI_StoryGame,
+            UI_CooperationGame
         }
 
         public void OnCreateBtn()
@@ -330,7 +350,12 @@ namespace GameA
 
         public void OnBattleBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlBattle>();
+            SocialGUIManager.Instance.OpenUI<UICtrlCompete>();
+        }
+
+        private void OnCooperationButton()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlCooperation>();
         }
 
         public void OnMailBtn()
@@ -568,7 +593,7 @@ namespace GameA
 //            else
             {
                 _cachedView.WeaponObject.SetActive(false);
-                _cachedView.HandBookObject.SetActive(true);
+                _cachedView.HandBookObject.SetActive(false);
                 SetLock(UIFunction.UI_Puzzle, false);
                 SetLock(UIFunction.UI_Train, false);
                 SetLock(UIFunction.UI_Achievement, false);

@@ -32,6 +32,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
+        private bool _useAOI;
         private byte[,] _pathGrid;
         private int _sceneIndex;
 
@@ -85,6 +86,11 @@ namespace GameA.Game
             get { return _allAirWallUnits; }
         }
 
+        public bool UseAoi
+        {
+            get { return _useAOI; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -122,7 +128,8 @@ namespace GameA.Game
             var height = ConstDefineGM2D.MapTileSize.y;
             Init(width, height);
             bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
-            if (MapConfig.UseAOI && !isMulti)
+            _useAOI = MapConfig.UseAOI && !isMulti;
+            if (_useAOI)
             {
                 InitRegions(regionTilesCount);
                 _interestArea = new InterestArea(ConstDefineGM2D.RegionTileSize * 1.5f,
@@ -236,6 +243,7 @@ namespace GameA.Game
                 return false;
             }
 
+            unit.IsInterest = !_useAOI;
             _units.Add(unitDesc.Guid, unit);
 
             if (tableUnit.IsGround == 1)
@@ -473,25 +481,27 @@ namespace GameA.Game
             for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
                 _allSwitchUnits[i].Reset();
+                _allSwitchUnits[i].IsInterest = !_useAOI;
             }
 
             for (int i = 0; i < _allMagicUnits.Count; i++)
             {
                 _allMagicUnits[i].Reset();
+                _allMagicUnits[i].IsInterest = !_useAOI;
             }
 
             for (int i = 0; i < _allOtherUnits.Count; i++)
             {
                 _allOtherUnits[i].Reset();
+                _allOtherUnits[i].IsInterest = !_useAOI;
             }
 
-            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
                 UnitDesc unitDesc = _deletedDatas[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI || isMulti)
+                if (!_useAOI)
                 {
                     InstantiateView(unitDesc, tableUnit);
                 }
@@ -1053,13 +1063,12 @@ namespace GameA.Game
 
         public void AddUnitsOutofMap()
         {
-            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
             for (int i = 0; i < _unitsOutofMap.Count; i++)
             {
                 UnitDesc unitDesc = _unitsOutofMap[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI || isMulti)
+                if (_useAOI)
                 {
                     InstantiateView(unitDesc, tableUnit);
                 }

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

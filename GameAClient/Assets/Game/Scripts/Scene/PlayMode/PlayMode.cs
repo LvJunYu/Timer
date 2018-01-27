@@ -495,15 +495,19 @@ namespace GameA.Game
                         }
 
                         var sortSpawnDatas = Scene2DManager.Instance.GetSortSpawnData();
-                        var userList = gameMode.RoomInfo.Users;
-                        for (int i = 0; i < userList.Count; i++)
+                        var userArray = gameMode.RoomInfo.RoomUserArray;
+                        for (int i = 0; i < userArray.Length; i++)
                         {
-                            bool isMain = userList[i].Guid == LocalUser.Instance.UserGuid;
-                            int inx = userList[i].Inx;
+                            if (userArray[i] == null)
+                            {
+                                continue;
+                            }
+                            bool isMain = userArray[i].Guid == LocalUser.Instance.UserGuid;
+                            int inx = userArray[i].Inx;
                             if (inx < sortSpawnDatas.Count)
                             {
                                 var player = AddPlayer(sortSpawnDatas[inx], inx, isMain);
-                                userList[i].Player = player;
+                                userArray[i].Player = player;
                             }
                             else
                             {

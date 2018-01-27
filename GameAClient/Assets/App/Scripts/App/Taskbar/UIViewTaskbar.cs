@@ -5,8 +5,6 @@
 ** Summary : UIViewTaskbar
 ***********************************************************************/
 
-using JetBrains.Annotations;
-using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,6 +58,12 @@ namespace GameA
         public Button SingleModeButton;
 
         public GameObject SingleMode;
+
+        public Button StoryGameButton;
+        public GameObject StoryGameObj;
+
+        public Button CooperationButton;
+        public GameObject CooperationObj;
 
 //		public GameObject SingleModeDisable;
         /// <summary>
