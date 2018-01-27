@@ -277,7 +277,8 @@ namespace GameA.Game
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
                 for (int i = 0; i < skill.KnockbackForces.Length; i++)
                 {
-                    unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);
+                    unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i],
+                        UnitExtraDynamic.FieldTag.KnockbackForces, i);
                 }
                 for (int i = 0; i < skill.AddStates.Length; i++)
                 {
@@ -297,7 +298,7 @@ namespace GameA.Game
 
             if (table.CanEdit(EEditType.MonsterCave))
             {
-                unitEditData.UnitExtra.MonsterId = (ushort)UnitDefine.MonstersInCave[0];
+                unitEditData.UnitExtra.MonsterId = (ushort) UnitDefine.MonstersInCave[0];
                 unitEditData.UnitExtra.UpdateFromMonsterId();
                 unitEditData.UnitExtra.MonsterIntervalTime = 1000;
                 unitEditData.UnitExtra.MaxCreatedMonster = 100;
@@ -457,6 +458,14 @@ namespace GameA.Game
                     return false;
                 }
             }
+            //判断npc的总数
+            {
+                if (UnitDefine.IsNpc(unitDesc.Id) &&
+                    NpcTaskDataTemp.Intance.GetNpcSerialNum() == NpcTaskDataTemp.NoneNumMark)
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -491,6 +500,8 @@ namespace GameA.Game
                 _unitIndexCount[unitDesc.Id] += 1;
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
+            NpcTaskDataTemp.Intance.AddNpc(unitDesc);
+
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 

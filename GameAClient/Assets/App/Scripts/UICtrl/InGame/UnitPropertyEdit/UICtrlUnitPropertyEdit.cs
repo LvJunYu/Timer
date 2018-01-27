@@ -459,9 +459,7 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlFashionSpineExtra>();
             _upCtrlUnitPropertyEditAdvance.Close();
-            EditNpcDiaType.Close();
-//            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
-            EditNpcTaskDock.Close();
+//            CloseUpCtrlPanel();
             _upCtrlUnitPropertyEditPreinstall.Close();
             base.OnClose();
         }
@@ -919,7 +917,8 @@ namespace GameA
                         if (hasSet)
                         {
                             _spawnMenuList[i].SpawnMenuView.Bg2Image.sprite = GetSpawnSprite(playersDic[i].TeamId);
-                            _spawnMenuList[i].SpawnMenuView.Bg3Image.sprite = GetSpawnSprite(playersDic[i].TeamId, true);
+                            _spawnMenuList[i].SpawnMenuView.Bg3Image.sprite =
+                                GetSpawnSprite(playersDic[i].TeamId, true);
                         }
                     }
                     //当前已经设置
@@ -1127,6 +1126,7 @@ namespace GameA
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
 //            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
+            CheckCloseUpCtrlPanel();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1251,7 +1251,8 @@ namespace GameA
             _curEnterType = eEnterType;
             _curId = unitId;
             _tableUnit = TableManager.Instance.GetUnit(unitId);
-            if (eEnterType == EEnterType.Normal && (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id)))
+            if (eEnterType == EEnterType.Normal &&
+                (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id)))
             {
                 EditData.UnitDesc.Rotation = (byte) (EditData.UnitExtra.MoveDirection - 1);
             }
@@ -1321,6 +1322,24 @@ namespace GameA
             if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
+            }
+        }
+
+        public void CheckCloseUpCtrlPanel(bool closeAdvane = true)
+        {
+            EditNpcTaskMonsterType.CheckClose();
+            EditNpcTaskColltionType.CheckClose();
+            EditNpcTaskTargetType.CheckClose();
+            EditNpcTaregtDialog.CheckClose();
+            EditNpcAddCondition.CheckClose();
+            EditNpcConditionType.CheckClose();
+            EditBeforeTask.CheckClose();
+            EditNpcDia.CheckClose();
+            EditBeforeTaskAward.CheckClose();
+            EditFinishTaskAward.CheckClose();
+            if (closeAdvane)
+            {
+                _upCtrlUnitPropertyEditAdvance.CheckClose();
             }
         }
 

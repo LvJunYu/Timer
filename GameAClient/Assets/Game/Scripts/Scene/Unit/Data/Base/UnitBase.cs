@@ -1095,7 +1095,7 @@ namespace GameA.Game
                     _colliderPos.y / ConstDefineGM2D.ServerTileScale);
                 z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
             }
-            else if (!_grounded || _deltaPos.y != 0 ||  IsClimbingVertical)
+            else if (!_grounded || _deltaPos.y != 0 || IsClimbingVertical)
             {
                 var tile = _colliderPos / ConstDefineGM2D.ServerTileScale;
                 var min = GetZ((tile + new IntVec2(1, 0)) * ConstDefineGM2D.ServerTileScale) + 0.01f;
@@ -1109,8 +1109,8 @@ namespace GameA.Game
         protected float GetZ(IntVec2 pos)
         {
             //为了子弹
-            var size = Mathf.Clamp(_tableUnit.Width/2, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            var size = Mathf.Clamp(_tableUnit.Width / 2, 0, ConstDefineGM2D.ServerTileScale);
+            return -(pos.x + pos.y + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -1788,6 +1788,7 @@ namespace GameA.Game
 
         internal void OnCtrlBySwitch()
         {
+            RpgTaskManger.Instance.OnControlFinish(_guid);
             SetActiveState(_eActiveState == EActiveState.Deactive ? EActiveState.Active : EActiveState.Deactive);
         }
 

@@ -226,7 +226,7 @@ namespace GameA.Game
             }
 
             AfterAddData(unitDesc, tableUnit);
-            
+
             return true;
         }
 
@@ -282,7 +282,8 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtraDynamic unitExtra, EditRecordBatch editRecordBatch = null)
+        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtraDynamic unitExtra,
+            EditRecordBatch editRecordBatch = null)
         {
             UnitBase unit;
             bool canSwitch = false;
@@ -318,12 +319,12 @@ namespace GameA.Game
                     {
                         if (!unit.CanControlledBySwitch)
                         {
-                            OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                            OnUnitDeleteUpdateExtraData(unitDesc, editRecordBatch);
                         }
                     }
                     else
                     {
-                        OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                        OnUnitDeleteUpdateExtraData(unitDesc, editRecordBatch);
                         LogHelper.Error("ProcessUnitExtra UnitBase missing");
                     }
                 }
@@ -454,7 +455,8 @@ namespace GameA.Game
             return true;
         }
 
-        public void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc, EditRecordBatch recordBatch = null)
+
+        private void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc, EditRecordBatch recordBatch = null)
         {
             if (UnitDefine.IsSwitch(unitDesc.Id))
             {
@@ -501,7 +503,13 @@ namespace GameA.Game
             }
         }
 
-        public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc,
+        public void OnUnitDeleteUpdateExtraData(UnitDesc unitDesc, EditRecordBatch recordBatch = null)
+        {
+            OnUnitDeleteUpdateSwitchData(unitDesc, recordBatch);
+            NpcTaskDataTemp.Intance.OnUnitDelteUpdateSwitchData(unitDesc);
+        }
+
+        private void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc,
             EditRecordBatch recordBatch = null)
         {
             if (UnitDefine.IsSwitch(newUnitDesc.Id))
@@ -554,6 +562,13 @@ namespace GameA.Game
                     }
                 }
             }
+        }
+
+        public void OnUnitMoveUpdateExtraData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc,
+            EditRecordBatch recordBatch = null)
+        {
+            OnUnitMoveUpdateSwitchData(oldUnitDesc, newUnitDesc, recordBatch);
+            NpcTaskDataTemp.Intance.OnUnitMoveUpdateSwitchData(oldUnitDesc, newUnitDesc);
         }
 
         public void SaveSwitchUnitData(List<SwitchUnitData> list)

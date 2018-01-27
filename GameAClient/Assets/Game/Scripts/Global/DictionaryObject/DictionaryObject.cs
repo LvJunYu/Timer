@@ -945,6 +945,10 @@ namespace SoyEngine
         {
             if (_leftDimension == 0)
             {
+                if (_childType == typeof(string))
+                {
+                    return null;
+                }
                 if (IsAtomic(_childType))
                 {
                     return Activator.CreateInstance(_childType);

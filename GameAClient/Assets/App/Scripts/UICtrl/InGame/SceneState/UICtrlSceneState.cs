@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System.Collections.Generic;
+using System.Net.Configuration;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
@@ -36,6 +37,7 @@ namespace GameA
         private const int _initUMCollectionLifeNum = 3;
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
+        private USCtrlNpcTask[] _npcTask;
         protected Sequence _finalCountDownSequence;
         private bool _showStar;
         private bool _isMulti;
@@ -87,6 +89,12 @@ namespace GameA
             {
                 _usCtrlMultiScores[i] = new USCtrlMultiScore();
                 _usCtrlMultiScores[i].Init(list[i]);
+            }
+            _npcTask = new USCtrlNpcTask[_cachedView.TaskGroup.Length];
+            for (int i = 0; i < _cachedView.TaskGroup.Length; i++)
+            {
+                _npcTask[i] = new USCtrlNpcTask();
+                _npcTask[i].Init(_cachedView.TaskGroup[i]);
             }
         }
 
@@ -166,9 +174,9 @@ namespace GameA
         {
             base.OnUpdate();
 //            UpdateShowHelper();
-            
+
             UpdateTimeLimit();
-            
+
             if (_showStar)
             {
                 UpdateAdventurePlay();
@@ -626,7 +634,8 @@ namespace GameA
         {
             int seconds = curValue % 60;
             int frameCount =
-                100 - Mathf.RoundToInt((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
+                100 - Mathf.RoundToInt((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime *
+                                       100);
             frameCount = Mathf.Clamp(frameCount, 0, 99);
             _cachedView.LeftTimeText.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, seconds, frameCount);
         }
@@ -701,12 +710,58 @@ namespace GameA
             }
             return umCtrlCollectionLifeItem;
         }
-        
+
         public void ShowCountDown(bool value)
         {
             _showCountDownTime = value;
             _countDownTimer = CountDownTime;
             _cachedView.CountDownTxt.SetActiveEx(value);
+        }
+
+        public void SetNpcTaskPanelDis()
+        {
+            _cachedView.TaskPanel.SetActive(false);
+        }
+
+        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> _nowTaskDic,
+            Dictionary<int, NpcTaskDynamic>_finishTaskDic)
+        {
+            if (_nowTaskDic.Count > 0)
+            {
+                _cachedView.TaskPanel.SetActive(true);
+            }
+            else
+            {
+                _cachedView.TaskPanel.SetActiveEx(false);
+            }
+            using (var enmotor = _nowTaskDic.GetEnumerator())
+            {
+                int index = 0;
+                while (enmotor.MoveNext())
+                {
+                    bool finish = false;
+                    for (int i = 0; i < enmotor.Current.Value.Targets.Count; i++)
+                    {
+                        finish = _finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber
+                        );
+                        if (finish)
+                        {
+                            break;
+                        }
+                    }
+
+                    UnitExtraDynamic extra;
+                    if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
+                    {
+                        _npcTask[index].SetNpcTask(extra, enmotor.Current.Value, finish);
+                    }
+                    index++;
+                }
+                for (int i = index; i < _npcTask.Length; i++)
+                {
+                    _npcTask[i].SetDisable();
+                }
+            }
         }
     }
 }

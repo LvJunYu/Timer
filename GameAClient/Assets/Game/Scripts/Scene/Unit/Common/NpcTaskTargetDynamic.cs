@@ -20,7 +20,7 @@ namespace GameA.Game
         {
             DefineField<byte>(FieldTag.TaskType, "TaskType");
             DefineField<ushort>(FieldTag.ColOrKillNum, "ColOrKillNum");
-            DefineField<ushort>(FieldTag.TargetUnitID, "TriggerUnitID");
+            DefineField<ushort>(FieldTag.TargetUnitID, "TargetUnitID");
             DefineField<IntVec3>(FieldTag.TargetGuid, "TargetGuid");
             DefineField<ushort>(FieldTag.TargetNpcNum, "TargetNpcNum");
         }
@@ -81,7 +81,7 @@ namespace GameA.Game
         {
             TaskType = (byte) data.TaskType;
             ColOrKillNum = (ushort) data.ColOrKillNum;
-            TargetUnitID = (byte) data.TargetUnitID;
+            TargetUnitID = (ushort) data.TargetUnitID;
             TargetGuid = GM2DTools.ToEngine(data.TargetGuid);
             TargetNpcNum = (ushort) data.TargetNpcNum;
         }
@@ -95,8 +95,6 @@ namespace GameA.Game
                 TargetGuid == other.TargetGuid &&
                 TargetNpcNum == other.TargetNpcNum;
         }
-
-       
     }
 
     public enum ENpcTargetType

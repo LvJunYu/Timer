@@ -10,7 +10,7 @@ using Spine.Unity;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5013, Type = typeof (Gate))]
+    [Unit(Id = 5013, Type = typeof(Gate))]
     public class Gate : BlockBase
     {
         private bool _opened;
@@ -65,7 +65,8 @@ namespace GameA.Game
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
-    
+
+
         private void CheckOpen(UnitBase other, bool checkOnly = false)
         {
             if (!checkOnly)

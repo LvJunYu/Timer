@@ -352,6 +352,7 @@ namespace GameA.Game
         protected override void OnDead()
         {
             base.OnDead();
+            RpgTaskManger.Instance.AddKill(Id);
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
         }
 
@@ -403,7 +404,7 @@ namespace GameA.Game
 
             return !IsSameTeam(unit.TeamId);
         }
-        
+
         public override UnitExtraDynamic GetUnitExtra()
         {
             if (_monsterCave != null)

@@ -56,6 +56,10 @@ namespace GameA.Game
 
             if (GetUnitExtra().NpcType == (byte) ENpcType.Dialog)
             {
+                if (GetUnitExtra().NpcDialog == null)
+                {
+                    return;
+                }
                 if (_diaPop == null)
                 {
                     _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()

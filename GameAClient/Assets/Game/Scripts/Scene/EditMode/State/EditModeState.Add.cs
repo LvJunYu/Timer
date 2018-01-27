@@ -189,7 +189,7 @@ namespace GameA.Game
                         if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
                         {
                             recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, needReplaceUnitExtra);
-                            DataScene2D.CurScene.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
+                            DataScene2D.CurScene.OnUnitDeleteUpdateExtraData(needReplaceUnitDesc, recordBatch);
                         }
                     });
                 }
