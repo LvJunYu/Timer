@@ -51,6 +51,12 @@ namespace GameA
             get { return _roomChatList; }
         }
 
+        public ChatData()
+        {
+            _roomCDTimer.Zero();
+            _worldCDTimer.Zero();
+        }
+
         public bool SendRoomChat(string data)
         {
             if (!_roomCDTimer.PassedTicks(RoomChatCDTimeTick))
