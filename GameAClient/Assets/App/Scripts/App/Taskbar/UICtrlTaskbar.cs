@@ -49,6 +49,8 @@ namespace GameA
 
         private bool _pushGoldEnergyStyle;
 
+        private USCtrlChat _chat;
+
         #endregion
 
         #region 属性
@@ -107,7 +109,7 @@ namespace GameA
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
             _cachedView.AnnouncementBtn.onClick.AddListener(OnAnnoncementBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
-            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
+//            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
             _cachedView.QQHallBtn.onClick.AddListener(OnQQHallBtn);
             _cachedView.QQBlueBtn.onClick.AddListener(OnQQBlueBtn);
@@ -130,6 +132,10 @@ namespace GameA
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
             OpenTaskBtn();
+            _chat = new USCtrlChat();
+            _chat.ResScenary = EResScenary.Home;
+            _chat.Scene = USCtrlChat.EScene.Home;
+            _chat.Init(_cachedView.HomeChat);
         }
 
         protected override void OnDestroy()
@@ -150,6 +156,7 @@ namespace GameA
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
             RefreshQQReward();
+            _chat.Open();
         }
 
         protected override void OnClose()
@@ -160,6 +167,7 @@ namespace GameA
                 _pushGoldEnergyStyle = false;
             }
             base.OnClose();
+            _chat.Close();
         }
 
         public void SetLock(UIFunction uitype, bool ifunlock)
@@ -269,7 +277,7 @@ namespace GameA
                     break;
                 case UIFunction.UI_Chat:
                 {
-                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
+//                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
                     _chatAvailable = ifunlock;
                 }
                     break;

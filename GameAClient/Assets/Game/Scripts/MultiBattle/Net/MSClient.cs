@@ -106,6 +106,12 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_RoomOpen>(Msg_MC_RoomOpen);
             RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomListRet);
             RegisterHandler<Msg_MC_QueryRoom>(Msg_MC_QueryRoomRet);
+            RegisterHandler<Msg_MC_Chat>(Msg_MC_Chat);
+        }
+
+        private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)
+        {
+            AppData.Instance.ChatData.OnMCChat(msg);
         }
 
         private void Msg_MC_QueryRoomListRet(Msg_MC_QueryRoomList msg, object netlink)

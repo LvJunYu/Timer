@@ -112,7 +112,7 @@ namespace GameA.Game
             }
         }
 
-        private void SendToRSServer(object msg)
+        public void SendToRSServer(object msg)
         {
             if (_roomClient != null && _roomClient.IsConnected())
             {
@@ -120,7 +120,7 @@ namespace GameA.Game
             }
         }
 
-        private void SendToMSServer(object msg)
+        public void SendToMSServer(object msg)
         {
             LogHelper.Debug("MSClient IsConnected: {0}", _msClient.IsConnected());
             if (_msClient != null && _msClient.IsConnected())

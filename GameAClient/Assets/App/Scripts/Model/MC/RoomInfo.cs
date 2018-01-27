@@ -224,5 +224,10 @@ namespace GameA
                 user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
             }
         }
+
+        public RoomUser GetRoomUserByGuid(long guid)
+        {
+            return _users.Find(u => u.Guid == guid);
+        }
     }
 }

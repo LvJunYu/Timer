@@ -48,6 +48,11 @@ namespace GameA.Game
             }
         }
 
+        public RoomInfo RoomInfo
+        {
+            get { return _roomInfo; }
+        }
+
         public void Add(PlayerBase player, int roomInx = 0)
         {
             if (!GM2DGame.Instance.GameMode.IsMulti)

@@ -17,6 +17,7 @@ namespace GameA
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private RoomUser _myRoomUser;
+        private USCtrlChat _chat;
 
         public RoomInfo RoomInfo
         {
@@ -61,6 +62,10 @@ namespace GameA
                 _usCtrlMultiRoomRawSlots[i] = new USCtrlMultiRoomRawSlot();
                 _usCtrlMultiRoomRawSlots[i].Init(rawList[i]);
             }
+            _chat = new USCtrlChat();
+            _chat.ResScenary = ResScenary;
+            _chat.Scene = USCtrlChat.EScene.Room;
+            _chat.Init(_cachedView.RoomChat);
         }
 
         protected override void OnOpen(object parameter)
@@ -97,6 +102,12 @@ namespace GameA
             {
                 RefrshView();
             }
+        }
+
+        protected override void OnClose()
+        {
+            _chat.Close();
+            base.OnClose();
         }
 
         private bool SetRoomPlayerUnitExtras()
@@ -144,10 +155,12 @@ namespace GameA
             if (_openState)
             {
                 RefreshOpenPannel();
+                _chat.Open();
             }
             else
             {
                 RefreshClosePannel();
+                _chat.Close();
             }
 
             RefreshBtns();

@@ -65,6 +65,7 @@ namespace GameA.Game
 
         private void Msg_RC_RoomChat(Msg_RC_RoomChat msg, object netlink)
         {
+            AppData.Instance.ChatData.OnRCChat(msg);
         }
 
         private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, object netlink)

@@ -204,5 +204,7 @@ namespace GameA
         public Button HandBook;
 
         public GameObject HandBookObject;
+
+        public USViewChat HomeChat;
     }
 }
