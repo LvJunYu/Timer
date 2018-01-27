@@ -24,7 +24,7 @@ namespace GameA
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
         private bool _battleAvailable = true;
-        private bool _storyGameAvailable = true;
+        private bool _storyGameAvailable = false;
         private bool _cooperationGameAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
@@ -350,7 +350,7 @@ namespace GameA
 
         public void OnBattleBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
+            SocialGUIManager.Instance.OpenUI<UICtrlCompete>();
         }
 
         private void OnCooperationButton()

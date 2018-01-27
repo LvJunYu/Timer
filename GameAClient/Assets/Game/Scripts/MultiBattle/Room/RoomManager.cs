@@ -5,6 +5,7 @@
 ** Summary : RoomManager
 ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.MasterServer;
@@ -71,6 +72,7 @@ namespace GameA.Game
             {
                 _roomClient.Disconnect();
             }
+
             if (_msClient != null)
             {
                 _msClient.Disconnect();
@@ -102,10 +104,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_roomClient != null)
             {
                 _roomClient.Update();
             }
+
             if (_msClient != null)
             {
                 _msClient.Update();
@@ -162,6 +166,7 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
                 return;
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在创建房间");
             _msgCreateRoom.ProjectId = projectGuid;
             ProjectManager.Instance.GetDataOnAsync(projectGuid, p =>
@@ -178,36 +183,48 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
                 return;
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入房间");
             var msg = new Msg_CM_JoinRoom();
             msg.RoomGuid = roomId;
             SendToMSServer(msg);
         }
 
-        public void SendRequestQuickPlay(long projectId = 1)
+        public void SendRequestQuickPlay(EQuickPlayType type = EQuickPlayType.EQPT_All, long projectId = 1,
+            EProjectType projectType = EProjectType.PT_Single)
         {
             if (!_msClient.IsConnected())
             {
                 SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
                 return;
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加入");
             var msg = new Msg_CM_QuickPlay();
-            msg.ProjectId = projectId;
-            if (projectId == 1)
+            msg.Type = type;
+            switch (type)
             {
-                SendToMSServer(msg);
-            }
-            else
-            {
-                ProjectManager.Instance.GetDataOnAsync(projectId, p =>
-                {
-                    msg.MaxUserCount = p.NetData.PlayerCount;
+                case EQuickPlayType.EQPT_All:
                     SendToMSServer(msg);
-                });
+                    break;
+                case EQuickPlayType.EQPT_Specific:
+                    msg.ProjectId = projectId;
+                    ProjectManager.Instance.GetDataOnAsync(projectId, p =>
+                    {
+                        msg.OfficalMultiBattleType = (int) p.ProjectType;
+                        msg.MaxUserCount = p.NetData.PlayerCount;
+                        SendToMSServer(msg);
+                    });
+                    break;
+                case EQuickPlayType.EQPT_Offical:
+                    msg.OfficalMultiBattleType = (int) projectType;
+                    SendToMSServer(msg);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("type", type, null);
             }
         }
-        
+
         public void SendQueryRoom(long roomId)
         {
             if (!_msClient.IsConnected())
@@ -215,6 +232,7 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("当前联机服务不可用，请稍后再试");
                 return;
             }
+
             var msg = new Msg_CM_QueryRoom();
             msg.RoomId = roomId;
             SendToMSServer(msg);
@@ -233,7 +251,7 @@ namespace GameA.Game
             msg.Flag = 1;
             SendToRSServer(msg);
         }
-        
+
         public void SendQueryRoomList(bool append, long projectId = 0)
         {
             var data = new Msg_CM_QueryRoomList();
@@ -249,6 +267,7 @@ namespace GameA.Game
             {
                 _roomList.Clear();
             }
+
             data.MaxCount = UPCtrlWorldMulti.PageSize;
             SendToMSServer(data);
         }
@@ -259,7 +278,7 @@ namespace GameA.Game
             data.UserGuid = userId;
             SendToRSServer(data);
         }
-        
+
         public void SendExitRoom()
         {
             var data = new Msg_CR_UserExit();
@@ -287,7 +306,7 @@ namespace GameA.Game
             data.Flag = 1;
             SendToRSServer(data);
         }
-        
+
         #endregion
 
         #region Room Receive
@@ -301,6 +320,7 @@ namespace GameA.Game
 //                _room.OnCreateFailed();
                 return;
             }
+
 //            var user = new RoomUser();
 //            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
 //            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
@@ -325,10 +345,12 @@ namespace GameA.Game
                 {
                     SocialGUIManager.ShowPopupDialog("加入房间失败");
                 }
+
                 Messenger.Broadcast(EMessengerType.OnJoinRoomFail);
 //                _room.OnJoinFailed();
                 return;
             }
+
 //            _room.OnJoinSuccess();
             ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
         }
@@ -378,6 +400,7 @@ namespace GameA.Game
             {
                 RoomList.Add(new RoomInfo(list[i]));
             }
+
             IsEnd = list.Count < UPCtrlWorldMulti.PageSize;
             Messenger.Broadcast(EMessengerType.OnRoomListChanged);
         }
@@ -399,6 +422,7 @@ namespace GameA.Game
                 SocialGUIManager.ShowPopupDialog("查找失败");
             }
         }
+
         #endregion
     }
 }

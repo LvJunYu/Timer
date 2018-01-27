@@ -1,30 +1,34 @@
 ﻿using GameA.Game;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlCooperation : UICtrlAnimationBase<UIViewCooperation>
+    public class UICtrlCooperation : UICtrlMultiBase
     {
-        private bool _hasRequested;
-        
-        protected override void InitGroupId()
+        protected override void RequestData()
         {
-            _groupId = (int) EUIGroupType.MainUI;
+//            LocalUser.Instance.PersonalProjectList.Request(EWorkShopProjectType.WSPT_Download, 0, 4, () =>
+//            {
+//                _hasRequested = true;
+//                _dataList = LocalUser.Instance.PersonalProjectList.AllDownloadList;
+//                RefreshView();
+//            });
+            
+            _data.Request(EProjectType.PT_Cooperation, () =>
+            {
+                _hasRequested = true;
+                _dataList = _data.CooperationProjectList;
+                RefreshView();
+            });
         }
 
-        protected override void OnViewCreated()
+        protected override void OnQuickJoinBtn()
         {
-            base.OnViewCreated();
-            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
-            _cachedView.QuickJoinBtn.onClick.AddListener(OnQuickJoinBtn);
+            RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Offical, 0, EProjectType.PT_Cooperation);
         }
 
-        private void OnQuickJoinBtn()
-        {
-            RoomManager.Instance.SendRequestQuickPlay();
-        }
-
-        private void OnReturnBtn()
+        protected override void OnReturnBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlCooperation>();
         }

@@ -551,7 +551,7 @@ namespace GameA
             }
             if (_isMulti)
             {
-                RoomManager.Instance.SendRequestQuickPlay(_project.ProjectId);
+                RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Specific, _project.ProjectId);
             }
             else
             {
