@@ -45,6 +45,7 @@ namespace GameA.Game
         {
             OnDead();
             PlayMode.Instance.DestroyUnit(this);
+            RpgTaskManger.Instance.AddColltion(Id);
         }
 
         public void StopTwenner()

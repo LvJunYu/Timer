@@ -21,6 +21,9 @@ namespace GameA
         public void InitData(SeletNowTask refreshnowTask, DictionaryListObject taskDataList,
             NpcTaskDynamic taskdata = null)
         {
+            _cachedView.AddBtn.onClick.RemoveAllListeners();
+            _cachedView.ChoseBtn.onClick.RemoveAllListeners();
+            _cachedView.DelteBtn.onClick.RemoveAllListeners();
             _taskData = taskdata;
             _taskDataList = taskDataList;
             _refreshcallback = refreshnowTask;
@@ -39,12 +42,21 @@ namespace GameA
             _cachedView.ChoseBtn.onClick.AddListener(() => { _refreshcallback.Invoke(_taskData); });
             _cachedView.AddBtn.onClick.AddListener(() =>
             {
-                _taskData = new NpcTaskDynamic();
-                _taskData.NpcSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
-                _taskDataList.Add(_taskData);
-                _refreshcallback.Invoke(_taskData);
-                _cachedView.AddBtn.SetActiveEx(false);
-                _cachedView.ChoseBtn.SetActiveEx(true);
+                if (NpcTaskDataTemp.Intance.GetNpcTaskSerialNum() == NpcTaskDataTemp.NoneNumMark)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog,
+                        string.Format("任务数目达到上限"));
+                }
+                else
+                {
+                    _taskData = new NpcTaskDynamic();
+                    _taskData.NpcTaskSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
+                    NpcTaskDataTemp.Intance.SetNpcTaskSerialNum(_taskData.NpcTaskSerialNumber);
+                    _taskDataList.Add(_taskData);
+                    _refreshcallback.Invoke(_taskData);
+                    _cachedView.AddBtn.SetActiveEx(false);
+                    _cachedView.ChoseBtn.SetActiveEx(true);
+                }
             });
             _cachedView.DelteBtn.onClick.AddListener(() =>
             {
@@ -61,7 +73,7 @@ namespace GameA
                     }
                 }
                 _taskDataList.RemoveAt(index);
-                NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(_taskData.NpcSerialNumber);
+                NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(_taskData.NpcTaskSerialNumber);
                 if (_taskDataList.Count > 0)
                 {
                     _refreshcallback.Invoke(_taskDataList.Get<NpcTaskDynamic>(0));
@@ -69,7 +81,7 @@ namespace GameA
                 else
                 {
                     NpcTaskDynamic taskDta = new NpcTaskDynamic();
-                    taskDta.NpcSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
+                    taskDta.NpcTaskSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
                     _taskDataList.Add(taskDta);
                     _refreshcallback.Invoke(_taskDataList.Get<NpcTaskDynamic>(0));
                 }

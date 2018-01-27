@@ -20,6 +20,11 @@ namespace GameA
 
         private NpcTaskDataTemp()
         {
+            Clear();
+        }
+
+        public void Clear()
+        {
             _npcTaskSerialNumberDic = new Dictionary<int, bool>();
             for (int i = 0; i < MaxNpcTargetSerialNum; i++)
             {
@@ -55,48 +60,53 @@ namespace GameA
         public NpcTaskDynamic TaskData { get; set; }
         public NpcTaskTargetDynamic TaskTargetData { get; set; }
         public bool IsEditNpcData { get; set; }
-
-        public bool IsEditNpcBerOrAfter(IntVec3 guid)
-        {
-            return IsEditNpcData && (TaskType == ETaskContype.BeforeTask || TaskType == ETaskContype.AfterTask) &&
-                   guid == NpcIntVec3;
-        }
+        public UnitExtraDynamic CurExtraDynamic { get; set; }
 
         public bool IsEditNpcTarget(IntVec3 guid)
         {
-            return IsEditNpcData && TaskType == ETaskContype.Task && guid == NpcIntVec3;
+            return IsEditNpcData && guid == NpcIntVec3;
         }
 
-        public void StartEditTaskControl(NpcTaskDynamic task, IntVec3 guid, ETaskContype type)
+        public void StartEditTargetControl(NpcTaskDynamic task, IntVec3 guid, ETaskContype type, UnitExtraDynamic extra)
         {
             TaskData = task;
             TaskTargetData = new NpcTaskTargetDynamic();
+            TaskTargetData.TaskType = (byte) ENpcTargetType.Contorl;
             IsEditNpcData = true;
             TaskType = type;
             NpcIntVec3 = guid;
+            CurExtraDynamic = extra;
             EditMode.Instance.StartSwitch();
         }
 
         public void FinishAddTarget(IntVec3 guid)
         {
+            UnitExtraDynamic unitextra;
+            unitextra = DataScene2D.CurScene.GetUnitExtra(NpcIntVec3);
             TaskTargetData.TargetGuid = guid;
             switch (TaskType)
             {
                 case ETaskContype.AfterTask:
                     TaskData.TaskFinishAward.Add(TaskTargetData);
+                    unitextra.NpcTask = CurExtraDynamic.NpcTask;
                     break;
                 case ETaskContype.BeforeTask:
                     TaskData.BeforeTaskAward.Add(TaskTargetData);
+                    unitextra.NpcTask = CurExtraDynamic.NpcTask;
                     break;
                 case ETaskContype.Task:
                     TaskData.Targets.Add(TaskTargetData);
+                    unitextra.NpcTask = CurExtraDynamic.NpcTask;
                     break;
             }
+//            EditMode.Instance.StopSwitch();
         }
 
         //开关改变是查找npc改变目标guid
         public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc)
         {
+            if (UnitDefine.IsNpc(oldUnitDesc.Id))
+                return;
             IntVec3 oldGuid = oldUnitDesc.Guid;
             IntVec3 newGuid = newUnitDesc.Guid;
             using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
@@ -105,15 +115,15 @@ namespace GameA
                 {
                     if (UnitDefine.IsNpc(itor.Current.Value.Id))
                     {
-                        List<NpcTaskDynamic> taskData =
-                            itor.Current.Value.GetUnitExtra().NpcTask.ToList<NpcTaskDynamic>();
+                        DictionaryListObject taskData =
+                            itor.Current.Value.GetUnitExtra().NpcTask;
                         for (int i = 0; i < taskData.Count; i++)
                         {
-                            var beforeTaskAward = taskData[i].BeforeTaskAward.ToList<NpcTaskTargetDynamic>();
+                            var beforeTaskAward = taskData.Get<NpcTaskDynamic>(i).BeforeTaskAward;
                             ChangeGuid(oldGuid, newGuid, beforeTaskAward);
-                            var TaskFinishAward = taskData[i].TaskFinishAward.ToList<NpcTaskTargetDynamic>();
+                            var TaskFinishAward = taskData.Get<NpcTaskDynamic>(i).Targets;
                             ChangeGuid(oldGuid, newGuid, TaskFinishAward);
-                            var TaskTarget = taskData[i].Targets.ToList<NpcTaskTargetDynamic>();
+                            var TaskTarget = taskData.Get<NpcTaskDynamic>(i).TaskFinishAward;
                             ChangeGuid(oldGuid, newGuid, TaskTarget);
                         }
                     }
@@ -121,13 +131,13 @@ namespace GameA
             }
         }
 
-        public void ChangeGuid(IntVec3 oldGuid, IntVec3 newGuid, List<NpcTaskTargetDynamic> targetDynamics)
+        public void ChangeGuid(IntVec3 oldGuid, IntVec3 newGuid, DictionaryListObject targetDynamics)
         {
             for (int i = 0; i < targetDynamics.Count; i++)
             {
-                if (targetDynamics[i].TargetGuid == oldGuid)
+                if (targetDynamics.Get<NpcTaskTargetDynamic>(i).TargetGuid == oldGuid)
                 {
-                    targetDynamics[i].TargetGuid = newGuid;
+                    targetDynamics.Get<NpcTaskTargetDynamic>(i).TargetGuid = newGuid;
                 }
             }
         }
@@ -135,6 +145,8 @@ namespace GameA
         //去除npc关联的开关的方法
         public void OnUnitDelteUpdateSwitchData(UnitDesc unitDesc)
         {
+            if (UnitDefine.IsNpc(unitDesc.Id))
+                return;
             IntVec3 guid = unitDesc.Guid;
             using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
             {
@@ -142,29 +154,34 @@ namespace GameA
                 {
                     if (UnitDefine.IsNpc(itor.Current.Value.Id))
                     {
-                        List<NpcTaskDynamic> taskData =
-                            itor.Current.Value.GetUnitExtra().NpcTask.ToList<NpcTaskDynamic>();
+                        DictionaryListObject taskData =
+                            itor.Current.Value.GetUnitExtra().NpcTask;
                         for (int i = 0; i < taskData.Count; i++)
                         {
-                            for (int j = 0; j < taskData[i].BeforeTaskAward.Count; j++)
+                            NpcTaskDynamic task = taskData.Get<NpcTaskDynamic>(i);
+                            for (int j = 0; j < task.BeforeTaskAward.Count; j++)
                             {
-                                if (taskData[i].BeforeTaskAward.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                if (task.BeforeTaskAward.Get<NpcTaskTargetDynamic>(j).TargetGuid == guid)
                                 {
-                                    taskData[i].BeforeTaskAward.Remove(j);
+                                    task.BeforeTaskAward.RemoveAt(j);
                                 }
                             }
-                            for (int j = 0; j < taskData[i].TaskFinishAward.Count; j++)
+                            for (int j = 0; j < task.TaskFinishAward.Count; j++)
                             {
-                                if (taskData[i].TaskFinishAward.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                if (task.TaskFinishAward.Get<NpcTaskTargetDynamic>(j).TargetGuid == guid)
                                 {
-                                    taskData[i].TaskFinishAward.Remove(j);
+                                    task.TaskFinishAward.RemoveAt(j);
                                 }
                             }
-                            for (int j = 0; j < taskData[i].Targets.Count; j++)
+                            for (int j = 0; j < task.Targets.Count; j++)
                             {
-                                if (taskData[i].Targets.ToList<NpcTaskTargetDynamic>()[j].TargetGuid == guid)
+                                if (task.Targets.Get<NpcTaskTargetDynamic>(j).TargetGuid == guid)
                                 {
-                                    taskData[i].Targets.Remove(j);
+                                    task.Targets.RemoveAt(j);
+                                    if (task.Targets.Count == 0)
+                                    {
+                                        RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
+                                    }
                                 }
                             }
                         }
@@ -222,29 +239,6 @@ namespace GameA
             return sucess;
         }
 
-        public bool SetSecenAllTaskSerialNum(List<int> numList)
-        {
-            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
-            {
-                _npcTaskSerialNumberDic[i + 1] = false;
-            }
-            bool sucess = true;
-            for (int i = 0; i < numList.Count; i++)
-            {
-                if (_npcTaskSerialNumberDic.ContainsKey(numList[i]))
-                {
-                    _npcTaskSerialNumberDic[numList[i]] = false;
-                }
-                else
-                {
-                    sucess = false;
-                    break;
-                }
-            }
-
-            return sucess;
-        }
-
         public int GetNpcSerialNum()
         {
             int SerialNUm = NoneNumMark;
@@ -274,42 +268,44 @@ namespace GameA
             return sucess;
         }
 
-        public bool SetSecenSerialNum(int num)
+        public void AddNpc(UnitDesc unitDesc)
         {
-            bool sucess;
-            if (_npcSerialNumberDic.ContainsKey(num))
+            UnitExtraDynamic extra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+            if (UnitDefine.IsNpc(unitDesc.Id))
             {
-                _npcSerialNumberDic[num] = true;
-                sucess = true;
-            }
-            else
-            {
-                sucess = false;
-            }
-            return sucess;
-        }
-
-        public bool SetSecenAllSerialNum(List<int> numList)
-        {
-            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
-            {
-                _npcSerialNumberDic[i + 1] = false;
-            }
-            bool sucess = true;
-            for (int i = 0; i < numList.Count; i++)
-            {
-                if (_npcSerialNumberDic.ContainsKey(numList[i]))
+                if (extra.NpcSerialNumber != 0)
                 {
-                    _npcSerialNumberDic[numList[i]] = false;
+                    SetNpcSerialNum(extra.NpcSerialNumber);
                 }
                 else
                 {
-                    sucess = false;
-                    break;
+                    int num = GetNpcSerialNum();
+                    SetNpcSerialNum(num);
+                    extra.NpcSerialNumber = (ushort) num;
+                }
+                if (extra.NpcType == (int) ENpcType.Task)
+                {
+                    for (int i = 0; i < extra.NpcTask.Count; i++)
+                    {
+                        if (extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber == 0)
+                        {
+                            int taskNum = GetNpcTaskSerialNum();
+                            if (SetNpcTaskSerialNum(taskNum))
+                            {
+                                extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber = (ushort) taskNum;
+                            }
+                            else
+                            {
+                                extra.NpcTask.RemoveAt(i);
+                            }
+                        }
+                        else
+                        {
+                            SetNpcTaskSerialNum(extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber);
+                        }
+                    }
                 }
             }
-
-            return sucess;
         }
     }
 

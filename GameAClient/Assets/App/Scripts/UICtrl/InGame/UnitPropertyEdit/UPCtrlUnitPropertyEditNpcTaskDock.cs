@@ -113,8 +113,19 @@ namespace GameA
             }
             else
             {
-                CurExtraNpcTaskData = new NpcTaskDynamic();
-                NpcTaskDatas.Add(CurExtraNpcTaskData);
+                if (NpcTaskDataTemp.Intance.GetNpcTaskSerialNum() == NpcTaskDataTemp.NoneNumMark)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog,
+                        string.Format("任务数目达到上限"));
+                    _mainCtrl.Close();
+                }
+                else
+                {
+                    CurExtraNpcTaskData = new NpcTaskDynamic();
+                    CurExtraNpcTaskData.NpcTaskSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
+                    NpcTaskDataTemp.Intance.SetNpcTaskSerialNum(CurExtraNpcTaskData.NpcTaskSerialNumber);
+                    NpcTaskDatas.Add(CurExtraNpcTaskData);
+                }
             }
             RefreshView();
         }
@@ -125,7 +136,7 @@ namespace GameA
             if (!_isOpen) return;
             //名字
             _cachedView.TaskNpcName.text = _mainCtrl.EditData.UnitExtra.NpcName;
-            _cachedView.TaskSerialNumText.text = CurExtraNpcTaskData.NpcSerialNumber.ToString();
+            _cachedView.TaskSerialNumText.text = CurExtraNpcTaskData.NpcTaskSerialNumber.ToString();
             //设置任务的序列
             int taskNum = NpcTaskDatas.Count;
             for (int i = 0; i < _usCtrlUnitNpcTaskIndexGroup.Length; i++)
@@ -177,6 +188,7 @@ namespace GameA
             {
                 _usCtrlUnitNpcTaskIndexGroup[i].SetSelected(CurExtraNpcTaskData);
             }
+            _cachedView.TaskSerialNumText.text = CurExtraNpcTaskData.NpcTaskSerialNumber.ToString();
 
             // 选中任务后的刷新
             List<ENpcTargetType> listType = new List<ENpcTargetType>();
@@ -201,6 +213,10 @@ namespace GameA
             if (listType.Count >= 3)
             {
                 _cachedView.AddTargetBtn.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.AddTargetBtn.SetActiveEx(true);
             }
             for (int i = 0; i < listType.Count; i++)
             {
@@ -259,7 +275,7 @@ namespace GameA
                     _mainCtrl.EditNpcTaskColltionType.OpenMenu(target);
                     break;
                 case ENpcTargetType.Moster:
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(target);
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(target);
                     break;
                 case ENpcTargetType.Contorl:
                     break;

@@ -56,6 +56,7 @@ namespace GameA
                     _target.TaskType = (byte) ENpcTargetType.Colltion;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetColltionDic[_colltionList[0]].Id;
+                    _target.ColOrKillNum = 1;
                     _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     _taskDynamic.Targets.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
@@ -65,6 +66,7 @@ namespace GameA
                     //选择击杀
                     _target = new NpcTaskTargetDynamic();
                     _target.TaskType = (byte) ENpcTargetType.Moster;
+                    _target.ColOrKillNum = 1;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetKillDic[_killtionList[0]].Id;
                     _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_target);
@@ -77,8 +79,8 @@ namespace GameA
                     if (_mainCtrl.IsInMap)
                     {
                         _mainCtrl.Close();
-                        NpcTaskDataTemp.Intance.StartEditTaskControl(_taskDynamic, _mainCtrl.EditData.UnitDesc.Guid,
-                            ETaskContype.Task);
+                        NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic, _mainCtrl.EditData.UnitDesc.Guid,
+                            ETaskContype.Task, _mainCtrl.EditData.UnitExtra);
 
                         //打开连线界面
                     }
@@ -134,6 +136,7 @@ namespace GameA
             {
                 _panel.SetActiveEx(false);
             }
+
             base.Close();
         }
 

@@ -133,21 +133,6 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
-                    {
-                        UnitBase unit;
-                        if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
-                        {
-                            if (!unit.CanControlledBySwitch)
-                            {
-                            }
-                            else
-                            {
-                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                    coverUnits[0].Guid);
-                            }
-                        }
-                    }
                     if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
                         UnitBase unit;
@@ -155,11 +140,28 @@ namespace GameA.Game
                         {
                             if (!unit.CanControlledBySwitch)
                             {
+                                if (UnitDefine.IsCanControlByNpc(unit.Id) &&
+                                    NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                        coverUnits[0].Guid);
+                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
+                                    {
+                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                    }
+                                }
                             }
                             else
                             {
-                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                    coverUnits[0].Guid);
+                                if (!UnitDefine.IsNpc(coverUnits[0].Id))
+                                {
+                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                        coverUnits[0].Guid);
+                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
+                                    {
+                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                    }
+                                }
                             }
                         }
                     }
@@ -199,8 +201,8 @@ namespace GameA.Game
                     //非选中的npc不可以编辑
                     if (UnitDefine.IsNpc(outValue.Id))
                     {
-                        if (NpcTaskDataTemp.Intance.IsEditNpcData &&
-                            outValue.Guid == NpcTaskDataTemp.Intance.NpcIntVec3)
+                        if (NpcTaskDataTemp.Intance.IsEditNpcTarget(outValue.Guid))
+
                         {
                             SelectUnit(outValue);
                             return true;
@@ -365,7 +367,15 @@ namespace GameA.Game
                             if (!UnitDefine.IsSwitch(itor.Current.Value.Id) &&
                                 !itor.Current.Value.CanControlledBySwitch)
                             {
-                                itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                if (UnitDefine.IsCanControlByNpc(itor.Current.Value.Id) &&
+                                    NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                }
+                                else
+                                {
+                                    itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                }
                             }
                             else
                             {

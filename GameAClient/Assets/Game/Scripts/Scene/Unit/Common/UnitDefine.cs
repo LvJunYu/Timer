@@ -194,5 +194,20 @@ namespace GameA.Game
         {
             return id > 30000 && id < 31000;
         }
+
+        public static bool IsCanControlByNpc(int id)
+        {
+            return id == 5013;
+        }
+
+        public static bool IsKey(int id)
+        {
+            return id == 5012;
+        }
+
+        public static bool IsTeeth(int id)
+        {
+            return id == 6001;
+        }
     }
 }

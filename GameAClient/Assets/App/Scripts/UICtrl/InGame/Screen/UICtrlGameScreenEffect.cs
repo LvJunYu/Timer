@@ -57,7 +57,7 @@ namespace GameA
             }
             pos.z = 0;
             Vector3 _pos = (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor;
-            _pos += new Vector3(0, 100, 0);
+            _pos += new Vector3(0, 150, 0);
             UMCtrlNpcDiaPop diaPop =
                 UMPoolManager.Instance.Get<UMCtrlNpcDiaPop>(_cachedView.Trans, EResScenary.UIInGame);
             diaPop.Init(_cachedView.Trans,
@@ -71,7 +71,7 @@ namespace GameA
         public void SetDymicPos(UMCtrlNpcDiaPop pop, Vector3 pos)
         {
             Vector3 _pos = (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor;
-            _pos += new Vector3(0, 100, 0);
+            _pos += new Vector3(0, 150, 0);
             pop.SetDymicPos(_pos);
         }
 

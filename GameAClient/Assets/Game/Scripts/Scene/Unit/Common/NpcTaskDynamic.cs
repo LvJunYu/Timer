@@ -18,7 +18,7 @@ namespace GameA.Game
     {
         static NpcTaskDynamic()
         {
-            DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
+            DefineField<ushort>(FieldTag.NpcTaskSerialNumber, "NpcTaskSerialNumber");
             DefineField<ushort>(FieldTag.TriggerTaskNumber, "TriggerTaskNumber");
             DefineField<NpcTaskTargetDynamic>(FieldTag.TriggerTask, "TriggerTask");
             DefineField<byte>(FieldTag.TriggerType, "TriggerType");
@@ -34,7 +34,7 @@ namespace GameA.Game
         public class FieldTag
         {
             private static int _nextId;
-            public static readonly int NpcSerialNumber = _nextId++;
+            public static readonly int NpcTaskSerialNumber = _nextId++;
             public static readonly int TriggerTaskNumber = _nextId++;
             public static readonly int TriggerTask = _nextId++;
             public static readonly int TriggerType = _nextId++;
@@ -47,11 +47,11 @@ namespace GameA.Game
             public static readonly int TaskimeLimit = _nextId++;
         }
 
-        public ushort NpcSerialNumber
+        public ushort NpcTaskSerialNumber
         {
-            get { return Get<ushort>(FieldTag.NpcSerialNumber); }
+            get { return Get<ushort>(FieldTag.NpcTaskSerialNumber); }
 
-            set { Set(value, FieldTag.NpcSerialNumber); }
+            set { Set(value, FieldTag.NpcTaskSerialNumber); }
         }
 
         public NpcTaskTargetDynamic TriggerTask
@@ -65,7 +65,7 @@ namespace GameA.Game
         {
             get { return Get<ushort>(FieldTag.TriggerTaskNumber); }
 
-            set { Set(value, FieldTag.NpcSerialNumber); }
+            set { Set(value, FieldTag.NpcTaskSerialNumber); }
         }
 
 
@@ -129,7 +129,7 @@ namespace GameA.Game
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
             var msg = new UnitExtraNpcTaskData();
-            msg.NpcSerialNumber = NpcSerialNumber;
+            msg.NpcTaskSerialNumber = NpcTaskSerialNumber;
             msg.TriggerTaskNumber = TriggerTaskNumber;
             msg.TriggerTask = TriggerTask.ToUnitExtraNpcTaskTarget();
             msg.TriggerType = TriggerType;
@@ -170,7 +170,7 @@ namespace GameA.Game
 
         public void Set(UnitExtraNpcTaskData data)
         {
-            NpcSerialNumber = (ushort) data.NpcSerialNumber;
+            NpcTaskSerialNumber = (ushort) data.NpcTaskSerialNumber;
             TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
             TriggerTask.Set(data.TriggerTask);
             TriggerType = (byte) data.TriggerType;

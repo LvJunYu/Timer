@@ -50,13 +50,13 @@ namespace GameA
             });
             _cachedView.TaskMidBeforeBtn.onClick.AddListener(() =>
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
+                SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskMiddle);
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
                     .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
             });
             _cachedView.TaskAfterBeforeBtn.onClick.AddListener(() =>
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
+                SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskAfter);
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
                     .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
             });
@@ -182,6 +182,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             if (_completeAnim)
             {
                 _closeSequence.Complete(true);
@@ -191,6 +192,7 @@ namespace GameA
             {
                 _closeSequence.PlayForward();
             }
+
             _openAnim = false;
         }
 

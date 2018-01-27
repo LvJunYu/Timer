@@ -17,7 +17,6 @@ namespace GameA
         private NpcDialogPreinstallList _dialogPreinstallList;
 
         private NpcDia _curEditNpcDia;
-        private Enpc _curENpcType;
         List<Image> _iconImages = new List<Image>();
         List<Image> _iconSelectImages = new List<Image>();
         List<USCtrlNpcDiaItem> _npcDiaItemList = new List<USCtrlNpcDiaItem>();
@@ -151,6 +150,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _npcDiaStrList = (DictionaryListObject) parameter;
+            _npcDiaList.Clear();
             if (_npcDiaStrList.Count == 0)
             {
                 _curEditNpcDia = new NpcDia();
@@ -182,7 +182,7 @@ namespace GameA
                 }
                 else
                 {
-                    _npcDiaItemList[i].setDiasble();
+                    _npcDiaItemList[i].setDiasble(i);
                 }
             }
         }
@@ -201,12 +201,12 @@ namespace GameA
             {
                 if (inx + 1 == (int) Enpc.Lead)
                 {
-                    _curENpcType = Enpc.Lead;
+                    _curEditNpcDia.NpcId = Enpc.Lead;
                     RefreshIconSprite();
                 }
                 else
                 {
-                    _curENpcType = _oriENpcType;
+                    _curEditNpcDia.NpcId = _oriENpcType;
                     RefreshIconSprite();
                 }
             }
@@ -264,7 +264,7 @@ namespace GameA
             Sprite iconsprite;
             for (int i = 1; i < (int) ENpcFace.Max; i++)
             {
-                name = NpcDia.GetNpcFaceSpriteName(_curENpcType, (ENpcFace) i);
+                name = NpcDia.GetNpcFaceSpriteName(_curEditNpcDia.NpcId, (ENpcFace) i);
                 JoyResManager.Instance.TryGetSprite(name, out iconsprite);
                 _iconImages[i - 1].sprite = iconsprite;
                 _iconSelectImages[i - 1].sprite = iconsprite;
@@ -295,7 +295,7 @@ namespace GameA
         public void SetNpcType(Enpc _enpc)
         {
             _oriENpcType = _enpc;
-            _curENpcType = _oriENpcType;
+            _curEditNpcDia.NpcId = _oriENpcType;
             RefreshIconSprite();
             RefreshCurDia();
         }

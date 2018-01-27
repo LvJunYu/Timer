@@ -93,10 +93,11 @@ namespace GameA
         }
 
 
-        public void setDiasble()
+        public void setDiasble(int index)
         {
             _cachedView.DisableObj.SetActive(true);
             _cachedView.EnableObj.SetActive(false);
+            SetIndex(index);
         }
 
         public void setEenable()

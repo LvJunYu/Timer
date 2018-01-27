@@ -57,5 +57,14 @@ namespace GameA.Game
             }
             GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
         }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            if (UnitDefine.IsNpc(unit.Id))
+            {
+                RpgTaskManger.Instance.OnPlayHitNpc(unit.Guid);
+            }
+        }
     }
 }
