@@ -28,6 +28,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allAirWallUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allMonsterCaves = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
@@ -91,6 +92,11 @@ namespace GameA.Game
             get { return _useAOI; }
         }
 
+        public List<UnitBase> AllMonsterCaves
+        {
+            get { return _allMonsterCaves; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -114,6 +120,7 @@ namespace GameA.Game
             _allBulletUnits.Clear();
             _allAirWallUnits.Clear();
             _allOtherUnits.Clear();
+            _allMonsterCaves.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -287,6 +294,10 @@ namespace GameA.Game
                 _allOtherUnits.Add(unit);
             }
 
+            if (UnitDefine.MonsterCaveId == unit.Id)
+            {
+                _allMonsterCaves.Add(unit);
+            }
             return true;
         }
 
@@ -357,8 +368,10 @@ namespace GameA.Game
             {
                 _allOtherUnits.Remove(unit);
             }
-
-
+            if (UnitDefine.MonsterCaveId == unit.Id)
+            {
+                _allMonsterCaves.Remove(unit);
+            }
             return _units.Remove(unitDesc.Guid);
         }
 

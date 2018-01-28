@@ -27,7 +27,6 @@ namespace GameA.Game
         [SerializeField] private int _winCondition;
         private NetBattleData _netBattleData;
         private int _levelFinishCount;
-        private int _monsterCaveCount;
 
         public EReviveType ReviveType
         {
@@ -37,6 +36,7 @@ namespace GameA.Game
                 {
                     return EReviveType.Original;
                 }
+
                 return (EReviveType) _netBattleData.ReviveType;
             }
         }
@@ -50,6 +50,7 @@ namespace GameA.Game
                 {
                     ClearFinishCount();
                 }
+
                 _needSave = value;
             }
         }
@@ -73,11 +74,6 @@ namespace GameA.Game
         {
             get { return _monsterCount; }
         }
-        
-        public int MonsterCaveCount
-        {
-            get { return _monsterCaveCount; }
-        }
 
         public int HeroCageCount
         {
@@ -98,6 +94,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 NeedSave = true;
                 _timeLimit = value;
             }
@@ -112,6 +109,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 NeedSave = true;
                 _lifeCount = value;
             }
@@ -132,19 +130,23 @@ namespace GameA.Game
                 {
                     result |= 1 << (int) EWinCondition.WC_Monster;
                 }
+
                 if (HasWinCondition(EWinCondition.WC_Collect))
                 {
                     result |= 1 << (int) EWinCondition.WC_Collect;
                 }
+
                 if (HasWinCondition(EWinCondition.WC_Arrive))
                 {
                     result |= 1 << (int) EWinCondition.WC_Arrive;
                 }
+
                 // 
                 if (result == 0)
                 {
                     result |= 1 << (int) EWinCondition.WC_TimeLimit;
                 }
+
                 return result;
             }
         }
@@ -223,6 +225,7 @@ namespace GameA.Game
                 {
                     return 0;
                 }
+
                 return _netBattleData.ReviveTime;
             }
             set
@@ -244,6 +247,7 @@ namespace GameA.Game
                 {
                     return 0;
                 }
+
                 return _netBattleData.ReviveInvincibleTime;
             }
             set
@@ -336,6 +340,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 if (_netBattleData.KillPlayerScore != value)
                 {
                     _netBattleData.KillPlayerScore = value;
@@ -353,6 +358,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 if (_netBattleData.ScoreWinCondition != value)
                 {
                     _netBattleData.ScoreWinCondition = value;
@@ -369,6 +375,7 @@ namespace GameA.Game
                 {
                     return false;
                 }
+
                 return _netBattleData.InfiniteLife;
             }
             set
@@ -377,6 +384,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 if (_netBattleData.InfiniteLife != value)
                 {
                     _netBattleData.InfiniteLife = value;
@@ -400,6 +408,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             NeedSave = true;
             if (value)
             {
@@ -453,6 +462,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return (_winCondition & (1 << (int) eWinCondition)) != 0;
         }
 
@@ -466,12 +476,13 @@ namespace GameA.Game
             _levelFinishCount = 0;
         }
 
-        public void AddOrDeleteUnit(Table_Unit tableUnit, bool value, bool isInit = false)
+        public void AddOrDeleteUnit(Table_Unit tableUnit , bool value, bool isInit = false)
         {
             if (!isInit)
             {
                 NeedSave = true;
             }
+
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnCount = value ? ++_spawnCount : --_spawnCount;
@@ -492,10 +503,6 @@ namespace GameA.Game
             {
                 _gemCount = value ? ++_gemCount : --_gemCount;
             }
-            else if (tableUnit.Id == UnitDefine.MonsterCaveId)
-            {
-                _monsterCaveCount = value ? ++_monsterCaveCount : --_monsterCaveCount;
-            }
         }
 
         public void AddOrDeleteConnection()
@@ -509,6 +516,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return (1 << (int) eHarmType & _netBattleData.HarmType) != 0;
         }
 
@@ -518,11 +526,13 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (CanHarmType(eHarmType) == value) return;
             if (!Init)
             {
                 NeedSave = true;
             }
+
             if (value)
             {
                 _netBattleData.HarmType |= 1 << (int) eHarmType;

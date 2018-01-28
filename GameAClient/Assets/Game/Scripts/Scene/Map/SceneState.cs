@@ -58,6 +58,7 @@ namespace GameA.Game
                 {
                     return 0;
                 }
+
                 return (int) (RunTimeTimeLimit - _gameTimer);
             }
         }
@@ -79,6 +80,7 @@ namespace GameA.Game
                     {
                         return Statistics.NetBattleTimeLimit;
                     }
+
                     return Statistics.TimeLimit * 10;
                 }
             }
@@ -96,12 +98,7 @@ namespace GameA.Game
 
         public int MonsterCount
         {
-            get { return Statistics.MonsterCount; }
-        }
-        
-        public int MonsterCaveCount
-        {
-            get { return Statistics.MonsterCaveCount; }
+            get { return Statistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves(); }
         }
 
         public int HeroCageCount
@@ -141,6 +138,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 _arrived = value;
                 UpdateWinState();
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
@@ -175,8 +173,10 @@ namespace GameA.Game
                     {
                         return 99;
                     }
+
                     return Statistics.NetBattleLifeCount;
                 }
+
                 return Statistics.LifeCount;
             }
         }
@@ -204,6 +204,7 @@ namespace GameA.Game
                 {
                     return TeamManager.Instance.GetMyTeamScore();
                 }
+
                 // 总分 = 杀死怪物得分 + 拾取宝石得分 + 剩余时间得分 + 剩余生命
                 return GetScore();
             }
@@ -243,6 +244,7 @@ namespace GameA.Game
                 total += (int) (RunTimeTimeLimit - _gameTimer) * 10;
                 total += PlayMode.Instance.MainPlayer.Life * 200;
             }
+
             //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
             //{
             //    total += total / 5;
@@ -286,14 +288,17 @@ namespace GameA.Game
             {
                 RemoveCondition(EWinCondition.WC_Arrive);
             }
+
             if (Statistics.GemCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Collect);
             }
+
             if (Statistics.MonsterCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Monster);
             }
+
             _gameTimer = 0;
             _runState = ESceneState.Run;
             Messenger.Broadcast(EMessengerType.OnWinDataChanged);
@@ -328,6 +333,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             //录像模式下如果出了问题至少保证时间超过录像长度就退出。
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord &&
                 GameRun.Instance.LogicFrameCnt >=
@@ -337,6 +343,7 @@ namespace GameA.Game
                 SocialApp.Instance.ReturnToApp();
                 return;
             }
+
             _gameTimer += deltaTime;
             if (IsMulti)
             {
@@ -376,8 +383,10 @@ namespace GameA.Game
                         // 因时间用完没有达到目标而失败
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
+
                     //_secondLeft = 0;
                 }
+
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
             }
         }
@@ -393,6 +402,7 @@ namespace GameA.Game
                     {
                         _keyDic.Add(playerId, 0);
                     }
+
                     _keyDic[playerId]++;
                 }
             }
@@ -426,6 +436,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -441,30 +452,37 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (Statistics.WinCondition == 0)
             {
                 return false;
             }
+
             if (Statistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
                     return true;
                 }
+
                 return false;
             }
+
             if (PlayMode.Instance.MainPlayer == null)
             {
                 return false;
             }
+
             if (CheckWinCollectTreasure())
             {
                 return false;
             }
+
             if (CheckWinKillMonster())
             {
                 return false;
             }
+
             //if (CheckWinRescueHero())
             //{
             //    return false;
@@ -476,6 +494,7 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -498,6 +517,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _runState = ESceneState.Win;
             Messenger.Broadcast(EMessengerType.GameFinishSuccess);
             LogHelper.Debug("Win");
@@ -554,6 +574,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (win)
             {
                 _runState = ESceneState.Win;
@@ -564,6 +585,7 @@ namespace GameA.Game
                 _runState = ESceneState.Fail;
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
             }
+
             if (scoreWin)
             {
                 TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);

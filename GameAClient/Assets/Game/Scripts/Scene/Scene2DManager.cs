@@ -128,6 +128,7 @@ namespace GameA.Game
                     data.Add(array[i]);
                 }
             }
+
             return data;
         }
 
@@ -281,6 +282,7 @@ namespace GameA.Game
             {
                 _initialMapSize = mainRect.Max - mainRect.Min + IntVec2.one;
             }
+
             MainDataScene2D.InitPlay(mainRect);
             for (int i = 0; i < mapData.OtherScenes.Count; i++)
             {
@@ -403,7 +405,18 @@ namespace GameA.Game
 
             ChangeScene(SqawnSceneIndex);
         }
-        
+
+        public int GetMonsterCountInCaves()
+        {
+            int count = 0;
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                count += _sceneList[i].GetMonsterCountInCaves();
+            }
+
+            return count;
+        }
+
         public void DeleteUnitsOutofMap()
         {
             ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
@@ -469,7 +482,6 @@ namespace GameA.Game
                 _curScene.CommitRecord(editRecordBatch);
             }
         }
-
     }
 
     public class Scene2DEntity : IDisposable
@@ -549,7 +561,7 @@ namespace GameA.Game
         {
             _colliderScene.AddUnitsOutofMap();
         }
-        
+
         public void DeleteUnitsOutofMap()
         {
             UnitBase[] units = _colliderScene.Units.Values.ToArray();
@@ -563,7 +575,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public void CreateAirWall()
         {
             var validMapRect = _dataScene.ValidMapRect;
@@ -601,6 +613,16 @@ namespace GameA.Game
             _editRecordManager.CommitRecord(editRecordBatch);
         }
 
+        public int GetMonsterCountInCaves()
+        {
+            int count = 0;
+            var caves = _colliderScene.AllMonsterCaves;
+            for (int i = 0; i < caves.Count; i++)
+            {
+                count += _dataScene.GetUnitExtra(caves[i].Guid).MaxCreatedMonster;
+            }
+            return count;
+        }
     }
 
     public enum EChangeSceneType
