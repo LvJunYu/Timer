@@ -120,12 +120,20 @@ namespace GameA.Game
         
         public override void UpdateLogic()
         {
+            if (!_run)
+            {
+                return;
+            }
             Speed += _fanForce;
             _fanForce = IntVec2.zero;
         }
         
         public override void UpdateView(float deltaTime)
         {
+            if (!_run)
+            {
+                return;
+            }
             if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
