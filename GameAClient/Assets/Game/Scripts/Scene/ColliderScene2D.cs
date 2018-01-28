@@ -1048,7 +1048,7 @@ namespace GameA.Game
 
             foreach (var unit in _units.Values)
             {
-                if (unit.IsInterest && CheckCanDelete(unit.TableUnit))
+                if (unit.View != null && CheckCanDelete(unit.TableUnit))
                 {
                     DestroyView(unit);
                     SetUnitInterest(unit, false);
