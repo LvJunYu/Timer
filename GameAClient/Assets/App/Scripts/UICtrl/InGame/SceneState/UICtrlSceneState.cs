@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System.Collections.Generic;
-using System.Net.Configuration;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
@@ -54,6 +53,8 @@ namespace GameA
 
         private float _showHelpTimer;
         private bool _showCountDownTime;
+        private int _lastShowTime;
+        private Sequence _startSequence;
 
         public bool ShowHelpPage3SecondsComplete
         {
@@ -184,7 +185,13 @@ namespace GameA
 
             if (_showCountDownTime)
             {
-                _cachedView.CountDownTxt.text = Mathf.CeilToInt(_countDownTimer).ToString();
+                var showTime = Mathf.CeilToInt(_countDownTimer);
+                if (showTime != _lastShowTime)
+                {
+                    _startSequence.Restart();
+                    _cachedView.CountDownTxt.text = showTime.ToString();
+                    _lastShowTime = showTime;
+                }
                 if (_countDownTimer > 0)
                 {
                     _countDownTimer -= Time.deltaTime;
@@ -630,6 +637,17 @@ namespace GameA
             _finalCountDownSequence.SetAutoKill(false).Pause();
         }
 
+        private void CreateStartCountDownSequence()
+        {
+            _startSequence = DOTween.Sequence();
+            _startSequence.Append(
+                _cachedView.CountDownTxt.rectTransform().DOScale(Vector3.one * 0.3f, 0.1f));
+            _startSequence.Append(
+                _cachedView.CountDownTxt.rectTransform().DOScale(Vector3.one * 1.15f, 0.15f)
+                    .SetEase(Ease.OutBack));
+            _startSequence.SetAutoKill(false).Pause();
+        }
+
         private void ShowFinalCountDown02(int curValue)
         {
             int seconds = curValue % 60;
@@ -716,11 +734,19 @@ namespace GameA
             _showCountDownTime = value;
             _countDownTimer = CountDownTime;
             _cachedView.CountDownTxt.SetActiveEx(value);
+            _cachedView.LeftTimeText.SetActiveEx(!value);
+            if (_startSequence == null)
+            {
+                CreateStartCountDownSequence();
+            }
         }
 
         public void SetNpcTaskPanelDis()
         {
-            _cachedView.TaskPanel.SetActive(false);
+            if (_isViewCreated)
+            {
+                _cachedView.TaskPanel.SetActive(false);
+            }
         }
 
         public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> _nowTaskDic,

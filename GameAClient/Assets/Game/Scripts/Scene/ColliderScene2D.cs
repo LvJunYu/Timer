@@ -243,7 +243,7 @@ namespace GameA.Game
                 return false;
             }
 
-            unit.IsInterest = !_useAOI;
+            unit.IsInterest = !_useAOI || tempData;
             _units.Add(unitDesc.Guid, unit);
 
             if (tableUnit.IsGround == 1)

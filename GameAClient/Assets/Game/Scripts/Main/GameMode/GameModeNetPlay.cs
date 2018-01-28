@@ -243,6 +243,11 @@ namespace GameA.Game
                     _frameLeftTime = 0;
                 }
             }
+
+            if (_curGamePhase == EGamePhase.CountDown)
+            {
+                GameRun.Instance.UpdateSkeletonAnimation();
+            }
         }
 
         private bool NeedApplyData()

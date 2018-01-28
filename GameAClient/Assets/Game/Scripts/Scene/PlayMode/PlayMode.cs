@@ -633,8 +633,7 @@ namespace GameA.Game
             Scene2DManager.Instance.CreateAirWall();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
             BgScene2D.Instance.Reset();
-            var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
-            UpdateWorldRegion(colliderPos, true);
+            UpdateWorldRegion(_mainPlayer.CurPos, true);
         }
 
         public bool Playing()
