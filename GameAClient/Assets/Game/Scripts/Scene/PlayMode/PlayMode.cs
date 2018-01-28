@@ -634,6 +634,7 @@ namespace GameA.Game
             CameraManager.Instance.SetCameraState(ECameraState.Play);
             BgScene2D.Instance.Reset();
             UpdateWorldRegion(_mainPlayer.CurPos, true);
+            BgScene2D.Instance.UpdateLogic(CameraManager.Instance.MainCameraTrans.position);
         }
 
         public bool Playing()

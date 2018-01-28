@@ -82,7 +82,6 @@ namespace GameA
             SelectChatTypeTag(_currentChatTypeTag);
         }
 
-
         private void SelectChatTypeTag(ChatData.EChatType chatType)
         {
             _currentChatTypeTag = chatType;

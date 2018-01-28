@@ -12,11 +12,12 @@ namespace GameA
         private const int ChatListLowWaterLine = 30;
         private const long RoomChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long WorldChatCDTimeTick = 15 * GameTimer.Second2Ticks;
-        
+        private const string FrequentlyWarning = "您的发言太快，请{0}秒后再发送";
+
         public event Action<EChatType, Item> OnChatListAppend;
         public event Action<EChatType> OnChatListCutHead;
-        
-        
+
+
         private List<Item> _allChatList = new List<Item>();
         private List<Item> _worldChatList = new List<Item>();
         private List<Item> _worldInviteChatList = new List<Item>();
@@ -63,6 +64,7 @@ namespace GameA
             {
                 return false;
             }
+
             Msg_CR_RoomChat msg = new Msg_CR_RoomChat();
             msg.Data = data;
             RoomManager.Instance.SendToRSServer(msg);
@@ -73,8 +75,10 @@ namespace GameA
         {
             if (!_worldCDTimer.PassedTicks(WorldChatCDTimeTick))
             {
+                AddLocalSystemChat(string.Format(FrequentlyWarning, GetWorldLeftSecond()));
                 return false;
             }
+
             Msg_CM_Chat msg = new Msg_CM_Chat();
             msg.ChatType = ECMChatType.CMCT_WorldChat;
             msg.Data = data;
@@ -82,19 +86,35 @@ namespace GameA
             return true;
         }
 
+        private int GetWorldLeftSecond()
+        {
+            return (int) (WorldChatCDTimeTick / GameTimer.Second2Ticks - _worldCDTimer.GetIntervalSeconds());
+        }
+
+        public void AddLocalSystemChat(string data)
+        {
+            var msg = new Msg_MC_Chat();
+            msg.Data = data;
+            msg.ChatType = ECMChatType.CMCT_System;
+            var item = new Item(msg);
+            AddChatItem(item);
+        }
+
         public bool SendWorldInvite(long roomId)
         {
             if (!_worldCDTimer.PassedTicks(WorldChatCDTimeTick))
             {
+                AddLocalSystemChat(string.Format(FrequentlyWarning, GetWorldLeftSecond()));
                 return false;
             }
+
             Msg_CM_Chat msg = new Msg_CM_Chat();
             msg.ChatType = ECMChatType.CMCT_WorldInvite;
             msg.Param = roomId;
             RoomManager.Instance.SendToMSServer(msg);
             return true;
         }
-        
+
         public void OnRCChat(Msg_RC_RoomChat msgChat)
         {
             var item = new Item(msgChat);
@@ -106,7 +126,7 @@ namespace GameA
             var item = new Item(msgChat);
             AddChatItem(item);
         }
-        
+
         private void AddChatItem(Item item)
         {
             AddChatItem(EChatType.All, item);
@@ -143,7 +163,7 @@ namespace GameA
                     throw new ArgumentOutOfRangeException("chatType", chatType, null);
             }
         }
-        
+
         private void FireAppendEvent(EChatType chatType, Item item)
         {
             if (OnChatListAppend != null)
@@ -159,7 +179,7 @@ namespace GameA
                 OnChatListCutHead.Invoke(chatType);
             }
         }
-        
+
         public class Item
         {
             private ChatUser _chatUser;
@@ -204,6 +224,7 @@ namespace GameA
                 {
                     _chatUser = new ChatUser(msg.PlayerId, "" + msg.PlayerId);
                 }
+
                 _chatType = EChatType.Room;
                 _content = msg.Data;
                 _time = DateTime.Now;
@@ -228,6 +249,7 @@ namespace GameA
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 _content = msg.Data;
                 _param = msg.Param;
                 _time = DateTime.Now;
@@ -237,12 +259,12 @@ namespace GameA
                 }
             }
         }
-        
+
         public class ChatUser
         {
             private long _userGuid;
             private string _userNickName;
-            
+
             public long UserGuid
             {
                 get { return _userGuid; }
@@ -259,7 +281,7 @@ namespace GameA
                 _userNickName = userNickName;
             }
         }
-        
+
         public enum EChatType
         {
             All,

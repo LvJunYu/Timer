@@ -13,9 +13,15 @@ namespace GameA
         private const string TemplateHomeChat =
             "<color=#e57c17><a href=user>{0}</a>：</color><color=#ffffff>{1}</color>";
 
-        private const string TemplateInvite = "<color=#a325cd>招募：</color><color=#e57c17><a href=user>{0}</a></color>" +
-                                              "<color=#775337>邀请您一起加入关卡{1}！</color>" +
-                                              "<color=#a325cd><a href=room>【点击进入】</a></color>";
+        private const string TemplateRoomInvite =
+            "<color=#a325cd>招募：</color><color=#e57c17><a href=user>{0}</a></color>" +
+            "<color=#775337>邀请您一起加入关卡{1}！</color>" +
+            "<color=#a325cd><a href=room>【点击进入】</a></color>";
+
+        private const string TemplateWorldInvite =
+            "<color=#a325cd>招募：</color><color=#e57c17><a href=user>{0}</a></color>" +
+            "<color=#FFFFFF>邀请您一起加入关卡{1}！</color>" +
+            "<color=#a325cd><a href=room>【点击进入】</a></color>";
 
         public USCtrlChat MainCtrl { set; get; }
         private ChatData.Item _item;
@@ -46,7 +52,9 @@ namespace GameA
             }
             else if (_item.ChatType == ChatData.EChatType.WorldInvite)
             {
-                _cachedView.Text.text = String.Format(TemplateInvite, _item.ChatUser.UserNickName, _item.Param);
+                _cachedView.Text.text =
+                    String.Format(MainCtrl.Scene == USCtrlChat.EScene.Room ? TemplateRoomInvite : TemplateWorldInvite,
+                        _item.ChatUser.UserNickName, _item.Param);
             }
             else
             {

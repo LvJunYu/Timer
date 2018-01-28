@@ -327,6 +327,10 @@ namespace GameA
 
         private void OnWorldRecruitBtn()
         {
+            if (!AppData.Instance.ChatData.SendWorldInvite(_roomInfo.RoomId))
+            {
+                return;
+            }
         }
     }
 }
