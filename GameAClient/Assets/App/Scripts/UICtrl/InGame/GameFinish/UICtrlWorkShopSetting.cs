@@ -244,7 +244,9 @@ namespace GameA
             {
                 GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                 if (null != gameModeEdit)
+                {
                     gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
+                }
             }
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");

@@ -431,6 +431,7 @@ namespace GameA
                 _spawnMenuList[i] = button;
                 _spawnMenuList[i].AddClickListener(() => OnSpawnMenuClick(inx));
                 _spawnMenuList[i].AddDeleteBtnListener(() => OnSpawnMenuDelete(inx));
+                _spawnMenuList[i].SetText(string.Format("0{0}", i + 1));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
             }
         }
@@ -450,6 +451,7 @@ namespace GameA
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
                 return;
             }
+
             _curSelectedPlayerIndex = 0;
             Reset();
             _upCtrlUnitPropertyEditPreinstall.Open();
@@ -935,11 +937,13 @@ namespace GameA
                     }
                 }
             }
+
             var uiCtrlFashionSpineExtra = SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>();
             if (!uiCtrlFashionSpineExtra.IsOpen)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlFashionSpineExtra>();
             }
+
             _cachedView.CharacterRawImage.texture =
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>().AvatarRenderTexture;
         }
@@ -1076,6 +1080,7 @@ namespace GameA
                     _upCtrlUnitPropertyEditAdvance.Close();
                     return;
                 }
+
                 playerUnitExtra = UnitExtraDynamic.GetDefaultPlayerValue(inx, _project.ProjectType);
                 EditData.UnitExtra.InternalUnitExtras.Set(playerUnitExtra, inx);
             }
@@ -1158,11 +1163,13 @@ namespace GameA
                     _upCtrlUnitPropertyEditAdvance.Close();
                 }
             }
+
             if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Dialog)
             {
                 EditNpcDiaType.Open();
                 EditNpcTaskDock.Close();
             }
+
             //任务型npc
 //            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
             if (editType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
@@ -1196,6 +1203,7 @@ namespace GameA
                 EditNpcDiaType.Open();
                 EditNpcTaskDock.Close();
             }
+
             //任务型npc
 //            UpCtrlUnitPropertyEditNpcTaskAdvance.Close();
             if (_curEditType == EEditType.NpcTask && (ENpcType) EditData.UnitExtra.NpcType == ENpcType.Task)
@@ -1203,6 +1211,7 @@ namespace GameA
                 EditNpcDiaType.Close();
                 EditNpcTaskDock.Open();
             }
+
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             EditNpcTaskDock.RefreshView();
             EditNpcDiaType.RefreshView();
