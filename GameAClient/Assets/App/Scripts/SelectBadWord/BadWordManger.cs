@@ -41,6 +41,10 @@ namespace GameA
         {
             inputField.onValueChanged.AddListener((string inputtext) =>
             {
+                if (inputtext == null)
+                {
+                    return;
+                }
                 inputField.text = Replace(inputtext, repaceChar);
             });
         }

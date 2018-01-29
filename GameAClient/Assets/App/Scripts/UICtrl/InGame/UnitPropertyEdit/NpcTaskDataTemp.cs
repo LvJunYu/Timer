@@ -192,16 +192,16 @@ namespace GameA
 
         public int GetNpcTaskSerialNum()
         {
-            int SerialNUm = NoneNumMark;
+            int serialNUm = NoneNumMark;
             for (int i = 0; i < MaxNpcTargetSerialNum; i++)
             {
                 if (!_npcTaskSerialNumberDic[i + 1])
                 {
-                    SerialNUm = i + 1;
+                    serialNUm = i + 1;
                     break;
                 }
             }
-            return SerialNUm;
+            return serialNUm;
         }
 
         public void RecycleNpcTaskSerialNum(int num)
@@ -241,16 +241,16 @@ namespace GameA
 
         public int GetNpcSerialNum()
         {
-            int SerialNUm = NoneNumMark;
+            int serialNUm = NoneNumMark;
             for (int i = 0; i < MaxNpcTargetSerialNum; i++)
             {
                 if (!_npcSerialNumberDic[i + 1])
                 {
-                    SerialNUm = i + 1;
+                    serialNUm = i + 1;
                     break;
                 }
             }
-            return SerialNUm;
+            return serialNUm;
         }
 
         public bool SetNpcSerialNum(int num)

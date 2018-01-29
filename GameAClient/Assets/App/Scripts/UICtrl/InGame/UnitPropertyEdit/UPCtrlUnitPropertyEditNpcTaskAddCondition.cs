@@ -14,6 +14,13 @@ namespace GameA
     {
         private GameObject _panel;
         private RectTransform _contentRtf;
+
+        public RectTransform ContentRtf
+        {
+            get { return _contentRtf; }
+            set { _contentRtf = value; }
+        }
+
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;

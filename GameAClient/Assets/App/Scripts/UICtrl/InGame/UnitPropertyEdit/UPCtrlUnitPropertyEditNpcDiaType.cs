@@ -91,8 +91,7 @@ namespace GameA
         {
 // 关闭的时候设置名字和对话内容
             _cachedView.NpcDiaLogDock.SetActiveEx(false);
-
-            SaveData();
+//            SaveData();
             base.Close();
         }
 
@@ -122,6 +121,10 @@ namespace GameA
 
         private void SetNameLength(string str)
         {
+            if (str == null)
+            {
+                return;
+            }
             _cachedView.NameTextNum.text = String.Format("{0}/{1}", str.Length, NamMaxLength);
             if (str.Length > NamMaxLength)
             {
@@ -131,6 +134,10 @@ namespace GameA
 
         private void SetDiALength(string str)
         {
+            if (str == null)
+            {
+                return;
+            }
             _cachedView.DiaTextNum.text = String.Format("{0}/{1}", str.Length, DiaMaxLength);
             if (str.Length > DiaMaxLength)
             {

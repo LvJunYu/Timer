@@ -119,6 +119,7 @@ namespace GameA.Game
         protected virtual void OnTrigger(UnitBase other)
         {
             if (!_trigger)
+                
             {
                 _trigger = true;
                 _unit = other;

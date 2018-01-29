@@ -89,6 +89,10 @@ namespace GameA
             //npc名字限制长度
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TaskNpcName);
             _cachedView.TaskNpcName.onValueChanged.AddListener(SetNameLength);
+            _cachedView.TaskNpcName.onEndEdit.AddListener((string name) =>
+            {
+                _mainCtrl.EditData.UnitExtra.NpcName = name;
+            });
             _cachedView.RemoveTaskTimeLimitBtn.onClick.AddListener(() =>
             {
                 CurExtraNpcTaskData.TaskimeLimit = 0;
@@ -161,18 +165,18 @@ namespace GameA
             _cachedView.NpcTaskDock.SetActiveEx(false);
 
             // 关闭的时候设置名字和对话内容
-            if (_cachedView.NpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
-            {
-                _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.NpcName.text;
-            }
-            if (_cachedView.NpcDialog.text != _mainCtrl.EditData.UnitExtra.NpcDialog)
-            {
-                _mainCtrl.EditData.UnitExtra.NpcDialog = _cachedView.NpcDialog.text;
-            }
-            if (_cachedView.TaskNpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
-            {
-                _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.TaskNpcName.text;
-            }
+//            if (_cachedView.NpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
+//            {
+//                _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.NpcName.text;
+//            }
+//            if (_cachedView.NpcDialog.text != _mainCtrl.EditData.UnitExtra.NpcDialog)
+//            {
+//                _mainCtrl.EditData.UnitExtra.NpcDialog = _cachedView.NpcDialog.text;
+//            }
+//            if (_cachedView.TaskNpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
+//            {
+//                _mainCtrl.EditData.UnitExtra.NpcName = _cachedView.TaskNpcName.text;
+//            }
             base.Close();
         }
 

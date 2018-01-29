@@ -1105,6 +1105,7 @@ namespace GameA
 
         private void OnCloseBtnClick()
         {
+            CheckCloseUpCtrlPanel();
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
             {
                 return;
@@ -1131,7 +1132,6 @@ namespace GameA
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
 //            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
-            CheckCloseUpCtrlPanel();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 

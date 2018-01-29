@@ -12,10 +12,18 @@ namespace GameA
     {
         private Sprite _sprite;
         private NpcDia _dia;
+
+        public NpcDia Dia
+        {
+            get { return _dia; }
+            set { _dia = value; }
+        }
+
         private List<NpcDia> _diaList;
         private int _index;
         private Action _callback;
 
+        
         private void Clear()
         {
             _cachedView.UpBtn.onClick.RemoveAllListeners();
