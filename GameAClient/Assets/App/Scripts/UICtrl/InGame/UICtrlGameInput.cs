@@ -163,14 +163,14 @@ namespace GameA
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
-            if (!_isOpen)
-            {
-                _equipments[slot] = tableSkill;
-                return;
-            }
             if (GM2DGame.Instance != null && GM2DGame.Instance.GameMode != null &&
                 GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
             {
+                return;
+            }
+            if (!_isOpen)
+            {
+                _equipments[slot] = tableSkill;
                 return;
             }
             if (null == tableSkill) return;
