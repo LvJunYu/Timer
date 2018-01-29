@@ -1111,6 +1111,13 @@ namespace GameA
                 return;
             }
 
+            if (_curEnterType != EEnterType.Normal)
+            {
+                _curEnterType = EEnterType.Normal;
+                _curId = EditData.UnitDesc.Id;
+                _tableUnit = TableManager.Instance.GetUnit(_curId);
+            }
+
             if (_tableUnit.CanEdit(EEditType.Text))
             {
                 if (_cachedView.TextInput.text != EditData.UnitExtra.Msg)

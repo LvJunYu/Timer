@@ -80,7 +80,7 @@ namespace GameA
             }
         }
 
-        public void Close()
+        public override void Close()
         {
             _cachedView.gameObject.SetActive(false);
         }

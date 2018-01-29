@@ -21,13 +21,13 @@ namespace GameA
             RefreshView();
         }
 
-        public void Open()
+        public override void Open()
         {
             _cachedView.gameObject.SetActive(true);
             RefreshView();
         }
 
-        public void Close()
+        public override void Close()
         {
             _cachedView.gameObject.SetActive(false);
         }

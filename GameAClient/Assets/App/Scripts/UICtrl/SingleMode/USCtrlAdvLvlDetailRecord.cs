@@ -30,11 +30,11 @@ namespace GameA
 
         #region 方法
 
-        public void Open ()
+        public override void Open ()
         {
             _cachedView.gameObject.SetActive (true);
         }
-        public void Close ()
+        public override void Close ()
         {
             _cachedView.gameObject.SetActive (false);
         }
