@@ -564,6 +564,7 @@ namespace GameA.Game
                     break;
                 case ERoomCloseCode.ERCC_BattleTimeout:
                 case ERoomCloseCode.ERCC_BattleEnd:
+                case ERoomCloseCode.ERCC_NoActiveUser:
                     if (_ePhase == EPhase.Failed
                         || _ePhase == EPhase.Succeed)
                     {
