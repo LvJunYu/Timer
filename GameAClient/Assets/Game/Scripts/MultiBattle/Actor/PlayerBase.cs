@@ -1173,12 +1173,12 @@ namespace GameA.Game
 
         public void CheckRope(RopeJoint ropeJoint)
         {
-            if (_eClimbState != EClimbState.Rope && CanClimb && _dropRopeTimer == 0 && Speed != IntVec2.zero)
+            if (_eClimbState != EClimbState.Rope && CanClimb && ropeJoint.GetTimer(this) == 0 && Speed != IntVec2.zero)
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
                 ropeJoint.JumpOnRope(_moveDirection);
                 _curRopeProgress = 0;
-                Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true, this);
             }
         }
 
@@ -1195,7 +1195,7 @@ namespace GameA.Game
             var ropeJoint = _curClimbUnit as RopeJoint;
             if (ropeJoint != null)
             {
-                Messenger<int, bool>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false, this);
             }
             _ropeOffset = IntVec2.zero;
         }

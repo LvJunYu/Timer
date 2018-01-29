@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace GameA.Game
         protected int _motorAcc;
         protected bool _inLadder;
         protected int _dropLadderTimer;
-        protected int _dropRopeTimer;
         protected List<UnitBase> _inLadders = new List<UnitBase>(4);
 
         protected InputBase _input;
@@ -261,7 +259,6 @@ namespace GameA.Game
                     if (!CheckRopeVerticalFloor())
                     {
                         SetClimbState(EClimbState.None);
-                        _dropRopeTimer = 15;
                         break;
                     }
 

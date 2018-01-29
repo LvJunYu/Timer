@@ -9,6 +9,8 @@ namespace GameA.Game
         private List<RopeJoint> _joints = new List<RopeJoint>(Rope.JointCount);
         private int _addForceTimer;
         private int _carryPlayerCount;
+        private Dictionary<long, int> _timerDic = new Dictionary<long, int>();
+        private const int LeaveTimer = 20;
 
         public bool IsInterest
         {
@@ -113,6 +115,15 @@ namespace GameA.Game
             {
                 _joints[i].UpdateLogic();
             }
+
+            var keys = _timerDic.Keys.ToString();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (_timerDic[keys[i]] > 0)
+                {
+                    _timerDic[keys[i]]--;
+                }
+            }
         }
 
         public void UpdateView(float deltaTime, bool addForce = false)
@@ -147,7 +158,7 @@ namespace GameA.Game
             return GameRun.Instance.LogicFrameCnt - _addForceTimer < 10;
         }
 
-        public void OnPlayerClimbRope(bool value)
+        public void OnPlayerClimbRope(bool value, PlayerBase player)
         {
             if (value)
             {
@@ -160,13 +171,31 @@ namespace GameA.Game
                     _carryPlayerCount--;
                 }
             }
+
+            if (!value)
+            {
+                var guid = player.RoomUser.Guid;
+                if (!_timerDic.ContainsKey(guid))
+                {
+                    _timerDic.Add(guid, 0);
+                }
+
+                _timerDic[guid] = LeaveTimer;
+            }
+            
+        }
+
+        public int GetTimer(long playerId)
+        {
+            int timer;
+            _timerDic.TryGetValue(playerId, out timer);
+            return timer;
         }
         
         public void Clear()
         {
             _joints.Clear();
         }
-
     }
 
     public class RopeManager : IDisposable
@@ -182,7 +211,7 @@ namespace GameA.Game
 
         public RopeManager()
         {
-            Messenger<int, bool>.AddListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
+            Messenger<int, bool, PlayerBase>.AddListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
         }
 
         public void Reset()
@@ -197,7 +226,7 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            Messenger<int, bool>.RemoveListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
+            Messenger<int, bool, PlayerBase>.RemoveListener(EMessengerType.OnPlayerClimbRope, OnPlayerClimbRope);
             Reset();
             _instance = null;
         }
@@ -330,12 +359,12 @@ namespace GameA.Game
             return null;
         }
 
-        private void OnPlayerClimbRope(int ropeIndex, bool value)
+        private void OnPlayerClimbRope(int ropeIndex, bool value, PlayerBase player)
         {
             WholeRope wholeRope = GetWholeRope(ropeIndex);
             if (wholeRope != null)
             {
-                wholeRope.OnPlayerClimbRope(value);
+                wholeRope.OnPlayerClimbRope(value, player);
             }
         }
     }

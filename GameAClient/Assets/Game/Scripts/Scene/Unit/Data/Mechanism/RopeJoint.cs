@@ -294,5 +294,10 @@ namespace GameA.Game
                 _jumpAwayDir = IntVec2.right;
             }
         }
+
+        public int GetTimer(PlayerBase player)
+        {
+            return _wholeRope.GetTimer(player.RoomUser.Guid);
+        }
     }
 }

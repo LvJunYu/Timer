@@ -195,11 +195,6 @@ namespace GameA.Game
                 _dropLadderTimer--;
             }
 
-            if (_dropRopeTimer > 0)
-            {
-                _dropRopeTimer--;
-            }
-
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -321,7 +316,6 @@ namespace GameA.Game
                         {
                             SpeedX = 0;
                             SpeedY = 0;
-                            _dropRopeTimer = 30;
                         }
                         else
                         {
@@ -348,7 +342,6 @@ namespace GameA.Game
                             {
                                 ropeJoint.JumpAwayRope(_moveDirection);
                             }
-                            _dropRopeTimer = 20;
                         }
                     }
 
