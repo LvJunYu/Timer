@@ -44,6 +44,7 @@ namespace GameA.Game
                     StartCoroutine(ParseData(mapData, startType));
                     break;
             }
+
             NpcTaskDataTemp.Intance.Clear();
         }
 
@@ -237,11 +238,7 @@ namespace GameA.Game
 //                            _mapProcess = num * ratio;
 //                            continue;
 //                        }
-                        UnitExtraDynamic unitExtra;
-                        if (DataScene2D.CurScene.TryGetUnitExtra(unitObject.Guid, out unitExtra))
-                        {
-                            FixUnitExtraByMapVersion(unitObject.Id, unitExtra, mapVersion);
-                        }
+                        FixUnitExtraByMapVersion(unitObject, mapVersion);
 
                         if (tableUnit.EPairType > 0)
                         {
@@ -272,17 +269,28 @@ namespace GameA.Game
             }
         }
 
-        private void FixUnitExtraByMapVersion(int id, UnitExtraDynamic unitExtra, int mapVersion)
+        private void FixUnitExtraByMapVersion(UnitDesc unitObject, int mapVersion)
         {
             if (mapVersion < 2)
             {
-                if (id == UnitDefine.SpawnId)
+                //出生点
+                if (unitObject.Id == UnitDefine.SpawnId)
                 {
-                    var playerUnitExtra = unitExtra.Clone();
-                    playerUnitExtra.MoveDirection = 0;
-                    unitExtra.InternalUnitExtras.Set(playerUnitExtra, _spawnIndex);
-                    unitExtra.TeamId = 0;
-                    _spawnIndex++;
+                    UnitExtraDynamic unitExtra;
+                    if (DataScene2D.CurScene.TryGetUnitExtra(unitObject.Guid, out unitExtra))
+                    {
+                        var playerUnitExtra = unitExtra.Clone();
+                        playerUnitExtra.MoveDirection = 0;
+                        unitExtra.InternalUnitExtras.Set(playerUnitExtra, _spawnIndex);
+                        unitExtra.TeamId = 0;
+                        _spawnIndex++;
+                    }
+                    else
+                    {
+                        var spawnUnitExtra = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId).UnitExtra;
+                        DataScene2D.CurScene.AddUnitExtra(unitObject.Guid, spawnUnitExtra);
+                        _spawnIndex++;
+                    }
                 }
             }
         }

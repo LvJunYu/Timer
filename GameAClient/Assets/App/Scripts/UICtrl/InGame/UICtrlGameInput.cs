@@ -163,7 +163,12 @@ namespace GameA
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
-            if (!_isViewCreated || GM2DGame.Instance != null && GM2DGame.Instance.GameMode != null &&
+            if (!_isOpen)
+            {
+                _equipments[slot] = tableSkill;
+                return;
+            }
+            if (GM2DGame.Instance != null && GM2DGame.Instance.GameMode != null &&
                 GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
             {
                 return;
@@ -173,7 +178,9 @@ namespace GameA
             _equipments[slot] = tableSkill;
             if (null == _cachedView) return;
             if (null == _usSkillBtns)
+            {
                 CreateUMSkillBtns();
+            }
             _usSkillBtns[slot].SetData(tableSkill);
             RefreshSkillBtns();
         }
