@@ -146,6 +146,11 @@ namespace GameA.Game
 
         public virtual void OnDestroyObject()
         {
+            if (_propertyViewWrapper != null)
+            {
+                _propertyViewWrapper.Hide();
+                _propertyViewWrapper = null;
+            }
         }
 
         public virtual void Reset()
