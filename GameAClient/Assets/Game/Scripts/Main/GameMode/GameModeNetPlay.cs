@@ -456,7 +456,7 @@ namespace GameA.Game
             if (msg.UserGuid == LocalUser.Instance.UserGuid)
             {
                 _ePhase = EPhase.Close;
-                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null, new KeyValuePair<string, Action>("确定", () =>
+                SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
                 {
                     SocialApp.Instance.ReturnToApp();
                 }));
@@ -556,68 +556,36 @@ namespace GameA.Game
 
         internal void OnRoomClose(ERoomCloseCode code)
         {
-            switch (_ePhase)
+            _ePhase = EPhase.Close;
+            LogHelper.Info("OnRoomClose: {0}", code.ToString());
+            switch (code)
             {
-                case EPhase.None:
-                case EPhase.Simulation:
-                case EPhase.Pursue:
-                {
-                    switch (code)
-                    {
-                        case ERoomCloseCode.ERCC_None:
-                            break;
-                        case ERoomCloseCode.ERCC_BattleEnd:
-                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
-                            break;
-                        case ERoomCloseCode.ERCC_RoomNotExist:
-                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
-                            break;
-                        case ERoomCloseCode.ERCC_WaitTimeout:
-                            SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
-                            break;
-                        case ERoomCloseCode.ERCC_BattleTimeout:
-                            break;
-                        case ERoomCloseCode.ERCC_NoActiveUser:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException("code", code, null);
-                    }
-
-                    SocialApp.Instance.ReturnToApp();
-                }
+                case ERoomCloseCode.ERCC_None:
                     break;
-                case EPhase.Normal:
-                case EPhase.Succeed:
-                case EPhase.Failed:
-                {
-                    switch (code)
+                case ERoomCloseCode.ERCC_BattleTimeout:
+                case ERoomCloseCode.ERCC_BattleEnd:
+                    if (_ePhase == EPhase.Failed
+                        || _ePhase == EPhase.Succeed)
                     {
-                        case ERoomCloseCode.ERCC_None:
-                            break;
-                        case ERoomCloseCode.ERCC_BattleEnd:
-                            break;
-                        case ERoomCloseCode.ERCC_RoomNotExist:
-                            SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
-                            break;
-                        case ERoomCloseCode.ERCC_WaitTimeout:
-                            SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
-                            break;
-                        case ERoomCloseCode.ERCC_BattleTimeout:
-                            return;
-                        case ERoomCloseCode.ERCC_NoActiveUser:
-                            return;
-                        default:
-                            throw new ArgumentOutOfRangeException("code", code, null);
+                        return;
                     }
-
-                    SocialApp.Instance.ReturnToApp();
-                }
+                    SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
                     break;
-                case EPhase.Close:
+                case ERoomCloseCode.ERCC_RoomNotExist:
+                    SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
+                    break;
+                case ERoomCloseCode.ERCC_WaitTimeout:
+                    SocialGUIManager.ShowPopupDialog("房间等待玩家超时，正在退出");
+                    break;
+                case ERoomCloseCode.ERCC_PrepareTimeout:
+                    SocialGUIManager.ShowPopupDialog("房间准备超时，正在退出");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    SocialGUIManager.ShowPopupDialog("房间超时，正在退出");
+                    break;
             }
+            
+            SocialApp.Instance.ReturnToApp();
         }
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
