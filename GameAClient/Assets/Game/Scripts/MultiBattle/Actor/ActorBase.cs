@@ -128,7 +128,7 @@ namespace GameA.Game
             base.OnLand();
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Actor {0} OnLand ", Guid));
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
             }
 
             if (HasStateType(EStateType.Stun))
