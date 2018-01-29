@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 
 namespace GameA.Game
@@ -116,8 +117,8 @@ namespace GameA.Game
                 _joints[i].UpdateLogic();
             }
 
-            var keys = _timerDic.Keys.ToString();
-            for (int i = 0; i < keys.Length; i++)
+            var keys = _timerDic.Keys.ToList();
+            for (int i = 0; i < keys.Count; i++)
             {
                 if (_timerDic[keys[i]] > 0)
                 {
