@@ -5,7 +5,7 @@ namespace GameA
 {
     public class UMCtrlChat : UMCtrlBase<UMViewChat>
     {
-        private const string TemplateSystem = "<color=#45ad0c>{0}</color>";
+        private const string TemplateSystem = "<color=#45ad0c>系统：{0}</color>";
 
         private const string TemplateRoomChat =
             "<color=#e57c17><a href=user>{0}</a>：</color><color=#775337>{1}</color>";
