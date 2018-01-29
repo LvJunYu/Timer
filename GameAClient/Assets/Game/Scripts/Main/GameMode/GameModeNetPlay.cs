@@ -556,7 +556,6 @@ namespace GameA.Game
 
         internal void OnRoomClose(ERoomCloseCode code)
         {
-            _ePhase = EPhase.Close;
             LogHelper.Info("OnRoomClose: {0}", code.ToString());
             switch (code)
             {
@@ -585,7 +584,7 @@ namespace GameA.Game
                     SocialGUIManager.ShowPopupDialog("房间超时，正在退出");
                     break;
             }
-            
+            _ePhase = EPhase.Close;
             SocialApp.Instance.ReturnToApp();
         }
 

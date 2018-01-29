@@ -36,7 +36,7 @@ namespace GameA.Game
         {
             base.OnDisconnected(code);
             LogHelper.Debug("RoomClient OnDisConnected");
-            Loom.QueueOnMainThread(RoomClientHandler.Intance.OnDisconnect);
+            Loom.QueueOnMainThread(RoomClientHandler.Intance.OnDisconnect, 100);
         }
     }
 
@@ -209,7 +209,10 @@ namespace GameA.Game
                             GameManager.Instance.RequestPlayMultiBattle(project);
                             SocialApp.Instance.ChangeToGame();
                             _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
-                            _modeNetPlay.OnRoomInfo(msg.RoomInfo);
+                            if (_modeNetPlay != null)
+                            {
+                                _modeNetPlay.OnRoomInfo(msg.RoomInfo);
+                            }
                             for (int i = 0; i < _roomActionList.Count; i++)
                             {
                                 _roomActionList[i].Invoke();
