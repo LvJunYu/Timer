@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 namespace GameA
 {
@@ -15,7 +11,6 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcTaskConditionType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;
@@ -29,14 +24,13 @@ namespace GameA
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskConditionTypePanel;
-            _contentRtf = _cachedView.NpcTaskConditionTypeContentRtf;
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetColltionDic)
+            foreach (var variable in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
-                _colltionList.Add(VARIABLE.Key);
+                _colltionList.Add(variable.Key);
             }
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
+            foreach (var variable in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
-                _killtionList.Add(VARIABLE.Key);
+                _killtionList.Add(variable.Key);
             }
 
             for (int i = 0; i < _cachedView.CondtionTypeBtnGroup.Length; i++)
@@ -93,11 +87,6 @@ namespace GameA
         {
             _taskDynamic = taskData;
             Open();
-        }
-
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
         }
 
         public override void Close()

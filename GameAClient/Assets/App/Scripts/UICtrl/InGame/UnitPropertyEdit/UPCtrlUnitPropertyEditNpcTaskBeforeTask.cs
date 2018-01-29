@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -13,22 +10,17 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcTaskBeforeTask : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;
         private bool _completeAnim;
         private NpcTaskDynamic _target = new NpcTaskDynamic();
-        private List<UMCtrlHandNpcSelectTargetItem> _umList = new List<UMCtrlHandNpcSelectTargetItem>();
-        private List<int> _idList = new List<int>();
         private USCtrlSliderSetting _killNumSetting;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskBeforeConditionTypePanel;
-            _contentRtf = _cachedView.NpcTaskBeforeConditionTypeContentRtf;
-
             BadWordManger.Instance.InputFeidAddListen(_cachedView.BeforeConditionInputField);
             _cachedView.BeforeConditionInputField.onValueChanged.AddListener((string str) =>
             {

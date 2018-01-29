@@ -15,7 +15,6 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcTaskTargetType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;
@@ -29,14 +28,13 @@ namespace GameA
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskTypePanel;
-            _contentRtf = _cachedView.NpcTaskTypeContentRtf;
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetColltionDic)
+            foreach (var colltion in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
-                _colltionList.Add(VARIABLE.Key);
+                _colltionList.Add(colltion.Key);
             }
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
+            foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
-                _killtionList.Add(VARIABLE.Key);
+                _killtionList.Add(kill.Key);
             }
 
             for (int i = 0; i < _cachedView.TargetTypeBtnGroup.Length; i++)
@@ -119,11 +117,6 @@ namespace GameA
         {
             _taskDynamic = taskData;
             Open();
-        }
-
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
         }
 
         public override void Close()

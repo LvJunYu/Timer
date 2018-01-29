@@ -1224,10 +1224,8 @@ namespace GameA
             EditNpcDiaType.RefreshView();
             EditNpcTaskMonsterType.RefreshView();
             EditNpcTaskColltionType.RefreshView();
-            EditNpcTaskTargetType.RefreshView();
             EditNpcTaregtDialog.RefreshView();
             EditNpcAddCondition.RefreshView();
-            EditNpcConditionType.RefreshView();
             EditBeforeTask.RefreshView();
             EditNpcDia.RefreshView();
             EditBeforeTaskAward.RefreshView();

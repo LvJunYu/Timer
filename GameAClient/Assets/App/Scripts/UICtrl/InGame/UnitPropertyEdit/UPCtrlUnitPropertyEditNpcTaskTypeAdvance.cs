@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
-using GameA.Game;
+﻿using DG.Tweening;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -12,8 +8,8 @@ namespace GameA
     public class UPCtrlUnitPropertyEditNpcTaskTypeAdvance : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
+
         private Sequence _closeSequence;
         private bool _openAnim;
         private bool _completeAnim;
@@ -23,7 +19,6 @@ namespace GameA
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskTypePanel;
-            _contentRtf = _cachedView.NpcTaskTypeContentRtf;
             for (int i = 0; i < _cachedView.TargetTypeBtnGroup.Length; i++)
             {
                 int index = i + 1;
@@ -45,11 +40,6 @@ namespace GameA
         {
             base.Open();
             OpenAnimation();
-        }
-
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
         }
 
         public override void Close()

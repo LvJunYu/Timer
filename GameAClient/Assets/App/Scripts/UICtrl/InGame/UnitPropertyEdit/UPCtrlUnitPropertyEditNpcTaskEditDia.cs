@@ -13,7 +13,6 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcTaskEditDia : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;
@@ -22,12 +21,10 @@ namespace GameA
         private USCtrlUnitNpcTaskTargetBtn[] _beforeTaskAwardBtnGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _finishTaskAwardBtnGroup;
 
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskEditDiaPanel;
-            _contentRtf = _cachedView.NpcTaskEditDiaContentRtf;
             _beforeTaskAwardBtnGroup = new USCtrlUnitNpcTaskTargetBtn[_cachedView.BeforeTaskAward.Length];
             for (int i = 0; i < _cachedView.BeforeTaskAward.Length; i++)
             {

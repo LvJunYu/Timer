@@ -272,7 +272,6 @@ namespace GameA.Game
 
         public void Judge()
         {
-            bool finishTask = false;
             using (var enumerator = _npcTaskDynamics.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -313,7 +312,6 @@ namespace GameA.Game
                     }
                     if (finishnum == enumerator.Current.Value.Targets.Count)
                     {
-                        finishTask = true;
                         _finishNpcTask.Add(enumerator.Current.Value.NpcTaskSerialNumber, enumerator.Current.Value);
                         break;
                     }

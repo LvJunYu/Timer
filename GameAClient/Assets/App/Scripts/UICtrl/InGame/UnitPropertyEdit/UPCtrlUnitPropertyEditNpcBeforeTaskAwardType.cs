@@ -15,8 +15,6 @@ namespace GameA
         UPCtrlUnitPropertyEditNpcBeforeTaskAwardType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;
-
-        private RectTransform _contentRtf;
         private Sequence _openSequence;
         private Sequence _closeSequence;
         private bool _openAnim;
@@ -30,7 +28,6 @@ namespace GameA
         {
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskBeforeAwardTypePanel;
-            _contentRtf = _cachedView.NpcTaskBeforeConditionTypeContentRtf;
             foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
                 _colltionList.Add(VARIABLE.Key);
