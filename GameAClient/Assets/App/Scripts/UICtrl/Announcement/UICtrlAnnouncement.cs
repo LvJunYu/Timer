@@ -23,27 +23,6 @@ namespace GameA
             CoroutineProxy.Instance.StartCoroutine(LoadAnnoucement());
         }
 
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-        }
-
-
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainPopUpUI;
@@ -63,7 +42,8 @@ namespace GameA
             _cachedView.QQGroup.text = _qqGroup;
             _cachedView.TileText.text = String.Format("{0} 版本更新", GlobalVar.Instance.AppVersion);
             string content =
-                "\u3000\u3000欢迎来到冒险与创造的世界，在接下来的一段时间里，我们将会保持更新，给大家带来更好的游戏体验。\n\u3000\u30001.新增联机功能，可以和小伙伴们一起战斗一起打怪兽啦。\n\u3000\u30002.针对角色和怪物，增加了更丰富的自定义功能。\n\u3000\u3000后面将会带来更多令人兴奋和有趣的玩法，敬请期待。\n\u3000\u3000更多消息尽在官方QQ群237065717，欢迎您的加入，同时我们也期待您给我们带来更多的建议和反馈，谢谢。";
+                "<color=#E88629FF>0.2.2.0更新公告</color>\n\u3000\u3000欢迎来到冒险与创造的世界，为了给各位冒险家带来更多更好的冒险体验，我们对游戏进行了以下内容更新。\n1.解决已知部分BUG\n2.优化了推荐，优秀的关卡更容易被推荐了。\n3.新增怪物巢穴、时空门、梯子和绳子等有趣内容，等待你的探险。\n4.新增合作模式和对抗模式，和其他冒险家一起战斗吧。\n5.新增聊天功能，可以和其他冒险家一起讨论关卡了。\n6.新增留言板功能，给你心仪的冒险家留个言吧。\n7.更新了新的冒险关卡，更多游戏内容等你体验。\n8.还有更多优化的内容等待你的发现。\n\u3000\u3000更多消息尽在官方QQ群：237065717，欢迎您的加入，同时我们也期待您给我们带来更多的建议和反馈。\n\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000冒险家协会\n\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u3000\u30002018 / 01 / 29";
+
             _cachedView.ContentText.text = content;
         }
 
