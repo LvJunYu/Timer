@@ -9,6 +9,8 @@ namespace GameA
         public const string BlockedStr = "已屏蔽";
         public const string BlockStr = "屏蔽";
         public const string FriendStr = "相互关注";
+        public const string CollectStr = "收藏";
+        public const string CollectedStr = "已收藏";
     }
 
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
