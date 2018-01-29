@@ -37,73 +37,73 @@ namespace NewResourceSolution
             Messenger<string>.Broadcast(EMessengerType.OnVersionUpdateStateChange, "正在检查资源（不消耗流量）...");
             // 读取远端版本
             // todo 按程序版本拼地址
-            string serverVersionConfigPath = StringUtil.Format(
-                StringFormat.ThreeLevelPath,
-                SocialApp.GetAppServerAddress().GameResoureRoot,
-                ResPath.GetPlatformFolder(),
-                ResDefine.ServerVersionConfigFileName) + "?t="+DateTimeUtil.GetNowTicks();
-            ServerVersionConfig serverVersionConfig = null;
+//            string serverVersionConfigPath = StringUtil.Format(
+//                StringFormat.ThreeLevelPath,
+//                SocialApp.GetAppServerAddress().GameResoureRoot,
+//                ResPath.GetPlatformFolder(),
+//                ResDefine.ServerVersionConfigFileName) + "?t="+DateTimeUtil.GetNowTicks();
+//            ServerVersionConfig serverVersionConfig = null;
 
-            while (true)
-            {
-                yield return UnityTools.GetObjectFromServer<ServerVersionConfig>(
-                    serverVersionConfigPath,
-                    (obj) => { serverVersionConfig = obj; },
-                    ResDefine.GetServerVersionConfigTimeout
-                );
-                if (serverVersionConfig == null && !IsDevelopment())
-                {
-                    var waitForUserInput = true;
-                    SocialGUIManager.ShowPopupDialog("连接资源服务器失败，请检查网络后重试", null,
-                        new KeyValuePair<string, Action>("重试", () =>
-                        {
-                            waitForUserInput = false;
-                        })
-                    );
-                    while (waitForUserInput) yield return null;
-                }
-                else
-                {
-                    break;
-                }
-            }
+//            while (true)
+//            {
+//                yield return UnityTools.GetObjectFromServer<ServerVersionConfig>(
+//                    serverVersionConfigPath,
+//                    (obj) => { serverVersionConfig = obj; },
+//                    ResDefine.GetServerVersionConfigTimeout
+//                );
+//                if (serverVersionConfig == null && !IsDevelopment())
+//                {
+//                    var waitForUserInput = true;
+//                    SocialGUIManager.ShowPopupDialog("连接资源服务器失败，请检查网络后重试", null,
+//                        new KeyValuePair<string, Action>("重试", () =>
+//                        {
+//                            waitForUserInput = false;
+//                        })
+//                    );
+//                    while (waitForUserInput) yield return null;
+//                }
+//                else
+//                {
+//                    break;
+//                }
+//            }
             
-            if (null != serverVersionConfig)
-            {
-                Version applicationVersion = new Version(RuntimeConfig.Instance.Version);
-                LogHelper.Info("applicationVersion: {0}", applicationVersion);
-                if (applicationVersion < serverVersionConfig.MinimumAppVersion)
-                {
-                    // 要求用户下载最新版本
-                    LogHelper.Info("MinimumAppVersion: {0}", serverVersionConfig.MinimumAppVersion);
-                    SocialGUIManager.ShowPopupDialog("重新从QQ游戏大厅进入，更新最新版本进入游戏", null,
-                        new KeyValuePair<string, Action>("确定", () =>
-                        {
-//                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
-                            SocialApp.Instance.Exit();
-                        })
-                    );
-                    yield return new WaitForSeconds(float.MaxValue);
-                }
-                if (applicationVersion < serverVersionConfig.LatestAppVersion)
-                {
-                    bool waitForUserInput = true;
-                    // 提示用户更新
-                    LogHelper.Info("LatestAppVersion: {0}", serverVersionConfig.LatestAppVersion);
-                    SocialGUIManager.ShowPopupDialog("游戏已更新，当前版本现在还能使用，是否更新最新版本", null,
-                        new KeyValuePair<string, Action>("继续", () =>
-                        {
-                            waitForUserInput = false;
-                        }),
-                        new KeyValuePair<string, Action>("更新", () =>
-                        {
-//                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
-                            SocialApp.Instance.Exit();
-                        })
-                    );
-                    while (waitForUserInput) yield return null;
-                }
-            }
+//            if (null != serverVersionConfig)
+//            {
+//                Version applicationVersion = new Version(RuntimeConfig.Instance.Version);
+//                LogHelper.Info("applicationVersion: {0}", applicationVersion);
+//                if (applicationVersion < serverVersionConfig.MinimumAppVersion)
+//                {
+//                    // 要求用户下载最新版本
+//                    LogHelper.Info("MinimumAppVersion: {0}", serverVersionConfig.MinimumAppVersion);
+//                    SocialGUIManager.ShowPopupDialog("重新从QQ游戏大厅进入，更新最新版本进入游戏", null,
+//                        new KeyValuePair<string, Action>("确定", () =>
+//                        {
+////                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+//                            SocialApp.Instance.Exit();
+//                        })
+//                    );
+//                    yield return new WaitForSeconds(float.MaxValue);
+//                }
+//                if (applicationVersion < serverVersionConfig.LatestAppVersion)
+//                {
+//                    bool waitForUserInput = true;
+//                    // 提示用户更新
+//                    LogHelper.Info("LatestAppVersion: {0}", serverVersionConfig.LatestAppVersion);
+//                    SocialGUIManager.ShowPopupDialog("游戏已更新，当前版本现在还能使用，是否更新最新版本", null,
+//                        new KeyValuePair<string, Action>("继续", () =>
+//                        {
+//                            waitForUserInput = false;
+//                        }),
+//                        new KeyValuePair<string, Action>("更新", () =>
+//                        {
+////                            Application.OpenURL(serverVersionConfig.LatestAppDownloadPath);
+//                            SocialApp.Instance.Exit();
+//                        })
+//                    );
+//                    while (waitForUserInput) yield return null;
+//                }
+//            }
             CHRuntimeResManifest newestLocalResManifest;
             if (persistentManifest != null)
             {
@@ -127,47 +127,47 @@ namespace NewResourceSolution
             }
             
             CHDownloadingResManifest newestDownloadingResManifest = null;
-            if (null != serverVersionConfig)
-            {
-                if (newestLocalResManifest.Ver < serverVersionConfig.LatestResVersion)
-                {
-                    CHDownloadingResManifest serverResManifest = null;
-                    string latestResManifestPath = string.Format(StringFormat.FourLevelPath,
-                        SocialApp.GetAppServerAddress().GameResoureRoot,
-                        ResPath.GetPlatformFolder(),
-                        serverVersionConfig.LatestResVersion,
-                        ResDefine.CHResManifestFileName);
-                    while (true)
-                    {
-                        var waitForUserInput = true;
-                        yield return UnityTools.GetObjectFromServer<CHDownloadingResManifest>(
-                            latestResManifestPath,
-                            (obj) => { serverResManifest = obj; },
-                            ResDefine.GetServerManifestTimeout
-                        );
-                        if (null == serverResManifest)
-                        {
-                            LogHelper.Error("Download latest resManifest failed, path: {0}",  
-                                latestResManifestPath);
-                            SocialGUIManager.ShowPopupDialog("最新资源获取失败", null,
-                                new KeyValuePair<string, Action>("重试", () =>
-                                {
-                                    waitForUserInput = false;
-                                })
-                            );
-                            while (waitForUserInput) yield return null;
-                        }
-                        else
-                        {
-                            serverResManifest.FileLocation = EFileLocation.Server;
-                            break;
-                        }
-                    }
-                    yield return serverResManifest.MergeExistingManifest(newestLocalResManifest);
-                    newestDownloadingResManifest = serverResManifest;
-                    manifestUpdated = true;
-                }
-            }
+//            if (null != serverVersionConfig)
+//            {
+//                if (newestLocalResManifest.Ver < serverVersionConfig.LatestResVersion)
+//                {
+//                    CHDownloadingResManifest serverResManifest = null;
+//                    string latestResManifestPath = string.Format(StringFormat.FourLevelPath,
+//                        SocialApp.GetAppServerAddress().GameResoureRoot,
+//                        ResPath.GetPlatformFolder(),
+//                        serverVersionConfig.LatestResVersion,
+//                        ResDefine.CHResManifestFileName);
+//                    while (true)
+//                    {
+//                        var waitForUserInput = true;
+//                        yield return UnityTools.GetObjectFromServer<CHDownloadingResManifest>(
+//                            latestResManifestPath,
+//                            (obj) => { serverResManifest = obj; },
+//                            ResDefine.GetServerManifestTimeout
+//                        );
+//                        if (null == serverResManifest)
+//                        {
+//                            LogHelper.Error("Download latest resManifest failed, path: {0}",  
+//                                latestResManifestPath);
+//                            SocialGUIManager.ShowPopupDialog("最新资源获取失败", null,
+//                                new KeyValuePair<string, Action>("重试", () =>
+//                                {
+//                                    waitForUserInput = false;
+//                                })
+//                            );
+//                            while (waitForUserInput) yield return null;
+//                        }
+//                        else
+//                        {
+//                            serverResManifest.FileLocation = EFileLocation.Server;
+//                            break;
+//                        }
+//                    }
+//                    yield return serverResManifest.MergeExistingManifest(newestLocalResManifest);
+//                    newestDownloadingResManifest = serverResManifest;
+//                    manifestUpdated = true;
+//                }
+//            }
             if (newestDownloadingResManifest == null)
             {
                 if (newestLocalResManifest is CHDownloadingResManifest)

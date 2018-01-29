@@ -5,12 +5,8 @@
   ** Summary : UICtrlGameCaptureCover.cs
   ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
-
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 using GameA.Game;
 
@@ -52,7 +48,7 @@ namespace GameA
         {
             if(_coverTexture != null)
             {
-                UnityEngine.Object.Destroy(_coverTexture);
+                Object.Destroy(_coverTexture);
                 _coverTexture = null;
             }
             base.OnDestroy();

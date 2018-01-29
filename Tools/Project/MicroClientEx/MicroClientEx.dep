@@ -1,0 +1,167 @@
+# Microsoft Developer Studio Generated Dependency File, included by MicroClientEx.mak
+
+.\common_function.cpp : \
+	".\common_function.h"\
+	".\ContainerDialog.h"\
+	".\MicroClientExDlg.h"\
+	".\PngBtn.h"\
+	".\ProgressBar.h"\
+	".\tinystr.h"\
+	".\tinyxml.h"\
+	".\webbrowser2.h"\
+	"c:\program files\microsoft sdk\include\ipexport.h"\
+	"c:\program files\microsoft sdk\include\iphlpapi.h"\
+	"c:\program files\microsoft sdk\include\iptypes.h"\
+	
+
+.\ContainerDialog.cpp : \
+	".\ContainerDialog.h"\
+	".\MicroClientEx.h"\
+	".\webbrowser2.h"\
+	"c:\program files\microsoft sdk\include\dimm.h"\
+	
+
+.\CountChecksum.cpp : \
+	".\CountChecksum.h"\
+	".\LogUtil.h"\
+	".\MD5ChecksumDefines.h"\
+	
+
+.\CustomControlSite.cpp : \
+	".\CustomControlSite.h"\
+	".\ImpIDispatch.h"\
+	".\MicroClientEx.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\occimpl.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\ocdb.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\ocdbid.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\olebind.h"\
+	
+
+.\HttpClient.cpp : \
+	".\HttpClient.h"\
+	
+
+.\ImpIDispatch.cpp : \
+	".\ContainerDialog.h"\
+	".\ImpIDispatch.h"\
+	".\MicroClientEx.h"\
+	".\MicroClientExDlg.h"\
+	".\PngBtn.h"\
+	".\ProgressBar.h"\
+	".\webbrowser2.h"\
+	
+
+.\MicroClientEx.cpp : \
+	".\ContainerDialog.h"\
+	".\ImpIDispatch.h"\
+	".\MicroClientEx.h"\
+	".\MicroClientExDlg.h"\
+	".\PngBtn.h"\
+	".\ProgressBar.h"\
+	".\webbrowser2.h"\
+	
+
+.\MicroClientEx.rc : \
+	".\res\MicroClientEx.ico"\
+	".\res\MicroClientEx.rc2"\
+	
+
+.\MicroClientExDlg.cpp : \
+	".\common_function.h"\
+	".\ContainerDialog.h"\
+	".\CountChecksum.h"\
+	".\HttpClient.h"\
+	".\LogUtil.h"\
+	".\MicroClientEx.h"\
+	".\MicroClientExDlg.h"\
+	".\PngBtn.h"\
+	".\ProgressBar.h"\
+	".\tinystr.h"\
+	".\tinyxml.h"\
+	".\webbrowser2.h"\
+	".\zconf.h"\
+	".\zlib.h"\
+	
+
+.\PngBtn.cpp : \
+	".\LogUtil.h"\
+	".\MicroClientEx.h"\
+	".\PngBtn.h"\
+	
+
+.\ProgressBar.cpp : \
+	".\MicroClientEx.h"\
+	".\ProgressBar.h"\
+	
+
+.\StdAfx.cpp : \
+	".\gdi+\gdiplus.h"\
+	".\gdi+\gdiplusbase.h"\
+	".\gdi+\gdiplusbitmap.h"\
+	".\gdi+\gdiplusbrush.h"\
+	".\gdi+\gdipluscachedbitmap.h"\
+	".\gdi+\gdipluscolor.h"\
+	".\gdi+\gdipluscolormatrix.h"\
+	".\gdi+\gdiplusenums.h"\
+	".\gdi+\gdiplusflat.h"\
+	".\gdi+\gdiplusfont.h"\
+	".\gdi+\gdiplusfontcollection.h"\
+	".\gdi+\gdiplusfontfamily.h"\
+	".\gdi+\gdiplusgpstubs.h"\
+	".\gdi+\gdiplusgraphics.h"\
+	".\gdi+\gdiplusheaders.h"\
+	".\gdi+\gdiplusimageattributes.h"\
+	".\gdi+\gdiplusimagecodec.h"\
+	".\gdi+\gdiplusimaging.h"\
+	".\gdi+\gdiplusinit.h"\
+	".\gdi+\gdipluslinecaps.h"\
+	".\gdi+\gdiplusmatrix.h"\
+	".\gdi+\gdiplusmem.h"\
+	".\gdi+\gdiplusmetafile.h"\
+	".\gdi+\gdiplusmetaheader.h"\
+	".\gdi+\gdipluspath.h"\
+	".\gdi+\gdipluspen.h"\
+	".\gdi+\gdipluspixelformats.h"\
+	".\gdi+\gdiplusregion.h"\
+	".\gdi+\gdiplusstringformat.h"\
+	".\gdi+\gdiplustypes.h"\
+	".\StdAfx.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\shldisp.h"\
+	"c:\program files\microsoft sdk\include\shobjidl.h"\
+	"c:\program files\microsoft sdk\include\shtypes.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	
+
+.\tinystr.cpp : \
+	".\tinystr.h"\
+	
+
+.\tinyxml.cpp : \
+	".\tinystr.h"\
+	".\tinyxml.h"\
+	
+
+.\tinyxmlerror.cpp : \
+	".\tinystr.h"\
+	".\tinyxml.h"\
+	
+
+.\tinyxmlparser.cpp : \
+	".\tinystr.h"\
+	".\tinyxml.h"\
+	
+
+.\webbrowser2.cpp : \
+	".\CustomControlSite.h"\
+	".\ImpIDispatch.h"\
+	".\webbrowser2.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\occimpl.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\ocdb.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\ocdbid.h"\
+	"c:\program files\microsoft visual studio\vc98\mfc\src\olebind.h"\
+	

@@ -23,18 +23,18 @@ namespace GameA.Game
 
             public void ChangeBillboardMessage(UnitDesc unitDesc, string newMsg)
             {
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                 var newUnitExtra = unitExtra;
                 newUnitExtra.Msg = newMsg;
-                DataScene2D.Instance.ProcessUnitExtra(unitDesc, newUnitExtra);
-                GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref unitDesc, ref newUnitExtra);
+                DataScene2D.CurScene.ProcessUnitExtra(unitDesc, newUnitExtra);
+                GetRecordBatch().RecordUpdateExtra(ref unitDesc, unitExtra, ref unitDesc, newUnitExtra);
                 CommitRecordBatch();
             }
             
-            public void ModifyUnitData(UnitDesc unitDesc, UnitExtra unitExtra, UnitDesc newUnitDesc, UnitExtra newUnitExtra)
+            public void ModifyUnitData(UnitDesc unitDesc, UnitExtraDynamic unitExtra, UnitDesc newUnitDesc, UnitExtraDynamic newUnitExtra)
             {
-                DataScene2D.Instance.ProcessUnitExtra(newUnitDesc, newUnitExtra, GetRecordBatch());
-                GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref newUnitDesc, ref newUnitExtra);
+                DataScene2D.CurScene.ProcessUnitExtra(newUnitDesc, newUnitExtra, GetRecordBatch());
+                GetRecordBatch().RecordUpdateExtra(ref unitDesc, unitExtra, ref newUnitDesc, newUnitExtra);
                 CommitRecordBatch();
             }
 

@@ -1,9 +1,10 @@
-﻿ /********************************************************************
+﻿/********************************************************************
  ** Filename : MatrixProjectTools.cs
  ** Author : quan
  ** Date : 16/4/26 下午10:48
  ** Summary : MatrixProjectTools.cs
  ***********************************************************************/
+
 using System;
 using UnityEngine;
 using SoyEngine;
@@ -103,7 +104,7 @@ namespace GameA
                     tip = "当前作品基于更新的资源版本发布，在网络环境下进入";
                     break;
             }
-            if(tip != null)
+            if (tip != null)
             {
 //                if(state == EMatrixProjectResState.ProjectProgramVersionAhead && VersionManager.Instance.HasNewDownload())
 //                {
@@ -124,7 +125,7 @@ namespace GameA
 
         public static bool CheckProjectValidAndShowTip(Project project)
         {
-            if(!project.IsValid)
+            if (!project.IsValid)
             {
                 CommonTools.ShowPopupDialog("作品已被删除，去尝试一下其他作品吧~");
                 return false;
@@ -134,19 +135,20 @@ namespace GameA
 
         public static void TryTipLoginBeforePlayProject(Action onPlay)
         {
-            if(LocalUser.Instance.Account.HasLogin)
+            if (LocalUser.Instance.Account.HasLogin)
             {
                 onPlay.Invoke();
                 return;
             }
-            if(_playCount % 2 == 0)
+            if (_playCount % 2 == 0)
             {
                 onPlay.Invoke();
                 return;
             }
             CommonTools.ShowPopupDialog("登录后玩游戏可以获取成绩进入排行榜，速度登录吧~", null,
                 new System.Collections.Generic.KeyValuePair<string, Action>("暂不登录", onPlay),
-                new System.Collections.Generic.KeyValuePair<string, Action>("立即登录", ()=>{
+                new System.Collections.Generic.KeyValuePair<string, Action>("立即登录", () =>
+                {
 //                    SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
                 }));
         }
@@ -193,7 +195,6 @@ namespace GameA
 //					failedCallback.Invoke();
 //				}
 //            });
-            
         }
 
         public static void PreparePublishedProject(long projectId, Action successCallback, Action failedCallback)
@@ -201,7 +202,7 @@ namespace GameA
             ParallelTaskHelper helper = new ParallelTaskHelper(2, successCallback, failedCallback);
 //            if(MatrixManager.Instance.AllMatrixList.Count > 0)
 //            {
-                helper.CompleteOne();
+            helper.CompleteOne();
 //            }
 //            else
 //            {
@@ -216,7 +217,7 @@ namespace GameA
 //            }
 
             Project project = null;
-            if(ProjectManager.Instance.TryGetData(projectId, out project))
+            if (ProjectManager.Instance.TryGetData(projectId, out project))
             {
                 helper.CompleteOne();
             }
@@ -224,12 +225,11 @@ namespace GameA
             {
                 Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
                 msg.ProjectId = projectId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(SoyHttpApiPath.Project, msg, ret=>{
-                    ProjectManager.Instance.OnSyncProject(ret);
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(SoyHttpApiPath.Project, msg, ret =>
+                {
+                    ProjectManager.Instance.UpdateData(ret);
                     helper.CompleteOne();
-                }, (code, msgStr)=>{
-                    helper.FailOne();
-                });
+                }, (code, msgStr) => { helper.FailOne(); });
             }
         }
 
@@ -298,9 +298,10 @@ namespace GameA
             FileDownloadFailed,
         }
 
-        public static void PreparePlayRecord(Record record, Project project, Action successCallback, Action<EPreparePlayRecordFailedReason> failedCallback)
+        public static void PreparePlayRecord(Record record, Project project, Action successCallback,
+            Action<EPreparePlayRecordFailedReason> failedCallback)
         {
-			return;
+            return;
 //            if(LocalUser.Instance.User == null && project.ProjectCategory == EProjectCategory.PC_Puzzle)
 //            {
 //                if(failedCallback != null)
@@ -465,7 +466,7 @@ namespace GameA
                         coder.WriteCoderProperties(holderOutput.Content);
 
                         // Write the decompressed file size.
-                        holderOutput.Content.Write(BitConverter.GetBytes((long)data.Length), 0, 8);
+                        holderOutput.Content.Write(BitConverter.GetBytes((long) data.Length), 0, 8);
 
                         // Encode the file.
                         coder.Code(holderInput.Content, holderOutput.Content, data.Length, -1, null);
@@ -473,7 +474,7 @@ namespace GameA
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LogHelper.Error(e.ToString());
             }
@@ -506,12 +507,13 @@ namespace GameA
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LogHelper.Error(e.ToString());
             }
             return null;
         }
+
         #endregion Tools
     }
 
@@ -519,30 +521,37 @@ namespace GameA
     public enum EMatrixProjectResState
     {
         None,
+
         /// <summary>
         /// App资源检查未完成
         /// </summary>
         AppResVersionNotReady,
+
         /// <summary>
         /// App没下载到最新的资源清单
         /// </summary>
         AppResVersionExpired,
+
         /// <summary>
         /// Matrix不存在
         /// </summary>
         MatrixNotExist,
+
         /// <summary>
         /// Matrix资源过期
         /// </summary>
         MatrixResExpired,
+
         /// <summary>
         /// 关卡依赖程序版本号超过本地
         /// </summary>
         ProjectProgramVersionAhead,
+
         /// <summary>
         /// 关卡依赖资源版本号超过本地
         /// </summary>
         ProjectResourceVersionAhead,
+
         /// <summary>
         /// 关卡文件未准备好
         /// </summary>
@@ -550,4 +559,3 @@ namespace GameA
         Ready,
     }
 }
-

@@ -13,13 +13,13 @@ namespace GameA
         private RectTransform _contentRect;
         private List<Table_QQHallGrowAward> _contentList;
         private List<int> _statusList = new List<int>();
-        private List<Table_QQHallGrowAwardStatus>  _hallGrowAwardStatuses = new List<Table_QQHallGrowAwardStatus>();
+        private List<Table_QQHallGrowAwardStatus> _hallGrowAwardStatuses = new List<Table_QQHallGrowAwardStatus>();
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             Init();
             _cachedView.GrowAwardDataScroller.Set(OnItemRefresh, GetItemRenderer);
-         
         }
 
         public override void OnDestroy()
@@ -31,7 +31,7 @@ namespace GameA
         {
             base.Open();
             _isOpen = true;
-          
+
             RefreshView();
             ReqestData();
         }
@@ -39,15 +39,10 @@ namespace GameA
         private void ReqestData()
         {
             LocalUser.Instance.QqGameReward.Request(0,
-                () =>
-                {
-                    SetContent(true);
-                },
-                code =>
-                {
-                   SetContent(false);
-                });
+                () => { SetContent(true); },
+                code => { SetContent(false); });
         }
+
         public override void Close()
         {
             base.Close();
@@ -94,7 +89,8 @@ namespace GameA
                 item.Set(_hallGrowAwardStatuses[inx]);
             }
         }
-        protected  void RefreshView()
+
+        protected void RefreshView()
         {
             _cachedView.GrowAwardDataScroller.SetItemCount(_hallGrowAwardStatuses.Count);
         }
@@ -108,27 +104,26 @@ namespace GameA
                 {
                     _statusList = new List<int>();
                 }
-                        
+
                 _hallGrowAwardStatuses.Clear();
                 for (int i = 0; i < _contentList.Count; i++)
                 {
-                    if (_statusList.Count <i+1)
+                    if (_statusList.Count < i + 1)
                     {
-                        _statusList.Add((int)EQQGameRewardStatus.QGRS_Unsatisfied);
+                        _statusList.Add((int) EQQGameRewardStatus.QGRS_Unsatisfied);
                     }
                     if (success)
                     {
-                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
-                            (EQQGameRewardStatus)_statusList[i] ,EQQGamePrivilegeType.QGPT_BlueVip ));  
+                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus(_contentList[i],
+                            (EQQGameRewardStatus) _statusList[i], EQQGamePrivilegeType.QGPT_BlueVip));
                     }
                     else
                     {
-                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus (_contentList[i],
-                            EQQGameRewardStatus.QGRS_Unsatisfied ,EQQGamePrivilegeType.QGPT_BlueVip ));  
+                        _hallGrowAwardStatuses.Add(new Table_QQHallGrowAwardStatus(_contentList[i],
+                            EQQGameRewardStatus.QGRS_Unsatisfied, EQQGamePrivilegeType.QGPT_BlueVip));
                     }
-              
                 }
-                RefreshView();   
+                RefreshView();
             }
         }
     }

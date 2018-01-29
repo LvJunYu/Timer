@@ -1,26 +1,36 @@
-﻿using System.Security.Permissions;
-using SoyEngine;
-
-namespace GameA.Game
+﻿namespace GameA.Game
 {
     [Unit(Id = 2004, Type = typeof(MonsterJelly))]
     public class MonsterJelly : MonsterAI_2
     {
+        public override bool IsMonster
+        {
+            get { return false; }
+        }
+
         public override bool IsInvincible
         {
             get { return true; }
         }
         
-        protected override bool OnInit()
+        public override UnitExtraDynamic UpdateExtraData()
         {
-            if (!base.OnInit())
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0)
             {
-                return false;
+                _maxSpeedX = unitExtra.MaxSpeedX;
             }
-            _maxSpeedX = 20;
-            return true;
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 20;
+            }
+            return unitExtra;
         }
-
+        
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (unit.IsPlayer)

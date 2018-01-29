@@ -4,24 +4,15 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlProjectComment : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>, IOnChangeHandler<long>
+    public class UPCtrlProjectComment : UPCtrlProjectDetailBase
     {
         private const int _pageSize = 10;
         private List<ProjectComment> _contentList;
         private WorldProjectCommentList _data;
-        private bool _isPostComment;
-        private EResScenary _resScenary;
-
-        public bool HasComment
-        {
-            get { return _contentList != null && _contentList.Count > 0; }
-        }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtn);
-            _cachedView.CommentInput.onEndEdit.AddListener(OnCommentInputEndEdit);
             _cachedView.CommentTableScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
@@ -35,19 +26,11 @@ namespace GameA
         public override void Close()
         {
             _contentList = null;
-            _cachedView.CommentInput.text = string.Empty;
+            Clear();
             base.Close();
         }
 
-        private void OnCommentInputEndEdit(string arg0)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                OnPostCommentBtn();
-            }
-        }
-
-        private void RequestData(bool append = false)
+        protected override void RequestData(bool append = false)
         {
             if (_mainCtrl.Project == null) return;
             _data = _mainCtrl.Project.CommentList;
@@ -56,6 +39,7 @@ namespace GameA
             {
                 startInx = _contentList.Count;
             }
+
             _mainCtrl.Project.RequestCommentList(startInx, _pageSize, () =>
             {
                 _contentList = _data.AllList;
@@ -66,25 +50,21 @@ namespace GameA
             }, code => { });
         }
 
-        private void RefreshView()
+        protected override void RefreshView()
         {
             if (_mainCtrl.Project == null || _contentList == null)
             {
                 _cachedView.CommentTableScroller.SetEmpty();
-                DictionaryTools.SetContentText(_cachedView.CommentCountTxt,
-                    string.Format(UICtrlProjectDetail.CountFormat, 0));
             }
             else
             {
                 _cachedView.CommentTableScroller.SetItemCount(_contentList.Count);
-                DictionaryTools.SetContentText(_cachedView.CommentCountTxt,
-                    string.Format(UICtrlProjectDetail.CountFormat, _contentList.Count));
             }
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlWorldProjectComment();
+            var item = new UMCtrlProjectComment();
             item.Init(parent, _resScenary);
             return item;
         }
@@ -102,6 +82,13 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+                var um = item as UMCtrlProjectComment;
+                if (um != null)
+                {
+                    int curVersion = _mainCtrl.Project.ProjectVersion;
+                    um.SetVersionLineEnable((inx == 0 || inx - 1 >= 0 && _contentList[inx - 1].ProjectVersion == curVersion) &&
+                                            _contentList[inx].ProjectVersion < curVersion);
+                }
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)
                 {
@@ -113,49 +100,30 @@ namespace GameA
             }
         }
 
-        private void OnPostCommentBtn()
+        public void OnReplyProjectComment(long commentId, ProjectCommentReply reply)
         {
-            if (_mainCtrl.Project == null || _mainCtrl.Project.ProjectUserData == null) return;
-            if (!_mainCtrl.CheckPlayed("玩过才能评论哦~~现在进入关卡吗？"))
+            var comment = _contentList.Find(p => p.Id == commentId);
+            if (comment != null)
             {
-                return;
+                comment.LocalAddReply(reply);
+                _cachedView.CommentTableScroller.RefreshCurrent();
             }
-            if (_isPostComment)
-            {
-                return;
-            }
-            if (string.IsNullOrEmpty(_cachedView.CommentInput.text))
-            {
-                return;
-            }
-            _isPostComment = true;
-            _mainCtrl.Project.SendComment(_cachedView.CommentInput.text, flag =>
-            {
-                _isPostComment = false;
-                if (flag)
-                {
-                    _cachedView.CommentInput.text = string.Empty;
-                    RefreshView();
-                }
-            });
         }
 
-        public void OnChangeHandler(long val)
+        public override void Clear()
         {
-            if (_isOpen)
+            _cachedView.CommentInput.text = string.Empty;
+            _cachedView.CommentTableScroller.ContentPosition = Vector2.zero;
+        }
+
+        public void OnDeleteUserMessage(ProjectComment comment)
+        {
+            if (_data != null && _data.AllList.Contains(comment))
             {
+                _data.AllList.Remove(comment);
+                _contentList = _data.AllList;
                 RefreshView();
             }
-        }
-
-        public void OnChangeToApp()
-        {
-            RequestData();
-        }
-
-        public void Set(EResScenary resScenary)
-        {
-            _resScenary = resScenary;
         }
     }
 }

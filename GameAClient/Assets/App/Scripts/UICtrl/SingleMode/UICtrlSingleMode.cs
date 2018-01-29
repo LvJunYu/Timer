@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -557,9 +556,9 @@ namespace GameA
 //                _cachedView.MatchBtn.gameObject.SetActive(true);
 //            }
 //            else
-            {
-                _cachedView.MatchBtn.gameObject.SetActive(false);
-            }
+//            {
+//                _cachedView.MatchBtn.gameObject.SetActive(false);
+//            }
         }
 
         private void FadeOutChanterBg(CanvasGroup chapterBg)

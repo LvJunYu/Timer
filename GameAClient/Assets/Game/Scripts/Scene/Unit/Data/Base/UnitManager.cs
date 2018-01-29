@@ -176,6 +176,8 @@ namespace GameA.Game
                     return (int) ESceneLayer.Bullet;
                 case (int) ELayerType.Gun:
                     return (int) ESceneLayer.Gun;
+                case (int) ELayerType.Rope:
+                    return (int) ESceneLayer.Rope;
             }
             LogHelper.Error("GetLayer Failed,LayerType:{0}", tableUnit.Layer);
             return (int) ESceneLayer.Item;
@@ -255,7 +257,7 @@ namespace GameA.Game
             switch (unit.TableUnit.EGeneratedType)
             {
                 case EGeneratedType.Spine:
-                    if (unit.Id == 1001 || unit.Id == 1002 || unit.Id == 65535)
+                    if (UnitDefine.IsSpawn(unit.Id) || UnitDefine.IsPlayer(unit.Id) || UnitDefine.IsShadow(unit.Id))
                     {
                         PoolFactory<ChangePartsSpineView>.Free((ChangePartsSpineView) unit.View);
                     }
@@ -327,7 +329,7 @@ namespace GameA.Game
             switch (unit.TableUnit.EGeneratedType)
             {
                 case EGeneratedType.Spine:
-                    if (unit.Id == 1001 || unit.Id == 1002 || unit.Id == 65535)
+                    if (UnitDefine.IsSpawn(unit.Id) || UnitDefine.IsPlayer(unit.Id) || UnitDefine.IsShadow(unit.Id))
                     {
                         unitView = PoolFactory<ChangePartsSpineView>.Get();
                     }

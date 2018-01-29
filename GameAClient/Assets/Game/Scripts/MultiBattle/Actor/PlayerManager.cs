@@ -7,29 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA.Game
 {
     public class PlayerManager : IDisposable
     {
         private static PlayerManager _instance;
+
         public static PlayerManager Instance
         {
             get { return _instance ?? (_instance = new PlayerManager()); }
         }
 
-        private List<RoomUser> _userDataList;
-        private List<PlayerBase> _playerList = new List<PlayerBase>(10);
+        public const int MaxTeamCount = 6;
+        private List<PlayerBase> _playerList = new List<PlayerBase>(MaxTeamCount); // 可能赋null，需要判空
         private MainPlayer _mainPlayer;
+        private RoomInfo _roomInfo;
 
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
-        }
-
-        public List<RoomUser> UserDataList
-        {
-            get { return _userDataList; }
         }
 
         public List<PlayerBase> PlayerList
@@ -37,41 +35,70 @@ namespace GameA.Game
             get { return _playerList; }
         }
 
-        public void SetUserData(List<RoomUser> users)
+        public RoomUser[] RoomUsers
         {
-            _userDataList = users;
-        }
-
-        public PlayerBase GetPlayerById(int id)
-        {
-            return _playerList.Find(p => p.Id == id);
-        }
-
-        public PlayerBase GetPlayerByInx(int inx)
-        {
-            if (inx < 0 || inx >= _playerList.Count)
+            get
             {
-                return null;
+                if (_roomInfo == null)
+                {
+                    return null;
+                }
+
+                return _roomInfo.RoomUserArray;
             }
-            return _playerList[inx];
         }
 
-        public void Add(PlayerBase player)
+        public RoomInfo RoomInfo
         {
-            if (_userDataList == null)
+            get { return _roomInfo; }
+        }
+
+        public void Add(PlayerBase player, int roomInx = 0)
+        {
+            if (!GM2DGame.Instance.GameMode.IsMulti)
             {
                 RoomUser roomUser = new RoomUser();
-                roomUser.Init(LocalUser.Instance.UserGuid, null, true);
+                if (GM2DGame.Instance.EGameRunMode == EGameRunMode.PlayRecord)
+                {
+                    var user = GM2DGame.Instance.GameMode.Record.UserInfo;
+                    roomUser.Init(user.UserId, user.NickName, true);
+                }
+                else
+                {
+                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                }
+
                 player.Set(roomUser);
                 player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
             }
             else
             {
-                player.Set(_userDataList[_playerList.Count]);
-                player.Setup(player.IsMain
-                    ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
-                    : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
+                if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit)
+                {
+                    RoomUser roomUser = new RoomUser();
+                    roomUser.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserInfoSimple.NickName, true);
+                    player.Set(roomUser);
+                    player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
+                }
+                else
+                {
+                    var userArray = RoomUsers;
+                    if (roomInx < userArray.Length && userArray[roomInx] != null)
+                    {
+                        player.Set(userArray[roomInx]);
+                    }
+                    else
+                    {
+                        LogHelper.Error("roomUser is null");
+                        return;
+                    }
+
+                    player.Setup(player.IsMain
+                        ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
+                        : GM2DGame.Instance.GameMode.GetOtherPlayerInput());   
+                }
             }
+
             _playerList.Add(player);
             if (player.IsMain)
             {
@@ -79,11 +106,48 @@ namespace GameA.Game
             }
         }
 
-        public void Dispose()
+        public PlayerBase GetPlayerByRoomIndex(int index)
+        {
+            if (_roomInfo != null)
+            {
+                var roomUsers = _roomInfo.RoomUserArray;
+                if (index < roomUsers.Length && roomUsers[index] != null)
+                {
+                    return roomUsers[index].Player;
+                }
+            }
+
+            return null;
+        }
+
+        public void Reset()
         {
             _playerList.Clear();
             _mainPlayer = null;
+        }
+
+        public void Dispose()
+        {
+            Reset();
             _instance = null;
+        }
+
+        public bool CheckAllPlayerSiTouLe()
+        {
+            for (int i = 0; i < _playerList.Count; i++)
+            {
+                if (_playerList[i] == null || !_playerList[i].SiTouLe)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void SetRoomInfo(RoomInfo roomInfo)
+        {
+            _roomInfo = roomInfo;
         }
     }
 }

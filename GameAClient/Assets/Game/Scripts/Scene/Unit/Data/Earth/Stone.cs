@@ -36,7 +36,7 @@ namespace GameA.Game
 
         private void SendMsgToAround()
         {
-            if (!GameRun.Instance.IsPlay)
+            if (!GameRun.Instance.IsPlaying)
             {
                 return;
             }

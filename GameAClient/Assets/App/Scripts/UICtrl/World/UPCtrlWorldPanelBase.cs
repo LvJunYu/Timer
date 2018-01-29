@@ -13,26 +13,26 @@ namespace GameA
             base.Open();
             _unload = false;
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            _cachedView.SearchBtn.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
-            _cachedView.SearchInputField.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList);
+            _cachedView.TopDock.SetActiveEx(_menu != UICtrlWorld.EMenu.RankList && _menu != UICtrlWorld.EMenu.Multi);
         }
 
         public override void Close()
         {
-            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
             _cachedView.Pannels[(int) _menu].SetActiveEx(false);
             base.Close();
         }
 
         public abstract void RequestData(bool append = false);
 
-        protected virtual void RefreshView()
+        public virtual void RefreshView()
         {
         }
 
         protected abstract void OnItemRefresh(IDataItemRenderer item, int inx);
 
-        public virtual void OnChangeHandler(long val){}
+        public virtual void OnChangeHandler(long val)
+        {
+        }
 
         public void Set(EResScenary resScenary)
         {
@@ -47,6 +47,5 @@ namespace GameA
         public virtual void Clear()
         {
         }
-        
     }
 }

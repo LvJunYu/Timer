@@ -11,6 +11,11 @@ namespace GameA.Game
 		[ColumnMapping("Id")]
 		public int Id;
 		/// <summary>
+        /// 
+        /// </summary>
+		[ColumnMapping("Group")]
+		public int Group;
+		/// <summary>
         /// Model
         /// </summary>
 		[ColumnMapping("Model")]

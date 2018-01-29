@@ -6,192 +6,248 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
     /// <summary>
     /// 服务器需要取得并且分配好三个角色的出生位置
     /// </summary>
-    public class RoomClient : NetClient
+    public class RoomClient : JoyTCPClient
     {
         public RoomClient()
         {
-            _handler = new RoomClientHandler();
+            _handler = RoomClientHandler.Intance;
             _serializer = new ClientProtoSerializer(typeof(ECRMsgType), ProtoSerializer.ProtoNameSpace,
                 new GeneratedClientSerializer());
         }
 
         protected override void OnConnected()
         {
+            base.OnConnected();
             LogHelper.Debug("RoomClient OnConnected");
             RoomManager.Instance.SendPlayerLoginRS();
-            new GameObject().AddComponent<TestRoom>();
+//            new GameObject().AddComponent<TestRoom>();
         }
 
-        protected override void OnClose()
+        protected override void OnDisconnected(int code = 0)
         {
-            LogHelper.Debug("RoomClient OnClose");
-        }
-
-        protected override void OnDisConnected()
-        {
+            base.OnDisconnected(code);
             LogHelper.Debug("RoomClient OnDisConnected");
+            Loom.QueueOnMainThread(RoomClientHandler.Intance.OnDisconnect, 100);
         }
     }
 
-    public class RoomClientHandler : Handler<object, NetLink>
+    public class RoomClientHandler : Handler<object, object>
     {
+        public static RoomClientHandler Intance = new RoomClientHandler();
+        
         private GameModeNetPlay _modeNetPlay;
+        private List<Action> _roomActionList = new List<Action>();
 
         protected override void InitHandler()
         {
             RegisterHandler<Msg_RC_LoginRet>(Msg_RC_LoginRet);
-            RegisterHandler<Msg_RC_CreateRoomRet>(Msg_RC_CreateRoomRet);
-            RegisterHandler<Msg_RC_JoinRoomRet>(Msg_RC_JoinRoomRet);
-            RegisterHandler<Msg_RC_RoomInfo>(Msg_RC_RoomInfo);
+            RegisterHandler<Msg_RC_FrameDataArray>(Msg_RC_FrameDataArray);
+            RegisterHandler<Msg_RC_RoomClose>(Msg_RC_RoomClose);
+            
             RegisterHandler<Msg_RC_RoomUserEnter>(Msg_RC_RoomUserEnter);
-            RegisterHandler<Msg_RC_UserExitRet>(Msg_RC_UserExitRet);
-            RegisterHandler<Msg_RC_UserExit>(Msg_RC_UserExit);
             RegisterHandler<Msg_RC_UserReadyInfo>(Msg_RC_UserReadyInfo);
+            RegisterHandler<Msg_RC_ChangePos>(Msg_RC_ChangePos);
+            RegisterHandler<Msg_RC_UserExit>(Msg_RC_UserExit);
+            RegisterHandler<Msg_RC_Kick>(Msg_RC_Kick);
             RegisterHandler<Msg_RC_WarnningHost>(Msg_RC_WarnningHost);
             RegisterHandler<Msg_RC_RoomOpen>(Msg_RC_RoomOpen);
-
-            RegisterHandler<Msg_RC_UserEnterBattle>(Msg_RC_UserEnterBattle);
-            RegisterHandler<Msg_RC_BattleStart>(Msg_RC_BattleStart);
-            RegisterHandler<Msg_RC_InputDatas>(Msg_RC_InputDatas);
-            RegisterHandler<Msg_RC_UserExitBattle>(Msg_RC_UserExitBattle);
-            RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
+            RegisterHandler<Msg_RC_RoomChat>(Msg_RC_RoomChat);
         }
 
-        private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, NetLink netLink)
+        private void Msg_RC_RoomChat(Msg_RC_RoomChat msg, object netlink)
+        {
+            AppData.Instance.ChatData.OnRCChat(msg);
+        }
+
+        private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, object netlink)
         {
             if (_modeNetPlay != null)
             {
-                _modeNetPlay.OnBattleClose(msg);
+                _modeNetPlay.OnRoomOpen();
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_RoomOpen(msg, netlink);
+                });
             }
         }
 
-        private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, NetLink netLink)
+        private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, object netlink)
+        {
+//            RoomManager.Instance.OnWarnningHost();
+        }
+
+        private void Msg_RC_Kick(Msg_RC_Kick msg, object netlink)
         {
             if (_modeNetPlay != null)
             {
-                _modeNetPlay.OnUserExitBattle(msg);
+                _modeNetPlay.OnUserKick(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_Kick(msg, netlink);
+                });
             }
         }
 
-        private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, NetLink netLink)
+        private void Msg_RC_UserExit(Msg_RC_UserExit msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnUserExit(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_UserExit(msg, netlink);
+                });
+            }
+        }
+
+        private void Msg_RC_ChangePos(Msg_RC_ChangePos msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomChangePos(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_ChangePos(msg, netlink);
+                });
+            }
+        }
+
+        private void Msg_RC_UserReadyInfo(Msg_RC_UserReadyInfo msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomPlayerReadyChanged(msg);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_UserReadyInfo(msg, netlink);
+                });
+            }
+        }
+
+        private void Msg_RC_RoomUserEnter(Msg_RC_RoomUserEnter msg, object netlink)
+        {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnRoomUserEnter(msg.UserInfo);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_RoomUserEnter(msg, netlink);
+                });
+            }
+        }
+
+        private void Msg_RC_FrameDataArray(Msg_RC_FrameDataArray msg, object netlink)
         {
             if (_modeNetPlay != null)
             {
                 _modeNetPlay.OnInputDatas(msg);
             }
-        }
-
-        private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, NetLink netLink)
-        {
-            if (_modeNetPlay != null)
+            else
             {
-                _modeNetPlay.OnBattleStart(msg);
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_FrameDataArray(msg, netlink);
+                });
             }
         }
 
-        private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, NetLink netLink)
+        private void Msg_RC_RoomClose(Msg_RC_RoomClose msg, object netLink)
         {
             if (_modeNetPlay != null)
             {
-                _modeNetPlay.OnUserEnterBattle(msg);
+                _modeNetPlay.OnRoomClose(msg.ResultCode);
+            }
+            else
+            {
+                _roomActionList.Add(() =>
+                {
+                    Msg_RC_RoomClose(msg, netLink);
+                });
             }
         }
-
-        private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, NetLink netLink)
+        
+        private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, object netLink)
         {
-            RoomManager.Instance.OnOpenBattle();
-            //这里进行房间和战场的交接
-            EBattleType battleType = RoomManager.Instance.Room.EBattleType;
-
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
-            var project = new Project();
-            project.Request(RoomManager.Instance.Room.ProjectId,
-                () => project.RequestPlay(() =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        switch (battleType)
+            _modeNetPlay = null;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
+            if (msg.ResultCode == ERLoginCode.ELC_Success)
+            {
+                LogHelper.Debug("Login RS Success");
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在启动游戏");
+                ProjectManager.Instance.GetDataOnAsync(msg.RoomInfo.ProjectId, project =>
+                {
+                    project.PrepareRes(() =>
                         {
-                            case EBattleType.EBT_PVE:
-                                GameManager.Instance.RequestPlayMultiCooperation(project);
-                                break;
-                            case EBattleType.EBT_PVP:
-                                GameManager.Instance.RequestPlayMultiBattle(project);
-                                break;
-                        }
-                        SocialApp.Instance.ChangeToGame();
-                        _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
-                    },
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    }),
-                error =>
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            GameManager.Instance.RequestPlayMultiBattle(project);
+                            SocialApp.Instance.ChangeToGame();
+                            _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                            if (_modeNetPlay != null)
+                            {
+                                _modeNetPlay.OnRoomInfo(msg.RoomInfo);
+                            }
+                            for (int i = 0; i < _roomActionList.Count; i++)
+                            {
+                                _roomActionList[i].Invoke();
+                            }
+                            _roomActionList.Clear();
+                        },
+                        () =>
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                        });
+                }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.ShowPopupDialog("进入关卡失败");
                 });
-        }
-
-        private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnWarnningHost();
-        }
-
-        private void Msg_RC_UserReadyInfo(Msg_RC_UserReadyInfo msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnUserReadyInfo(msg);
-        }
-
-        private void Msg_RC_UserExit(Msg_RC_UserExit msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnUserExit(msg);
-        }
-
-        private void Msg_RC_UserExitRet(Msg_RC_UserExitRet msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnSelfExit(msg);
-        }
-
-        private void Msg_RC_RoomUserEnter(Msg_RC_RoomUserEnter msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnNewUserJoinRoom(msg);
-        }
-
-        private void Msg_RC_RoomInfo(Msg_RC_RoomInfo msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnRoomInfo(msg);
-        }
-
-        private void Msg_RC_JoinRoomRet(Msg_RC_JoinRoomRet msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnJoinRoomRet(msg);
-        }
-
-        private void Msg_RC_CreateRoomRet(Msg_RC_CreateRoomRet msg, NetLink netLink)
-        {
-            RoomManager.Instance.OnCreateRoomRet(msg);
-        }
-
-        private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, NetLink netLink)
-        {
-            if (msg.ResultCode == ERLoginCode.ELC_Success)
-            {
-                LogHelper.Debug("Login RS Success");
             }
             else
             {
                 LogHelper.Debug("Login RS Failed");
+                SocialGUIManager.ShowPopupDialog("联机失败");
+            }
+        }
+
+
+        public void OnDisconnect()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(RoomManager.Instance);
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnDisconnected();
+            }
+            else
+            {
+                _roomActionList.Add(OnDisconnect);
             }
         }
     }

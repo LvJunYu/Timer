@@ -12,27 +12,51 @@ namespace GameA
         protected Dictionary<long, CardDataRendererWrapper<Project>> _dict =
             new Dictionary<long, CardDataRendererWrapper<Project>>();
 
+        protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
-        protected bool _hasRequested;
+        
+        public int Mask {
+            get
+            {
+                int mask = 0;
+                for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+                {
+                    if (_cachedView.ProjectTypeTogs[i].isOn)
+                    {
+                        mask |= 1 << i;
+                    }
+                }
 
+                if (mask == 0)
+                {
+                    mask = Project.ProjectTypeAllMask;
+                }
+                return mask;
+            }
+        }
+        
         public override void Open()
         {
             base.Open();
-            if (!_hasRequested)
-            {
-                RequestData();
-            }
+            RequestData();
             RefreshView();
+        }
+
+        public override void Close()
+        {
+            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            base.Close();
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _eCurUi = GetUMCurUI(_menu);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
         }
 
-        protected override void RefreshView()
+        public override void RefreshView()
         {
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
@@ -42,6 +66,7 @@ namespace GameA
                 _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
                 return;
             }
+
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
             for (int i = 0; i < _projectList.Count; i++)
             {
@@ -50,9 +75,16 @@ namespace GameA
                     CardDataRendererWrapper<Project> w =
                         new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
                     _contentList.Add(w);
-                    _dict.Add(_projectList[i].ProjectId, w);
+                    if (_dict.ContainsKey(_projectList[i].ProjectId))
+                    {
+                    }
+                    else
+                    {
+                        _dict.Add(_projectList[i].ProjectId, w);
+                    }
                 }
             }
+
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
@@ -62,12 +94,14 @@ namespace GameA
             {
                 return;
             }
+
             SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
         }
 
         protected IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
+            item.SetCurUI(_eCurUi);
             item.Init(parent, _resScenary);
             return item;
         }
@@ -85,6 +119,7 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+
                 item.Set(_contentList[inx]);
             }
         }
@@ -93,6 +128,11 @@ namespace GameA
         {
         }
 
+        public virtual void OnProjectTypesChanged()
+        {
+            RequestData();
+        }
+        
         public override void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;
@@ -100,17 +140,41 @@ namespace GameA
             {
                 w.BroadcastDataChanged();
             }
+
 //            RequestData();
         }
 
         public override void Clear()
         {
-            _hasRequested = false;
+            base.Clear();
             _unload = true;
             _contentList.Clear();
             _dict.Clear();
             _projectList = null;
             _cachedView.GridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
+        }
+
+        private UMCtrlProject.ECurUI GetUMCurUI(UICtrlWorld.EMenu menu)
+        {
+            switch (menu)
+            {
+                case UICtrlWorld.EMenu.Recommend:
+                    return UMCtrlProject.ECurUI.Recommend;
+//                case UICtrlWorld.EMenu.MaxScore:
+//                    return UMCtrlProject.ECurUI.MaxScore;
+                case UICtrlWorld.EMenu.NewestProject:
+                    return UMCtrlProject.ECurUI.AllNewestProject;
+//                case UICtrlWorld.EMenu.Follows:
+//                    return UMCtrlProject.ECurUI.Follows;
+                case UICtrlWorld.EMenu.UserFavorite:
+                    return UMCtrlProject.ECurUI.UserFavorite;
+//                case UICtrlWorld.EMenu.UserPlayHistory:
+//                    return UMCtrlProject.ECurUI.UserPlayHistory;
+                case UICtrlWorld.EMenu.RankList:
+                    return UMCtrlProject.ECurUI.RankList;
+                default:
+                    return UMCtrlProject.ECurUI.None;
+            }
         }
     }
 }

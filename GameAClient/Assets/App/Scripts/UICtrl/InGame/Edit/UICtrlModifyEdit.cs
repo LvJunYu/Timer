@@ -140,15 +140,15 @@ namespace GameA
             IntVec3 unitPos = IntVec3.zero;
             if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
             {
-                unitPos = DataScene2D.Instance.AddedUnits[idx].ModifiedUnit.UnitDesc.Guid;
+                unitPos = DataScene2D.CurScene.AddedUnits[idx].ModifiedUnit.UnitDesc.Guid;
             }
             else if (EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance))
             {
-                unitPos = DataScene2D.Instance.RemovedUnits[idx].OrigUnit.UnitDesc.Guid;
+                unitPos = DataScene2D.CurScene.RemovedUnits[idx].OrigUnit.UnitDesc.Guid;
             }
             else if (EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance))
             {
-                unitPos = DataScene2D.Instance.ModifiedUnits[idx].ModifiedUnit.UnitDesc.Guid;
+                unitPos = DataScene2D.CurScene.ModifiedUnits[idx].ModifiedUnit.UnitDesc.Guid;
             }
 
             CameraManager.Instance.CameraCtrlEdit.SetPos(GM2DTools.TileToWorld(unitPos));
@@ -196,17 +196,17 @@ namespace GameA
             List<ModifyData> descs = null;
             if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
             {
-                descs = DataScene2D.Instance.AddedUnits;
+                descs = DataScene2D.CurScene.AddedUnits;
                 slotNumLimit = _addLimit;
             }
             else if (EditMode.Instance.IsInState(EditModeState.ModifyRemove.Instance))
             {
-                descs = DataScene2D.Instance.RemovedUnits;
+                descs = DataScene2D.CurScene.RemovedUnits;
                 slotNumLimit = _delLimit;
             }
             else if (EditMode.Instance.IsInState(EditModeState.ModifyModify.Instance))
             {
-                descs = DataScene2D.Instance.ModifiedUnits;
+                descs = DataScene2D.CurScene.ModifiedUnits;
                 slotNumLimit = _altLimit;
             }
             if (null == descs)

@@ -10,6 +10,13 @@ namespace GameA
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         private Project _project;
+        private const string _publishConfirmTitle = "发布确认";
+        private const string _updateConfirmTitle = "更新确认";
+        private const string _publishOkStr = "立即发布";
+        private const string _updateOkStr = "更新发布";
+        private const string _publishConfirmDesc = "确定要这样发布吗？";
+        private const string _updateConfirmDesc = "更新会覆盖已发布关卡，确定要更新吗？";
+
         private const string _winConditionStr = "胜利条件：";
         private const string _timeLimitFormat = "时间限制：{0}s";
         private const string _comma = "、";
@@ -29,13 +36,9 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                 return;
             }
+
             _needSave = false;
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
-                _cachedView.DefaultCover);
-            _cachedView.TitleField.text = _project.Name;
-            _cachedView.DescField.text = _project.Summary;
-            RefreshWinConditionText();
-            _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
+            RefreshView();
         }
 
         protected override void OnClose()
@@ -44,6 +47,7 @@ namespace GameA
             {
                 SaveProject();
             }
+
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCover);
             base.OnClose();
         }
@@ -70,6 +74,37 @@ namespace GameA
             SetPart(_cachedView.transform, EAnimationType.Fade);
         }
 
+        private void RefreshView()
+        {
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                _cachedView.DefaultCover);
+            _cachedView.TitleField.text = _project.Name;
+            _cachedView.DescField.text = _project.Summary;
+            _cachedView.MultiObj.SetActive(_project.IsMulti);
+            _cachedView.StandaloneObj.SetActive(!_project.IsMulti);
+            if (_project.MainId != 0)
+            {
+                _cachedView.TitleTxt.text = _updateConfirmTitle;
+                _cachedView.DescText.text = _updateConfirmDesc;
+                _cachedView.OKBtnTxt.text = _updateOkStr;
+            }
+            else
+            {
+                _cachedView.TitleTxt.text = _publishConfirmTitle;
+                _cachedView.DescText.text = _publishConfirmDesc;
+                _cachedView.OKBtnTxt.text = _publishOkStr;
+            }
+
+            if (_project.IsMulti)
+            {
+                RefreshMultiWinConditonText();
+            }
+            else
+            {
+                RefreshWinConditionText();
+            }
+        }
+
         private void RefreshWinConditionText()
         {
             int winCondition = _project.WinCondition;
@@ -81,29 +116,50 @@ namespace GameA
                 _stringBuilder.Append(_arrive);
                 conditonCount++;
             }
+
             if (((1 << (int) EWinCondition.WC_Collect) & winCondition) != 0)
             {
                 if (conditonCount > 0)
                 {
                     _stringBuilder.Append(_comma);
                 }
+
                 _stringBuilder.Append(_collect);
                 conditonCount++;
             }
+
             if (((1 << (int) EWinCondition.WC_Monster) & winCondition) != 0)
             {
                 if (conditonCount > 0)
                 {
                     _stringBuilder.Append(_comma);
                 }
+
                 _stringBuilder.Append(_killMonster);
                 conditonCount++;
             }
+
             if (conditonCount == 0)
             {
                 _stringBuilder.Append(_timeLimit);
             }
+
             _cachedView.PassCondition.text = _stringBuilder.ToString();
+            _cachedView.TimeLimit.text = string.Format(_timeLimitFormat, _project.TimeLimit * 10);
+        }
+
+        private void RefreshMultiWinConditonText()
+        {
+            var netData = _project.NetData;
+            if (netData == null) return;
+            _cachedView.NetBattleTimeLimit.text = netData.GetTimeLimit();
+            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
+            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
+            _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
+            _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
+            _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
+            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
         }
 
         private void OnDescEndEdit(string arg0)
@@ -113,6 +169,7 @@ namespace GameA
             {
                 return;
             }
+
             var testRes = CheckTools.CheckProjectDesc(newDesc);
             if (testRes == CheckTools.ECheckProjectSumaryResult.Success)
             {
@@ -128,11 +185,19 @@ namespace GameA
 
         private void OnTitleEndEdit(string arg0)
         {
+            if (_project.MainId != 0)
+            {
+                SocialGUIManager.ShowPopupDialog("发布过的关卡不能修改关卡名称");
+                _cachedView.TitleField.text = _project.Name;
+                return;
+            }
+
             string newTitle = _cachedView.TitleField.text;
             if (string.IsNullOrEmpty(newTitle) || newTitle == _project.Name)
             {
                 return;
             }
+
             var testRes = CheckTools.CheckProjectName(newTitle);
             if (testRes == CheckTools.ECheckProjectNameResult.Success)
             {
@@ -145,7 +210,7 @@ namespace GameA
                 _cachedView.TitleField.text = _project.Name;
             }
         }
-        
+
         private void OnOKBtn()
         {
             if (_needSave)
@@ -165,26 +230,33 @@ namespace GameA
             {
                 Publsih();
             }
-            
         }
 
         private void Publsih()
         {
+            if (null == _project)
+            {
+                return;
+            }
+
+            if (_project.IsMulti && _project.NetData != null && _project.NetData.PlayerCount == 0)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                SocialGUIManager.ShowPopupDialog("游戏没有设置主角，无法发布");
+                return;
+            }
+
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
             if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             }
-            if (null == _project)
-            {
-                return;
-            }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在发布");
             _project.Publish(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     CommonTools.ShowPopupDialog("发布关卡成功");
-                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _project.ProjectId);
                     if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
                     {
                         GM2DGame.Instance.QuitGame(null, null);
@@ -221,10 +293,11 @@ namespace GameA
                 null,
                 _project.TimeLimit,
                 _project.WinCondition,
+                _project.IsMulti,
+                null,
                 () =>
                 {
                     _needSave = false;
-                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _project);
                     if (successAction != null)
                     {
                         successAction.Invoke();

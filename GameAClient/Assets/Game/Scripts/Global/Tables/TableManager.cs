@@ -15,17 +15,17 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
+		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
-		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
-		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
-		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
+		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_Achievement> Table_AchievementDic = new Dictionary<int, Table_Achievement>();
+		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_HonorReport> Table_HonorReportDic = new Dictionary<int, Table_HonorReport>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
@@ -38,29 +38,32 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
 		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
-		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
+		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
 		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
+		public readonly Dictionary<int,Table_NpcTaskTargetColltion> Table_NpcTaskTargetColltionDic = new Dictionary<int, Table_NpcTaskTargetColltion>();
+		public readonly Dictionary<int,Table_NpcTaskTargetKill> Table_NpcTaskTargetKillDic = new Dictionary<int, Table_NpcTaskTargetKill>();
+		public readonly Dictionary<int,Table_NpcDefaultDia> Table_NpcDefaultDiaDic = new Dictionary<int, Table_NpcDefaultDia>();
 		[SerializeField] private Table_State[] _tableStates;
 		[SerializeField] private Table_Skill[] _tableSkills;
 		[SerializeField] private Table_Reward[] _tableRewards;
+		[SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[SerializeField] private Table_Equipment[] _tableEquipments;
 		[SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
-		[SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[SerializeField] private Table_Trap[] _tableTraps;
 		[SerializeField] private Table_Unit[] _tableUnits;
 		[SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[SerializeField] private Table_StarRequire[] _tableStarRequires;
-		[SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
-		[SerializeField] private Table_FashionUnit[] _tableFashionUnits;
+		[SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[SerializeField] private Table_Achievement[] _tableAchievements;
+		[SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[SerializeField] private Table_HonorReport[] _tableHonorReports;
 		[SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[SerializeField] private Table_Turntable[] _tableTurntables;
@@ -73,15 +76,18 @@ namespace GameA.Game
 		[SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
 		[SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
-		[SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[SerializeField] private Table_Matrix[] _tableMatrixs;
+		[SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[SerializeField] private Table_Morph[] _tableMorphs;
 		[SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
 		[SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[SerializeField] private Table_ModifyReward[] _tableModifyRewards;
 		[SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
 		[SerializeField] private Table_BoostItem[] _tableBoostItems;
+		[SerializeField] private Table_NpcTaskTargetColltion[] _tableNpcTaskTargetColltions;
+		[SerializeField] private Table_NpcTaskTargetKill[] _tableNpcTaskTargetKills;
+		[SerializeField] private Table_NpcDefaultDia[] _tableNpcDefaultDias;
 
 		#endregion
 		#region 属性
@@ -103,12 +109,12 @@ namespace GameA.Game
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string RewardJsonStr = JoyResManager.Instance.GetJson ("Reward", (int) EResScenary.TableAsset);
             _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
+			string FashionShopJsonStr = JoyResManager.Instance.GetJson ("FashionShop", (int) EResScenary.TableAsset);
+            _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string EquipmentJsonStr = JoyResManager.Instance.GetJson ("Equipment", (int) EResScenary.TableAsset);
             _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
 			string EquipmentLevelJsonStr = JoyResManager.Instance.GetJson ("EquipmentLevel", (int) EResScenary.TableAsset);
             _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
-			string FashionShopJsonStr = JoyResManager.Instance.GetJson ("FashionShop", (int) EResScenary.TableAsset);
-            _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string TrapJsonStr = JoyResManager.Instance.GetJson ("Trap", (int) EResScenary.TableAsset);
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = JoyResManager.Instance.GetJson ("Unit", (int) EResScenary.TableAsset);
@@ -117,14 +123,14 @@ namespace GameA.Game
             _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = JoyResManager.Instance.GetJson ("StarRequire", (int) EResScenary.TableAsset);
             _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
-			string StandaloneChapterJsonStr = JoyResManager.Instance.GetJson ("StandaloneChapter", (int) EResScenary.TableAsset);
-            _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
 			string StandaloneLevelJsonStr = JoyResManager.Instance.GetJson ("StandaloneLevel", (int) EResScenary.TableAsset);
             _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
-			string FashionUnitJsonStr = JoyResManager.Instance.GetJson ("FashionUnit", (int) EResScenary.TableAsset);
-            _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
+			string StandaloneChapterJsonStr = JoyResManager.Instance.GetJson ("StandaloneChapter", (int) EResScenary.TableAsset);
+            _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
 			string AchievementJsonStr = JoyResManager.Instance.GetJson ("Achievement", (int) EResScenary.TableAsset);
             _tableAchievements = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Achievement[]>(AchievementJsonStr);
+			string FashionUnitJsonStr = JoyResManager.Instance.GetJson ("FashionUnit", (int) EResScenary.TableAsset);
+            _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
 			string HonorReportJsonStr = JoyResManager.Instance.GetJson ("HonorReport", (int) EResScenary.TableAsset);
             _tableHonorReports = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HonorReport[]>(HonorReportJsonStr);
 			string TreasureMapJsonStr = JoyResManager.Instance.GetJson ("TreasureMap", (int) EResScenary.TableAsset);
@@ -149,12 +155,12 @@ namespace GameA.Game
             _tablePuzzleUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleUpgrade[]>(PuzzleUpgradeJsonStr);
 			string PuzzleSlotJsonStr = JoyResManager.Instance.GetJson ("PuzzleSlot", (int) EResScenary.TableAsset);
             _tablePuzzleSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSlot[]>(PuzzleSlotJsonStr);
-			string AvatarSlotNameJsonStr = JoyResManager.Instance.GetJson ("AvatarSlotName", (int) EResScenary.TableAsset);
-            _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
 			string AvatarStructJsonStr = JoyResManager.Instance.GetJson ("AvatarStruct", (int) EResScenary.TableAsset);
             _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string MatrixJsonStr = JoyResManager.Instance.GetJson ("Matrix", (int) EResScenary.TableAsset);
             _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
+			string AvatarSlotNameJsonStr = JoyResManager.Instance.GetJson ("AvatarSlotName", (int) EResScenary.TableAsset);
+            _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
 			string MorphJsonStr = JoyResManager.Instance.GetJson ("Morph", (int) EResScenary.TableAsset);
             _tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphJsonStr);
 			string PlayerLvToModifyLimitJsonStr = JoyResManager.Instance.GetJson ("PlayerLvToModifyLimit", (int) EResScenary.TableAsset);
@@ -167,6 +173,12 @@ namespace GameA.Game
             _tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockJsonStr);
 			string BoostItemJsonStr = JoyResManager.Instance.GetJson ("BoostItem", (int) EResScenary.TableAsset);
             _tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemJsonStr);
+			string NpcTaskTargetColltionJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetColltion", (int) EResScenary.TableAsset);
+            _tableNpcTaskTargetColltions = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetColltion[]>(NpcTaskTargetColltionJsonStr);
+			string NpcTaskTargetKillJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetKill", (int) EResScenary.TableAsset);
+            _tableNpcTaskTargetKills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetKill[]>(NpcTaskTargetKillJsonStr);
+			string NpcDefaultDiaJsonStr = JoyResManager.Instance.GetJson ("NpcDefaultDia", (int) EResScenary.TableAsset);
+            _tableNpcDefaultDias = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcDefaultDia[]>(NpcDefaultDiaJsonStr);
 			JoyResManager.Instance.UnloadScenary((int) EResScenary.TableAsset);
 			for (int i = 0; i < _tableStates.Length; i++)
 			{
@@ -201,6 +213,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableFashionShops.Length; i++)
+			{
+				if (!Table_FashionShopDic.ContainsKey(_tableFashionShops[i].Id))
+				{
+					Table_FashionShopDic.Add(_tableFashionShops[i].Id,_tableFashionShops[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableEquipments.Length; i++)
 			{
 				if (!Table_EquipmentDic.ContainsKey(_tableEquipments[i].Id))
@@ -221,17 +244,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableEquipmentLevels table.Id {0} is duplicated!", _tableEquipmentLevels[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableFashionShops.Length; i++)
-			{
-				if (!Table_FashionShopDic.ContainsKey(_tableFashionShops[i].Id))
-				{
-					Table_FashionShopDic.Add(_tableFashionShops[i].Id,_tableFashionShops[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTraps.Length; i++)
@@ -278,17 +290,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableStarRequires table.Id {0} is duplicated!", _tableStarRequires[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableStandaloneChapters.Length; i++)
-			{
-				if (!Table_StandaloneChapterDic.ContainsKey(_tableStandaloneChapters[i].Id))
-				{
-					Table_StandaloneChapterDic.Add(_tableStandaloneChapters[i].Id,_tableStandaloneChapters[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableStandaloneChapters table.Id {0} is duplicated!", _tableStandaloneChapters[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
 			{
 				if (!Table_StandaloneLevelDic.ContainsKey(_tableStandaloneLevels[i].Id))
@@ -300,15 +301,15 @@ namespace GameA.Game
 					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableFashionUnits.Length; i++)
+			for (int i = 0; i < _tableStandaloneChapters.Length; i++)
 			{
-				if (!Table_FashionUnitDic.ContainsKey(_tableFashionUnits[i].Id))
+				if (!Table_StandaloneChapterDic.ContainsKey(_tableStandaloneChapters[i].Id))
 				{
-					Table_FashionUnitDic.Add(_tableFashionUnits[i].Id,_tableFashionUnits[i]);
+					Table_StandaloneChapterDic.Add(_tableStandaloneChapters[i].Id,_tableStandaloneChapters[i]);
 				}
 				else
 				{
-					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
+					LogHelper.Warning("_tableStandaloneChapters table.Id {0} is duplicated!", _tableStandaloneChapters[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableAchievements.Length; i++)
@@ -320,6 +321,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableAchievements table.Id {0} is duplicated!", _tableAchievements[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableFashionUnits.Length; i++)
+			{
+				if (!Table_FashionUnitDic.ContainsKey(_tableFashionUnits[i].Id))
+				{
+					Table_FashionUnitDic.Add(_tableFashionUnits[i].Id,_tableFashionUnits[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableHonorReports.Length; i++)
@@ -454,17 +466,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePuzzleSlots table.Id {0} is duplicated!", _tablePuzzleSlots[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableAvatarSlotNames.Length; i++)
-			{
-				if (!Table_AvatarSlotNameDic.ContainsKey(_tableAvatarSlotNames[i].Id))
-				{
-					Table_AvatarSlotNameDic.Add(_tableAvatarSlotNames[i].Id,_tableAvatarSlotNames[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableAvatarStructs.Length; i++)
 			{
 				if (!Table_AvatarStructDic.ContainsKey(_tableAvatarStructs[i].Id))
@@ -485,6 +486,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableMatrixs table.Id {0} is duplicated!", _tableMatrixs[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableAvatarSlotNames.Length; i++)
+			{
+				if (!Table_AvatarSlotNameDic.ContainsKey(_tableAvatarSlotNames[i].Id))
+				{
+					Table_AvatarSlotNameDic.Add(_tableAvatarSlotNames[i].Id,_tableAvatarSlotNames[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableMorphs.Length; i++)
@@ -553,6 +565,39 @@ namespace GameA.Game
 					LogHelper.Warning("_tableBoostItems table.Id {0} is duplicated!", _tableBoostItems[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableNpcTaskTargetColltions.Length; i++)
+			{
+				if (!Table_NpcTaskTargetColltionDic.ContainsKey(_tableNpcTaskTargetColltions[i].Id))
+				{
+					Table_NpcTaskTargetColltionDic.Add(_tableNpcTaskTargetColltions[i].Id,_tableNpcTaskTargetColltions[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcTaskTargetColltions table.Id {0} is duplicated!", _tableNpcTaskTargetColltions[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableNpcTaskTargetKills.Length; i++)
+			{
+				if (!Table_NpcTaskTargetKillDic.ContainsKey(_tableNpcTaskTargetKills[i].Id))
+				{
+					Table_NpcTaskTargetKillDic.Add(_tableNpcTaskTargetKills[i].Id,_tableNpcTaskTargetKills[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcTaskTargetKills table.Id {0} is duplicated!", _tableNpcTaskTargetKills[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableNpcDefaultDias.Length; i++)
+			{
+				if (!Table_NpcDefaultDiaDic.ContainsKey(_tableNpcDefaultDias[i].Id))
+				{
+					Table_NpcDefaultDiaDic.Add(_tableNpcDefaultDias[i].Id,_tableNpcDefaultDias[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcDefaultDias table.Id {0} is duplicated!", _tableNpcDefaultDias[i].Id);
+				}
+			}
 			
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
@@ -584,6 +629,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_FashionShop GetFashionShop(int key)
+		{
+			Table_FashionShop tmp;
+			if (Table_FashionShopDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_Equipment GetEquipment(int key)
 		{
 			Table_Equipment tmp;
@@ -597,15 +651,6 @@ namespace GameA.Game
 		{
 			Table_EquipmentLevel tmp;
 			if (Table_EquipmentLevelDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_FashionShop GetFashionShop(int key)
-		{
-			Table_FashionShop tmp;
-			if (Table_FashionShopDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -647,15 +692,6 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_StandaloneChapter GetStandaloneChapter(int key)
-		{
-			Table_StandaloneChapter tmp;
-			if (Table_StandaloneChapterDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_StandaloneLevel GetStandaloneLevel(int key)
 		{
 			Table_StandaloneLevel tmp;
@@ -665,10 +701,10 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_FashionUnit GetFashionUnit(int key)
+		public Table_StandaloneChapter GetStandaloneChapter(int key)
 		{
-			Table_FashionUnit tmp;
-			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
+			Table_StandaloneChapter tmp;
+			if (Table_StandaloneChapterDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -678,6 +714,15 @@ namespace GameA.Game
 		{
 			Table_Achievement tmp;
 			if (Table_AchievementDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_FashionUnit GetFashionUnit(int key)
+		{
+			Table_FashionUnit tmp;
+			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -791,15 +836,6 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_AvatarSlotName GetAvatarSlotName(int key)
-		{
-			Table_AvatarSlotName tmp;
-			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_AvatarStruct GetAvatarStruct(int key)
 		{
 			Table_AvatarStruct tmp;
@@ -813,6 +849,15 @@ namespace GameA.Game
 		{
 			Table_Matrix tmp;
 			if (Table_MatrixDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_AvatarSlotName GetAvatarSlotName(int key)
+		{
+			Table_AvatarSlotName tmp;
+			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -867,6 +912,33 @@ namespace GameA.Game
 		{
 			Table_BoostItem tmp;
 			if (Table_BoostItemDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcTaskTargetColltion GetNpcTaskTargetColltion(int key)
+		{
+			Table_NpcTaskTargetColltion tmp;
+			if (Table_NpcTaskTargetColltionDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcTaskTargetKill GetNpcTaskTargetKill(int key)
+		{
+			Table_NpcTaskTargetKill tmp;
+			if (Table_NpcTaskTargetKillDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcDefaultDia GetNpcDefaultDia(int key)
+		{
+			Table_NpcDefaultDia tmp;
+			if (Table_NpcDefaultDiaDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

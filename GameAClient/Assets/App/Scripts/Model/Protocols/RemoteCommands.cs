@@ -803,6 +803,120 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingMatchShadowBattle {
+            get { return _isRequstingMatchShadowBattle; }
+        }
+        private static bool _isRequstingMatchShadowBattle = false;
+        /// <summary>
+		/// 匹配乱入对决
+		/// </summary>
+		/// <param name="id">BattleId</param>
+        public static void MatchShadowBattle (
+            long id,
+            Action<Msg_SC_CMD_MatchShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMatchShadowBattle) {
+                return;
+            }
+            _isRequstingMatchShadowBattle = true;
+            Msg_CS_CMD_MatchShadowBattle msg = new Msg_CS_CMD_MatchShadowBattle();
+            // 匹配乱入对决
+            msg.Id = id;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MatchShadowBattle>(
+                SoyHttpApiPath.MatchShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMatchShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MatchShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMatchShadowBattle = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingRequestHelpShadowBattle {
+            get { return _isRequstingRequestHelpShadowBattle; }
+        }
+        private static bool _isRequstingRequestHelpShadowBattle = false;
+        /// <summary>
+		/// 乱入对决请求帮战
+		/// </summary>
+		/// <param name="shadowBattleId">Id</param>
+		/// <param name="targetUserId"></param>
+        public static void RequestHelpShadowBattle (
+            long shadowBattleId,
+            long targetUserId,
+            Action<Msg_SC_CMD_RequestHelpShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingRequestHelpShadowBattle) {
+                return;
+            }
+            _isRequstingRequestHelpShadowBattle = true;
+            Msg_CS_CMD_RequestHelpShadowBattle msg = new Msg_CS_CMD_RequestHelpShadowBattle();
+            // 乱入对决请求帮战
+            msg.ShadowBattleId = shadowBattleId;
+            msg.TargetUserId = targetUserId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_RequestHelpShadowBattle>(
+                SoyHttpApiPath.RequestHelpShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingRequestHelpShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "RequestHelpShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingRequestHelpShadowBattle = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingGiveUpShadowBattle {
+            get { return _isRequstingGiveUpShadowBattle; }
+        }
+        private static bool _isRequstingGiveUpShadowBattle = false;
+        /// <summary>
+		/// 放弃乱入对决
+		/// </summary>
+		/// <param name="id">Id</param>
+        public static void GiveUpShadowBattle (
+            long id,
+            Action<Msg_SC_CMD_GiveUpShadowBattle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingGiveUpShadowBattle) {
+                return;
+            }
+            _isRequstingGiveUpShadowBattle = true;
+            Msg_CS_CMD_GiveUpShadowBattle msg = new Msg_CS_CMD_GiveUpShadowBattle();
+            // 放弃乱入对决
+            msg.Id = id;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GiveUpShadowBattle>(
+                SoyHttpApiPath.GiveUpShadowBattle, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingGiveUpShadowBattle = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GiveUpShadowBattle", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingGiveUpShadowBattle = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCommitWorldProjectResult {
             get { return _isRequstingCommitWorldProjectResult; }
         }
@@ -838,6 +952,49 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingCommitWorldProjectResult = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReplyProjectComment {
+            get { return _isRequstingReplyProjectComment; }
+        }
+        private static bool _isRequstingReplyProjectComment = false;
+        /// <summary>
+		/// 回复关卡评论
+		/// </summary>
+		/// <param name="commentId"></param>
+		/// <param name="content">内容</param>
+		/// <param name="targetReplyId">回复的回复ID</param>
+        public static void ReplyProjectComment (
+            long commentId,
+            string content,
+            long targetReplyId,
+            Action<Msg_SC_CMD_ReplyProjectComment> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReplyProjectComment) {
+                return;
+            }
+            _isRequstingReplyProjectComment = true;
+            Msg_CS_CMD_ReplyProjectComment msg = new Msg_CS_CMD_ReplyProjectComment();
+            // 回复关卡评论
+            msg.CommentId = commentId;
+            msg.Content = content;
+            msg.TargetReplyId = targetReplyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReplyProjectComment>(
+                SoyHttpApiPath.ReplyProjectComment, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReplyProjectComment = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReplyProjectComment", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReplyProjectComment = false;
                 },
                 form
             );
@@ -881,6 +1038,120 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingPostWorldProjectComment = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteProjectComment {
+            get { return _isRequstingDeleteProjectComment; }
+        }
+        private static bool _isRequstingDeleteProjectComment = false;
+        /// <summary>
+		/// 删除关卡评论
+		/// </summary>
+		/// <param name="commentId">评论Id</param>
+        public static void DeleteProjectComment (
+            long commentId,
+            Action<Msg_SC_CMD_DeleteProjectComment> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProjectComment) {
+                return;
+            }
+            _isRequstingDeleteProjectComment = true;
+            Msg_CS_CMD_DeleteProjectComment msg = new Msg_CS_CMD_DeleteProjectComment();
+            // 删除关卡评论
+            msg.CommentId = commentId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProjectComment>(
+                SoyHttpApiPath.DeleteProjectComment, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProjectComment = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProjectComment", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProjectComment = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteProjectCommentReply {
+            get { return _isRequstingDeleteProjectCommentReply; }
+        }
+        private static bool _isRequstingDeleteProjectCommentReply = false;
+        /// <summary>
+		/// 删除关卡评论回复
+		/// </summary>
+		/// <param name="replyId">评论回复Id</param>
+        public static void DeleteProjectCommentReply (
+            long replyId,
+            Action<Msg_SC_CMD_DeleteProjectCommentReply> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteProjectCommentReply) {
+                return;
+            }
+            _isRequstingDeleteProjectCommentReply = true;
+            Msg_CS_CMD_DeleteProjectCommentReply msg = new Msg_CS_CMD_DeleteProjectCommentReply();
+            // 删除关卡评论回复
+            msg.ReplyId = replyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteProjectCommentReply>(
+                SoyHttpApiPath.DeleteProjectCommentReply, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteProjectCommentReply = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProjectCommentReply", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteProjectCommentReply = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateWorldProjectCommentLike {
+            get { return _isRequstingUpdateWorldProjectCommentLike; }
+        }
+        private static bool _isRequstingUpdateWorldProjectCommentLike = false;
+        /// <summary>
+		/// 修改评论赞
+		/// </summary>
+		/// <param name="commentId">评论Id</param>
+		/// <param name="likeFlag"></param>
+        public static void UpdateWorldProjectCommentLike (
+            long commentId,
+            bool likeFlag,
+            Action<Msg_SC_CMD_UpdateWorldProjectCommentLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateWorldProjectCommentLike) {
+                return;
+            }
+            _isRequstingUpdateWorldProjectCommentLike = true;
+            Msg_CS_CMD_UpdateWorldProjectCommentLike msg = new Msg_CS_CMD_UpdateWorldProjectCommentLike();
+            // 修改评论赞
+            msg.CommentId = commentId;
+            msg.LikeFlag = likeFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectCommentLike>(
+                SoyHttpApiPath.UpdateWorldProjectCommentLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateWorldProjectCommentLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateWorldProjectCommentLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateWorldProjectCommentLike = false;
                 },
                 form
             );
@@ -933,10 +1204,10 @@ namespace GameA
         /// <summary>
 		/// 修改关卡收藏状态
 		/// </summary>
-		/// <param name="projectId">关卡Id</param>
+		/// <param name="projectMainId">关卡Id</param>
 		/// <param name="favoriteFlag"></param>
         public static void UpdateWorldProjectFavorite (
-            long projectId,
+            long projectMainId,
             bool favoriteFlag,
             Action<Msg_SC_CMD_UpdateWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -947,7 +1218,7 @@ namespace GameA
             _isRequstingUpdateWorldProjectFavorite = true;
             Msg_CS_CMD_UpdateWorldProjectFavorite msg = new Msg_CS_CMD_UpdateWorldProjectFavorite();
             // 修改关卡收藏状态
-            msg.ProjectId = projectId;
+            msg.ProjectMainId = projectMainId;
             msg.FavoriteFlag = favoriteFlag;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectFavorite>(
                 SoyHttpApiPath.UpdateWorldProjectFavorite, msg, ret => {
@@ -973,9 +1244,9 @@ namespace GameA
         /// <summary>
 		/// 删除收藏关卡
 		/// </summary>
-		/// <param name="projectId">关卡Id</param>
+		/// <param name="projecMaintId">关卡Id</param>
         public static void DeleteWorldProjectFavorite (
-            List<long> projectId,
+            List<long> projecMaintId,
             Action<Msg_SC_CMD_DeleteWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -985,7 +1256,7 @@ namespace GameA
             _isRequstingDeleteWorldProjectFavorite = true;
             Msg_CS_CMD_DeleteWorldProjectFavorite msg = new Msg_CS_CMD_DeleteWorldProjectFavorite();
             // 删除收藏关卡
-            msg.ProjectId.AddRange(projectId);
+            msg.ProjecMaintId.AddRange(projecMaintId);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteWorldProjectFavorite>(
                 SoyHttpApiPath.DeleteWorldProjectFavorite, msg, ret => {
                     if (successCallback != null) {
@@ -1077,6 +1348,46 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingGetProjectByMainId {
+            get { return _isRequstingGetProjectByMainId; }
+        }
+        private static bool _isRequstingGetProjectByMainId = false;
+        /// <summary>
+		/// 通过主id和版本号获取关卡
+		/// </summary>
+		/// <param name="mainId">关卡Id</param>
+		/// <param name="version">特定版本号</param>
+        public static void GetProjectByMainId (
+            long mainId,
+            int version,
+            Action<Msg_SC_CMD_GetProjectByMainId> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingGetProjectByMainId) {
+                return;
+            }
+            _isRequstingGetProjectByMainId = true;
+            Msg_CS_CMD_GetProjectByMainId msg = new Msg_CS_CMD_GetProjectByMainId();
+            // 通过主id和版本号获取关卡
+            msg.MainId = mainId;
+            msg.Version = version;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GetProjectByMainId>(
+                SoyHttpApiPath.GetProjectByMainId, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingGetProjectByMainId = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetProjectByMainId", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingGetProjectByMainId = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCreateProject {
             get { return _isRequstingCreateProject; }
         }
@@ -1093,6 +1404,8 @@ namespace GameA
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
+		/// <param name="projectType">关卡类型</param>
+		/// <param name="netData">联机信息</param>
         public static void CreateProject (
             string name,
             string summary,
@@ -1103,6 +1416,8 @@ namespace GameA
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
+            EProjectType projectType,
+            Msg_NetBattleData netData,
             Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1121,6 +1436,8 @@ namespace GameA
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
+            msg.ProjectType = projectType;
+            msg.NetData = netData;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
                 SoyHttpApiPath.CreateProject, msg, ret => {
                     if (successCallback != null) {
@@ -1155,6 +1472,7 @@ namespace GameA
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
+		/// <param name="netData">联机信息</param>
         public static void UpdateProject (
             long projectId,
             string name,
@@ -1166,6 +1484,7 @@ namespace GameA
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
+            Msg_NetBattleData netData,
             Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1185,6 +1504,7 @@ namespace GameA
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
+            msg.NetData = netData;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
                 SoyHttpApiPath.UpdateProject, msg, ret => {
                     if (successCallback != null) {
@@ -1197,6 +1517,43 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingUpdateProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingEditProject {
+            get { return _isRequstingEditProject; }
+        }
+        private static bool _isRequstingEditProject = false;
+        /// <summary>
+		/// 继续编辑关卡
+		/// </summary>
+		/// <param name="projectMainId">关卡Id</param>
+        public static void EditProject (
+            long projectMainId,
+            Action<Msg_SC_CMD_EditProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingEditProject) {
+                return;
+            }
+            _isRequstingEditProject = true;
+            Msg_CS_CMD_EditProject msg = new Msg_CS_CMD_EditProject();
+            // 继续编辑关卡
+            msg.ProjectMainId = projectMainId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_EditProject>(
+                SoyHttpApiPath.EditProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingEditProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "EditProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingEditProject = false;
                 },
                 form
             );
@@ -1234,6 +1591,234 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDeleteProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCreateUnitPreinstall {
+            get { return _isRequstingCreateUnitPreinstall; }
+        }
+        private static bool _isRequstingCreateUnitPreinstall = false;
+        /// <summary>
+		/// 创建预设
+		/// </summary>
+		/// <param name="preinstall">预设数据</param>
+        public static void CreateUnitPreinstall (
+            Msg_Preinstall preinstall,
+            Action<Msg_SC_CMD_CreateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateUnitPreinstall) {
+                return;
+            }
+            _isRequstingCreateUnitPreinstall = true;
+            Msg_CS_CMD_CreateUnitPreinstall msg = new Msg_CS_CMD_CreateUnitPreinstall();
+            // 创建预设
+            msg.Preinstall = preinstall;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateUnitPreinstall>(
+                SoyHttpApiPath.CreateUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateUnitPreinstall {
+            get { return _isRequstingUpdateUnitPreinstall; }
+        }
+        private static bool _isRequstingUpdateUnitPreinstall = false;
+        /// <summary>
+		/// 更新预设
+		/// </summary>
+		/// <param name="preinstallId">预设Id</param>
+		/// <param name="preinstall">预设数据</param>
+        public static void UpdateUnitPreinstall (
+            long preinstallId,
+            Msg_Preinstall preinstall,
+            Action<Msg_SC_CMD_UpdateUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateUnitPreinstall) {
+                return;
+            }
+            _isRequstingUpdateUnitPreinstall = true;
+            Msg_CS_CMD_UpdateUnitPreinstall msg = new Msg_CS_CMD_UpdateUnitPreinstall();
+            // 更新预设
+            msg.PreinstallId = preinstallId;
+            msg.Preinstall = preinstall;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUnitPreinstall>(
+                SoyHttpApiPath.UpdateUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUnitPreinstall {
+            get { return _isRequstingDeleteUnitPreinstall; }
+        }
+        private static bool _isRequstingDeleteUnitPreinstall = false;
+        /// <summary>
+		/// 删除预设
+		/// </summary>
+		/// <param name="preinstallId">预设Id</param>
+        public static void DeleteUnitPreinstall (
+            List<long> preinstallId,
+            Action<Msg_SC_CMD_DeleteUnitPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUnitPreinstall) {
+                return;
+            }
+            _isRequstingDeleteUnitPreinstall = true;
+            Msg_CS_CMD_DeleteUnitPreinstall msg = new Msg_CS_CMD_DeleteUnitPreinstall();
+            // 删除预设
+            msg.PreinstallId.AddRange(preinstallId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUnitPreinstall>(
+                SoyHttpApiPath.DeleteUnitPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUnitPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUnitPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUnitPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCreateNpcDialogPreinstall {
+            get { return _isRequstingCreateNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingCreateNpcDialogPreinstall = false;
+        /// <summary>
+		/// 创建预设Npc对话
+		/// </summary>
+		/// <param name="data">预设数据</param>
+        public static void CreateNpcDialogPreinstall (
+            string data,
+            Action<Msg_SC_CMD_CreateNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingCreateNpcDialogPreinstall = true;
+            Msg_CS_CMD_CreateNpcDialogPreinstall msg = new Msg_CS_CMD_CreateNpcDialogPreinstall();
+            // 创建预设Npc对话
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateNpcDialogPreinstall>(
+                SoyHttpApiPath.CreateNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateNpcDialogPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateNpcDialogPreinstall {
+            get { return _isRequstingUpdateNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingUpdateNpcDialogPreinstall = false;
+        /// <summary>
+		/// 更新预设Npc对话
+		/// </summary>
+		/// <param name="id">预设Id</param>
+		/// <param name="data">数据</param>
+        public static void UpdateNpcDialogPreinstall (
+            long id,
+            string data,
+            Action<Msg_SC_CMD_UpdateNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingUpdateNpcDialogPreinstall = true;
+            Msg_CS_CMD_UpdateNpcDialogPreinstall msg = new Msg_CS_CMD_UpdateNpcDialogPreinstall();
+            // 更新预设Npc对话
+            msg.Id = id;
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateNpcDialogPreinstall>(
+                SoyHttpApiPath.UpdateNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateNpcDialogPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteNpcDialogPreinstall {
+            get { return _isRequstingDeleteNpcDialogPreinstall; }
+        }
+        private static bool _isRequstingDeleteNpcDialogPreinstall = false;
+        /// <summary>
+		/// 删除预设Npc对话
+		/// </summary>
+		/// <param name="idList">预设Id</param>
+        public static void DeleteNpcDialogPreinstall (
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteNpcDialogPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteNpcDialogPreinstall) {
+                return;
+            }
+            _isRequstingDeleteNpcDialogPreinstall = true;
+            Msg_CS_CMD_DeleteNpcDialogPreinstall msg = new Msg_CS_CMD_DeleteNpcDialogPreinstall();
+            // 删除预设Npc对话
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteNpcDialogPreinstall>(
+                SoyHttpApiPath.DeleteNpcDialogPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteNpcDialogPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteNpcDialogPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteNpcDialogPreinstall = false;
                 },
                 form
             );
@@ -1800,6 +2385,203 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingReceiveQQGameReward = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingPublishUserMessage {
+            get { return _isRequstingPublishUserMessage; }
+        }
+        private static bool _isRequstingPublishUserMessage = false;
+        /// <summary>
+		/// 发布留言
+		/// </summary>
+		/// <param name="userId">用户ID</param>
+		/// <param name="content">内容</param>
+        public static void PublishUserMessage (
+            long userId,
+            string content,
+            Action<Msg_SC_CMD_PublishUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPublishUserMessage) {
+                return;
+            }
+            _isRequstingPublishUserMessage = true;
+            Msg_CS_CMD_PublishUserMessage msg = new Msg_CS_CMD_PublishUserMessage();
+            // 发布留言
+            msg.UserId = userId;
+            msg.Content = content;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishUserMessage>(
+                SoyHttpApiPath.PublishUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPublishUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPublishUserMessage = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReplyUserMessage {
+            get { return _isRequstingReplyUserMessage; }
+        }
+        private static bool _isRequstingReplyUserMessage = false;
+        /// <summary>
+		/// 回复留言
+		/// </summary>
+		/// <param name="userMessageId">留言ID</param>
+		/// <param name="content">内容</param>
+		/// <param name="targetReplyId">回复的回复ID</param>
+        public static void ReplyUserMessage (
+            long userMessageId,
+            string content,
+            long targetReplyId,
+            Action<Msg_SC_CMD_ReplyUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReplyUserMessage) {
+                return;
+            }
+            _isRequstingReplyUserMessage = true;
+            Msg_CS_CMD_ReplyUserMessage msg = new Msg_CS_CMD_ReplyUserMessage();
+            // 回复留言
+            msg.UserMessageId = userMessageId;
+            msg.Content = content;
+            msg.TargetReplyId = targetReplyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReplyUserMessage>(
+                SoyHttpApiPath.ReplyUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReplyUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReplyUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReplyUserMessage = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateUserMessageLike {
+            get { return _isRequstingUpdateUserMessageLike; }
+        }
+        private static bool _isRequstingUpdateUserMessageLike = false;
+        /// <summary>
+		/// 回复留言
+		/// </summary>
+		/// <param name="userMessageId">留言ID</param>
+		/// <param name="likeFlag">赞</param>
+        public static void UpdateUserMessageLike (
+            long userMessageId,
+            bool likeFlag,
+            Action<Msg_SC_CMD_UpdateUserMessageLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateUserMessageLike) {
+                return;
+            }
+            _isRequstingUpdateUserMessageLike = true;
+            Msg_CS_CMD_UpdateUserMessageLike msg = new Msg_CS_CMD_UpdateUserMessageLike();
+            // 回复留言
+            msg.UserMessageId = userMessageId;
+            msg.LikeFlag = likeFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUserMessageLike>(
+                SoyHttpApiPath.UpdateUserMessageLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateUserMessageLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateUserMessageLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateUserMessageLike = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUserMessage {
+            get { return _isRequstingDeleteUserMessage; }
+        }
+        private static bool _isRequstingDeleteUserMessage = false;
+        /// <summary>
+		/// 删除留言
+		/// </summary>
+		/// <param name="messageId">留言Id</param>
+        public static void DeleteUserMessage (
+            long messageId,
+            Action<Msg_SC_CMD_DeleteUserMessage> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUserMessage) {
+                return;
+            }
+            _isRequstingDeleteUserMessage = true;
+            Msg_CS_CMD_DeleteUserMessage msg = new Msg_CS_CMD_DeleteUserMessage();
+            // 删除留言
+            msg.MessageId = messageId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUserMessage>(
+                SoyHttpApiPath.DeleteUserMessage, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUserMessage = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUserMessage", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUserMessage = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteUserMessageReply {
+            get { return _isRequstingDeleteUserMessageReply; }
+        }
+        private static bool _isRequstingDeleteUserMessageReply = false;
+        /// <summary>
+		/// 删除留言回复
+		/// </summary>
+		/// <param name="replyId">留言回复Id</param>
+        public static void DeleteUserMessageReply (
+            long replyId,
+            Action<Msg_SC_CMD_DeleteUserMessageReply> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteUserMessageReply) {
+                return;
+            }
+            _isRequstingDeleteUserMessageReply = true;
+            Msg_CS_CMD_DeleteUserMessageReply msg = new Msg_CS_CMD_DeleteUserMessageReply();
+            // 删除留言回复
+            msg.ReplyId = replyId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteUserMessageReply>(
+                SoyHttpApiPath.DeleteUserMessageReply, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteUserMessageReply = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteUserMessageReply", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteUserMessageReply = false;
                 },
                 form
             );

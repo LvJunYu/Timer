@@ -6,6 +6,8 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -18,6 +20,7 @@ namespace GameA
     {
         #region 变量
 
+        private static string _emptySummary = "没有留下任何描述的神秘关卡";
         private static string _scoreFormat = "{0:F1}";
         private static string _fullScore = "10";
         private long _guid;
@@ -41,6 +44,8 @@ namespace GameA
 
         public static Project EmptyProject = new Project();
 
+        public static int ProjectTypeAllMask = 1 | (1<<1) | (1<<2);
+
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
@@ -49,6 +54,19 @@ namespace GameA
         public AdventureLevelRankList AdventureLevelRankList
         {
             get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
+        }
+
+        public string ShowSummary
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_summary))
+                {
+                    return _emptySummary;
+                }
+
+                return _summary;
+            }
         }
 
         public float Score
@@ -83,7 +101,7 @@ namespace GameA
                 return 0;
             }
         }
-        
+
         public int UnlikeCount
         {
             get
@@ -91,6 +109,18 @@ namespace GameA
                 if (_extendReady)
                 {
                     return _extendData.UnlikeCount;
+                }
+                return 0;
+            }
+        }
+
+        public int TotalCount
+        {
+            get
+            {
+                if (_extendReady)
+                {
+                    return _extendData.UnlikeCount + _extendData.LikeCount;
                 }
                 return 0;
             }
@@ -251,13 +281,18 @@ namespace GameA
             }
         }
 
+        public Msg_SC_DAT_ShadowBattleData ShadowBattleParam { get; private set; }
+        public bool IsMulti {
+            get { return _projectType > EProjectType.PT_Single; }
+        }
+
         #endregion 属性
 
         #region 方法
 
         public void Request(Action successCallback = null, Action<ENetResultCode> failedCallback = null)
         {
-            Request(_projectId,successCallback,failedCallback);
+            Request(_projectId, successCallback, failedCallback);
         }
 
         public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
@@ -272,20 +307,56 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
-
-                    PrepareRes(() =>
+                    //判断是否是乱入对决
+                    if (ret.ShadowBattleData != null)
                     {
-                        if (successCallback != null)
+                        Record record = new Record(ret.ShadowBattleData.Record);
+                        record.PrepareRecord(() =>
                         {
-                            successCallback.Invoke();
-                        }
-                    }, () =>
+                            PrepareRes(() =>
+                            {
+                                ShadowBattleParam = ret.ShadowBattleData;
+                                Messenger<ShadowBattleData>.Broadcast(EMessengerType.OnShadowBattleStart,
+                                    new ShadowBattleData(ret.ShadowBattleData));
+                                Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, ret.ShadowBattleData.Id);
+                                Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart,
+                                    new Reward(ret.ShadowBattleData.Reward));
+                                if (successCallback != null)
+                                {
+                                    successCallback.Invoke();
+                                }
+                                ShadowBattleParam = null;
+                            }, () =>
+                            {
+                                if (failedCallback != null)
+                                {
+                                    failedCallback.Invoke(ENetResultCode.NR_None);
+                                }
+                            });
+                        }, () =>
+                        {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(ENetResultCode.NR_None);
+                            }
+                        });
+                    }
+                    else
                     {
-                        if (failedCallback != null)
+                        PrepareRes(() =>
                         {
-                            failedCallback.Invoke(ENetResultCode.NR_None);
-                        }
-                    });
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }, () =>
+                        {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(ENetResultCode.NR_None);
+                            }
+                        });
+                    }
                 }
                 else
                 {
@@ -303,18 +374,45 @@ namespace GameA
             });
         }
 
-        public void RequestPlayShadowBattle(Record record, Action successCallback, Action failedCallback)
+        public void RequestPlayShadowBattle(long battleId, Action successCallback, Action failedCallback)
         {
-            record.PrepareRecord(() =>
+            RemoteCommands.MatchShadowBattle(battleId, msg =>
             {
-                RequestPlay(successCallback, code =>
+                var record = new Record(msg.PlayProjectData.ShadowBattleData.Record);
+                record.PrepareRecord(() =>
                 {
-                    if (failedCallback != null)
+                    _commitToken = msg.PlayProjectData.Token;
+                    _deadPos = msg.PlayProjectData.DeadPos;
+                    if (_projectUserData != null)
                     {
-                        failedCallback.Invoke();
+                        _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
-                });
-            }, failedCallback);
+                    PrepareRes(() =>
+                    {
+                        ShadowBattleParam = msg.PlayProjectData.ShadowBattleData;
+                        Messenger<long>.Broadcast(EMessengerType.OnShadowBattleStart, battleId);
+                        Messenger<Reward>.Broadcast(EMessengerType.OnShadowBattleStart,
+                            new Reward(msg.PlayProjectData.ShadowBattleData.Reward));
+                        if (successCallback != null)
+                        {
+                            successCallback.Invoke();
+                        }
+                        ShadowBattleParam = null;
+                    }, () =>
+                    {
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke();
+                        }
+                    });
+                }, failedCallback);
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke();
+                }
+            });
         }
 
         public byte[] GetData()
@@ -349,6 +447,8 @@ namespace GameA
             byte[] recordBytes,
             int timeLimit,
             int winCondition,
+            bool isMulti,
+            NetBattleData netBattleData,
             Action successCallback,
             Action<EProjectOperateResult> failedCallback)
         {
@@ -407,6 +507,8 @@ namespace GameA
                     timeLimit,
                     winCondition,
                     GetMsgProjectUploadParam(),
+                    _projectType,
+                    ToMsg(netBattleData),
                     msg =>
                     {
                         if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
@@ -454,6 +556,7 @@ namespace GameA
                     winCondition,
                     // 如果是在工坊界面修改关卡的信息，就不必传附加参数
                     null == dataBytes ? null : GetMsgProjectUploadParam(),
+                    ToMsg(netBattleData),
                     msg =>
                     {
                         if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
@@ -493,6 +596,29 @@ namespace GameA
             }
         }
 
+        private Msg_NetBattleData ToMsg(NetBattleData netBattleData)
+        {
+            if (netBattleData == null) return null;
+            var msg = new Msg_NetBattleData();
+            msg.HarmType = netBattleData.HarmType;
+            msg.TimeLimit = netBattleData.TimeLimit;
+            var spawns = Scene2DManager.Instance.GetSpawnData();
+            msg.PlayerCount = netBattleData.PlayerCount = spawns.Count;
+            msg.LifeCount = netBattleData.LifeCount;
+            msg.ReviveTime = netBattleData.ReviveTime;
+            msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
+            msg.ReviveType = netBattleData.ReviveType;
+            msg.TimeWinCondition = netBattleData.TimeWinCondition;
+            msg.WinScore = netBattleData.WinScore;
+            msg.ArriveScore = netBattleData.ArriveScore;
+            msg.CollectGemScore = netBattleData.CollectGemScore;
+            msg.KillMonsterScore = netBattleData.KillMonsterScore;
+            msg.KillPlayerScore = netBattleData.KillPlayerScore;
+            msg.ScoreWinCondition = netBattleData.ScoreWinCondition;
+            msg.InfiniteLife = netBattleData.InfiniteLife;
+            return msg;
+        }
+
         public void Delete()
         {
             DeleteResCache();
@@ -523,17 +649,19 @@ namespace GameA
                     if (ret.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
                         _publishTime = UpdateTime;
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _projectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
-                        //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
                         if (onSuccess != null)
                         {
                             onSuccess.Invoke();
                         }
+                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(
+                            ProjectManager.Instance.UpdateData(ret.ProjectData));
                     }
                     else
                     {
-                        LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+                        LogHelper.Error("Publish project error, code: {0}", ret.ResultCode);
                         if (onError != null)
                         {
                             onError.Invoke((EProjectOperateResult) ret.ResultCode);
@@ -549,6 +677,58 @@ namespace GameA
                     }
                 });
         }
+        
+        public void UnPublish(Action onSuccess = null, Action onFail = null)
+        {
+            var projectList = new List<long> {_projectId};
+            RemoteCommands.UnpublishWorldProject(projectList, msg =>
+            {
+                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                {
+                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectUnPublished, _projectId);
+                    if (onSuccess != null)
+                    {
+                        onSuccess.Invoke();
+                    }
+                }
+                else
+                {
+                    LogHelper.Error("UnPublish project error, code: {0}", msg.ResultCode);
+                    if (onFail != null)
+                    {
+                        onFail.Invoke();
+                    }
+                }
+            },
+            code =>
+            {
+                SoyHttpClient.ShowErrorTip(code);
+                if (onFail != null)
+                {
+                    onFail.Invoke();
+                }
+            });
+        }
+
+        public void Edit()
+        {
+            RemoteCommands.EditProject(_mainId, msg =>
+            {
+                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                {
+                    AppLogicUtil.EditPersonalProject(new Project(msg.ProjectData));
+                }
+                else
+                {
+                    LogHelper.Error("Edit project error, code: {0}", msg.ResultCode);
+                }
+            },
+            code =>
+            {
+                SoyHttpClient.ShowErrorTip(code);
+            });
+        }
+
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
@@ -713,6 +893,7 @@ namespace GameA
             {
                 if (ret.ResultCode != (int) EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                 {
+                    LogHelper.Error("UpdateWorldProjectFavorite fail, ResultCode = {0}", ret.ResultCode);
                     if (failedCallback != null)
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
@@ -727,12 +908,14 @@ namespace GameA
                 {
                     _extendData.FavoriteCount += favorite ? 1 : -1;
                 }
+                Messenger<Project, bool>.Broadcast(EMessengerType.OnProjectMyFavoriteChanged, this, _projectUserData.Favorite);
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
                 }
             }, code =>
             {
+                LogHelper.Error("UpdateWorldProjectFavorite fail, code = {0}", code);
                 if (failedCallback != null)
                 {
                     failedCallback.Invoke(code);
@@ -843,7 +1026,7 @@ namespace GameA
                     Project p = new Project();
                     p._projectStatus = EProjectStatus.PS_Private;
                     p.OnSync(ret.ProjectData);
-                    LocalUser.Instance.PersonalProjectList.LocalAdd(p);
+                    LocalUser.Instance.PersonalProjectList.LocalAddDownloadProject(p);
                     if (successCallback != null)
                     {
                         successCallback.Invoke();
@@ -866,10 +1049,11 @@ namespace GameA
             });
         }
 
-        public static Project CreateWorkShopProject()
+        public static Project CreateWorkShopProject(EProjectType projectType)
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
+            p.ProjectType = projectType;
 //            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";

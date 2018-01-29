@@ -133,6 +133,26 @@ namespace GameA
         /// 继承的关卡ID
         /// </summary>
         private long _parentId;
+        /// <summary>
+        /// 关卡类型
+        /// </summary>
+        private EProjectType _projectType;
+        /// <summary>
+        /// 联机信息
+        /// </summary>
+        private NetBattleData _netData;
+        /// <summary>
+        /// 关卡主Id
+        /// </summary>
+        private long _mainId;
+        /// <summary>
+        /// 关卡版本号
+        /// </summary>
+        private int _projectVersion;
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        private int _newestProjectVersion;
 
         // cs fields----------------------------------
         /// <summary>
@@ -453,6 +473,56 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 关卡类型
+        /// </summary>
+        public EProjectType ProjectType { 
+            get { return _projectType; }
+            set { if (_projectType != value) {
+                _projectType = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 联机信息
+        /// </summary>
+        public NetBattleData NetData { 
+            get { return _netData; }
+            set { if (_netData != value) {
+                _netData = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 关卡主Id
+        /// </summary>
+        public long MainId { 
+            get { return _mainId; }
+            set { if (_mainId != value) {
+                _mainId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 关卡版本号
+        /// </summary>
+        public int ProjectVersion { 
+            get { return _projectVersion; }
+            set { if (_projectVersion != value) {
+                _projectVersion = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        public int NewestProjectVersion { 
+            get { return _newestProjectVersion; }
+            set { if (_newestProjectVersion != value) {
+                _newestProjectVersion = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -472,6 +542,9 @@ namespace GameA
                     return true;
                 }
                 if (null != _projectUserData && _projectUserData.IsDirty) {
+                    return true;
+                }
+                if (null != _netData && _netData.IsDirty) {
                     return true;
                 }
                 return base.IsDirty;
@@ -557,6 +630,15 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            _projectType = msg.ProjectType;           
+            if (null == _netData) {
+                _netData = new NetBattleData(msg.NetData);
+            } else {
+                _netData.OnSyncFromParent(msg.NetData);
+            }
+            _mainId = msg.MainId;           
+            _projectVersion = msg.ProjectVersion;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
             OnSyncPartial(msg);
             return true;
         }
@@ -610,6 +692,16 @@ namespace GameA
             _updateTime = msg.UpdateTime;           
             _publishTime = msg.PublishTime;           
             _parentId = msg.ParentId;           
+            _projectType = msg.ProjectType;           
+            if(null != msg.NetData){
+                if (null == _netData){
+                    _netData = new NetBattleData(msg.NetData);
+                }
+                _netData.CopyMsgData(msg.NetData);
+            }
+            _mainId = msg.MainId;           
+            _projectVersion = msg.ProjectVersion;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
             return true;
         } 
 
@@ -662,6 +754,16 @@ namespace GameA
             _updateTime = obj.UpdateTime;           
             _publishTime = obj.PublishTime;           
             _parentId = obj.ParentId;           
+            _projectType = obj.ProjectType;           
+            if(null != obj.NetData){
+                if (null == _netData){
+                    _netData = new NetBattleData();
+                }
+                _netData.DeepCopy(obj.NetData);
+            }
+            _mainId = obj.MainId;           
+            _projectVersion = obj.ProjectVersion;           
+            _newestProjectVersion = obj.NewestProjectVersion;           
             return true;
         }
 
@@ -681,6 +783,7 @@ namespace GameA
             _userInfo = new UserInfoSimple();
             _extendData = new ProjectExtend();
             _projectUserData = new ProjectUserData();
+            _netData = new NetBattleData();
             OnCreate();
         }
         #endregion

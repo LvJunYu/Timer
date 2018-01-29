@@ -93,7 +93,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlBulletinBoardMessageShow>();
 			}
 			_curShowCount ++;
-		    string value = DataScene2D.Instance.GetUnitExtra(index).Msg;
+		    string value = DataScene2D.CurScene.GetUnitExtra(index).Msg;
 			_cachedView.ShowText.text = string.IsNullOrEmpty(value) ? GM2DUIConstDefine.GameBulletinBoardMessageDefaultMessage : value;
 			UpdateUIShow();
 			

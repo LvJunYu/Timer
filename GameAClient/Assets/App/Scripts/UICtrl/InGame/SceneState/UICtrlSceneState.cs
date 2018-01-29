@@ -28,6 +28,7 @@ namespace GameA
         private int _showValue;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
 
+        private const int CountDownTime = 3;
         private const int _finalTimeMax = 10;
         private const int _HeartbeatTimeMax = 30;
         private const float _collectDelayTime = 1f;
@@ -35,8 +36,13 @@ namespace GameA
         private const int _initUMCollectionLifeNum = 3;
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
+        private USCtrlNpcTask[] _npcTask;
         protected Sequence _finalCountDownSequence;
         private bool _showStar;
+        private bool _isMulti;
+        private float _countDownTimer;
+        private USCtrlMultiScore[] _usCtrlMultiScores;
+        private bool _waiting;
 
         /// <summary>
         /// 冒险模式
@@ -46,6 +52,9 @@ namespace GameA
         private int[] _starValueAry;
 
         private float _showHelpTimer;
+        private bool _showCountDownTime;
+        private int _lastShowTime;
+        private Sequence _startSequence;
 
         public bool ShowHelpPage3SecondsComplete
         {
@@ -75,6 +84,19 @@ namespace GameA
                 _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionLifeItemCache[i].Hide();
             }
+            var list = _cachedView.MultiObj.GetComponentsInChildren<USViewMultiScore>(_cachedView.MultiObj);
+            _usCtrlMultiScores = new USCtrlMultiScore[list.Length];
+            for (int i = 0; i < list.Length; i++)
+            {
+                _usCtrlMultiScores[i] = new USCtrlMultiScore();
+                _usCtrlMultiScores[i].Init(list[i]);
+            }
+            _npcTask = new USCtrlNpcTask[_cachedView.TaskGroup.Length];
+            for (int i = 0; i < _cachedView.TaskGroup.Length; i++)
+            {
+                _npcTask[i] = new USCtrlNpcTask();
+                _npcTask[i].Init(_cachedView.TaskGroup[i]);
+            }
         }
 
         protected override void OnDestroy()
@@ -87,6 +109,14 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _isMulti = GM2DGame.Instance.GameMode.IsMulti;
+            _waiting = false;
+            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+            if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
+            {
+                _waiting = true;
+                _cachedView.LeftTimeText.text = "等待中";
+            }
             Clear();
             UpdateAll();
         }
@@ -100,19 +130,76 @@ namespace GameA
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
+            RegisterEvent<int, int>(EMessengerType.OnScoreChanged, OnTeamScoreChanged);
             RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
+            RegisterEvent(EMessengerType.OnTeamChanged, OnTeamChanged);
+            RegisterEvent<int>(EMessengerType.OnMainPlayerReviveTime, OnMainPlayerReviveTime);
+        }
+
+        private void OnMainPlayerReviveTime(int second)
+        {
+            if (!_isOpen) return;
+            _cachedView.ReviveDock.SetActiveEx(second > 0);
+            if (second > 0)
+            {
+                int min = second / 60;
+                second = second % 60;
+                _cachedView.ReviveTxt.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, min, second);
+            }
+        }
+
+        private void OnTeamChanged()
+        {
+            if (!_isOpen) return;
+            for (int i = 0; i < _usCtrlMultiScores.Length; i++)
+            {
+                _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == i + 1);
+            }
+        }
+
+        private void OnTeamScoreChanged(int teamId, int score)
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            int index = teamId - 1;
+            if (index >= 0 && index < _usCtrlMultiScores.Length)
+            {
+                _usCtrlMultiScores[index].SetScore(score);
+            }
         }
 
         public override void OnUpdate()
         {
             base.OnUpdate();
 //            UpdateShowHelper();
+
             UpdateTimeLimit();
 
             if (_showStar)
             {
                 UpdateAdventurePlay();
+            }
+
+            if (_showCountDownTime)
+            {
+                var showTime = Mathf.CeilToInt(_countDownTimer);
+                if (showTime != _lastShowTime)
+                {
+                    _startSequence.Restart();
+                    _cachedView.CountDownTxt.text = showTime.ToString();
+                    _lastShowTime = showTime;
+                }
+                if (_countDownTimer > 0)
+                {
+                    _countDownTimer -= Time.deltaTime;
+                }
+                else
+                {
+                    ShowCountDown(false);
+                }
             }
         }
 
@@ -129,8 +216,6 @@ namespace GameA
                 _cachedView.HelpPage.SetActive(false);
             }
         }
-
-        #region event
 
         private void OnWinDataChanged()
         {
@@ -177,19 +262,49 @@ namespace GameA
             UpdateScore();
         }
 
-        #endregion
-
-        #region  private
-
         private void UpdateAll()
         {
-            InitConditionView();
             UpdateLifeItemValue();
-            UpdateWinDataWithOutTimeLimit();
-            UpdateItemVisible();
             UpdateTimeLimit();
-            UpdateKeyCount();
-            UpdateScore();
+            _cachedView.MultiObj.SetActive(_isMulti);
+            _cachedView.StandaloneObj.SetActive(!_isMulti);
+            if (_isMulti)
+            {
+                UpdateMulti();
+            }
+            else
+            {
+                InitConditionView();
+                UpdateWinDataWithOutTimeLimit();
+                UpdateItemVisible();
+                UpdateKeyCount();
+                UpdateScore();
+            }
+        }
+
+        private void UpdateMulti()
+        {
+            var teams = TeamManager.Instance.Teams;
+            for (int i = 0; i < _usCtrlMultiScores.Length; i++)
+            {
+                byte team = (byte) (i + 1);
+                _usCtrlMultiScores[i].SetEnable(teams.Contains(team));
+                _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(team));
+                _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == team);
+            }
+            var netData = PlayMode.Instance.SceneState.Statistics.NetBattleData;
+            _cachedView.TimeLimit.text = string.Format("游戏时间{0}", netData.GetTimeLimit());
+            _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
+            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
+            _cachedView.ArriveScore.SetActiveEx(PlayMode.Instance.SceneState.FinalCount > 0);
+            _cachedView.CollectGemScore.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
+            _cachedView.KillMonsterScore.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
+            _cachedView.KillPlayerScore.SetActiveEx(true);
+            _cachedView.WinScoreCondition.text = string.Format("达到{0}分即可获得胜利", netData.WinScore);
+            _cachedView.ArriveScore.text = string.Format("到达终点得分{0}", netData.ArriveScore);
+            _cachedView.CollectGemScore.text = string.Format("获得兽牙得分{0}", netData.CollectGemScore);
+            _cachedView.KillMonsterScore.text = string.Format("击杀怪物得分{0}", netData.KillMonsterScore);
+            _cachedView.KillPlayerScore.text = string.Format("击杀玩家得分{0}", netData.KillPlayerScore);
         }
 
         private void UpdateItemVisible()
@@ -229,7 +344,8 @@ namespace GameA
                 }
             }
             if (!hasOtherLimit)
-            {//没有其他条件，时间限制改为存活
+            {
+                //没有其他条件，时间限制改为存活
                 _winConditionItemDict[EWinCondition.WC_TimeLimit]
                     .SetText(GetWinConditionString(EWinCondition.WC_TimeLimit, true));
             }
@@ -244,7 +360,7 @@ namespace GameA
         {
             if (PlayMode.Instance.MainPlayer == null)
             {
-                _cachedView.LifeText.text = "";
+                _cachedView.LifeText.text = string.Empty;
                 return;
             }
             _cachedView.LifeRoot.SetActiveEx(true);
@@ -296,9 +412,15 @@ namespace GameA
 
         private void UpdateTimeLimit()
         {
+            if (_waiting)
+            {
+                return;
+            }
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
             if (curValue < _finalTimeMax)
+            {
                 ShowFinalCountDown02(curValue);
+            }
             if (curValue != _lastShowSceonds)
             {
                 _lastFrame = GameRun.Instance.LogicFrameCnt;
@@ -323,7 +445,7 @@ namespace GameA
                 {
                     _winConditionItemDict[EWinCondition.WC_TimeLimit].SetComplete(curValue > 0);
                 }
-                else
+                else if (_winConditionItemDict.Count > 0)
                 {
                     _winConditionItemDict[EWinCondition.WC_TimeLimit].SetComplete(curValue <= 0);
                 }
@@ -495,7 +617,9 @@ namespace GameA
         private void ShowFinalCountDown()
         {
             if (null == _finalCountDownSequence)
+            {
                 CreateFinalCountDownSequence();
+            }
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
             _cachedView.LeftTimeText.color = Color.red;
             _finalCountDownSequence.Restart();
@@ -512,11 +636,23 @@ namespace GameA
             _finalCountDownSequence.SetAutoKill(false).Pause();
         }
 
+        private void CreateStartCountDownSequence()
+        {
+            _startSequence = DOTween.Sequence();
+            _startSequence.Append(
+                _cachedView.CountDownTxt.rectTransform().DOScale(Vector3.one * 0.3f, 0.1f));
+            _startSequence.Append(
+                _cachedView.CountDownTxt.rectTransform().DOScale(Vector3.one * 1.15f, 0.15f)
+                    .SetEase(Ease.OutBack));
+            _startSequence.SetAutoKill(false).Pause();
+        }
+
         private void ShowFinalCountDown02(int curValue)
         {
             int seconds = curValue % 60;
             int frameCount =
-                100 - (int) ((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
+                100 - Mathf.RoundToInt((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime *
+                                       100);
             frameCount = Mathf.Clamp(frameCount, 0, 99);
             _cachedView.LeftTimeText.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, seconds, frameCount);
         }
@@ -534,6 +670,8 @@ namespace GameA
             _lastFrame = 0;
             _lastValue = 0;
             _showValue = 0;
+            _cachedView.ReviveDock.SetActive(false);
+            ShowCountDown(false);
         }
 
         private void ShowCollectionAnimation(Vector3 InitialPos)
@@ -590,6 +728,65 @@ namespace GameA
             return umCtrlCollectionLifeItem;
         }
 
-        #endregion
+        public void ShowCountDown(bool value)
+        {
+            _showCountDownTime = value;
+            _countDownTimer = CountDownTime;
+            _cachedView.CountDownTxt.SetActiveEx(value);
+            _cachedView.LeftTimeText.SetActiveEx(!value);
+            if (_startSequence == null)
+            {
+                CreateStartCountDownSequence();
+            }
+        }
+
+        public void SetNpcTaskPanelDis()
+        {
+            if (_isViewCreated)
+            {
+                _cachedView.TaskPanel.SetActive(false);
+            }
+        }
+
+        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> _nowTaskDic,
+            Dictionary<int, NpcTaskDynamic>_finishTaskDic)
+        {
+            if (_nowTaskDic.Count > 0)
+            {
+                _cachedView.TaskPanel.SetActive(true);
+            }
+            else
+            {
+                _cachedView.TaskPanel.SetActiveEx(false);
+            }
+            using (var enmotor = _nowTaskDic.GetEnumerator())
+            {
+                int index = 0;
+                while (enmotor.MoveNext())
+                {
+                    bool finish = false;
+                    for (int i = 0; i < enmotor.Current.Value.Targets.Count; i++)
+                    {
+                        finish = _finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber
+                        );
+                        if (finish)
+                        {
+                            break;
+                        }
+                    }
+
+                    UnitExtraDynamic extra;
+                    if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
+                    {
+                        _npcTask[index].SetNpcTask(extra, enmotor.Current.Value, finish);
+                    }
+                    index++;
+                }
+                for (int i = index; i < _npcTask.Length; i++)
+                {
+                    _npcTask[i].SetDisable();
+                }
+            }
+        }
     }
 }

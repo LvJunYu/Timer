@@ -20,10 +20,16 @@ namespace GameA.Game
         protected GM2DRecordData _gm2drecordData;
         public ShadowData ShadowData = new ShadowData();
         public ShadowData ShadowDataPlayed;
+        protected bool _playShadowData;
+
+        public virtual bool IsMulti
+        {
+            get { return false; }
+        }
 
         public virtual bool PlayShadowData
         {
-            get { return false; }
+            get { return _playShadowData; }
         }
 
         public virtual bool SaveShadowData
@@ -63,6 +69,7 @@ namespace GameA.Game
             _startType = startType;
             _coroutineProxy = coroutineProxy;
             _run = true;
+            _playShadowData = false;
             return true;
         }
 
@@ -91,6 +98,7 @@ namespace GameA.Game
 
         public virtual void OnGameStart()
         {
+            Messenger.Broadcast(EMessengerType.OnGameStartComplete);
         }
 
         public void RecordAnimation(string animName, bool loop, float timeScale = 1f, int trackIdx = 0)
@@ -110,21 +118,29 @@ namespace GameA.Game
             GameRun.Instance.Update();
             if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
+                if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
-                    if (localPlayerInput != null)
+                    if (GameRun.Instance.IsPlaying)
                     {
-                        localPlayerInput.ProcessCheckInput();
-                        List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
-                        for (int i = 0; i < inputChangeList.Count; i++)
+                        LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
+                        if (localPlayerInput != null)
                         {
-                            _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
-                            _inputDatas.Add(inputChangeList[i]);
+                            localPlayerInput.ProcessCheckInput();
+                            List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+                            for (int i = 0; i < inputChangeList.Count; i++)
+                            {
+                                _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+                                _inputDatas.Add(inputChangeList[i]);
+                            }
+                            localPlayerInput.ApplyInputData(inputChangeList);
                         }
-                        localPlayerInput.ApplyInputData(inputChangeList);
+                        UpdateLogic();
                     }
-                    UpdateLogic();
+                    // 结束时依然播放动画
+                    else
+                    {
+                        GameRun.Instance.UpdateSkeletonAnimation();
+                    }
                 }
             }
         }

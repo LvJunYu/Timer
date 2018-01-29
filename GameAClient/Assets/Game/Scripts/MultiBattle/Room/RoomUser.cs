@@ -5,20 +5,18 @@
 ** Summary : RoomUser
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 100, PreferedPoolSize = 1000, MaxPoolSize = 10000)]
     public class RoomUser : IPoolableObject
     {
         protected long _guid;
         protected string _name;
         protected bool _ready;
         protected int _inx;
+        protected PlayerBase _player;
 
         public string Name
         {
@@ -34,6 +32,18 @@ namespace GameA.Game
         {
             get { return _ready; }
             set { _ready = value; }
+        }
+
+        public int Inx
+        {
+            get { return _inx; }
+            set { _inx = value; }
+        }
+
+        public PlayerBase Player
+        {
+            get { return _player; }
+            set { _player = value; }
         }
 
         public void OnGet()
@@ -52,19 +62,32 @@ namespace GameA.Game
         {
         }
 
-        public void Set(Msg_RC_RoomUserInfo roomUserInfo)
+        public RoomUser()
+        {
+        }
+        
+        public RoomUser(Msg_MC_RoomUserInfo roomUserInfo)
         {
             _guid = roomUserInfo.UserGuid;
-            _name = roomUserInfo.UserName;
+            _name = roomUserInfo.NickName;
             _ready = roomUserInfo.Ready == 1;
             _inx = roomUserInfo.inx;
         }
+
+        public RoomUser(Msg_RC_RoomUserInfo roomUserInfo)
+        {
+            _guid = roomUserInfo.UserGuid;
+            _name = roomUserInfo.NickName;
+            _ready = roomUserInfo.ReadyFlag;
+            _inx = roomUserInfo.inx;
+        }
         
-        public void Init(long guid, string name, bool ready)
+        public void Init(long guid, string name, bool ready, int index = 0)
         {
             _guid = guid;
             _name = name;
             _ready = ready;
+            _inx = index;
         }
 
     }

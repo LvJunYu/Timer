@@ -7,10 +7,12 @@ namespace GameA.Game
     [Serializable]
     public class CameraCtrlPlay : CameraCtrlBase
     {
-
         private IntVec2 _cameraViewTileSize;
         private IntVec2 _cameraViewHalfTileSize;
         private IntRect _validMapTileRect;
+        public PlayerBase _cameraPlayer;
+        private int _curCameraPlayerIndex;
+        private CameraEffect _cameraEffect;
 
         /// <summary>
         /// 屏幕底部中点
@@ -18,7 +20,6 @@ namespace GameA.Game
         [SerializeField] private IntVec2 _rollPos;
 
         [SerializeField] private IntVec2 _targetRollPos;
-        
 
         // 注意！！这个接口只能新手引导用
         public IntVec2 CurRollPos
@@ -27,15 +28,46 @@ namespace GameA.Game
             set { _rollPos = value; }
         }
 
+        public PlayerBase CameraPlayer
+        {
+            set { _cameraPlayer = value; }
+            get
+            {
+                if (_cameraPlayer == null)
+                {
+                    _cameraPlayer = PlayMode.Instance.MainPlayer;
+                }
+
+                return _cameraPlayer;
+            }
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            _cameraEffect = new CameraEffect();
+            _cameraEffect.Init(InnerCameraManager.RendererCamera);
+        }
+
         public override void OnMapReady()
         {
             base.OnMapReady();
+            InitMapCameraParam();
+            _mapReady = true;
+        }
+
+        public override void OnMapChanged(EChangeMapRectType eChangeMapRectType)
+        {
+            if (!_mapReady) return;
+            base.OnMapChanged(eChangeMapRectType);
             InitMapCameraParam();
         }
 
         public override void Enter()
         {
             base.Enter();
+            _curCameraPlayerIndex = 0;
+            _cameraPlayer = null;
             InnerCameraManager.RendererCamera.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
             UpdatePosByPlayer();
         }
@@ -55,8 +87,11 @@ namespace GameA.Game
         public override void UpdateLogic(float deltaTime)
         {
             UpdatePosByPlayer();
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.UpdateLogic(deltaTime);
+            }
         }
-
 
         private void InitMapCameraParam()
         {
@@ -66,23 +101,35 @@ namespace GameA.Game
             _cameraViewTileSize = GM2DTools.WorldToTile(cameraViewWorldSize);
             _cameraViewHalfTileSize = _cameraViewTileSize / 2;
 
-            _validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            _validMapTileRect = DataScene2D.CurScene.ValidMapRect;
             _validMapTileRect.Max += new IntVec2(5, 1) * ConstDefineGM2D.ServerTileScale;
             _validMapTileRect.Min -= new IntVec2(5, 3) * ConstDefineGM2D.ServerTileScale;
         }
 
+        public void ResetCameraPlayer()
+        {
+            _curCameraPlayerIndex = 0;
+            _cameraPlayer = PlayMode.Instance.MainPlayer;
+        }
+
+        public void SetNextCameraPlayer()
+        {
+            _cameraPlayer = TeamManager.Instance.GetNextPlayer(ref _curCameraPlayerIndex);
+        }
+
         private void UpdatePosByPlayer()
         {
-            MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
-            if (null == mainPlayer)
+            PlayerBase player = CameraPlayer;
+            if (null == player)
             {
                 return;
             }
-            if (PlayMode.Instance.SceneState.Arrived)
-            {
-                return;
-            }
-            _targetRollPos = mainPlayer.CameraFollowPos;
+
+//            if (PlayMode.Instance.SceneState.Arrived)
+//            {
+//                return;
+//            }
+            _targetRollPos = player.CameraFollowPos;
 
             int dx = _targetRollPos.x - _rollPos.x;
             if (dx > -5 && dx <= -1)
@@ -91,7 +138,7 @@ namespace GameA.Game
             }
             else if (dx < 1)
             {
-                _rollPos.x = mainPlayer.CameraFollowPos.x;
+                _rollPos.x = player.CameraFollowPos.x;
             }
             else if (dx < 5)
             {
@@ -101,7 +148,7 @@ namespace GameA.Game
             {
                 _rollPos.x += dx / 5;
             }
-            
+
             int dy = _targetRollPos.y - _rollPos.y;
             if (dy <= -100)
             {
@@ -113,12 +160,12 @@ namespace GameA.Game
             }
             else if (dy <= 0)
             {
-                _rollPos.y = mainPlayer.CameraFollowPos.y;
+                _rollPos.y = player.CameraFollowPos.y;
             }
             else
             {
                 dy = _targetRollPos.y - _rollPos.y;
-                if (dy < 10 || mainPlayer.EUnitState != EUnitState.Normal)
+                if (dy < 10 || player.EUnitState != EUnitState.Normal)
                 {
                     _rollPos.y = _targetRollPos.y;
                 }
@@ -131,6 +178,7 @@ namespace GameA.Game
                     _rollPos.y += dy / 25;
                 }
             }
+
             LimitRollPos();
             InnerCameraManager.MainCameraPos = GM2DTools.TileToWorld(_rollPos);
         }
@@ -147,6 +195,35 @@ namespace GameA.Game
 
             _rollPos.x = Mathf.Clamp(_rollPos.x, _validMapTileRect.Min.x + _cameraViewHalfTileSize.x,
                 _validMapTileRect.Max.x - _cameraViewHalfTileSize.x);
+        }
+
+        public void PlayEffect(Action changeAction, Action endAction)
+        {
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.Play(changeAction, endAction);
+            }
+            else
+            {
+                if (changeAction != null)
+                {
+                    changeAction.Invoke();
+                }
+
+                if (endAction != null)
+                {
+                    endAction.Invoke();
+                }
+            }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            if (_cameraEffect != null)
+            {
+                _cameraEffect.Stop();
+            }
         }
     }
 }

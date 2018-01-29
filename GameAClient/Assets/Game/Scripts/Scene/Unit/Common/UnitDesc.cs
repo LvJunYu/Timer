@@ -137,4 +137,21 @@ namespace GameA.Game
             return string.Format("Grid: {0}, Depth: {1}, Layer: {2}, IsDynamic: {3}", Grid, Depth, Layer, IsDynamic);
         }
     }
+
+    public class SceneUnitDesc
+    {
+        public UnitDesc UnitDesc;
+        public int SceneIndex;
+
+        public SceneUnitDesc(UnitDesc unitDesc, int sceneIndex)
+        {
+            UnitDesc = unitDesc;
+            SceneIndex = sceneIndex;
+        }
+        
+        public bool Equals(SceneUnitDesc other)
+        {
+            return other.UnitDesc.Guid == UnitDesc.Guid && other.SceneIndex == SceneIndex;
+        }
+    }
 }

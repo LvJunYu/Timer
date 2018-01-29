@@ -37,13 +37,13 @@ namespace GameA
             _cachedView.Login.onClick.AddListener(OnLogin);
             _cachedView.ForgetPasswordBtnRes.onClick.AddListener(ForgetPWD);
             _cachedView.ChangePasswordBtnRes.onClick.AddListener(ChangePWD);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Phone);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Pwd);
         }
-
 
         #endregion
 
         #region  private 
-
 
         #endregion
 
@@ -79,12 +79,11 @@ namespace GameA
                     LogHelper.Error("登录失败, Code: " + ret);
                 });
         }
-        
+
         private void GuestLoginIn()
         {
-            
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力登录中");
-            LocalUser.Instance.Account.GuestLoginIn(()=>
+            LocalUser.Instance.Account.GuestLoginIn(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialApp.Instance.LoginSucceed();
@@ -110,7 +109,7 @@ namespace GameA
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSignup>();
         }
+
         #endregion
-        
     }
 }

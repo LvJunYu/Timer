@@ -35,10 +35,10 @@ namespace GameA.Game
                 }
                 
                 var tableUnit = UnitManager.Instance.GetTableUnit(createUnitDesc.Id);
-                var grid = tableUnit.GetBaseDataGrid(createUnitDesc.Guid.x, createUnitDesc.Guid.y);
+                var grid = tableUnit.GetDataGrid(createUnitDesc.Guid.x, createUnitDesc.Guid.y, 0, createUnitDesc.Scale);
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
                 SceneNode outHit;
-                if (DataScene2D.GridCast(grid, out outHit, layerMask))
+                if (DataScene2D.GridCast(grid, out outHit, Scene2DManager.Instance.CurSceneIndex, layerMask))
                 {
                     return;
                 }

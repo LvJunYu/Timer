@@ -38,9 +38,9 @@ namespace GameA
             _cachedView.BtnCD1.fillAmount = 0;
             _cachedView.BtnCD2.fillAmount = 0;
             _cachedView.TimeTxt.text = "";
-            int bulletNum = TableManager.Instance.Table_SkillDic[tableSkill.SkillId].BulletCount;
-            _curBulletCount = bulletNum;
-            UpdateBulletNum(bulletNum, bulletNum);
+//            int bulletNum = TableManager.Instance.Table_SkillDic[tableSkill.SkillId].BulletCount;
+//            _curBulletCount = bulletNum;
+//            UpdateBulletNum(bulletNum, bulletNum);
         }
 
         public void OnSkillCDTime(float leftTime, float totalTime)
@@ -62,7 +62,7 @@ namespace GameA
             else
             {
                 _cachedView.BtnCD1.fillAmount = 0;
-                _cachedView.TimeTxt.text = "";
+                _cachedView.TimeTxt.text = string.Empty;
                 _cachedView.BtnCD2.fillAmount = 1 - leftTime / totalTime;
             }
             if (_press)

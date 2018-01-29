@@ -17,7 +17,6 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 1, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class ChangePartsSpineView : SpineUnit
     {
-        protected Skeleton _skeleton;
         protected Skin _dynamicSkin;
         protected Skin _baseSkin;
 
@@ -46,7 +45,6 @@ namespace GameA.Game
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;
             _animation.Set();
-
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
 
@@ -87,7 +85,6 @@ namespace GameA.Game
             _skeletonAnimation = animationComp;
             _renderer = animationComp.GetComponent<Renderer>();
             _skeletonAnimation.enabled = true;
-
             _avatarId = 0;
             _skeletonName = "SMainBoy0";
             _skeleton = _skeletonAnimation.skeleton;
@@ -138,6 +135,30 @@ namespace GameA.Game
                     _slotName2Index[id] = i;
                 }
             }
+        }
+
+        public void SetAttachment(int index, string attachmentName)
+        {
+            var tableAvatarStruct = TableManager.Instance.GetAvatarStruct(_avatarId);
+            if (tableAvatarStruct == null)
+            {
+                return;
+            }
+            ExposedList<Slot> slots = _skeleton.slots;
+            int slotIdx;
+            if (_slotName2Index.TryGetValue(index, out slotIdx))
+            {
+                var attachment = _skeleton.GetAttachment("SMainBoy0/s_nu", attachmentName);
+                _dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
+                if (attachment == null)
+                {
+                    slots.Items[slotIdx].Attachment = null;
+                }
+                _dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
+                slots.Items[slotIdx].Attachment = attachment;
+            }
+            _skeleton.slots = slots;
+            _skeleton.skin = _dynamicSkin;
         }
 
         public bool SetParts(int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false)

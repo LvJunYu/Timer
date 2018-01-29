@@ -6,10 +6,6 @@
 ** Summary : BulletFire
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-
 namespace GameA.Game
 {
     [Unit(Id = 10002, Type = typeof(ProjectileFire))]

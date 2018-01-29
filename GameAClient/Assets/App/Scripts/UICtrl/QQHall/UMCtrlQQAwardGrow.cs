@@ -38,7 +38,7 @@ namespace GameA
 
         public void SetAward(Table_QQHallGrowAward award, EQQGameRewardStatus isColltion, EQQGamePrivilegeType type)
         {
-            bool _levelUp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel >= award.Id;
+//            bool _levelUp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel >= award.Id;
             DictionaryTools.SetContentText(_cachedView.AwarLivesNum, award.Id.ToString());
             DictionaryTools.SetContentText(_cachedView.AwardCoinsNum, award.CoinNum.ToString());
             DictionaryTools.SetContentText(_cachedView.AwarDiamondDiNum, award.DiamodNum.ToString());

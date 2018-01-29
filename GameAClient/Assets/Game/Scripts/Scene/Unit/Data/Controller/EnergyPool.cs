@@ -5,10 +5,7 @@
 ** Summary : EnergyPool
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -18,7 +15,7 @@ namespace GameA.Game
         protected int _timer;
         protected int _weaponId;
         protected EnergyPoolCtrl _energyPoolCtrl;
-        
+
         protected UnityNativeParticleItem _efffectWeapon;
 
         internal override bool InstantiateView()
@@ -54,10 +51,11 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override void UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData()
         {
-            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
-            base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData();
+            _weaponId = unitExtra.ChildId;
+            return unitExtra;
         }
 
         private void UpdateEnergyEffect()
@@ -76,7 +74,9 @@ namespace GameA.Game
             _efffectWeapon = null;
             if (!string.IsNullOrEmpty(tableEquipment.Model) && _energyPoolCtrl != null)
             {
-                _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _energyPoolCtrl.Weapon);
+                _efffectWeapon =
+                    GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model,
+                        _energyPoolCtrl.Weapon);
                 if (_efffectWeapon != null)
                 {
                     _efffectWeapon.Play();
@@ -91,7 +91,7 @@ namespace GameA.Game
                 if (_timer == 0)
                 {
                     _timer = UnitDefine.EnergyTimer;
-                    other.SetWeapon(_weaponId);
+                    other.SetWeapon(_weaponId, GetUnitExtra());
                 }
             }
             return base.OnUpHit(other, ref y, checkOnly);

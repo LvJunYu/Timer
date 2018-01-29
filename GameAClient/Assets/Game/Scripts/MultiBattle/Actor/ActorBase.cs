@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
@@ -30,7 +29,7 @@ namespace GameA.Game
         None,
         Trap,
         Monster,
-        Drowned//淹死
+        Drowned //淹死
     }
 
     public enum EClayOnWallDirection
@@ -43,17 +42,18 @@ namespace GameA.Game
 
     public class ActorBase : DynamicRigidbody
     {
-        protected static string Death = "Death";
-        protected static string DeathLazer = "DeathLazer";
-        protected static string DeathWater = "DeathWater";
-        protected static string DeathFire = "DeathFire";
-        protected static string OnSawStart = "OnSawStart";
-        protected static string Idle = "Idle";
-        protected static string Run = "Run";
-        protected static string Attack = "Attack";
-        
-        private static EInputType[] _skillInputs = new EInputType[3]
-            {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
+        protected const string Death = "Death";
+        protected const string DeathLazer = "DeathLazer";
+        protected const string DeathWater = "DeathWater";
+        protected const string DeathFire = "DeathFire";
+        protected const string OnSawStart = "OnSawStart";
+        protected const string Idle = "Idle";
+        public string Run = "Run";
+        protected const string Attack = "Attack";
+        protected const int _breakFlagDuration = 5 * ConstDefineGM2D.FixedFrameCount; //使坏标记持续时间，用于击杀者判断
+        protected PlayerBase _curBreaker; //使坏的人，用于击杀者判断
+        protected int _breakFrame; //使坏的帧数，用于击杀判断
+        private static EInputType[] _skillInputs = {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
@@ -71,6 +71,10 @@ namespace GameA.Game
         private int _hpStayTimer;
 
         protected StatusBar _statusBar;
+        protected int _jumpAbility;
+        protected IntVec2 _attackRange;
+        protected int _injuredReduce;
+        protected int _curIncrease;
 
         public override EDieType EDieType
         {
@@ -105,12 +109,15 @@ namespace GameA.Game
         protected override void Clear()
         {
             RemoveAllStates();
+            _curBreaker = null;
+            _breakFrame = 0;
             _eDieType = EDieType.None;
             _damageFrame = 0;
             if (_view != null)
             {
                 _view.SetDamageShaderValue("Value", 0);
             }
+
             _hpStayTimer = 0;
             _skillCtrl = null;
             base.Clear();
@@ -119,6 +126,11 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
+            }
+
             if (HasStateType(EStateType.Stun))
             {
                 //落地时候移除掉猛犸象的晕眩
@@ -133,6 +145,7 @@ namespace GameA.Game
                 Object.Destroy(_statusBar.gameObject);
                 _statusBar = null;
             }
+
             RemoveAllStates();
             base.OnObjectDestroy();
         }
@@ -149,6 +162,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             base.UpdateLogic();
             //死亡时也要变色
             CheckShowDamage();
@@ -160,18 +174,27 @@ namespace GameA.Game
             {
                 UpdateInput();
             }
+
             if (_skillCtrl != null && CanAttack)
             {
                 _skillCtrl.UpdateLogic();
             }
+
             if (_jumpTimer > 0)
             {
                 _jumpTimer--;
             }
+
             if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
             {
                 _jumpState = EJumpState.Fall;
             }
+
+            if (_dropLadderTimer > 0)
+            {
+                _dropLadderTimer--;
+            }
+
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -184,11 +207,14 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_curBanInputTime == 0 && !IsHoldingBox())
             {
-                switch (_eClimbState)
+                switch (ClimbState)
                 {
                     case EClimbState.None:
+                    case EClimbState.Ladder:
+//                    case EClimbState.Rope:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -197,6 +223,7 @@ namespace GameA.Game
                         {
                             SetFacingDir(EMoveDirection.Right);
                         }
+
                         break;
                     case EClimbState.Up: //翻转
                         if (_input.GetKeyApplied(EInputType.Left))
@@ -207,9 +234,11 @@ namespace GameA.Game
                         {
                             SetFacingDir(EMoveDirection.Left);
                         }
+
                         break;
                 }
             }
+
             CheckJump();
             CheckAssist();
             CheckSkill();
@@ -220,15 +249,14 @@ namespace GameA.Game
             _climbJump = false;
             if (_input.GetKeyDownApplied(EInputType.Jump))
             {
-                //攀墙跳
-                if (_eClimbState > EClimbState.None)
+                if (ClimbState > EClimbState.None)
                 {
-                    _climbJump = true;
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
-                    if (_eClimbState == EClimbState.Left)
+                    if (ClimbState == EClimbState.Left)
                     {
+                        _climbJump = true;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
                         {
@@ -242,8 +270,9 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Right);
                         }
                     }
-                    else if (_eClimbState == EClimbState.Right)
+                    else if (ClimbState == EClimbState.Right)
                     {
+                        _climbJump = true;
                         //按着下的时候 直接下来
                         if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
                         {
@@ -257,10 +286,65 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Left);
                         }
                     }
-                    else if (_eClimbState == EClimbState.Up)
+                    else if (ClimbState == EClimbState.Up)
                     {
+                        _climbJump = true;
                         SpeedY = -10;
                     }
+                    else if (ClimbState == EClimbState.Ladder)
+                    {
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                            _dropLadderTimer = 15;
+                        }
+                        else
+                        {
+                            SpeedY = 120;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                _dropLadderTimer = 15;
+                            }
+                        }
+                    }
+                    else if (ClimbState == EClimbState.Rope)
+                    {
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            Speed = _curClimbUnit.Speed * 2;
+                            if (SpeedX > 0)
+                            {
+                                SpeedX += 10;
+                            }
+                            else if (SpeedX < 0)
+                            {
+                                SpeedX -= 10;
+                            }
+
+                            SpeedX = Mathf.Clamp(SpeedX, -160, 160);
+
+                            SpeedY += 120;
+                            if (SpeedY > 0)
+                            {
+                                SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                            }
+
+                            RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
+                            if (ropeJoint != null)
+                            {
+                                ropeJoint.JumpAwayRope(_moveDirection);
+                            }
+                        }
+                    }
+
                     SetClimbState(EClimbState.None);
                 }
                 else if (_jumpLevel == -1)
@@ -270,8 +354,9 @@ namespace GameA.Game
                         ExtraSpeed.y = _stepY;
                         _stepY = 0;
                     }
+
                     _jumpLevel = 0;
-                    SpeedY = _onClay ? 120 : 165;
+                    SpeedY = _onClay ? 120 : _jumpAbility;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
@@ -288,18 +373,25 @@ namespace GameA.Game
                         else
                         {
                             _jumpLevel = 1;
-                            SpeedY = 165;
+                            SpeedY = _jumpAbility;
                             _jumpState = EJumpState.Jump2;
                         }
+
                         ExtraSpeed.y = 0;
                         _jumpTimer = 15;
                         _input.CurAppliedInputKeyAry[(int) EInputType.Jump] = false;
                     }
                 }
             }
+            //如果掉下梯子时按上下则重新上梯子
+            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
+                _input.GetKeyUpApplied(EInputType.Up))
+            {
+                _dropLadderTimer = 0;
+            }
         }
 
-        protected void CheckAssist()
+        protected virtual void CheckAssist()
         {
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {
@@ -312,12 +404,13 @@ namespace GameA.Game
             var eShootDir = _moveDirection == EMoveDirection.Left
                 ? EShootDirectionType.Left
                 : EShootDirectionType.Right;
-            if (_eClimbState == EClimbState.Up)
+            if (ClimbState == EClimbState.Up)
             {
                 eShootDir = _moveDirection == EMoveDirection.Left
                     ? EShootDirectionType.Right
                     : EShootDirectionType.Left;
             }
+
             if (_input.GetKeyApplied(EInputType.Left))
             {
                 eShootDir = EShootDirectionType.Left;
@@ -350,6 +443,7 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
+
             _angle = (int) eShootDir;
             if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot) && _skillCtrl != null)
             {
@@ -360,6 +454,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     switch (skill.EWeaponInputType)
                     {
                         case EWeaponInputType.GetKey:
@@ -367,44 +462,75 @@ namespace GameA.Game
                             {
                                 if (_skillCtrl.Fire(i))
                                 {
-                                    ChangeGunView(i);
+                                    ChangeGunView(i, eShootDir);
                                 }
+
                                 return;
                             }
+
                             break;
                         case EWeaponInputType.GetKeyUp:
                             if (_input.GetKeyUpApplied(_skillInputs[i]))
                             {
                                 if (_skillCtrl.Fire(i))
                                 {
-                                    ChangeGunView(i);
+                                    ChangeGunView(i, eShootDir);
                                 }
                             }
+
                             break;
                     }
                 }
             }
         }
 
-        public virtual void ChangeGunView(int slot)
+        public virtual void ChangeGunView(int slot, EShootDirectionType? eShootDir)
         {
         }
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
         {
-            if (!IsMain)
+            if (!IsPlayer)
             {
                 return true;
             }
+
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
 
-        public override void AddStates(params int[] ids)
+        private void CheckKiller()
+        {
+            if (_curBreaker != null && _breakFrame > 0 &&
+                GameRun.Instance.LogicFrameCnt - _breakFrame < _breakFlagDuration)
+            {
+                if (IsMonster)
+                {
+                    Messenger<UnitBase>.Broadcast(EMessengerType.OnMonsterDead, _curBreaker);
+                }
+                else if (IsPlayer)
+                {
+                    Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, _curBreaker);
+                }
+
+                _curBreaker = null;
+                _breakFrame = 0;
+            }
+        }
+
+        public void AddBreaker(PlayerBase player)
+        {
+            _curBreaker = player;
+            _breakFrame = GameRun.Instance.LogicFrameCnt;
+        }
+
+        /// sender是状态的施与者，用于计算击杀
+        public override void AddStates(UnitBase sender, params int[] ids)
         {
             if (!_isAlive)
             {
                 return;
             }
+
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
@@ -412,16 +538,33 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 var tableState = TableManager.Instance.GetState(id);
                 if (tableState == null)
                 {
                     continue;
                 }
+
                 //如果是减益buff 当前无敌时跳过。
                 if (tableState.IsBuff == 0 && IsInvincible)
                 {
                     continue;
                 }
+
+                //记录debuff施与者，用于计算击杀
+                if (tableState.IsBuff == 0 && sender != null && !IsSameTeam(sender.TeamId))
+                {
+                    var player = sender as PlayerBase;
+                    if (player != null)
+                    {
+                        AddBreaker(player);
+                    }
+                }
+                else
+                {
+                    _breakFrame = 0;
+                }
+
                 //如果已存在，判断叠加属性
                 State state;
                 if (TryGetState(id, out state))
@@ -429,19 +572,22 @@ namespace GameA.Game
                     ++state;
                     continue;
                 }
+
                 //如果不存在，判断是否同类替换
                 if (tableState.IsReplace == 1)
                 {
                     RemoveStateByType((EStateType) tableState.StateType);
                 }
+
                 state = PoolFactory<State>.Get();
-                if (state.OnAttached(tableState, this))
+                if (state.OnAttached(tableState, this, sender))
                 {
                     OnAddState(state);
                     _currentStates.Add(state);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
+
                 PoolFactory<State>.Free(state);
             }
         }
@@ -484,6 +630,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             state = null;
             return false;
         }
@@ -509,6 +656,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             state = null;
             return false;
         }
@@ -530,6 +678,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     state.OnRemoved();
                     PoolFactory<State>.Free(state);
                     _currentStates.Remove(state);
@@ -555,6 +704,7 @@ namespace GameA.Game
             {
                 v = one.TableState.StateTypePriority.CompareTo(other.TableState.StateTypePriority);
             }
+
             return v;
         }
 
@@ -564,7 +714,9 @@ namespace GameA.Game
             {
                 return;
             }
+
             _eDieType = EDieType.Lazer;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -578,7 +730,9 @@ namespace GameA.Game
             {
                 return;
             }
+
             _eDieType = EDieType.Saw;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -593,6 +747,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _hasWaterCheckedInFrame = true;
             if (HasStateType(EStateType.Fire))
             {
@@ -602,11 +757,14 @@ namespace GameA.Game
                 RemoveStateByType(EStateType.Fire);
                 return;
             }
+
             if (!_isAlive || IsInvincible)
             {
                 return;
             }
+
             _eDieType = EDieType.Water;
+            CheckKiller();
             OnDead();
             if (IsMain)
             {
@@ -621,15 +779,18 @@ namespace GameA.Game
             {
                 _statusBar.SetHPActive(false);
             }
+
             if (HasStateType(EStateType.Fire))
             {
                 _eDieType = EDieType.Fire;
             }
+
             State state;
             if (TryGetState(73, out state))
             {
                 _eDieType = EDieType.TigerEat;
             }
+
             if (_animation != null)
             {
                 RemoveAllStates(true);
@@ -657,7 +818,6 @@ namespace GameA.Game
                 default:
                     return Death;
             }
-
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -667,17 +827,18 @@ namespace GameA.Game
                 State state;
                 if (TryGetState(EStateType.Fire, out state))
                 {
-                    unit.AddStates(state.TableState.Id);
+                    unit.AddStates(state.Sender, state.TableState.Id);
                 }
             }
         }
 
-        public override void OnHpChanged(int hpChanged)
+        public override void OnHpChanged(int hpChanged, UnitBase killer = null)
         {
             if (!_isAlive || !PlayMode.Instance.SceneState.GameRunning)
             {
                 return;
             }
+
             if (hpChanged < 0)
             {
                 //无敌时候不管用
@@ -685,22 +846,41 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 _damageFrame = BattleDefine.DamageDurationFrame;
-                if (_isMonster)
-                {
-                    _hpStayTimer = BattleDefine.HpStayTime;
-                    if (_statusBar != null)
-                    {
-                        _statusBar.SetHPActive(true);
-                    }
-                }
+//                if (_isMonster)
+//                {
+//                    _hpStayTimer = BattleDefine.HpStayTime;
+//                    if (_statusBar != null)
+//                    {
+//                        _statusBar.SetHPActive(true);
+//                    }
+//                }
+                hpChanged = (int) (hpChanged * TableConvert.GetInjuredReduce(_injuredReduce));
             }
+            else
+            {
+                hpChanged = (int) (hpChanged * TableConvert.GetCurIncrease(_curIncrease));
+            }
+
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);
             if (_hp == 0)
             {
                 OnDead();
+                if (killer != null)
+                {
+                    if (IsMonster)
+                    {
+                        Messenger<UnitBase>.Broadcast(EMessengerType.OnMonsterDead, killer);
+                    }
+                    else if (IsPlayer)
+                    {
+                        Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, killer);
+                    }
+                }
             }
+
             if (_statusBar != null)
             {
                 _statusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
@@ -717,6 +897,7 @@ namespace GameA.Game
                     _view.SetDamageShaderValue("Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
                 }
             }
+
             if (_hpStayTimer > 0)
             {
                 _hpStayTimer--;
@@ -727,12 +908,13 @@ namespace GameA.Game
             }
         }
 
-        public void CreateStatusBar()
+        protected virtual void CreateStatusBar()
         {
             if (null != _statusBar)
             {
                 return;
             }
+
             GameObject statusBarObj =
                 Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar")) as
                     GameObject;
@@ -741,6 +923,63 @@ namespace GameA.Game
                 _statusBar = statusBarObj.GetComponent<StatusBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
+
+            if (_statusBar != null) _statusBar.SetOwner(this);
         }
+
+        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (!CheckCanHit(other))
+            {
+                return false;
+            }
+            return base.OnDownHit(other, ref y, checkOnly);
+        }
+
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (!CheckCanHit(other))
+            {
+                return false;
+            }
+            return base.OnUpHit(other, ref y, checkOnly);
+        }
+
+        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
+        {
+            if (!CheckCanHit(other))
+            {
+                return false;
+            }
+            return base.OnLeftHit(other, ref x, checkOnly);
+        }
+
+        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
+        {
+            if (!CheckCanHit(other))
+            {
+                return false;
+            }
+            return base.OnRightHit(other, ref x, checkOnly);
+        }
+        
+        private bool CheckCanHit(UnitBase other)
+        {
+            if (other.Id == UnitDefine.RopeJointId)
+            {
+                return false;
+            }
+            if (UnitDefine.UseProjectileBullet(other.Id))
+            {
+                var projectile = other as ProjectileBase;
+                if (!projectile.Skill.Owner.CanHarm(this))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 }

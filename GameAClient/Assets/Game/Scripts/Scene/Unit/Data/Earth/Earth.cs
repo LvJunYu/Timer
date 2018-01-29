@@ -19,7 +19,7 @@ namespace GameA.Game
     {
         protected override void InitAssetPath()
         {
-            var v = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
+            var v = DataScene2D.CurScene.GetUnitExtra(_guid).ChildId;
             _assetPath = string.Format("{0}_{1}", _tableUnit.Model,  (byte) Mathf.Clamp(v, 1, 2));
         }
 

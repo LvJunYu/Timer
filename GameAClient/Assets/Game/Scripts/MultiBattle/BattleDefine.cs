@@ -5,9 +5,6 @@
 ** Summary : BattleDefine
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     public class BattleDefine

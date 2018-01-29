@@ -27,23 +27,17 @@ namespace GameA
             upCtrlWorldRecommendProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
 
-            var upCtrlWorldBestProject = new UPCtrlWorldBestProject();
-            upCtrlWorldBestProject.Set(ResScenary);
-            upCtrlWorldBestProject.SetMenu(EMenu.MaxScore);
-            upCtrlWorldBestProject.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.MaxScore] = upCtrlWorldBestProject;
+            var upCtrlWorldNewest = new UPCtrlWorldAllNewestProject();
+            upCtrlWorldNewest.Set(ResScenary);
+            upCtrlWorldNewest.SetMenu(EMenu.NewestProject);
+            upCtrlWorldNewest.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlWorldNewest;
 
-            var upCtrlNewestProject = new UPCtrlWorldNewestProject();
-            upCtrlNewestProject.Set(ResScenary);
-            upCtrlNewestProject.SetMenu(EMenu.NewestProject);
-            upCtrlNewestProject.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.NewestProject] = upCtrlNewestProject;
-
-            var upCtrlWorldFollowedUserProject = new UPCtrlWorldFollowedUserProject();
-            upCtrlWorldFollowedUserProject.Set(ResScenary);
-            upCtrlWorldFollowedUserProject.SetMenu(EMenu.Follows);
-            upCtrlWorldFollowedUserProject.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.Follows] = upCtrlWorldFollowedUserProject;
+            var upCtrlWorldMulti = new UPCtrlWorldMulti();
+            upCtrlWorldMulti.Set(ResScenary);
+            upCtrlWorldMulti.SetMenu(EMenu.Multi);
+            upCtrlWorldMulti.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Multi] = upCtrlWorldMulti;
 
             var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
             upCtrlWorldUserFavorite.Set(ResScenary);
@@ -51,12 +45,12 @@ namespace GameA
             upCtrlWorldUserFavorite.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.UserFavorite] = upCtrlWorldUserFavorite;
 
-            var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
-            upCtrlWorldUserPlayHistory.Set(ResScenary);
-            upCtrlWorldUserPlayHistory.SetMenu(EMenu.UserPlayHistory);
-            upCtrlWorldUserPlayHistory.Init(this, _cachedView);
-            _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
-
+            var upCtrlWorldFollowedUserProject = new UPCtrlWorldFollowedUserProject();
+            upCtrlWorldFollowedUserProject.Set(ResScenary);
+            upCtrlWorldFollowedUserProject.SetMenu(EMenu.Collect);
+            upCtrlWorldFollowedUserProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Collect] = upCtrlWorldFollowedUserProject;
+            
             var uPCtrlWorldRanklistPanel = new UPCtrlWorldRanklistPanel();
             uPCtrlWorldRanklistPanel.Set(ResScenary);
             uPCtrlWorldRanklistPanel.SetMenu(EMenu.RankList);
@@ -73,6 +67,20 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+
+            for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+            {
+                _cachedView.ProjectTypeTogs[i].onValueChanged.AddListener(b =>
+                {
+                    if (_isOpen && _curMenuCtrl is UPCtrlWorldProjectBase)
+                    {
+                        ((UPCtrlWorldProjectBase)_curMenuCtrl).OnProjectTypesChanged();
+                    }
+                });
+            }
+            
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchInputField);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchRoomInputField);
         }
 
         protected override void OnDestroy()
@@ -97,6 +105,13 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
+            RegisterEvent<long>(EMessengerType.OnRoomProjectInfoFinish, OnRoomProjectInfoFinish);
+            RegisterEvent(EMessengerType.OnRoomListChanged, OnRoomListChanged);
+            RegisterEvent<Msg_MC_QueryRoom>(EMessengerType.OnQueryRoomRet, OnQueryRoomRet);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            RegisterEvent(EMessengerType.OnJoinRoomFail, OnJoinRoomFail);
+            RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
+            RegisterEvent<Project, bool>(EMessengerType.OnProjectMyFavoriteChanged, OnProjectMyFavoriteChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -117,6 +132,34 @@ namespace GameA
                 _pushGoldEnergyStyle = true;
             }
         }
+        
+        protected override void OnClose()
+        {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
+
+            for (int i = 0; i < _cachedView.ProjectTypeTogs.Length; i++)
+            {
+                _cachedView.ProjectTypeTogs[i].isOn = false;
+            }
+            base.OnClose();
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, new Vector3(-200, 0, 0));
+            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
+            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+        }
 
         private void Clear()
         {
@@ -128,11 +171,43 @@ namespace GameA
                 }
             }
             _cachedView.SearchInputField.text = String.Empty;
+            _cachedView.SearchRoomInputField.text = String.Empty;
+        }
+
+        private void OnChangeToAppMode()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnChangeToAppMode();
+            }
+        }
+
+        private void OnJoinRoomFail()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnJoinRoomFail();
+            }
+        }
+
+        private void OnRoomListChanged()
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnRoomListChanged();
+            }
+        }
+
+        private void OnQueryRoomRet(Msg_MC_QueryRoom msg)
+        {
+            if (_isOpen && _curMenu == EMenu.Multi)
+            {
+                ((UPCtrlWorldMulti)_curMenuCtrl).OnQueryRoomRet(msg);
+            }
         }
 
         private void OnSearchBtn()
         {
-            if (!(_curMenuCtrl is UPCtrlWorldProjectBase)) return;
             if (string.IsNullOrEmpty(_cachedView.SearchInputField.text))
             {
                 ChangeMenu(_curMenu);
@@ -152,7 +227,7 @@ namespace GameA
                         {
                             if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_Success)
                             {
-                                ShowSearchedProject(new Project(msg.Data));
+                                ShowSearchedProject(ProjectManager.Instance.UpdateData(msg.Data));
                             }
                             else if (msg.ResultCode == (int) ESearchWorldProjectCode.SWPC_NotExsit)
                             {
@@ -174,6 +249,7 @@ namespace GameA
             if (_sarchUmCtrlProject == null)
             {
                 _sarchUmCtrlProject = new UMCtrlProject();
+                _sarchUmCtrlProject.SetCurUI(UMCtrlProject.ECurUI.Search);
                 _sarchUmCtrlProject.Init(_cachedView.SearchPannelRtf, ResScenary);
             }
             CardDataRendererWrapper<Project> w =
@@ -187,29 +263,6 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
             }
-        }
-
-        protected override void OnClose()
-        {
-            if (_pushGoldEnergyStyle)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
-                _pushGoldEnergyStyle = false;
-            }
-            if (_curMenuCtrl != null)
-            {
-                _curMenuCtrl.Close();
-            }
-            base.OnClose();
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
-            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, new Vector3(-200, 0, 0));
-            SetPart(_cachedView.PannelRtf, EAnimationType.MoveFromRight);
-            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }
 
         private void ChangeMenu(EMenu menu)
@@ -244,15 +297,43 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
         }
 
+        private void OnProjectNotValid()
+        {
+            if (_isOpen && _curMenuCtrl is UPCtrlWorldProjectBase)
+            {
+                ((UPCtrlWorldProjectBase) _curMenuCtrl).RequestData();
+            }
+        }
+
         private void OnProjectDataChanged(long projectId)
         {
             if (!_isOpen)
             {
                 return;
             }
-            if (_curMenuCtrl != null)
+            if (_curMenu != EMenu.Multi && _curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
+            }
+        }
+
+        private void OnRoomProjectInfoFinish(long roomId)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
+            {
+                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(roomId);
+            }
+        }
+
+        private void OnProjectMyFavoriteChanged(Project project, bool favorite)
+        {
+            if (_isOpen && _curMenu == EMenu.UserFavorite && _curMenuCtrl != null)
+            {
+                ((UPCtrlWorldUserFavorite) _curMenuCtrl).OnProjectMyFavoriteChanged(project, favorite);
             }
         }
 
@@ -260,11 +341,10 @@ namespace GameA
         {
             None = -1,
             Recommend,
-            MaxScore,
             NewestProject,
-            Follows,
+            Multi,
             UserFavorite,
-            UserPlayHistory,
+            Collect,
             RankList,
             Max
         }

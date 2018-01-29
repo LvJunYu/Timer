@@ -5,16 +5,36 @@
 ** Summary : BrickUnit
 ***********************************************************************/
 
-using SoyEngine;
-using Spine.Unity;
-
 namespace GameA.Game
 {
-    [Unit(Id = 5013, Type = typeof (Gate))]
+    [Unit(Id = 5013, Type = typeof(Gate))]
     public class Gate : BlockBase
     {
         private bool _opened;
         protected int _timer;
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            
+            if (_opened)
+            {
+                if (_animation != null)
+                {
+                    var entry = _animation.PlayOnce("Open");
+                    entry.time = entry.endTime;
+                }
+
+                SetCross(true);
+                SetSortingOrderBackground();
+                UpdateTransPos();
+            }
+
+            return true;
+        }
 
         protected override void Clear()
         {
@@ -33,6 +53,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -43,6 +64,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -53,6 +75,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -63,16 +86,17 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
-    
+
         private void CheckOpen(UnitBase other, bool checkOnly = false)
         {
             if (!checkOnly)
             {
-                if (other.IsMain)
+                if (other.IsPlayer)
                 {
-                    if (_enabled && PlayMode.Instance.SceneState.UseKey())
+                    if (_enabled && PlayMode.Instance.SceneState.UseKey(other as PlayerBase))
                     {
                         SetEnabled(false);
                         _timer = 50;

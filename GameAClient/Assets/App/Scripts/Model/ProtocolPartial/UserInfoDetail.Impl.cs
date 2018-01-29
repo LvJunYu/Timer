@@ -271,12 +271,12 @@ namespace GameA
                 {
                     project.DeleteResCache();
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
-                    project = ProjectManager.Instance.OnSyncProject(msgProject, true);
+                    project = ProjectManager.Instance.UpdateData(msgProject);
                 }
                 else
                 {
                     msgProject.LocalDataState = ELocalDataState.LDS_Uptodate;
-                    project = ProjectManager.Instance.OnSyncProject(msgProject, true);
+                    project = ProjectManager.Instance.UpdateData(msgProject);
                     localSavedProjectList.Add(project);
                 }
             }
@@ -362,7 +362,7 @@ namespace GameA
         protected override void OnSyncPartial()
         {
             base.OnSyncPartial();
-            Messenger<long>.Broadcast(EMessengerType.OnUserInfoChanged, _userInfoSimple.UserId);
+            Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnUserInfoChanged, this);
         }
     }
 }

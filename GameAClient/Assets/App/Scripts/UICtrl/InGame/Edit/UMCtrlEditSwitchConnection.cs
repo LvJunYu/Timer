@@ -1,4 +1,5 @@
-﻿using GameA.Game;
+﻿using System;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
@@ -15,6 +16,12 @@ namespace GameA
         private Vector3 _targetSwitchWorldPos;
         private Vector3 _targetUnitWorldPos;
         private bool _buttonShow;
+        private const string ConnectSpriteName = "img_switch_arrow_";
+        private const string BreakBgSpriteName = "img_switch_arrow_mid_";
+        private const string BreakBtnSpriteName = "btn_switch_off_";
+        private const string AfterTaskName = "blue";
+        private const string BeforeTaskName = "red";
+        private const string TaskName = "yellow";
 
         protected override void OnViewCreated()
         {
@@ -35,12 +42,51 @@ namespace GameA
 
         public void Set(int inx, Vector3 switchPos, Vector3 unitPos)
         {
+            SetImage(NpcTaskDataTemp.Intance.TaskType);
             _index = inx;
             _targetSwitchWorldPos = switchPos;
             _targetUnitWorldPos = unitPos;
 //            _cachedView.Trans.localScale = Vector3.one * 0.5f;
             RecalcPos();
         }
+
+        public void SetImage(ETaskContype controlType)
+        {
+            switch (controlType)
+            {
+                case ETaskContype.None:
+                    SetSprite(TaskName);
+                    break;
+                case ETaskContype.AfterTask:
+                    SetSprite(AfterTaskName);
+
+                    break;
+                case ETaskContype.BeforeTask:
+                    SetSprite(BeforeTaskName);
+                    break;
+                case ETaskContype.Task:
+                    SetSprite(TaskName);
+                    break;
+            }
+        }
+
+        private void SetSprite(string typeName)
+        {
+            Sprite connectSprite;
+            Sprite BreakBgSprite;
+            Sprite BreakBtnSprite;
+
+            NewResourceSolution.JoyResManager.Instance.TryGetSprite(
+                String.Format("{0}{1}", ConnectSpriteName, typeName), out connectSprite);
+            _cachedView.ConnectionImage.sprite = connectSprite;
+            NewResourceSolution.JoyResManager.Instance.TryGetSprite(
+                String.Format("{0}{1}", BreakBgSpriteName, typeName), out BreakBgSprite);
+            _cachedView.BreakBgImage.sprite = BreakBgSprite;
+            NewResourceSolution.JoyResManager.Instance.TryGetSprite(
+                String.Format("{0}{1}", BreakBtnSpriteName, typeName), out BreakBtnSprite);
+            _cachedView.BreakBtnImage.sprite = BreakBtnSprite;
+        }
+
 
         public void RecalcPos()
         {

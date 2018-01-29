@@ -7,9 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -26,22 +24,22 @@ namespace GameA.Game
 	    public const int EffectLayer = 1 << (int) ESceneLayer.Effect;
 
 		public const int MaxLayer = 1 << (int)ESceneLayer.Max;
-        public const int UnitLayer = ItemLayer | MonsterLayer | RemotePlayer;
-	    public const int UnitLayerWithMainPlayer = ItemLayer | MainPlayerLayer;
+        public const int UnitLayer = ItemLayer | MonsterLayer;
+	    public const int UnitLayerWithMainPlayer = ItemLayer | MainPlayerLayer | RemotePlayer;
 
 	    public const int UnitLayerWithoutEffect = (~MaxLayer) & (~EffectLayer);
 		public const int MainPlayerAndEffectLayer = 1 << (int)ESceneLayer.Effect |1<<(int)ESceneLayer.MainPlayer;
 
-        public const int FanBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer | 1<<(int)ESceneLayer.Bullet;
+        public const int FanBlockLayer = MainPlayerLayer | RemotePlayer | MonsterLayer | ItemLayer | 1<<(int)ESceneLayer.Bullet;
 	    
-	    public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
-        public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
-        public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
+	    public const int LazerShootLayer = MainPlayerLayer | RemotePlayer | MonsterLayer | ItemLayer;
+        public const int BridgeBlockLayer = MainPlayerLayer | RemotePlayer | MonsterLayer | ItemLayer;
+        public const int MovingEarthBlockLayer = MainPlayerLayer | RemotePlayer | MonsterLayer | ItemLayer;
 
-        public const int BulletHitLayer = MonsterLayer | ItemLayer;
-        public const int BulletHitLayerWithMainPlayer = MonsterLayer | ItemLayer | MainPlayerLayer;
+        public const int BulletHitLayer = MonsterLayer | ItemLayer | RemotePlayer;
+        public const int BulletHitLayerWithMainPlayer = MonsterLayer | ItemLayer | MainPlayerLayer | RemotePlayer;
 	    
-        public const int MonsterViewLayer = MainPlayerLayer | ItemLayer;
+        public const int MonsterViewLayer = MainPlayerLayer | RemotePlayer  | ItemLayer;
 
 		public static EnvManager Instance
         {
@@ -50,20 +48,36 @@ namespace GameA.Game
 
 		public void Init()
         {
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.RemotePlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Effect);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Decoration);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RemotePlayer, (int) ESceneLayer.Rope);
+	        
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Monster);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Effect);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Decoration);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Rope);
+		        
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Rope, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Rope, (int) ESceneLayer.RemotePlayer);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Monster);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.RemotePlayer);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Monster);
 	        
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Item);
@@ -71,6 +85,7 @@ namespace GameA.Game
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Monster);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Bullet);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.RemotePlayer);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.RigidbodyItem);
@@ -103,6 +118,7 @@ namespace GameA.Game
         Bullet,
         Gun,
 	    Decoration,
+	    Rope,
 		HomeAvatar = 30,
         Max = 31
     }

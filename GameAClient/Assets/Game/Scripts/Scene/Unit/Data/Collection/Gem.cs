@@ -5,8 +5,6 @@
 ** Summary : Gem
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
@@ -32,7 +30,13 @@ namespace GameA.Game
         {
             PlayMode.Instance.SceneState.GemGain++;
             if (_trans != null)
-                Messenger<Vector3>.Broadcast(EMessengerType.OnGemCollect, _trans.position);
+            {
+                Messenger<UnitBase>.Broadcast(EMessengerType.OnGemCollect, other);
+                if (other.IsMain)
+                {
+                    Messenger<Vector3>.Broadcast(EMessengerType.OnGemCollect, _trans.position);
+                }
+            }
             base.OnTrigger(other);
         }
     }

@@ -6,8 +6,18 @@ using UnityEngine;
 
 namespace GameA
 {
+    public enum ExplantionIndex
+    {
+        Role = 1,
+        Earth = 2,
+        Mechanism = 3,
+        Collection = 4,
+        Decoration = 5,
+        Controller = 6
+    }
+
     [UIResAutoSetup(EResScenary.UICommon)]
-    public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook> 
+    public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook>
     {
         public enum ExplantionIndex
         {
@@ -18,6 +28,7 @@ namespace GameA
             Decoration = 5,
             Controller = 6
         }
+
         #region Fields
 
         private float _TweenTime = 0.5f;
@@ -28,12 +39,13 @@ namespace GameA
         private Table_Unit _uint;
         private Tweener _contenTween;
         private UMCtrlHandBookItem _curSeleCtrlHandBookItem;
-        private  List<int> _RoleList =  new List<int>();
-        private  List<int> _EarthList =  new List<int>();
-        private  List<int> _MechanismList =  new List<int>();
-        private  List<int> _ColletionList =  new List<int>();
-        private  List<int> _DecorationList =  new List<int>();
-        private  List<int> _ControllerList =  new List<int>();
+        private List<int> _RoleList = new List<int>();
+        private List<int> _EarthList = new List<int>();
+        private List<int> _MechanismList = new List<int>();
+        private List<int> _ColletionList = new List<int>();
+        private List<int> _DecorationList = new List<int>();
+        private List<int> _ControllerList = new List<int>();
+
         #endregion
 
         #region Properties
@@ -48,7 +60,7 @@ namespace GameA
             SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
             SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
-        
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -77,7 +89,6 @@ namespace GameA
                     _isFirst = false;
                 }
             }
-           
         }
 
         protected override void InitGroupId()
@@ -85,7 +96,7 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainUI;
         }
 
-      
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlHandBook>();
@@ -93,31 +104,30 @@ namespace GameA
 
         public void InitData()
         {
-               
-                foreach (var item in TableManager.Instance.Table_UnitDic)
+            foreach (var item in TableManager.Instance.Table_UnitDic)
+            {
+                switch (item.Value.UIType)
                 {
-                    switch (item.Value.UIType)
-                    {
-                        case (int) ExplantionIndex.Role:
-                            _RoleList.Add(item.Key);
-                            break;
-                        case (int) ExplantionIndex.Earth:
-                            _EarthList.Add(item.Key);
-                            break;
-                        case (int) ExplantionIndex.Mechanism:
-                            _MechanismList.Add(item.Key);
-                            break;
-                        case (int) ExplantionIndex.Collection:
-                            _ColletionList.Add(item.Key);
-                            break;
-                        case (int) ExplantionIndex.Decoration:
-                            _DecorationList.Add(item.Key);
-                            break;
-                        case (int) ExplantionIndex.Controller:
-                            _ControllerList.Add(item.Key);
-                            break;
-                    }
+                    case (int) ExplantionIndex.Role:
+                        _RoleList.Add(item.Key);
+                        break;
+                    case (int) ExplantionIndex.Earth:
+                        _EarthList.Add(item.Key);
+                        break;
+                    case (int) ExplantionIndex.Mechanism:
+                        _MechanismList.Add(item.Key);
+                        break;
+                    case (int) ExplantionIndex.Collection:
+                        _ColletionList.Add(item.Key);
+                        break;
+                    case (int) ExplantionIndex.Decoration:
+                        _DecorationList.Add(item.Key);
+                        break;
+                    case (int) ExplantionIndex.Controller:
+                        _ControllerList.Add(item.Key);
+                        break;
                 }
+            }
         }
 
         public void InitItemGroup()
@@ -127,7 +137,7 @@ namespace GameA
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.RoleRectGroup, resScenary);
-                explationItem.IintItem(_RoleList[i], false);
+                explationItem.IintItem(_RoleList[i], true);
                 if (_curSeleCtrlHandBookItem == null)
                 {
                     _curSeleCtrlHandBookItem = explationItem;
@@ -137,7 +147,7 @@ namespace GameA
             for (int i = 0; i < _EarthList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.EarthRectGroup,resScenary);
+                explationItem.Init(_cachedView.EarthRectGroup, resScenary);
                 explationItem.IintItem(_EarthList[i], true);
             }
             for (int i = 0; i < _MechanismList.Count; i++)
@@ -166,9 +176,8 @@ namespace GameA
             }
         }
 
-        public void UpdateDesc(int unitID ,UMCtrlHandBookItem selecCtrlHandBookItem)
+        public void UpdateDesc(int unitID, UMCtrlHandBookItem selecCtrlHandBookItem)
         {
-
             if (_curSeleCtrlHandBookItem == null)
             {
                 _curSeleCtrlHandBookItem = selecCtrlHandBookItem;
@@ -184,12 +193,11 @@ namespace GameA
             _unitIconName = _uint.Icon;
             if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
             {
-
                 _cachedView.Icon.sprite = _unitIcon;
             }
             _cachedView.Desc.text = _uint.Summary;
-            
         }
+
         public void OnRoleBtn()
         {
             JudgeMove(_cachedView.RoleRect.anchoredPosition.y);
@@ -199,33 +207,34 @@ namespace GameA
         {
             JudgeMove(_cachedView.EarthRect.anchoredPosition.y);
         }
+
         public void OnTrickBtn()
         {
             JudgeMove(_cachedView.TrickRect.anchoredPosition.y);
         }
 
         public void OnCollitionBtn()
-        {   
+        {
             JudgeMove(_cachedView.CollitionRect.anchoredPosition.y);
         }
-        
+
         public void OnDecorationBtn()
         {
             JudgeMove(_cachedView.DecorationRect.anchoredPosition.y);
         }
 
         public void OnCtrlBtn()
-        {   
+        {
             JudgeMove(_cachedView.CtrlRect.anchoredPosition.y);
         }
 
-        public void JudgeMove( float posY )
+        public void JudgeMove(float posY)
         {
             if (_contenTween != null)
             {
                 _contenTween.Pause();
             }
-            _contenTween =  _cachedView.ContenTransform.DOAnchorPosY(-(posY),_TweenTime,true);
+            _contenTween = _cachedView.ContenTransform.DOAnchorPosY(-(posY), _TweenTime, true);
         }
 
         #endregion

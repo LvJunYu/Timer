@@ -66,20 +66,33 @@ namespace GameA
 			_inited = true;
 			_dirty = false;
 			_isRequesting = false;
-			if (_syncSuccessCB != null) {
-				_syncSuccessCB.Invoke ();
+			if (_syncSuccessCB != null)
+			{
+				var scb = _syncSuccessCB;
 				_syncSuccessCB = null;
+				_syncFailedCB = null;
+				scb.Invoke ();
 			}
-			_syncFailedCB = null;
+			else
+			{
+				_syncFailedCB = null;
+			}
 		}
 
 		protected void OnSyncFailed (ENetResultCode netResultCode, string errorMsg) {
 			LogHelper.Error ("Network error when sync {0}, error code: {1}, msg: {2}", this.GetType().ToString(), netResultCode, errorMsg);
 			_isRequesting = false;
-			if (_syncFailedCB != null) {
-				_syncFailedCB.Invoke (netResultCode);
+			if (_syncFailedCB != null)
+			{
+				var fcb = _syncFailedCB;
+				_syncSuccessCB = null;
+				_syncFailedCB = null;
+				fcb.Invoke(netResultCode);
 			}
-			_syncSuccessCB = null;
+			else
+			{
+				_syncSuccessCB = null;
+			}
 		}
 
         protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {

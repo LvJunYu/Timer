@@ -5,8 +5,6 @@
 ** Summary : UnitDefine
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 
@@ -16,6 +14,7 @@ namespace GameA.Game
     {
         public static Vector2 HidePos = Vector3.one * -5;
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
+        public static int[] MonstersInCave = {2001, 2002, 2003, 2005, 2007};
 
         public const float UnitSorttingLayerRatio = 0.0015625f;
 
@@ -26,44 +25,58 @@ namespace GameA.Game
         public const float ZOffsetBack = 0.99f;
         public const float ZOffsetFront = -0.99f;
 
-        public static float[] ZOffsetsPlant = new float[2] {ZOffsetFrontest, ZOffsetBack};
+        public static float[] ZOffsetsPlant = {ZOffsetFrontest, ZOffsetBack};
 
         public const int FanRange = 30;
         public const int FanForce = 20;
-
-        public const int PlayerTableId = 1002;
+        public const int WaterGun = 101;
+        public const int SpawnId = 1001;
+        public const int MainPlayerId = 1002;
+        public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
+        public const int MonsterDragonId = 2007;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
         public const int ClayId = 4011;
         public const int ScorchedEarthId = 4013;
         public const int CloudId = 4015;
+        public const int RopeId = 5020;
+        public const int RopeJointId = 5021;
+        public const int TerrainId = 4100;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
         public const int BlueStoneRotateId = 8004;
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
+        public const int MonsterCaveId = 5022;
         public const int BillboardId = 7001;
+        public const int EnergyPoolId = 8001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
+        public const int ShadowId = 65535;
 
         public static bool IsSpawn(int id)
         {
-            return id == 1001;
+            return id == SpawnId;
         }
 
         public static bool IsMain(int id)
+        {
+            return id == MainPlayerId;
+        }
+
+        public static bool IsPlayer(int id)
         {
             return id < 2000 && id > 1001;
         }
 
         public static bool IsHero(int id)
         {
-            return id < 3000;
+            return id < 3000 || IsNpc(id);
         }
 
         public static bool IsMonster(int id)
@@ -78,7 +91,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id > 8101 && id <= 8200 || id == 9003;
+            return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002 || id == 30003;
         }
 
         public static bool IsSwitchTrigger(int id)
@@ -113,13 +126,14 @@ namespace GameA.Game
 
         public static bool IsShadow(int id)
         {
-            return id == 65535 || id == 65534;
+            return id == ShadowId || id == 65534;
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
-            return node.Id == SwitchTriggerPressId &&
-                   (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
+            return node.Id == SwitchTriggerPressId;
+            //去掉rotation的判断，使激光旋转时也可以触发开关
+//            &&(node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
         public static bool IsLaserDamage(int layer)
@@ -136,10 +150,11 @@ namespace GameA.Game
 
         public static bool IsPaintBlock(Table_Unit tableUnit)
         {
-            if (IsMain(tableUnit.Id))
+            if (IsPlayer(tableUnit.Id))
             {
                 return false;
             }
+
             return tableUnit.IsBulletBlock == 1;
         }
 
@@ -149,8 +164,9 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) &&
-                    !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == 8001 ||
+                    !IsBullet(tableUnit.Id) && !IsShadow(tableUnit.Id)) || tableUnit.Id == EnergyPoolId ||
                    tableUnit.Id == FinalDoorId;
         }
 
@@ -159,9 +175,39 @@ namespace GameA.Game
             return id == 10001 || id == 10004 || id == 10005 || id == 10006;
         }
 
+        public static bool UseProjectileBullet(int id)
+        {
+            return id == 10002 || id == 10003;
+        }
+
         public static bool CanTrigger(UnitBase unit)
         {
             return !IsBullet(unit.Id);
+        }
+
+        public static bool IsLadder(int id)
+        {
+            return id == 4016;
+        }
+
+        public static bool IsNpc(int id)
+        {
+            return id > 30000 && id < 31000;
+        }
+
+        public static bool IsCanControlByNpc(int id)
+        {
+            return id == 5013;
+        }
+
+        public static bool IsKey(int id)
+        {
+            return id == 5012;
+        }
+
+        public static bool IsTeeth(int id)
+        {
+            return id == 6001;
         }
     }
 }

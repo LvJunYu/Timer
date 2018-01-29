@@ -13,6 +13,10 @@ using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using FileTools = SoyEngine.FileTools;
+#if UNITY_EDITOR
+using UnityEditor;
+
+#endif
 
 namespace GameA
 {
@@ -26,7 +30,7 @@ namespace GameA
         [SerializeField] private LogHelper.ELogLevel _logLevel = LogHelper.ELogLevel.All;
         [SerializeField] private PublishChannel.EType _publishChannel = PublishChannel.EType.None;
         [SerializeField] private bool _clearCache;
-        [SerializeField] private string _roomServerAddress;
+        [SerializeField] private string _masterServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
         private float _startTime;
         private const float MinLoadingTime = 2f;
@@ -39,9 +43,9 @@ namespace GameA
             set { _env = value; }
         }
 
-        public string RoomServerAddress
+        public string MasterServerAddress
         {
-            get { return _roomServerAddress; }
+            get { return _masterServerAddress; }
         }
 
         public static AddressConfig GetAppServerAddress()
@@ -103,6 +107,8 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
+            Loom.Init();
+            ScreenResolutionManager.Instance.Init();
             LogHelper.LogLevel = _logLevel;
             if (_clearCache)
             {
@@ -114,7 +120,7 @@ namespace GameA
                 channel = _publishChannel;
             }
             PublishChannel.Init(channel);
-			RegisterGameTypeVersion();
+            RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
@@ -124,6 +130,7 @@ namespace GameA
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
+            RoomManager.Instance.MasterServerAddress = _masterServerAddress;
             gameObject.AddComponent<SocialGUIManager>();
             CoroutineManager.Instance.Init(this);
             JoyResManager.Instance.Init();
@@ -131,7 +138,22 @@ namespace GameA
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
             _startTime = Time.realtimeSinceStartup;
-            JoyResManager.Instance.CheckApplicationAndResourcesVersion();
+            if (_env == EEnvironment.Production && Application.isEditor)
+            {
+                SocialGUIManager.ShowPopupDialog("当前环境为正式服，你真的确定要继续吗？", null,
+                    new KeyValuePair<string, Action>("确定",
+                        () => { JoyResManager.Instance.CheckApplicationAndResourcesVersion(); }),
+                    new KeyValuePair<string, Action>("取消", () =>
+                    {
+#if UNITY_EDITOR
+                        EditorApplication.isPlaying = false;
+#endif
+                    }));
+            }
+            else
+            {
+                JoyResManager.Instance.CheckApplicationAndResourcesVersion();
+            }
         }
 
         public void LoginAfterUpdateResComplete()
@@ -140,17 +162,18 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-            CompassManager.Instance.Login();
+            ReYunManager.Instance.Login();
+//            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
+            BadWordManger.Instance.Init();
         }
 
         public void LoginSucceed()
         {
             AppData.Instance.Init();
 //            ShareUtil.Init();
-//            RoomManager.Instance.Init();
 #if !UNITY_EDITOR_OSX && !UNITY_STANDALONE_OSX
 //            YIMManager.Instance.Login();
 #endif
@@ -180,6 +203,11 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
                 SocialGUIManager.Instance.ShowAppView();
+                if (LocalUser.Instance.User.LoginCount == 1)
+                {
+                    ReYunManager.Instance.Register();
+                }
+                RoomManager.Instance.Init();
             }, code =>
             {
                 if (GlobalVar.Instance.Env != EEnvironment.Production)
@@ -272,19 +300,24 @@ namespace GameA
             }
             base.OnDestroy();
             CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
+            ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
         }
 
         protected override void Update()
         {
             base.Update();
             GameManager.Instance.Update();
-            CompassManager.Instance.Update();
-//            RoomManager.Instance.Update();
+//            CompassManager.Instance.Update();
+            ReYunManager.Instance.Update();
+            RoomManager.Instance.Update();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }
-            PublishChannel.Instance.Update();
+            if (PublishChannel.Instance != null)
+            {
+                PublishChannel.Instance.Update();
+            }
         }
 
         [Serializable]

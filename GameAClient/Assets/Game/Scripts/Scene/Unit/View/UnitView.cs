@@ -7,6 +7,8 @@
 
 using NewResourceSolution;
 using SoyEngine;
+using Spine;
+using Spine.Unity;
 using UnityEngine;
 
 namespace GameA.Game
@@ -15,19 +17,21 @@ namespace GameA.Game
     {
         public static Color SelectedColor = Color.red;
         public static Color NormalColor = Color.white;
-        
+
         protected Transform _trans;
 
         protected Transform _pairTrans;
 
         protected UnitBase _unit;
         protected AnimationSystem _animation;
+        protected Skeleton _skeleton;
+        protected SkeletonAnimation _skeletonAnimation;
 
         protected UnitPropertyViewWrapper _propertyViewWrapper;
 
         protected bool _isPart;
 
-		public Transform Trans
+        public Transform Trans
         {
             get { return _trans; }
         }
@@ -37,13 +41,28 @@ namespace GameA.Game
             get { return _animation; }
         }
 
+        public Skeleton Skeleton
+        {
+            get { return _skeleton; }
+        }
+
+        public SkeletonAnimation SkeletonAnimation
+        {
+            get { return _skeletonAnimation; }
+        }
+
+        public Transform PairTrans
+        {
+            get { return _pairTrans; }
+        }
+
         public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
-			if (UnitManager.Instance != null) 
+            if (UnitManager.Instance != null)
             {
-				_trans.parent = UnitManager.Instance.GetOriginParent ();
-			}
+                _trans.parent = UnitManager.Instance.GetOriginParent();
+            }
         }
 
         public virtual void OnGet()
@@ -76,21 +95,18 @@ namespace GameA.Game
 
         public virtual void SetRendererEnabled(bool value)
         {
-
         }
 
-        public virtual void SetRendererColor (Color color)
+        public virtual void SetRendererColor(Color color)
         {
         }
 
         public virtual void SetSortingOrder(int sortingOrder)
         {
-            
         }
 
-        public virtual void SetDamageShaderValue(string name = null,float value = 1)
+        public virtual void SetDamageShaderValue(string name = null, float value = 1)
         {
-            
         }
 
         public virtual void OnFree()
@@ -121,17 +137,20 @@ namespace GameA.Game
         }
 
         public virtual void OnSelect()
-	    {
-		    
-	    }
+        {
+        }
 
-	    public virtual void OnCancelSelect()
-	    {
-		    
-	    }
+        public virtual void OnCancelSelect()
+        {
+        }
 
         public virtual void OnDestroyObject()
         {
+            if (_propertyViewWrapper != null)
+            {
+                _propertyViewWrapper.Hide();
+                _propertyViewWrapper = null;
+            }
         }
 
         public virtual void Reset()
@@ -160,7 +179,7 @@ namespace GameA.Game
             }
             UpdateSign();
         }
-        
+
         public virtual void OnPlay()
         {
             SetEditAssistActive(false);
@@ -177,8 +196,8 @@ namespace GameA.Game
                 if (active)
                 {
                     var unitDesc = _unit.UnitDesc;
-                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-                    _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                    var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+                    _propertyViewWrapper.Show(ref unitDesc, unitExtra);
                 }
                 else
                 {
@@ -189,7 +208,6 @@ namespace GameA.Game
 
         public virtual void ChangeView(string assetPath)
         {
-            
         }
 
         public virtual void OnNeighborDirChanged(ENeighborDir neighborDir, bool add)
@@ -217,7 +235,7 @@ namespace GameA.Game
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GameRun.Instance.IsEdit)
+                if (GameRun.Instance.IsEdit && !GameRun.Instance.IsPlaying)
                 {
                     if (EditHelper.CheckCanEdit(tableUnit.Id))
                     {
@@ -226,8 +244,8 @@ namespace GameA.Game
                             _propertyViewWrapper = new UnitPropertyViewWrapper();
                         }
                         var unitDesc = _unit.UnitDesc;
-                        var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-                        _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                        var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+                        _propertyViewWrapper.Show(ref unitDesc, unitExtra);
                     }
                 }
             }
@@ -235,7 +253,7 @@ namespace GameA.Game
             {
                 SetPairRenderer();
             }
-	    }
+        }
 
         private void SetPairRenderer()
         {
@@ -245,7 +263,7 @@ namespace GameA.Game
                 _pairTrans = new GameObject("Pair").transform;
                 CommonTools.SetParent(_pairTrans, _trans);
                 spriteRenderer = _pairTrans.gameObject.AddComponent<SpriteRenderer>();
-                spriteRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
+                spriteRenderer.sortingOrder = (int) ESortingOrder.AttTexture2;
                 if (this is SpineUnit)
                 {
                     var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
@@ -255,7 +273,7 @@ namespace GameA.Game
             }
             spriteRenderer = _pairTrans.GetComponent<SpriteRenderer>();
             PairUnit pairUnit;
-            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, out pairUnit))
+            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
             {
                 LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
                 return;
@@ -275,7 +293,7 @@ namespace GameA.Game
             }
             Vector2 res = Vector2.zero;
             Vector2 size = GM2DTools.TileToWorld(_unit.GetDataSize() * 0.5f);
-            switch ((EDirectionType)_unit.Rotation)
+            switch ((EDirectionType) _unit.Rotation)
             {
                 case EDirectionType.Right:
                     res.x = -size.x;

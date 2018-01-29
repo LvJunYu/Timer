@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+/*
 using YIMEngine;
 
 namespace GameA
@@ -196,3 +197,4 @@ namespace GameA
         }
     }
 }
+*/

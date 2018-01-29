@@ -50,13 +50,13 @@ namespace GameA.Game
         private StateMachine<EditMode, EditModeState.Base> _stateMachine;
         private EditModeStateMachineHelper _stateMachineHelper;
         private BlackBoard _boardData;
-        private EditRecordManager _editRecordManager;
         private readonly MapStatistics _mapStatistics = new MapStatistics();
         [SerializeField]
         private GameObject _backgroundObject;
         private SlicedCameraMask _cameraMask;
         private EEditorLayer _lastEditorLayer = EEditorLayer.None;
         #endregion
+        
 
         #region Property
 
@@ -84,7 +84,7 @@ namespace GameA.Game
         {
             get { return _enable; }
         }
-
+        
         #endregion
 
         #region DefaultMethod
@@ -114,8 +114,7 @@ namespace GameA.Game
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
-                _editRecordManager.Clear();
-                _editRecordManager = null;
+                
                 _enable = false;
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
@@ -133,12 +132,10 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.None.Instance);
             _boardData = new BlackBoard();
             _boardData.Init();
-            _editRecordManager = new EditRecordManager();
-            _editRecordManager.Init();
             
             _backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
-            box.size = Vector2.one*1000;
+            box.size = Vector2.one * 1000;
             box.transform.position = Vector3.forward;
             
             InitMask();
@@ -246,6 +243,7 @@ namespace GameA.Game
 
         public void StartSwitch()
         {
+            
             _stateMachine.ChangeState(EditModeState.Switch.Instance);
         }
 
@@ -278,16 +276,6 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.ModifyModify.Instance);
         }
 
-        public void Undo()
-        {
-            _editRecordManager.Undo();
-        }
-
-        public void Redo()
-        {
-            _editRecordManager.Redo();
-        }
-
         public void Update()
         {
             if (!_enable) return;
@@ -303,12 +291,6 @@ namespace GameA.Game
         #endregion
 
         #region PublicMethod
-
-        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
-        {
-            _editRecordManager.CommitRecord(editRecordBatch);
-        }
-
         /// <summary>
         /// 从地图文件反序列化时的处理方法
         /// </summary>
@@ -321,7 +303,7 @@ namespace GameA.Game
 
         public void OnMapReady()
         {
-            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
+            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect));
         }
         
         /// <summary>
@@ -417,7 +399,7 @@ namespace GameA.Game
             switch (_boardData.EditorLayer)
             {//进入模式
                 case EEditorLayer.None:
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -432,7 +414,7 @@ namespace GameA.Game
                     }
                     break;
                 case EEditorLayer.Normal:
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -452,7 +434,7 @@ namespace GameA.Game
                 case EEditorLayer.Effect:
                     _cameraMask.SetLayerMaskSortOrder((int) ESortingOrder.EffectEditorLayMask);
                     CameraMask.ShowLayerMask();
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -469,7 +451,7 @@ namespace GameA.Game
                     break;
                 case EEditorLayer.Capture:
                     BgScene2D.Instance.SetCirrus(false);
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
                         {
@@ -504,7 +486,7 @@ namespace GameA.Game
         /// <param name="unitId"></param>
         /// <param name="rotate"></param>
         /// <param name="unitExtra"></param>
-        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
+        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtraDynamic unitExtra)
         {
             if (IsInState(EditModeState.Move.Instance))
             {
@@ -525,8 +507,6 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.Move.Instance);
         }
 
-
-
         public void DeleteSwitchConnection(int idx)
         {
             if (IsInState(EditModeState.Switch.Instance))
@@ -541,7 +521,7 @@ namespace GameA.Game
         /// <param name="unitDesc"></param>
         /// <param name="unitExtra"></param>
         /// <returns></returns>
-        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtra unitExtra)
+        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtraDynamic unitExtra)
         {
             Table_Unit tableUnit;
             if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
@@ -549,11 +529,11 @@ namespace GameA.Game
                 return false;
             }
             EditHelper.BeforeAddUnit(tableUnit);
-            UnitExtra oldExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-            DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+            var oldExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+            DataScene2D.CurScene.ProcessUnitExtra(unitDesc, unitExtra);
             if (!AddUnit(unitDesc))
             {
-                DataScene2D.Instance.ProcessUnitExtra(unitDesc, oldExtra);
+                DataScene2D.CurScene.ProcessUnitExtra(unitDesc, oldExtra);
                 return false;
             }
             EditHelper.AfterAddUnit(unitDesc, tableUnit);
@@ -573,7 +553,7 @@ namespace GameA.Game
                 LogHelper.Error("InternalAddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
+            if (!DataScene2D.CurScene.AddData(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -582,11 +562,11 @@ namespace GameA.Game
                 PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
-            if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -603,6 +583,12 @@ namespace GameA.Game
             if (!DeleteUnit(unitDesc))
             {
                 return false;
+            }
+            //绑绳子的物体删除下面的绳子
+            Rope rope;
+            if (RopeManager.Instance.CheckTieRope(unitDesc, out rope))
+            {
+                DeleteUnitWithCheck(rope.UnitDesc);
             }
             //地块上的植被自动删除
             if (UnitDefine.IsEarth(unitDesc.Id))
@@ -632,11 +618,11 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            if (!ColliderScene2D.Instance.DestroyView(unitDesc))
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
+            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
             {
                 //成对的不能返回false
                 if (tableUnit.EPairType == 0)
@@ -644,7 +630,7 @@ namespace GameA.Game
                     return false;
                 }
             }
-            if (!DataScene2D.Instance.DeleteData(unitDesc, tableUnit))
+            if (!DataScene2D.CurScene.DeleteData(unitDesc, tableUnit))
             {
                 return false;
             }
@@ -664,10 +650,8 @@ namespace GameA.Game
 
         #endregion
 
-
         #region PrivateMethod
 
-        
         /// <summary>
         /// 初始化地图边框和特效蒙黑
         /// </summary>
@@ -702,7 +686,6 @@ namespace GameA.Game
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetCameraMaskSortOrder((int) ESortingOrder.Mask);
         }
-
         
         private void OnSuccess()
         {

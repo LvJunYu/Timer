@@ -34,5 +34,19 @@ namespace GameA.Game
         {
             return Mathf.RoundToInt(range * ConstDefineGM2D.ServerTileScale * 0.1f);
         }
+
+        public static float GetInjuredReduce(int injuredReduce)
+        {
+            var value = 1 - injuredReduce / (float) 100;
+            value = Mathf.Clamp(value, 0, 1);
+            return value;
+        }
+        
+        public static float GetCurIncrease(int curIncrease)
+        {
+            var value = 1 + curIncrease / (float) 100;
+            if (value < 0) value = 0;
+            return value;
+        }
     }
 }

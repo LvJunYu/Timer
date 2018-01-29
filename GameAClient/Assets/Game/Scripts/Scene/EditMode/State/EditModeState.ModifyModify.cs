@@ -52,11 +52,11 @@ namespace GameA.Game
                 }
                 var unitPos = mouseWorldPos;
                 UnitBase unitBase;
-                if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unitBase))
+                if (ColliderScene2D.CurScene.TryGetUnit(touchedUnitDesc.Guid, out unitBase))
                 {
                     unitPos = GM2DTools.TileToWorld(unitBase.CenterPos);
                 }
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var unitExtra = DataScene2D.CurScene.GetUnitExtra(touchedUnitDesc.Guid);
                 var rootGo = EditHelper.CreateDragRoot(unitPos, touchedUnitDesc.Id,
                     (EDirectionType) touchedUnitDesc.Rotation, out unitBase);
                 data.CurrentMovingUnitBase = unitBase;
@@ -84,14 +84,14 @@ namespace GameA.Game
                 {
                     return;
                 }
-                UnitExtra touchedUnitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var touchedUnitExtra = DataScene2D.CurScene.GetUnitExtra(touchedUnitDesc.Guid);
                 if (EditHelper.TryEditUnitData(touchedUnitDesc))
                 {
                     UnitBase unit;
-                    if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unit))
+                    if (ColliderScene2D.CurScene.TryGetUnit(touchedUnitDesc.Guid, out unit))
                     {
                         UnitDesc newUnitDesc = unit.UnitDesc;
-                        UnitExtra newUnitExtra = DataScene2D.Instance.GetUnitExtra(newUnitDesc.Guid);
+                        var newUnitExtra = DataScene2D.CurScene.GetUnitExtra(newUnitDesc.Guid);
                         OnModifyModify(new UnitEditData(touchedUnitDesc, touchedUnitExtra),
                             new UnitEditData(newUnitDesc, newUnitExtra));
                     }
@@ -165,7 +165,7 @@ namespace GameA.Game
                     stateData.MovingRoot = null;
                 }
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                stateData.DragUnitExtra = UnitExtra.zero;
+                stateData.DragUnitExtra = null;
             }
             
             private void ProcessDrop(EditMode.BlackBoard boardData, Data stateData)

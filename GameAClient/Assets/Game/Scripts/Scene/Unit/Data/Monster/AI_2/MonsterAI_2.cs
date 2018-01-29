@@ -1,7 +1,5 @@
 ﻿using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
-
 namespace GameA.Game
 {
     public class MonsterAI_2 : MonsterBase
@@ -15,7 +13,7 @@ namespace GameA.Game
         protected int _timerAttack;
         protected int _timerRun;
         protected int _timerStupid;
-        protected int _intelligenc = 10; //智商，决定出问号概率，0每走几步就会出问好，10不会出问号
+        protected int _intelligenc = 11; //智商，决定出问号概率，0每走几步就会出问好，11不会出问号
 
         protected override void Clear()
         {
@@ -113,23 +111,45 @@ namespace GameA.Game
                     OnChangeRun();
                     break;
             }
-//            LogHelper.Debug(_eMonsterState+"~");
+            if (GameModeNetPlay.DebugEnable())
+            {
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_2 ChangeState {0}", _eMonsterState.ToString(), GetType().Name));
+            }
         }
 
         protected virtual void OnChangeRun()
         {
-            _timerRun = Random.Range(90, 140);
+            _timerRun = RandomDependFrame(90, 140);
+        }
+        
+        public override UnitExtraDynamic UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = 40;
+            }
+            return unitExtra;
         }
 
         protected virtual void OnChangeStupid(Vector3 pos)
         {
-            _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
-            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 
+            _timerStupid = RandomDependFrame(0, 2) == 0 ? 150 : 225;
+            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos,
                 ESortingOrder.EffectItem);
         }
 
         protected override void UpdateMonsterAI()
         {
+            base.UpdateMonsterAI();
             if (_timerBang > 0)
             {
                 _timerBang--;
@@ -154,7 +174,7 @@ namespace GameA.Game
             {
                 _timerStupid--;
             }
-            if(_isClayOnWall) return;
+            if (_isClayOnWall) return;
             switch (_eMonsterState)
             {
                 case EMonsterState.Idle:
@@ -165,7 +185,7 @@ namespace GameA.Game
                     SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
                     if (_timerRun == 0)
                     {
-                        int value = Random.Range(0, 10);
+                        int value = GameRun.Instance.LogicFrameCnt % 11;
                         if (_intelligenc <= value)
                         {
                             ChangeState(EMonsterState.Stupid);
@@ -174,7 +194,7 @@ namespace GameA.Game
                         {
                             _timerRun = 30;
                         }
-                    } 
+                    }
                     break;
                 case EMonsterState.Stupid:
                     SetInput(EInputType.Right, false);
@@ -229,6 +249,11 @@ namespace GameA.Game
                     SetInput(EInputType.Skill1, true);
                     break;
             }
+        }
+
+        private int RandomDependFrame(int min, int max)
+        {
+            return Mathf.Clamp(GameRun.Instance.LogicFrameCnt % (max - min) + min, min, max);
         }
     }
 }

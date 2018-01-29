@@ -6,10 +6,7 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -22,6 +19,8 @@ namespace GameA.Game
         public int Num;
         public UnitDesc UnitA;
         public UnitDesc UnitB;
+        public int UnitAScene; //todo 包一层
+        public int UnitBScene;
         public int TriggeredCnt;
         public UnitBase Sender;
 
@@ -37,24 +36,28 @@ namespace GameA.Game
             TriggeredCnt = 0;
         }
 
-        public void SetValue(UnitDesc unitDesc, Table_Unit tableUnit)
+        public void SetValue(UnitDesc unitDesc, Table_Unit tableUnit, int sceneIndex)
         {
             //确保UnitA对应着第一个
             if (UnitA == UnitDesc.zero && unitDesc.Id == tableUnit.PairUnitIds[0])
             {
                 UnitA = unitDesc;
+                UnitAScene = sceneIndex;
                 return;
             }
+
             UnitB = unitDesc;
+            UnitBScene = sceneIndex;
         }
 
-        public void RemoveValue(UnitDesc unitDesc)
+        public void RemoveValue(UnitDesc unitDesc, int sceneIndex)
         {
-            if (UnitA == unitDesc)
+            if (UnitA.Guid == unitDesc.Guid && UnitAScene == sceneIndex)
             {
                 UnitA = UnitDesc.zero;
             }
-            if (UnitB == unitDesc)
+
+            if (UnitB.Guid == unitDesc.Guid && UnitBScene == sceneIndex)
             {
                 UnitB = UnitDesc.zero;
             }
@@ -66,6 +69,7 @@ namespace GameA.Game
             {
                 return ids[0];
             }
+
             return ids[1];
         }
 
@@ -89,8 +93,7 @@ namespace GameA.Game
     public class PairUnitManager : IDisposable
     {
         private static PairUnitManager _instance;
-        [SerializeField]
-        private Dictionary<EPairType, PairUnit[]> _pairUnits = new Dictionary<EPairType, PairUnit[]>();
+        [SerializeField] private Dictionary<EPairType, PairUnit[]> _pairUnits = new Dictionary<EPairType, PairUnit[]>();
 
         public static PairUnitManager Instance
         {
@@ -105,6 +108,7 @@ namespace GameA.Game
         public PairUnitManager()
         {
             _pairUnits.Add(EPairType.PortalDoor, new PairUnit[20]);
+            _pairUnits.Add(EPairType.SpacetimeDoor, new PairUnit[10]);
             foreach (var pairUnits in _pairUnits.Values)
             {
                 for (int i = 0; i < pairUnits.Length; i++)
@@ -114,20 +118,22 @@ namespace GameA.Game
             }
         }
 
-        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit, PairUnitData pairUnitData)
+        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit, PairUnitData pairUnitData, int sceneIndex)
         {
             if (!_pairUnits.ContainsKey(tableUnit.EPairType))
             {
                 LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
                 return;
             }
+
             if (pairUnitData.Num >= _pairUnits[tableUnit.EPairType].Length)
             {
                 LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
                 return;
             }
+
             var pairUnit = _pairUnits[tableUnit.EPairType][pairUnitData.Num];
-            pairUnit.SetValue(unitDesc, tableUnit);
+            pairUnit.SetValue(unitDesc, tableUnit, sceneIndex);
         }
 
         public void Dispose()
@@ -156,42 +162,54 @@ namespace GameA.Game
                 LogHelper.Error("AddPairUnit Failed{0}", unitDesc);
                 return;
             }
-            pairUnit.SetValue(unitDesc, tableUnit);
+
+            pairUnit.SetValue(unitDesc, tableUnit, Scene2DManager.Instance.CurSceneIndex);
         }
 
         public bool DeletePairUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             var ePairType = tableUnit.EPairType;
+            int sceneIndex = Scene2DManager.Instance.CurSceneIndex;
             PairUnit pairUnit;
-            if (!TryGetPairUnit(ePairType, unitDesc, out pairUnit))
+            if (!TryGetPairUnit(ePairType, unitDesc, sceneIndex, out pairUnit))
             {
                 LogHelper.Error("DeletePairUnit TryGetPairUnit Failed, {0}", unitDesc);
                 return false;
             }
-            pairUnit.RemoveValue(unitDesc);
+
+            pairUnit.RemoveValue(unitDesc, sceneIndex);
             return true;
         }
 
         public void OnPairTriggerEnter(UnitBase sender, UnitBase unit)
         {
             PairUnit pairUnit;
-            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.UnitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
             {
                 LogHelper.Error("OnPairTriggerEnter TryGetPairUnit Failed, {0}", unit);
                 return;
             }
+
             pairUnit.TriggeredCnt++;
             pairUnit.Sender = sender;
-            //传送门要特殊处理
+            //传送门
             if (unit.TableUnit.EPairType == EPairType.PortalDoor)
             {
                 Portal.OnPortal(pairUnit, unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB : pairUnit.UnitA);
                 return;
             }
+            //多场景时空门
+            if (unit.TableUnit.EPairType == EPairType.SpacetimeDoor)
+            {
+                SpacetimeDoor.OnSpacetimeDoor(pairUnit, unit.Guid == pairUnit.UnitA.Guid &&
+                                                        Scene2DManager.Instance.CurSceneIndex == pairUnit.UnitAScene);
+                return;
+            }
+
             var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
             //通知UnitBase
             UnitBase listernerUnit;
-            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            if (ColliderScene2D.CurScene.TryGetUnit(listerner, out listernerUnit))
             {
                 listernerUnit.OnPairUnitTriggerEnter(pairUnit);
             }
@@ -200,23 +218,24 @@ namespace GameA.Game
         public void OnPairTriggerExit(UnitBase sender, UnitBase unit)
         {
             PairUnit pairUnit;
-            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.UnitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
             {
                 LogHelper.Error("OnPairTriggerExit TryGetPairUnit Failed, {0}", unit);
                 return;
             }
+
             pairUnit.TriggeredCnt--;
             pairUnit.Sender = null;
             var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
             //通知UnitBase
             UnitBase listernerUnit;
-            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            if (ColliderScene2D.CurScene.TryGetUnit(listerner, out listernerUnit))
             {
                 listernerUnit.OnPairUnitTriggerExit(pairUnit);
             }
         }
 
-        public bool TryGetPairUnit(EPairType ePairType, IntVec3 guid, out PairUnit pairUnit)
+        public bool TryGetPairUnit(EPairType ePairType, IntVec3 guid, int sceneIndex, out PairUnit pairUnit)
         {
             pairUnit = null;
             PairUnit[] pairUnits;
@@ -224,21 +243,23 @@ namespace GameA.Game
             {
                 return false;
             }
+
             for (int i = 0; i < pairUnits.Length; i++)
             {
                 var current = pairUnits[i];
-                if (current.UnitA.Guid == guid || current.UnitB.Guid == guid)
+                if (current.UnitA.Guid == guid && current.UnitAScene == sceneIndex  || current.UnitB.Guid == guid && current.UnitBScene == sceneIndex)
                 {
                     pairUnit = current;
                     return true;
                 }
             }
+
             return false;
         }
 
-        public bool TryGetPairUnit(EPairType ePairType, UnitDesc unitDesc, out PairUnit pairUnit)
+        public bool TryGetPairUnit(EPairType ePairType, UnitDesc unitDesc, int scene, out PairUnit pairUnit)
         {
-            return TryGetPairUnit(ePairType, unitDesc.Guid, out pairUnit);
+            return TryGetPairUnit(ePairType, unitDesc.Guid, scene, out pairUnit);
         }
 
         public bool TryGetNotFullPairUnit(EPairType ePairType, out PairUnit pairUnit)
@@ -250,6 +271,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetNotFullPairUnit Faield, {0}", ePairType);
                 return false;
             }
+
             for (int i = 0; i < pairUnits.Length; i++)
             {
                 var current = pairUnits[i];
@@ -259,25 +281,29 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
         public int GetCurrentId(int id)
         {
-            if (id==0)
+            if (id == 0)
             {
                 return 0;
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             if (tableUnit.EPairType == 0)
             {
                 return id;
             }
+
             PairUnit pairUnit;
             if (!TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
             {
                 return id;
             }
+
             return pairUnit.GetVacancyId(tableUnit.PairUnitIds);
         }
     }

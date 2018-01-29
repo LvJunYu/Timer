@@ -20,6 +20,14 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private long _projectMainId;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _projectVersion;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _section;
         /// <summary>
         /// 
@@ -120,6 +128,26 @@ namespace GameA
             get { return _projectId; }
             set { if (_projectId != value) {
                 _projectId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long ProjectMainId { 
+            get { return _projectMainId; }
+            set { if (_projectMainId != value) {
+                _projectMainId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ProjectVersion { 
+            get { return _projectVersion; }
+            set { if (_projectVersion != value) {
+                _projectVersion = value;
                 SetDirty();
             }}
         }
@@ -373,6 +401,8 @@ namespace GameA
             if (null == msg) return false;
             _recordId = msg.RecordId;           
             _projectId = msg.ProjectId;           
+            _projectMainId = msg.ProjectMainId;           
+            _projectVersion = msg.ProjectVersion;           
             _section = msg.Section;           
             _level = msg.Level;           
             if (null == _userInfo) {
@@ -409,6 +439,8 @@ namespace GameA
             if (null == msg) return false;
             _recordId = msg.RecordId;           
             _projectId = msg.ProjectId;           
+            _projectMainId = msg.ProjectMainId;           
+            _projectVersion = msg.ProjectVersion;           
             _section = msg.Section;           
             _level = msg.Level;           
             if(null != msg.UserInfo){
@@ -446,6 +478,8 @@ namespace GameA
             if (null == obj) return false;
             _recordId = obj.RecordId;           
             _projectId = obj.ProjectId;           
+            _projectMainId = obj.ProjectMainId;           
+            _projectVersion = obj.ProjectVersion;           
             _section = obj.Section;           
             _level = obj.Level;           
             if(null != obj.UserInfo){

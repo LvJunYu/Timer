@@ -30,7 +30,8 @@ namespace GameA.Game
         public const string Jump = "M1EffectJumpStart";
         public const string Land = "M1EffectLand";
         public const string Run = "M1EffectEarthWalk";
-		public const string RunOnMud = "M1EffectClayWalk";
+        public const string RunOnClay = "M1EffectRunClay";
+        public const string ClimbOnClay = "M1EffectClimbClay";
         public const string Brake = "M1EffectBrake";
         public const string WallJump = "M1EffectWallJump";
 		public const string WallClimb = "M1EffectWallClimb";

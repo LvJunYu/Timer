@@ -1,18 +1,52 @@
-﻿using System.Collections;
-using System;
-using SoyEngine.Proto;
-using System.Collections.Generic;
-using System.Net;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
 {
     public class StatusBar : MonoBehaviour
     {
-//        public int TestCurrent = 100;
-//        public int TestMax = 100;
-//        public int TestMPGrids = 10;
+        private static string _fillAmout = "_FillAmount";
+
+        public GameObject ShowMe, PlayerBar, MonsterBar;
+        public Transform PlayerCurrentHPTrans, MonsterCurrentHPTrans;
+        public TextMesh Name;
+        public SpriteRenderer PlayerBg, MonsterBg;
+
+        private Transform _trans;
+        private ActorBase _owner;
+        private float _showPerccentage = 1;
+        private SpriteRenderer[] _playeSpriteRenderers, _monsterSpriteRenderers;
+        private EHPShowState _hpState;
+        private float _stateTimer;
+
+        private float ShowPerccentage
+        {
+            set
+            {
+                _showPerccentage = value;
+                if (_owner == null) return;
+                if (_owner.IsPlayer)
+                {
+                    var sprite = _playeSpriteRenderers[_owner.TeamId].sprite;
+                    if (sprite != null)
+                    {
+                        var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                                  sprite.texture.width;
+                        _playeSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    }
+                }
+                if (_owner.IsMonster)
+                {
+                    var sprite = _monsterSpriteRenderers[_owner.TeamId].sprite;
+                    if (sprite != null)
+                    {
+                        var val = Mathf.Lerp(sprite.textureRect.x, sprite.textureRect.xMax, _showPerccentage) /
+                                  sprite.texture.width;
+                        _monsterSpriteRenderers[_owner.TeamId].material.SetFloat(_fillAmout, val);
+                    }
+                }
+            }
+        }
 
         void Awake()
         {
@@ -20,151 +54,125 @@ namespace GameA.Game
             var srs = _trans.GetComponentsInChildren<SpriteRenderer>(true);
             for (int i = 0; i < srs.Length; i++)
             {
-                srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
+                srs[i].sortingOrder = (int) ESortingOrder.DragingItem + 1;
             }
+            PlayerBg.sortingOrder = (int) ESortingOrder.DragingItem;
+            MonsterBg.sortingOrder = (int) ESortingOrder.DragingItem;
             SetHPActive(false);
+            _playeSpriteRenderers = PlayerCurrentHPTrans.GetComponentsInChildren<SpriteRenderer>(true);
+            _monsterSpriteRenderers = MonsterCurrentHPTrans.GetComponentsInChildren<SpriteRenderer>(true);
         }
 
         void Update()
         {
             _trans.rotation = Quaternion.identity;
-//            if (Input.GetKeyDown(KeyCode.H))
+//            switch (_hpState)
 //            {
-//                TestCurrent -= UnityEngine.Random.Range(5, 10);
-//                SetHP(EHPModifyCase.Hit, TestCurrent, TestMax);
+//                case EHPShowState.Normal:
+//                    break;
+//                case EHPShowState.BeingHit:
+//                    _stateTimer -= Time.deltaTime;
+//                    if (_stateTimer < 0)
+//                    {
+//                        _hpState = EHPShowState.Normal;
+//                    }
+//                    break;
+//                case EHPShowState.BeingHeal:
+//                    _stateTimer -= Time.deltaTime;
+//                    if (_stateTimer < 0)
+//                    {
+//                        _hpState = EHPShowState.Normal;
+//                    }
+//                    break;
 //            }
-//            if (Input.GetKeyDown(KeyCode.J))
-//            {
-//                TestCurrent += UnityEngine.Random.Range(5, 10);
-//                SetHP(EHPModifyCase.Heal, TestCurrent, TestMax);
-//            }
-//            if (Input.GetKeyDown(KeyCode.G))
-//            {
-//                SetMPGrids(TestMPGrids);
-//            }
-//            if (Input.GetKeyDown(KeyCode.M))
-//            {
-//                SetMP(TestCurrent, TestMax);
-//            }
-            switch (_hpState)
-            {
-                case EHPShowState.Normal:
-                    break;
-                case EHPShowState.BeingHit:
-                    HPBeforeHitRenderer.color = new Color(1f, 1f, 1f, _stateTimer / s_hittingTime);
-                    _stateTimer -= Time.deltaTime;
-                    if (_stateTimer < 0)
-                    {
-                        _hpState = EHPShowState.Normal;
-                        HPBeforeHitTrans.gameObject.SetActive(false);
-                    }
-                    break;
-                case EHPShowState.beingHeal:
-                    HPAfterHealRenderer.color = new Color(0f, 1f, 0f, _stateTimer / s_healingTime);
-                    _stateTimer -= Time.deltaTime;
-                    if (_stateTimer < 0)
-                    {
-                        _hpState = EHPShowState.Normal;
-                        HPAfterHealTrans.gameObject.SetActive(false);
-                    }
-                    break;
-            }
         }
-
-        #region fields
-
-        /// <summary>
-        /// 被攻击状态显示持续时间
-        /// </summary>
-        private static float s_hittingTime = 0.5f;
-
-        /// <summary>
-        /// 被治疗状态显示持续时间
-        /// </summary>
-        private static float s_healingTime = 0.3f;
-
-        private Transform _trans;
-        public GameObject HPRoot;
-
-        public Transform CurrentHPTrans;
-        public Transform HPBeforeHitTrans;
-        public SpriteRenderer HPBeforeHitRenderer;
-        public Transform HPAfterHealTrans;
-        public SpriteRenderer HPAfterHealRenderer;
-
-        /// <summary>
-        ///目标物体的高度 
-        /// </summary>
-        private float _targetHeight;
-
-        private float _hpPerccentage = 1;
-
-        /// <summary>
-        /// 当前hp显示状态
-        /// </summary>
-        [SerializeField] private EHPShowState _hpState;
-
-        [SerializeField] private float _stateTimer;
-
-        #endregion
-
-        #region properties
-
-        private float HpPerccentage
-        {
-            set
-            {
-                _hpPerccentage = value;
-                CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
-            }
-        }
-
-        #endregion
-
-        #region methods
 
         public void SetHPActive(bool value)
         {
-            HPRoot.SetActiveEx(value);
+            _trans.SetActiveEx(value);
+            if (value)
+            {
+                RefreshBar();
+            }
+        }
+
+        public void RefreshBar()
+        {
+            if (_owner == null) return;
+            if (_owner.IsPlayer)
+            {
+                for (int i = 0; i < _playeSpriteRenderers.Length; i++)
+                {
+                    _playeSpriteRenderers[i].SetActiveEx(i == _owner.TeamId);
+                }
+                if (((PlayerBase) _owner).RoomUser != null)
+                {
+                    Name.text = ((PlayerBase) _owner).RoomUser.Name;
+                }
+            }
+            if (_owner.IsMonster)
+            {
+                for (int i = 0; i < _monsterSpriteRenderers.Length; i++)
+                {
+                    _monsterSpriteRenderers[i].SetActiveEx(i == _owner.TeamId);
+                }
+            }
+
+            if (_owner.MaxHp != 0)
+            {
+                SetHP(EHPModifyCase.Set, _owner.Hp, _owner.MaxHp);
+            }
+            else
+            {
+                SetHP(EHPModifyCase.Set, 1, 1);
+            }
         }
 
         public void SetHP(EHPModifyCase modifyCase, int current, int max)
         {
             current = Mathf.Clamp(current, 0, max);
-            switch (modifyCase)
-            {
-                case EHPModifyCase.Set:
-                    _hpState = EHPShowState.Normal;
-                    break;
-                case EHPModifyCase.Hit:
-                    _stateTimer = s_hittingTime;
-                    if (EHPShowState.BeingHit != _hpState)
-                    {
-                        _hpState = EHPShowState.BeingHit;
-                        HPBeforeHitTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
-                        HPBeforeHitTrans.gameObject.SetActive(true);
-                        HPAfterHealTrans.gameObject.SetActive(false);
-                        HPBeforeHitRenderer.color = Color.white;
-                    }
-                    break;
-                case EHPModifyCase.Heal:
-                    _stateTimer = s_healingTime;
-                    if (EHPShowState.beingHeal != _hpState)
-                    {
-                        _hpState = EHPShowState.beingHeal;
-                        HPAfterHealTrans.gameObject.SetActive(true);
-                        HPBeforeHitTrans.gameObject.SetActive(false);
-                        HPAfterHealRenderer.color = Color.green;
-                    }
-                    float healingPercentage = current / (float) max - _hpPerccentage;
-                    // 因为healing是放在current下的子物体，所以缩放要除以父物体的缩放
-                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / (float) current, 1, 1);
-                    break;
-            }
-            HpPerccentage = current / (float) max;
+            ShowPerccentage = current / (float) max;
+//            switch (modifyCase)
+//            {
+//                case EHPModifyCase.Set:
+//                    _hpState = EHPShowState.Normal;
+//                    ShowPerccentage = _targetPerccentage = current / (float) max;
+//                    break;
+//                case EHPModifyCase.Hit:
+//                    _stateTimer = s_hittingTime;
+//                    if (EHPShowState.BeingHit != _hpState)
+//                    {
+//                        _hpState = EHPShowState.BeingHit;
+//                        _targetPerccentage = current / (float) max;
+//                    }
+//                    break;
+//                case EHPModifyCase.Heal:
+//                    _stateTimer = s_healingTime;
+//                    if (EHPShowState.BeingHeal != _hpState)
+//                    {
+//                        _hpState = EHPShowState.BeingHeal;
+//                        _targetPerccentage = current / (float) max;
+//                    }
+//                    break;
+//            }
         }
 
-        #endregion
+        public void SetOwner(ActorBase owner)
+        {
+            _owner = owner;
+            ShowMe.SetActive(_owner.IsMain);
+            PlayerBar.SetActive(_owner.IsPlayer);
+            MonsterBar.SetActive(_owner.IsMonster);
+        }
+
+        public void Reset()
+        {
+            if (_owner != null)
+            {
+                SetHPActive(true);
+                SetHP(EHPModifyCase.Set, 1, 1);
+            }
+        }
     }
 
     /// <summary>
@@ -174,7 +182,7 @@ namespace GameA.Game
     {
         Normal, // 正常
         BeingHit, // 被攻击中
-        beingHeal, // 被治疗中
+        BeingHeal, // 被治疗中
     }
 
     /// <summary>

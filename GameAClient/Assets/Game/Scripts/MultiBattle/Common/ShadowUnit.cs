@@ -1,7 +1,9 @@
 ﻿using System;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -12,7 +14,7 @@ namespace GameA.Game
         protected static ShadowUnit _instance;
         private static string Victory = "Victory";
         protected ShadowData _shadowData;
-        protected Color _color = Color.white;
+        protected Color _color = new Color(0.57f, 0.57f, 0.57f, 1);
         protected SkeletonAnimation _skeletonAnimation;
         protected int _deadFrame;
         protected int _onPortalFrame;
@@ -34,7 +36,7 @@ namespace GameA.Game
             get { return true; }
         }
 
-        public SkeletonAnimation SkeletonAnimation
+        public override SkeletonAnimation SkeletonAnimation
         {
             get
             {
@@ -58,6 +60,26 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _view.SetRendererColor(_color);
+            CreatePlayerName();
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// aHeadFrame影子提前出场的帧数
+        /// </summary>
+        /// <param name="shadowData"></param>
+        /// <param name="aHeadFrame"></param>
         public void SetShadowData(ShadowData shadowData, int aHeadFrame = 0)
         {
             _shadowData = shadowData;
@@ -67,6 +89,14 @@ namespace GameA.Game
         internal override void Reset()
         {
             base.Reset();
+            if (_view != null)
+            {
+                _view.SetRendererColor(_color);
+                if (_playerNameInGame != null)
+                {
+                    _playerNameInGame.SetNameActive(true);
+                }
+            }
             SkeletonAnimation.Reset();
             ClearData();
         }
@@ -134,13 +164,20 @@ namespace GameA.Game
         private void Fade(int startFram, float speed)
         {
             float a = _color.a * (1f - (_logicFrame - startFram) * speed);
-            if (a < 0) a = 0;
+            if (a < 0)
+            {
+                a = 0;
+            }
             _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
         }
 
         public void Dead(int frame)
         {
             _deadFrame = frame;
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(false);
+            }
         }
 
         public void Revive()
@@ -149,11 +186,19 @@ namespace GameA.Game
             _deadFrame = 0;
             _animation.Reset();
             _view.SetRendererColor(_color);
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
         }
 
         public void EnterPortal(int frame)
         {
             _onPortalFrame = frame;
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(false);
+            }
         }
 
         public void OutPortal()
@@ -162,6 +207,10 @@ namespace GameA.Game
             _onPortalFrame = 0;
             _animation.Reset();
             _view.SetRendererColor(_color);
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetNameActive(true);
+            }
         }
 
         private void ClearData()
@@ -183,6 +232,27 @@ namespace GameA.Game
             if (SkeletonAnimation != null)
             {
                 SkeletonAnimation.Update(deltaTime);
+            }
+        }
+
+        public void SetName(string name)
+        {
+            if (_playerNameInGame != null)
+            {
+                _playerNameInGame.SetName(name);
+            }
+        }
+
+        private void CreatePlayerName()
+        {
+            if (null != _playerNameInGame) return;
+            GameObject playerName =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "PlayerNameInGame")) as
+                    GameObject;
+            if (null != playerName)
+            {
+                _playerNameInGame = playerName.GetComponent<PlayerNameInGame>();
+                CommonTools.SetParent(playerName.transform, _trans);
             }
         }
     }

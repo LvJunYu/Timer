@@ -49,3 +49,15 @@ Tools/Project/QQGame_Joyyou_Dll/QQGameMsgExporter/Release
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/ipch
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Debug
 Tools/Project/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/QQGame_Joyyou_Launcher/Release
+Tools/Project/MicroClientEx/Debug
+Tools/Project/MicroClientEx/Release
+*.VC.db
+Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/obj
+Tools/Project/JoyGameBuildVersionTool/.idea
+Tools/Project/JoyGameBuildVersionTool/JoyGameBuildVersionTool/bin
+*.suo
+sh.exe.stackdump
+*.ncb
+*.opt
+GameAClient/data.txt
+GameAClient/clientData.txt

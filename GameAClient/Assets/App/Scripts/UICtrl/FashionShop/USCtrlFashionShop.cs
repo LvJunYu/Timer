@@ -25,7 +25,7 @@ namespace GameA
             }
         }
 
-        public void Open()
+        public override void Open()
         {
             _cachedView.gameObject.SetActive(true);
             Refreash();
@@ -66,7 +66,7 @@ namespace GameA
             }
         }
 
-	    public void Close()
+	    public override void Close()
         {
             _cachedView.gameObject.SetActive(false);
         }

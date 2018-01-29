@@ -5,8 +5,6 @@
 ** Summary : MonsterTree
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 
@@ -20,13 +18,6 @@ namespace GameA.Game
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterAI_1
     {
-        internal override void OnPlay()
-        {
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.SetSkill(101);
-            base.OnPlay();
-        }
-
         public override void StartSkill()
         {
             if (_animation != null && !_animation.IsPlaying(Attack, 1))

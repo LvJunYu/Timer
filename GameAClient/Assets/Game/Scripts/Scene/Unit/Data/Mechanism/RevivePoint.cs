@@ -5,15 +5,15 @@
 ** Summary : RevivePoint
 ***********************************************************************/
 
+using System.Collections.Generic;
 using SoyEngine;
-using Spine.Unity;
 
 namespace GameA.Game
 {
     [Unit(Id = 5002, Type = typeof(RevivePoint))]
     public class RevivePoint : BlockBase
     {
-        private bool _trigger;
+        private Dictionary<long, bool> _triggerDic = new Dictionary<long, bool>(PlayerManager.MaxTeamCount);
 
         protected override bool OnInit()
         {
@@ -21,7 +21,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            Messenger<IntVec3>.AddListener(EMessengerType.OnRespawnPointTrigger, OnRespawnPointTrigger);
+
+            Messenger<IntVec3, PlayerBase>.AddListener(EMessengerType.OnRespawnPointTrigger, OnRespawnPointTrigger);
             return true;
         }
 
@@ -31,25 +32,42 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init("Run");
-            for (int i = 0; i < _viewExtras.Length; i++)
+
+            var mainPlayer = PlayMode.Instance.MainPlayer;
+            if (mainPlayer != null && CheckTrigger(mainPlayer.RoomUser.Guid))
             {
-                _viewExtras[i].Animation.Init("Run");
+                _animation.PlayLoop("Start");
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].Animation.PlayLoop("Start");
+                }
             }
+            else
+            {
+                _animation.Init("Run");
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].Animation.Init("Run");
+                }
+            }
+
             return true;
         }
 
-        private void OnRespawnPointTrigger(IntVec3 guid)
+        private void OnRespawnPointTrigger(IntVec3 guid, PlayerBase player)
         {
             if (_guid == guid)
             {
                 return;
             }
-            if (!_trigger)
+
+            var playerId = player.RoomUser.Guid;
+            if (!CheckTrigger(playerId))
             {
                 return;
             }
-            if (_trans != null)
+
+            if (player.IsMain && _trans != null)
             {
                 _animation.Reset();
                 _animation.PlayLoop("Run");
@@ -59,40 +77,65 @@ namespace GameA.Game
                     _viewExtras[i].Animation.PlayLoop("Run");
                 }
             }
-            _trigger = false;
+
+            SetTrigger(playerId, false);
         }
 
         internal override void Reset()
         {
             base.Reset();
-            _trigger = false;
+            _triggerDic.Clear();
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly)
             {
-                if (other.IsMain)
+                if (other.IsPlayer)
                 {
-                    if (!_trigger)
+                    var player = other as PlayerBase;
+                    var playerId = player.RoomUser.Guid;
+                    if (!CheckTrigger(playerId))
                     {
-                        _trigger = true;
+                        SetTrigger(playerId, true);
                         other.OnRevivePos(new IntVec2(_curPos.x, _curPos.y + ConstDefineGM2D.ServerTileScale));
-                        _animation.PlayLoop("Start");
-                        for (int i = 0; i < _viewExtras.Length; i++)
+                        if (other.IsMain)
                         {
-                            _viewExtras[i].Animation.PlayLoop("Start");
+                            _animation.PlayLoop("Start");
+                            for (int i = 0; i < _viewExtras.Length; i++)
+                            {
+                                _viewExtras[i].Animation.PlayLoop("Start");
+                            }
+
+                            Messenger<IntVec3, PlayerBase>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid,
+                                player);
                         }
-                        Messenger<IntVec3>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid);
                     }
                 }
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
+        }
+
+        private void SetTrigger(long playerId, bool value)
+        {
+            _triggerDic.AddOrReplace(playerId, value);
+        }
+
+        private bool CheckTrigger(long playerId)
+        {
+            bool trigger;
+            if (_triggerDic.TryGetValue(playerId, out trigger))
+            {
+                return trigger;
+            }
+
+            return false;
         }
 
         internal override void OnDispose()
         {
-            Messenger<IntVec3>.RemoveListener(EMessengerType.OnRespawnPointTrigger, OnRespawnPointTrigger);
+            Messenger<IntVec3, PlayerBase>.RemoveListener(EMessengerType.OnRespawnPointTrigger, OnRespawnPointTrigger);
             base.OnDispose();
         }
     }

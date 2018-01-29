@@ -1,36 +1,41 @@
 using System;
-using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
-using System.Collections;
 
 namespace GameA.Game
 {
     public class GameModeMultiBattlePlay : GameModeNetPlay
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
+        public override bool Init(Project project, object param, GameManager.EStartType startType,
+            MonoBehaviour corountineProxy)
         {
             if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
             _gameSituation = EGameSituation.Battle;
+            _successType = UICtrlGameFinish.EShowState.MultiWin;
+            _failType = UICtrlGameFinish.EShowState.MultiLose;
             return true;
         }
 
         public override void OnGameFailed()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+            base.OnGameFailed();
+            if (!PlayMode.Instance.SceneState.GameFailed) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
         }
 
         public override void OnGameSuccess()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+            base.OnGameSuccess();
+            if (!PlayMode.Instance.SceneState.GameSucceed) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
         }
 
         public override bool Restart(Action<bool> successCb, Action failedCb)
         {
-            _project.RequestPlay(() => {
+            _project.RequestPlay(() =>
+            {
                 GameRun.Instance.RePlay();
                 OnGameStart();
                 if (successCb != null)

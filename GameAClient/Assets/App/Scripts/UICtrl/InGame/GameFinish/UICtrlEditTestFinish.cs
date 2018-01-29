@@ -9,10 +9,14 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlEditTestFinish : UICtrlInGameBase<UIViewEditTestFinish>
     {
+        private Project _project;
+
         public enum EShowState
         {
             Win,
-            Lose
+            Lose,
+            MultiWin,
+            MultiLose,
         }
 
         protected override void InitGroupId()
@@ -32,6 +36,20 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _project = null;
+            GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (gameModeEdit != null)
+            {
+                _project = gameModeEdit.Project;
+            }
+
+            if (_project == null)
+            {
+                LogHelper.Error("OpenUICtrlEditTestFinish, but _project == null");
+                SocialGUIManager.Instance.CloseUI<UICtrlEditTestFinish>();
+                return;
+            }
+
             UpdateView((EShowState) parameter);
         }
 
@@ -80,7 +98,7 @@ namespace GameA
         private void OnPublishBtn()
         {
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if(null == gameModeEdit) return;
+            if (null == gameModeEdit) return;
             if (gameModeEdit.NeedSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
@@ -98,6 +116,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(gameModeEdit.Project);
             }
+
             SocialGUIManager.Instance.CloseUI<UICtrlEditTestFinish>();
             PauseGame();
         }
@@ -107,21 +126,33 @@ namespace GameA
             switch (showState)
             {
                 case EShowState.Lose:
+                case EShowState.MultiLose:
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
-                    _cachedView.ReturnBtn.gameObject.SetActive(false);
-                    _cachedView.RetryBtn.gameObject.SetActive(true);
-                    _cachedView.ContinueEditBtn.gameObject.SetActive(true);
-                    _cachedView.PublishBtn.gameObject.SetActive(false);
+                    _cachedView.ReturnBtn.SetActiveEx(false);
+                    _cachedView.RetryBtn.SetActiveEx(true);
+                    _cachedView.ContinueEditBtn.SetActiveEx(true);
+                    _cachedView.PublishBtn.SetActiveEx(false);
                     _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishLose");
                     break;
                 case EShowState.Win:
+                case EShowState.MultiWin:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
-                    _cachedView.ReturnBtn.gameObject.SetActive(false);
-                    _cachedView.RetryBtn.gameObject.SetActive(false);
-                    _cachedView.ContinueEditBtn.gameObject.SetActive(true);
-                    _cachedView.PublishBtn.gameObject.SetActive(true);
+                    _cachedView.ReturnBtn.SetActiveEx(false);
+                    _cachedView.RetryBtn.SetActiveEx(false);
+                    _cachedView.ContinueEditBtn.SetActiveEx(true);
+                    bool canPublish = showState == EShowState.Win && _project.ParentId == 0;
+                    _cachedView.PublishBtn.SetActiveEx(canPublish);
+                    if (canPublish)
+                    {
+                        _cachedView.WinContent.text = "恭喜成功通关，现在可以发布您的关卡啦！";
+                    }
+                    else
+                    {
+                        _cachedView.WinContent.text = "恭喜您获得胜利！";
+                    }
+
                     _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin3Star");
                     break;
             }

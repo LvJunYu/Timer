@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlStory : UICtrlInGameBase<UIViewStory>
+    public class UICtrlStory : UICtrlResManagedBase<UIViewStory>
     {
         #region 常量与字段
 

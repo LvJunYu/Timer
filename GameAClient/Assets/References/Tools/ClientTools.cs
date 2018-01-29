@@ -115,8 +115,9 @@ namespace SoyEngine
         /// 对相机截图。   
         /// </summary>  
         /// <returns>The screenshot2.</returns>  
-        /// <param name="camera">Camera.要被截屏的相机</param>  
-        /// <param name="rect">Rect.截屏的区域</param>  
+        /// <param name="camera">要被截屏的相机</param>
+        /// <param name="screenSize">屏幕尺寸</param>
+        /// <param name="rect">截屏的区域</param>  
         public static Texture2D CaptureCamera(Camera camera, Vector2 screenSize, Rect rect)   
         {  
             // 创建一个RenderTexture对象

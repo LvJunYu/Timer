@@ -1,0 +1,20 @@
+using System;
+using SoyEngine;
+namespace GameA.Game
+{
+    [Serializable]
+	public partial class Table_NpcTaskTargetColltion
+	{
+		/// <summary>
+        /// 序号
+        /// </summary>
+		[ColumnMapping("Id")]
+		public int Id;
+	}
+
+    public class TableNpcTaskTargetColltionAsset:BaseTableAsset
+	{
+		[UnityEngine.SerializeField]
+		public Table_NpcTaskTargetColltion[] DataArray;
+	}
+}

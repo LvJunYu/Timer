@@ -16,22 +16,35 @@ namespace GameA.Game
     [Serializable]
     public class ColliderScene2D : Scene2D
     {
-        private static ColliderScene2D _instance;
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
-        
+        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
+        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
+        private readonly List<UnitDesc> _unitsOutofMap = new List<UnitDesc>();
+        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
+        private readonly List<UnitDesc> _destroyDatas = new List<UnitDesc>();
+
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allAirWallUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allMonsterCaves = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
+        private bool _useAOI;
         private byte[,] _pathGrid;
+        private int _sceneIndex;
 
-        public static ColliderScene2D Instance
+        public static ColliderScene2D CurScene
         {
-            get { return _instance ?? (_instance = new ColliderScene2D()); }
+            get { return Scene2DManager.Instance.CurColliderScene2D; }
+        }
+
+        public static ColliderScene2D MainColliderScene2D
+        {
+            get { return Scene2DManager.Instance.MainColliderScene2D; }
         }
 
         public Dictionary<IntVec3, UnitBase> Units
@@ -59,6 +72,31 @@ namespace GameA.Game
             get { return _allBulletUnits; }
         }
 
+        public int SceneIndex
+        {
+            get { return _sceneIndex; }
+        }
+
+        public List<UnitBase> WaitDestroyUnits
+        {
+            get { return _waitDestroyUnits; }
+        }
+
+        public List<UnitBase> AllAirWallUnits
+        {
+            get { return _allAirWallUnits; }
+        }
+
+        public bool UseAoi
+        {
+            get { return _useAOI; }
+        }
+
+        public List<UnitBase> AllMonsterCaves
+        {
+            get { return _allMonsterCaves; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -70,31 +108,44 @@ namespace GameA.Game
                     {
                         Object.Destroy(unit.View.Trans.gameObject);
                     }
+
                     unit.OnObjectDestroy();
                     unit.OnDispose();
                 }
             }
+
             _units.Clear();
             _allSwitchUnits.Clear();
             _allMagicUnits.Clear();
             _allBulletUnits.Clear();
+            _allAirWallUnits.Clear();
             _allOtherUnits.Clear();
+            _allMonsterCaves.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicUnsubscribe, OnDynamicUnsubscribe);
-            _instance = null;
         }
 
-        public void Init(IntVec2 regionTilesCount, int width, int height)
+        public void Init(int index = 0)
         {
+            _sceneIndex = index;
+            var regionTilesCount = ConstDefineGM2D.RegionTileSize;
+            var width = ConstDefineGM2D.MapTileSize.x;
+            var height = ConstDefineGM2D.MapTileSize.y;
             Init(width, height);
-            if (MapConfig.UseAOI)
+            bool isMulti = GM2DGame.Instance != null && GM2DGame.Instance.GameMode.Project.IsMulti;
+            _useAOI = MapConfig.UseAOI && !isMulti;
+            if (_useAOI)
             {
                 InitRegions(regionTilesCount);
-                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+                _interestArea = new InterestArea(ConstDefineGM2D.RegionTileSize * 1.5f,
+                    ConstDefineGM2D.RegionTileSize * 2.5f, this);
+//                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
             }
-            _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
+
+            _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale),
+                Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
             for (int i = 0; i < _pathGrid.GetLength(0); i++)
             {
                 for (int j = 0; j < _pathGrid.GetLength(1); j++)
@@ -102,6 +153,7 @@ namespace GameA.Game
                     _pathGrid[i, j] = 1;
                 }
             }
+
             InitPathFinder(_pathGrid);
         }
 
@@ -136,12 +188,14 @@ namespace GameA.Game
                 LogHelper.Warning("AddCollider Failed, {0}", colliderDesc);
                 return false;
             }
+
             var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
             if (!AddNode(colliderNode))
             {
                 LogHelper.Error("AddCollider Failed,{0}", colliderDesc);
                 return false;
             }
+
             _allColliderDescs.Add(colliderDesc);
             return true;
         }
@@ -152,44 +206,73 @@ namespace GameA.Game
             {
                 return false;
             }
+
             var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
             if (!DeleteNode(colliderNode))
             {
                 LogHelper.Error("DeleteCollider Failed,{0}", colliderDesc);
                 return false;
             }
+
             _allColliderDescs.Remove(colliderDesc);
             return true;
         }
-        
-        public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+
+        public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool tempData = false)
         {
+            if (tempData)
+            {
+                _addedDatas.Add(unitDesc);
+            }
+
             if (_units.ContainsKey(unitDesc.Guid))
             {
                 //LogHelper.Warning("AddUnit Failed, {0}", UnitDesc);
                 return false;
             }
+
             var colliderNode = NodeFactory.GetColliderNode(unitDesc, tableUnit);
             if (colliderNode == null)
-            { 
+            {
                 return false;
             }
+
             if (!AddNode(colliderNode))
             {
                 LogHelper.Error("AddUnit Failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
             if (!unit.Init(tableUnit, unitDesc, colliderNode.IsDynamic() ? colliderNode : null))
             {
                 DeleteNode(colliderNode);
                 return false;
             }
+
+            unit.IsInterest = !_useAOI || tempData;
             _units.Add(unitDesc.Guid, unit);
+
             if (tableUnit.IsGround == 1)
             {
-                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                if (unitDesc.Scale != Vector2.one)
+                {
+                    for (int i = 0; i < unit.Scale.x; i++)
+                    {
+                        for (int j = 0; j < unit.Scale.y; j++)
+                        {
+                            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale + i,
+                                unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale + j] = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale,
+                        unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                }
             }
+
             if (UnitDefine.IsSwitchTrigger(unit.Id))
             {
                 _allSwitchUnits.Add(unit);
@@ -198,13 +281,22 @@ namespace GameA.Game
             {
                 _allMagicUnits.Add(unit);
             }
-            else if(UnitDefine.IsBullet(unit.Id))
+            else if (UnitDefine.IsBullet(unit.Id))
             {
                 _allBulletUnits.Add(unit);
+            }
+            else if (UnitDefine.TerrainId == unit.Id)
+            {
+                _allAirWallUnits.Add(unit);
             }
             else
             {
                 _allOtherUnits.Add(unit);
+            }
+
+            if (UnitDefine.MonsterCaveId == unit.Id)
+            {
+                _allMonsterCaves.Add(unit);
             }
             return true;
         }
@@ -215,30 +307,47 @@ namespace GameA.Game
                 (byte) (flag ? 0 : 1);
         }
 
-        public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool tempData = false)
         {
+            if (tempData)
+            {
+                if (_addedDatas.Contains(unitDesc))
+                {
+                    _addedDatas.Remove(unitDesc);
+                }
+                else
+                {
+                    _deletedDatas.Add(unitDesc);
+                }
+            }
+
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
                 LogHelper.Warning("DeleteUnit Failed, {0}", unitDesc);
                 return true;
             }
+
             var colliderNode = NodeFactory.GetColliderNode(unitDesc, tableUnit);
             if (colliderNode == null)
             {
                 LogHelper.Error("GetColliderNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             if (!DeleteNode(colliderNode))
             {
                 LogHelper.Error("DeleteNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             unit.OnDispose();
             if (tableUnit.IsGround == 1)
             {
-                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale,
+                    unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
             }
+
             if (UnitDefine.IsSwitchTrigger(unit.Id))
             {
                 _allSwitchUnits.Remove(unit);
@@ -247,13 +356,21 @@ namespace GameA.Game
             {
                 _allMagicUnits.Remove(unit);
             }
-            else if(UnitDefine.IsBullet(unit.Id))
+            else if (UnitDefine.IsBullet(unit.Id))
             {
                 _allBulletUnits.Remove(unit);
+            }
+            else if (UnitDefine.TerrainId == unit.Id)
+            {
+                _allAirWallUnits.Remove(unit);
             }
             else
             {
                 _allOtherUnits.Remove(unit);
+            }
+            if (UnitDefine.MonsterCaveId == unit.Id)
+            {
+                _allMonsterCaves.Remove(unit);
             }
             return _units.Remove(unitDesc.Guid);
         }
@@ -266,18 +383,27 @@ namespace GameA.Game
                 LogHelper.Warning("InstantiateView Failed, {0}", unitDesc);
                 return false;
             }
-            if (unit.View !=null)
+
+            return InstantiateView(unit);
+        }
+
+        private bool InstantiateView(UnitBase unit)
+        {
+            if (unit.View != null)
             {
                 return false;
             }
+
             if (!unit.InstantiateView())
             {
                 return false;
             }
+
             if (unit.TableUnit.EGeneratedType == EGeneratedType.Morph)
             {
                 unit.DoProcessMorph(true);
             }
+
             return true;
         }
 
@@ -289,21 +415,19 @@ namespace GameA.Game
                 LogHelper.Warning("DestroyView Failed, {0}", unitDesc);
                 return false;
             }
+
+            DestroyView(unit);
+            return true;
+        }
+
+        public void DestroyView(UnitBase unit)
+        {
             if (unit.TableUnit.EGeneratedType == EGeneratedType.Morph)
             {
                 unit.DoProcessMorph(false);
             }
-            UnitManager.Instance.FreeUnitView(unit);
-            return true;
-        }
 
-        public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
-        {
-            if (!_units.TryGetValue(guid, out unit))
-            {
-                return false;
-            }
-            return !unit.IsFreezed;
+            UnitManager.Instance.FreeUnitView(unit);
         }
 
         public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
@@ -314,10 +438,92 @@ namespace GameA.Game
                 unit = null;
                 return false;
             }
-            return _units.TryGetValue(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation), out unit);
+
+            return TryGetUnit(tableUnit.ColliderToRenderer(colliderNode.Guid, colliderNode.Rotation),
+                out unit);
         }
 
-        #region AOI
+        public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
+        {
+            if (!TryGetUnitAndPlayer(guid, out unit))
+            {
+                return false;
+            }
+
+            return !unit.IsFreezed;
+        }
+
+        private bool TryGetUnitAndPlayer(IntVec3 guid, out UnitBase unit)
+        {
+            if (_units.TryGetValue(guid, out unit))
+            {
+                return true;
+            }
+
+            // Player会跨场景，特殊处理
+            var players = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i] != null && players[i].Guid == guid)
+                {
+                    unit = players[i];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Reset()
+        {
+            foreach (UnitDesc unitDesc in _addedDatas)
+            {
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                DestroyView(unitDesc);
+                DeleteUnit(unitDesc, tableUnit);
+            }
+
+            _addedDatas.Clear();
+            for (int i = 0; i < _allColliderDescs.Count; i++)
+            {
+                DeleteCollider(_allColliderDescs[i]);
+            }
+
+            _allColliderDescs.Clear();
+            // 先删除、再重置地块、再添加
+            for (int i = 0; i < _allSwitchUnits.Count; i++)
+            {
+                _allSwitchUnits[i].Reset();
+                _allSwitchUnits[i].IsInterest = !_useAOI;
+            }
+
+            for (int i = 0; i < _allMagicUnits.Count; i++)
+            {
+                _allMagicUnits[i].Reset();
+                _allMagicUnits[i].IsInterest = !_useAOI;
+            }
+
+            for (int i = 0; i < _allOtherUnits.Count; i++)
+            {
+                _allOtherUnits[i].Reset();
+                _allOtherUnits[i].IsInterest = !_useAOI;
+            }
+
+            for (int i = 0; i < _deletedDatas.Count; i++)
+            {
+                UnitDesc unitDesc = _deletedDatas[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                AddUnit(unitDesc, tableUnit);
+                if (!_useAOI)
+                {
+                    InstantiateView(unitDesc, tableUnit);
+                }
+            }
+
+            AddUnitsOutofMap();
+            _deletedDatas.Clear();
+            _waitDestroyUnits.Clear();
+        }
 
         public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
         {
@@ -325,36 +531,17 @@ namespace GameA.Game
             {
                 if (unit.TableUnit.IsGround == 1)
                 {
-                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
-                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale, unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale,
+                        lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
+                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale,
+                        unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
                 }
+
                 return true;
             }
+
             return false;
         }
-
-        public void Reset()
-        {
-            for (int i = 0; i < _allSwitchUnits.Count; i++)
-            {
-                _allSwitchUnits[i].Reset();
-            }
-            for (int i = 0; i < _allMagicUnits.Count; i++)
-            {
-                _allMagicUnits[i].Reset();
-            }
-            for (int i = 0; i < _allOtherUnits.Count; i++)
-            {
-                _allOtherUnits[i].Reset();
-            }
-            for (int i = 0; i < _allColliderDescs.Count; i++)
-            {
-                DeleteCollider(_allColliderDescs[i]);
-            }
-            _allColliderDescs.Clear();
-        }
-
-        #region Comparison SortData
 
         public void SortData()
         {
@@ -375,33 +562,42 @@ namespace GameA.Game
                     v = one.Guid.z.CompareTo(other.Guid.z);
                 }
             }
+
             return v;
         }
-   
-        #endregion
+
+        #region AOI
 
         private void OnAOISubscribe(NodeData[] nodes, Grid2D interGrid)
         {
-            //LogHelper.Debug("OnAOISubscribe : {0}", nodes.Length);
-            ProcessAOI(nodes, interGrid, true);
+            if (_sceneIndex == Scene2DManager.Instance.CurSceneIndex)
+            {
+                ProcessAOI(nodes, interGrid, true);
+            }
         }
 
         private void OnAOIUnsubscribe(NodeData[] nodes, Grid2D outerGrid)
         {
-            //LogHelper.Debug("OnAOIUnsubscribe : {0}", nodes.Length);
-            ProcessAOI(nodes, outerGrid, false);
+            if (_sceneIndex == Scene2DManager.Instance.CurSceneIndex)
+            {
+                ProcessAOI(nodes, outerGrid, false);
+            }
         }
 
         private void OnDynamicSubscribe(SceneNode[] nodes, Grid2D interGrid)
         {
-            //LogHelper.Debug("OnDynamicSubscribe:{0}", nodes.Length);
-            ProcessDynamicAOI(nodes, interGrid, true);
+            if (_sceneIndex == Scene2DManager.Instance.CurSceneIndex)
+            {
+                ProcessDynamicAOI(nodes, interGrid, true);
+            }
         }
 
         private void OnDynamicUnsubscribe(SceneNode[] nodes, Grid2D outerGrid)
         {
-            //LogHelper.Debug("OnDynamicUnsubscribe:{0}", nodes.Length);
-            ProcessDynamicAOI(nodes, outerGrid, false);
+            if (_sceneIndex == Scene2DManager.Instance.CurSceneIndex)
+            {
+                ProcessDynamicAOI(nodes, outerGrid, false);
+            }
         }
 
         private void ProcessAOI(NodeData[] nodes, Grid2D grid, bool isSubscribe)
@@ -415,10 +611,12 @@ namespace GameA.Game
                     LogHelper.Error("ProcessAOI Failed,GetTableUnit:{0}", node);
                     return;
                 }
+
                 if (!isSubscribe && !CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
+
                 var unitObject = new UnitDesc();
                 unitObject.Id = node.Id;
                 unitObject.Rotation = node.Direction;
@@ -435,19 +633,25 @@ namespace GameA.Game
                         unitObject.Guid = tableUnit.ColliderToRenderer(unitObject.Guid, unitObject.Rotation);
                         if (isSubscribe)
                         {
-                            if (!grid.Contains(tableUnit.GetBaseDataGrid(unitObject.Guid)))
+                            if (!grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0,
+                                unitObject.Scale)))
                             {
                                 continue;
                             }
+
                             InstantiateView(unitObject, tableUnit);
+                            SetUnitInterest(unitObject, true);
                         }
                         else
                         {
-                            if (grid.Contains(tableUnit.GetBaseDataGrid(unitObject.Guid)))
+                            if (grid.Contains(tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, 0,
+                                unitObject.Scale)))
                             {
                                 continue;
                             }
+
                             DestroyView(unitObject);
+                            SetUnitInterest(unitObject, false);
                         }
                     }
                 }
@@ -465,10 +669,12 @@ namespace GameA.Game
                     LogHelper.Error("ProcessDynamicAOI Failed,GetTableUnit:{0}", node);
                     return;
                 }
+
                 if (!isSubscribe && !CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
+
                 var unitObject = new UnitDesc();
                 unitObject.Id = node.Id;
                 unitObject.Rotation = node.Rotation;
@@ -480,7 +686,9 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     InstantiateView(unitObject, tableUnit, node);
+                    SetUnitInterest(unitObject, true);
                 }
                 else
                 {
@@ -488,18 +696,34 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     DestroyView(unitObject);
+                    SetUnitInterest(unitObject, false);
                 }
             }
         }
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            //if (tableUnit.EUnitType == EUnitType.Monster || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
-            //{
-            //    return false;
-            //}
-            return true;
+            return tableUnit.EUnitType != EUnitType.Hero;
+        }
+
+        private void SetUnitInterest(UnitDesc unitDesc, bool value)
+        {
+            UnitBase unit;
+            if (_units.TryGetValue(unitDesc.Guid, out unit))
+            {
+                SetUnitInterest(unit, value);
+            }
+            else
+            {
+                LogHelper.Warning("GetValue Failed, {0}", unitDesc);
+            }
+        }
+
+        private void SetUnitInterest(UnitBase unit, bool value)
+        {
+            unit.IsInterest = value;
         }
 
         #endregion
@@ -508,89 +732,107 @@ namespace GameA.Game
 
         private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
 
-        internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
+        internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
-            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
+            return SceneQuery2D.PointCast(point, out sceneNode, layerMask, CurScene, minDepth, maxDepth);
         }
 
-        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit, float distance = ConstDefineGM2D.MaxMapDistance,
+        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit,
+            float distance = ConstDefineGM2D.MaxMapDistance,
             int layerMask = JoyPhysics2D.LayMaskAll, SceneNode excludeNode = null)
         {
             return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask,
-                Instance, float.MinValue, float.MaxValue, excludeNode);
+                CurScene, float.MinValue, float.MaxValue, excludeNode);
         }
 
-        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance,
-            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction,
+            float distance = ConstDefineGM2D.MaxMapDistance,
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
+            SceneNode excludeNode = null)
         {
-            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, Instance,
+            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, CurScene,
                 float.MinValue, float.MaxValue, excludeNode);
         }
-        
-        public static List<UnitBase>  RaycastAllReturnUnits(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
+
+        public static List<UnitBase> RaycastAllReturnUnits(IntVec2 origin, Vector2 direction,
+            float distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             _cachedUnits.Clear();
-            var hits = RaycastAll(origin, direction, distance , layerMask, minDepth, maxDepth, excludeNode);
+            var hits = RaycastAll(origin, direction, distance, layerMask, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < hits.Count; i++)
             {
                 var hit = hits[i];
-                var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+                var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
+                               hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 :
+                               hit.normal.y < 0 ? -1 : 0);
                 GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             }
+
             return _cachedUnits;
         }
 
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.GridCast(ref grid2D, out node, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
-        internal static bool GridCast(IntVec2 pointA, IntVec2 pointB, byte direction, out GridHit2D hit, int distance = ConstDefineGM2D.MaxMapDistance,
+        internal static bool GridCast(IntVec2 pointA, IntVec2 pointB, byte direction, out GridHit2D hit,
+            int distance = ConstDefineGM2D.MaxMapDistance,
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCast(pointA, pointB, direction, out hit, distance, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            return SceneQuery2D.GridCast(pointA, pointB, direction, out hit, distance, layerMask, CurScene, minDepth,
+                maxDepth, excludeNode);
         }
 
-        internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+        internal static List<SceneNode> GridCastAll(Grid2D grid2D, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.GridCastAll(ref grid2D, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
-        internal static List<GridHit2D> GridCastAll(IntVec2 pointA, IntVec2 pointB, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+        internal static List<GridHit2D> GridCastAll(IntVec2 pointA, IntVec2 pointB, byte direction,
+            int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
+            float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, CurScene, minDepth,
+                maxDepth,
                 excludeNode);
         }
 
-        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction,
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth,excludeNode);
+            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
         public static List<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             _cachedUnits.Clear();
-            var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
                 GetUnits(nodes[i], one, _cachedUnits);
             }
+
             return _cachedUnits;
         }
 
         public static List<UnitBase> GetUnits(RayHit2D hit)
         {
             _cachedUnits.Clear();
-            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
+                           hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 :
+                           hit.normal.y < 0 ? -1 : 0);
             GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             return _cachedUnits;
         }
@@ -610,15 +852,17 @@ namespace GameA.Game
                 LogHelper.Error("GetTableUnit failed.{0}", node.Id);
                 return false;
             }
+
             if (node.IsDynamic())
             {
                 IntVec3 guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!_instance.TryGetUnit(guid, out unit))
+                if (!CurScene.TryGetUnit(guid, out unit))
                 {
                     //LogHelper.Warning("TryGetUnits failed,{0}", node);
                     return false;
                 }
+
                 units.Add(unit);
             }
             else
@@ -633,31 +877,36 @@ namespace GameA.Game
                         var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                         guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                         UnitBase unit;
-                        if (!_instance.TryGetUnit(guid, out unit))
+                        if (!CurScene.TryGetUnit(guid, out unit))
                         {
                             continue;
                         }
+
                         units.Add(unit);
                     }
                 }
             }
+
             return true;
         }
-        
+
         public static List<SceneNode> CircleCastAll(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.CircleCastAll(center, radius, layerMask, CurScene, minDepth, maxDepth,
                 excludeNode);
         }
 
-        public static List<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        public static List<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius,
+            int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
+            SceneNode excludeNode = null)
         {
             _cachedUnits.Clear();
             var grid = new Grid2D(center.x - radius, center.y - radius, center.x + radius - 1, center.y + radius - 1);
-            grid = grid.IntersectWith(DataScene2D.Instance.RootGrid);
-            List<SceneNode> nodes = SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth, excludeNode);
+            grid = grid.IntersectWith(DataScene2D.CurScene.RootGrid);
+            List<SceneNode> nodes =
+                SceneQuery2D.CircleCastAll(center, radius, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
                 if (!SplitNode(center, radius, grid, nodes[i]))
@@ -665,6 +914,7 @@ namespace GameA.Game
                     LogHelper.Error("SplitNode failed.{0}, {1}", nodes[i], grid);
                 }
             }
+
             return _cachedUnits;
         }
 
@@ -676,15 +926,17 @@ namespace GameA.Game
                 LogHelper.Error("GetTableUnit failed.{0}", node.Id);
                 return false;
             }
+
             //动态物体
             if (node.IsDynamic())
             {
                 var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!_instance.TryGetUnit(guid, out unit))
+                if (!CurScene.TryGetUnit(guid, out unit))
                 {
                     return false;
                 }
+
                 _cachedUnits.Add(unit);
                 return true;
             }
@@ -696,20 +948,23 @@ namespace GameA.Game
             {
                 for (int k = 0; k < count.y; k++)
                 {
-                    var guid = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y, node.Depth);
+                    var guid = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y,
+                        node.Depth);
                     guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                     var splitedGrid = tableUnit.GetColliderGrid(guid.x, guid.y, node.Rotation, node.Scale);
                     if (splitedGrid.Intersect(center, radius))
                     {
                         UnitBase unit;
-                        if (!_instance.TryGetUnit(guid, out unit))
+                        if (!CurScene.TryGetUnit(guid, out unit))
                         {
                             continue;
                         }
+
                         _cachedUnits.Add(unit);
                     }
                 }
             }
+
             return true;
         }
 
@@ -719,8 +974,9 @@ namespace GameA.Game
 
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
-            var start = unit.CenterDownPos ;
-            var end = target.DownUnit == null ? target.CenterDownPos : target.DownUnit.CenterUpFloorPos;
+            var start = unit.CenterDownPos;
+            bool useDownUnit = target.DownUnit != null && UnitDefine.TerrainId != target.DownUnit.Id;
+            var end = useDownUnit ? target.DownUnit.CenterUpFloorPos : target.CenterDownPos;
             //不在空中的时候
             if (!target.Grounded)
             {
@@ -737,8 +993,10 @@ namespace GameA.Game
                     }
                 }
             }
+
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
-            return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
+            return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale,
+                Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
         }
 
         public override bool IsGround(int x, int y)
@@ -747,10 +1005,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (_pathGrid[x, y] == 0)
             {
                 return true;
             }
+
             return false;
         }
 
@@ -769,6 +1029,7 @@ namespace GameA.Game
                 startY = y1;
                 endY = y0;
             }
+
             for (int y = startY; y <= endY; ++y)
             {
                 if (IsGround(x, y))
@@ -776,7 +1037,80 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
+        }
+
+        public void Exit()
+        {
+            _destroyDatas.Clear();
+            foreach (UnitDesc unitDesc in _addedDatas)
+            {
+                if (UnitDefine.IsBullet(unitDesc.Id))
+                {
+                    _destroyDatas.Add(unitDesc);
+                }
+            }
+
+            for (int i = 0; i < _destroyDatas.Count; i++)
+            {
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_destroyDatas[i].Id);
+                DestroyView(_destroyDatas[i]);
+                DeleteUnit(_destroyDatas[i], tableUnit, true);
+            }
+
+            foreach (var unit in _units.Values)
+            {
+                if (unit.View != null && CheckCanDelete(unit.TableUnit))
+                {
+                    DestroyView(unit);
+                    SetUnitInterest(unit, false);
+                }
+            }
+        }
+
+        public void Enter()
+        {
+            InitCreateArea(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos));
+        }
+
+        public void AddUnitsOutofMap()
+        {
+            for (int i = 0; i < _unitsOutofMap.Count; i++)
+            {
+                UnitDesc unitDesc = _unitsOutofMap[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                AddUnit(unitDesc, tableUnit);
+                if (_useAOI)
+                {
+                    InstantiateView(unitDesc, tableUnit);
+                }
+
+                DataScene2D.CurScene.AfterAddData(unitDesc, tableUnit);
+                PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, true, true);
+            }
+
+            _unitsOutofMap.Clear();
+        }
+
+        public bool DeleteUnitsOutofMap(UnitBase unit)
+        {
+            UnitDesc unitDesc = unit.UnitDesc;
+            Table_Unit tableUnit = unit.TableUnit;
+            if (!DestroyView(unitDesc))
+            {
+                return false;
+            }
+
+            if (!DeleteUnit(unitDesc, tableUnit))
+            {
+                return false;
+            }
+
+            _unitsOutofMap.Add(unitDesc);
+            DataScene2D.CurScene.AfterDeleteData(unitDesc, tableUnit);
+            PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, false, true);
+            return true;
         }
     }
 }

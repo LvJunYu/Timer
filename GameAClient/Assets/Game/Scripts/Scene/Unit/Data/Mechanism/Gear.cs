@@ -1,5 +1,4 @@
-﻿using SoyEngine;
-
+﻿
 namespace GameA.Game
 {
     [Unit(Id = 5017, Type = typeof(Gear))]

@@ -52,7 +52,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                EditMode.Instance.CommitRecordBatch(_recordBatch);
+                Scene2DManager.Instance.CommitRecordBatch(_recordBatch);
                 _recordBatch = null;
             }
 

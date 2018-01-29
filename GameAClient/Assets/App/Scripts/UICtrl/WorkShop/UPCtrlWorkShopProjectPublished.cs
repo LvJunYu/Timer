@@ -1,10 +1,11 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
     public class UPCtrlWorkShopProjectPublished : UPCtrlWorkShopProjectBase
     {
-        private UserPublishedWorldProjectList _data;
+        private UserPublishedWorldProjectList _data = LocalUser.Instance.UserPublishedWorldProjectList;
 
         public override void RequestData(bool append = false)
         {
@@ -13,7 +14,6 @@ namespace GameA
             {
                 startInx = LocalUser.Instance.UserPublishedWorldProjectList.AllList.Count;
             }
-            _data = LocalUser.Instance.UserPublishedWorldProjectList;
             _data.Requset(startInx, _pageSize, () =>
             {
                 _projectList = _data.AllList;
@@ -46,6 +46,14 @@ namespace GameA
                     }
                 }
             }
+        }
+        
+        protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlProject();
+            item.SetCurUI(UMCtrlProject.ECurUI.Published);
+            item.Init(parent, _resScenary);
+            return item;
         }
     }
 }

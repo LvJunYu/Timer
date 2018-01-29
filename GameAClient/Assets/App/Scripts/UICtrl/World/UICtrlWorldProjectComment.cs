@@ -6,6 +6,7 @@ namespace GameA
     public class UICtrlWorldProjectComment : UICtrlResManagedBase<UIViewWorldProjectComment>
     {
         private Project _project;
+        private bool _onlyChangeView;
 
         protected override void OnViewCreated()
         {
@@ -15,6 +16,7 @@ namespace GameA
             _cachedView.CancelBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.GoodTog.onValueChanged.AddListener(OnGoodTogValueChanged);
             _cachedView.BadTog.onValueChanged.AddListener(OnBadTogValueChanged);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.CommentInput);
         }
 
         protected override void OnOpen(object parameter)
@@ -31,7 +33,7 @@ namespace GameA
 
         protected override void OnClose()
         {
-            _cachedView.CommentInput.text = string.Empty;
+            Clear();
             base.OnClose();
         }
 
@@ -53,7 +55,10 @@ namespace GameA
             }
             else
             {
-                SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project.Request();
+                if (SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project != null)
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().Project.Request();
+                }
             }
             SocialGUIManager.Instance.CloseUI<UICtrlWorldProjectComment>();
         }
@@ -65,6 +70,7 @@ namespace GameA
 
         private void OnBadTogValueChanged(bool value)
         {
+            if (_onlyChangeView) return;
             if (_project == null) return;
             if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Unlike)
             {
@@ -79,6 +85,7 @@ namespace GameA
 
         private void OnGoodTogValueChanged(bool value)
         {
+            if (_onlyChangeView) return;
             if (_project == null) return;
             if (value && _project.ProjectUserData.LikeState != EProjectLikeState.PLS_Like)
             {
@@ -89,6 +96,15 @@ namespace GameA
             {
                 _project.UpdateLike(EProjectLikeState.PLS_AllRight);
             }
+        }
+
+        private void Clear()
+        {
+            _cachedView.CommentInput.text = string.Empty;
+            _onlyChangeView = true;
+            _cachedView.GoodTog.isOn = false;
+            _cachedView.BadTog.isOn = false;
+            _onlyChangeView = false;
         }
     }
 }

@@ -6,8 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -17,8 +15,15 @@ namespace GameA.Game
     {
         protected int _fireTimer;
         protected EClayOnWallDirection _eClayOnWallDirection;
-        protected IntVec2 _hitPos;
+        protected IntVec2 _clayPos;
         protected bool _isClayOnWall;
+        protected UnitBase _attactTarget;
+        protected MonsterCave _monsterCave;
+
+        public override bool IsMonster
+        {
+            get { return true; }
+        }
 
         public bool IsClayOnWall
         {
@@ -28,9 +33,32 @@ namespace GameA.Game
                 if (!value)
                 {
                     _eClayOnWallDirection = EClayOnWallDirection.None;
-                    _hitPos = IntVec2.zero;
+                    _clayPos = IntVec2.zero;
                 }
+
                 _isClayOnWall = value;
+            }
+        }
+
+        protected virtual UnitBase AttackTarget
+        {
+            get
+            {
+                if (_attactTarget == null || !_attactTarget.IsAlive)
+                {
+                    UpdateAttackTarget(); //没有目标时返回自己
+                }
+
+                return _attactTarget;
+            }
+        }
+
+        public override bool CanAttack
+        {
+            get
+            {
+                return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) &&
+                       !IsInState(EEnvState.Ice) && AttackTarget.IsAlive && AttackTarget != this;
             }
         }
 
@@ -64,8 +92,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            _isMonster = true;
-            _maxSpeedX = 40;
+
+//            _maxSpeedX = 40;
             return true;
         }
 
@@ -75,8 +103,30 @@ namespace GameA.Game
             {
                 return false;
             }
-            CreateStatusBar();
+            // 游戏时怪物死亡后，在Destroy前切换场景，切换回来会重新生成View，此时判断不显示View
+            if (!_isAlive && GameRun.Instance.IsPlaying)
+            {
+                _view.SetRendererEnabled(false);
+            }
+            else
+            {
+                CreateStatusBar();
+                if (_statusBar != null)
+                {
+                    _statusBar.SetHPActive(true);
+                }
+            }
             return true;
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (_tableUnit.SkillId > 0)
+            {
+                _skillCtrl = new SkillCtrl(this);
+                _skillCtrl.SetSkill(_tableUnit.SkillId);
+            }
         }
 
         protected override void Clear()
@@ -87,7 +137,7 @@ namespace GameA.Game
             _fireTimer = 0;
             if (_statusBar != null)
             {
-                _statusBar.SetHPActive(false);
+                _statusBar.Reset();
             }
         }
 
@@ -118,6 +168,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (HasStateType(EStateType.Fire))
             {
                 OnFire();
@@ -135,22 +186,38 @@ namespace GameA.Game
             {
                 RemoveStates(41);
             }
+
             _eClayOnWallDirection = eClayOnWallDirection;
             IsClayOnWall = true;
-            _hitPos = CenterPos;
+            _clayPos = CenterPos;
             Speed = IntVec2.zero;
-            AddStates(41);
+            AddStates(null, 41);
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
             //判断黏在墙上若发生位移，则解除黏在墙上
-            if (IsClayOnWall && (_hitPos - CenterPos).SqrMagnitude() >
+            if (IsClayOnWall && (_clayPos - CenterPos).SqrMagnitude() >
                 GM2DTools.WorldToTile(0.5f) * GM2DTools.WorldToTile(0.5f))
             {
                 RemoveStates(41);
             }
+        }
+
+        public override UnitExtraDynamic UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            if (unitExtra.CastRange > 0)
+            {
+                _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
+            }
+            else
+            {
+                _attackRange = IntVec2.one * TableConvert.GetRange(10);
+            }
+
+            return unitExtra;
         }
 
         protected override void CaculateGravity()
@@ -191,6 +258,15 @@ namespace GameA.Game
 
         protected virtual void UpdateMonsterAI()
         {
+            if (GameRun.Instance.LogicFrameCnt % 50 == 0)
+            {
+                UpdateAttackTarget(AttackTarget);
+            }
+
+            if (GameRun.Instance.LogicFrameCnt % 101 == 0)
+            {
+                UpdateAttackTarget();
+            }
         }
 
         protected virtual void OnFire()
@@ -200,6 +276,7 @@ namespace GameA.Game
             {
                 ChangeWay(_moveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
             }
+
             CheckWay();
         }
 
@@ -261,15 +338,12 @@ namespace GameA.Game
                     return ChangeWay(EMoveDirection.Left);
                 }
             }
+
             return false;
         }
 
         public override bool ChangeWay(EMoveDirection eMoveDirection)
         {
-            if (!_isMonster)
-            {
-                return false;
-            }
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;
@@ -278,12 +352,79 @@ namespace GameA.Game
         protected override void OnDead()
         {
             base.OnDead();
+            RpgTaskManger.Instance.AddKill(Id);
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
+        }
+
+        internal override void OnDispose()
+        {
+            if (GameRun.Instance.IsPlaying)
+            {
+                var drops = GetUnitExtra().Drops;
+                if (!drops.IsEmpty)
+                {
+                    PlayMode.Instance.CreateRuntimeUnit(drops.Get<ushort>(0), _curPos);
+                }
+            }
+            if (_monsterCave != null)
+            {
+                _monsterCave.OnMonsterDestroy(this);
+            }
         }
 
         protected void SetInput(EInputType eInputType, bool value)
         {
             _input.CurAppliedInputKeyAry[(int) eInputType] = value;
+        }
+
+        protected virtual void UpdateAttackTarget(UnitBase lastTarget = null)
+        {
+            if (!GM2DGame.Instance.GameMode.IsMulti)
+            {
+                _attactTarget = PlayMode.Instance.MainPlayer;
+                return;
+            }
+
+            if (lastTarget != null && lastTarget != this && lastTarget.IsAlive)
+            {
+                _attactTarget = lastTarget;
+            }
+            else
+            {
+                _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+            }
+        }
+
+        public override bool CanHarm(UnitBase unit)
+        {
+            if (!unit.IsActor)
+            {
+                return false;
+            }
+
+            return !IsSameTeam(unit.TeamId);
+        }
+
+        public override UnitExtraDynamic GetUnitExtra()
+        {
+            if (_monsterCave != null)
+            {
+                return _monsterCave.GetUnitExtra();
+            }
+            return base.GetUnitExtra();
+        }
+
+        public void SetCave(MonsterCave monsterCave)
+        {
+            _monsterCave = monsterCave;
+            UpdateExtraData();
+            _eActiveState = EActiveState.Active;
+            _moveDirection = EMoveDirection.Left;
+            //根据队伍刷新血条颜色
+            if (_statusBar != null)
+            {
+                _statusBar.RefreshBar();
+            }
         }
     }
 }

@@ -5,13 +5,13 @@
 ** Summary : CameraCtrlBase
 ***********************************************************************/
 
-using UnityEngine;
-
 namespace GameA.Game
 {
     public abstract class CameraCtrlBase
     {
         #region 常量与字段
+
+        protected bool _mapReady;
 
         #endregion
 
@@ -31,20 +31,42 @@ namespace GameA.Game
             InnerCameraManager = CameraManager.Instance;
         }
 
-        public virtual void Init() { }
+        public virtual void Init()
+        {
+        }
 
-        public virtual void OnMapReady() { }
+        public virtual void OnMapReady()
+        {
+        }
 
-        public virtual void UpdateLogic(float deltaTime) { }
+        public virtual void OnMapChanged(EChangeMapRectType eChangeMapRectType)
+        {
+        }
 
-        public virtual void Update() { }
+        public virtual void UpdateLogic(float deltaTime)
+        {
+        }
 
-        public virtual void Enter() { }
+        public virtual void Update()
+        {
+        }
 
-        public virtual void Exit() { }
+        public virtual void Enter()
+        {
+        }
 
-        public virtual void Destory() { }
-        
+        public virtual void Exit()
+        {
+        }
+
+        public virtual void Reset()
+        {
+        }
+
+        public virtual void Destory()
+        {
+        }
+
         #endregion
     }
 }

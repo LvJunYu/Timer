@@ -16,35 +16,16 @@ namespace GameA
         public enum EMode
         {
             None,
-
-            // 正常编辑
-            Edit,
-
-            // 编辑时测试
-            EditTest,
-
-            // 正常游戏
-            Play,
-
-            // 播放录像
-            PlayRecord,
-
-            // 改造编辑
-            ModifyEdit,
+            Edit, // 正常编辑
+            MultiEdit,
+            EditTest, // 编辑时测试
+            MultiEditTest,
+            Play, // 正常游戏
+            PlayRecord, // 播放录像
+            ModifyEdit // 改造编辑
         }
 
-        #region 常量与字段
-
-        // 编辑类型，是正常编辑还是改造编辑
         private EMode _editMode = EMode.Edit;
-
-        #endregion
-
-        #region 属性
-
-        #endregion
-
-        #region 方法
 
         protected override void InitGroupId()
         {
@@ -88,12 +69,26 @@ namespace GameA
 
         public void ChangeToEditTestMode()
         {
-            SetButtonState(EMode.EditTest);
+            if (GM2DGame.Instance.GameMode.IsMulti)
+            {
+                SetButtonState(EMode.MultiEditTest);
+            }
+            else
+            {
+                SetButtonState(EMode.EditTest);
+            }
         }
 
         public void ChangeToEditMode()
         {
-            SetButtonState(EMode.Edit);
+            if (GM2DGame.Instance.GameMode.IsMulti)
+            {
+                SetButtonState(EMode.MultiEdit);
+            }
+            else
+            {
+                SetButtonState(EMode.Edit);
+            }
             AfterEditModeStateChange();
         }
 
@@ -118,6 +113,7 @@ namespace GameA
             switch (mode)
             {
                 case EMode.Edit:
+                case EMode.MultiEdit:
                     _cachedView.Erase.gameObject.SetActive(false);
                     _cachedView.EraseSelected.gameObject.SetActive(false);
                     _cachedView.Redo.gameObject.SetActive(true);
@@ -139,6 +135,7 @@ namespace GameA
                     _cachedView.Home.gameObject.SetActive(true);
                     break;
                 case EMode.EditTest:
+                case EMode.MultiEditTest:
                     _cachedView.Erase.gameObject.SetActive(false);
                     _cachedView.EraseSelected.gameObject.SetActive(false);
                     _cachedView.Redo.gameObject.SetActive(false);
@@ -282,17 +279,18 @@ namespace GameA
 
         private void OnUndo()
         {
-            EditMode.Instance.Undo();
+            Scene2DManager.Instance.Undo();
         }
 
         private void OnRedo()
         {
-            EditMode.Instance.Redo();
+            Scene2DManager.Instance.Redo();
         }
 
         private void OnClickHome()
         {
-            if (_editMode == EMode.Edit || _editMode == EMode.EditTest)
+            if (_editMode == EMode.Edit || _editMode == EMode.EditTest || _editMode == EMode.MultiEdit ||
+                _editMode == EMode.MultiEditTest)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>(_editMode);
             }
@@ -337,22 +335,16 @@ namespace GameA
             _cachedView.ExitSwitchMode.gameObject.SetActive(inSwitch);
         }
 
-        #region event 
-
         private void AfterEditModeStateChange()
         {
             if (!_isViewCreated)
             {
                 return;
             }
-            if (_editMode == EMode.Edit)
+            if (_editMode == EMode.Edit || _editMode == EMode.MultiEdit)
             {
                 UpdateEditModeBtnView();
             }
         }
-
-        #endregion
-
-        #endregion
     }
 }

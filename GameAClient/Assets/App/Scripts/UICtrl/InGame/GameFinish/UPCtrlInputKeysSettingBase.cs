@@ -46,6 +46,7 @@ namespace GameA
 
         protected void OnRestoreDefaultBtn()
         {
+            if (!_isOpen) return;
             for (int i = 0; i < _usCtrls.Length; i++)
             {
                 _usCtrls[i].RestoreDefault();

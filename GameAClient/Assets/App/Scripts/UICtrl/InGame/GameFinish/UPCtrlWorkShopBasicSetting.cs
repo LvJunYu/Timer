@@ -7,15 +7,10 @@ namespace GameA
     {
         private USCtrlGameSettingItem _playBGMusic;
         private USCtrlGameSettingItem _playSoundsEffects;
-        private GameModeEdit _gameModeWorkshopEdit;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.TestBtn.onClick.AddListener(_mainCtrl.OnTestBtn);
-            _cachedView.PublishBtn.onClick.AddListener(_mainCtrl.OnPublishBtn);
-            _cachedView.TitleInputField.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
-            _cachedView.DescInputField.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
             _playBGMusic = new USCtrlGameSettingItem();
             _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
             _playSoundsEffects = new USCtrlGameSettingItem();
@@ -45,18 +40,19 @@ namespace GameA
         private void UpdateSettingItem()
         {
             _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
-            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects, _mainCtrl.OnClickSoundsEffectsButton);
+            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects,
+                _mainCtrl.OnClickSoundsEffectsButton);
         }
 
         private void UpdateBtns()
         {
-            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (_gameModeWorkshopEdit != null)
+            var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (gameModeWorkshopEdit != null)
             {
 //                bool needSave = _gameModeWorkshopEdit.MapDirty;
 //                _cachedView.SaveBtn.gameObject.SetActive(needSave);
 //                _cachedView.SaveBtnFinished.SetActive(!needSave);
-                bool canPublish = _gameModeWorkshopEdit.CheckCanPublish();
+                bool canPublish = gameModeWorkshopEdit.CheckCanPublish();
                 _cachedView.TestBtn.gameObject.SetActive(!canPublish);
 //                _cachedView.TestBtnDiable.SetActive(needSave);
                 _cachedView.TestBtnFinished.SetActive(canPublish);

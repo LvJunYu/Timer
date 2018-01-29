@@ -7,9 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using SoyEngine;
-using Spine.Unity.MeshGeneration;
 using UnityEngine;
 
 namespace GameA.Game
@@ -19,49 +17,43 @@ namespace GameA.Game
     {
         private static List<UnitBase> _cacheUnits = new List<UnitBase>(1);
         protected int _slot;
-        [SerializeField]
-        protected EPaintType _epaintType;
-
+        [SerializeField] protected EPaintType _epaintType;
         protected EWeaponInputType _eWeaponInputType;
-        [SerializeField]
-        protected UnitBase _owner;
+        [SerializeField] protected UnitBase _owner;
         protected Table_Skill _tableSkill;
-
         protected int _totalBulletCount;
         protected int _currentBulletCount;
         protected int _cdTime;
         protected int _chargeTime;
         protected int _singTime;
-
         protected int _projectileSpeed;
+        protected int _effectRange;
+        protected int[] _knockbackForces;
+        protected int[] _addStates;
 
         /// <summary>
         /// 攻击距离
         /// </summary>
-        [SerializeField]
-        protected int _castRange;
+        [SerializeField] protected int _castRange;
 
-        [SerializeField]
-        protected int _radius;
+        [SerializeField] protected int _radius;
 
         /// <summary>
         /// 定时器
         /// </summary>
-        [SerializeField]
-        protected int _timerCD;
+        [SerializeField] protected int _timerCD;
+
         protected int _timerCharge;
         protected bool _startCharge;
         protected int _timerSing;
-
         protected int _damage;
-
         protected int _targetType;
-        
+
         public int Id
         {
             get { return _tableSkill.Id; }
         }
-   
+
         public UnitBase Owner
         {
             get { return _owner; }
@@ -92,7 +84,7 @@ namespace GameA.Game
             get { return _eWeaponInputType; }
         }
 
-        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType)
+        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType, UnitExtraDynamic unitExtra)
         {
             _eWeaponInputType = eWeaponInputType;
             _owner = ower;
@@ -103,21 +95,117 @@ namespace GameA.Game
                 LogHelper.Error("GetSkill Failed, {0}", id);
                 return;
             }
+
             _epaintType = (EPaintType) _tableSkill.PaintType;
-            SetTimerCD(0);
-            _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
-            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
-            _castRange = TableConvert.GetRange(_tableSkill.CastRange);
-            _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
-            _damage = _tableSkill.Damage;
-            _totalBulletCount = _tableSkill.BulletCount;
-            _currentBulletCount = _totalBulletCount;
+            if (_owner.IsPlayer)
+            {
+                SetDataFromExtra(unitExtra);
+            }
+            else
+            {
+                SetDataFromExtra(_owner.GetUnitExtra());
+            }
+
+            SetTimerCD(0);
             SetBullet(_totalBulletCount);
             _timerCD = 0;
             _timerCharge = 0;
             _timerSing = 0;
             _targetType = GetHitLayer();
+        }
+
+        private void SetDataFromExtra(UnitExtraDynamic extra)
+        {
+            if (extra == null)
+            {
+                extra = new UnitExtraDynamic();
+            }
+
+            if (extra.TimeInterval > 0)
+            {
+                _cdTime = TableConvert.GetTime(extra.TimeInterval);
+            }
+            else
+            {
+                _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
+            }
+
+            if (extra.Damage > 0)
+            {
+                _damage = extra.Damage;
+            }
+            else
+            {
+                _damage = _tableSkill.Damage;
+            }
+
+            if (extra.EffectRange > 0)
+            {
+                _effectRange = extra.EffectRange;
+            }
+            else
+            {
+                if (_tableSkill.EffectValues != null && _tableSkill.EffectValues.Length > 0)
+                {
+                    _effectRange = _tableSkill.EffectValues[0];
+                }
+            }
+
+            if (extra.CastRange > 0)
+            {
+                _castRange = TableConvert.GetRange(extra.CastRange);
+            }
+            else
+            {
+                _castRange = TableConvert.GetRange(_tableSkill.CastRange);
+            }
+
+            if (extra.BulletSpeed > 0)
+            {
+                _projectileSpeed = TableConvert.GetSpeed(extra.BulletSpeed);
+            }
+            else
+            {
+                _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            }
+
+            if (extra.ChargeTime > 0)
+            {
+                _chargeTime = TableConvert.GetTime(extra.ChargeTime);
+            }
+            else
+            {
+                _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
+            }
+
+            if (extra.BulletCount > 0)
+            {
+                _totalBulletCount = extra.BulletCount;
+            }
+            else
+            {
+                _totalBulletCount = _tableSkill.BulletCount;
+            }
+
+            if (extra.KnockbackForces != null && !extra.KnockbackForces.IsEmpty)
+            {
+                _knockbackForces =
+                    Array.ConvertAll(extra.KnockbackForces.ToList<ushort>().ToArray(), item => (int) item);
+            }
+            else
+            {
+                _knockbackForces = _tableSkill.KnockbackForces;
+            }
+
+            if (extra.AddStates != null && !extra.AddStates.IsEmpty)
+            {
+                _addStates = Array.ConvertAll(extra.AddStates.ToList<ushort>().ToArray(), item => (int) item);
+            }
+            else
+            {
+                _addStates = _tableSkill.AddStates;
+            }
         }
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
@@ -144,6 +232,7 @@ namespace GameA.Game
                     SetTimerCharge(_timerCharge - 1);
                 }
             }
+
             if (_timerCD > 0)
             {
                 SetTimerCD(_timerCD - 1);
@@ -153,6 +242,7 @@ namespace GameA.Game
                     SetTimerCharge(_chargeTime);
                 }
             }
+
             if (_timerSing > 0)
             {
                 _timerSing--;
@@ -162,36 +252,45 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public bool Fire()
         {
-            if (_owner.IsMain && _currentBulletCount <= 0)
+            if (_currentBulletCount <= 0 && _owner.IsPlayer)
             {
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
+                if (_owner.IsMain)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
+                }
+
                 return false;
             }
+
             if (_timerCD > 0)
             {
                 return false;
             }
+
             SetTimerCD(_cdTime);
             if (_timerSing > 0)
             {
                 return false;
             }
+
             _owner.StartSkill();
             _timerSing = _singTime;
             if (_timerSing == 0)
             {
                 OnSkillCast();
             }
+
             if (_owner.IsPlayer)
             {
                 SetBullet(_currentBulletCount - 1);
             }
+
             return true;
         }
-        
+
         private void SetBullet(int bulletCount)
         {
             var count = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
@@ -202,7 +301,8 @@ namespace GameA.Game
                 SetTimerCharge(_chargeTime);
                 if (_owner.IsMain)
                 {
-                    Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
+                    Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount,
+                        _totalBulletCount);
                 }
             }
         }
@@ -213,19 +313,21 @@ namespace GameA.Game
             {
                 return;
             }
+
             _timerCD = value;
             if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
             {
                 Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillCDTime, _slot, _timerCD, _cdTime);
             }
         }
-        
+
         private void SetTimerCharge(int value)
         {
             if (_timerCharge == value)
             {
                 return;
             }
+
             _timerCharge = value;
             if (_timerCharge == 0)
             {
@@ -233,9 +335,11 @@ namespace GameA.Game
                 _startCharge = false;
                 _timerCharge = _chargeTime;
             }
+
             if (_owner.IsMain)
             {
-                Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillChargeTime, _slot , _timerCharge, _chargeTime);
+                Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillChargeTime, _slot, _timerCharge,
+                    _chargeTime);
             }
         }
 
@@ -245,13 +349,15 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioFire);
             }
+
             if (UnitDefine.UseRayBullet(projectileId))
             {
                 var bullet = PoolFactory<Bullet>.Get();
-                bullet.Init(this,pos, angle);
+                bullet.Init(this, pos, angle);
                 PlayMode.Instance.AddBullet(bullet);
                 return;
             }
+
             {
                 var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
                 if (bullet != null)
@@ -267,39 +373,44 @@ namespace GameA.Game
             {
                 return _owner.CenterPos;
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
                 return IntVec2.zero;
             }
+
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.CenterPos - dataSize * 0.5f;
         }
-        
+
         protected virtual void OnSkillCast()
         {
             _owner.OnSkillCast();
-            switch ((EBehaviorType)_tableSkill.BehaviorType)
+            switch ((EBehaviorType) _tableSkill.BehaviorType)
             {
                 case EBehaviorType.Common:
                     OnHit();
                     break;
                 case EBehaviorType.RangeShoot:
-                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId),
+                        _owner.Angle);
                     break;
                 case EBehaviorType.ContinueShoot:
 //                    var count = _tableSkill.BehaviorValues[0];
 //                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
 //                    for (int i = 0; i < count; i++)
-                    {
-                        CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
-                    }
+                {
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId),
+                        _owner.Angle);
+                }
                     break;
                 case EBehaviorType.SectorShoot:
                 case EBehaviorType.Summon:
                 case EBehaviorType.Teleport:
                 case EBehaviorType.HitDivide:
-                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId),
+                        _owner.Angle);
                     break;
             }
         }
@@ -320,7 +431,7 @@ namespace GameA.Game
                         if (unit.IsActor)
                         {
                             var dir = unit.CenterPos - centerDownPos;
-                            OnActorHit(unit, new Vector2(dir.x,dir.y));
+                            OnActorHit(unit as ActorBase, new Vector2(dir.x, dir.y));
                         }
                     }
                 }
@@ -336,19 +447,20 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit != _owner)
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, bullet.Direction);
+                            OnActorHit(unit as ActorBase, bullet.Direction);
                         }
-                        else if(unit.CanPainted && _epaintType != EPaintType.None)
+                        else if (unit.CanPainted && _epaintType != EPaintType.None)
                         {
                             OnPaintHit(unit, bullet.CurPos, bullet.MaskRandom);
                         }
                     }
                 }
             }
+
             PlayMode.Instance.DeleteBullet(bullet);
         }
 
@@ -363,11 +475,11 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive)
                     {
-                        if (unit.IsActor)
+                        if (unit.IsActor && unit != _owner)
                         {
-                            OnActorHit(unit, projectile.Direction);
+                            OnActorHit(unit as ActorBase, projectile.Direction);
                         }
-                        else if(unit.CanPainted && _epaintType != EPaintType.None)
+                        else if (unit.CanPainted && _epaintType != EPaintType.None)
                         {
                             OnPaintHit(unit, projectile.CenterPos, projectile.MaskRandom);
                         }
@@ -376,41 +488,54 @@ namespace GameA.Game
             }
         }
 
-        private void OnActorHit(UnitBase unit, Vector2 direction)
+        private void OnActorHit(ActorBase actor, Vector2 direction)
         {
-            if (!unit.IsAlive)
+            if (!actor.IsAlive || actor == _owner)
             {
                 return;
             }
-            if (!unit.IsInvincible)
+
+            var canHarm = _owner.CanHarm(actor);
+            //击退
+            if (canHarm && !actor.IsInvincible)
             {
-                var forces = _tableSkill.KnockbackForces;
-                if (forces.Length == 2)
+                if (_knockbackForces.Length == 2)
                 {
-                    unit.Speed = IntVec2.zero;
-                    unit.CurBanInputTime = 10;
+                    actor.Speed = IntVec2.zero;
+                    actor.CurBanInputTime = 10;
                     if (direction.x > 0)
                     {
-                        unit.ExtraSpeed.x = forces[0];
+                        actor.ExtraSpeed.x = _knockbackForces[0];
                     }
                     else if (direction.x < 0)
                     {
-                        unit.ExtraSpeed.x = -forces[0];
+                        actor.ExtraSpeed.x = -_knockbackForces[0];
                     }
+
                     if (direction.y > 0)
                     {
-                        unit.ExtraSpeed.y = forces[1];
+                        actor.ExtraSpeed.y = _knockbackForces[1];
                     }
                     else if (direction.y < 0)
                     {
-                        unit.ExtraSpeed.y = -forces[1];
+                        actor.ExtraSpeed.y = -_knockbackForces[1];
+                    }
+
+                    if (_owner.IsPlayer)
+                    {
+                        actor.AddBreaker(_owner as PlayerBase);
                     }
                 }
             }
+
             //触发状态
-            unit.AddStates(_tableSkill.AddStates);
-            unit.RemoveStates(_tableSkill.RemoveStates);
-            unit.OnHpChanged(-_damage);
+            if (canHarm)
+            {
+                actor.AddStates(_owner, _addStates);
+                actor.OnHpChanged(-_damage, _owner);
+            }
+
+            actor.RemoveStates(_tableSkill.RemoveStates);
         }
 
         protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)
@@ -424,22 +549,24 @@ namespace GameA.Game
                         _cacheUnits.Add(hitUnit);
                         return _cacheUnits;
                     }
+
                     break;
                 case EEffcetMode.TargetCircle:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_effectRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1, centerPos.y + _radius - 1);
+                    _radius = TableConvert.GetRange(_effectRange);
+                    var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1,
+                        centerPos.y + _radius - 1);
                     return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
                 }
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_effectRange);
                     var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
@@ -454,13 +581,15 @@ namespace GameA.Game
                             units.RemoveAt(i);
                         }
                     }
+
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    _radius = TableConvert.GetRange(_effectRange);
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }
+
             return null;
         }
 
@@ -473,20 +602,24 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioDestroy);
             }
+
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
             }
+
             if (hitUnit == null || hitUnit.DynamicCollider != null)
             {
                 return;
             }
+
             byte rotation;
-            if (!GM2DTools.GetRotation4((int)angle, out rotation))
+            if (!GM2DTools.GetRotation4((int) angle, out rotation))
             {
                 return;
             }
+
             if (_tableSkill.CreateUnitId > 0)
             {
                 var tableUnit = UnitManager.Instance.GetTableUnit(_tableSkill.CreateUnitId);
@@ -494,9 +627,10 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 IntVec2 pos = IntVec2.zero;
                 var size = tableUnit.GetDataSize(rotation, Vector2.one);
-                switch ((EDirectionType)rotation)
+                switch ((EDirectionType) rotation)
                 {
                     case EDirectionType.Up:
                         pos = new IntVec2(hitPos.x - size.x / 2, hitPos.y - size.y);
@@ -511,6 +645,7 @@ namespace GameA.Game
                         pos = new IntVec2(hitPos.x - size.x, hitPos.y - size.y / 2);
                         break;
                 }
+
                 var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, pos, rotation);
                 if (unit != null)
                 {
@@ -518,7 +653,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         protected int GetHitLayer()
         {
             int layer = 0;
@@ -526,30 +661,35 @@ namespace GameA.Game
             {
                 layer |= EnvManager.ItemLayer;
             }
+
             if (HasTargetType(ETargetType.Monster))
             {
                 layer |= EnvManager.MonsterLayer;
             }
+
             if (HasTargetType(ETargetType.MainPlayer))
             {
                 layer |= EnvManager.MainPlayerLayer;
             }
+
             if (HasTargetType(ETargetType.RemotePlayer))
             {
                 layer |= EnvManager.RemotePlayer;
             }
+
             if (HasTargetType(ETargetType.Self))
             {
 //                layer |= EnvManager.ItemLayer;
             }
+
             return layer;
         }
 
         private bool HasTargetType(ETargetType eTargetType)
         {
-            return ((1<<(int) eTargetType) & _tableSkill.TargetType) != 0;
+            return ((1 << (int) eTargetType) & _tableSkill.TargetType) != 0;
         }
-        
+
         protected void OnPaintHit(UnitBase target, IntVec2 centerPos, int maskRandom)
         {
             int length = ConstDefineGM2D.ServerTileScale;
@@ -557,119 +697,125 @@ namespace GameA.Game
             UnitBase neighborUnit;
             if (centerPos.y <= target.ColliderGrid.YMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
-                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
+                if (!ColliderScene2D.CurScene.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
+                    || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Down);
                 }
             }
             else if (centerPos.y > target.ColliderGrid.YMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
-                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
+                if (!ColliderScene2D.CurScene.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
+                    || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Up);
                 }
             }
+
             if (centerPos.x <= target.ColliderGrid.XMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
-                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
+                if (!ColliderScene2D.CurScene.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
+                    || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Left);
                 }
             }
             else if (centerPos.x > target.ColliderGrid.XMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
-                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
+                if (!ColliderScene2D.CurScene.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
+                    || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Right);
                 }
             }
         }
 
-        protected virtual void DoPaint(IntVec2 centerPos, int maskRandom, UnitBase target, EDirectionType eDirectionType)
+        protected virtual void DoPaint(IntVec2 centerPos, int maskRandom, UnitBase target,
+            EDirectionType eDirectionType)
         {
             var paintDepth = PaintBlock.TileOffsetHeight;
             switch (eDirectionType)
             {
                 case EDirectionType.Down:
-                    {
-                        var start = centerPos.x - _radius;
-                        var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom);
+                {
+                    var start = centerPos.x - _radius;
+                    var end = centerPos.x + _radius;
+                    target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom);
 
-                        if (start <= target.ColliderGrid.XMin)
-                        {
-                            start = target.ColliderGrid.YMin;
-                            end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
-                        }
-                        if (end >= target.ColliderGrid.XMax)
-                        {
-                            start = target.ColliderGrid.YMin;
-                            end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
-                        }
+                    if (start <= target.ColliderGrid.XMin)
+                    {
+                        start = target.ColliderGrid.YMin;
+                        end = target.ColliderGrid.YMin + paintDepth;
+                        target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                     }
+
+                    if (end >= target.ColliderGrid.XMax)
+                    {
+                        start = target.ColliderGrid.YMin;
+                        end = target.ColliderGrid.YMin + paintDepth;
+                        target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
+                    }
+                }
                     break;
                 case EDirectionType.Up:
+                {
+                    var start = centerPos.x - _radius;
+                    var end = centerPos.x + _radius;
+                    target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom);
+                    if (start <= target.ColliderGrid.XMin)
                     {
-                        var start = centerPos.x - _radius;
-                        var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom);
-                        if (start <= target.ColliderGrid.XMin)
-                        {
-                            start = target.ColliderGrid.YMax - paintDepth;
-                            end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
-                        }
-                        if (end >= target.ColliderGrid.XMax)
-                        {
-                            start = target.ColliderGrid.YMax - paintDepth;
-                            end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
-                        }
+                        start = target.ColliderGrid.YMax - paintDepth;
+                        end = target.ColliderGrid.YMax;
+                        target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                     }
+
+                    if (end >= target.ColliderGrid.XMax)
+                    {
+                        start = target.ColliderGrid.YMax - paintDepth;
+                        end = target.ColliderGrid.YMax;
+                        target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
+                    }
+                }
                     break;
                 case EDirectionType.Right:
+                {
+                    var start = centerPos.y - _radius;
+                    var end = centerPos.y + _radius;
+                    target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom);
+                    if (start <= target.ColliderGrid.YMin)
                     {
-                        var start = centerPos.y - _radius;
-                        var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom);
-                        if (start <= target.ColliderGrid.YMin)
-                        {
-                            start = target.ColliderGrid.XMax - paintDepth;
-                            end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
-                        }
-                        if (end >= target.ColliderGrid.YMax)
-                        {
-                            start = target.ColliderGrid.XMax - paintDepth;
-                            end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
-                        }
+                        start = target.ColliderGrid.XMax - paintDepth;
+                        end = target.ColliderGrid.XMax;
+                        target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                     }
+
+                    if (end >= target.ColliderGrid.YMax)
+                    {
+                        start = target.ColliderGrid.XMax - paintDepth;
+                        end = target.ColliderGrid.XMax;
+                        target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
+                    }
+                }
                     break;
                 case EDirectionType.Left:
+                {
+                    var start = centerPos.y - _radius;
+                    var end = centerPos.y + _radius;
+                    target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom);
+                    if (start <= target.ColliderGrid.YMin)
                     {
-                        var start = centerPos.y - _radius;
-                        var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom);
-                        if (start <= target.ColliderGrid.YMin)
-                        {
-                            start = target.ColliderGrid.XMin;
-                            end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
-                        }
-                        if (end >= target.ColliderGrid.YMax)
-                        {
-                            start = target.ColliderGrid.XMin;
-                            end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
-                        }
+                        start = target.ColliderGrid.XMin;
+                        end = target.ColliderGrid.XMin + paintDepth;
+                        target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                     }
+
+                    if (end >= target.ColliderGrid.YMax)
+                    {
+                        start = target.ColliderGrid.XMin;
+                        end = target.ColliderGrid.XMin + paintDepth;
+                        target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
+                    }
+                }
                     break;
             }
         }

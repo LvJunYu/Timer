@@ -41,6 +41,16 @@ namespace GameA.Game
 		[ColumnMapping("Hp")]
 		public int Hp;
 		/// <summary>
+        /// 最大速度
+        /// </summary>
+		[ColumnMapping("MaxSpeed")]
+		public int MaxSpeed;
+		/// <summary>
+        /// 弹跳
+        /// </summary>
+		[ColumnMapping("JumpAbility")]
+		public int JumpAbility;
+		/// <summary>
         /// 类别
         /// </summary>
 		[ColumnMapping("UnitType")]
@@ -101,6 +111,11 @@ namespace GameA.Game
 		[ColumnMapping("IsBulletBlock")]
 		public int IsBulletBlock;
 		/// <summary>
+        /// 系绳子
+        /// </summary>
+		[ColumnMapping("CanTieRope")]
+		public int CanTieRope;
+		/// <summary>
         /// 数量
         /// </summary>
 		[ColumnMapping("Count")]
@@ -160,6 +175,16 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("ActiveState")]
 		public int ActiveState;
+		/// <summary>
+        /// 有效范围
+        /// </summary>
+		[ColumnMapping("ValidRange")]
+		public int ValidRange;
+		/// <summary>
+        /// 
+        /// </summary>
+		[ColumnMapping("SkillId")]
+		public int SkillId;
 		/// <summary>
         /// 装载
         /// </summary>

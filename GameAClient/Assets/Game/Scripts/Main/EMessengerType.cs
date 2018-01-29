@@ -27,7 +27,7 @@ namespace GameA
 	    public static int OnUnitDeletedInEditMode = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
-        public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
+	    public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
 
@@ -40,7 +40,9 @@ namespace GameA
         public static int OnKeyChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnWinDataChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnScoreChanged = SoyEngine.EMessengerType.NextId++;
-        public static int OnMainPlayerCreated = SoyEngine.EMessengerType.NextId++;
+	    public static int OnTeamChanged = SoyEngine.EMessengerType.NextId++;
+	    public static int OnMainPlayerCreated = SoyEngine.EMessengerType.NextId++;
+	    public static int OnMainPlayerReviveTime = SoyEngine.EMessengerType.NextId++;
 
 	    public static int GameLog = SoyEngine.EMessengerType.NextId++;
 	    public static int GameErrorLog = SoyEngine.EMessengerType.NextId++;
@@ -51,14 +53,18 @@ namespace GameA
         public static int GameFinishFailedShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
 
-        public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
+	    public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
+	    public static int OnPlayerDead = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnEditCameraOrthoSizeChange = SoyEngine.EMessengerType.NextId++;
-		public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
+	    public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
+	    public static int OnSpawnDataChanged = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
+	    // 到达终点
+	    public static int OnPlayerArrive = SoyEngine.EMessengerType.NextId++;
         // 拾取了宝石
         public static int OnGemCollect = SoyEngine.EMessengerType.NextId++;
 	    // 拾取了一条命

@@ -5,10 +5,7 @@
 ** Summary : ScorchedEarth
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -25,6 +22,10 @@ namespace GameA.Game
                 return false;
             }
             _animation.Init("Run");
+            if (_state == 2)
+            {
+                _view.SetRendererEnabled(false);
+            }
             return true;
         }
 
@@ -94,10 +95,6 @@ namespace GameA.Game
             if (_state == 0)
             {
                 _state = 1;
-                if (UseMagic())
-                {
-                    SetEnabled(false);
-                }
             }
         }
 
@@ -112,6 +109,7 @@ namespace GameA.Game
                     //开始爆炸
                     _state = 2;
                     SetCross(true);
+                    SetEnabled(false);
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
@@ -138,10 +136,7 @@ namespace GameA.Game
                     //复原
                     _state = 0;
                     SetCross(false);
-                    if (UseMagic())
-                    {
-                        SetEnabled(true);
-                    }
+                    SetEnabled(true);
                     _timer = 0;
                     if (_view != null)
                     {

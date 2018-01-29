@@ -14,6 +14,7 @@ namespace GameA.Game
         private Gesture _lastDragGesture;
         private bool _pinchActive;
         private Gesture _lastPinchGesture;
+        private UICtrlUnitPropertyEdit _uiCtrlUnitPropertyEdit;
 
         public EditModeStateMachineHelper(StateMachine<EditMode, EditModeState.Base> stateMachine)
         {
@@ -59,10 +60,10 @@ namespace GameA.Game
             InputManager.Instance.OnMouseRightButtonDragStart -= OnMouseRightButtonDragStart;
             InputManager.Instance.OnMouseRightButtonDrag -= OnMouseRightButtonDrag;
             InputManager.Instance.OnMouseRightButtonDragEnd -= OnMouseRightButtonDragEnd;
-            
+
             _stateMachine.AfterChangeStateCallback -= OnAfterStateChange;
             _stateMachine.BeforeChangeStateCallback -= OnBeforeStateChange;
-            
+
             foreach (var state in _initedStateSet)
             {
                 state.Dispose();
@@ -70,7 +71,7 @@ namespace GameA.Game
             _initedStateSet.Clear();
             _dragMode = EDragMode.None;
         }
-        
+
         #region InputEvent
 
         private void OnTouchStart(Gesture gesture)
@@ -104,7 +105,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         private void OnTouchUp(Gesture gesture)
         {
             switch (_dragMode)
@@ -136,7 +137,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         private void OnPinch(Gesture gesture)
         {
             if (!EditMode.Instance.Enable)
@@ -358,6 +359,14 @@ namespace GameA.Game
             {
                 return;
             }
+            if (_uiCtrlUnitPropertyEdit == null)
+            {
+                _uiCtrlUnitPropertyEdit = SocialGUIManager.Instance.GetUI<UICtrlUnitPropertyEdit>();
+            }
+            if (_uiCtrlUnitPropertyEdit != null && _uiCtrlUnitPropertyEdit.IsOpen)
+            {
+                return;
+            }
             if (null != _stateMachine.GlobalState)
             {
                 _stateMachine.GlobalState.OnMouseWheelChange(arg1, arg2);
@@ -426,12 +435,12 @@ namespace GameA.Game
                 _initedStateSet.Add(newState);
             }
         }
-        
+
         private void OnAfterStateChange(EditModeState.Base oldState, EditModeState.Base newState)
         {
             Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
         }
-        
+
         private enum EDragMode
         {
             None,

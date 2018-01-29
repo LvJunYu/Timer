@@ -83,7 +83,16 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorkshopCreate);
+            return RequestStartGame(project, EStartType.WorkshopStandaloneCreate);
+        }
+
+        
+        public bool RequestCreateMulti(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.WorkshopMultiCreate);
         }
 
         public bool RequestEdit(Project project)
@@ -91,9 +100,17 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorkshopEdit);
+            return RequestStartGame(project, EStartType.WorkshopEditStandalone);
         }
-
+        
+        public bool RequestEditMultiBattle(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.WorkshopEditMultiBattle);
+        }
+        
         public bool RequestModify(Project project)
         {
             _projectList.Clear();
@@ -107,16 +124,16 @@ namespace GameA
             _projectList.Clear();
             _projectList.Add(project);
             _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.WorldPlay);
+            return RequestStartGame(project, EStartType.WorldPlay, project.ShadowBattleParam);
         }
-        
-        public bool RequestPlayShadowBattle(Project project, Record record)
-        {
-            _projectList.Clear();
-            _projectList.Add(project);
-            _curProjectInx = 0;
-            return RequestStartGame(project, EStartType.ShadowBattlePlay, record);
-        }
+
+//        public bool RequestPlayShadowBattle(Project project, Record record)
+//        {
+//            _projectList.Clear();
+//            _projectList.Add(project);
+//            _curProjectInx = 0;
+//            return RequestStartGame(project, EStartType.WorldPlay, record);
+//        }
 
         public bool RequestPlayAdvNormal(Project project, SituationAdventureParam param)
         {
@@ -223,8 +240,10 @@ namespace GameA
         public enum EStartType
         {
             None,
-            WorkshopCreate,
-            WorkshopEdit,
+            WorkshopStandaloneCreate,
+            WorkshopMultiCreate,
+            WorkshopEditStandalone,
+            WorkshopEditMultiBattle,
             WorldPlay,
             WorldPlayRecord,
 
@@ -236,7 +255,7 @@ namespace GameA
             AdventureBonusPlay,
             MultiCooperationPlay,
             MultiBattlePlay,
-            ShadowBattlePlay,
+//            ShadowBattlePlay,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)

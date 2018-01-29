@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine.Unity;
@@ -79,6 +78,8 @@ namespace GameA.Game
             PlayMode.Instance.Dispose();
             MapManager.Instance.Dispose();
             PlayerManager.Instance.Dispose();
+            TeamManager.Instance.Dispose();
+            RopeManager.Instance.Dispose();
 
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();
@@ -112,7 +113,8 @@ namespace GameA.Game
             MapManager.Instance.Init(eGameInitType, project);
             while (!MapManager.Instance.GenerateMapComplete)
             {
-                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, MapManager.Instance.MapProcess * 0.8f);
+                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess,
+                    MapManager.Instance.MapProcess * 0.8f);
                 yield return new WaitForSeconds(0.1f);
             }
             GameParticleManager.Instance.PreLoadParticle(ParticleNameConstDefineGM2D.WinEffect, EResScenary.Default);
@@ -171,10 +173,10 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
-            
+
             float debugSpeed = 1;
-            
-            #if UNITY_EDITOR
+
+#if UNITY_EDITOR
             if (Input.GetKey(KeyCode.T))
             {
                 debugSpeed = 2;
@@ -187,9 +189,9 @@ namespace GameA.Game
             {
                 debugSpeed = 8;
             }
-            #endif
-            
-            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed * debugSpeed;
+#endif
+
+            _gameTimeSinceGameStarted += Time.deltaTime * GM2DGame.Instance.GamePlaySpeed * debugSpeed;
         }
 
         public void UpdateLogic(float deltaTime)
@@ -203,6 +205,14 @@ namespace GameA.Game
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
             _logicFrameCnt++;
+        }
+
+        public void UpdateSkeletonAnimation()
+        {
+            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
+            {
+                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
+            }
         }
 
         #region GameState
@@ -264,25 +274,27 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnGameRestart);
             return true;
         }
-        
+
         public bool Playing()
         {
             LogHelper.Debug("Playing");
+            _gameTimeSinceGameStarted = 0;
+            _logicFrameCnt = 0;
             if (!PlayMode.Instance.Playing())
             {
                 LogHelper.Debug("Playing failed");
                 return false;
             }
-            _gameTimeSinceGameStarted = 0;
-            _logicFrameCnt = 0;
             _isPlaying = true;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.StartGame);
-            _bgmMusic = GM2DGame.Instance.Project.AdventureProjectType == EAdventureProjectType.APT_Bonus ? AudioNameConstDefineGM2D.LevelBonusBgm : AudioNameConstDefineGM2D.LevelNormalBgm;
+            _bgmMusic = GM2DGame.Instance.Project.AdventureProjectType == EAdventureProjectType.APT_Bonus
+                ? AudioNameConstDefineGM2D.LevelBonusBgm
+                : AudioNameConstDefineGM2D.LevelNormalBgm;
             GameAudioManager.Instance.PlayMusic(_bgmMusic);
             Messenger.Broadcast(EMessengerType.OnPlay);
             if (Application.isMobilePlatform)
             {
-                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+                var inputControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
                 if (inputControl != null)
                 {
                     for (int i = 0; i < 3; i++)
@@ -291,9 +303,10 @@ namespace GameA.Game
                     }
                 }
             }
+            RpgTaskManger.Instance.GetAllTask();
             return true;
         }
-        
+
         /// <summary>
         /// 游戏以胜利结束
         /// </summary>

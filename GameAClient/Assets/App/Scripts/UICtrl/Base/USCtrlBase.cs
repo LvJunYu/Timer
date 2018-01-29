@@ -9,6 +9,7 @@ namespace SoyEngine
 	{
 		protected T _cachedView;
 		private bool _hasInited;
+		protected bool _isOpen = false;
 
 		public bool HasInited
 		{
@@ -27,6 +28,14 @@ namespace SoyEngine
 		protected virtual void OnViewCreated()
 		{			
 		}
+
+		public virtual void OnDestroy()
+		{
+			
+		}
+		
+		public virtual void Open() { _isOpen = true; }
+		public virtual void Close() { _isOpen = false; }
 	}
 }
 

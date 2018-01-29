@@ -1,29 +1,43 @@
-﻿using SoyEngine;
-
+﻿
 namespace GameA.Game
 {
     public class EffectBase : UnitBase
     {
         protected bool _trigger;
         protected UnitBase _unit;
-        
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
             {
                 return false;
             }
+
             SetSortingOrderFrontest();
             return true;
         }
-        
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+
+            if (GameRun.Instance.IsPlaying)
+            {
+                _view.SetRendererEnabled(false);
+            }
+            return true;
+        }
+
         protected override void Clear()
         {
             base.Clear();
             _trigger = false;
             _unit = null;
         }
-        
+
         internal override void OnPlay()
         {
             base.OnPlay();
@@ -50,6 +64,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 _trigger = true;
                 _unit = other;
                 OnTriggerEnter();

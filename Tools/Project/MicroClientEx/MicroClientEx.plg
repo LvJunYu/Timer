@@ -1,0 +1,64 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MicroClientEx - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/MicroClientEx.res" /d "_DEBUG" "Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx\MicroClientEx.rc"" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPB7F6.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx\MicroClientExDlg.cpp"
+]
+Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSPB7F6.tmp" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPB7F7.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/JoyGame_Launcher.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/JoyGame_Launcher.exe" /pdbtype:sept 
+.\Debug\CaptionButton.obj
+.\Debug\common_function.obj
+.\Debug\CompressStream.obj
+.\Debug\CompressStreamBuf.obj
+.\Debug\ContainerDialog.obj
+.\Debug\CountChecksum.obj
+.\Debug\CustomControlSite.obj
+.\Debug\DecompressStream.obj
+.\Debug\DecompressStreamBuf.obj
+.\Debug\DrawAppearance.obj
+.\Debug\HttpClient.obj
+.\Debug\ImpIDispatch.obj
+.\Debug\LogUtil.obj
+.\Debug\MicroClientEx.obj
+.\Debug\MicroClientExDlg.obj
+.\Debug\PngBtn.obj
+.\Debug\ProgressBar.obj
+.\Debug\StdAfx.obj
+.\Debug\StreamException.obj
+.\Debug\tinystr.obj
+.\Debug\tinyxml.obj
+.\Debug\tinyxmlerror.obj
+.\Debug\tinyxmlparser.obj
+.\Debug\webbrowser2.obj
+.\Debug\ZlibStream.obj
+.\Debug\ZlibStreamBuf.obj
+.\Debug\MicroClientEx.res
+]
+Creating command line "link.exe @C:\Users\quan\AppData\Local\Temp\RSPB7F7.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+MicroClientExDlg.cpp
+Linking...
+   Creating library Debug/JoyGame_Launcher.lib and object Debug/JoyGame_Launcher.exp
+LINK : warning LNK4049: locally defined symbol ""protected: static struct AFX_INTERFACEMAP const COleControlSite::interfaceMap" (?interfaceMap@COleControlSite@@1UAFX_INTERFACEMAP@@B)" imported
+LINK : warning LNK4049: locally defined symbol "_malloc" imported
+LINK : warning LNK4049: locally defined symbol "_free" imported
+
+
+
+<h3>Results</h3>
+JoyGame_Launcher.exe - 0 error(s), 3 warning(s)
+</pre>
+</body>
+</html>

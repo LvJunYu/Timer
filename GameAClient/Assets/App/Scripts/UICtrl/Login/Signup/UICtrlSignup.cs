@@ -17,6 +17,7 @@ namespace GameA
     public class UICtrlSignup : UICtrlGenericBase<UIViewSignup>
     {
         #region 常量与字段
+
         #endregion
 
         #region 属性
@@ -24,15 +25,17 @@ namespace GameA
         #endregion
 
         #region 方法
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             InitUIEvent();
+            InitInputFieldCheck();
             LoginLogicUtil.Init();
         }
 
@@ -58,10 +61,10 @@ namespace GameA
         {
             _cachedView.SmsCode.text = "";
             _cachedView.GetSMSCode.enabled = false;
-            Text text =  _cachedView.GetSMSCodeBtnLabel;
-            for(int countDown = 60; countDown>0; countDown--)
+            Text text = _cachedView.GetSMSCodeBtnLabel;
+            for (int countDown = 60; countDown > 0; countDown--)
             {
-                text.text = "" + countDown +"秒后可重发";
+                text.text = "" + countDown + "秒后可重发";
                 yield return new WaitForSeconds(1f);
             }
             text.text = "获取验证码";
@@ -78,11 +81,11 @@ namespace GameA
             var pwd = _cachedView.Pwd.text;
             bool phoneCheckResult = CheckTools.CheckPhoneNum(phone);
             LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
-            if(!phoneCheckResult)
+            if (!phoneCheckResult)
             {
                 return;
             }
-            bool verificationCheckResult = CheckTools.CheckVerificationCode (verificationCode);
+            bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
             //if(!verificationCheckResult)
             //{
@@ -96,7 +99,8 @@ namespace GameA
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力注册中");
             LocalUser.Instance.Account.SignUp(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
-                ret=> {
+                ret =>
+                {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.GetUI<UICtrlSignup>().Close();
                     SocialApp.Instance.LoginSucceed();
@@ -113,7 +117,8 @@ namespace GameA
 
         #endregion
 
-        #region  
+        #region
+
         /// <summary>
         /// 验证码功能待完成
         /// </summary>
@@ -126,10 +131,9 @@ namespace GameA
             {
                 return;
             }
-            RemoteCommands.GetVerificationCode(phoneNum,EAccountIdentifyType.AIT_Phone,EVerifyCodeType.VCT_Register,
-                (ret) => { },null
-
-                );
+            RemoteCommands.GetVerificationCode(phoneNum, EAccountIdentifyType.AIT_Phone, EVerifyCodeType.VCT_Register,
+                (ret) => { }, null
+            );
             CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
             //            string phoneNum = _cachedView.Phone.text;
             //            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
@@ -216,11 +220,19 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             LoginLogicUtil.ShowSnsLoginCancel();
         }
+
         #endregion
 
         public object GetTitle()
         {
             return "注册";
+        }
+
+        private void InitInputFieldCheck()
+        {
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Phone);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.Pwd);
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SmsCode);
         }
     }
 }

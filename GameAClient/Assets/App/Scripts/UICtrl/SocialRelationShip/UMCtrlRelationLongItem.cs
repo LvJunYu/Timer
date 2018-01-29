@@ -36,7 +36,7 @@ namespace GameA
                 _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
             _userInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
-//            bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
+            bool followMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe;
             bool followByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
             bool isFriend = _userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend;
             _cachedView.TalkBtn.SetActiveEx(false);
@@ -52,8 +52,13 @@ namespace GameA
                     _cachedView.BtnTxt.text = RelationCommonString.FollowedStr;
                     _cachedView.BtnTxt.color = _cachedView.FollowedColor;
                 }
-                else
+                else if (followMe)
                 {
+                    _cachedView.BtnTxt.text = RelationCommonString.FollowStr;
+                    _cachedView.BtnTxt.color = Color.white;
+                }
+                else
+                {//理论上不会进入这个
                     _cachedView.BtnTxt.text = RelationCommonString.FollowStr;
                     _cachedView.BtnTxt.color = Color.white;
                 }

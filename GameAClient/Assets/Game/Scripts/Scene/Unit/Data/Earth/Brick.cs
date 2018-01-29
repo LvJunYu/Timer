@@ -16,7 +16,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.IsMain || UnitDefine.IsBullet(other.Id))
+                if (other.IsPlayer || UnitDefine.IsBullet(other.Id))
                 {
                     DestroyBrick();
                 }

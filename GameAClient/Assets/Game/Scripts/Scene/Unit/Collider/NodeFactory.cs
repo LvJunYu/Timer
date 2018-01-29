@@ -16,7 +16,7 @@ namespace GameA.Game
         public static SceneNode GetDataNode(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             return SoyEngine.NodeFactory.GetDataNode((ushort) tableUnit.Id,
-                tableUnit.GetBaseDataGrid(unitDesc.Guid), unitDesc.Guid.z,
+                tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale), unitDesc.Guid.z,
                 unitDesc.Rotation, unitDesc.Scale, UnitManager.Instance.GetLayer(tableUnit));
         }
 
@@ -29,8 +29,8 @@ namespace GameA.Game
                     isDynamic = true;
                     break;
                 case EColliderType.Static:
-                    UnitExtra unitExtra;
-                    if (DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                    UnitExtraDynamic unitExtra;
+                    if (DataScene2D.CurScene.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                     {
                         isDynamic = unitExtra.IsDynamic();
                     }

@@ -7,6 +7,7 @@ namespace GameA
     public abstract class UPCtrlWorkShopProjectBase : UPCtrlBase<UICtrlWorkShop, UIViewWorkShop>,
         IOnChangeHandler<long>
     {
+        protected bool _hasRequested;
         protected const int _pageSize = 21;
         protected List<Project> _projectList;
         protected EResScenary _resScenary;
@@ -59,7 +60,13 @@ namespace GameA
                     CardDataRendererWrapper<Project> w =
                         new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
                     _contentList.Add(w);
-                    _dict.Add(_projectList[i].ProjectId, w);
+                    if (_dict.ContainsKey(_projectList[i].ProjectId))
+                    {
+                    }
+                    else
+                    {
+                        _dict.Add(_projectList[i].ProjectId, w);
+                    }
                 }
             }
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
@@ -73,12 +80,7 @@ namespace GameA
             }
         }
 
-        protected virtual IDataItemRenderer GetItemRenderer(RectTransform parent)
-        {
-            var item = new UMCtrlProject();
-            item.Init(parent, _resScenary);
-            return item;
-        }
+        protected abstract IDataItemRenderer GetItemRenderer(RectTransform parent);
 
         protected virtual void OnItemRefresh(IDataItemRenderer item, int inx)
         {

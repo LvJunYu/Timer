@@ -6,9 +6,9 @@ namespace GameA.Game
     {
         public EAction ActionType;
         public UnitDesc UnitDesc;
-        public UnitExtra UnitExtra;
+        public UnitExtraDynamic UnitExtra;
         public UnitDesc UnitDescOld;
-        public UnitExtra UnitExtraOld;
+        public UnitExtraDynamic UnitExtraOld;
         public IntVec3 SwitchGuid;
         
         public enum EAction
@@ -34,6 +34,10 @@ namespace GameA.Game
             /// 删除开关连接
             /// </summary>
             RemoveSwitchConnection,
+            /// <summary>
+            /// 修改场景大小
+            /// </summary>
+            ChangeMapRect,
         }
     }
 }

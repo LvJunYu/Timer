@@ -5,7 +5,7 @@
 ** Summary : SpineUnit
 ***********************************************************************/
 
-using System;
+using System.Collections.Generic;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -17,10 +17,10 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 30, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class SpineUnit : UnitView
     {
-        protected SkeletonAnimation _skeletonAnimation;
         protected Renderer _renderer;
         protected Shader _damageShader;
         private bool _hasSetShader;
+        private List<Material> _materialsCache = new List<Material>();
 
         public SpineUnit()
         {
@@ -45,6 +45,7 @@ namespace GameA.Game
             _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
+            _materialsCache.Clear();
             return true;
         }
 
@@ -64,25 +65,60 @@ namespace GameA.Game
             }
         }
 
+        private static string _oldShaderName = "Spine/Skeleton";
+
         public override void SetDamageShaderValue(string name, float value)
         {
-            InitShader();
-            if (_renderer == null) return;
+            base.SetDamageShaderValue(name, value);
+            if (_renderer == null)
+            {
+//                LogHelper.Error("SetDamageShaderValue , but _renderer == null");
+                return;
+            }
+            if (_unit == null)
+            {
+                LogHelper.Error("SetDamageShaderValue , but _unit == null");
+                return;
+            }
             Material[] materials;
-            //玩家只有一個，直接改shareMals，不頻繁創創建实例
-            if (_unit.IsMain)
+            //主玩家只有一個，直接改shareMals，不頻繁創創建实例
+//            if (_unit.IsMain)
+//            {
+//                if (_damageShader == null)
+//                {
+//                    _damageShader = Shader.Find("Spine/SkeletonWhite");
+//                }
+//                materials = _renderer.sharedMaterials;
+//                for (int i = 0; i < materials.Length; i++)
+//                {
+//                    if (materials[i] != null)
+//                    {
+//                        //玩家的materials在动态变化，缓存后一起修改
+//                        if (!_materialsCache.Contains(materials[i]))
+//                        {
+//                            if (materials[i].shader.name == _oldShaderName)
+//                            {
+//                                materials[i].shader = _damageShader;
+//                            }
+//                            _materialsCache.Add(materials[i]);
+//                        }
+//                    }
+//                }
+//                for (int i = 0; i < _materialsCache.Count; i++)
+//                {
+//                    _materialsCache[i].SetFloat(name, value);
+//                }
+//            }
+//            else
             {
-                materials = _renderer.sharedMaterials;
-            }
-            else
-            {
+                InitShader();
                 materials = _renderer.materials;
-            }
-            for (int i = 0; i < materials.Length; i++)
-            {
-                if (name != null && materials[i] != null)
+                for (int i = 0; i < materials.Length; i++)
                 {
-                    materials[i].SetFloat(name, value);
+                    if (materials[i] != null)
+                    {
+                        materials[i].SetFloat(name, value);
+                    }
                 }
             }
         }
@@ -90,15 +126,17 @@ namespace GameA.Game
         private void InitShader()
         {
             if (_hasSetShader) return;
-            var materials = _renderer.sharedMaterials;
             if (_damageShader == null)
             {
                 _damageShader = Shader.Find("Spine/SkeletonWhite");
             }
+            var materials = _renderer.sharedMaterials;
             for (int i = 0; i < materials.Length; i++)
             {
-                if (materials[i] != null && materials[i].shader.name == "Spine/Skeleton")
+                if (materials[i] != null && materials[i].shader.name == _oldShaderName)
+                {
                     materials[i].shader = _damageShader;
+                }
             }
             _hasSetShader = true;
         }

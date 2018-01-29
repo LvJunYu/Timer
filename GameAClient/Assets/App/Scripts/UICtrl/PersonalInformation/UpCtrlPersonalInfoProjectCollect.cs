@@ -5,18 +5,17 @@ namespace GameA
 {
     public class UpCtrlPersonalInfoProjectCollect : UPCtrlPersonalInfoProjectBase
     {
-        private UserFavoriteWorldProjectList _data;
+        private UserFavoriteWorldProjectList _data = new UserFavoriteWorldProjectList();
 
         protected override void RequestData(bool append = false)
         {
-            _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             if (_mainCtrl.UserInfoDetail == null) return;
             int startInx = 0;
             if (append)
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize,
+            _data.Request(_mainCtrl.UserInfoDetail.UserInfoSimple.UserId, startInx, PageSize, Project.ProjectTypeAllMask,
                 EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
                     _projectList = _data.AllList;

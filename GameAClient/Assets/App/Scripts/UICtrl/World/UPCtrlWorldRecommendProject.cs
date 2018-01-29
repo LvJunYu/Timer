@@ -1,28 +1,61 @@
-﻿
+﻿using SoyEngine;
+
 namespace GameA
 {
     public class UPCtrlWorldRecommendProject : UPCtrlWorldProjectBase
     {
-        private WorldRecommendProjectList _data;
+        private WorldBestProjectList _data;
 
         public override void RequestData(bool append = false)
         {
-            _data = AppData.Instance.WorldData.RecommendProjectList;
+            _data = AppData.Instance.WorldData.WorldBestProjectList;
             if (_isRequesting)
             {
                 return;
             }
             _isRequesting = true;
-            _data.Request(0, () =>
+            int startInx = 0;
+            if (append)
             {
-                _hasRequested = true;
-                _isRequesting = false;
-                _projectList = _data.ProjectList;
-                if (_isOpen)
+                startInx = _contentList.Count;
+            }
+            _data.Request(startInx, _pageSize, Mask, () =>
                 {
-                    RefreshView();
+                    _isRequesting = false;
+                    _projectList = _data.AllList;
+                    if (_isOpen)
+                    {
+                        RefreshView();
+                    }
+                }, code =>
+            {
+                _isRequesting = false;
+                LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code);
+            });
+        }
+        
+        protected override void OnItemRefresh(IDataItemRenderer item, int inx)
+        {
+            if (_unload)
+            {
+                item.Set(null);
+            }
+            else
+            {
+                if (inx >= _contentList.Count)
+                {
+                    LogHelper.Error("OnItemRefresh Error Inx > count");
+                    return;
                 }
-            }, code => { _isRequesting = false; });
+                item.Set(_contentList[inx]);
+                if (!_data.IsEnd)
+                {
+                    if (inx > _contentList.Count - 2)
+                    {
+                        RequestData(true);
+                    }
+                }
+            }
         }
     }
 }

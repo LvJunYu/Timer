@@ -84,26 +84,17 @@ namespace GameA
             }
             SetPartAnimations();
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
-                .OnUpdate(OnOpenAnimationUpdate).PrependCallback(() =>
-                {
-                    if (_closeSequence.IsPlaying())
-                    {
-                        _closeSequence.Complete(true);
-                        _cachedView.gameObject.SetActive(true);
-                    }
-                });
-            _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() =>
-                {
-                    if (_openSequence.IsPlaying())
-                    {
-                        _openSequence.Complete(true);
-                    }
-                });
+                .OnUpdate(OnOpenAnimationUpdate);
+            _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
         }
 
         private void OpenAnimation(bool immediateFinish = false)
         {
+            if (_closeSequence.IsPlaying())
+            {
+                _closeSequence.Complete(true);
+                _cachedView.SetActiveEx(true);
+            }
             if (_passAnimation || immediateFinish)
             {
                 _openSequence.Restart();
@@ -118,6 +109,10 @@ namespace GameA
 
         private void CloseAnimation(bool immediateFinish = false)
         {
+            if (_openSequence.IsPlaying())
+            {
+                _openSequence.Complete(true);
+            }
             if (_passAnimation || immediateFinish)
             {
                 _closeSequence.PlayForward();
@@ -126,7 +121,7 @@ namespace GameA
             }
             else
             {
-                _cachedView.gameObject.SetActive(true);
+                _cachedView.SetActiveEx(true);
                 _closeSequence.PlayForward();
             }
         }

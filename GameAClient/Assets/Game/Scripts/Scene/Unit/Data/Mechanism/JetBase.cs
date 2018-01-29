@@ -23,8 +23,9 @@ namespace GameA.Game
         protected float _endAngle;
         protected float _curAngle;
         protected int _timeDelay;
-        protected int _timeInterval;
-        
+        protected int _attackInterval;
+        protected int _castRange;
+
         public override bool CanControlledBySwitch
         {
             get { return true; }
@@ -45,17 +46,57 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
-        public override void UpdateExtraData()
+
+        protected override void SetSkillValue()
         {
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
-            _weaponId = unitExtra.ChildId;
+            _skillCtrl.CurrentSkills[0].SetValue(_attackInterval, _castRange);
+            if (_attackInterval < 10)
+            {
+                _timeScale = 4;
+            }
+            else if (_attackInterval < 20)
+            {
+                _timeScale = 3;
+            }
+            else if (_attackInterval < 40)
+            {
+                _timeScale = 2;
+            }
+        }
+
+        public override UnitExtraDynamic UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            //todo 兼容老版本
+            if (unitExtra.ChildId < 1000)
+            {
+                _weaponId = unitExtra.ChildId / 100 * 1000 + unitExtra.ChildId % 100;
+            }
+            else
+            {
+                _weaponId = unitExtra.ChildId;
+            }
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
-            _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
-            _timeInterval = Math.Max(25, _timeInterval);
-            base.UpdateExtraData();
+            if (unitExtra.TimeInterval > 0)
+            {
+                _attackInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            }
+            else
+            {
+                _attackInterval = TableConvert.GetTime(150);
+            }
+//            _attackInterval = Math.Max(25, _attackInterval);
+            if (unitExtra.CastRange > 0)
+            {
+                _castRange = TableConvert.GetRange(unitExtra.CastRange);
+            }
+            else
+            {
+                _castRange = TableConvert.GetRange(300);
+            }
+            return unitExtra;
         }
 
         internal override bool InstantiateView()
@@ -91,8 +132,8 @@ namespace GameA.Game
             FreeEffect(_efffectWeapon);
             _efffectWeapon = null;
         }
-        
-        public override bool SetWeapon(int id)
+
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1)
         {
             if (id == 0)
             {
@@ -116,13 +157,9 @@ namespace GameA.Game
                 }
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
-            _skillCtrl.SetSkill(tableEquipment.MonsterSkillId);
-            SetValue();
+            _skillCtrl.SetSkill(tableEquipment.SkillId);
+            SetSkillValue();
             return true;
-        }
-
-        protected virtual void SetValue()
-        {
         }
 
         public override void UpdateLogic()
@@ -152,11 +189,13 @@ namespace GameA.Game
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
-                if (!Util.IsFloatEqual(_angle, _endAngle) )
+                if (!Util.IsFloatEqual(_angle, _endAngle))
                 {
                     if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                     {
-                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise
+                            ? ERotateMode.Anticlockwise
+                            : ERotateMode.Clockwise;
                     }
                 }
                 if (_trans != null)

@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -15,10 +16,10 @@ namespace GameA
 	{
         #region field
 
-        private bool _hasInit = false;
         private int _appResVersion = 1;
         private AdventureData _adventureData;
         private WorldData _worldData;
+		private ChatData _chatData;
 
 		private static AppData _instance = new AppData();
 
@@ -35,11 +36,6 @@ namespace GameA
             get { return _appResVersion; }
         }
 
-        public bool HasInit
-        {
-            get { return _hasInit; }
-        }
-
         public AdventureData AdventureData
         {
             get { return _adventureData; }
@@ -50,7 +46,12 @@ namespace GameA
             get { return _worldData; }
         }
 
-        #endregion property
+		public ChatData ChatData
+		{
+			get { return _chatData; }
+		}
+
+		#endregion property
 
         #region methond
 
@@ -58,15 +59,19 @@ namespace GameA
         {
             _adventureData = new AdventureData();
             _worldData = new WorldData();
+	        _chatData = new ChatData();
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountLoginStateChanged);
         }
-
 
         public void LoadAppData(Action successCallback, Action<ENetResultCode> failedCallback)
         {
 			Request(0, ()=>{
 				SoyPath.Instance.FileUrlRoot = _fileUrlRoot;
 				SoyPath.Instance.ImageUrlRoot = _imageUrlRoot;
+				if (GlobalVar.Instance.Env == EEnvironment.Production)
+				{
+					RoomManager.Instance.MasterServerAddress = _masterServerAddress;
+				}
 				if (_serverTime != 0)
 				{
 					DateTimeUtil.SyncServerTime(_serverTime);

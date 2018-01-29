@@ -119,7 +119,7 @@ namespace GameA.Game
             _successCallback = successCallback;
             _failCallback = failCallback;
             _eRoomState = ERoomState.RequestCreate;
-            RoomManager.Instance.SendRequestCreateRoom(eBattleType, projectId);
+            RoomManager.Instance.SendRequestCreateRoom(projectId);
         }
 
         public bool OnCreateSuccess(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
@@ -208,16 +208,16 @@ namespace GameA.Game
             return true;
         }
 
-        public void OnRoomInfo(Msg_RC_RoomInfo ret)
+        public void OnRoomInfo(Msg_MC_RoomInfo ret)
         {
             _users.Clear();
             ret.Users.ForEach(msgUser =>
             {
                 var user = new RoomUser();
-                user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
+                user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
                 _users.Add(user);
             });
-            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
+//            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
             Messenger.Broadcast(EMessengerType.OnRoomInfoChanged);
         }
 
@@ -359,7 +359,7 @@ namespace GameA.Game
         {
             //开启战场！
             _eRoomState = ERoomState.OpenBattle;
-            PlayerManager.Instance.SetUserData(_users);
+//            PlayerManager.Instance.SetUserData(_users);
             Messenger.Broadcast(EMessengerType.OnOpenBattle);
         }
 

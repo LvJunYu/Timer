@@ -9,7 +9,7 @@ namespace GameA
     public partial class ProjectUserData : SyncronisticData<Msg_ProjectUserData> {
         #region 字段
         /// <summary>
-        /// 胜利条件枚举
+        /// 
         /// </summary>
         private long _projectId;
         /// <summary>
@@ -52,7 +52,7 @@ namespace GameA
 
         #region 属性
         /// <summary>
-        /// 胜利条件枚举
+        /// 
         /// </summary>
         public long ProjectId { 
             get { return _projectId; }

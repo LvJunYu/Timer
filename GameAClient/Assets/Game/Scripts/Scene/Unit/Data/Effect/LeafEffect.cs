@@ -17,7 +17,7 @@ namespace GameA.Game
         
         protected override void OnTriggerEnter()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectLuoYe");
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectLuoYe", _trans.position);
         }
     }
 }

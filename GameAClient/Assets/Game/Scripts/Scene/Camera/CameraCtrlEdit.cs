@@ -23,6 +23,15 @@ namespace GameA.Game
             _positionSpringbackEffect.Init(InnerCameraManager);
             _orthoSizeSpringbackEffect.Init(InnerCameraManager, OnTargetOrthoSizeChanged);
             InitEditorCameraStartParam();
+            _mapReady = true;
+        }
+
+        public override void OnMapChanged(EChangeMapRectType eChangeMapRectType)
+        {
+            if (!_mapReady) return;
+            base.OnMapChanged(eChangeMapRectType);
+            _orthoSizeSpringbackEffect.OnMapChanged(eChangeMapRectType);
+            _positionSpringbackEffect.OnMapChanged(eChangeMapRectType);
         }
 
         public override void Enter()
@@ -70,18 +79,17 @@ namespace GameA.Game
         {
             _positionSpringbackEffect.MovePosEnd(deltaPos);
         }
-        
+
         public override void Update()
         {
             _positionSpringbackEffect.Update();
             _orthoSizeSpringbackEffect.Update();
         }
-        
-        
+
         private void InitEditorCameraStartParam()
         {
-            Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
-            
+            Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.CurScene.ValidMapRect);
+
             float sWHRatio = GM2DGame.Instance.GameScreenAspectRatio;
             float mWHRatio = validMapRect.width / validMapRect.height;
 
@@ -89,21 +97,31 @@ namespace GameA.Game
             Vector3 pos;
             Vector2 uiResolution = SocialGUIManager.GetUIResolution();
             if (sWHRatio > mWHRatio)
-            {//屏幕比地图宽 全显地图底部
+            {
+                //屏幕比地图宽 全显地图底部
                 orthoSize = validMapRect.width / sWHRatio / 2;
                 pos = new Vector3(validMapRect.center.x,
                     validMapRect.yMin + validMapRect.width / sWHRatio / 2);
-                
             }
             else
-            {//地图比屏幕宽 全显地图左侧
-                pos = new Vector3(validMapRect.xMin + orthoSize * GM2DGame.Instance.GameScreenAspectRatio, validMapRect.center.y);
+            {
+                //地图比屏幕宽 全显地图左侧
+                pos = new Vector3(validMapRect.xMin + orthoSize * GM2DGame.Instance.GameScreenAspectRatio,
+                    validMapRect.center.y);
             }
+
+            // size超过最大时，左下显示
+            if (orthoSize > ConstDefineGM2D.CameraOrthoSizeMaxValue)
+            {
+                float maxSize = ConstDefineGM2D.CameraOrthoSizeMaxValue;
+                pos = new Vector3(validMapRect.xMin + maxSize, validMapRect.yMin + maxSize);
+            }
+
             //往左移动一个x遮罩的宽度
             pos.x -= orthoSize * 2 * sWHRatio * ConstDefineGM2D.CameraMoveOutUISizeX / uiResolution.x;
             //往下移动一个Bottom遮罩的高度
             pos.y -= orthoSize * 2 * ConstDefineGM2D.CameraMoveOutSizeYBottom / uiResolution.y;
-            
+
             _cachedOrthoSize = orthoSize;
             _cachedPos = pos;
             _orthoSizeSpringbackEffect.SetOrthoSize(orthoSize);

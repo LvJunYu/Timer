@@ -5,8 +5,8 @@
 ** Summary : SceneState  
 ***********************************************************************/
 
-
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -30,17 +30,23 @@ namespace GameA.Game
         [SerializeField] private int _gemGain;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
+        private Dictionary<long, int> _keyDic = new Dictionary<long, int>(PlayerManager.MaxTeamCount);
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
+        public bool IsMulti
+        {
+            get { return Statistics.IsMulti; }
+        }
+
         public bool IsMainPlayerCreated
         {
-            get { return _mapStatistics.SpawnCount > 0; }
+            get { return Statistics.SpawnCount > 0; }
         }
 
         public bool HasKey
         {
-            get { return _mapStatistics.KeyCount > 0; }
+            get { return Statistics.KeyCount > 0; }
         }
 
         public int SecondLeft
@@ -52,6 +58,7 @@ namespace GameA.Game
                 {
                     return 0;
                 }
+
                 return (int) (RunTimeTimeLimit - _gameTimer);
             }
         }
@@ -69,29 +76,39 @@ namespace GameA.Game
 //                    return _mapStatistics.TimeLimit * 10+60;
 //                }else
                 {
-                    return _mapStatistics.TimeLimit * 10;
+                    if (IsMulti)
+                    {
+                        return Statistics.NetBattleTimeLimit;
+                    }
+
+                    return Statistics.TimeLimit * 10;
                 }
             }
         }
 
+        public int FinalCount
+        {
+            get { return Statistics.FinalCount; }
+        }
+
         public int TotalGem
         {
-            get { return _mapStatistics.GemCount; }
+            get { return Statistics.GemCount; }
         }
 
         public int MonsterCount
         {
-            get { return _mapStatistics.MonsterCount; }
+            get { return Statistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves(); }
         }
 
         public int HeroCageCount
         {
-            get { return _mapStatistics.HeroCageCount; }
+            get { return Statistics.HeroCageCount; }
         }
 
         public int WinCondition
         {
-            get { return _mapStatistics.WinCondition; }
+            get { return Statistics.WinCondition; }
         }
 
         public int GemGain
@@ -117,10 +134,11 @@ namespace GameA.Game
             get { return _arrived; }
             set
             {
-                if (!CheckWin(true))
+                if (!IsMulti && !CheckWin(true))
                 {
                     return;
                 }
+
                 _arrived = value;
                 UpdateWinState();
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
@@ -149,14 +167,17 @@ namespace GameA.Game
         {
             get
             {
-//                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
-//                {
-//                    return _mapStatistics.LifeCount * 11/10;
-//                }
-//                else
+                if (IsMulti)
                 {
-                    return _mapStatistics.LifeCount;
+                    if (Statistics.InfiniteLife)
+                    {
+                        return 99;
+                    }
+
+                    return Statistics.NetBattleLifeCount;
                 }
+
+                return Statistics.LifeCount;
             }
         }
 
@@ -179,9 +200,39 @@ namespace GameA.Game
         {
             get
             {
+                if (IsMulti)
+                {
+                    return TeamManager.Instance.GetMyTeamScore();
+                }
+
                 // 总分 = 杀死怪物得分 + 拾取宝石得分 + 剩余时间得分 + 剩余生命
                 return GetScore();
             }
+        }
+
+        public int GemScore
+        {
+            get { return Statistics.NetBattleCollectGemScore; }
+        }
+
+        public int KillMonsterScore
+        {
+            get { return Statistics.NetBattleKillMonsterScore; }
+        }
+
+        public int KillPlayerScore
+        {
+            get { return Statistics.NetBattleKillPlayerScore; }
+        }
+
+        public int ArriveScore
+        {
+            get { return Statistics.NetBattleArriveScore; }
+        }
+
+        public MapStatistics Statistics
+        {
+            get { return _mapStatistics; }
         }
 
         private int GetScore(bool forceCalculateAll = false)
@@ -190,9 +241,10 @@ namespace GameA.Game
             if (_runState == ESceneState.Fail) return 0;
             if (_runState == ESceneState.Win || forceCalculateAll)
             {
-                total += ((int) (RunTimeTimeLimit - _gameTimer)) * 10;
+                total += (int) (RunTimeTimeLimit - _gameTimer) * 10;
                 total += PlayMode.Instance.MainPlayer.Life * 200;
             }
+
             //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
             //{
             //    total += total / 5;
@@ -202,10 +254,11 @@ namespace GameA.Game
             return total;
         }
 
-        /// <summary>
-        ///     �༭ģʽ�µ�����
-        /// </summary>
-        /// <param name="mapStatistics"></param>
+        public void InitMultiBattleData(NetBattleData netBattleData)
+        {
+            Statistics.InitMultiBattleData(netBattleData);
+        }
+
         public void Init(MapStatistics mapStatistics)
         {
             _mapStatistics = mapStatistics;
@@ -213,9 +266,9 @@ namespace GameA.Game
 
         internal void Init(GM2DMapData levelData)
         {
-            _mapStatistics.WinCondition = (byte) levelData.WinCondition;
-            _mapStatistics.TimeLimit = levelData.TimeLimit;
-            _mapStatistics.LifeCount = levelData.LifeCount;
+            Statistics.WinCondition = (byte) levelData.WinCondition;
+            Statistics.TimeLimit = levelData.TimeLimit;
+            Statistics.LifeCount = levelData.LifeCount;
         }
 
         public void Reset()
@@ -226,22 +279,26 @@ namespace GameA.Game
             _gemGain = 0;
             _monsterKilled = 0;
             _keyGain = 0;
+            _keyDic.Clear();
         }
 
         public void StartPlay()
         {
-            if (_mapStatistics.FinalCount == 0)
+            if (Statistics.FinalCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Arrive);
             }
-            if (_mapStatistics.GemCount == 0)
+
+            if (Statistics.GemCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Collect);
             }
-            if (_mapStatistics.MonsterCount == 0)
+
+            if (MonsterCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Monster);
             }
+
             _gameTimer = 0;
             _runState = ESceneState.Run;
             Messenger.Broadcast(EMessengerType.OnWinDataChanged);
@@ -249,7 +306,7 @@ namespace GameA.Game
 
         public void Check(Table_Unit tableUnit)
         {
-            _mapStatistics.AddOrDeleteUnit(tableUnit, true);
+            Statistics.AddOrDeleteUnit(tableUnit, true);
         }
 
         /// <summary>
@@ -257,17 +314,17 @@ namespace GameA.Game
         /// </summary>
         public void ForceSetTimeFinish()
         {
-            _gameTimer = _mapStatistics.TimeLimit * 10;
+            _gameTimer = Statistics.TimeLimit * 10;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
-            return _mapStatistics.HasWinCondition(eWinCondition);
+            return Statistics.HasWinCondition(eWinCondition);
         }
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            _mapStatistics.SetWinCondition(eWinCondition, false);
+            Statistics.SetWinCondition(eWinCondition, false);
         }
 
         public void UpdateLogic(float deltaTime)
@@ -276,6 +333,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             //录像模式下如果出了问题至少保证时间超过录像长度就退出。
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord &&
                 GameRun.Instance.LogicFrameCnt >=
@@ -285,26 +343,39 @@ namespace GameA.Game
                 SocialApp.Instance.ReturnToApp();
                 return;
             }
-            if (HasWinCondition(EWinCondition.WC_TimeLimit))
+
+            _gameTimer += deltaTime;
+            if (IsMulti)
             {
-                _gameTimer += deltaTime;
-                if (CheckWinTimeLimit())
+                if (NetBattleTimeOver())
+                {
+                    switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
+                    {
+                        case ENetBattleTimeResult.Score:
+                            NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+                            break;
+                        case ENetBattleTimeResult.AllWin:
+                            NetBattleWin(true);
+                            break;
+                        case ENetBattleTimeResult.AllFail:
+                            NetBattleWin(false);
+                            break;
+                        default:
+                            LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                if (HasWinCondition(EWinCondition.WC_TimeLimit) && CheckWinTimeLimit())
                 {
                     bool value = CheckWin();
                     _gameTimer = 0;
-
                     if (value)
                     {
-                        if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-                        {
-                            _runState = ESceneState.Fail;
-                            Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                        }
-                        else
-                        {
-                            _runState = ESceneState.Win;
-                            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
-                        }
+                        _runState = ESceneState.Win;
+                        Messenger.Broadcast(EMessengerType.GameFinishSuccess);
                     }
                     else
                     {
@@ -312,26 +383,60 @@ namespace GameA.Game
                         // 因时间用完没有达到目标而失败
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
+
                     //_secondLeft = 0;
                 }
+
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
             }
         }
 
-        public void AddKey()
+        public void AddKey(PlayerBase owner = null)
         {
-            _keyGain++;
-            Messenger.Broadcast(EMessengerType.OnKeyChanged);
+            if (IsMulti)
+            {
+                if (owner != null)
+                {
+                    var playerId = owner.RoomUser.Guid;
+                    if (!_keyDic.ContainsKey(playerId))
+                    {
+                        _keyDic.Add(playerId, 0);
+                    }
+
+                    _keyDic[playerId]++;
+                }
+            }
+            else
+            {
+                _keyGain++;
+                Messenger.Broadcast(EMessengerType.OnKeyChanged);
+            }
         }
 
-        public bool UseKey()
+        public bool UseKey(PlayerBase owner = null)
         {
-            if (_keyGain > 0)
+            if (IsMulti)
             {
-                _keyGain--;
-                Messenger.Broadcast(EMessengerType.OnKeyChanged);
-                return true;
+                if (owner != null)
+                {
+                    var playerId = owner.RoomUser.Guid;
+                    if (_keyDic.ContainsKey(playerId) && _keyDic[playerId] > 0)
+                    {
+                        _keyDic[playerId]--;
+                        return true;
+                    }
+                }
             }
+            else
+            {
+                if (_keyGain > 0)
+                {
+                    _keyGain--;
+                    Messenger.Broadcast(EMessengerType.OnKeyChanged);
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -342,35 +447,42 @@ namespace GameA.Game
 
         private bool CheckWin(bool ignoreConditionArrived = false)
         {
+            if (IsMulti) return false;
             if (_runState != ESceneState.Run)
             {
                 return false;
             }
-            if (_mapStatistics.WinCondition == 0)
+
+            if (Statistics.WinCondition == 0)
             {
                 return false;
             }
 
-            if (_mapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
+            if (Statistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
                     return true;
                 }
+
                 return false;
             }
+
             if (PlayMode.Instance.MainPlayer == null)
             {
                 return false;
             }
+
             if (CheckWinCollectTreasure())
             {
                 return false;
             }
+
             if (CheckWinKillMonster())
             {
                 return false;
             }
+
             //if (CheckWinRescueHero())
             //{
             //    return false;
@@ -382,11 +494,15 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             return true;
         }
 
-        //判断乱入胜利条件
-        private bool CheckShadowWin()
+        /// <summary>
+        /// 判断乱入胜利条件
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckShadowWin()
         {
             int score = GetScore(true);
             int shadowScore = GM2DGame.Instance.GameMode.Record.Score;
@@ -401,28 +517,20 @@ namespace GameA.Game
             {
                 return;
             }
-            if (GM2DGame.Instance.GameMode.PlayShadowData && !CheckShadowWin())
-            {
-                _runState = ESceneState.Fail;
-                Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                LogHelper.Debug("Lose");
-            }
-            else
-            {
-                _runState = ESceneState.Win;
-                Messenger.Broadcast(EMessengerType.GameFinishSuccess);
-                LogHelper.Debug("Win");
-            }
+
+            _runState = ESceneState.Win;
+            Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+            LogHelper.Debug("Win");
         }
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < _mapStatistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < Statistics.GemCount;
         }
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < _mapStatistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < MonsterCount;
         }
 
         //private bool CheckWinRescueHero()
@@ -438,6 +546,66 @@ namespace GameA.Game
         private bool CheckWinTimeLimit()
         {
             return HasWinCondition(EWinCondition.WC_TimeLimit) && _gameTimer >= RunTimeTimeLimit;
+        }
+
+        public bool CanHarmType(EHarmType eHarmType)
+        {
+            return Statistics.CanHarmType(eHarmType);
+        }
+
+        public void CheckNetBattleWin(int score, bool myTeam)
+        {
+            if (!IsMulti) return;
+            if (Statistics.NetBattleScoreWinCondition && score >= Statistics.NetBattleWinScore)
+            {
+                NetBattleWin(myTeam, true);
+            }
+        }
+
+        private bool NetBattleTimeOver()
+        {
+            return _gameTimer >= RunTimeTimeLimit;
+        }
+
+        private void NetBattleWin(bool win, bool scoreWin = false)
+        {
+            var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+            if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
+            {
+                return;
+            }
+
+            if (win)
+            {
+                _runState = ESceneState.Win;
+                Messenger.Broadcast(EMessengerType.GameFinishSuccess);
+            }
+            else
+            {
+                _runState = ESceneState.Fail;
+                Messenger.Broadcast(EMessengerType.GameFinishFailed);
+            }
+
+            if (scoreWin)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
+            }
+            else
+            {
+                TeamManager.Instance.GameOver((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition);
+            }
+        }
+
+        public void AllPlayerSiTouLe()
+        {
+            if (Statistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
+            {
+                NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+            }
+            else
+            {
+                NetBattleWin(false);
+            }
         }
     }
 }

@@ -70,12 +70,30 @@ namespace SoyEngine
         public const string UserPublishedWorldProjectList = "/world/getUserPublishedProjectList";
         // Msg_CS_CMD_PlayWorldProject
         public const string PlayWorldProject = "/world/playProject";
+        // 匹配乱入对决
+        public const string MatchShadowBattle = "/world/matchShadowBattle";
+        // 匹配乱入对决
+        public const string ShadowBattleData = "/world/getShadowBattleData";
+        // 乱入对决请求帮战
+        public const string RequestHelpShadowBattle = "/world/requestHelpShadowBattle";
+        // 放弃乱入对决
+        public const string GiveUpShadowBattle = "/world/giveUpShadowBattle";
         // 提交过关世界关卡数据
         public const string CommitWorldProjectResult = "/world/commitProjectResult";
         // 获取世界关卡评论列表
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
+        // 获取关卡评论回复
+        public const string ProjectCommentReplyData = "/world/getProjectCommentReplyData";
+        // 回复关卡评论
+        public const string ReplyProjectComment = "/world/replyProjectComment";
         // 提交世界关卡评论
         public const string PostWorldProjectComment = "/world/postProjectComment";
+        // 删除关卡评论
+        public const string DeleteProjectComment = "/world/deleteProjectComment";
+        // 删除关卡评论回复
+        public const string DeleteProjectCommentReply = "/world/deleteProjectCommentReply";
+        // 修改评论赞
+        public const string UpdateWorldProjectCommentLike = "/world/updateProjectCommentLike";
         // 修改关卡顶踩
         public const string UpdateWorldProjectLike = "/world/updateProjectLike";
         // 修改关卡收藏状态
@@ -106,24 +124,48 @@ namespace SoyEngine
         public const string WorldFollowedUserProjectList = "/world/getFollowedUserProjectList";
         // 排行榜
         public const string WorldRankList = "/world/getRankList";
-        // 匹配乱入对决
-        public const string MatchShadowBattleData = "/world/matchShadowBattleData";
         // 搜索关卡
         public const string SearchWorldProject = "/world/searchProject";
+        // 获取官方多人关卡
+        public const string OfficialProjectList = "/world/getOfficialProjectList";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据
         public const string Project = "/project/get";
+        // 通过主id和版本号获取关卡
+        public const string GetProjectByMainId = "/project/getByMainId";
         // 关卡扩展信息
         public const string ProjectExtend = "/project/getExtend";
         // 创建关卡
         public const string CreateProject = "/project/create";
         // 更新关卡
         public const string UpdateProject = "/project/update";
+        // 继续编辑关卡
+        public const string EditProject = "/project/edit";
         // 删除关卡
         public const string DeleteProject = "/project/delete";
         // 工坊关卡
         public const string PersonalProjectList = "/project/getPersonalList";
+        // 获取预设列表
+        public const string UnitPreinstallList = "/workshop/getUnitPreinstallList";
+        // 获取物体预设数据
+        public const string UnitPreinstall = "/workshop/getUnitPreinstall";
+        // 创建预设
+        public const string CreateUnitPreinstall = "/workshop/createUnitPreinstall";
+        // 更新预设
+        public const string UpdateUnitPreinstall = "/workshop/updateUnitPreinstall";
+        // 删除预设
+        public const string DeleteUnitPreinstall = "/workshop/deleteUnitPreinstall";
+        // 获取预设NPC对话列表
+        public const string NpcDialogPreinstallList = "/workshop/getNpcDialogPreinstallList";
+        // 预设Npc对话
+        public const string NpcDialogPreinstall = "/workshop/getNpcDialogPreinstall";
+        // 创建预设Npc对话
+        public const string CreateNpcDialogPreinstall = "/workshop/createNpcDialogPreinstall";
+        // 更新预设Npc对话
+        public const string UpdateNpcDialogPreinstall = "/workshop/updateNpcDialogPreinstall";
+        // 删除预设Npc对话
+        public const string DeleteNpcDialogPreinstall = "/workshop/deleteNpcDialogPreinstall";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
@@ -182,6 +224,20 @@ namespace SoyEngine
         public const string QQGameReward = "/home/getQQGameReward";
         // QQ蓝钻大厅特权奖励领取
         public const string ReceiveQQGameReward = "/home/receiveQQGameReward";
+        // 获取留言数据
+        public const string UserMessageData = "/home/getUserMessageData";
+        // 获取留言回复数据
+        public const string UserMessageReplyData = "/home/getUserMessageReplyData";
+        // 发布留言
+        public const string PublishUserMessage = "/home/publishUserMessage";
+        // 回复留言
+        public const string ReplyUserMessage = "/home/replyUserMessage";
+        // 回复留言
+        public const string UpdateUserMessageLike = "/home/updateUserMessageLike";
+        // 删除留言
+        public const string DeleteUserMessage = "/home/deleteUserMessage";
+        // 删除留言回复
+        public const string DeleteUserMessageReply = "/home/deleteUserMessageReply";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

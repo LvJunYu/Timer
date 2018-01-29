@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
@@ -16,18 +15,19 @@ namespace GameA.Game
     [Serializable]
     public class RigidbodyUnit : BlockBase
     {
-        [SerializeField]
-        protected UnitBase[] _hitUnits = new UnitBase[4];
+        [SerializeField] protected UnitBase[] _hitUnits = new UnitBase[4];
         private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
+
         /// <summary>
         /// 是否相撞
         /// </summary>
         protected static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
+
         /// <summary>
         /// 是否相交
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
-        
+
         protected bool _onClay;
         protected bool _onIce;
         [SerializeField] protected IntVec2 _fanForce;
@@ -51,17 +51,12 @@ namespace GameA.Game
             _fanForces.Clear();
             _excludeUnit = null;
         }
-        
-        public override void SetStepOnClay()
-        {
-            _onClay = true;
-        }
 
         public override void SetStepOnIce()
         {
             _onIce = true;
         }
-        
+
         public override void CheckStart()
         {
             _downUnit = null;
@@ -110,16 +105,18 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
+                ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
                 _lastColliderGrid = _colliderGrid;
             }
-            else if(!_isFreezed)  //静止的时候检测是否交叉
+            else if (!_isFreezed) //静止的时候检测是否交叉
             {
-                var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid,
+                    JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                    _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && unit !=  _excludeUnit)
+                    if (unit.IsAlive && unit != _excludeUnit)
                     {
                         CheckIntersect(unit);
                     }
@@ -137,6 +134,12 @@ namespace GameA.Game
             return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
+        protected virtual void CheckClimbUnitChangeDir(EClimbState eClimbState)
+        {
+        }
+
+        protected IntVec2 _colliderDeltaPos;
+        
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
@@ -145,12 +148,15 @@ namespace GameA.Game
                 int y = int.MaxValue;
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + _deltaPos.y);
-                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                    min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+                var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                    JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                    _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && unit !=  _excludeUnit)
+                    if (unit.IsAlive && unit != _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
@@ -173,7 +179,7 @@ namespace GameA.Game
                 {
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
-                    _hitUnits[(int)EDirectionType.Up] = hit;
+                    _hitUnits[(int) EDirectionType.Up] = hit;
                 }
             }
         }
@@ -188,13 +194,16 @@ namespace GameA.Game
                 int deltaX = int.MaxValue;
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + _deltaPos.y);
-                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                    min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+                var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                    JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                    _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
                     _cacheCheckedDownUnits.Add(unit.Guid);
-                    if (unit.IsAlive && unit !=  _excludeUnit)
+                    if (unit.IsAlive && unit != _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
@@ -222,7 +231,8 @@ namespace GameA.Game
                 {
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
-                    _hitUnits[(int)EDirectionType.Down] = hit;
+                    _hitUnits[(int) EDirectionType.Down] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Up);
                 }
             }
             for (int i = 0; i < _downUnits.Count; i++)
@@ -232,7 +242,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                if (unit.IsAlive && unit !=  _excludeUnit)
+                if (unit.IsAlive && unit != _excludeUnit)
                 {
                     CheckIntersect(unit);
                     int ymin = 0;
@@ -252,12 +262,15 @@ namespace GameA.Game
                 int x = 0;
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
-                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                    min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+                var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                    JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                    _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && unit !=  _excludeUnit)
+                    if (unit.IsAlive && unit != _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
@@ -279,7 +292,8 @@ namespace GameA.Game
                 if (flag)
                 {
                     _colliderPos.x = x;
-                    _hitUnits[(int)EDirectionType.Left] = hit;
+                    _hitUnits[(int) EDirectionType.Left] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Right);
                 }
             }
         }
@@ -292,12 +306,15 @@ namespace GameA.Game
                 int x = int.MaxValue;
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
-                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
+                    min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+                var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                    JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                    _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && unit !=  _excludeUnit)
+                    if (unit.IsAlive && unit != _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
@@ -319,7 +336,8 @@ namespace GameA.Game
                 if (flag)
                 {
                     _colliderPos.x = x;
-                    _hitUnits[(int)EDirectionType.Right] = hit;
+                    _hitUnits[(int) EDirectionType.Right] = hit;
+                    CheckClimbUnitChangeDir(EClimbState.Left);
                 }
             }
         }
@@ -341,7 +359,7 @@ namespace GameA.Game
                 Hit(unit, eDirectionType);
             }
         }
-        
+
         internal override void InFan(UnitBase fanUnit, IntVec2 force)
         {
             if (_fanForces.ContainsKey(fanUnit.Guid))
@@ -352,7 +370,7 @@ namespace GameA.Game
             {
                 _fanForces.Add(fanUnit.Guid, force);
             }
-            _fanForce= IntVec2.zero;
+            _fanForce = IntVec2.zero;
             var iter = _fanForces.GetEnumerator();
             while (iter.MoveNext())
             {
@@ -374,7 +392,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             IntVec2 deltaImpactPos = IntVec2.zero;
@@ -408,5 +426,6 @@ namespace GameA.Game
             }
             return deltaImpactPos;
         }
+        
     }
 }

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -18,14 +17,11 @@ namespace GameA.Game
     public class PlayMode : IDisposable
     {
         private static PlayMode _instance;
-        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
         private readonly List<Action> _nextActions = new List<Action>();
         private readonly SceneState _sceneState = new SceneState();
 
-        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
         [SerializeField] private IntVec2 _focusPos;
 
@@ -39,6 +35,7 @@ namespace GameA.Game
         private UnitUpdateManager _unitUpdateManager;
         private List<Trap> _traps = new List<Trap>();
         protected List<Bullet> _bullets = new List<Bullet>();
+        private bool _hasCreatedPlayer;
 
         public static PlayMode Instance
         {
@@ -53,7 +50,6 @@ namespace GameA.Game
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
-            set { _mainPlayer = value; }
         }
 
         public int GameSuccessFrameCnt
@@ -65,7 +61,7 @@ namespace GameA.Game
         {
             get { return _gameFailedTime; }
         }
-        
+
         public SceneState SceneState
         {
             get { return _sceneState; }
@@ -77,6 +73,11 @@ namespace GameA.Game
             get { return _statistic; }
         }
 
+        public bool HasCreatedPlayer
+        {
+            get { return _hasCreatedPlayer; }
+        }
+
         public void Dispose()
         {
             Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
@@ -84,6 +85,7 @@ namespace GameA.Game
             {
                 _statistic.Dispose();
             }
+
             _instance = null;
         }
 
@@ -101,39 +103,26 @@ namespace GameA.Game
             {
                 UnFreeze(_freezingNodes[i]);
             }
+
             _freezingNodes.Clear();
             _nextActions.Clear();
-            _waitDestroyUnits.Clear();
             _statistic.Reset();
 
-            foreach (UnitDesc unitDesc in _addedDatas)
-            {
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.DestroyView(unitDesc);
-                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
-            }
-            _addedDatas.Clear();
-            for (int i = 0; i < _deletedDatas.Count; i++)
-            {
-                UnitDesc unitDesc = _deletedDatas[i];
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
-                if (!MapConfig.UseAOI)
-                {
-                    ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit);
-                }
-            }
-            _deletedDatas.Clear();
-            ColliderScene2D.Instance.Reset();
+            Scene2DManager.Instance.Reset();
             GameAudioManager.Instance.StopAll();
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
+            RopeManager.Instance.Reset();
+            PlayerManager.Instance.Reset();
+            TeamManager.Instance.Reset();
+            CameraManager.Instance.Reset();
             _sceneState.Reset();
 
             for (int i = 0; i < _traps.Count; i++)
             {
                 DeleteTrap(_traps[i].Guid);
             }
+
             _traps.Clear();
 
             for (int i = 0; i < _bullets.Count; i++)
@@ -144,7 +133,9 @@ namespace GameA.Game
                     PoolFactory<Bullet>.Free(bullet);
                 }
             }
+
             _bullets.Clear();
+            _hasCreatedPlayer = false;
         }
 
         public void Pause()
@@ -169,28 +160,39 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_pausing && _mainPlayer.Life <= 0)
+
+            if (_mainPlayer == null)
+            {
+                LogHelper.Error("_mainPlayer == null");
+            }
+
+            if (_pausing && _mainPlayer != null && _mainPlayer.Life <= 0)
             {
                 _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            ColliderScene2D.Instance.UpdateLogic(_focusPos);
+
+//            ColliderScene2D.Instance.UpdateLogic(_focusPos);
             if (_mainPlayer != null && _unitUpdateManager != null)
             {
                 _unitUpdateManager.UpdateLogic(deltaTime);
             }
+
             if (_sceneState != null)
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
+
             if (_mainPlayer != null)
             {
                 _focusPos = GetFocusPos(_mainPlayer.CameraFollowPos);
             }
+
             for (int i = 0; i < _traps.Count; i++)
             {
                 _traps[i].UpdateLogic();
             }
+
             if (_bullets.Count > 0)
             {
                 for (int i = 0; i < _bullets.Count; i++)
@@ -202,11 +204,13 @@ namespace GameA.Game
 
         private void BeforeUpdateLogic()
         {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            for (int i = waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                DeleteUnit(_waitDestroyUnits[i]);
-                _waitDestroyUnits.RemoveAt(i);
+                DeleteUnit(waitDestroyUnits[i]);
+                waitDestroyUnits.RemoveAt(i);
             }
+
             if (_nextActions.Count > 0)
             {
                 for (int i = 0; i < _nextActions.Count; i++)
@@ -216,6 +220,7 @@ namespace GameA.Game
                         _nextActions[i].Invoke();
                     }
                 }
+
                 _nextActions.Clear();
             }
         }
@@ -253,27 +258,31 @@ namespace GameA.Game
 
         public UnitBase CreateUnit(UnitDesc unitDesc)
         {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            for (int i = waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                UnitBase current = _waitDestroyUnits[i];
+                UnitBase current = waitDestroyUnits[i];
                 if (current.UnitDesc == unitDesc)
                 {
-                    _waitDestroyUnits.RemoveAt(i);
+                    waitDestroyUnits.RemoveAt(i);
                     current.IsAlive = true;
                     return current;
                 }
             }
+
             if (!AddUnit(unitDesc))
             {
                 LogHelper.Error("CreateUnit Failed,{0}", unitDesc);
                 return null;
             }
+
             UnitBase unit;
-            if (!ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+            if (!ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
             {
                 LogHelper.Error("CreateUnit TryGetUnit Failed,{0}", unitDesc);
                 return null;
             }
+
             return unit;
         }
 
@@ -283,12 +292,15 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsAlive = false;
-            if (_waitDestroyUnits.Contains(unit))
+            var waitDestroyUnits = ColliderScene2D.CurScene.WaitDestroyUnits;
+            if (waitDestroyUnits.Contains(unit))
             {
                 return;
             }
-            _waitDestroyUnits.Add(unit);
+
+            waitDestroyUnits.Add(unit);
         }
 
         private bool AddUnit(UnitDesc unitDesc)
@@ -299,23 +311,25 @@ namespace GameA.Game
                 LogHelper.Error("AddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            _addedDatas.Add(unitDesc);
-            if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
+
+            if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit, true))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+
+            if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 //return false;
             }
+
             return true;
         }
 
-        private bool DeleteUnit(UnitBase unit)
+        public bool DeleteUnit(UnitBase unit)
         {
             return unit != null && DeleteUnit(unit.UnitDesc);
         }
-
+        
         private bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
@@ -324,19 +338,13 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            if (_addedDatas.Contains(unitDesc))
-            {
-                _addedDatas.Remove(unitDesc);
-            }
-            else
-            {
-                _deletedDatas.Add(unitDesc);
-            }
-            if (!ColliderScene2D.Instance.DestroyView(unitDesc))
+
+            if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
-            if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
+
+            if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit, true))
             {
                 return false;
             }
@@ -349,6 +357,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsFreezed = true;
             _freezingNodes.Add(unit);
         }
@@ -363,6 +372,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             unit.IsFreezed = false;
             _freezingNodes.Remove(unit);
         }
@@ -371,7 +381,15 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            _mainPlayer.OnSucceed();
+            var playerList = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null && TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
+                {
+                    playerList[i].OnSucceed();
+                }
+            }
+
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
             {
@@ -409,6 +427,7 @@ namespace GameA.Game
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -418,82 +437,165 @@ namespace GameA.Game
             _sceneState.MonsterKilled++;
         }
 
-        #region State
-
-        public bool CheckPlayerValid(bool run = true)
+        private bool CheckPlayerValid(bool run = true)
         {
-            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            Scene2DManager.Instance.ChangeScene(Scene2DManager.Instance.SqawnSceneIndex, EChangeSceneType.ChangeScene);
+            var spawnDatas = Scene2DManager.Instance.GetSpawnData();
             if (spawnDatas.Count == 0)
             {
                 if (run)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
                 }
+
                 return false;
             }
+
             if (run)
             {
-                for (int i = 0; i < spawnDatas.Count; i++)
+                if (!_sceneState.IsMulti)
                 {
-                    var spawnData = spawnDatas[i];
-                    if (i == 0)
+                    //单人
+                    AddPlayer();
+                    //乱入对决，创建影子Unit
+                    if (GM2DGame.Instance.GameMode.PlayShadowData &&
+                        GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                     {
-                        //TODO 临时 测试多人
-                        if (PlayerManager.Instance.UserDataList == null)
+                        var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
+                        if (shadowUnit != null)
                         {
-                            PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
+                            if (gameMode != null) shadowUnit.SetName(gameMode.ShadowName);
                         }
-                        else
-                        {
-                            for (int j = 0; j < PlayerManager.Instance.UserDataList.Count; j++)
-                            {
-                                PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
-                            }
-                        }
-                        //创建影子Unit
-                        if (GM2DGame.Instance.GameMode.PlayShadowData &&
-                            GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
-                        {
-                            var shadowUnit = CreateRuntimeUnit(65535, spawnData.GetUpPos()) as ShadowUnit;
-                            shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed, 0);
-                        }
-                        _mainPlayer = PlayerManager.Instance.MainPlayer;
+                    }
+                }
+                else
+                {
+                    //多人
+                    if (GM2DGame.Instance.EGameRunMode == EGameRunMode.Edit)
+                    {
+                        AddPlayer();
                     }
                     else
                     {
-//                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
+//                        var mainGhost = 
+//                            CreateRuntimeUnit(UnitDefine.MainPlayerId, spawnDatas[0].UnitDesc.GetUpPos()) as MainPlayer;
+//                        if (mainGhost != null)
+//                        {
+//                            mainGhost.SetUnitExtra(spawnDatas[0].UnitExtra);
+//                            PlayerManager.Instance.AddGhost(mainGhost); //增加临时主角
+//                        }
+
+                        var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                        if (gameMode == null)
+                        {
+                            LogHelper.Error("gameMode == null");
+                            return false;
+                        }
+
+                        var sortSpawnDatas = Scene2DManager.Instance.GetSortSpawnData();
+                        var userArray = gameMode.RoomInfo.RoomUserArray;
+                        for (int i = 0; i < userArray.Length; i++)
+                        {
+                            if (userArray[i] == null)
+                            {
+                                continue;
+                            }
+                            bool isMain = userArray[i].Guid == LocalUser.Instance.UserGuid;
+                            int inx = userArray[i].Inx;
+                            if (inx < sortSpawnDatas.Count)
+                            {
+                                var player = AddPlayer(sortSpawnDatas[inx], inx, isMain);
+                                userArray[i].Player = player;
+                            }
+                            else
+                            {
+                                LogHelper.Error("userInx is out of range");
+                            }
+                        }
+
+                        _mainPlayer = PlayerManager.Instance.MainPlayer;
+                        _hasCreatedPlayer = true;
+                    }
+
+                    for (int i = 0; i < spawnDatas.Count; i++)
+                    {
+                        byte team = spawnDatas[i].UnitExtra.TeamId;
+                        TeamManager.Instance.AddTeam(team);
                     }
                 }
             }
+
             return true;
+        }
+
+        ///多人模式下，basicNum是服务器随机的初始位置序号        
+        public PlayerBase AddPlayer(int roomInx = 0, bool main = true)
+        {
+            var spawnDatas = Scene2DManager.Instance.GetSortSpawnData();
+            if (spawnDatas.Count == 0)
+            {
+                LogHelper.Error("can not find a spwan!");
+                return null;
+            }
+
+            return AddPlayer(spawnDatas[roomInx], roomInx, main);
+        }
+
+        private PlayerBase AddPlayer(UnitEditData unitEditData, int roomInx, bool main)
+        {
+            int id;
+            if (main)
+            {
+                id = UnitDefine.MainPlayerId;
+            }
+            else
+            {
+                id = UnitDefine.OtherPlayerId;
+            }
+            var player = CreateRuntimeUnit(id, unitEditData.UnitDesc.GetUpPos()) as PlayerBase;
+            if (player != null)
+            {
+                PlayerManager.Instance.Add(player, roomInx);
+                player.SetUnitExtra(unitEditData.UnitExtra);
+                TeamManager.Instance.AddPlayer(player, unitEditData);
+                if (main)
+                {
+                    _mainPlayer = PlayerManager.Instance.MainPlayer;
+                }
+
+                if (_run)
+                {
+                    player.OnPlay();
+                }
+            }
+
+            return player;
         }
 
         public bool StartEdit()
         {
-            if (!CheckPlayerValid(false))
-            {
-                return false;
-            }
+            CheckPlayerValid(false);
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
             BgScene2D.Instance.OnStop();
             BgScene2D.Instance.Reset();
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos), true);
-            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                units[i].OnEdit();
-            }
+            Scene2DManager.Instance.OnEdit();
             return true;
         }
 
         public bool StartPlay()
         {
+            DeleteUnitsOutofMap();
             if (!CheckPlayerValid())
             {
+                AddUnitsOutofMap();
                 return false;
             }
+
             PreparePlay();
             return true;
         }
@@ -501,43 +603,52 @@ namespace GameA.Game
         public bool RePlay()
         {
             Reset();
+            DeleteUnitsOutofMap();
             if (!CheckPlayerValid())
             {
+                AddUnitsOutofMap();
                 return false;
             }
+
             CameraManager.Instance.SetCameraState(ECameraState.None);
             PreparePlay();
             return true;
         }
 
+        public void AddUnitsOutofMap()
+        {
+            Scene2DManager.Instance.AddUnitsOutofMap();
+        }
+
+        private void DeleteUnitsOutofMap()
+        {
+            Scene2DManager.Instance.DeleteUnitsOutofMap();
+        }
+
         private void PreparePlay()
         {
             _run = false;
-            BeforePlay();
+            CheckPairUnit();
             _sceneState.StartPlay();
+            Scene2DManager.Instance.CreateAirWall();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
-            BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCameraPos);
-            var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
-            UpdateWorldRegion(colliderPos, true);
+            BgScene2D.Instance.Reset();
+            UpdateWorldRegion(_mainPlayer.CurPos, true);
+            BgScene2D.Instance.UpdateLogic(CameraManager.Instance.MainCameraTrans.position);
         }
 
         public bool Playing()
         {
             _pausing = false;
             _run = true;
-            ColliderScene2D.Instance.SortData();
             CrossPlatformInputManager.ClearVirtualInput();
-            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                UnitBase unit = units[i];
-                unit.OnPlay();
-            }
+            Scene2DManager.Instance.OnPlay();
+            RopeManager.Instance.OnPlay();
             BgScene2D.Instance.OnPlay();
             return true;
         }
 
-        private void BeforePlay()
+        private void CheckPairUnit()
         {
             bool flag = false;
             using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())
@@ -553,13 +664,17 @@ namespace GameA.Game
                             if (!pairUnit.IsEmpty && !pairUnit.IsFull)
                             {
                                 flag = true;
-                                UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
-                                DeleteUnit(unitObject);
+                                bool unitAEmpty = pairUnit.UnitA == UnitDesc.zero;
+                                int sceneIndex = unitAEmpty ? pairUnit.UnitBScene : pairUnit.UnitAScene;
+                                UnitDesc unitObject = unitAEmpty ? pairUnit.UnitB : pairUnit.UnitA;
+                                Scene2DManager.Instance.ActionFromOtherScene(sceneIndex,
+                                    () => { DeleteUnit(unitObject); });
                             }
                         }
                     }
                 }
             }
+
             if (flag)
             {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "已移除没有成双的机关喔~");
@@ -577,24 +692,22 @@ namespace GameA.Game
             _focusPos = GetFocusPos(mainPlayerPos);
             if (isInit)
             {
-                ColliderScene2D.Instance.InitCreateArea(_focusPos);
+                ColliderScene2D.CurScene.InitCreateArea(_focusPos);
             }
             else
             {
-                ColliderScene2D.Instance.UpdateLogic(_focusPos);
+                ColliderScene2D.CurScene.UpdateLogic(_focusPos);
             }
         }
 
         private IntVec2 GetFocusPos(IntVec2 followPos)
         {
-            IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
+            IntRect validMapRect = DataScene2D.CurScene.ValidMapRect;
             IntVec2 size = ConstDefineGM2D.HalfMaxScreenSize;
             followPos.x = Mathf.Clamp(followPos.x, validMapRect.Min.x + size.x, validMapRect.Max.x + 1 - size.x);
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);
             return followPos;
         }
-
-        #endregion
 
         public bool AddTrap(int trapId, IntVec2 centerPos)
         {
@@ -604,6 +717,7 @@ namespace GameA.Game
                 _traps.Add(trap);
                 return true;
             }
+
             PoolFactory<Trap>.Free(trap);
             return false;
         }
@@ -620,6 +734,7 @@ namespace GameA.Game
                     break;
                 }
             }
+
             return true;
         }
 
@@ -634,7 +749,7 @@ namespace GameA.Game
             PoolFactory<Bullet>.Free(bullet);
         }
 
-        public void Clear()
+        public void ClearBullet()
         {
             for (int i = 0; i < _bullets.Count; i++)
             {
@@ -644,7 +759,9 @@ namespace GameA.Game
                     PoolFactory<Bullet>.Free(bullet);
                 }
             }
+
             _bullets.Clear();
         }
+
     }
 }

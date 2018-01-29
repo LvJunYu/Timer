@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+/*
 using YIMEngine;
 
 namespace GameA
@@ -46,13 +47,14 @@ namespace GameA
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
-                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
+                _cachedView.NpcTypeTabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
                     b => ClickMenu(index, b));
                 if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
                 {
                     _menuCtrlArray[i].Close();
                 }
             }
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.InptField);
         }
 
         protected override void OnOpen(object parameter)
@@ -64,11 +66,11 @@ namespace GameA
             }
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.World, true);
+                _cachedView.NpcTypeTabGroup.SelectIndex((int) EMenu.World, true);
             }
             else
             {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+                _cachedView.NpcTypeTabGroup.SelectIndex((int) _curMenu, true);
             }
         }
 
@@ -370,4 +372,4 @@ namespace GameA
             Max
         }
     }
-}
+}*/

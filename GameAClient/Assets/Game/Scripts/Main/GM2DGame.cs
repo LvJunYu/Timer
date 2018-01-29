@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     /// <summary>
-    /// 游戏所属情景 世界 冒险 匹配 对战
+    /// 游戏所属情景 世界 冒险 匹配 对战 乱斗 联机
     /// </summary>
     public enum EGameSituation
     {
@@ -24,6 +24,7 @@ namespace GameA.Game
         Match,
         Battle,
         ShadowBattle,
+        NetBattle
     }
 
     /// <summary>
@@ -48,8 +49,9 @@ namespace GameA.Game
 
         /// <summary>
         /// 地图数据版本号 地图数据含义改变时变化 比如原来记录碰撞体区域，现在改为数据区域
+        /// 2: 出生点属性兼容判断
         /// </summary>
-        public const int MapVersion = 1;
+        public const int MapVersion = 2;
 
         public const string GameName = "GameMaker2D";
         private GameModeBase _gameMode;
@@ -110,14 +112,17 @@ namespace GameA.Game
                 case GameManager.EStartType.WorldPlay:
                     _gameMode = new GameModeWorldPlay();
                     break;
-                case GameManager.EStartType.ShadowBattlePlay:
-                    _gameMode = new GameModeShadowBattlePlay();
-                    break;
-                case GameManager.EStartType.WorkshopCreate:
+                case GameManager.EStartType.WorkshopStandaloneCreate:
                     _gameMode = new GameModeWorkshopEdit();
                     break;
-                case GameManager.EStartType.WorkshopEdit:
+                case GameManager.EStartType.WorkshopMultiCreate:
+                    _gameMode = new GameModeNetEdit();
+                    break;
+                case GameManager.EStartType.WorkshopEditStandalone:
                     _gameMode = new GameModeWorkshopEdit();
+                    break;
+                case GameManager.EStartType.WorkshopEditMultiBattle:
+                    _gameMode = new GameModeNetEdit();
                     break;
                 case GameManager.EStartType.WorldPlayRecord:
                     _gameMode = new GameModeWorldPlayRecord();
@@ -231,7 +236,6 @@ namespace GameA.Game
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
             {
-                Messenger.Broadcast(EMessengerType.OnGameStartComplete);
                 _gameMode.OnGameStart();
             }));
         }

@@ -86,6 +86,7 @@ namespace GameA.Game
         Decoration = 5,
         Controller = 6,
         Effect = 7,
+        Npc = 8,
         Max,
     }
 
@@ -113,6 +114,7 @@ namespace GameA.Game
         Gun = 6,
         Bullet = 7,
         Decoration = 8,
+        Rope = 9,
         Max
     }
 
@@ -265,6 +267,7 @@ namespace GameA.Game
     {
         None,
         PortalDoor,
+        SpacetimeDoor,
         TrapDoor,
         Max
     }
@@ -282,5 +285,18 @@ namespace GameA.Game
         Jump1,
         Jump2,
         Fall
+    }
+
+    public enum ENpcType
+    {
+        Dialog,
+        Task
+    }
+
+    public enum ENpcTriggerType
+    {
+        Close,
+        Interval,
+        Max
     }
 }

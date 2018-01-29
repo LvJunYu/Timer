@@ -23,34 +23,53 @@ namespace GameA
         private readonly MailList _mailList = new MailList();
         private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
         private readonly RelationUserList _relationUserList = new RelationUserList();
+
         private readonly AddUserList _addUserList = new AddUserList();
+
         // 抽奖相关数据
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
+
         // 匹配挑战相关数据
         private readonly MatchUserData _matchUserData = new MatchUserData();
-        // 乱入对战相关数据
-        private readonly MatchShadowBattleData _matchShadowBattleData = new MatchShadowBattleData();
+
         // 增益道具
         private readonly UserProp _userProp = new UserProp();
+
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
-        private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList();
+
+        private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList =
+            new UserPublishedWorldProjectList();
+
         // 工坊地块数量上限数据Z
         private readonly UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
+
         //拼图数据
         private readonly UserPictureFull _userPictureFull = new UserPictureFull();
+
         private readonly UserUsingPictureFullData _userUsingPictureFullData = new UserUsingPictureFullData();
+
         private readonly UserPicturePart _userPicturePart = new UserPicturePart();
+
         //武器数据
         private readonly UserWeaponData _userWeaponData = new UserWeaponData();
+
         private readonly UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
+
         //训练数据
         private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
+
         //成就数据
         private readonly Achievement _achievement = new Achievement();
-        
+
+        //预设数据
+        private readonly UnitPreinstallList _unitPreinstallList = new UnitPreinstallList();
+
         private readonly QQGameReward _qqGameReward = new QQGameReward();
 
+        private readonly NpcDialogPreinstallList _npcDialogPreinstallList = new NpcDialogPreinstallList();
+
         #endregion
+
         #region 属性
 
         public long UserGuid
@@ -80,33 +99,22 @@ namespace GameA
 
         public RelationUserList RelationUserList
         {
-            get
-            {
-                return _relationUserList;
-            }
+            get { return _relationUserList; }
         }
-        
+
         public AddUserList AddUserList
         {
-            get
-            {
-                return _addUserList;
-            }
+            get { return _addUserList; }
         }
 
         public UsingAvatarPart UsingAvatarData
         {
-            get
-            {
-                return _usingAvatarData;
-            }
+            get { return _usingAvatarData; }
         }
+
         public ValidAvatarPart ValidAvatarData
         {
-            get
-            {
-                return _validAvatarData;
-            }
+            get { return _validAvatarData; }
         }
 
         public QQGameReward QqGameReward
@@ -125,40 +133,23 @@ namespace GameA
 
         public MatchUserData MatchUserData
         {
-            get
-            {
-                return _matchUserData;
-            }
+            get { return _matchUserData; }
         }
-        
-        public MatchShadowBattleData MatchShadowBattleData
-        {
-            get { return _matchShadowBattleData; }
-        }
-
 
         public PersonalProjectList PersonalProjectList
         {
-            get
-            {
-                return _personalProjectList;
-            }
+            get { return _personalProjectList; }
         }
 
         public UserPublishedWorldProjectList UserPublishedWorldProjectList
         {
-            get
-            {
-                return _userPublishedWorldProjectList;
-            }
+            get { return _userPublishedWorldProjectList; }
         }
+
         // 增益道具
         public UserProp UserProp
         {
-            get
-            {
-                return _userProp;
-            }
+            get { return _userProp; }
         }
 
         // 工坊地块数量上限数据
@@ -188,25 +179,38 @@ namespace GameA
         {
             get { return _userWeaponData; }
         }
+
         public UserWeaponPartData UserWeaponPartData
         {
             get { return _userWeaponPartData; }
         }
-        
+
         //训练数据
         public UserTrainProperty UserTrainProperty
         {
             get { return _userTrainProperty; }
         }
-        
+
         //成就数据
         public Achievement Achievement
         {
             get { return _achievement; }
         }
+
+        public UnitPreinstallList UnitPreinstallList
+        {
+            get { return _unitPreinstallList; }
+        }
+
+        public NpcDialogPreinstallList NpcDialogPreinstallList
+        {
+            get { return _npcDialogPreinstallList; }
+        }
+
         #endregion
 
         #region 方法
+
         private LocalUser()
         {
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, OnLogout);
@@ -244,7 +248,6 @@ namespace GameA
                 successCallback,
                 failedCallback
             );
-
         }
 
         public void LoadPropData(Action successCallback, Action<ENetResultCode> failedCallback)
@@ -273,6 +276,7 @@ namespace GameA
                 _user = null;
             }
         }
+
         #endregion
     }
 }

@@ -5,36 +5,69 @@
 ** Summary : UICtrlGameLog  
 ***********************************************************************/
 
-
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlGameLog: UICtrlInGameBase<UIViewGameLog>
     {
         public const float FadeOutTime = 1;
         public const float DurationTime = 1;
 
-        private float _lastSetTime = 0;
-        private bool _isFadeingOut = false;
+        private float _lastSetTime;
+        private bool _isFadeingOut;
+        private Vector2 _origPos;
+        private int _origSize;
+        private bool _hasChanged;
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _origPos = _cachedView.Content.rectTransform.anchoredPosition;
+            _origSize = _cachedView.Content.fontSize;
+        }
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.InGameTip;
+            _groupId = (int)EUIGroupType.PopUpDialog;
         }
 
         private void ShowLog(string value)
         {
-	        SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
+            }
+            if (_hasChanged)
+            {
+                Reset();
+            }
             SetData(value, _cachedView.LogColor);
         }
 
         private void ShowErrorLog(string value)
         {
-	        SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
+            }
+            if (_hasChanged)
+            {
+                Reset();
+            }
             SetData(value, _cachedView.ErrorColor);
+        }
+
+        private void ShowLogCustomed(string value, Vector2 pos, int size)
+        {
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
+            }
+            SetData(value, _cachedView.ErrorColor);
+            _cachedView.Content.transform.position = pos;
+            _cachedView.Content.fontSize = size;
         }
 
         public override void OnUpdate()
@@ -46,22 +79,12 @@ namespace GameA
 	    protected override void InitEventListener()
 	    {
 		    base.InitEventListener();
-		    MessengerOperator(true);
+		    RegisterEvent<string>(EMessengerType.GameLog, ShowLog);
+	        RegisterEvent<string>(EMessengerType.GameErrorLog, ShowErrorLog);
+	        RegisterEvent<string, Vector2, int>(EMessengerType.GameErrorLog, ShowLogCustomed);
 	    }
 
-//	    protected override void OnViewCreated()
-//	    {
-//		    base.OnViewCreated();
-//		    MessengerOperator(true);
-//	    }
-
-//	    protected override void OnDestroy()
-//	    {
-//		    base.OnDestroy();
-//			MessengerOperator(false);
-//		}
-
-	    private void UpdateShowContent()
+        private void UpdateShowContent()
         {
             if (_isFadeingOut)
             {
@@ -71,7 +94,6 @@ namespace GameA
             {
                 _isFadeingOut = true;
                 _cachedView.Content.CrossFadeAlpha(0, FadeOutTime, true);
-
             }
         }
 
@@ -84,26 +106,11 @@ namespace GameA
             _isFadeingOut = false;
         }
 
-
-		#region
-
-	    private void MessengerOperator(bool value)
-	    {
-		    if (value)
-		    {
-			    Messenger<string>.AddListener(EMessengerType.GameLog, ShowLog);
-				Messenger<string>.AddListener(EMessengerType.GameErrorLog, ShowErrorLog);
-			}
-			else
-		    {
-			    Messenger<string>.RemoveListener(EMessengerType.GameLog, ShowLog);
-				Messenger<string>.RemoveListener(EMessengerType.GameErrorLog, ShowErrorLog);
-			}
-		}
-
-
-		#endregion
-
-
+        private void Reset()
+        {
+            _cachedView.Content.rectTransform.anchoredPosition = _origPos;
+            _cachedView.Content.fontSize = _origSize;
+            _hasChanged = true;
+        }
 	}
 }

@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.AddStates(62);
+            other.AddStates(null, 62);
             base.OnTrigger(other);
         }
     }

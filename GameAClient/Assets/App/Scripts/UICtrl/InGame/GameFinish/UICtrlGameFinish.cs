@@ -19,6 +19,8 @@ namespace GameA
             WinWithNextLevel,
             Lose,
             Win,
+            MultiLose,
+            MultiWin,
             WinRankRate,
             AdvNormalWin,
             AdvNormalLose,
@@ -35,6 +37,7 @@ namespace GameA
         private readonly List<UIParticleItem> _particleList = new List<UIParticleItem>();
         private int _curMarkStarValue;
         private USCtrlGameFinishReward[] _rewardCtrl;
+        private Reward _shadowBattleReward;
         private Record _friendRecord;
         private FriendRecordData _friendRecordData = new FriendRecordData();
 
@@ -53,6 +56,8 @@ namespace GameA
             _cachedView.PlayRecordBtn.onClick.AddListener(OnPlayRecordBtn);
             _cachedView.RetryShadowBattleBtn.onClick.AddListener(OnRetryBtn);
             _cachedView.GiveUpBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.FriendHelpBtn.onClick.AddListener(OnFriendHelpBtn);
+            _cachedView.MultiConfirmBtn.onClick.AddListener(OnReturnBtn);
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++)
             {
@@ -84,10 +89,36 @@ namespace GameA
             base.OnClose();
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnShadowBattleFriendHelp, OnShadowBattleFriendHelp);
+            RegisterEvent<Reward>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
+        }
+
+        private void OnShadowBattleFriendHelp()
+        {
+            if (_isOpen)
+            {
+                OnReturnBtn();
+            }
+        }
+
         public override void OnUpdate()
         {
             base.OnUpdate();
             _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
+            _cachedView.MultiShineRotateRoot.localRotation = Quaternion.Euler(0, 0, -Time.realtimeSinceStartup * 20f);
+        }
+
+        private void OnShadowBattleStart(Reward reward)
+        {
+            _shadowBattleReward = reward;
+        }
+
+        private void OnFriendHelpBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlShadowBattleFriendHelp>();
         }
 
         private void OnPlayRecordBtn()
@@ -274,15 +305,28 @@ namespace GameA
 
         private void UpdateView()
         {
+            bool isMulti = _showState == EShowState.MultiWin || _showState == EShowState.MultiLose;
+            SetSinglePanel(!isMulti);
+            _cachedView.MultiConfirmBtn.SetActiveEx(isMulti);
+            _cachedView.MultiLoseObj.SetActiveEx(_showState == EShowState.MultiLose);
+            _cachedView.MultiWinObj.SetActiveEx(_showState == EShowState.MultiWin);
+            
             _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
-            _cachedView.FriendHelpObj.SetActive(_showState == EShowState.ShadowBattleLose);
+            _cachedView.ShadowBattleFailObj.SetActive(_showState == EShowState.ShadowBattleLose);
+            _cachedView.ShadowBattleWinObj.SetActive(_showState == EShowState.ShadowBattleWin);
             switch (_showState)
             {
+                case EShowState.MultiWin:
+                    _cachedView.Animation.Play("UICtrlGameFinishMultiWin");
+                    break;
+                case EShowState.MultiLose:
+                    _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
+                    break;
                 case EShowState.Win:
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
-                    _cachedView.RetryBtn.gameObject.SetActive(true);
+                    _cachedView.RetryBtn.gameObject.SetActive(_showState == EShowState.Win);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.NextBtn.gameObject.SetActive(false);
@@ -303,7 +347,7 @@ namespace GameA
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
-                    _cachedView.RetryBtn.gameObject.SetActive(true);
+                    _cachedView.RetryBtn.gameObject.SetActive(_showState == EShowState.Lose);
                     _cachedView.NextBtn.gameObject.SetActive(false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive(false);
                     _cachedView.Score.gameObject.SetActive(false);
@@ -325,12 +369,28 @@ namespace GameA
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.ScoreOutLine.text =
                         _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
-                    _cachedView.RewardObj.SetActive(true);
-                    _cachedView.ExpBarObj.SetActive(true);
+                    bool winShadow = PlayMode.Instance.SceneState.CheckShadowWin();
+                    var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                    bool friendHelp = gameMode != null && gameMode.ShadowBattleType == EShadowBattleType.FriendHelp;
+                    _cachedView.FriendHelpBtn.SetActiveEx(!friendHelp);
+                    _cachedView.FriendHelpTxt.SetActiveEx(!friendHelp);
+                    _cachedView.ShadowBattleFailObj.SetActive(!winShadow);
+                    _cachedView.ShadowBattleWinObj.SetActive(winShadow);
+                    _cachedView.RetryShadowBattleBtn.SetActiveEx(!winShadow);
+                    _cachedView.RewardObj.SetActive(winShadow);
+                    _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
-                    //Todo 更新奖励
-                    //UpdateReward ();
-
+                    if (winShadow)
+                    {
+                        if (friendHelp)
+                        {
+                            UpdateReward(_shadowBattleReward, 0.5f);
+                        }
+                        else
+                        {
+                            UpdateReward(_shadowBattleReward);
+                        }
+                    }
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
@@ -346,6 +406,11 @@ namespace GameA
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.PlayRecordObj.SetActive(false);
+                    var gameMode2 = GM2DGame.Instance.GameMode as GameModeWorldPlay;
+                    _cachedView.FriendHelpBtn.SetActiveEx(gameMode2 != null &&
+                                                          gameMode2.ShadowBattleType == EShadowBattleType.Normal);
+                    _cachedView.FriendHelpTxt.SetActiveEx(gameMode2 != null &&
+                                                          gameMode2.ShadowBattleType == EShadowBattleType.Normal);
                     _cachedView.Animation.Play("UICtrlGameFinishLose");
                     PlayLoseEffect();
                     break;
@@ -539,14 +604,15 @@ namespace GameA
                 }, code => { LogHelper.Error("FriendRecordData request fail, code = {0}", code); });
         }
 
-        private void UpdateReward(Reward reward)
+        private void UpdateReward(Reward reward, float percent = 1)
         {
             if (null != reward && reward.IsInited)
             {
                 int i = 0;
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
-                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString()
+                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(),
+                        ((int) (reward.ItemList[i].Count * percent)).ToString()
                     );
                 }
                 for (; i < _rewardCtrl.Length; i++)
@@ -589,6 +655,13 @@ namespace GameA
                     _groupId);
             uiparticle.Particle.Play();
             _particleList.Add(uiparticle);
+        }
+
+        private void SetSinglePanel(bool value)
+        {
+            _cachedView.Lose.SetActive(value);
+            _cachedView.Win.SetActive(value);
+            _cachedView.SiglePanel.SetActive(value);
         }
     }
 }

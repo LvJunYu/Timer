@@ -65,6 +65,10 @@ namespace GameA
         /// 最后登录时间
         /// </summary>
         private long _lastLoginTime;
+        /// <summary>
+        /// 留言次数
+        /// </summary>
+        private int _messageCount;
 
         // cs fields----------------------------------
         /// <summary>
@@ -215,6 +219,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 留言次数
+        /// </summary>
+        public int MessageCount { 
+            get { return _messageCount; }
+            set { if (_messageCount != value) {
+                _messageCount = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -295,6 +309,7 @@ namespace GameA
             }
             _loginCount = msg.LoginCount;           
             _lastLoginTime = msg.LastLoginTime;           
+            _messageCount = msg.MessageCount;           
             OnSyncPartial(msg);
             return true;
         }
@@ -326,6 +341,7 @@ namespace GameA
             }
             _loginCount = msg.LoginCount;           
             _lastLoginTime = msg.LastLoginTime;           
+            _messageCount = msg.MessageCount;           
             return true;
         } 
 
@@ -356,6 +372,7 @@ namespace GameA
             }
             _loginCount = obj.LoginCount;           
             _lastLoginTime = obj.LastLoginTime;           
+            _messageCount = obj.MessageCount;           
             return true;
         }
 

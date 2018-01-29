@@ -29,6 +29,12 @@ namespace GameA
             _cachedView.RankTimeTapGroup.SelectIndex(_timeBucketCount - 1 - (int) ERankTimeBucket.RTB_Total, true);
         }
 
+        public override void Close()
+        {
+            _cachedView.GridDataScrollers[(int) _menu].RefreshCurrent();
+            base.Close();
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -80,7 +86,7 @@ namespace GameA
                 });
         }
 
-        protected override void RefreshView()
+        public override void RefreshView()
         {
             _cachedView.LevelTex.text = _curType == EWorldRankType.WRT_Player ? _advLv : _createLv;
             _cachedView.CountTex.text = _curType == EWorldRankType.WRT_Player ? _advCount : _createCount;
@@ -92,7 +98,7 @@ namespace GameA
                 return;
             }
             _contentList.Clear();
-            _contentList.Capacity = _projectList.Count;
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
             for (int i = 0; i < _projectList.Count; i++)
             {
                 CardDataRendererWrapper<WorldRankItem.WorldRankHolder> w =
@@ -139,6 +145,7 @@ namespace GameA
 
         public override void Clear()
         {
+            base.Clear();
             _unload = true;
             _contentList.Clear();
             _projectList = null;

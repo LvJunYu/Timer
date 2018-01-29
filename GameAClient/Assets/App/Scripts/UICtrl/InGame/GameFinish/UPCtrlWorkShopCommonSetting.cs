@@ -39,6 +39,8 @@ namespace GameA
         {
             base.Open();
             _cachedView.CommonSettingPanel.SetActive(true);
+            _cachedView.BtnDock1.SetActiveEx(false);
+            _cachedView.BtnDock2.SetActiveEx(true);
             UpdateSettingItem();
             UpdateScreenSettingView();
         }
@@ -46,7 +48,7 @@ namespace GameA
         public override void Close()
         {
             base.Close();
-            _cachedView.CommonSettingPanel.SetActive(false);
+            _cachedView.CommonSettingPanel.SetActiveEx(false);
         }
 
         protected override void OnFullScreenToggleValueChanged(bool arg0)

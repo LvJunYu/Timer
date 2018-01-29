@@ -186,12 +186,14 @@ namespace GameA.Game
 
         private void OnGameFinishDeadMark()
         {
+            if (GM2DGame.Instance.GameMode.IsMulti) return;
             OnSync(GM2DGame.Instance.Project.DeadPos);
             Play();
         }
 
         private void OnMainPlayerDead()
         {
+            if (GM2DGame.Instance.GameMode.IsMulti) return;
             Vector3 deadPos = PlayMode.Instance.MainPlayer.Trans.position + Vector3.up*0.5f;
             _curDeadPosList.Add(new Vector2(deadPos.x, deadPos.y));
         }

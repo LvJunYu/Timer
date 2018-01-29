@@ -5,8 +5,6 @@
 ** Summary : ProjectileBase
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using UnityEngine;
 
@@ -55,8 +53,14 @@ namespace GameA.Game
             get { return _maskRandom; }
         }
 
+        public SkillBase Skill
+        {
+            get { return _skill; }
+        }
+
         public void OnGet()
         {
+            _isInterest = true;
         }
 
         public void OnFree()
@@ -121,12 +125,20 @@ namespace GameA.Game
         
         public override void UpdateLogic()
         {
+            if (!_run)
+            {
+                return;
+            }
             Speed += _fanForce;
             _fanForce = IntVec2.zero;
         }
         
         public override void UpdateView(float deltaTime)
         {
+            if (!_run)
+            {
+                return;
+            }
             if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;

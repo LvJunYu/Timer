@@ -6,27 +6,18 @@ namespace GameA
 {
     public class UPCtrlWorkShopLevelSetting : UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting>
     {
-        private GameModeEdit _gameModeWorkshopEdit;
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             InitUI();
-            _cachedView.SureBtn_2.onClick.AddListener(OnButtonEnsureClick);
-            _cachedView.SureBtn_3.onClick.AddListener(OnButtonEnsureClick);
-
-            _cachedView.TestBtn_2.onClick.AddListener(_mainCtrl.OnTestBtn);
-            _cachedView.PublishBtn_2.onClick.AddListener(_mainCtrl.OnPublishBtn);
-            _cachedView.TitleInputField_2.onEndEdit.AddListener(_mainCtrl.OnTitleEndEdit);
-            _cachedView.DescInputField_2.onEndEdit.AddListener(_mainCtrl.OnDescEndEdit);
         }
 
         private void UpdateBtns()
         {
-            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (_gameModeWorkshopEdit != null)
+            var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (gameModeWorkshopEdit != null)
             {
-                bool canPublish = _gameModeWorkshopEdit.CheckCanPublish();
+                bool canPublish = gameModeWorkshopEdit.CheckCanPublish();
                 _cachedView.TestBtn_2.gameObject.SetActive(!canPublish);
                 _cachedView.TestBtnFinished_2.SetActive(canPublish);
                 _cachedView.PublishBtn_2.gameObject.SetActive(canPublish);
@@ -44,13 +35,15 @@ namespace GameA
         {
             base.Open();
             _cachedView.LevelSettingPannel.SetActive(true);
+            _cachedView.BtnDock1.SetActiveEx(true);
+            _cachedView.BtnDock2.SetActiveEx(false);
             UpdateAll();
         }
 
         public override void Close()
         {
             base.Close();
-            _cachedView.LevelSettingPannel.SetActive(false);
+            _cachedView.LevelSettingPannel.SetActiveEx(false);
         }
 
         public void UpdateAll()
@@ -60,21 +53,10 @@ namespace GameA
             UpdateBtns();
             UpdateInfo();
         }
-
-        private void OnButtonEnsureClick()
+        
+        public void OnLifeItemButtonClick(int lifeId)
         {
-            for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
-            {
-                EditMode.Instance.MapStatistics.SetWinCondition(i, _mainCtrl.CurCondition.SettingValue[(int) i]);
-            }
-            EditMode.Instance.MapStatistics.TimeLimit =  _mainCtrl.CurCondition.TimeLimit;
-            EditMode.Instance.MapStatistics.LifeCount =  _mainCtrl.CurCondition.LifeCount;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
-        }
-
-        private void OnLifeItemButtonClick(int lifeId)
-        {
-            if ( _mainCtrl.CurCondition.LifeCount == lifeId)
+            if (_mainCtrl.CurCondition.LifeCount == lifeId)
             {
                 return;
             }
@@ -88,7 +70,7 @@ namespace GameA
             {
                 var item = _cachedView.ItemArray_2[i];
                 if (item != null)
-                    item.InitItem((EWinCondition) i,  _mainCtrl.CurCondition);
+                    item.InitItem((EWinCondition) i, _mainCtrl.CurCondition);
             }
             for (int i = 0; i < _cachedView.LifeItemArray_2.Length; i++)
             {
@@ -112,7 +94,7 @@ namespace GameA
         {
             for (int i = 0; i < _cachedView.LifeItemArray_2.Length; i++)
             {
-                _cachedView.LifeItemArray_2[i].UpdateShow( _mainCtrl.CurCondition.LifeCount);
+                _cachedView.LifeItemArray_2[i].UpdateShow(_mainCtrl.CurCondition.LifeCount);
             }
         }
     }

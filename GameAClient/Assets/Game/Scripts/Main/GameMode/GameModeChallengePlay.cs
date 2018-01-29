@@ -137,7 +137,7 @@ namespace GameA.Game
             PlayMode.Instance.OnBoostItemSelectFinish(useItems);
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
-
+	        _run = true;
             GameRun.Instance.Playing();
         }
     }

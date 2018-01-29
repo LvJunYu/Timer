@@ -1,0 +1,53 @@
+<!-- 79服配置 --> 
+
+<Root>http://139.129.229.229/ResRoot/version/</Root> 
+<Version>0.0.0.1</Version>
+<Vroot>http://139.129.229.229/ResRoot/config.xml</Vroot>
+
+
+<!-- 媒体服配置 --> 
+<!--
+<Root>http://login.syj.t4game.com\MicroClientEX\MicroClientEx_Media</Root>
+<Url>http://login.syj.t4game.com/37wan.html?serverId=S1</Url>
+<Version>1.1.0.14</Version>
+<Downurl>http://login.syj.t4game.com</Downurl>
+<Vroot>http://login.syj.t4game.com\McData\Media\</Vroot>
+-->
+
+<!-- 56外网配置 --> 
+<!--
+<Root>http://116.90.82.99:60080\MicroClientEX\MicroClientEx_56_Publish</Root>
+<Url>http://116.90.82.99:60080/index_MC.html</Url>
+<Version>1.1.0.14</Version>
+<Downurl>http://172.18.1.56/index_MC_internal.html</Downurl>
+<Vroot>http://116.90.82.99:60080\McData\Publish\</Vroot>
+-->
+
+<!-- 56服配置 --> 
+<!--
+<Root>http://172.18.1.56\MicroClientEX\MicroClientEx_Internal</Root>
+<Url>http://172.18.1.56/index_MC_internal.html</Url>
+<Version>1.1.0.14</Version>
+<Downurl>http://172.18.1.56/index_MC_internal.html</Downurl>
+<Vroot>http://172.18.1.56\McData\Internal\</Vroot>
+-->
+
+<!--360 配置-->
+<!--
+<Root>http://res.syj.t4game.com/MicroClientEX/MicroClientEx_Media</Root>
+<Url>http://syj.wan.360.cn/gamelogin_s.html</Url>
+<Version>1.1.0.18</Version>
+<Downurl>http://res.syj.t4game.com/Installer_Download_360/SYJ_Installer_360.exe</Downurl>
+<Vroot>http://res.syj.t4game.com\McData\360\</Vroot>
+-->
+
+<!--37wan 配置-->
+<!--
+<Root>http://res.syj.t4game.com/MicroClientEX/MicroClientEx_Media</Root>
+<Url>http://syj.37wan.com/game/</Url>
+<Version>1.1.0.16</Version>
+<Downurl>http://res.syj.t4game.com/Installer_Download_37wan/SYJ_Installer_37wan.exe</Downurl>
+<Vroot>http://res.syj.t4game.com\McData\37wan\</Vroot>
+-->
+
+<Info>http://a.syj.360.t4game.com.cn:8787/record/requestRecord?</Info>

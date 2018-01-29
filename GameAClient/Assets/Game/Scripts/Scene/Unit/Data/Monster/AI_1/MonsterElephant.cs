@@ -5,11 +5,6 @@
 ** Summary : MonsterElephant
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using UnityEngine;
-
 namespace GameA.Game
 {
     [Unit(Id = 2002, Type = typeof(MonsterElephant))]
@@ -25,13 +20,6 @@ namespace GameA.Game
 //            return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
 //        }
 
-        internal override void OnPlay()
-        {
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.SetSkill(102);
-            base.OnPlay();
-        }
-        
         public override void StartSkill()
         {
             if (_animation != null && !_animation.IsPlaying(Attack, 1))

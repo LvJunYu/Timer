@@ -5,7 +5,7 @@ namespace GameA
 {
     public class UPCtrlWorldUserFavorite : UPCtrlWorldProjectBase
     {
-        private UserFavoriteWorldProjectList _data;
+        private UserFavoriteWorldProjectList _data = AppData.Instance.WorldData.UserFavoriteProjectList;
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)
         {
@@ -20,6 +20,7 @@ namespace GameA
                     LogHelper.Error("OnItemRefresh Error Inx > count");
                     return;
                 }
+
                 item.Set(_contentList[inx]);
                 if (!_data.IsEnd)
                 {
@@ -33,22 +34,38 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
-            _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             int startInx = 0;
             if (append)
             {
                 startInx = _contentList.Count;
             }
-            _data.Request(LocalUser.Instance.Account.UserGuid, startInx, _pageSize,
+
+            _data.Request(LocalUser.Instance.Account.UserGuid, startInx, _pageSize, Mask,
                 EFavoriteProjectOrderBy.FPOB_FavoriteTime, EOrderType.OT_Desc, () =>
                 {
-                    _hasRequested = true;
                     _projectList = _data.AllList;
                     if (_isOpen)
                     {
                         RefreshView();
                     }
-                }, code => { });
+                }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
+        }
+
+        public void OnProjectMyFavoriteChanged(Project project, bool favorite)
+        {
+            if (_isOpen)
+            {
+                if (!favorite && _data.AllList.Contains(project))
+                {
+                    _data.AllList.Remove(project);
+                }
+                if (favorite && !_data.AllList.Contains(project))
+                {
+                    _data.AllList.Add(project);
+                }
+                _projectList = _data.AllList;
+                RefreshView();
+            }
         }
     }
 }

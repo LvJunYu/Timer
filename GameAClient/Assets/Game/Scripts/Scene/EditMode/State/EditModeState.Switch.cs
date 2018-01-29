@@ -2,6 +2,7 @@
 using HedgehogTeam.EasyTouch;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA.Game
 {
@@ -52,6 +53,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 OnDragEnd(null);
+                boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 OnExitSwitchMode(boardData, data);
                 owner.RevertEditorLayer();
                 base.Exit(owner);
@@ -117,7 +119,7 @@ namespace GameA.Game
                 }
                 var data = boardData.GetStateData<Data>();
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
-                var tile = DataScene2D.Instance.GetTileIndex(mouseWorldPos, boardData.CurrentTouchUnitDesc.Id);
+                var tile = DataScene2D.CurScene.GetTileIndex(mouseWorldPos, boardData.CurrentTouchUnitDesc.Id);
                 tile.z = boardData.CurrentTouchUnitDesc.Guid.z;
                 var target = new UnitDesc(boardData.CurrentTouchUnitDesc.Id, tile,
                     boardData.CurrentTouchUnitDesc.Rotation, boardData.CurrentTouchUnitDesc.Scale);
@@ -134,19 +136,33 @@ namespace GameA.Game
                     if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
                         UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit(coverUnits[0].Guid, out unit))
+                        if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
                         {
                             if (!unit.CanControlledBySwitch)
                             {
+                                if (UnitDefine.IsCanControlByNpc(unit.Id) &&
+                                    NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                        coverUnits[0].Guid);
+                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
+                                    {
+                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                    }
+                                }
                             }
                             else
                             {
-                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                    coverUnits[0].Guid);
+                                if (!UnitDefine.IsNpc(coverUnits[0].Id))
+                                {
+                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                        coverUnits[0].Guid);
+                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
+                                    {
+                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                    }
+                                }
                             }
-                        }
-                        else
-                        {
                         }
                     }
                     else
@@ -161,7 +177,6 @@ namespace GameA.Game
                         }
                     }
                 }
-                boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 if (null != data.CurrentConnectionUI)
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().FreeEditingConnection();
@@ -183,6 +198,20 @@ namespace GameA.Game
                 UnitDesc outValue;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), EEditorLayer.None, out outValue))
                 {
+                    //非选中的npc不可以编辑
+                    if (UnitDefine.IsNpc(outValue.Id))
+                    {
+                        if (NpcTaskDataTemp.Intance.IsEditNpcTarget(outValue.Guid))
+
+                        {
+                            SelectUnit(outValue);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                     if (UnitDefine.IsSwitch(outValue.Id))
                     {
                         SelectUnit(outValue);
@@ -191,7 +220,7 @@ namespace GameA.Game
                     else
                     {
                         UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit(outValue.Guid, out unit))
+                        if (ColliderScene2D.CurScene.TryGetUnit(outValue.Guid, out unit))
                         {
                             if (unit.CanControlledBySwitch)
                             {
@@ -229,7 +258,7 @@ namespace GameA.Game
                     switchGuid = data.CachedConnectedGUIDs[idx];
                     unitGuid = boardData.CurrentTouchUnitDesc.Guid;
                 }
-                if (DataScene2D.Instance.UnbindSwitch(switchGuid, unitGuid))
+                if (DataScene2D.CurScene.UnbindSwitch(switchGuid, unitGuid))
                 {
                     GetRecordBatch().RecordRemoveSwitchConnection(switchGuid, unitGuid);
                     CommitRecordBatch();
@@ -240,7 +269,7 @@ namespace GameA.Game
 
             private void AddSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
             {
-                if (DataScene2D.Instance.BindSwitch(switchGuid, unitGuid))
+                if (DataScene2D.CurScene.BindSwitch(switchGuid, unitGuid))
                 {
                     GetRecordBatch().RecordAddSwitchConnection(switchGuid, unitGuid);
                     CommitRecordBatch();
@@ -276,7 +305,7 @@ namespace GameA.Game
                     if (isFromSwitch)
                     {
                         List<UnitBase> controlledUnits =
-                            DataScene2D.Instance.GetControlledUnits(boardData.CurrentTouchUnitDesc.Guid);
+                            DataScene2D.CurScene.GetControlledUnits(boardData.CurrentTouchUnitDesc.Guid);
                         if (null != controlledUnits)
                         {
                             for (int i = 0; i < controlledUnits.Count; i++)
@@ -288,7 +317,7 @@ namespace GameA.Game
                     else
                     {
                         List<IntVec3> switchUnits =
-                            DataScene2D.Instance.GetSwitchUnitsConnected(boardData.CurrentTouchUnitDesc.Guid);
+                            DataScene2D.CurScene.GetSwitchUnitsConnected(boardData.CurrentTouchUnitDesc.Guid);
                         for (int i = 0; i < switchUnits.Count; i++)
                         {
                             data.CachedConnectedGUIDs.Add(switchUnits[i]);
@@ -329,7 +358,7 @@ namespace GameA.Game
             private void OnEnterSwitchMode()
             {
                 List<IntVec3> allEditableGuiDs = new List<IntVec3>();
-                using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                 {
                     while (itor.MoveNext())
                     {
@@ -338,11 +367,47 @@ namespace GameA.Game
                             if (!UnitDefine.IsSwitch(itor.Current.Value.Id) &&
                                 !itor.Current.Value.CanControlledBySwitch)
                             {
-                                itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                if (UnitDefine.IsCanControlByNpc(itor.Current.Value.Id) &&
+                                    NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                }
+                                else
+                                {
+                                    itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                }
                             }
                             else
                             {
-                                allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                if (!NpcTaskDataTemp.Intance.IsEditNpcData)
+                                {
+                                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+                                    {
+                                        itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                    }
+                                    else
+                                    {
+                                        allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                    }
+                                }
+                                else
+                                {
+                                    if (UnitDefine.IsNpc(itor.Current.Value.Id))
+                                    {
+                                        if (itor.Current.Value.Guid == NpcTaskDataTemp.Intance.NpcIntVec3)
+                                        {
+                                            allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                        }
+                                        else
+                                        {
+                                            itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        allEditableGuiDs.Add(itor.Current.Value.Guid);
+                                    }
+                                }
                             }
                         }
                     }
@@ -356,7 +421,7 @@ namespace GameA.Game
                 data.CachedConnectedGUIDs.Clear();
                 UpdateSwitchEffects();
 
-                using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
                 {
                     while (itor.MoveNext())
                     {
@@ -366,6 +431,8 @@ namespace GameA.Game
                         }
                     }
                 }
+                //退出连线模式
+                NpcTaskDataTemp.Intance.IsEditNpcData = false;
                 SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch>();
             }
 

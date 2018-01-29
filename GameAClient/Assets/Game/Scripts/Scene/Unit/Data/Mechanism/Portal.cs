@@ -5,10 +5,7 @@
 ** Summary : Portal
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using Spine.Unity;
 
 namespace GameA.Game
 {
@@ -24,7 +21,11 @@ namespace GameA.Game
             InitAssetRotation(true);
             if (_withEffect != null)
             {
-                SetRelativeEffectPos(_withEffect.Trans, (EDirectionType)Rotation);
+                SetRelativeEffectPos(_withEffect.Trans, (EDirectionType) Rotation);
+            }
+            if (GameRun.Instance.IsPlaying && _view.PairTrans != null)
+            {
+                _view.PairTrans.SetActiveEx(false);
             }
             return true;
         }
@@ -50,14 +51,14 @@ namespace GameA.Game
             {
                 if (units[i].IsAlive)
                 {
-                    if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection)(unitDesc.Rotation + 1)))
+                    if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection) (unitDesc.Rotation + 1)))
                     {
                         return;
                     }
                 }
             }
             var speed = IntVec2.zero;
-            switch ((EDirectionType)unitDesc.Rotation)
+            switch ((EDirectionType) unitDesc.Rotation)
             {
                 case EDirectionType.Up:
                     speed.x = (pairUnit.TriggeredCnt / 2) % 2 == 0 ? 45 : -45;
@@ -74,12 +75,12 @@ namespace GameA.Game
                     speed.y = 1;
                     break;
             }
-            var targetMin = new IntVec2(checkGrid.XMin,checkGrid.YMin);
+            var targetMin = new IntVec2(checkGrid.XMin, checkGrid.YMin);
             sender.OnPortal(sender.TableUnit.ColliderToRenderer(targetMin, sender.Rotation), speed);
             pairUnit.Sender = null;
-            if (unitDesc.Id == UnitDefine.PlayerTableId)
+            if (UnitDefine.IsMain(unitDesc.Id))
             {
-                Messenger.Broadcast (EMessengerType.OnPlayerEnterPortal);
+                Messenger.Broadcast(EMessengerType.OnPlayerEnterPortal);
             }
         }
 
@@ -87,7 +88,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY <= 0 && Rotation == (int)EDirectionType.Up)
+                if (other.SpeedY <= 0 && Rotation == (int) EDirectionType.Up)
                 {
                     OnTrigger(other);
                 }
@@ -99,7 +100,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY > 0 && Rotation == (int)EDirectionType.Down)
+                if (other.SpeedY > 0 && Rotation == (int) EDirectionType.Down)
                 {
                     OnTrigger(other);
                 }
@@ -111,7 +112,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)EDirectionType.Left)
+                if (Rotation == (int) EDirectionType.Left)
                 {
                     OnTrigger(other);
                 }
@@ -123,7 +124,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)EDirectionType.Right)
+                if (Rotation == (int) EDirectionType.Right)
                 {
                     OnTrigger(other);
                 }

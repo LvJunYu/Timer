@@ -5,9 +5,6 @@
 ** Summary : MapConfig
 ***********************************************************************/
 
-using SoyEngine.Proto;
-using SoyEngine;
-
 namespace GameA.Game
 {
     public class MapConfig
@@ -15,16 +12,14 @@ namespace GameA.Game
         public static int FinalItemId;
         public static int SpawnId;
         public static int TerrainItemId;
-        public static IntVec2 PermitMapSize;
-        public static bool UseAOI ;
+        public static bool UseAOI ; //还需要判断是多人也不用AOI
 
         public static bool Init()
         {
-            UseAOI = false;
-            TerrainItemId = 4100;
-            SpawnId = 1001;
-            FinalItemId = 5001;
-            PermitMapSize = new IntVec2(60, 30) * ConstDefineGM2D.ServerTileScale;
+            UseAOI = true;
+            TerrainItemId = UnitDefine.TerrainId;
+            SpawnId = UnitDefine.SpawnId;
+            FinalItemId = UnitDefine.FinalDoorId;
             return true;
         }
     }

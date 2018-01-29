@@ -1,5 +1,4 @@
 ﻿using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -9,39 +8,25 @@ namespace GameA
         protected EResScenary _resScenary;
         protected UICtrlProjectDetail.EMenu _menu;
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-//            if (_menu < UICtrlProjectDetail.EMenu.Comment)
-//            {
-//                _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
-//            }
-        }
-
         public override void Open()
         {
             base.Open();
-//            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            RequestData();
-            RefreshView();
+            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
         }
 
         public override void Close()
         {
             base.Close();
-//            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
+            _cachedView.Pannels[(int) _menu].SetActiveEx(false);
         }
 
         protected abstract void RequestData(bool append = false);
 
         protected abstract void RefreshView();
 
-        protected abstract IDataItemRenderer GetItemRenderer(RectTransform parent);
-
-        protected abstract void OnItemRefresh(IDataItemRenderer item, int inx);
-
-        public void OnChangeToApp()
+        public virtual void OnChangeToApp()
         {
+            Clear();
             RequestData();
         }
 
@@ -53,7 +38,7 @@ namespace GameA
             }
         }
 
-        public void Set(EResScenary resScenary)
+        public void SetResScenary(EResScenary resScenary)
         {
             _resScenary = resScenary;
         }

@@ -18,6 +18,7 @@ namespace GameA
         public static readonly int OnWorldFollowedUserProjectListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnProjectDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnProjectMyFavoriteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectCommentChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentCompleteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentPlayedChanged = SoyEngine.EMessengerType.NextId++;
@@ -33,7 +34,10 @@ namespace GameA
         public static readonly int OnWorkShopProjectCreated = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopDownloadListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectPublished = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectUnPublished = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnProjectNotValid = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnRequestStartGame = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnGameStartComplete = SoyEngine.EMessengerType.NextId++;
@@ -110,15 +114,19 @@ namespace GameA
         public static readonly int OnResourcesUpdateProgressUpdate = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnVersionUpdateStateChange = SoyEngine.EMessengerType.NextId++;
 
-        //PVP
-        public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
-
+        //多人房间
         public static readonly int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomWarnningHost = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
-
+        public static readonly int OnRoomListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnQueryRoomRet = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnJoinRoomFail = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomPlayerInfoChanged = SoyEngine.EMessengerType.NextId++;
+        
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 
@@ -165,5 +173,25 @@ namespace GameA
 
         //QQ
         public static readonly int OnQQRewardGetChangee = SoyEngine.EMessengerType.NextId++;
+
+        //留言板
+        public static readonly int OnPublishDockActiveChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnReplyUserMessage = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnReplyProjectComment = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteUserMessage = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteUserMessageReply = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteProjectComment = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDeleteProjectCommentReply = SoyEngine.EMessengerType.NextId++;
+
+        //乱入
+        public static readonly int OnShadowBattleStart = SoyEngine.EMessengerType.NextId++;
+
+        public static readonly int OnShadowBattleFriendHelp = SoyEngine.EMessengerType.NextId++;
+
+        //新消息通知
+        public static readonly int OnInfoNotificationChanged = SoyEngine.EMessengerType.NextId++;
+
+        //绳子
+        public static readonly int OnPlayerClimbRope = SoyEngine.EMessengerType.NextId++;
     }
 }

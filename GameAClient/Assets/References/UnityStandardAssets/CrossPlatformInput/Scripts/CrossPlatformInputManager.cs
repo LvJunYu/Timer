@@ -11,7 +11,7 @@ namespace UnityStandardAssets.CrossPlatformInput
     public enum EPlatform
     {
         Moblie,
-        Standalone
+        PC
     }
 
     public static class CrossPlatformInputManager
@@ -29,7 +29,7 @@ namespace UnityStandardAssets.CrossPlatformInput
             }
             if (Application.isEditor)
             {
-                Platform = EPlatform.Standalone;
+                Platform = EPlatform.PC;
                 virtualInput = new StandaloneInput();
                 UpdateInputControlKeys();
             }
@@ -39,7 +39,7 @@ namespace UnityStandardAssets.CrossPlatformInput
                 Platform = EPlatform.Moblie;
                 virtualInput = new MobileInput();
 #else
-                Platform = EPlatform.Standalone;
+                Platform = EPlatform.PC;
                 virtualInput = new StandaloneInput();
                 UpdateInputControlKeys();
 #endif

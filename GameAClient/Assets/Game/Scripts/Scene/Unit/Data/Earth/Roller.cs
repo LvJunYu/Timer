@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using SoyEngine;
-using Spine.Unity;
 
 namespace GameA.Game
 {

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
@@ -23,7 +22,9 @@ namespace GameA
 
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
-        private bool _battleAvailable;
+        private bool _battleAvailable = true;
+        private bool _storyGameAvailable = false;
+        private bool _cooperationGameAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
@@ -46,6 +47,8 @@ namespace GameA
         private UIParticleItem _uiParticleItem;
 
         private bool _pushGoldEnergyStyle;
+
+        private USCtrlChat _chat;
 
         #endregion
 
@@ -70,12 +73,12 @@ namespace GameA
             base.InitEventListener();
 
             RegisterEvent(EMessengerType.OnQQRewardGetChangee, RefreshQQReward);
-            RegisterEvent<long>(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
+            RegisterEvent<UserInfoDetail>(EMessengerType.OnUserInfoChanged, OnUserInfoChanged);
         }
 
-        private void OnChangeToUserInfo(long id)
+        private void OnUserInfoChanged(UserInfoDetail user)
         {
-            if (_isOpen && id == LocalUser.Instance.UserGuid)
+            if (_isOpen && user == LocalUser.Instance.User)
             {
                 RefreshUserInfo();
             }
@@ -84,13 +87,13 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            //为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
-//            _cachedView.Account.onClick.AddListener(Account);
+//            _cachedView.Account.onClick.AddListener(Account);//为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
             _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
             _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
             _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
+            _cachedView.CooperationButton.onClick.AddListener(OnCooperationButton);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -103,8 +106,9 @@ namespace GameA
             _cachedView.PuzzleBtn.onClick.AddListener(OnPuzzleBtn);
             _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
+            _cachedView.AnnouncementBtn.onClick.AddListener(OnAnnoncementBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
-            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
+//            _cachedView.ChatBtn.onClick.AddListener(OnChatBtn);
             _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
             _cachedView.QQHallBtn.onClick.AddListener(OnQQHallBtn);
             _cachedView.QQBlueBtn.onClick.AddListener(OnQQBlueBtn);
@@ -119,12 +123,18 @@ namespace GameA
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
             SetLock(UIFunction.UI_Battle, _battleAvailable);
+            SetLock(UIFunction.UI_StoryGame, _storyGameAvailable);
+            SetLock(UIFunction.UI_CooperationGame, _cooperationGameAvailable);
             SetLock(UIFunction.UI_Weapon, _weaponAvailable);
             SetLock(UIFunction.UI_Chat, _chatAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
             OpenTaskBtn();
+            _chat = new USCtrlChat();
+            _chat.ResScenary = EResScenary.Home;
+            _chat.Scene = USCtrlChat.EScene.Home;
+            _chat.Init(_cachedView.HomeChat);
         }
 
         protected override void OnDestroy()
@@ -145,6 +155,7 @@ namespace GameA
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
             RefreshQQReward();
+            _chat.Open();
         }
 
         protected override void OnClose()
@@ -155,6 +166,7 @@ namespace GameA
                 _pushGoldEnergyStyle = false;
             }
             base.OnClose();
+            _chat.Close();
         }
 
         public void SetLock(UIFunction uitype, bool ifunlock)
@@ -225,6 +237,19 @@ namespace GameA
                     _battleAvailable = ifunlock;
                 }
                     break;
+                case UIFunction.UI_StoryGame:
+                {
+                    _cachedView.StoryGameObj.SetActiveEx(ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
+                case UIFunction.UI_CooperationGame:
+                {
+                    _cachedView.Battle.SetActiveEx(ifunlock);
+                    _cachedView.BattleDisable.SetActiveEx(!ifunlock);
+                    _battleAvailable = ifunlock;
+                }
+                    break;
                 case UIFunction.UI_Lottery:
                 {
                     _cachedView.Lottery.SetActiveEx(ifunlock);
@@ -251,7 +276,7 @@ namespace GameA
                     break;
                 case UIFunction.UI_Chat:
                 {
-                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
+//                    _cachedView.ChatBtn.SetActiveEx(ifunlock);
                     _chatAvailable = ifunlock;
                 }
                     break;
@@ -272,7 +297,9 @@ namespace GameA
             UI_Achievement = 9,
             UI_Weapon,
             UI_Chat,
-            UI_Battle
+            UI_Battle,
+            UI_StoryGame,
+            UI_CooperationGame
         }
 
         public void OnCreateBtn()
@@ -330,7 +357,12 @@ namespace GameA
 
         public void OnBattleBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlBattle>();
+            SocialGUIManager.Instance.OpenUI<UICtrlCompete>();
+        }
+
+        private void OnCooperationButton()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlCooperation>();
         }
 
         public void OnMailBtn()
@@ -434,7 +466,12 @@ namespace GameA
 
         private void OnChatBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+           // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+        }
+
+        private void OnAnnoncementBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlAnnouncement>();
         }
 
         private void RefreshUserInfo()
@@ -490,7 +527,7 @@ namespace GameA
                 JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
                 _cachedView.QqHallImage.sprite = openHall;
             }
-            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip )
+            if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip)
             {
                 if (
                     RewardSave.Instance.IsQQBlueNewPlayerColltion &&
@@ -507,7 +544,7 @@ namespace GameA
                     Sprite openBlue;
                     JoyResManager.Instance.TryGetSprite(_blueNoOpen, out openBlue);
                     _cachedView.QqOpenImage.sprite = openBlue;
-                } 
+                }
             }
             else
             {

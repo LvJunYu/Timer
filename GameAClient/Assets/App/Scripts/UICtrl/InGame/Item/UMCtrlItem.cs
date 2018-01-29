@@ -23,10 +23,20 @@ namespace GameA
         private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
         private UMCtrlUnitProperty _umCtrlUnitProperty;
         private bool _isShow;
-        
+
+        public bool IsShow
+        {
+            get { return _isShow; }
+        }
+
+        public int UnitId
+        {
+            get { return _table.Id; }
+        }
+
         public void Show()
         {
-            if (_isShow)
+            if (IsShow)
             {
                 return;
             }
@@ -36,11 +46,15 @@ namespace GameA
             Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSprite);
+            }
         }
 
         public void Hide()
         {
-            if (!_isShow)
+            if (!IsShow)
             {
                 return;
             }
@@ -50,8 +64,11 @@ namespace GameA
             Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSprite);
+            }
         }
-
 
         public void OnDestroyObject()
         {
@@ -96,7 +113,7 @@ namespace GameA
                     _checkBehaviour = ECheckBehaviour.Drag;
                     var current = EditHelper.GetUnitDefaultData(_table.Id);
                     EDirectionType rotate = EDirectionType.Up;
-                    UnitExtra unitExtra = current.UnitExtra;
+                    var unitExtra = current.UnitExtra;
                     if (_table.CanEdit(EEditType.Direction))
                     {
                         rotate = (EDirectionType) current.UnitDesc.Rotation;
@@ -141,7 +158,6 @@ namespace GameA
             OnItem();
         }
 
-
         private void OnItem()
         {
             if (_selected)
@@ -173,16 +189,7 @@ namespace GameA
             }
             _cachedView.SpriteIcon.sprite = null;
             _cachedView.SpriteIcon.SetActiveEx(true);
-            Sprite texture;
-            if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
-            {
-                _cachedView.SpriteIcon.sprite = texture;
-            }
-            else
-            {
-                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-                    tableUnit.Icon, tableUnit.EGeneratedType);
-            }
+            RefreshSprite();
             if (_selected)
             {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
@@ -215,6 +222,27 @@ namespace GameA
             _cachedView.Number.gameObject.SetActive(true);
         }
 
+        private void RefreshSprite()
+        {
+            if (UnitDefine.IsSpawn(_table.Id))
+            {
+                var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
+                _cachedView.SpriteIcon.sprite = TeamManager.GetSpawnSprite(define.UnitExtra.TeamId);
+            }
+            else
+            {
+                Sprite texture;
+                if (JoyResManager.Instance.TryGetSprite(_table.Icon, out texture))
+                {
+                    _cachedView.SpriteIcon.sprite = texture;
+                }
+                else
+                {
+                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", _table.Id,
+                        _table.Icon, _table.EGeneratedType);
+                }
+            }
+        }
 
         private void OnSelectedItemChanged(ushort id)
         {
@@ -252,7 +280,7 @@ namespace GameA
             _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
             _umCtrlUnitProperty.UITran.localScale = Vector3.one * 0.47f;
             var unitDefaultData = EditHelper.GetUnitDefaultData(_table.Id);
-            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, ref unitDefaultData.UnitExtra);
+            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, unitDefaultData.UnitExtra);
         }
 
         private void OnUnitAddedInEditMode(int id)

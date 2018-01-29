@@ -5,9 +5,6 @@
 ** Summary : Lazer
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -20,10 +17,12 @@ namespace GameA.Game
 
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
-        
+
         protected Vector3 _direction;
         protected int _distance;
-        
+        protected IntVec2 _hitPoint;
+        protected bool _zFront;
+
         protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
@@ -43,13 +42,13 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
-        public override void UpdateExtraData()
+
+        public override UnitExtraDynamic UpdateExtraData()
         {
-            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            var unitExtra = base.UpdateExtraData();
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
-            base.UpdateExtraData();
+            return unitExtra;
         }
 
         internal override bool InstantiateView()
@@ -71,6 +70,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _zFront = false;
             _curAngle = _angle;
             _direction = GM2DTools.GetDirection(_curAngle);
             if (_trans != null)
@@ -114,7 +114,7 @@ namespace GameA.Game
                 _gridCheck.Clear();
                 return;
             }
-            _distance = ConstDefineGM2D.MaxMapDistance;
+            _distance = _tableUnit.ValidRange * ConstDefineGM2D.ServerTileScale;
             if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
@@ -127,11 +127,13 @@ namespace GameA.Game
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
-                if (!Util.IsFloatEqual(_angle, _endAngle) )
+                if (!Util.IsFloatEqual(_angle, _endAngle))
                 {
                     if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                     {
-                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise
+                            ? ERotateMode.Anticlockwise
+                            : ERotateMode.Clockwise;
                     }
                 }
                 _direction = GM2DTools.GetDirection(_curAngle);
@@ -152,10 +154,12 @@ namespace GameA.Game
                         if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                         {
                             UnitBase switchTrigger;
-                            if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
+                            if (ColliderScene2D.CurScene.TryGetUnit(hit.node, out switchTrigger))
                             {
                                 _gridCheck.Do((SwitchTriggerPress) switchTrigger);
                                 _distance = hit.distance + 80;
+                                //如果打到左边或者下面 则层级放在前面，显示出来
+                                CheckZFront(ref hit);
                                 break;
                             }
                         }
@@ -166,6 +170,8 @@ namespace GameA.Game
                             if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
                             {
                                 _distance = hit.distance;
+                                //如果打到左边或者下面 则层级放在前面，显示出来
+                                CheckZFront(ref hit);
                                 flag = true;
                                 break;
                             }
@@ -178,7 +184,7 @@ namespace GameA.Game
                     if (UnitDefine.IsLaserDamage(hit.node.Layer))
                     {
                         UnitBase unit;
-                        if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
+                        if (ColliderScene2D.CurScene.TryGetUnit(hit.node, out unit))
                         {
                             if (unit != null && unit.IsAlive && unit.IsActor)
                             {
@@ -203,10 +209,28 @@ namespace GameA.Game
                 {
                     _lazerEffectEnd.Play();
                     _lazerEffectEnd.Trans.position =
-                        GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) +
-                        distanceWorld * _direction;
+                        GM2DTools.TileToWorld(CenterPos, GetEffectZ(_hitPoint)) +distanceWorld * _direction;
                 }
             }
+        }
+
+        private void CheckZFront(ref RayHit2D hit)
+        {
+            _hitPoint = hit.point;
+            //如果打到左边或者下面 则层级放在前面，显示出来
+            if (hit.normal.x > 0 || hit.normal.y > 0)
+            {
+                _zFront = true;
+            }
+            else
+            {
+                _zFront = false;
+            }
+        }
+
+        protected  float GetEffectZ(IntVec2 point)
+        {
+            return -(point.x + point.y) * UnitDefine.UnitSorttingLayerRatio + (_zFront ? -1.99f : 1.99f);
         }
     }
 }

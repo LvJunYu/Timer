@@ -4,11 +4,13 @@ namespace GameA
 {
     public static class RelationCommonString
     {
-        public static string FollowedStr = "已关注";
-        public static string FollowStr = "关 注";
-        public static string BlockedStr = "已屏蔽";
-        public static string BlockStr = "屏蔽";
-        public static string FriendStr = "相互关注";
+        public const string FollowedStr = "已关注";
+        public const string FollowStr = "关 注";
+        public const string BlockedStr = "已屏蔽";
+        public const string BlockStr = "屏蔽";
+        public const string FriendStr = "相互关注";
+        public const string CollectStr = "收藏";
+        public const string CollectedStr = "已收藏";
     }
 
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
@@ -63,6 +65,7 @@ namespace GameA
                     _menuCtrlArray[i].Close();
                 }
             }
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.SeachInputField);
         }
 
         protected override void OnDestroy()

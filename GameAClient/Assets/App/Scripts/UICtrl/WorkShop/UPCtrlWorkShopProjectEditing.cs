@@ -1,29 +1,38 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
 {
     public class UPCtrlWorkShopProjectEditing : UPCtrlWorkShopProjectBase
     {
-        private PersonalProjectList _data;
+        private bool _isRequesting;
+        private PersonalProjectList _data = LocalUser.Instance.PersonalProjectList;
 
         public override void RequestData(bool append = false)
         {
-            _data = LocalUser.Instance.PersonalProjectList;
-            if (_data.IsInited && !_data.IsDirty) return;
-            _data.Request(() =>
+            if ( _isRequesting) return;
+            _isRequesting = true;
+            int startInx = 0;
+            if (append)
             {
-                _projectList = _data.ProjectList;
+                startInx = _data.AllEdittingList.Count;
+            }
+
+            _data.Request(EWorkShopProjectType.WSPT_Editting, startInx, _pageSize, () =>
+            {
+                _projectList = _data.AllEdittingList;
                 if (_isOpen)
                 {
                     RefreshView();
                 }
-            });
+                _isRequesting = false;
+            }, code => _isRequesting = false);
         }
 
         public override void RefreshView()
         {
-            _projectList = _data.ProjectList;
+            _projectList = _data.AllEdittingList;
             _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
             _contentList.Clear();
             _dict.Clear();
@@ -36,9 +45,16 @@ namespace GameA
                     CardDataRendererWrapper<Project> w =
                         new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
                     _contentList.Add(w);
-                    _dict.Add(_projectList[i].ProjectId, w);
+                    if (_dict.ContainsKey(_projectList[i].ProjectId))
+                    {
+                    }
+                    else
+                    {
+                        _dict.Add(_projectList[i].ProjectId, w);
+                    }
                 }
             }
+
             _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
@@ -55,12 +71,47 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlSetProjectSize>();
         }
 
+        protected override void OnItemRefresh(IDataItemRenderer item, int inx)
+        {
+            if (!_isOpen)
+            {
+                item.Set(null);
+            }
+            else
+            {
+                if (inx >= _contentList.Count)
+                {
+                    LogHelper.Error("OnItemRefresh Error Inx > count");
+                    return;
+                }
+
+                item.Set(_contentList[inx]);
+                if (!_data.EdittingIsEnd)
+                {
+                    if (inx > _contentList.Count - 2)
+                    {
+                        RequestData(true);
+                    }
+                }
+            }
+        }
+
         protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlProject();
-            item.SetMode(UMCtrlProject.EFunc.Editing);
+            item.SetCurUI(UMCtrlProject.ECurUI.Editing);
             item.Init(parent, _resScenary);
             return item;
+        }
+
+        public void OnWorkShopProjectPublished(long projectId)
+        {
+            var project = _data.AllEdittingList.Find(p => p.ProjectId == projectId);
+            if (project != null)
+            {
+                _data.AllEdittingList.Remove(project);
+            }
+            RefreshView();
         }
     }
 }

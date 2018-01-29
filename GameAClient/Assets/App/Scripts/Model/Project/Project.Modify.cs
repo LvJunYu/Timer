@@ -35,7 +35,7 @@ namespace GameA
 
             if (_projectStatus == EProjectStatus.PS_Reform)
             {
-                List<ModifyData> addedUnits = DataScene2D.Instance.AddedUnits;
+                List<ModifyData> addedUnits = DataScene2D.CurScene.AddedUnits;
                 Dictionary<int, int> addedDic = new Dictionary<int, int>();
                 for (int i = 0; i < addedUnits.Count; i++)
                 {
@@ -75,17 +75,17 @@ namespace GameA
                 }
             }
 
-            _projectUploadParam.MapWidth = DataScene2D.Instance.Width;
-            _projectUploadParam.MapHeight = DataScene2D.Instance.Height;
-            _projectUploadParam.TotalUnitCount = ColliderScene2D.Instance.Units.Count;
-            _projectUploadParam.AddCount = DataScene2D.Instance.AddedUnits.Count;
-            _projectUploadParam.DeleteCount = DataScene2D.Instance.RemovedUnits.Count;
-            _projectUploadParam.ModifyCount = DataScene2D.Instance.ModifiedUnits.Count;
+            _projectUploadParam.MapWidth = DataScene2D.CurScene.Width;
+            _projectUploadParam.MapHeight = DataScene2D.CurScene.Height;
+            _projectUploadParam.TotalUnitCount = ColliderScene2D.CurScene.Units.Count;
+            _projectUploadParam.AddCount = DataScene2D.CurScene.AddedUnits.Count;
+            _projectUploadParam.DeleteCount = DataScene2D.CurScene.RemovedUnits.Count;
+            _projectUploadParam.ModifyCount = DataScene2D.CurScene.ModifiedUnits.Count;
             _projectUploadParam.ReformRate = 1f *
-                                             (DataScene2D.Instance.AddedUnits.Count +
-                                              DataScene2D.Instance.RemovedUnits.Count +
-                                              DataScene2D.Instance.ModifiedUnits.Count) /
-                                             ColliderScene2D.Instance.Units.Count;
+                                             (DataScene2D.CurScene.AddedUnits.Count +
+                                              DataScene2D.CurScene.RemovedUnits.Count +
+                                              DataScene2D.CurScene.ModifiedUnits.Count) /
+                                             ColliderScene2D.CurScene.Units.Count;
             _projectUploadParam.RecordRestartCount = 0;
             _projectUploadParam.RecordUsedLifeCount = 0;
             _projectUploadParam.OperateCount = 0;
@@ -185,7 +185,15 @@ namespace GameA
 
             for (int i = 0; i < _projectUploadParam.UsedUnitDataList.Count; i++) {
                 Msg_UnitDataItem msgUnitDataItem = new Msg_UnitDataItem ();
-                msgUnitDataItem.UnitCount = _projectUploadParam.UsedUnitDataList [i].UnitCount;
+//                var id = _projectUploadParam.UsedUnitDataList[i].UnitId;
+//                if (id == 4016 || id == 4017 || id == 4018)
+//                {
+//                    msgUnitDataItem.UnitCount = 0;
+//                }
+//                else
+                {
+                    msgUnitDataItem.UnitCount = _projectUploadParam.UsedUnitDataList [i].UnitCount;
+                }
                 msgUnitDataItem.UnitId = _projectUploadParam.UsedUnitDataList [i].UnitId;
                 msgProjectUploadParam.UsedUnitDataList.Add(msgUnitDataItem);
             }

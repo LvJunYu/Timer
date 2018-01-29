@@ -7,8 +7,9 @@ namespace GameA
     public class UMCtrlWorldRecentRecord : UMCtrlBase<UMViewWorldRecentRecord>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Record> _wrapper;
-        private static string _successStr = "成功";
-        private static string _failStr = "失败";
+        private const string _successStr = "成功";
+        private const string _failStr = "失败";
+        private bool _showVersionLine;
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -64,6 +65,11 @@ namespace GameA
             RefreshView();
         }
 
+        public void SetVersionLineEnable(bool value)
+        {
+            _showVersionLine = value;
+        }
+
         public void RefreshView()
         {
             if (_wrapper == null)
@@ -82,6 +88,8 @@ namespace GameA
                 DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
             user.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            _cachedView.LastVersionDock.SetActive(_showVersionLine);
+            _cachedView.Line.SetActive(!_showVersionLine);
         }
 
         public void Unload()

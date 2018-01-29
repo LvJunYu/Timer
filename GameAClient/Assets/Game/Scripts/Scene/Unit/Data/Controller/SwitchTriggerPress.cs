@@ -5,10 +5,7 @@
 ** Summary : SwitchTrigger
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using SoyEngine;
 
 namespace GameA.Game
 {

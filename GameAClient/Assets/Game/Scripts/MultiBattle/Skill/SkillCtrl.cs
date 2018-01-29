@@ -5,8 +5,6 @@
 ** Summary : SkillCtrl
 ***********************************************************************/
 
-using System.Linq;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -21,12 +19,12 @@ namespace GameA.Game
             _owner = owner;
             _currentSkills = new SkillBase[slotCount];
         }
-        
+
         public SkillBase[] CurrentSkills
         {
             get { return _currentSkills; }
         }
-        
+
         public bool HasEmptySlot(out int slot)
         {
             for (int i = 0; i < _currentSkills.Length; i++)
@@ -41,7 +39,8 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool SetSkill(int id, EWeaponInputType eWeaponInputType = EWeaponInputType.GetKey, int slot = 0)
+        public virtual bool SetSkill(int id, EWeaponInputType eWeaponInputType = EWeaponInputType.GetKey, int slot = 0,
+            UnitExtraDynamic unitExtra = null)
         {
             if (!CheckValid(slot))
             {
@@ -49,14 +48,14 @@ namespace GameA.Game
             }
             if (_currentSkills[slot] != null)
             {
-                if (_currentSkills[slot].Id== id)
+                if (_currentSkills[slot].Id == id)
                 {
                     return false;
                 }
                 _currentSkills[slot].Exit();
                 _currentSkills[slot] = null;
             }
-            _currentSkills[slot] = new SkillBase(id, slot, _owner, eWeaponInputType);
+            _currentSkills[slot] = new SkillBase(id, slot, _owner, eWeaponInputType, unitExtra);
             return true;
         }
 

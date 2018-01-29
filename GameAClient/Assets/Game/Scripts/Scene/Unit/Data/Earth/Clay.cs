@@ -5,8 +5,6 @@
 ** Summary : Clay
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 
 namespace GameA.Game
@@ -33,11 +31,20 @@ namespace GameA.Game
         {
             if (_colliderGrid.Intersects(grid))
             {
-                OnEffect(other, eDirectionType);
+                OnEffect(other, eDirectionType, this);
             }
         }
-
-        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        
+        protected override bool CheckMagicPassBeforeHit(UnitBase unit)
+        {
+            if (base.CheckMagicPassBeforeHit(unit))
+            {
+                return true;
+            }
+            return unit.CurClimbUnit == this;
+        }
+        
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType, UnitBase unit)
         {
             if (other.IsInState(EEnvState.Ice))
             {
@@ -55,7 +62,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        other.SetClimbState(EClimbState.Up);
+                        other.SetClimbState(EClimbState.Up, unit);
                     }
                     break;
                 case EDirectionType.Left:
@@ -65,7 +72,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        other.SetClimbState(EClimbState.Right);
+                        other.SetClimbState(EClimbState.Right, unit);
                     }
                     break;
                 case EDirectionType.Right:
@@ -75,7 +82,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        other.SetClimbState(EClimbState.Left);
+                        other.SetClimbState(EClimbState.Left, unit);
                     }
                     break;
             }

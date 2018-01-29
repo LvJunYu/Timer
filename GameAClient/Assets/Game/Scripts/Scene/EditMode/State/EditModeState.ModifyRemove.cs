@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HedgehogTeam.EasyTouch;
+﻿using HedgehogTeam.EasyTouch;
 using SoyEngine;
 
 namespace GameA.Game
@@ -26,7 +25,7 @@ namespace GameA.Game
                 }
                 GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.EditLayItem);
                 
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var unitExtra = DataScene2D.CurScene.GetUnitExtra(touchedUnitDesc.Guid);
                 if (EditMode.Instance.DeleteUnitWithCheck(touchedUnitDesc))
                 {
                     OnModifyDelete(new UnitEditData(touchedUnitDesc, unitExtra));
@@ -75,7 +74,7 @@ namespace GameA.Game
             public bool CheckCanModifyErase(UnitDesc unitDesc)
             {
                 // 检查是否是不能删除的特殊物体
-                if (unitDesc.Id == UnitDefine.PlayerTableId)
+                if (UnitDefine.IsMain(unitDesc.Id))
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除主角");
                     return false;

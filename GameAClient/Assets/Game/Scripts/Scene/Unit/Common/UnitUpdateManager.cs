@@ -5,88 +5,141 @@
 ** Summary : UnitUpdateManager
 ***********************************************************************/
 
-using System.Collections.Generic;
-using SoyEngine;
-using UnityEngine;
-
 namespace GameA.Game
 {
     public class UnitUpdateManager
     {
         public void UpdateLogic(float deltaTime)
         {
-            var mainUnit = PlayMode.Instance.MainPlayer;
+            var playerList = PlayerManager.Instance.PlayerList;
+            var allSwitchUnits = ColliderScene2D.CurScene.AllSwitchUnits;
+            var allMagicUnits = ColliderScene2D.CurScene.AllMagicUnits;
+            var allBulletUnits = ColliderScene2D.CurScene.AllBulletUnits;
+            var allOtherUnits = ColliderScene2D.CurScene.AllOtherUnits;
 
-            var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
-            var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
-            var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
-            var allOtherUnits = ColliderScene2D.Instance.AllOtherUnits;
-            
             for (int i = 0; i < allSwitchUnits.Count; i++)
             {
-                allSwitchUnits[i].UpdateLogic();
+                if (allSwitchUnits[i].IsInterest)
+                {
+                    allSwitchUnits[i].UpdateLogic();
+                }
             }
+
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
-                allMagicUnits[i].UpdateLogic();
+                if (allMagicUnits[i].IsInterest)
+                {
+                    allMagicUnits[i].UpdateLogic();
+                }
             }
-            
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                allOtherUnits[i].CheckStart();
-            }
-            //人先执行 AI怪物后执行
-            mainUnit.UpdateLogic();
-            for (int i = 0; i < allOtherUnits.Count; i++)
-            {
-                if (allOtherUnits[i].IsMain)
+                if (allOtherUnits[i].IsPlayer)
                 {
                     continue;
                 }
-                allOtherUnits[i].UpdateLogic();
+
+                if (allOtherUnits[i].IsInterest)
+                {
+                    allOtherUnits[i].CheckStart();
+                }
             }
-            for (int i = 0; i < allBulletUnits.Count; i++)
+
+            for (int i = 0; i < playerList.Count; i++)
             {
-                allBulletUnits[i].UpdateLogic();
+                if (playerList[i] != null)
+                {
+                    playerList[i].CheckStart();
+                }
             }
-            for (int i = 0; i < allMagicUnits.Count; i++)
+
+            //人先执行 AI怪物后执行
+            for (int i = 0; i < playerList.Count; i++)
             {
-                allMagicUnits[i].UpdateView(deltaTime);
+                if (playerList[i] != null)
+                {
+                    playerList[i].UpdateLogic();
+                }
             }
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                allOtherUnits[i].CalculateExtraDeltaPos();
+                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
+                {
+                    continue;
+                }
+
+                if (allOtherUnits[i].IsInterest)
+                {
+                    allOtherUnits[i].UpdateLogic();
+                }
             }
-            var boxOperateType = mainUnit.GetBoxOperateType();
-            switch (boxOperateType)
-            {
-                case EBoxOperateType.None:
-                case EBoxOperateType.Push:
-                    for (int i = 0; i < allOtherUnits.Count; i++)
-                    {
-                        if (allOtherUnits[i].IsMain)
-                        {
-                            continue;
-                        }
-                        allOtherUnits[i].UpdateView(deltaTime);
-                    }
-                    mainUnit.UpdateView(deltaTime);
-                    break;
-                case EBoxOperateType.Pull:
-                    mainUnit.UpdateView(deltaTime);
-                    for (int i = 0; i < allOtherUnits.Count; i++)
-                    {
-                        if (allOtherUnits[i].IsMain)
-                        {
-                            continue;
-                        }
-                        allOtherUnits[i].UpdateView(deltaTime);
-                    }
-                    break;
-            }
+
+            RopeManager.Instance.UpdateLogic();
+
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
-                allBulletUnits[i].UpdateView(deltaTime);
+                if (allBulletUnits[i].IsInterest)
+                {
+                    allBulletUnits[i].UpdateLogic();
+                }
+            }
+
+            for (int i = 0; i < allMagicUnits.Count; i++)
+            {
+                if (allMagicUnits[i].IsInterest)
+                {
+                    allMagicUnits[i].UpdateView(deltaTime);
+                }
+            }
+
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                if (allOtherUnits[i].IsInterest)
+                {
+                    allOtherUnits[i].CalculateExtraDeltaPos();
+                }
+            }
+
+            //拉箱子的先移动，推箱子的最后
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null && playerList[i].GetBoxOperateType() == EBoxOperateType.Pull)
+                {
+                    playerList[i].UpdateView(deltaTime);
+                }
+            }
+
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
+                {
+                    continue;
+                }
+
+                if (allOtherUnits[i].IsInterest)
+                {
+                    allOtherUnits[i].UpdateView(deltaTime);
+                }
+            }
+
+            //绳子单独控制
+            RopeManager.Instance.UpdateView(deltaTime);
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null && playerList[i].GetBoxOperateType() != EBoxOperateType.Pull)
+                {
+                    playerList[i].UpdateView(deltaTime);
+                }
+            }
+
+            for (int i = 0; i < allBulletUnits.Count; i++)
+            {
+                if (allBulletUnits[i].IsInterest)
+                {
+                    allBulletUnits[i].UpdateView(deltaTime);
+                }
             }
         }
     }
