@@ -5,8 +5,7 @@
 ** Summary : UMViewGamePlayItem  
 ***********************************************************************/
 
-
-
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -104,7 +103,7 @@ namespace GameA
                     }
                 case EWinCondition.WC_Monster:
                     {
-                        return Game.EditMode.Instance.MapStatistics.MonsterCount;
+                        return Game.EditMode.Instance.MapStatistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves();
                     }
                 //case Game.EWinCondition.RescueHero:
                     //{

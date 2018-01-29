@@ -29,6 +29,7 @@ namespace GameA.Game
         private Texture2D _maskTexture;
         private Color[][] _paintColors;
         private Color[][] _maskColors;
+        private Vector2 _oriPos;
 
         private static Color[] EmptyPixels;
         public const int Ratio = 2;
@@ -84,6 +85,42 @@ namespace GameA.Game
         public override bool CanPainted
         {
             get { return true; }
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+
+            if (_paintObject != null)
+            {
+                CommonTools.SetParent(_paintObject.transform, _view.Trans);
+                _paintObject.transform.localPosition = _oriPos;
+            }
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            if (_paintObject != null)
+            {
+                _oriPos = _paintObject.transform.localPosition;
+                _paintObject.transform.parent = null;
+                _paintObject.transform.position = new Vector2(100000, 0);
+            }
+            base.OnObjectDestroy();
+        }
+
+        internal override void OnDispose()
+        {
+            if (_paintObject != null)
+            {
+                Object.Destroy(_paintObject);
+                _paintObject = null;
+            }
+            base.OnDispose();
         }
 
         protected override void Clear()
@@ -410,7 +447,7 @@ namespace GameA.Game
                 CommonTools.SetParent(_paintObject.transform, _view.Trans);
                 _paintObject.transform.localPosition = Vector3.back * 0.01f;
                 var paintRenderer = _paintObject.AddComponent<SpriteRenderer>();
-                paintRenderer.sortingOrder = sr.sortingOrder;
+                paintRenderer.sortingOrder = sr.sortingOrder + 1;
                 paintRenderer.sprite = Sprite.Create(_paintTexture,
                     new Rect(0f, 0f, _paintTexture.width, _paintTexture.height), new Vector2(0.5f, 0.5f), PixelsPerUnit,
                     0,

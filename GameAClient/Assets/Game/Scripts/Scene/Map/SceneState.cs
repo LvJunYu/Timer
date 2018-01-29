@@ -294,7 +294,7 @@ namespace GameA.Game
                 RemoveCondition(EWinCondition.WC_Collect);
             }
 
-            if (Statistics.MonsterCount == 0)
+            if (MonsterCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Monster);
             }
@@ -530,7 +530,7 @@ namespace GameA.Game
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < Statistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < MonsterCount;
         }
 
         //private bool CheckWinRescueHero()

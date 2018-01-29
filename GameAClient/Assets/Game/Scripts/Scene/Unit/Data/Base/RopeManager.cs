@@ -11,7 +11,7 @@ namespace GameA.Game
         private int _addForceTimer;
         private int _carryPlayerCount;
         private Dictionary<long, int> _timerDic = new Dictionary<long, int>();
-        private const int LeaveTimer = 20;
+        private const int DropCD = 20;
 
         public bool IsInterest
         {
@@ -117,8 +117,8 @@ namespace GameA.Game
                 _joints[i].UpdateLogic();
             }
 
-            var keys = _timerDic.Keys.ToList();
-            for (int i = 0; i < keys.Count; i++)
+            var keys = _timerDic.Keys.ToArray();
+            for (int i = 0; i < keys.Length; i++)
             {
                 if (_timerDic[keys[i]] > 0)
                 {
@@ -172,16 +172,10 @@ namespace GameA.Game
                     _carryPlayerCount--;
                 }
             }
-
+            //跳下绳子CD时间
             if (!value)
             {
-                var guid = player.RoomUser.Guid;
-                if (!_timerDic.ContainsKey(guid))
-                {
-                    _timerDic.Add(guid, 0);
-                }
-
-                _timerDic[guid] = LeaveTimer;
+                _timerDic.AddOrReplace(player.RoomUser.Guid, DropCD);
             }
             
         }

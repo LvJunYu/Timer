@@ -277,7 +277,7 @@ namespace GameA
                     new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));
                 return;
             }
-
+            
             if (_needSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
@@ -288,11 +288,16 @@ namespace GameA
                 }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                    SocialGUIManager.ShowPopupDialog("保存数据失败");
                 });
             }
             else
             {
+                if (_project.CreateTime == _project.UpdateTime)
+                {
+                    SocialGUIManager.ShowPopupDialog("无法更新发布，此关卡尚无修改");
+                    return;
+                }
                 SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_project);
             }
         }
