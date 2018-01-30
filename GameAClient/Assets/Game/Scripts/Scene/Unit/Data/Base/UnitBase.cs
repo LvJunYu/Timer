@@ -987,6 +987,7 @@ namespace GameA.Game
                 }
             }
 
+            _hp = _maxHp;
             return unitExtra;
         }
 

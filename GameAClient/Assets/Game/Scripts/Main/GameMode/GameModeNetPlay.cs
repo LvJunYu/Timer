@@ -456,7 +456,7 @@ namespace GameA.Game
             if (msg.UserGuid == LocalUser.Instance.UserGuid)
             {
                 _ePhase = EPhase.Close;
-                SocialGUIManager.ShowPopupDialog("您已被房主提出游戏", null, new KeyValuePair<string, Action>("确定", () =>
+                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null, new KeyValuePair<string, Action>("确定", () =>
                 {
                     SocialApp.Instance.ReturnToApp();
                 }));

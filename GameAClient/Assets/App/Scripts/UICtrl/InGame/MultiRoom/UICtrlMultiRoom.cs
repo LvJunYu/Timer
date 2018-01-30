@@ -313,7 +313,11 @@ namespace GameA
 
         private void RefreshStartBtns()
         {
-            if (!_isHost) return;
+            if (!_isHost)
+            {
+                _cachedView.CancelBtn.SetActiveEx(_starting);
+                return;
+            }
             bool allReady = _roomInfo.CheckAllReady();
             if (allReady)
             {
