@@ -87,6 +87,7 @@ namespace GameA.Game
             TryCloseLoading();
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
+            AppData.Instance.ChatData.ClearRoomChat();
             if (!base.Stop())
             {
                 return false;
