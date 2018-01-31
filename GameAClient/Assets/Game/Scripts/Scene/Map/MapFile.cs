@@ -126,8 +126,14 @@ namespace GameA.Game
                     unitAGrid.z = pairUnitDatas[i].UnitAScene;
                     var unitBGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitB);
                     unitBGrid.z = pairUnitDatas[i].UnitBScene;
-                    pairUnits.Add(unitAGrid, pairUnitDatas[i]);
-                    pairUnits.Add(unitBGrid, pairUnitDatas[i]);
+                    if (unitAGrid != IntVec3.zero)
+                    {
+                        pairUnits.Add(unitAGrid, pairUnitDatas[i]);
+                    }
+                    if (unitBGrid != IntVec3.zero)
+                    {
+                        pairUnits.Add(unitBGrid, pairUnitDatas[i]);
+                    }
                 }
             }
 
@@ -423,7 +429,7 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < pairUnitIter.Current.Length; i++)
                         {
-                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero)
+                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero || pairUnitIter.Current[i].UnitB.Guid != IntVec3.zero)
                             {
                                 gm2DMapData.PairUnitDatas.Add(GM2DTools.ToProto(pairUnitIter.Current[i]));
                             }
