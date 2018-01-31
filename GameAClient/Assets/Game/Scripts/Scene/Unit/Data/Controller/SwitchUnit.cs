@@ -29,19 +29,12 @@ namespace GameA.Game
 
         internal override bool InstantiateView()
         {
-            // 游戏中重新生成View时
-            if (GameRun.Instance.IsPlaying && _switchTrigger == null)
+            if (_switchTrigger == null)
             {
                 CreateSwitchTrigger();
             }
 
             return base.InstantiateView();
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            CreateSwitchTrigger();
         }
 
         public override void UpdateView(float deltaTime)
