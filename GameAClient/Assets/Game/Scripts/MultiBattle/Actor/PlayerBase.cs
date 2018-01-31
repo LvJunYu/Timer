@@ -600,7 +600,10 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowData.RecordOutPortal();
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
-
+                    if (_gun != null)
+                    {
+                        _gun.Revive();
+                    }
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
