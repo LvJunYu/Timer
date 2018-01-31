@@ -378,6 +378,11 @@ namespace GameA.Game
             {
                 ChangeScene(i);
                 _curScene.Reset();
+                //删除其它场景Reset时创建的物体
+                if (sqawnIndex != i)
+                {
+                    _curScene.Exit();
+                }
             }
 
             ChangeScene(sqawnIndex);
