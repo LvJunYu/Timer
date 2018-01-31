@@ -296,6 +296,36 @@ namespace GameA.Game
             return true;
         }
 
+        public bool CheckAllTeamerSiTouLe(byte teamId)
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                if (_players[i].TeamId != teamId)
+                {
+                    continue;
+                }
+
+                if (!_players[i].SiTouLe)
+                {
+                    return false;
+                }
+            }
+            _scoreDic[teamId] = 0;
+            Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, 0);
+            return true;
+        }
+        
+        public bool CheckOnlyMyTeamLeft()
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                if (_players[i].TeamId != _myTeamId && !_players[i].SiTouLe)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         #region Score
 
         public void AddScore(UnitBase unit, int score)
@@ -420,5 +450,6 @@ namespace GameA.Game
         }
 
         #endregion
+
     }
 }

@@ -21,16 +21,6 @@ namespace GameA.Game
 		[ColumnMapping("Model")]
 		public string Model;
 		/// <summary>
-        /// 像素宽
-        /// </summary>
-		[ColumnMapping("Width")]
-		public int Width;
-		/// <summary>
-        /// 像素高
-        /// </summary>
-		[ColumnMapping("Height")]
-		public int Height;
-		/// <summary>
         /// 
         /// </summary>
 		[ColumnMapping("MinScaleX")]
@@ -61,10 +51,20 @@ namespace GameA.Game
 		[ColumnMapping("MoveSpeedX")]
 		public float MoveSpeedX;
 		/// <summary>
-        /// 
+        /// Alpha
         /// </summary>
 		[ColumnMapping("Alpha")]
 		public float Alpha;
+		/// <summary>
+        /// 最大数量
+        /// </summary>
+		[ColumnMapping("MaxCount")]
+		public int MaxCount;
+		/// <summary>
+        /// 跟随镜头速率
+        /// </summary>
+		[ColumnMapping("FollowMoveRatio")]
+		public float FollowMoveRatio;
 	}
 
     public class TableBackgroundAsset:BaseTableAsset

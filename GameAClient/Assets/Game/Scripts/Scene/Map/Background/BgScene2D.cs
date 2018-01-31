@@ -6,35 +6,12 @@
 ***********************************************************************/
 
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
 {
-    public enum EBgDepth
-    {
-        Depth1 = 1,
-        Depth2,
-        Depth3,
-        Depth4,
-        Depth5,
-        Depth6,
-        Depth7,
-        Depth8,
-        Depth9,
-        Depth10,
-        Depth11,
-        Depth12,
-        Depth13,
-        Depth14,
-        Depth15,
-        Depth16,
-        Depth17,
-        Depth18,
-        Depth19,
-        Max
-    }
-
     public class BgScene2D : Scene2D
     {
         private static BgScene2D _instance;
@@ -57,18 +34,11 @@ namespace GameA.Game
         private int _curBgGroup = 1;
         private BgItem _sun;
         private BgItem _seaLevel;
-
+        private readonly int[] _maxDepthCount = new int[(int) EBgDepth.Max];
+        private readonly float[] _moveRatio = new float[(int) EBgDepth.Max];
+        private readonly Dictionary<string, Sprite> _spriteDic = new Dictionary<string, Sprite>();
         private readonly Dictionary<int, List<Table_Background>> _tableBgs =
             new Dictionary<int, List<Table_Background>>();
-
-        private static readonly int[] MaxDepthCount_1 = {20, 20, 20, 20, 30, 20, 30, 30, 30, 30, 30, 50, 50, 1};
-        private static readonly int[] MaxDepthCount_2 =
-            {20, 20, 20, 20, 5, 30, 30, 30, 30, 30, 30, 30, 30, 5, 30, 30, 1, 1, 1};
-        private static readonly int[][] MaxDepthCount = {MaxDepthCount_1, MaxDepthCount_2};
-        private static readonly float[] MoveRatio_1 = {1, 1, 1, 1, 1, 1, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f};
-        private static readonly float[] MoveRatio_2 =
-            {1, 1, 1, 1, 1, 1, 0.7f, 0.7f, 0.7f, 0.6f, 0.5f, 0.45f, 0.4f, 1, 0.3f, 1, 0f, 0f, 1};
-        private static readonly float[][] MoveRatio = {MoveRatio_1, MoveRatio_2};
 
         public static BgScene2D Instance
         {
@@ -83,6 +53,7 @@ namespace GameA.Game
         public override void Dispose()
         {
             base.Dispose();
+            _spriteDic.Clear();
             foreach (var bgItem in _items.Values)
             {
                 if (bgItem != null && bgItem.Trans != null)
@@ -103,12 +74,12 @@ namespace GameA.Game
 
         public float GetMoveRatio(int depth)
         {
-            return MoveRatio[_curBgGroup - 1][depth - 1];
+            return _moveRatio[depth - 1];
         }
 
         private int GetMaxDepthCount(int depth)
         {
-            int count = MaxDepthCount[_curBgGroup - 1][depth - 1];
+            int count = _maxDepthCount[depth - 1];
             if (count == 1)
             {
                 return 1;
@@ -156,6 +127,18 @@ namespace GameA.Game
                     continue;
                 }
 
+                Sprite sprite;
+                if (!JoyResManager.Instance.TryGetSprite(bg.Model, out sprite))
+                {
+                    LogHelper.Error("TryGetSpriteByName failed,{0}", bg.Model);
+                    continue;
+                }
+
+                if (!_spriteDic.ContainsKey(bg.Model))
+                {
+                    _spriteDic.Add(bg.Model, sprite);
+                }
+
                 List<Table_Background> tables;
                 if (!_tableBgs.TryGetValue(bg.Depth, out tables))
                 {
@@ -163,6 +146,8 @@ namespace GameA.Game
                     _tableBgs.Add(bg.Depth, tables);
                 }
 
+                _maxDepthCount[bg.Depth - 1] = bg.MaxCount;
+                _moveRatio[bg.Depth - 1] = bg.FollowMoveRatio;
                 tables.Add(bg);
             }
         }
@@ -194,6 +179,7 @@ namespace GameA.Game
                 _starRect = new Rect(validMapRect.min.x - 10, validMapRect.min.y + ConstDefineGM2D.MinStarY,
                     validMapRect.size.x + 20, validMapRect.size.y - ConstDefineGM2D.MinStarY);
             }
+
             _starTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_starRect));
             if (validMapRect.size.y <= ConstDefineGM2D.MinGhostY)
             {
@@ -202,8 +188,10 @@ namespace GameA.Game
             else
             {
                 _ghostRect = new Rect(validMapRect.min.x - 10, validMapRect.min.y + ConstDefineGM2D.MinGhostY,
-                    validMapRect.size.x + 20, Mathf.Min(validMapRect.size.y - ConstDefineGM2D.MinGhostY, ConstDefineGM2D.MaxGhostHeight) );
+                    validMapRect.size.x + 20,
+                    Mathf.Min(validMapRect.size.y - ConstDefineGM2D.MinGhostY, ConstDefineGM2D.MaxGhostHeight));
             }
+
             _ghostTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_ghostRect));
         }
 
@@ -456,8 +444,12 @@ namespace GameA.Game
             {
                 switch ((EBgDepth) tableBg.Depth)
                 {
-                    //前面的地面
+                    //前面的草
                     case EBgDepth.Depth1:
+                    case EBgDepth.Depth2:
+                    case EBgDepth.Depth3:
+                    //前面的地面
+                    case EBgDepth.Depth4:
                         if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                         {
                             grid = Grid2D.zero;
@@ -468,7 +460,7 @@ namespace GameA.Game
                             _followTileRect.YMin - GM2DTools.WorldToTile(1.13f));
                         break;
                     //左右柱子
-                    case EBgDepth.Depth2:
+                    case EBgDepth.Depth5:
                         if (_validTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y >
                             _followTileRect.YMax)
                         {
@@ -491,7 +483,8 @@ namespace GameA.Game
 
                         break;
                     //房顶
-                    case EBgDepth.Depth3:
+                    case EBgDepth.Depth6:
+                    case EBgDepth.Depth22:
                         if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                         {
                             grid = Grid2D.zero;
@@ -502,7 +495,7 @@ namespace GameA.Game
                             _validTileRect.YMax - GM2DTools.WorldToTile(0.7f));
                         break;
                     //后面的地面
-                    case EBgDepth.Depth4:
+                    case EBgDepth.Depth7:
                         if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                         {
                             grid = Grid2D.zero;
@@ -513,50 +506,52 @@ namespace GameA.Game
                             _followTileRect.YMin + GM2DTools.WorldToTile(1.85f));
                         break;
                     //前面不动的树    
-                    case EBgDepth.Depth6:
+                    case EBgDepth.Depth11:
                         min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
                             _followTileRect.YMin + GM2DTools.WorldToTile(2.27f));
                         break;
                     //后面的树
-                    case EBgDepth.Depth7:
-                    case EBgDepth.Depth8:
-                    case EBgDepth.Depth9:
+                    case EBgDepth.Depth12:
+                    case EBgDepth.Depth13:
                         min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
                             _followTileRect.YMin + GM2DTools.WorldToTile(1.77f));
                         break;
                     //山
-                    case EBgDepth.Depth10:
-                    case EBgDepth.Depth12:
-                    case EBgDepth.Depth13:
+                    case EBgDepth.Depth14:
+                    case EBgDepth.Depth16:
+                    case EBgDepth.Depth17:
                         min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
                             _followTileRect.YMin);
                         break;
                     //泡泡
-                    case EBgDepth.Depth5:
+                    case EBgDepth.Depth8:
+                    case EBgDepth.Depth9:
+                    case EBgDepth.Depth10:
                     //云
-                    case EBgDepth.Depth11:
                     case EBgDepth.Depth15:
+                    case EBgDepth.Depth20:
                         min = new IntVec2(Random.Range(_cloudTileRect.XMin, _cloudTileRect.XMax + size.x),
                             Random.Range(_cloudTileRect.YMin, _cloudTileRect.YMax + size.y));
                         break;
                     //海平面
-                    case EBgDepth.Depth17:
+                    case EBgDepth.Depth23:
                         break;
                     //太阳
-                    case EBgDepth.Depth18:
+                    case EBgDepth.Depth24:
                         break;
                     //鬼魂
-                    case EBgDepth.Depth14:
+                    case EBgDepth.Depth18:
+                    case EBgDepth.Depth19:
                         min = new IntVec2(Random.Range(_ghostTileRect.XMin, _ghostTileRect.XMax + size.x),
                             Random.Range(_ghostTileRect.YMin, _ghostTileRect.YMax + size.y));
                         break;
                     //星星
-                    case EBgDepth.Depth16:
+                    case EBgDepth.Depth21:
                         min = new IntVec2(Random.Range(_starTileRect.XMin, _starTileRect.XMax + size.x),
                             Random.Range(_starTileRect.YMin, _starTileRect.YMax + size.y));
                         break;
                     //背景
-                    case EBgDepth.Depth19:
+                    case EBgDepth.Depth25:
                         min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin - GM2DTools.WorldToTile(2f));
                         break;
                 }
@@ -578,8 +573,26 @@ namespace GameA.Game
 
             scale.x = x;
             scale.y = y;
+            var sprite = GetModelSprite(tableBg.Model);
+            if (sprite == null)
+            {
+                return IntVec2.zero;
+            }
+
             //1米 = 640计算单位 = 128像素，650 / 128 = 5，所以每像素占5个计算单位
-            return new IntVec2((int) (tableBg.Width * 5 * scale.x), (int) (tableBg.Height * 5 * scale.y));
+            return new IntVec2((int) (sprite.rect.width * 5 * scale.x), (int) (sprite.rect.height * 5 * scale.y));
+        }
+
+        public Sprite GetModelSprite(string model)
+        {
+            Sprite sprite;
+            if (_spriteDic.TryGetValue(model, out sprite))
+            {
+                return sprite;
+            }
+
+            LogHelper.Error("GetModelSprite failed,{0}", model);
+            return null;
         }
 
         private void SetChirldFollowBasePos()
@@ -689,6 +702,36 @@ namespace GameA.Game
 
             _items.Clear();
             GenerateBackground(_curSeed);
+        }
+
+        public enum EBgDepth
+        {
+            Depth1 = 1,
+            Depth2,
+            Depth3,
+            Depth4,
+            Depth5,
+            Depth6,
+            Depth7,
+            Depth8,
+            Depth9,
+            Depth10,
+            Depth11,
+            Depth12,
+            Depth13,
+            Depth14,
+            Depth15,
+            Depth16,
+            Depth17,
+            Depth18,
+            Depth19,
+            Depth20,
+            Depth21,
+            Depth22,
+            Depth23,
+            Depth24,
+            Depth25,
+            Max
         }
     }
 }

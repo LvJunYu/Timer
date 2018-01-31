@@ -744,9 +744,9 @@ namespace GameA.Game
                         _siTouLe = true;
                         if (GM2DGame.Instance.GameMode.IsMulti)
                         {
-                            if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                            if (TeamManager.Instance.CheckAllTeamerSiTouLe(TeamId))
                             {
-                                PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                                PlayMode.Instance.SceneState.AllTeamerSiTouLe(TeamId);
                             }
                         }
                         else

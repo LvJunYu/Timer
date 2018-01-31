@@ -132,19 +132,6 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public bool CheckAllPlayerSiTouLe()
-        {
-            for (int i = 0; i < _playerList.Count; i++)
-            {
-                if (_playerList[i] == null || !_playerList[i].SiTouLe)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public void SetRoomInfo(RoomInfo roomInfo)
         {
             _roomInfo = roomInfo;
