@@ -9,6 +9,11 @@ namespace GameA
     public class UICtrlMultiRoom : UICtrlInGameBase<UIViewMultiRoom>
     {
         private const string EmptyStr = "无";
+        private const string StartingFormat = "开始游戏({0})";
+        private const string RawStartingFormat = "开始{0}";
+        private const string StartStr = "开始游戏";
+        private const string StartRawStr = "开始";
+        private const int StartTime = 5;
         private RoomInfo _roomInfo;
         private Project _project;
         private bool _openState;
@@ -18,6 +23,9 @@ namespace GameA
         private Sequence _closeSequence;
         private RoomUser _myRoomUser;
         private USCtrlChat _chat;
+        private bool _starting;
+        private bool _isHost;
+        private float _curTimer;
 
         public RoomInfo RoomInfo
         {
@@ -41,7 +49,7 @@ namespace GameA
             _cachedView.OpenBtn.onClick.AddListener(OnOpenBtn);
             _cachedView.CloseButton.onClick.AddListener(OnCloseButton);
             _cachedView.WorldRecruitBtn.onClick.AddListener(OnWorldRecruitBtn);
-            _cachedView.InviteFriendBtn.onClick.AddListener(OnInviteFriendBtn);
+            _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
             _cachedView.PrepareBtn.onClick.AddListener(OnPrepareBtn);
             _cachedView.RawPrepareBtn.onClick.AddListener(OnPrepareBtn);
             _cachedView.StartBtn.onClick.AddListener(OnStartBtn);
@@ -62,6 +70,7 @@ namespace GameA
                 _usCtrlMultiRoomRawSlots[i] = new USCtrlMultiRoomRawSlot();
                 _usCtrlMultiRoomRawSlots[i].Init(rawList[i]);
             }
+
             _chat = new USCtrlChat();
             _chat.ResScenary = ResScenary;
             _chat.Scene = USCtrlChat.EScene.Room;
@@ -94,6 +103,7 @@ namespace GameA
                 return;
             }
 
+            _starting = false;
             if (!_openState)
             {
                 OnOpenBtn();
@@ -102,12 +112,33 @@ namespace GameA
             {
                 RefrshView();
             }
+
+            RefreshStartBtns();
         }
 
         protected override void OnClose()
         {
             _chat.Close();
             base.OnClose();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (_isHost && _starting)
+            {
+                int timer = Mathf.CeilToInt(_curTimer);
+                _cachedView.StartBtnTxt.text = string.Format(StartingFormat, timer);
+                _cachedView.RawStartBtnTxt.text = string.Format(RawStartingFormat, timer);
+                _curTimer -= Time.deltaTime;
+                if (_curTimer <= 0)
+                {
+                    _curTimer = 0;
+                    OnStartBtn();
+                    _starting = false;
+                    RefreshBtns();
+                }
+            }
         }
 
         private bool SetRoomPlayerUnitExtras()
@@ -185,6 +216,7 @@ namespace GameA
             {
                 return;
             }
+
             var userArray = _roomInfo.RoomUserArray;
             if (_openState)
             {
@@ -255,8 +287,10 @@ namespace GameA
             {
                 return;
             }
+
             RefreshPlayerInfo();
             RefreshBtns();
+            RefreshStartBtns();
         }
 
         private void RefreshBtns()
@@ -265,15 +299,43 @@ namespace GameA
             {
                 return;
             }
-            bool isHost = _roomInfo.HostUserId == LocalUser.Instance.UserGuid;
+
+            _isHost = _roomInfo.HostUserId == LocalUser.Instance.UserGuid;
             _cachedView.PrepareBtnTxt.text = _myRoomUser.Ready ? "取消准备" : "准  备";
             _cachedView.RawPrepareBtnTxt.text = _myRoomUser.Ready ? "取消" : "准备";
-            _cachedView.PrepareBtn.SetActiveEx(!isHost);
-            _cachedView.RawPrepareBtn.SetActiveEx(!isHost);
-            _cachedView.StartBtn.SetActiveEx(isHost);
-            _cachedView.RawStartBtn.SetActiveEx(isHost);
+            _cachedView.PrepareBtn.SetActiveEx(!_isHost);
+            _cachedView.RawPrepareBtn.SetActiveEx(!_isHost);
+            _cachedView.StartBtn.SetActiveEx(_isHost);
+            _cachedView.RawStartBtn.SetActiveEx(_isHost);
             bool allReady = _roomInfo.CheckAllReady();
             _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = allReady;
+        }
+
+        private void RefreshStartBtns()
+        {
+            if (!_isHost)
+            {
+                _cachedView.CancelBtn.SetActiveEx(_starting);
+                return;
+            }
+            bool allReady = _roomInfo.CheckAllReady();
+            if (allReady)
+            {
+                _starting = true;
+                _curTimer = StartTime;
+            }
+            else if (_starting)
+            {
+                _starting = false;
+            }
+
+            if (!_starting)
+            {
+                _cachedView.StartBtnTxt.text = StartStr;
+                _cachedView.RawStartBtnTxt.text = StartRawStr;
+            }
+
+            _cachedView.CancelBtn.SetActiveEx(_starting);
         }
 
         private void OnCloseButton()
@@ -287,6 +349,7 @@ namespace GameA
             {
                 _openSequence.Complete(true);
             }
+
             _closeSequence.PlayForward();
         }
 
@@ -301,6 +364,7 @@ namespace GameA
             {
                 _closeSequence.Complete(true);
             }
+
             SetState(true);
             _openSequence.Restart();
         }
@@ -321,16 +385,20 @@ namespace GameA
             RoomManager.Instance.SendRoomPrepare(!_myRoomUser.Ready);
         }
 
-        private void OnInviteFriendBtn()
+        private void OnCancelBtn()
         {
+            if (_starting)
+            {
+                _starting = false;
+                _cachedView.StartBtnTxt.text = StartStr;
+                _cachedView.RawStartBtnTxt.text = StartRawStr;
+                _cachedView.CancelBtn.SetActiveEx(false);
+            }
         }
 
         private void OnWorldRecruitBtn()
         {
-            if (!AppData.Instance.ChatData.SendWorldInvite(_roomInfo.RoomId))
-            {
-                return;
-            }
+            AppData.Instance.ChatData.SendWorldInvite(_roomInfo.RoomId);
         }
     }
 }

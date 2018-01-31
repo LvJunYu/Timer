@@ -195,7 +195,10 @@ namespace GameA.Game
             if (UnitDefine.IsSpawn(id) &&
                 Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex).SpawnDatas.Count == 0)
             {
-                data.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
+                if (data.UnitExtra.InternalUnitExtras.Count == 0)
+                {
+                    data.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
+                }
             }
             //地块特殊处理
             if (UnitDefine.IsEarth(id))
@@ -503,6 +506,11 @@ namespace GameA.Game
             NpcTaskDataTemp.Intance.AddNpc(unitDesc);
 
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
+            //如果添加的是出生点则清空默认属性
+            if (unitDesc.Id == UnitDefine.SpawnId && _unitDefaultDataDict.ContainsKey(UnitDefine.SpawnId))
+            {
+                _unitDefaultDataDict.Remove(UnitDefine.SpawnId);
+            }
         }
 
         public static void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)

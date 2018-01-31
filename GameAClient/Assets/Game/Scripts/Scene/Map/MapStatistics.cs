@@ -295,7 +295,7 @@ namespace GameA.Game
             set
             {
                 if (_netBattleData == null) return;
-                if (_netBattleData.WinScore != value)
+                if (_netBattleData.ArriveScore != value)
                 {
                     _netBattleData.ArriveScore = value;
                     NeedSave = true;

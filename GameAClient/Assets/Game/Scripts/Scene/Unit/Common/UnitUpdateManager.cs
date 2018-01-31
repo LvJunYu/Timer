@@ -96,9 +96,21 @@ namespace GameA.Game
 
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
+                if (allOtherUnits[i].IsPlayer)
+                {
+                    continue;
+                }
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CalculateExtraDeltaPos();
+                }
+            }
+
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null)
+                {
+                    playerList[i].CalculateExtraDeltaPos();
                 }
             }
 
