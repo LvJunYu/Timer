@@ -27,6 +27,12 @@ namespace GameA.Game
             }
         }
 
+        protected override void Clear()
+        {
+            base.Clear();
+            CreateSwitchTrigger();
+        }
+
         internal override bool InstantiateView()
         {
             if (_switchTrigger == null)
