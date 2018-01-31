@@ -37,6 +37,7 @@ namespace GameA.Game
         private readonly int[] _maxDepthCount = new int[(int) EBgDepth.Max];
         private readonly float[] _moveRatio = new float[(int) EBgDepth.Max];
         private readonly Dictionary<string, Sprite> _spriteDic = new Dictionary<string, Sprite>();
+
         private readonly Dictionary<int, List<Table_Background>> _tableBgs =
             new Dictionary<int, List<Table_Background>>();
 
@@ -84,13 +85,19 @@ namespace GameA.Game
             {
                 return 1;
             }
-
-            int increase = (int) (_followRect.width / 60 + _followRect.height / 30);
+            int increase;
+            if (_curBgGroup == 2 && depth <= 3)
+            {
+                increase = (int) (_followRect.width / 60);
+            }
+            else
+            {
+                increase = (int) (_followRect.width / 60 + _followRect.height / 30);
+            }
             if (increase == 0)
             {
                 increase = 1;
             }
-
             return count * increase;
         }
 
@@ -325,7 +332,7 @@ namespace GameA.Game
 
             bgNode = NodeFactory.GetBgNode((ushort) tableBg.Id, grid, tableBg.Depth, scale);
             SceneNode node;
-            if (!CanOverlap(tableBg.Depth) && SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this,
+            if (!CanOverlap(tableBg) && SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this,
                     tableBg.Depth, tableBg.Depth))
             {
                 return false;
@@ -448,6 +455,9 @@ namespace GameA.Game
                     case EBgDepth.Depth1:
                     case EBgDepth.Depth2:
                     case EBgDepth.Depth3:
+                        min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
+                            _followTileRect.YMin + GM2DTools.WorldToTile(-1.6f));
+                        break;
                     //前面的地面
                     case EBgDepth.Depth4:
                         if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
@@ -471,20 +481,20 @@ namespace GameA.Game
                         //左柱子
                         if (num % 2 == 1)
                         {
-                            min = new IntVec2(_validTileRect.XMin - GM2DTools.WorldToTile(6.8f),
+                            min = new IntVec2(_validTileRect.XMin - GM2DTools.WorldToTile(7.67f),
                                 _followTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                         }
                         //右柱子
                         else
                         {
-                            min = new IntVec2(_validTileRect.XMax - GM2DTools.WorldToTile(1.1f),
+                            scale.x = -scale.x;
+                            min = new IntVec2(_validTileRect.XMax - GM2DTools.WorldToTile(1.34f),
                                 _followTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                         }
 
                         break;
                     //房顶
                     case EBgDepth.Depth6:
-                    case EBgDepth.Depth22:
                         if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                         {
                             grid = Grid2D.zero;
@@ -493,6 +503,16 @@ namespace GameA.Game
 
                         min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                             _validTileRect.YMax - GM2DTools.WorldToTile(0.7f));
+                        break;
+                    case EBgDepth.Depth22:
+                        if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
+                        {
+                            grid = Grid2D.zero;
+                            return false;
+                        }
+
+                        min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
+                            _validTileRect.YMax - GM2DTools.WorldToTile(4.7f));
                         break;
                     //后面的地面
                     case EBgDepth.Depth7:
@@ -645,7 +665,7 @@ namespace GameA.Game
         {
             foreach (var bgItem in _items.Values)
             {
-                if (bgItem.Depth == 4)
+                if (bgItem.TableBg.Model == "BJ_tree17")
                 {
                     bgItem.Trans.gameObject.SetActive(value);
                 }
@@ -659,13 +679,13 @@ namespace GameA.Game
 
         private bool ShowBeforeScene(int depth)
         {
-            return _curBgGroup == 1 && depth <= 4 || _curBgGroup == 2 && depth <= 3;
+            return _curBgGroup == 1 && depth <= 4 || _curBgGroup == 2 && depth <= 6;
         }
 
-        private bool CanOverlap(int depth)
+        private bool CanOverlap(Table_Background tableBackground)
         {
             //藤蔓可以重叠
-            return depth == 4 && _curBgGroup == 1;
+            return tableBackground.Model == "BJ_tree17" && _curBgGroup == 1;
         }
 
         private bool DeleteView(SceneNode node)

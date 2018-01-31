@@ -26,7 +26,7 @@ namespace GameA.Game
         protected SceneNode _node;
         protected float _sizeX;
         protected float _halfSizeX;
-
+        
         public Transform Trans
         {
             get { return _trans; }
@@ -40,6 +40,11 @@ namespace GameA.Game
         public SceneNode Node
         {
             get { return _node; }
+        }
+
+        public Table_Background TableBg
+        {
+            get { return _tableBg; }
         }
 
         public virtual bool Init(Table_Background table, SceneNode node, bool beforeScene = false, bool setCenter = false)
