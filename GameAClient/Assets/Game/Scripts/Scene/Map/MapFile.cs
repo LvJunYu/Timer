@@ -210,6 +210,11 @@ namespace GameA.Game
             float ratio = 1f / _totalCount;
             for (int i = 0; i < data.Count; i++)
             {
+                //去掉老版本的空气墙
+                if (data[i].Id == UnitDefine.TerrainId)
+                {
+                    continue;
+                }
                 var tableUnit = UnitManager.Instance.GetTableUnit(data[i].Id);
                 if (tableUnit == null)
                 {
