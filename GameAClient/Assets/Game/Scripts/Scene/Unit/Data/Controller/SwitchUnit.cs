@@ -35,7 +35,7 @@ namespace GameA.Game
 
         internal override bool InstantiateView()
         {
-            if (_switchTrigger == null)
+            if (_switchTrigger == null && _guid != IntVec3.zero)
             {
                 CreateSwitchTrigger();
             }
