@@ -506,7 +506,7 @@ namespace GameA.Game
             NpcTaskDataTemp.Intance.AddNpc(unitDesc);
 
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
-            //如果添加的是出生点则清空默认属性
+            //如果添加的是出生点则清空默认属性，因为出生点之间属性互斥
             if (unitDesc.Id == UnitDefine.SpawnId && _unitDefaultDataDict.ContainsKey(UnitDefine.SpawnId))
             {
                 _unitDefaultDataDict.Remove(UnitDefine.SpawnId);
