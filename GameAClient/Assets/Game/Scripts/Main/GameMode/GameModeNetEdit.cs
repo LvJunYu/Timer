@@ -96,54 +96,60 @@ namespace GameA.Game
             {
                 EditMode.Instance.StartAdd();
             }
-            GetCaptureIconBtyes();
-            Loom.RunAsync(() =>
-            {
-                byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-                mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-                Loom.QueueOnMainThread(() =>
-                {
-                    if (mapDataBytes == null
-                        || mapDataBytes.Length == 0)
-                    {
-                        if (failedCallback != null)
-                        {
-                            failedCallback.Invoke(EProjectOperateResult.POR_Error);
-                        }
-                        return;
-                    }
-                    bool passFlag = CheckCanPublish();
 
-                    if (EditMode.Instance.MapStatistics.NetBattleData != null)
-                        _project.Save(
-                            _project.Name,
-                            _project.Summary,
-                            mapDataBytes,
-                            IconBytes,
-                            passFlag,
-                            true,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            null,
-                            0,
-                            0,
-                            true,
-                            EditMode.Instance.MapStatistics.NetBattleData,
-                            () =>
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+            {
+                GetCaptureIconBtyes();
+                Loom.RunAsync(() =>
+                {
+                    byte[] mapDataBytes = MapManager.Instance.SaveMapData();
+                    mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
+                    Loom.QueueOnMainThread(() =>
+                    {
+                        if (mapDataBytes == null
+                            || mapDataBytes.Length == 0)
+                        {
+                            if (failedCallback != null)
                             {
-                                NeedSave = false;
-                                MapDirty = false;
-                                if (successCallback != null)
+                                failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                            }
+
+                            return;
+                        }
+
+                        bool passFlag = CheckCanPublish();
+
+                        if (EditMode.Instance.MapStatistics.NetBattleData != null)
+                            _project.Save(
+                                _project.Name,
+                                _project.Summary,
+                                mapDataBytes,
+                                IconBytes,
+                                passFlag,
+                                true,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                null,
+                                0,
+                                0,
+                                true,
+                                EditMode.Instance.MapStatistics.NetBattleData,
+                                () =>
                                 {
-                                    successCallback.Invoke();
-                                }
-                            }, failedCallback);
+                                    NeedSave = false;
+                                    MapDirty = false;
+                                    if (successCallback != null)
+                                    {
+                                        successCallback.Invoke();
+                                    }
+                                }, failedCallback);
+                    });
                 });
-            });
+            }));
         }
 
         public override bool CheckCanPublish(bool showPrompt = false)
