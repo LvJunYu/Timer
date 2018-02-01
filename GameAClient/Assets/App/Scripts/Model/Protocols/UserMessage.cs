@@ -1,4 +1,4 @@
-//  | 留言
+// 获取留言数据 | 获取留言数据
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,8 +6,9 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserMessage : SyncronisticData<Msg_UserMessage> {
+    public partial class UserMessage : SyncronisticData<Msg_SC_DAT_UserMessage> {
         #region 字段
+        // sc fields----------------------------------
         /// <summary>
         /// 
         /// </summary>
@@ -40,9 +41,16 @@ namespace GameA
         /// 
         /// </summary>
         private UserMessageReply _firstReply;
+
+        // cs fields----------------------------------
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _cs_messageId;
         #endregion
 
         #region 属性
+        // sc properties----------------------------------
         /// <summary>
         /// 
         /// </summary>
@@ -123,23 +131,75 @@ namespace GameA
                 SetDirty();
             }}
         }
+        
+        // cs properties----------------------------------
+        /// <summary>
+        /// 
+        /// </summary>
+        public long CS_MessageId { 
+            get { return _cs_messageId; }
+            set { _cs_messageId = value; }
+        }
+
+        public override bool IsDirty {
+            get {
+                if (null != _userInfo && _userInfo.IsDirty) {
+                    return true;
+                }
+                if (null != _firstReply && _firstReply.IsDirty) {
+                    return true;
+                }
+                return base.IsDirty;
+            }
+        }
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_UserMessage msg)
+        /// <summary>
+		/// 获取留言数据
+		/// </summary>
+		/// <param name="messageId">.</param>
+        public void Request (
+            long messageId,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            if (_isRequesting) {
+                if (_cs_messageId != messageId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_messageId = messageId;
+                OnRequest (successCallback, failedCallback);
+
+                Msg_CS_DAT_UserMessage msg = new Msg_CS_DAT_UserMessage();
+                msg.MessageId = messageId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserMessage>(
+                    SoyHttpApiPath.UserMessage, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
+        }
+
+        public bool OnSync (Msg_SC_DAT_UserMessage msg)
         {
             if (null == msg) return false;
-            _id = msg.Id;     
+            _id = msg.Id;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            _createTime = msg.CreateTime;     
-            _content = msg.Content;     
-            _likeNum = msg.LikeNum;     
-            _userLike = msg.UserLike;     
-            _replyCount = msg.ReplyCount;     
+            _createTime = msg.CreateTime;           
+            _content = msg.Content;           
+            _likeNum = msg.LikeNum;           
+            _userLike = msg.UserLike;           
+            _replyCount = msg.ReplyCount;           
             if (null == _firstReply) {
                 _firstReply = new UserMessageReply(msg.FirstReply);
             } else {
@@ -148,8 +208,8 @@ namespace GameA
             OnSyncPartial(msg);
             return true;
         }
-
-        public bool CopyMsgData (Msg_UserMessage msg)
+        
+        public bool CopyMsgData (Msg_SC_DAT_UserMessage msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
@@ -197,13 +257,13 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_UserMessage msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_UserMessage msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserMessage (Msg_UserMessage msg) {
+        public UserMessage (Msg_SC_DAT_UserMessage msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
@@ -212,6 +272,7 @@ namespace GameA
         public UserMessage () { 
             _userInfo = new UserInfoSimple();
             _firstReply = new UserMessageReply();
+            OnCreate();
         }
         #endregion
     }
