@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GameA
 {
@@ -54,6 +55,15 @@ namespace GameA
             base.OnViewCreated();
             _eCurUi = GetUMCurUI(_menu);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.ScrollRectEx1s[(int) _menu].OnEndDragEvent.AddListener(OnEndDragEvent);
+        }
+
+        protected virtual void OnEndDragEvent(PointerEventData arg0)
+        {
+            if (_cachedView.ScrollRectEx1s[(int) _menu].content.anchoredPosition.y < -90)
+            {
+                RequestData();
+            }
         }
 
         public override void RefreshView()

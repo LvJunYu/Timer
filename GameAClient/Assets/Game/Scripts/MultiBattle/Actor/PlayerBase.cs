@@ -15,7 +15,6 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         protected Gun _gun;
-
         protected RoomUser _roomUser;
         protected UnitExtraDynamic _unitExtra;
         protected bool _siTouLe;
