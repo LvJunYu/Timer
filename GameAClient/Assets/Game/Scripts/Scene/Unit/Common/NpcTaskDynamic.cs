@@ -29,6 +29,7 @@ namespace GameA.Game
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.TaskFinishAward, "TaskFinishAward");
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.BeforeTaskAward, "BeforeTaskAward");
             DefineField<ushort>(FieldTag.TaskimeLimit, "TaskimeLimit");
+            DefineField<ushort>(FieldTag.TargetNpcSerialNumber, "TargetNpcSerialNumber");
         }
 
         public class FieldTag
@@ -45,6 +46,7 @@ namespace GameA.Game
             public static readonly int TaskFinishAward = _nextId++;
             public static readonly int BeforeTaskAward = _nextId++;
             public static readonly int TaskimeLimit = _nextId++;
+            public static readonly int TargetNpcSerialNumber = _nextId++;
         }
 
         public ushort NpcTaskSerialNumber
@@ -125,6 +127,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.TaskimeLimit); }
         }
 
+        public ushort TargetNpcSerialNumber
+        {
+            get { return Get<ushort>(FieldTag.TargetNpcSerialNumber); }
+
+            set { Set(value, FieldTag.TargetNpcSerialNumber); }
+        }
+
 
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
@@ -136,6 +145,7 @@ namespace GameA.Game
             msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
             msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
             msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
+            msg.TargetNpcSerialNumber = TargetNpcSerialNumber;
             //清一下列表
             msg.TaskTarget.Clear();
             for (int i = 0, count = Targets.Count; i < count; i++)
@@ -174,6 +184,7 @@ namespace GameA.Game
             TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
             TriggerTask.Set(data.TriggerTask);
             TriggerType = (byte) data.TriggerType;
+            TargetNpcSerialNumber = (ushort) data.TargetNpcSerialNumber;
             for (int i = 0; i < data.TaskBefore.Count; i++)
             {
                 Set(data.TaskBefore[i], FieldTag.TaskBefore, i);

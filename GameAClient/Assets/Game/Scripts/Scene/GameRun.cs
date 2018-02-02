@@ -167,7 +167,6 @@ namespace GameA.Game
             {
                 return;
             }
-            InputManager.Instance.Update();
             GameParticleManager.Instance.Update();
             GameAudioManager.Instance.Update();
             DeadMarkManager.Instance.Update();
@@ -206,6 +205,7 @@ namespace GameA.Game
             }
             _logicFrameCnt++;
         }
+
 
         public void UpdateSkeletonAnimation()
         {

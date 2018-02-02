@@ -1103,7 +1103,7 @@ namespace GameA
             RefreshSpawmMenu();
         }
 
-        private void OnCloseBtnClick()
+        public void OnCloseBtnClick()
         {
             CheckCloseUpCtrlPanel();
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -1133,12 +1133,11 @@ namespace GameA
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
                 }
-
+                CheckNpcTaskNum();
                 EditHelper.CompleteEditUnitData(_originData, EditData);
             }
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
-//            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1218,15 +1217,12 @@ namespace GameA
                 EditNpcDiaType.Close();
                 EditNpcTaskDock.Open();
             }
-
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             EditNpcTaskDock.RefreshView();
             EditNpcDiaType.RefreshView();
             EditNpcTaskMonsterType.RefreshView();
             EditNpcTaskColltionType.RefreshView();
             EditNpcTaregtDialog.RefreshView();
-            EditNpcAddCondition.RefreshView();
-            EditBeforeTask.RefreshView();
             EditNpcDia.RefreshView();
             EditBeforeTaskAward.RefreshView();
             EditFinishTaskAward.RefreshView();
@@ -1362,6 +1358,28 @@ namespace GameA
             Normal,
             MonsterSettingFromMonsterCave,
             WeaponSettingFromSpawn
+        }
+
+        public void CheckNpcTaskNum()
+        {
+            int num = EditData.UnitExtra.NpcTask.Count;
+            for (int i = 0; i < num; i++)
+            {
+                if (EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).Targets.Count == 0)
+                {
+                    NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i)
+                        .NpcTaskSerialNumber);
+                    EditData.UnitExtra.NpcTask.RemoveAt(i);
+                }
+                else
+                {
+                    if (EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).TargetNpcSerialNumber == 0)
+                    {
+                        EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).TargetNpcSerialNumber =
+                            EditData.UnitExtra.NpcSerialNumber;
+                    }
+                }
+            }
         }
     }
 }

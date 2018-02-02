@@ -306,6 +306,7 @@ namespace GameA
         protected override void Update()
         {
             base.Update();
+            InputManager.Instance.Update();
             GameManager.Instance.Update();
 //            CompassManager.Instance.Update();
             ReYunManager.Instance.Update();

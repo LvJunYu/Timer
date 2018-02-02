@@ -57,6 +57,11 @@ namespace GameA.Game
             get { return _box; }
         }
 
+        public UnitBase[] HitUnit
+        {
+            get { return _hitUnits; }
+        }
+
         public override bool CanAttack
         {
             get

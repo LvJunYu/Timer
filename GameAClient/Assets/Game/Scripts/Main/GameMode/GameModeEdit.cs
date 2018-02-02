@@ -411,7 +411,8 @@ namespace GameA.Game
             ColliderScene2D.CurScene.InitCreateArea(GM2DTools.WorldToTile(cameraPos));
             EditMode.Instance.CameraMask.Hide();
             BgScene2D.Instance.UpdateLogic(cameraPos);
-            Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
+            Texture2D t2 =
+                ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
             CameraManager.Instance.MainCameraPos = oriCameraPos;
             CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
             BgScene2D.Instance.Reset();

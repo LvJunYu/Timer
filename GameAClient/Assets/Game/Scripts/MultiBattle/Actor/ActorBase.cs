@@ -396,6 +396,7 @@ namespace GameA.Game
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {
                 OnBoxHoldingChanged();
+                RpgTaskManger.Instance.AssitConShowDiaEvent();
             }
         }
 

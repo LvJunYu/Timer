@@ -61,10 +61,7 @@ namespace GameA.Game
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             base.Hit(unit, eDirectionType);
-            if (UnitDefine.IsNpc(unit.Id))
-            {
-                RpgTaskManger.Instance.OnPlayHitNpc(unit.Guid);
-            }
+            RpgTaskManger.Instance.OnPlayHitNpc(unit.Guid);
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -17,7 +14,7 @@ namespace GameA
         private Sequence _closeSequence;
         private bool _openAnim;
         private bool _completeAnim;
-        private NpcTaskDynamic _task = new NpcTaskDynamic();
+        private NpcTaskDynamic _task;
         private USCtrlUnitNpcTaskTargetBtn[] _beforeTaskAwardBtnGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _finishTaskAwardBtnGroup;
 
@@ -65,6 +62,15 @@ namespace GameA
             {
                 _mainCtrl.EditFinishTaskAward.OpenMenu(_task);
             });
+            _cachedView.NpcTaskEditDiaPanelExitBtn.onClick.AddListener(Close);
+            _cachedView.TargetTaskNpc.onEndEdit.AddListener((str) =>
+            {
+                if (NpcTaskDataTemp.Intance.NpcSerialNumberDic.ContainsKey(Convert.ToInt32(str)))
+                {
+                    _task.NpcTaskSerialNumber = (ushort) Convert.ToInt32(str);
+                }
+            });
+            BadWordManger.Instance.InputFeidAddListen(_cachedView.TargetTaskNpc);
         }
 
         public void OpenMenu(NpcTaskDynamic task)

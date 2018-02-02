@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
+﻿using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -58,6 +54,7 @@ namespace GameA
                     Close();
                 }
             });
+            _cachedView.NpcTaskAddConditionPanelExitBtn.onClick.AddListener(Close);
         }
 
         public void OpenMenu(NpcTaskDynamic taskData)
@@ -68,14 +65,9 @@ namespace GameA
 
         public override void Open()
         {
-            base.Open();
             _mainCtrl.CloseUpCtrlPanel();
             OpenAnimation();
-        }
-
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
+            base.Open();
         }
 
         public override void Close()
