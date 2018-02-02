@@ -375,7 +375,6 @@ namespace GameA.Game
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;
             gm2DMapData.FinishCount = mapEditor.MapStatistics.LevelFinishCount;
             gm2DMapData.BgRandomSeed = BgScene2D.Instance.CurSeed;
-            Scene2DManager.Instance.ChangeScene(0, EChangeSceneType.ParseMap);
             gm2DMapData.InitialMapSize = GM2DTools.ToProto(Scene2DManager.Instance.InitialMapSize);
             int oriScene = Scene2DManager.Instance.CurSceneIndex;
             Scene2DManager.Instance.ChangeScene(0);

@@ -245,9 +245,9 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                if (GameModeNetPlay.DebugEnable())
+                if (GameModeBase.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid == {0} _trans.position = {1} ", Guid,
+                    GameModeBase.WriteDebugData(string.Format("Type = {2}, Guid == {0} _trans.position = {1} ", Guid,
                         _trans.position, GetType().Name));
                 }
             }

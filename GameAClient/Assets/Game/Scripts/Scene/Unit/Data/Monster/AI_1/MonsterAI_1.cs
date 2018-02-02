@@ -82,9 +82,9 @@ namespace GameA.Game
         protected virtual void ChangeState(EAIState state)
         {
             _eState = state;
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_1 ChangeState {0}", _eState.ToString(), 
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, MonsterAi_1 ChangeState {0}", _eState.ToString(), 
                     GetType().Name));
             }
         }
@@ -368,9 +368,9 @@ namespace GameA.Game
                 SetInput(EInputType.Right, false);
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, FindPath {0}", _path.Count, GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, FindPath {0}", _path.Count, GetType().Name));
             }
         }
 

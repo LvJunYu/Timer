@@ -17,8 +17,6 @@ namespace GameA.Game
 {
     public class GameModeNetPlay : GameModePlay
     {
-        private static GameModeNetPlay _instance;
-
         protected List<Msg_RC_FrameData> _serverStartInputFrameList = new List<Msg_RC_FrameData>();
         protected Queue<Msg_RC_FrameData> _serverInputFrameQueue = new Queue<Msg_RC_FrameData>(128);
         protected int _preServerFrameCount;
@@ -29,7 +27,6 @@ namespace GameA.Game
         protected bool _loadingHasClosed;
         protected int _maxUserCount;
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
-        private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
         private RoomInfo _roomInfo;
         private EGamePhase _curGamePhase;
         private bool _loadComplete;
@@ -49,30 +46,6 @@ namespace GameA.Game
             get { return _curGamePhase; }
         }
 
-        public static bool DebugEnable()
-        {
-            if (_instance == null) return false;
-            return _instance._debugClientData.Enable;
-        }
-
-        public static void WriteDebugData(string str, bool writeLine = true)
-        {
-            if (_instance == null) return;
-            if (writeLine)
-            {
-                _instance._debugClientData.WriteLine(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
-            }
-            else
-            {
-                _instance._debugClientData.Write(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
-            }
-        }
-
-        protected GameModeNetPlay()
-        {
-            _instance = this;
-        }
-
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -83,7 +56,6 @@ namespace GameA.Game
         public override bool Stop()
         {
             _debugFile.Close();
-            _debugClientData.Close();
             TryCloseLoading();
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
@@ -92,7 +64,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _instance = null;
             return true;
         }
 

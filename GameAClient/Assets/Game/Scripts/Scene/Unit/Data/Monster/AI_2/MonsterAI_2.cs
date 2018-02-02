@@ -111,9 +111,9 @@ namespace GameA.Game
                     OnChangeRun();
                     break;
             }
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_2 ChangeState {0}", _eMonsterState.ToString(), GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, MonsterAi_2 ChangeState {0}", _eMonsterState.ToString(), GetType().Name));
             }
         }
 
