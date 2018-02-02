@@ -134,55 +134,59 @@ namespace GameA.Game
             {
                 EditMode.Instance.StartAdd();
             }
-            GetCaptureIconBtyes();
-            Loom.RunAsync(() =>
+
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
             {
-                byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-                mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-                Loom.QueueOnMainThread(() =>
+                GetCaptureIconBtyes();
+                Loom.RunAsync(() =>
                 {
-                    if (mapDataBytes == null
-                        || mapDataBytes.Length == 0)
+                    byte[] mapDataBytes = MapManager.Instance.SaveMapData();
+                    mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
+                    Loom.QueueOnMainThread(() =>
                     {
-                        if (failedCallback != null)
+                        if (mapDataBytes == null
+                            || mapDataBytes.Length == 0)
                         {
-                            failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                            }
+
+                            return;
                         }
 
-                        return;
-                    }
+                        bool passFlag = CheckCanPublish();
 
-                    bool passFlag = CheckCanPublish();
-
-                    _project.Save(
-                        _project.Name,
-                        _project.Summary,
-                        mapDataBytes,
-                        IconBytes,
-                        passFlag,
-                        true,
-                        _recordUsedTime,
-                        _recordScore,
-                        _recordScoreItemCount,
-                        _recordKillMonsterCount,
-                        _recordLeftTime,
-                        _recordLeftLife,
-                        RecordBytes,
-                        EditMode.Instance.MapStatistics.TimeLimit,
-                        EditMode.Instance.MapStatistics.MsgWinCondition,
-                        _project.IsMulti,
-                        null,
-                        () =>
-                        {
-                            NeedSave = false;
-                            MapDirty = false;
-                            if (successCallback != null)
+                        _project.Save(
+                            _project.Name,
+                            _project.Summary,
+                            mapDataBytes,
+                            IconBytes,
+                            passFlag,
+                            true,
+                            _recordUsedTime,
+                            _recordScore,
+                            _recordScoreItemCount,
+                            _recordKillMonsterCount,
+                            _recordLeftTime,
+                            _recordLeftLife,
+                            RecordBytes,
+                            EditMode.Instance.MapStatistics.TimeLimit,
+                            EditMode.Instance.MapStatistics.MsgWinCondition,
+                            _project.IsMulti,
+                            null,
+                            () =>
                             {
-                                successCallback.Invoke();
-                            }
-                        }, failedCallback);
+                                NeedSave = false;
+                                MapDirty = false;
+                                if (successCallback != null)
+                                {
+                                    successCallback.Invoke();
+                                }
+                            }, failedCallback);
+                    });
                 });
-            });
+            }));
         }
 
         public override void ChangeMode(EMode mode)

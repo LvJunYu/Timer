@@ -313,7 +313,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _collected = _project.ProjectUserData != null && _project.ProjectUserData.Favorite;
-            _cachedView.FavoriteTxt.text = _collected ? "已收藏" : "收藏";
+            _cachedView.FavoriteTxt.text = _collected ? RelationCommonString.CollectedStr : RelationCommonString.CollectStr;
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = _project.ProjectUserData != null &&
                                        _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;

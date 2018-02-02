@@ -371,31 +371,44 @@ namespace GameA.Game
 
         public void Reset()
         {
-            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+            int sqawnIndex = SqawnSceneIndex;
+            ChangeScene(sqawnIndex, EChangeSceneType.ChangeScene);
 
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
                 _curScene.Reset();
+                //删除其它场景Reset时创建的物体
+                if (sqawnIndex != i)
+                {
+                    _curScene.Exit();
+                }
             }
 
-            ChangeScene(SqawnSceneIndex);
+            ChangeScene(sqawnIndex);
         }
 
         public void OnPlay()
         {
+            int sqawnIndex = SqawnSceneIndex;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
                 _curScene.OnPlay();
+                //删除其它场景OnPlay时创建的物体
+                if (sqawnIndex != i)
+                {
+                    _curScene.Exit();
+                }
             }
 
-            ChangeScene(SqawnSceneIndex);
+            ChangeScene(sqawnIndex);
         }
 
         public void AddUnitsOutofMap()
         {
-            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+            int sqawnIndex = SqawnSceneIndex;
+            ChangeScene(sqawnIndex, EChangeSceneType.ChangeScene);
 
             for (int i = 0; i < _sceneList.Count; i++)
             {
@@ -403,7 +416,7 @@ namespace GameA.Game
                 _sceneList[i].AddUnitsOutofMap();
             }
 
-            ChangeScene(SqawnSceneIndex);
+            ChangeScene(sqawnIndex);
         }
 
         public int GetMonsterCountInCaves()
@@ -419,7 +432,8 @@ namespace GameA.Game
 
         public void DeleteUnitsOutofMap()
         {
-            ChangeScene(SqawnSceneIndex, EChangeSceneType.ChangeScene);
+            int sqawnIndex = SqawnSceneIndex;
+            ChangeScene(sqawnIndex, EChangeSceneType.ChangeScene);
 
             for (int i = 0; i < _sceneList.Count; i++)
             {
@@ -427,7 +441,7 @@ namespace GameA.Game
                 _sceneList[i].DeleteUnitsOutofMap();
             }
 
-            ChangeScene(SqawnSceneIndex);
+            ChangeScene(sqawnIndex);
         }
 
         public void CreateAirWall()

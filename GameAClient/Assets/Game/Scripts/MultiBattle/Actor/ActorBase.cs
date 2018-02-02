@@ -128,7 +128,7 @@ namespace GameA.Game
             base.OnLand();
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Actor {0} OnLand ", Guid));
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
             }
 
             if (HasStateType(EStateType.Stun))
@@ -193,11 +193,6 @@ namespace GameA.Game
             if (_dropLadderTimer > 0)
             {
                 _dropLadderTimer--;
-            }
-
-            if (_dropRopeTimer > 0)
-            {
-                _dropRopeTimer--;
             }
 
             for (int i = 0; i < _currentStates.Count; i++)
@@ -321,7 +316,6 @@ namespace GameA.Game
                         {
                             SpeedX = 0;
                             SpeedY = 0;
-                            _dropRopeTimer = 30;
                         }
                         else
                         {
@@ -348,7 +342,6 @@ namespace GameA.Game
                             {
                                 ropeJoint.JumpAwayRope(_moveDirection);
                             }
-                            _dropRopeTimer = 20;
                         }
                     }
 
@@ -937,42 +930,53 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.Id == UnitDefine.RopeJointId)
+            if (!CheckProjectileHit(other))
             {
                 return false;
             }
-
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.Id == UnitDefine.RopeJointId)
+            if (!CheckProjectileHit(other))
             {
                 return false;
             }
-
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.Id == UnitDefine.RopeJointId)
+            if (!CheckProjectileHit(other))
             {
                 return false;
             }
-
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.Id == UnitDefine.RopeJointId)
+            if (!CheckProjectileHit(other))
             {
                 return false;
             }
-
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+        
+        //检测子弹穿过
+        private bool CheckProjectileHit(UnitBase other)
+        {
+            if (UnitDefine.UseProjectileBullet(other.Id))
+            {
+                var projectile = other as ProjectileBase;
+                if (!projectile.Skill.Owner.CanHarm(this))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

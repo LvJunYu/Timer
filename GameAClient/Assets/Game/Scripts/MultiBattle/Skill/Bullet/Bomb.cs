@@ -35,12 +35,12 @@ namespace GameA.Game
             {
                 _effectBullet.Play();
             }
-            _angle = _skill.Owner.MoveDirection == EMoveDirection.Right
+            _angle = Skill.Owner.MoveDirection == EMoveDirection.Right
                 ? (int) EShootDirectionType.RightUp
                 : (int) EShootDirectionType.LeftUp;
             var rad = _angle * Mathf.Deg2Rad;
             _spring = 120;
-            _speed = new IntVec2(_skill.ProjectileSpeed * (Math.Sin(rad) > 0 ? 1 : -1), _spring);
+            _speed = new IntVec2(Skill.ProjectileSpeed * (Math.Sin(rad) > 0 ? 1 : -1), _spring);
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
             _spring -= 20;
         }
@@ -138,7 +138,7 @@ namespace GameA.Game
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
-            _newSpeed.x = _skill.ProjectileSpeed * (Math.Sin(rad) > 0 ? 1 : -1);
+            _newSpeed.x = Skill.ProjectileSpeed * (Math.Sin(rad) > 0 ? 1 : -1);
             if (eDirectionType != EDirectionType.Up)
             {
                 _newSpeed.y = _spring;

@@ -1,5 +1,4 @@
-﻿using System;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -148,7 +147,7 @@ namespace GameA.Game
                         for (var j = 0; j < units.Count; j++)
                         {
                             var unit = units[j];
-                            if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross)
+                            if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross && CheckBulletHit(unit))
                             {
                                 _targetUnit = unit;
                                 _curPos = hit.point;
@@ -196,6 +195,16 @@ namespace GameA.Game
                     _destroy = 1;
                 }
             }
+        }
+
+        private bool CheckBulletHit(UnitBase unit)
+        {
+            if (unit.IsActor && !_skill.Owner.CanHarm(unit))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool CheckHit(int id)

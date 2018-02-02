@@ -210,19 +210,19 @@ namespace GameA.Game
 
         public void CheckPreJointPos()
         {
-            if (PreJoint.Id == UnitDefine.RopeJointId)
+            if (_preJoint.Id == UnitDefine.RopeJointId)
             {
-                var target = PreJoint.CurPos + PreJoint.Speed;
+                var target = _preJoint.CurPos + _preJoint.Speed;
                 var from = CurPos + Speed;
                 if (!CheckDis(ref from, ref target))
                 {
-                    PreJoint.Speed = target - PreJoint.CurPos;
+                    _preJoint.Speed = target - _preJoint.CurPos;
                 }
             }
             //第一个物体固定在原物体下
             else
             {
-                Speed = PreJoint.CenterDownPos - CenterUpFloorPos;
+                Speed = _preJoint.CenterDownPos - CenterUpFloorPos;
                 if (NextJoint != null)
                 {
                     NextJoint.FixSpeedFromPre();
@@ -293,6 +293,11 @@ namespace GameA.Game
             {
                 _jumpAwayDir = IntVec2.right;
             }
+        }
+
+        public int GetTimer(PlayerBase player)
+        {
+            return _wholeRope.GetTimer(player.RoomUser.Guid);
         }
     }
 }

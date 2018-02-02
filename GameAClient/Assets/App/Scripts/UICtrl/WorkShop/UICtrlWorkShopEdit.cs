@@ -12,6 +12,9 @@ namespace GameA
         private string _publishStr = "发 布";
         private string _editStr = "编 辑";
         private string _glanceStr = "浏 览";
+        private string _glanceTitle = "关卡浏览";
+        private string _editTitle = "关卡编辑";
+        private string _updateTitle = "关卡更新";
         private Project _project;
         private bool _isEditTitle;
         private bool _isEditDesc;
@@ -132,6 +135,7 @@ namespace GameA
             {
                 _editState = EEditState.DownLoad;
                 _cachedView.OKBtnTxt.text = _glanceStr;
+                _cachedView.UITitleTxt.text = _glanceTitle;
                 return;
             }
 
@@ -147,6 +151,7 @@ namespace GameA
                     _editState = EEditState.Updating;
                     _cachedView.OKBtnTxt.text = _editStr;
                 }
+                _cachedView.UITitleTxt.text = _updateTitle;
             }
             else
             {
@@ -160,6 +165,7 @@ namespace GameA
                     _editState = EEditState.Editing;
                     _cachedView.OKBtnTxt.text = _editStr;
                 }
+                _cachedView.UITitleTxt.text = _editTitle;
             }
         }
 
@@ -271,7 +277,7 @@ namespace GameA
                     new KeyValuePair<string, Action>("取消", null), new KeyValuePair<string, Action>("进入", OnEditBtn));
                 return;
             }
-
+            
             if (_needSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存修改");
@@ -282,11 +288,16 @@ namespace GameA
                 }, () =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("保存数据失败。");
+                    SocialGUIManager.ShowPopupDialog("保存数据失败");
                 });
             }
             else
             {
+                if (_project.CreateTime == _project.UpdateTime)
+                {
+                    SocialGUIManager.ShowPopupDialog("无法更新发布，此关卡尚无修改");
+                    return;
+                }
                 SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_project);
             }
         }

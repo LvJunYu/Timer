@@ -12,7 +12,6 @@ namespace GameA
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
-            set { _userInfoDetail = value; } //测试用
         }
 
         public UserMessageReplyData ReplyList
@@ -20,7 +19,7 @@ namespace GameA
             get { return _replyList; }
         }
 
-        protected override void OnSyncPartial(Msg_UserMessage msg)
+        protected override void OnSyncPartial(Msg_SC_DAT_UserMessage msg)
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
@@ -114,6 +113,18 @@ namespace GameA
                     Messenger<UserMessage>.Broadcast(EMessengerType.OnDeleteUserMessage, this);
                 }
             }, null);
+        }
+
+        public void Request(Action successCallback, Action failedCallback = null)
+        {
+            Request(_id, successCallback, code =>
+            {
+                LogHelper.Error("UserMessage Request fail, code = {0}", code);
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke();
+                }
+            });
         }
     }
 }

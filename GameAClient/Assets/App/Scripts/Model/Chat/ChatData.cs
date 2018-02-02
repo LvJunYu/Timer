@@ -115,6 +115,12 @@ namespace GameA
             return true;
         }
 
+        public void ClearRoomChat()
+        {
+            _roomChatList.Clear();
+            FireCutHeadEvent(EChatType.Room);
+        }
+
         public void OnRCChat(Msg_RC_RoomChat msgChat)
         {
             var item = new Item(msgChat);

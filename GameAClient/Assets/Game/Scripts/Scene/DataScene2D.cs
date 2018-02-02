@@ -360,6 +360,11 @@ namespace GameA.Game
                 _unitExtras.Remove(guid);
             }
         }
+        
+        public void AddUnitExtra(IntVec3 guid, UnitExtraDynamic unitExtra)
+        {
+            _unitExtras.AddOrReplace(guid, unitExtra);
+        }
 
         #endregion
 

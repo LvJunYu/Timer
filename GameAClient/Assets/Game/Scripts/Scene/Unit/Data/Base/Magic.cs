@@ -247,8 +247,8 @@ namespace GameA.Game
                 UpdateTransPos();
                 if (GameModeNetPlay.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid,
-                        _trans.position));
+                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid == {0} _trans.position = {1} ", Guid,
+                        _trans.position, GetType().Name));
                 }
             }
         }

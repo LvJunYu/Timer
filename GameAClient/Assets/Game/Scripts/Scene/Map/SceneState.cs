@@ -294,7 +294,7 @@ namespace GameA.Game
                 RemoveCondition(EWinCondition.WC_Collect);
             }
 
-            if (Statistics.MonsterCount == 0)
+            if (MonsterCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Monster);
             }
@@ -530,7 +530,7 @@ namespace GameA.Game
 
         private bool CheckWinKillMonster()
         {
-            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < Statistics.MonsterCount;
+            return HasWinCondition(EWinCondition.WC_Monster) && _monsterKilled < MonsterCount;
         }
 
         //private bool CheckWinRescueHero()
@@ -605,6 +605,24 @@ namespace GameA.Game
             else
             {
                 NetBattleWin(false);
+            }
+        }
+
+        public void AllTeamerSiTouLe(byte teamId)
+        {
+            //队友全死判输
+            if (TeamManager.Instance.MyTeamId == teamId)
+            {
+                NetBattleWin(false);
+                return;
+            }
+            //竞技模式判断是否剩余自己一个队
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PS_Compete)
+            {
+                if (TeamManager.Instance.CheckOnlyMyTeamLeft())
+                {
+                    NetBattleWin(true);
+                }
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace GameA.Game
         protected int _motorAcc;
         protected bool _inLadder;
         protected int _dropLadderTimer;
-        protected int _dropRopeTimer;
         protected List<UnitBase> _inLadders = new List<UnitBase>(4);
 
         protected InputBase _input;
@@ -261,7 +259,6 @@ namespace GameA.Game
                     if (!CheckRopeVerticalFloor())
                     {
                         SetClimbState(EClimbState.None);
-                        _dropRopeTimer = 15;
                         break;
                     }
 
@@ -677,7 +674,7 @@ namespace GameA.Game
 
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("SetClimbState {0}", _eClimbState.ToString()));
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(), GetType().Name));
             }
         }
 
@@ -780,8 +777,8 @@ namespace GameA.Game
                 UpdateTransPos();
                 if (GameModeNetPlay.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Guid {0} _trans.position = {1} ", Guid,
-                        _trans.position));
+                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid = {0} _trans.position = {1} ", Guid,
+                        _trans.position, GetType().Name));
                 }
             }
             else if (GameRun.Instance.IsPlaying)

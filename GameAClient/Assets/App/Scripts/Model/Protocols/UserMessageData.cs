@@ -1,4 +1,4 @@
-// 获取留言数据 | 获取留言数据
+// 获取留言数据列表 | 获取留言数据列表
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -109,7 +109,7 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 获取留言数据
+		/// 获取留言数据列表
 		/// </summary>
 		/// <param name="userId">用户id.</param>
 		/// <param name="startInx">.</param>

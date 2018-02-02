@@ -84,7 +84,8 @@ namespace GameA.Game
             _eState = state;
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("MonsterAi_1 ChangeState {0}", _eState.ToString()));
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_1 ChangeState {0}", _eState.ToString(), 
+                    GetType().Name));
             }
         }
 
@@ -367,7 +368,7 @@ namespace GameA.Game
 
             if (GameModeNetPlay.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("FindPath {0}", _path.Count));
+                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, FindPath {0}", _path.Count, GetType().Name));
             }
         }
 

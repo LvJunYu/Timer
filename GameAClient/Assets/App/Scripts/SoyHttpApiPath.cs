@@ -80,6 +80,8 @@ namespace SoyEngine
         public const string GiveUpShadowBattle = "/world/giveUpShadowBattle";
         // 提交过关世界关卡数据
         public const string CommitWorldProjectResult = "/world/commitProjectResult";
+        // 获取关卡评论数据
+        public const string ProjectComment = "/world/getProjectComment";
         // 获取世界关卡评论列表
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
         // 获取关卡评论回复
@@ -225,6 +227,8 @@ namespace SoyEngine
         // QQ蓝钻大厅特权奖励领取
         public const string ReceiveQQGameReward = "/home/receiveQQGameReward";
         // 获取留言数据
+        public const string UserMessage = "/home/getUserMessage";
+        // 获取留言数据列表
         public const string UserMessageData = "/home/getUserMessageData";
         // 获取留言回复数据
         public const string UserMessageReplyData = "/home/getUserMessageReplyData";

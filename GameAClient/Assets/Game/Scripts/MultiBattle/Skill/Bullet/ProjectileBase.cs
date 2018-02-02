@@ -53,6 +53,11 @@ namespace GameA.Game
             get { return _maskRandom; }
         }
 
+        public SkillBase Skill
+        {
+            get { return _skill; }
+        }
+
         public void OnGet()
         {
             _isInterest = true;

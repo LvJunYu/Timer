@@ -44,6 +44,7 @@ namespace GameA.Game
                     StartCoroutine(ParseData(mapData, startType));
                     break;
             }
+
             NpcTaskDataTemp.Intance.Clear();
         }
 
@@ -125,8 +126,14 @@ namespace GameA.Game
                     unitAGrid.z = pairUnitDatas[i].UnitAScene;
                     var unitBGrid = GM2DTools.ToEngine(pairUnitDatas[i].UnitB);
                     unitBGrid.z = pairUnitDatas[i].UnitBScene;
-                    pairUnits.Add(unitAGrid, pairUnitDatas[i]);
-                    pairUnits.Add(unitBGrid, pairUnitDatas[i]);
+                    if (unitAGrid != IntVec3.zero)
+                    {
+                        pairUnits.Add(unitAGrid, pairUnitDatas[i]);
+                    }
+                    if (unitBGrid != IntVec3.zero)
+                    {
+                        pairUnits.Add(unitBGrid, pairUnitDatas[i]);
+                    }
                 }
             }
 
@@ -203,6 +210,11 @@ namespace GameA.Game
             float ratio = 1f / _totalCount;
             for (int i = 0; i < data.Count; i++)
             {
+                //去掉老版本的空气墙
+                if (data[i].Id == UnitDefine.TerrainId)
+                {
+                    continue;
+                }
                 var tableUnit = UnitManager.Instance.GetTableUnit(data[i].Id);
                 if (tableUnit == null)
                 {
@@ -237,11 +249,7 @@ namespace GameA.Game
 //                            _mapProcess = num * ratio;
 //                            continue;
 //                        }
-                        UnitExtraDynamic unitExtra;
-                        if (DataScene2D.CurScene.TryGetUnitExtra(unitObject.Guid, out unitExtra))
-                        {
-                            FixUnitExtraByMapVersion(unitObject.Id, unitExtra, mapVersion);
-                        }
+                        FixUnitExtraByMapVersion(unitObject, mapVersion);
 
                         if (tableUnit.EPairType > 0)
                         {
@@ -272,17 +280,28 @@ namespace GameA.Game
             }
         }
 
-        private void FixUnitExtraByMapVersion(int id, UnitExtraDynamic unitExtra, int mapVersion)
+        private void FixUnitExtraByMapVersion(UnitDesc unitObject, int mapVersion)
         {
             if (mapVersion < 2)
             {
-                if (id == UnitDefine.SpawnId)
+                //出生点
+                if (unitObject.Id == UnitDefine.SpawnId)
                 {
-                    var playerUnitExtra = unitExtra.Clone();
-                    playerUnitExtra.MoveDirection = 0;
-                    unitExtra.InternalUnitExtras.Set(playerUnitExtra, _spawnIndex);
-                    unitExtra.TeamId = 0;
-                    _spawnIndex++;
+                    UnitExtraDynamic unitExtra;
+                    if (DataScene2D.CurScene.TryGetUnitExtra(unitObject.Guid, out unitExtra))
+                    {
+                        var playerUnitExtra = unitExtra.Clone();
+                        playerUnitExtra.MoveDirection = 0;
+                        unitExtra.InternalUnitExtras.Set(playerUnitExtra, _spawnIndex);
+                        unitExtra.TeamId = 0;
+                        _spawnIndex++;
+                    }
+                    else
+                    {
+                        var spawnUnitExtra = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId).UnitExtra;
+                        DataScene2D.CurScene.AddUnitExtra(unitObject.Guid, spawnUnitExtra);
+                        _spawnIndex++;
+                    }
                 }
             }
         }
@@ -415,7 +434,7 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < pairUnitIter.Current.Length; i++)
                         {
-                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero)
+                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero || pairUnitIter.Current[i].UnitB.Guid != IntVec3.zero)
                             {
                                 gm2DMapData.PairUnitDatas.Add(GM2DTools.ToProto(pairUnitIter.Current[i]));
                             }

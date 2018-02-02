@@ -49,32 +49,28 @@ namespace GameA.Game
         public static Color CleanColor = new Color(1f, 1f, 1f, 0f);
         private static Color EdgeColor = new Color32(111, 47, 11, 255);
 
-        private static Color[] PaintUpColor = new Color[4]
-        {
+        private static Color[] PaintUpColor = {
             new Color32(255, 128, 36, 255),
             new Color32(197, 245, 246, 255),
             new Color32(241, 213, 74, 255),
             new Color32(141, 254, 184, 255)
         };
 
-        private static Color[] PaintRightColor = new Color[4]
-        {
+        private static Color[] PaintRightColor = {
             new Color32(214, 32, 31, 255),
             new Color32(109, 202, 207, 255),
             new Color32(181, 123, 35, 255),
             new Color32(42, 185, 170, 255),
         };
 
-        private static Color[] PaintFrontColor = new Color[4]
-        {
+        private static Color[] PaintFrontColor = {
             new Color32(238, 91, 47, 255),
             new Color32(142, 231, 246, 255),
             new Color32(221, 183, 53, 255),
             new Color32(40, 221, 152, 255),
         };
 
-        private static Color[] PaintEdgeColor = new Color[4]
-        {
+        private static Color[] PaintEdgeColor = {
             new Color32(255, 209, 111, 255),
             new Color32(240, 245, 246, 255),
             new Color32(250, 234, 104, 255),
@@ -84,6 +80,41 @@ namespace GameA.Game
         public override bool CanPainted
         {
             get { return true; }
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+
+            if (_paintObject != null)
+            {
+                CommonTools.SetParent(_paintObject.transform, _view.Trans);
+                _paintObject.transform.localPosition = Vector3.back * 0.1f;
+            }
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            if (_paintObject != null)
+            {
+                _paintObject.transform.parent = null;
+                _paintObject.transform.position = new Vector2(100000, 0);
+            }
+            base.OnObjectDestroy();
+        }
+
+        internal override void OnDispose()
+        {
+            if (_paintObject != null)
+            {
+                Object.Destroy(_paintObject);
+                _paintObject = null;
+            }
+            base.OnDispose();
         }
 
         protected override void Clear()
