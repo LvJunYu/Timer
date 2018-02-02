@@ -133,7 +133,8 @@ namespace NewResourceSolution
         /// <param name="existingManifest">Existing manifest.</param>
         public IEnumerator MergePersistentToStreamingManifest (CHRuntimeResManifest existingManifest)
         {
-            var lastTime = Time.realtimeSinceStartup;
+            var lastTime = 
+                Time.realtimeSinceStartup;
             var persistentManifestDict = new Dictionary<string, CHResBundle>(existingManifest.BundleName2BundleDict);
             for (int i = 0; i < _bundles.Count; i++)
             {

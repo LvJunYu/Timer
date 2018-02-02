@@ -15,6 +15,11 @@ namespace GameA.Game
     [Unit(Id = 1002, Type = typeof(MainPlayer))]
     public class MainPlayer : PlayerBase
     {
+        public UnitBase[] HitUnit
+        {
+            get { return _hitUnits; }
+        }
+
         public override bool IsMain
         {
             get { return true; }
@@ -61,10 +66,7 @@ namespace GameA.Game
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             base.Hit(unit, eDirectionType);
-            if (UnitDefine.IsNpc(unit.Id))
-            {
-                RpgTaskManger.Instance.OnPlayHitNpc(unit.Guid);
-            }
+            RpgTaskManger.Instance.OnPlayHitNpc(unit.Guid);
         }
     }
 }

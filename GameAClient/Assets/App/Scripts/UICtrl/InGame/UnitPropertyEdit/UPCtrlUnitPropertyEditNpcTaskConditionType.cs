@@ -38,6 +38,7 @@ namespace GameA
                 int index = i + 1;
                 _cachedView.CondtionTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+            _cachedView.NpcTaskConditionTypePanelExitBtn.onClick.AddListener(Close);
         }
 
         public void ChooseTargetType(int index)

@@ -329,7 +329,7 @@ namespace GameA.Game
         {
             return unit != null && DeleteUnit(unit.UnitDesc);
         }
-        
+
         private bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
@@ -462,7 +462,8 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                     {
                         var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
-                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
+                        var shadowUnit =
+                            CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
                         if (shadowUnit != null)
                         {
                             shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
@@ -762,6 +763,5 @@ namespace GameA.Game
 
             _bullets.Clear();
         }
-
     }
 }

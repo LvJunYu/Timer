@@ -48,6 +48,7 @@ namespace GameA
                 value => _target.ColOrKillNum = (ushort) value);
             _cachedView.MonsterDownBtn.onClick.AddListener(() => { _cachedView.MonsterBar.value -= 0.1f; });
             _cachedView.MonsterUpBtn.onClick.AddListener(() => { _cachedView.MonsterBar.value += 0.1f; });
+            _cachedView.NpcTaskMonsterPanelExitBtn.onClick.AddListener(Close);
         }
 
         private void RefreshBtnGroup()

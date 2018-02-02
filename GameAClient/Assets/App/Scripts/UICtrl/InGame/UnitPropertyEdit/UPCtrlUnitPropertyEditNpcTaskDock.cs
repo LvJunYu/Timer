@@ -128,6 +128,7 @@ namespace GameA
                     CurExtraNpcTaskData = new NpcTaskDynamic();
                     CurExtraNpcTaskData.NpcTaskSerialNumber = (ushort) NpcTaskDataTemp.Intance.GetNpcTaskSerialNum();
                     NpcTaskDataTemp.Intance.SetNpcTaskSerialNum(CurExtraNpcTaskData.NpcTaskSerialNumber);
+                    CurExtraNpcTaskData.TargetNpcSerialNumber = _mainCtrl.EditData.UnitExtra.NpcSerialNumber;
                     NpcTaskDatas.Add(CurExtraNpcTaskData);
                 }
             }
@@ -252,6 +253,7 @@ namespace GameA
             }
             _cachedView.AddConditionBtn.SetActiveEx(!(CurExtraNpcTaskData.TriggerType != (int) ENpcTargetType.None &&
                                                       CurExtraNpcTaskData.TaskimeLimit > 0));
+            _mainCtrl.CloseUpCtrlPanel();
         }
 
         private void EditTriggerTaskEdit(TrrigerTaskType type)

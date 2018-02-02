@@ -42,6 +42,7 @@ namespace GameA
                 int index = i + 1;
                 _cachedView.TargetTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+            _cachedView.NpcTaskTypeExitBtn.onClick.AddListener(Close);
         }
 
         public void ChooseTargetType(int index)
@@ -76,10 +77,9 @@ namespace GameA
                     //选择控制
                     if (_mainCtrl.IsInMap)
                     {
-                        _mainCtrl.Close();
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic, _mainCtrl.EditData.UnitDesc.Guid,
                             ETaskContype.Task, _mainCtrl.EditData.UnitExtra);
-
+                        _mainCtrl.OnCloseBtnClick();
                         //打开连线界面
                     }
                     else

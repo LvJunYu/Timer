@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -11,6 +15,26 @@ namespace GameA.Game
         private int _showIntervalTime;
         private int _timeIntervalDynamic;
         private int _showTime = 150;
+        private NpcStateBar _stateBar;
+        private Action _oldState;
+
+        public Action OldState
+        {
+            get { return _oldState; }
+        }
+
+        public Action NowState
+        {
+            get { return _nowState; }
+        }
+
+        private Action _nowState;
+
+        public NpcStateBar StateBar
+        {
+            get { return _stateBar; }
+            set { _stateBar = value; }
+        }
 
         protected override bool IsCheckClimb()
         {
@@ -53,7 +77,19 @@ namespace GameA.Game
                     _unit = null;
                 }
             }
+            SetDia();
 
+//            if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
+//            {
+//                foreach (var VARIABLE in _hitUnits)
+//                {
+//                    Debug.Log(VARIABLE.Id);
+//                }
+//            }
+        }
+
+        private void SetDia()
+        {
             if (GetUnitExtra().NpcType == (byte) ENpcType.Dialog)
             {
                 if (GetUnitExtra().NpcDialog == null)
@@ -93,11 +129,8 @@ namespace GameA.Game
                     }
                 }
             }
-
-            if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
-            {
-            }
         }
+
 
         protected override void Clear()
         {
@@ -107,19 +140,21 @@ namespace GameA.Game
             {
                 UMPoolManager.Instance.Free(_diaPop);
             }
-
+            if (_stateBar != null)
+            {
+                SetNpcNum();
+            }
             _trigger = false;
             _diaPop = null;
             _showIntervalTime = 0;
             _timeIntervalDynamic = 0;
-
             _unit = null;
         }
 
         protected virtual void OnTrigger(UnitBase other)
         {
             if (!_trigger)
-                
+
             {
                 _trigger = true;
                 _unit = other;
@@ -160,8 +195,63 @@ namespace GameA.Game
             }
         }
 
+        public void SetReady()
+        {
+            _stateBar.SetReady();
+            _oldState = null;
+            _nowState = SetReady;
+        }
+
+        public void SetInTask()
+        {
+            _stateBar.SetInTask();
+            _oldState = null;
+            _nowState = SetInTask;
+        }
+
+        public void SetFinishTask()
+        {
+            _stateBar.AllTaskFinish();
+            _oldState = null;
+            _nowState = SetFinishTask;
+        }
+
+        public void SetNpcNum()
+        {
+            _stateBar.SetNpcNum(GetUnitExtra().NpcSerialNumber);
+        }
+
+        public void SetShowTip()
+        {
+            _stateBar.ShowTip();
+            _oldState = _nowState;
+        }
+
+        public void SetNoShow()
+        {
+            _stateBar.SetNoShow();
+        }
+
+        internal override bool InstantiateView()
+        {
+            return base.InstantiateView();
+        }
+
         protected override void CreateStatusBar()
         {
+            if (null != _statusBar)
+            {
+                return;
+            }
+            GameObject statusBarObj =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "NpcSerNumber")) as
+                    GameObject;
+            if (null != statusBarObj)
+            {
+                _stateBar = statusBarObj.GetComponent<NpcStateBar>();
+                CommonTools.SetParent(statusBarObj.transform, _trans);
+                SetNpcNum();
+            }
         }
 
         protected override void UpdateAttackTarget(UnitBase lastTarget = null)
@@ -170,6 +260,21 @@ namespace GameA.Game
             {
                 _attactTarget = PlayMode.Instance.MainPlayer;
             }
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            if (_stateBar != null)
+            {
+                Object.Destroy(_stateBar.gameObject);
+                _stateBar = null;
+            }
+            base.OnObjectDestroy();
+        }
+
+        protected override void CheckAssist()
+        {
+            base.CheckAssist();
         }
     }
 }

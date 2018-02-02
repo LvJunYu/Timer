@@ -177,6 +177,10 @@ namespace GameA
 //            UpdateShowHelper();
 
             UpdateTimeLimit();
+            for (int i = 0; i < _npcTask.Length; i++)
+            {
+                _npcTask[i].UpdataTimeLimit();
+            }
 
             if (_showStar)
             {
@@ -748,10 +752,10 @@ namespace GameA
             }
         }
 
-        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> _nowTaskDic,
-            Dictionary<int, NpcTaskDynamic>_finishTaskDic)
+        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> nowTaskDic,
+            Dictionary<int, NpcTaskDynamic>finishTaskDic)
         {
-            if (_nowTaskDic.Count > 0)
+            if (nowTaskDic.Count > 0)
             {
                 _cachedView.TaskPanel.SetActive(true);
             }
@@ -759,7 +763,7 @@ namespace GameA
             {
                 _cachedView.TaskPanel.SetActiveEx(false);
             }
-            using (var enmotor = _nowTaskDic.GetEnumerator())
+            using (var enmotor = nowTaskDic.GetEnumerator())
             {
                 int index = 0;
                 while (enmotor.MoveNext())
@@ -767,8 +771,7 @@ namespace GameA
                     bool finish = false;
                     for (int i = 0; i < enmotor.Current.Value.Targets.Count; i++)
                     {
-                        finish = _finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber
-                        );
+                        finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
                         if (finish)
                         {
                             break;
@@ -778,7 +781,7 @@ namespace GameA
                     UnitExtraDynamic extra;
                     if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
                     {
-                        _npcTask[index].SetNpcTask(extra, enmotor.Current.Value, finish);
+                        _npcTask[index].SetNpcTask(enmotor.Current.Key, extra, enmotor.Current.Value, finish);
                     }
                     index++;
                 }

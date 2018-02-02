@@ -234,10 +234,7 @@ namespace GameA.Game
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             yield return _gameMode.InitByStep();
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-            {
-                _gameMode.OnGameStart();
-            }));
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => { _gameMode.OnGameStart(); }));
         }
 
         private void OnDestroy()

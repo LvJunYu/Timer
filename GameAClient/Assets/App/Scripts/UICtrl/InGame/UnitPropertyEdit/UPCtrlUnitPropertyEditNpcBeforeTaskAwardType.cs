@@ -51,6 +51,7 @@ namespace GameA
                 }
                 _cachedView.BeforeAwardTypeTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+            _cachedView.NpcTaskBeforeAwardTypePanelExitBtn.onClick.AddListener(Close);
         }
 
         public void ChooseTargetType(int index)
@@ -76,6 +77,7 @@ namespace GameA
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
                             _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra);
+                        _mainCtrl.OnCloseBtnClick();
                     }
                     else
                     {
