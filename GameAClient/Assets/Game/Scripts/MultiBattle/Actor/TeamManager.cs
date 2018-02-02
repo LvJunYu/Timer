@@ -20,7 +20,10 @@ namespace GameA.Game
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
-        private Dictionary<int, UnitExtraDynamic> _playerUnitExtraDic = new Dictionary<int, UnitExtraDynamic>(MaxTeamCount);
+
+        private Dictionary<int, UnitExtraDynamic> _playerUnitExtraDic =
+            new Dictionary<int, UnitExtraDynamic>(MaxTeamCount);
+
         private List<UnitEditData> _unitDatas = new List<UnitEditData>(MaxTeamCount);
         private List<byte> _teams = new List<byte>(MaxTeamCount);
         private ENetBattleTimeResult _eNetBattleTimeResult;
@@ -142,6 +145,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 var spawnUnitExtra = spawnDataScene.GetUnitExtra(spawnDatas[i].Guid);
                 var playerUnitExtras = spawnUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>();
                 for (int j = 0; j < playerUnitExtras.Count; j++)
@@ -174,6 +178,7 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -243,16 +248,42 @@ namespace GameA.Game
             return PlayMode.Instance.MainPlayer;
         }
 
-        public UnitBase GetMonsterTarget(MonsterBase unit)
+        public UnitBase GetMonsterTarget(MonsterBase unit, bool tryNearest = true)
         {
-            int curPlayerCount = Players.Count;
+            int curPlayerCount = _players.Count;
+            //根据距离确定目标
+            if (tryNearest)
+            {
+                UnitBase target = null;
+                int minRelX = int.MaxValue;
+                for (int i = 0; i < curPlayerCount; i++)
+                {
+                    var relPos = _players[i].CenterDownPos - unit.CenterDownPos;
+                    int relY = Mathf.Abs(relPos.y);
+                    if (relY > 3 * ConstDefineGM2D.ServerTileScale)
+                    {
+                        continue;
+                    }
+                    int relX = Mathf.Abs(relPos.x);
+                    if (relX < minRelX)
+                    {
+                        minRelX = relX;
+                        target = _players[i];
+                    }
+                }
+                if (target != null)
+                {
+                    return target;
+                }
+            }
+            //随机一个目标
             int curStartIndex = GameRun.Instance.LogicFrameCnt;
-            for (int i = 0; i < Players.Count; i++)
+            for (int i = 0; i < curPlayerCount; i++)
             {
                 int index = (i + curStartIndex) % curPlayerCount;
-                if (Players[index].TeamId == 0 || unit.TeamId == 0 || Players[index].TeamId != unit.TeamId)
+                if (_players[index].TeamId == 0 || unit.TeamId == 0 || _players[index].TeamId != unit.TeamId)
                 {
-                    return Players[index];
+                    return _players[index];
                 }
             }
 
@@ -310,11 +341,12 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             _scoreDic[teamId] = 0;
             Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, 0);
             return true;
         }
-        
+
         public bool CheckOnlyMyTeamLeft()
         {
             for (int i = 0; i < _players.Count; i++)
@@ -324,8 +356,10 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             return true;
         }
+
         #region Score
 
         public void AddScore(UnitBase unit, int score)
@@ -450,6 +484,5 @@ namespace GameA.Game
         }
 
         #endregion
-
     }
 }
