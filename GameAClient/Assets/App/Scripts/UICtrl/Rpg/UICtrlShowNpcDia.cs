@@ -19,7 +19,6 @@ namespace GameA
         private Color _textColor;
         private DictionaryListObject _prediaList;
         private float _time;
-        private InputBase _input;
 
         public Sprite FaceSprite
         {
@@ -68,7 +67,6 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            _input = GM2DGame.Instance.GameMode.GetMainPlayerInput();
             if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();

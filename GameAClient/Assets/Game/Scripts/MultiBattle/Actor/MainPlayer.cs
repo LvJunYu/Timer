@@ -15,11 +15,6 @@ namespace GameA.Game
     [Unit(Id = 1002, Type = typeof(MainPlayer))]
     public class MainPlayer : PlayerBase
     {
-        public UnitBase[] HitUnit
-        {
-            get { return _hitUnits; }
-        }
-
         public override bool IsMain
         {
             get { return true; }
