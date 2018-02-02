@@ -126,7 +126,6 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWinDataChanged, OnWinDataChanged);
             RegisterEvent(EMessengerType.OnLifeChanged, OnLifeChanged);
-            RegisterEvent(EMessengerType.OnMainPlayerCreated, OnLifeChanged);
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
@@ -665,7 +664,7 @@ namespace GameA
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
-            UpdateLifeItemValueText(EditMode.Instance.MapStatistics.LifeCount);
+            UpdateLifeItemValueText(PlayMode.Instance.SceneState.Life);
             UpdateCollectText(0);
             _lastFrame = 0;
             _lastValue = 0;

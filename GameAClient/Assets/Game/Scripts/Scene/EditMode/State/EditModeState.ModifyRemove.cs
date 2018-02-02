@@ -79,7 +79,7 @@ namespace GameA.Game
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除主角");
                     return false;
                 }
-                else if (unitDesc.Id == UnitDefine.FinalDoorId)
+                if (unitDesc.Id == UnitDefine.FinalDoorId)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除终点");
                     return false;
