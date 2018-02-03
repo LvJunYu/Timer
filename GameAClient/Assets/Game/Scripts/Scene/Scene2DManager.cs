@@ -582,8 +582,18 @@ namespace GameA.Game
             for (int i = 0; i < units.Length; i++)
             {
                 var unit = units[i];
-                var unitDesc = unit.UnitDesc;
-                if (!_dataScene.IsInTileMap(unit.TableUnit.GetDataGrid(ref unitDesc)))
+                UnitBase checkUnit;
+                //开关可能越界，但控制物体在地图内则不删除
+                if (UnitDefine.IsSwitchTrigger(unit.Id))
+                {
+                    checkUnit = ((SwitchTrigger) unit).SwitchUnit;
+                }
+                else
+                {
+                    checkUnit = unit;
+                }
+                var unitDesc = checkUnit.UnitDesc;
+                if (!_dataScene.IsInTileMap(checkUnit.TableUnit.GetDataGrid(ref unitDesc)))
                 {
                     _colliderScene.DeleteUnitsOutofMap(unit);
                 }

@@ -171,7 +171,6 @@ namespace GameA.Game
             GameAudioManager.Instance.Update();
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
-            MapManager.Instance.Update();
 
             float debugSpeed = 1;
 
@@ -199,6 +198,7 @@ namespace GameA.Game
             CameraManager.Instance.UpdateLogic(deltaTime);
             var pos = CameraManager.Instance.MainCameraTrans.position;
             BgScene2D.Instance.UpdateLogic(pos);
+            ColliderScene2D.CurScene.UpdateLogic(GM2DTools.WorldToTile(pos));
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
