@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
@@ -17,8 +16,6 @@ namespace GameA
         private Sprite _faceSprite;
         private string _colorName;
         private Color _textColor;
-        private DictionaryListObject _prediaList;
-        private float _time;
 
         public Sprite FaceSprite
         {
@@ -37,6 +34,7 @@ namespace GameA
         {
             base.OnDestroy();
         }
+
 
         public override void OnUpdate()
         {
@@ -61,7 +59,7 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-            _time = Time.realtimeSinceStartup;
+//            _time = Time.realtimeSinceStartup;
             GM2DGame.Instance.Continue();
         }
 
@@ -74,7 +72,7 @@ namespace GameA
 //                return;
 //            }
 //            else
-            _prediaList = (DictionaryListObject) parameter;
+//            {
             base.OnOpen(parameter);
             GM2DGame.Instance.Pause();
             _diaList = (DictionaryListObject) parameter;
