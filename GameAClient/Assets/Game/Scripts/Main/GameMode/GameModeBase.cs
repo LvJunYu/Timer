@@ -21,6 +21,7 @@ namespace GameA.Game
         public ShadowData ShadowData = new ShadowData();
         public ShadowData ShadowDataPlayed;
         protected bool _playShadowData;
+        private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
 
         public virtual bool IsMulti
         {
@@ -60,6 +61,32 @@ namespace GameA.Game
         public List<int> InputDatas
         {
             get { return _inputDatas; }
+        }
+        
+        private static GameModeBase _instance;
+
+        public static bool DebugEnable()
+        {
+            if (_instance == null) return false;
+            return _instance._debugClientData.Enable;
+        }
+
+        public static void WriteDebugData(string str, bool writeLine = true)
+        {
+            if (_instance == null) return;
+            if (writeLine)
+            {
+                _instance._debugClientData.WriteLine(string.Format("Frame:{0}  {1}", GameRun.Instance.LogicFrameCnt, str));
+            }
+            else
+            {
+                _instance._debugClientData.Write(string.Format("Frame:{0}  {1}", GameRun.Instance.LogicFrameCnt, str));
+            }
+        }
+
+        protected GameModeBase()
+        {
+            _instance = this;
         }
 
         public virtual bool Init(Project project, object param, GameManager.EStartType startType,
@@ -171,6 +198,8 @@ namespace GameA.Game
         public virtual bool Stop()
         {
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GameRun.Instance.Stop));
+            _debugClientData.Close();
+            _instance = null;
             return true;
         }
 

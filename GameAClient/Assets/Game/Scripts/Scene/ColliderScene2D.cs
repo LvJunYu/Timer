@@ -298,6 +298,7 @@ namespace GameA.Game
             {
                 _allMonsterCaves.Add(unit);
             }
+
             return true;
         }
 
@@ -368,10 +369,12 @@ namespace GameA.Game
             {
                 _allOtherUnits.Remove(unit);
             }
+
             if (UnitDefine.MonsterCaveId == unit.Id)
             {
                 _allMonsterCaves.Remove(unit);
             }
+
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -697,8 +700,16 @@ namespace GameA.Game
                         continue;
                     }
 
-                    DestroyView(unitObject);
-                    SetUnitInterest(unitObject, false);
+                    if (UnitDefine.IsBullet(unitObject.Id))
+                    {
+                        DestroyView(unitObject);
+                        DeleteUnit(unitObject, tableUnit, true);
+                    }
+                    else
+                    {
+                        DestroyView(unitObject);
+                        SetUnitInterest(unitObject, false);
+                    }
                 }
             }
         }
@@ -764,8 +775,10 @@ namespace GameA.Game
             for (int i = 0; i < hits.Count; i++)
             {
                 var hit = hits[i];
-                var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0,
-                               hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+                var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
+                               hit.normal.x < 0 ? -1 : 0,
+                               hit.normal.y > 0 ? 1 :
+                               hit.normal.y < 0 ? -1 : 0);
                 GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             }
 
@@ -829,8 +842,10 @@ namespace GameA.Game
         public static List<UnitBase> GetUnits(RayHit2D hit)
         {
             _cachedUnits.Clear();
-            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0,
-                           hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
+                           hit.normal.x < 0 ? -1 : 0,
+                           hit.normal.y > 0 ? 1 :
+                           hit.normal.y < 0 ? -1 : 0);
             GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             return _cachedUnits;
         }

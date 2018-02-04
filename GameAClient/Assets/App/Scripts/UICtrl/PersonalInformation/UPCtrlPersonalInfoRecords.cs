@@ -8,7 +8,7 @@ namespace GameA
     {
         private const int PageSize = 10;
         private List<Record> _dataList;
-        private WorldUserRecentRecordList _data;
+        private WorldUserRecentRecordList _data = new WorldUserRecentRecordList();
 
         protected override void OnViewCreated()
         {
@@ -19,7 +19,6 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _data = AppData.Instance.WorldData.WorldUserRecentRecordList;
             RequestData();
             RefreshView();
         }

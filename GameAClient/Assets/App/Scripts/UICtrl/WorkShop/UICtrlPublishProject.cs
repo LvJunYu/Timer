@@ -239,11 +239,14 @@ namespace GameA
                 return;
             }
 
-            if (_project.IsMulti && _project.NetData != null && _project.NetData.PlayerCount == 0)
+            if (_project.IsMulti && _project.NetData != null)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
-                SocialGUIManager.ShowPopupDialog("游戏没有设置主角，无法发布");
-                return;
+                if(_project.NetData.PlayerCount < 2)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                    SocialGUIManager.ShowPopupDialog("多人游戏至少设置两名玩家才能发布");
+                    return;
+                }
             }
 
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();

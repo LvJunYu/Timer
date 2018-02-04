@@ -209,12 +209,6 @@ namespace GameA.Game
             }
         }
 
-        public void Update()
-        {
-            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
-            ColliderScene2D.CurScene.UpdateLogic(pos);
-        }
-
         /// <summary>
         /// 正在处理地图数据时
         /// </summary>

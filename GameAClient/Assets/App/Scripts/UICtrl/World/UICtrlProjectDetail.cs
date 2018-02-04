@@ -117,10 +117,10 @@ namespace GameA
                 return;
             }
 
-            if (!CheckProjectValid())
-            {
-                return;
-            }
+//            if (!CheckProjectValid())
+//            {
+//                return;
+//            }
 
             _isMyself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _isMulti = _project.IsMulti;
