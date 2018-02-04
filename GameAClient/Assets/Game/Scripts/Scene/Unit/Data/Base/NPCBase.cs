@@ -96,17 +96,21 @@ namespace GameA.Game
                 {
                     return;
                 }
+                if (GetUnitExtra().NpcDialog.Length == 0)
+                {
+                    return;
+                }
                 if (_diaPop == null)
                 {
                     _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
                         .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
                     if (CheckPlayerPos())
                     {
                         _diaPop.Show();
+                        SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
                     else
                     {
@@ -120,6 +124,7 @@ namespace GameA.Game
                     if (_timeIntervalDynamic > _showIntervalTime)
                     {
                         _diaPop.Show();
+                        SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
 
                     if (_timeIntervalDynamic > _showTime + _showIntervalTime)
@@ -165,7 +170,7 @@ namespace GameA.Game
         private bool CheckPlayerPos()
         {
             float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
-            return x <= 50;
+            return x <= 3;
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)

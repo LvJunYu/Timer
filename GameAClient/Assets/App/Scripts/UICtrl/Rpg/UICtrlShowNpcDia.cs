@@ -67,16 +67,14 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
-                GM2DGame.Instance.Continue();
-                return;
-            }
-            else
-            {
-                _prediaList = (DictionaryListObject) parameter;
-            }
+//            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
+//            {
+//                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
+//                GM2DGame.Instance.Continue();
+//                return;
+//            }
+//            else
+            _prediaList = (DictionaryListObject) parameter;
             base.OnOpen(parameter);
             GM2DGame.Instance.Pause();
             _diaList = (DictionaryListObject) parameter;
@@ -263,7 +261,7 @@ namespace GameA
             return diaData;
         }
 
-        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, string waggle)
+        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, int waggle)
         {
             string diaData = String.Format("{0}_{1}_{2}_{3}_{4}_{5}", npcid, faceid, dia, npcName, color, waggle);
             return diaData;

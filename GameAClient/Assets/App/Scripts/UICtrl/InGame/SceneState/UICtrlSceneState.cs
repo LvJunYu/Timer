@@ -762,6 +762,7 @@ namespace GameA
             else
             {
                 _cachedView.TaskPanel.SetActiveEx(false);
+                return;
             }
             using (var enmotor = nowTaskDic.GetEnumerator())
             {
@@ -769,21 +770,14 @@ namespace GameA
                 while (enmotor.MoveNext())
                 {
                     bool finish = false;
-                    for (int i = 0; i < enmotor.Current.Value.Targets.Count; i++)
-                    {
-                        finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
-                        if (finish)
-                        {
-                            break;
-                        }
-                    }
 
+                    finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
                     UnitExtraDynamic extra;
                     if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
                     {
                         _npcTask[index].SetNpcTask(enmotor.Current.Key, extra, enmotor.Current.Value, finish);
                     }
-                    index++;
+                    ++index;
                 }
                 for (int i = index; i < _npcTask.Length; i++)
                 {

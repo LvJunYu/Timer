@@ -36,6 +36,7 @@ namespace GameA
         {
             _target = target;
             Open();
+            _cachedView.DiaTargetNpcNum.text = _target.TargetNpcNum.ToString();
         }
 
         public override void Open()

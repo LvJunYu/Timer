@@ -56,9 +56,9 @@ namespace GameA
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetColltionDic[_colltionList[0]].Id;
                     _target.ColOrKillNum = 1;
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     _taskDynamic.Targets.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     Close();
                     break;
                 case (int) ENpcTargetType.Moster:
@@ -68,9 +68,9 @@ namespace GameA
                     _target.ColOrKillNum = 1;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetKillDic[_killtionList[0]].Id;
-                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_target);
                     _taskDynamic.Targets.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_target);
                     Close();
                     break;
                 case (int) ENpcTargetType.Contorl:
@@ -94,7 +94,9 @@ namespace GameA
                         //输入传话的目标
                         _target = new NpcTaskTargetDynamic();
                         _target.TaskType = (byte) ENpcTargetType.Dialog;
+                        _target.TargetNpcNum = 0;
                         _taskDynamic.Targets.Add(_target);
+                        _mainCtrl.EditNpcTaskDock.RefreshView();
                         _mainCtrl.EditNpcTaregtDialog.OpenMenu(_target);
                         Close();
                     }

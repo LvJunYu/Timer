@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -1128,7 +1130,8 @@ namespace GameA
 
             if (_originData != EditData)
             {
-                if (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id))
+//                || UnitDefine.IsNpc(_tableUnit.Id)
+                if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
@@ -1365,18 +1368,17 @@ namespace GameA
             int num = EditData.UnitExtra.NpcTask.Count;
             for (int i = 0; i < num; i++)
             {
-                if (EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).Targets.Count == 0)
+                NpcTaskDynamic task = EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i);
+                if (task.Targets.Count == 0)
                 {
-                    NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i)
-                        .NpcTaskSerialNumber);
+                    NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
                     EditData.UnitExtra.NpcTask.RemoveAt(i);
                 }
                 else
                 {
-                    if (EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).TargetNpcSerialNumber == 0)
+                    if (task.TargetNpcSerialNumber == 0)
                     {
-                        EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i).TargetNpcSerialNumber =
-                            EditData.UnitExtra.NpcSerialNumber;
+                        task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;
                     }
                 }
             }

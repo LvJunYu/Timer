@@ -44,8 +44,6 @@ namespace GameA.Game
                     StartCoroutine(ParseData(mapData, startType));
                     break;
             }
-
-            NpcTaskDataTemp.Intance.Clear();
         }
 
         internal void Stop()
@@ -207,6 +205,7 @@ namespace GameA.Game
             int mapVersion,
             GameTimer timer, int sceneIndex = 0)
         {
+
             float ratio = 1f / _totalCount;
             for (int i = 0; i < data.Count; i++)
             {
@@ -434,7 +433,8 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < pairUnitIter.Current.Length; i++)
                         {
-                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero || pairUnitIter.Current[i].UnitB.Guid != IntVec3.zero)
+                            if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero ||
+                                pairUnitIter.Current[i].UnitB.Guid != IntVec3.zero)
                             {
                                 gm2DMapData.PairUnitDatas.Add(GM2DTools.ToProto(pairUnitIter.Current[i]));
                             }

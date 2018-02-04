@@ -37,6 +37,7 @@ namespace GameA.Game
         {
             SerNumMesh.SetActiveEx(true);
             TaskSignSprite.SetActiveEx(false);
+            ConTip.SetActiveEx(false);
             SerNumMesh.text = num.ToString();
         }
 

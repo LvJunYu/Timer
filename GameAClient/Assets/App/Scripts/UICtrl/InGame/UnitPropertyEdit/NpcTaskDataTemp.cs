@@ -22,10 +22,10 @@ namespace GameA
 
         private NpcTaskDataTemp()
         {
-            Clear();
+            Init();
         }
 
-        public void Clear()
+        public void Init()
         {
             _npcTaskSerialNumberDic = new Dictionary<int, bool>();
             for (int i = 0; i < MaxNpcTargetSerialNum; i++)
@@ -36,6 +36,18 @@ namespace GameA
             for (int i = 0; i < MaxNpcSerialNum; i++)
             {
                 _npcSerialNumberDic.Add(i + 1, false);
+            }
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < MaxNpcTargetSerialNum; i++)
+            {
+                _npcTaskSerialNumberDic[i + 1] = false;
+            }
+            for (int i = 0; i < MaxNpcSerialNum; i++)
+            {
+                _npcSerialNumberDic[i + 1] = false;
             }
         }
 
@@ -219,6 +231,15 @@ namespace GameA
             _npcTaskSerialNumberDic[num] = false;
         }
 
+        public void RecycleNpcSerialNum(int num)
+        {
+            if (!_npcSerialNumberDic.ContainsKey(num))
+            {
+                return;
+            }
+            _npcSerialNumberDic[num] = false;
+        }
+
         public bool SetNpcTaskSerialNum(int num)
         {
             bool sucess;
@@ -276,6 +297,38 @@ namespace GameA
                 sucess = false;
             }
             return sucess;
+        }
+
+        public void RemoveNpc(UnitDesc unitDesc)
+        {
+            UnitExtraDynamic extra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
+            if (UnitDefine.IsNpc(unitDesc.Id))
+            {
+                if (extra.NpcSerialNumber != 0)
+                {
+                    RecycleNpcSerialNum(extra.NpcSerialNumber);
+                }
+                if (extra.NpcType == (int) ENpcType.Task)
+                {
+                    for (int i = 0; i < extra.NpcTask.Count; i++)
+                    {
+                        if (extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber != 0)
+                        {
+                        }
+                        else
+                        {
+                            RecycleNpcTaskSerialNum(extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber);
+                        }
+                    }
+                }
+                UnitBase unit;
+                NPCBase npcUnit;
+                if (ColliderScene2D.CurScene.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    npcUnit = unit as NPCBase;
+                    if (npcUnit != null && npcUnit.StateBar != null) npcUnit.SetNpcNum();
+                }
+            }
         }
 
         public void AddNpc(UnitDesc unitDesc)
