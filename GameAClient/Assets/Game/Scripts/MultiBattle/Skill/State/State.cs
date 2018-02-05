@@ -71,7 +71,7 @@ namespace GameA.Game
             if (_tableState.Id == 61)
             {
                 //出生无敌
-                _duration = PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime *
+                _duration = PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime *
                             ConstDefineGM2D.FixedFrameCount;
             }
             else

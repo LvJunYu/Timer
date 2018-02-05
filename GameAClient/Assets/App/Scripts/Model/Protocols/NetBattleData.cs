@@ -68,6 +68,10 @@ namespace GameA
         /// 无限生命
         /// </summary>
         private bool _infiniteLife;
+        /// <summary>
+        /// 最低开启人数
+        /// </summary>
+        private int _minPlayer;
         #endregion
 
         #region 属性
@@ -221,6 +225,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 最低开启人数
+        /// </summary>
+        public int MinPlayer { 
+            get { return _minPlayer; }
+            set { if (_minPlayer != value) {
+                _minPlayer = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -242,6 +256,7 @@ namespace GameA
             _killPlayerScore = msg.KillPlayerScore;     
             _scoreWinCondition = msg.ScoreWinCondition;     
             _infiniteLife = msg.InfiniteLife;     
+            _minPlayer = msg.MinPlayer;     
             OnSyncPartial(msg);
             return true;
         }
@@ -264,6 +279,7 @@ namespace GameA
             _killPlayerScore = msg.KillPlayerScore;           
             _scoreWinCondition = msg.ScoreWinCondition;           
             _infiniteLife = msg.InfiniteLife;           
+            _minPlayer = msg.MinPlayer;           
             return true;
         } 
 
@@ -285,6 +301,7 @@ namespace GameA
             _killPlayerScore = obj.KillPlayerScore;           
             _scoreWinCondition = obj.ScoreWinCondition;           
             _infiniteLife = obj.InfiniteLife;           
+            _minPlayer = obj.MinPlayer;           
             return true;
         }
 

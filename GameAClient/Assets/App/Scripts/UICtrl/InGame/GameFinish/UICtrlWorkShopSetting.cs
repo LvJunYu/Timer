@@ -261,7 +261,7 @@ namespace GameA
         {
             _cachedView.Togs[(int) EMenu.MultiBasic].SetActiveEx(IsMulti);
             _cachedView.Togs[(int) EMenu.MultiWinCondition].SetActiveEx(IsMulti);
-            _cachedView.Togs[(int) EMenu.MultiPlayerSetting].SetActiveEx(IsMulti);
+            _cachedView.Togs[(int) EMenu.MultiPlayerSetting].SetActiveEx(false);
             _cachedView.Togs[(int) EMenu.StandaloneLevelSetting].SetActiveEx(!IsMulti);
 //            UpdateFinishCondition();
             if (IsMulti)

@@ -10,6 +10,7 @@ namespace GameA
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         private Project _project;
+        private const string EmptyStr = "无";
         private const string _publishConfirmTitle = "发布确认";
         private const string _updateConfirmTitle = "更新确认";
         private const string _publishOkStr = "立即发布";
@@ -153,13 +154,13 @@ namespace GameA
             var netData = _project.NetData;
             if (netData == null) return;
             _cachedView.NetBattleTimeLimit.text = netData.GetTimeLimit();
+            _cachedView.NetBattleMinPlayerCount.text = netData.MinPlayer.ToString();
             _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
-            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.WinScoreCondition.text = netData.ScoreWinCondition ? netData.WinScore.ToString() : EmptyStr;
             _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
             _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
-            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
         }
 
         private void OnDescEndEdit(string arg0)

@@ -547,7 +547,7 @@ namespace GameA.Game
                     {
                         _statusBar.SetHPActive(true);
                     }
-                    if (PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime > 0)
+                    if (PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime > 0)
                     {
                         AddStates(null, 61);
                     }
@@ -722,7 +722,7 @@ namespace GameA.Game
                 {
                     if (_dieTime % ConstDefineGM2D.FixedFrameCount == 0)
                     {
-                        var reviveTime = PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime;
+                        var reviveTime = PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveTime;
                         int dieSecond = _dieTime / ConstDefineGM2D.FixedFrameCount;
                         if (dieSecond == Mathf.Max(1, reviveTime))
                         {

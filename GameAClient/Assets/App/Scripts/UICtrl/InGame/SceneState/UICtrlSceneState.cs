@@ -295,19 +295,19 @@ namespace GameA
                 _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(team));
                 _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == team);
             }
-            var netData = PlayMode.Instance.SceneState.Statistics.NetBattleData;
+            var netData = PlayMode.Instance.SceneState.MapStatistics.NetBattleData;
             _cachedView.TimeLimit.text = string.Format("游戏时间{0}", netData.GetTimeLimit());
             _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
             _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
             _cachedView.ArriveScore.SetActiveEx(PlayMode.Instance.SceneState.FinalCount > 0);
             _cachedView.CollectGemScore.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
             _cachedView.KillMonsterScore.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
-            _cachedView.KillPlayerScore.SetActiveEx(true);
+            _cachedView.KillPlayerScore.SetActiveEx(netData.KillPlayerScore != 0);
             _cachedView.WinScoreCondition.text = string.Format("达到{0}分即可获得胜利", netData.WinScore);
-            _cachedView.ArriveScore.text = string.Format("到达终点得分{0}", netData.ArriveScore);
-            _cachedView.CollectGemScore.text = string.Format("获得兽牙得分{0}", netData.CollectGemScore);
-            _cachedView.KillMonsterScore.text = string.Format("击杀怪物得分{0}", netData.KillMonsterScore);
-            _cachedView.KillPlayerScore.text = string.Format("击杀玩家得分{0}", netData.KillPlayerScore);
+            _cachedView.ArriveScore.text = string.Format("到达终点得{0}分", netData.ArriveScore);
+            _cachedView.CollectGemScore.text = string.Format("获得兽牙得{0}分", netData.CollectGemScore);
+            _cachedView.KillMonsterScore.text = string.Format("击杀怪物得{0}分", netData.KillMonsterScore);
+            _cachedView.KillPlayerScore.text = string.Format("击杀玩家得{0}分", netData.KillPlayerScore);
         }
 
         private void UpdateItemVisible()
