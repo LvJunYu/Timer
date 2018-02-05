@@ -240,12 +240,25 @@ namespace GameA
                 return;
             }
 
+            if (string.IsNullOrEmpty(_project.Name))
+            {
+                SocialGUIManager.ShowPopupDialog("请输入关卡名称再发布");
+                return;
+            }
+
             if (_project.IsMulti && _project.NetData != null)
             {
-                if(_project.NetData.PlayerCount < 2)
+                if (_project.NetData.PlayerCount < 2)
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                     SocialGUIManager.ShowPopupDialog("多人游戏至少设置两名玩家才能发布");
+                    return;
+                }
+
+                if (_project.ProjectType == EProjectType.PS_Compete && _project.NetData.TeamCount < 2)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                    SocialGUIManager.ShowPopupDialog("对抗游戏至少设置两个阵营才能发布");
                     return;
                 }
             }

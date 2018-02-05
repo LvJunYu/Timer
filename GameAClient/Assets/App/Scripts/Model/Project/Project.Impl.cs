@@ -457,10 +457,10 @@ namespace GameA
                 LogHelper.Error("Save Project is readonly");
                 return;
             }
-            if (string.IsNullOrEmpty(name))
-            {
-                name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
-            }
+//            if (string.IsNullOrEmpty(name))
+//            {
+//                name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
+//            }
             Name = name;
             Summary = summary;
             WinCondition = winCondition;
@@ -603,7 +603,17 @@ namespace GameA
             msg.HarmType = netBattleData.HarmType;
             msg.TimeLimit = netBattleData.TimeLimit;
             var spawns = Scene2DManager.Instance.GetSpawnData();
+            List<byte> teamList = new List<byte>();
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                byte teamId = spawns[i].UnitExtra.TeamId;
+                if (!teamList.Contains(teamId))
+                {
+                    teamList.Add(teamId);
+                }
+            }
             msg.PlayerCount = netBattleData.PlayerCount = spawns.Count;
+            msg.TeamCount = netBattleData.TeamCount = teamList.Count;
             msg.LifeCount = netBattleData.LifeCount;
             msg.ReviveTime = netBattleData.ReviveTime;
             msg.ReviveInvincibleTime = netBattleData.ReviveInvincibleTime;
@@ -616,6 +626,7 @@ namespace GameA
             msg.KillPlayerScore = netBattleData.KillPlayerScore;
             msg.ScoreWinCondition = netBattleData.ScoreWinCondition;
             msg.InfiniteLife = netBattleData.InfiniteLife;
+            msg.MinPlayer = netBattleData.MinPlayer;
             return msg;
         }
 

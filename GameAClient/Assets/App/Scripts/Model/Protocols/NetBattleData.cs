@@ -72,6 +72,10 @@ namespace GameA
         /// 最低开启人数
         /// </summary>
         private int _minPlayer;
+        /// <summary>
+        /// 阵营数
+        /// </summary>
+        private int _teamCount;
         #endregion
 
         #region 属性
@@ -235,6 +239,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 阵营数
+        /// </summary>
+        public int TeamCount { 
+            get { return _teamCount; }
+            set { if (_teamCount != value) {
+                _teamCount = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -257,6 +271,7 @@ namespace GameA
             _scoreWinCondition = msg.ScoreWinCondition;     
             _infiniteLife = msg.InfiniteLife;     
             _minPlayer = msg.MinPlayer;     
+            _teamCount = msg.TeamCount;     
             OnSyncPartial(msg);
             return true;
         }
@@ -280,6 +295,7 @@ namespace GameA
             _scoreWinCondition = msg.ScoreWinCondition;           
             _infiniteLife = msg.InfiniteLife;           
             _minPlayer = msg.MinPlayer;           
+            _teamCount = msg.TeamCount;           
             return true;
         } 
 
@@ -302,6 +318,7 @@ namespace GameA
             _scoreWinCondition = obj.ScoreWinCondition;           
             _infiniteLife = obj.InfiniteLife;           
             _minPlayer = obj.MinPlayer;           
+            _teamCount = obj.TeamCount;           
             return true;
         }
 
