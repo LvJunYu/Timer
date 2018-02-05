@@ -1100,7 +1100,7 @@ namespace GameA.Game
                 }
 
                 DataScene2D.CurScene.AfterAddData(unitDesc, tableUnit);
-                PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, true, true);
+                PlayMode.Instance.SceneState.MapStatistics.AddOrDeleteUnit(tableUnit, true, true);
             }
 
             _unitsOutofMap.Clear();
@@ -1122,7 +1122,7 @@ namespace GameA.Game
 
             _unitsOutofMap.Add(unitDesc);
             DataScene2D.CurScene.AfterDeleteData(unitDesc, tableUnit);
-            PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, false, true);
+            PlayMode.Instance.SceneState.MapStatistics.AddOrDeleteUnit(tableUnit, false, true);
             return true;
         }
     }
