@@ -249,9 +249,8 @@ namespace GameA
             {
                 _cachedView.Icon.sprite = _unitIcon;
             }
-//            string[] strarry = _uint.Summary.Split(':');
-//            _cachedView.Desc.text = strarry[1];
-//            _cachedView.EffectText.text = strarry[3];
+            _cachedView.Desc.text = _uint.Summary;
+            _cachedView.EffectText.text = _uint.EffectSummary;
         }
 
         public void OnRoleBtn()
