@@ -81,7 +81,7 @@ namespace GameA.Game
         protected override void UpdateMonsterAI()
         {
             IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
-            if (ConditionAttack(rel))
+            if (ConditionAttack(rel) && CanHarm(AttackTarget))
             {
                 if (_eMonsterState != EMonsterState.Attack)
                 {

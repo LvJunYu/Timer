@@ -202,6 +202,20 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public int NetBattleMinPlayerCount
+        {
+            get { return _netBattleData.MinPlayer; }
+            set
+            {
+                if (_netBattleData == null) return;
+                if (_netBattleData.MinPlayer != value)
+                {
+                    _netBattleData.MinPlayer = value;
+                    NeedSave = true;
+                }
+            }
+        }
 
         public int NetBattleLifeCount
         {
@@ -431,10 +445,15 @@ namespace GameA.Game
         public void InitMultiBattleData(NetBattleData netBattleData)
         {
             _netBattleData = netBattleData;
+            //兼容老地图
+            if (_netBattleData.MinPlayer == 0)
+            {
+                _netBattleData.MinPlayer = 2;
+            }
             IsMulti = true;
         }
 
-        public void CreateDefaltNetData()
+        public void CreateDefaltNetData(Project project)
         {
             _netBattleData = new NetBattleData();
             SetHarmType(EHarmType.EnemyMonster, true, true);
@@ -445,14 +464,23 @@ namespace GameA.Game
             _netBattleData.ReviveTime = 0;
             _netBattleData.ReviveInvincibleTime = 0;
             _netBattleData.ReviveType = 0;
-            _netBattleData.TimeWinCondition = 0;
             _netBattleData.WinScore = 100;
             _netBattleData.ArriveScore = 100;
             _netBattleData.CollectGemScore = 10;
             _netBattleData.KillMonsterScore = 10;
-            _netBattleData.KillPlayerScore = 20;
+            _netBattleData.MinPlayer = 2;
             _netBattleData.ScoreWinCondition = false;
             _netBattleData.InfiniteLife = true;
+            if (project.ProjectType == EProjectType.PT_Cooperation)
+            {
+                _netBattleData.KillPlayerScore = 0;
+                _netBattleData.TimeWinCondition = 1;
+            }
+            else
+            {
+                _netBattleData.KillPlayerScore = 20;
+                _netBattleData.TimeWinCondition = 0;
+            }
             IsMulti = true;
         }
 

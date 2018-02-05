@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
@@ -17,8 +16,6 @@ namespace GameA
         private Sprite _faceSprite;
         private string _colorName;
         private Color _textColor;
-        private DictionaryListObject _prediaList;
-        private float _time;
 
         public Sprite FaceSprite
         {
@@ -37,6 +34,7 @@ namespace GameA
         {
             base.OnDestroy();
         }
+
 
         public override void OnUpdate()
         {
@@ -61,22 +59,20 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-            _time = Time.realtimeSinceStartup;
+//            _time = Time.realtimeSinceStartup;
             GM2DGame.Instance.Continue();
         }
 
         protected override void OnOpen(object parameter)
         {
-            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
-                GM2DGame.Instance.Continue();
-                return;
-            }
-            else
-            {
-                _prediaList = (DictionaryListObject) parameter;
-            }
+//            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
+//            {
+//                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
+//                GM2DGame.Instance.Continue();
+//                return;
+//            }
+//            else
+//            {
             base.OnOpen(parameter);
             GM2DGame.Instance.Pause();
             _diaList = (DictionaryListObject) parameter;
@@ -263,7 +259,7 @@ namespace GameA
             return diaData;
         }
 
-        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, string waggle)
+        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, int waggle)
         {
             string diaData = String.Format("{0}_{1}_{2}_{3}_{4}_{5}", npcid, faceid, dia, npcName, color, waggle);
             return diaData;

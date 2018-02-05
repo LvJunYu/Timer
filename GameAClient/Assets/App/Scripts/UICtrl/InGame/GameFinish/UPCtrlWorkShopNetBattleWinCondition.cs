@@ -1,5 +1,6 @@
 ﻿using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -29,11 +30,15 @@ namespace GameA
             _usKillMonsterScoreSetting.Init(_cachedView.KillMonsterScoreSetting);
             _usKillPlayerScoreSetting.Init(_cachedView.KillPlayerScoreSetting);
             _usWinScoreSetting.Init(_cachedView.WinScoreSetting);
-            _usTimeLimitSetting.Set(60, 600, value => EditMode.Instance.MapStatistics.NetBattleTimeLimit = value, 30,"{0:f1}分钟", 60);
+            _usTimeLimitSetting.Set(60, 600, value => EditMode.Instance.MapStatistics.NetBattleTimeLimit = value, 30,
+                "{0:f1}分钟", 60);
             _usArriveScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleArriveScore = value);
-            _usCollectGemScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleCollectGemScore = value);
-            _usKillMonsterScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleKillMonsterScore = value);
-            _usKillPlayerScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleKillPlayerScore = value);
+            _usCollectGemScoreSetting.Set(0, 100,
+                value => EditMode.Instance.MapStatistics.NetBattleCollectGemScore = value);
+            _usKillMonsterScoreSetting.Set(0, 100,
+                value => EditMode.Instance.MapStatistics.NetBattleKillMonsterScore = value);
+            _usKillPlayerScoreSetting.Set(0, 100,
+                value => EditMode.Instance.MapStatistics.NetBattleKillPlayerScore = value);
             _usWinScoreSetting.Set(0, 500, value => EditMode.Instance.MapStatistics.NetBattleWinScore = value);
             _usScoreConditionSetting = new USCtrlGameSettingItem();
             _usScoreConditionSetting.Init(_cachedView.ScoreConditionSetting);
@@ -70,8 +75,14 @@ namespace GameA
         {
             for (int i = 0; i < _cachedView.WinConditionTogs.Length; i++)
             {
+                if (i == 0)
+                {
+                    _cachedView.WinConditionTogs[0]
+                        .SetActiveEx(_mainCtrl.CurProject.ProjectType != EProjectType.PT_Cooperation);
+                }
                 _cachedView.WinConditionTogs[i].isOn = EditMode.Instance.MapStatistics.NetBattleTimeWinCondition == i;
             }
+
             _usScoreConditionSetting.SetData(EditMode.Instance.MapStatistics.NetBattleScoreWinCondition, value =>
             {
                 EditMode.Instance.MapStatistics.NetBattleScoreWinCondition = value;
@@ -82,6 +93,7 @@ namespace GameA
             _usArriveScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleArriveScore);
             _usCollectGemScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleCollectGemScore);
             _usKillMonsterScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleKillMonsterScore);
+            _usKillPlayerScoreSetting.SetEnable(_mainCtrl.CurProject.ProjectType != EProjectType.PT_Cooperation);
             _usKillPlayerScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleKillPlayerScore);
             _usWinScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleWinScore);
         }

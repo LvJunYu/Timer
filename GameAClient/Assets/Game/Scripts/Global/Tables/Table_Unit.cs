@@ -235,6 +235,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("Summary")]
 		public string Summary;
+		/// <summary>
+        /// 效果描述
+        /// </summary>
+		[ColumnMapping("EffectSummary")]
+		public string EffectSummary;
 	}
 
     public class TableUnitAsset:BaseTableAsset

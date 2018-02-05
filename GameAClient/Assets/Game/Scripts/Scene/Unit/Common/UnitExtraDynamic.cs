@@ -491,7 +491,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.CureIncrease:
                     return 0;
                 case EAdvanceAttribute.NpcIntervalTiem:
-                    return 0;
+                    return 1;
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return 500;
                 case EAdvanceAttribute.MaxCreatedMonster:

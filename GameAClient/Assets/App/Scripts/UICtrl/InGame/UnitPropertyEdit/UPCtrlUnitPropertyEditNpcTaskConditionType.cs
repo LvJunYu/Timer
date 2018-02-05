@@ -52,8 +52,8 @@ namespace GameA
                     targetData.TaskType = (byte) ENpcTargetType.Moster;
                     targetData.TargetUnitID = (ushort) _killtionList[0];
                     _taskDynamic.TriggerTask = targetData;
-                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     Close();
                     break;
                 case (int) TrrigerTaskType.Colltion:
@@ -63,8 +63,8 @@ namespace GameA
                     targetCol.TaskType = (byte) ENpcTargetType.Colltion;
                     targetCol.TargetUnitID = (ushort) _colltionList[0];
                     _taskDynamic.TriggerTask = targetCol;
-                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_taskDynamic.TriggerTask);
                     Close();
                     break;
                 case (int) TrrigerTaskType.FinishOtherTask:
