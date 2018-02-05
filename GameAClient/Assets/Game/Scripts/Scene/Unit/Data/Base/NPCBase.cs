@@ -36,6 +36,20 @@ namespace GameA.Game
             set { _stateBar = value; }
         }
 
+        protected override bool OnInit()
+        {
+            return base.OnInit();
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (GetUnitExtra().MoveDirection == EMoveDirection.None)
+            {
+                ChangeState(EMonsterState.Idle);
+            }
+        }
+
         protected override bool IsCheckClimb()
         {
             return false;

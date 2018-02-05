@@ -23,7 +23,7 @@ namespace GameA
         private int _index;
         private Action _callback;
 
-        
+
         private void Clear()
         {
             _cachedView.UpBtn.onClick.RemoveAllListeners();
@@ -46,6 +46,9 @@ namespace GameA
             JoyResManager.Instance.TryGetSprite(name, out _sprite);
             _cachedView.IconImage.sprite = _sprite;
             _cachedView.DiaText.text = dia.Dia;
+            Color textColor;
+            ColorUtility.TryParseHtmlString(dia.Color, out textColor);
+            _cachedView.DiaText.color = textColor;
         }
 
         private void SetIndex(int index)

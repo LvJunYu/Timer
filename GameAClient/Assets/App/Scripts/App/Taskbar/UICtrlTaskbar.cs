@@ -466,7 +466,7 @@ namespace GameA
 
         private void OnChatBtn()
         {
-           // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+            // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
         }
 
         private void OnAnnoncementBtn()
@@ -600,7 +600,7 @@ namespace GameA
 //            else
             {
                 _cachedView.WeaponObject.SetActive(false);
-                _cachedView.HandBookObject.SetActive(false);
+                _cachedView.HandBookObject.SetActive(true);
                 SetLock(UIFunction.UI_Puzzle, false);
                 SetLock(UIFunction.UI_Train, false);
                 SetLock(UIFunction.UI_Achievement, false);
