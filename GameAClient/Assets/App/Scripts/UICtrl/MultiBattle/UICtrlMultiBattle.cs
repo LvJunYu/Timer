@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -9,6 +10,7 @@ namespace GameA
         private bool _hasRequested;
         private bool _pushGoldEnergyStyle;
         private List<Project> _dataList;
+        private Dictionary<long, UMCtrlOfficialProject> _umDic;
         private USCtrlChat _chat;
         private OfficialProjectList _data = new OfficialProjectList();
 
@@ -30,7 +32,8 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
             _cachedView.QuickStartBtn.onClick.AddListener(OnQuickStartBtn);
-            _cachedView.RefuseInviteTog.onValueChanged.AddListener(value => LocalUser.Instance.RefuseTeamInvite = value);
+            _cachedView.RefuseInviteTog.onValueChanged.AddListener(value =>
+                LocalUser.Instance.RefuseTeamInvite = value);
             _chat = new USCtrlChat();
             _chat.ResScenary = ResScenary;
             _chat.Scene = USCtrlChat.EScene.Team;
@@ -50,6 +53,7 @@ namespace GameA
             {
                 RequestData();
             }
+
             RefreshView();
         }
 
@@ -71,11 +75,13 @@ namespace GameA
                 _dataList = _data.ProjectSyncList;
                 if (_dataList != null)
                 {
+                    _umDic = new Dictionary<long, UMCtrlOfficialProject>(_dataList.Count);
                     for (int i = 0; i < _dataList.Count; i++)
                     {
                         var um = new UMCtrlOfficialProject();
                         um.Init(_cachedView.GridRtf, ResScenary);
                         um.Set(_dataList[i]);
+                        _umDic.Add(_dataList[i].ProjectId, um);
                     }
                     _hasRequested = true;
                 }
@@ -94,6 +100,40 @@ namespace GameA
         private void OnReturnBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
+        }
+
+        public void OnSelectProject(Msg_MC_SelectProject msg)
+        {
+            if (_dataList == null || _umDic == null)
+            {
+                return;
+            }
+            UMCtrlOfficialProject um;
+            var list = msg.ProjectIdList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (_umDic.TryGetValue(list[i], out um))
+                {
+                    um.SetSelected(true);
+                }
+            }
+        }
+
+        public void OnUnselectProject(Msg_MC_UnselectProject msg)
+        {
+            if (_dataList == null || _umDic == null)
+            {
+                return;
+            }
+            UMCtrlOfficialProject um;
+            var list = msg.ProjectIdList;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (_umDic.TryGetValue(list[i], out um))
+                {
+                    um.SetSelected(false);
+                }
+            }
         }
     }
 }

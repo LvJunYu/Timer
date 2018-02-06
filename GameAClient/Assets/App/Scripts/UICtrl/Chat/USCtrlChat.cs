@@ -14,10 +14,8 @@ namespace GameA
         private Stack<UMCtrlChat> _umPool = new Stack<UMCtrlChat>(70);
         private List<ChatData.Item> _contentList;
         private List<UMCtrlChat> _umList = new List<UMCtrlChat>(70);
-
         private EResScenary _resScenary;
         private EScene _scene;
-
         public EResScenary ResScenary
         {
             get { return _resScenary; }
@@ -70,13 +68,19 @@ namespace GameA
             }
 
             _cachedView.ChatTypeBtn.onClick.AddListener(OnSendChatTypeClick);
-            SetChatTypeByScene(_scene);
+            if (_scene == EScene.Room)
+            {
+                SetSendChatType(ChatData.EChatType.Room);
+            }
+            else
+            {
+                SetSendChatType(ChatData.EChatType.World);
+            }
         }
 
         public override void Open()
         {
             base.Open();
-            SetChatTypeByScene(_scene);
             SelectChatTypeTag(_currentChatTypeTag);
         }
 
@@ -87,7 +91,6 @@ namespace GameA
             {
                 return;
             }
-
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
         }
@@ -106,22 +109,6 @@ namespace GameA
             else
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "队伍";
-            }
-        }
-
-        private void SetChatTypeByScene(EScene scene)
-        {
-            if (scene == EScene.Home)
-            {
-                SetSendChatType(ChatData.EChatType.World);
-            }
-            else if (scene == EScene.Room)
-            {
-                SetSendChatType(ChatData.EChatType.Room);
-            }
-            else
-            {
-                SetSendChatType(ChatData.EChatType.Team);
             }
         }
 

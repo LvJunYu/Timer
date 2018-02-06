@@ -25,13 +25,11 @@ namespace GameA
             _wwwForm.headers["Content-Type"] = "application/json";
         }
 
-        private bool Init()
+        public void Init()
         {
-            if (SocialApp.Instance.Env != EEnvironment.Production) return false;
-            if (_hasInited) return true;
+            if (SocialApp.Instance.Env != EEnvironment.Production) return;
             _userId = LocalUser.Instance.UserGuid.ToString();
             _hasInited = true;
-            return true;
         }
 
         public void Install()
@@ -58,7 +56,7 @@ namespace GameA
 
         public void Register()
         {
-            if (!Init()) return;
+            if (!_hasInited) return;
             var url = server + "/receive/rest/register";
             JsonData data = new JsonData();
             data["appid"] = _appId;
@@ -71,7 +69,7 @@ namespace GameA
 
         public void Login()
         {
-            if (!Init()) return;
+            if (!_hasInited) return;
             var url = server + "/receive/rest/loggedin";
             JsonData data = new JsonData();
             data["appid"] = _appId;
@@ -84,7 +82,7 @@ namespace GameA
 
         public void Quit(int onlineTime)
         {
-            if (!Init()) return;
+            if (!_hasInited) return;
             var url = server + "/receive/rest/event";
             JsonData data = new JsonData();
             data["appid"] = _appId;
@@ -98,7 +96,7 @@ namespace GameA
 
         private void Heartbeat()
         {
-            if (!Init()) return;
+            if (!_hasInited) return;
             var url = server + "/receive/rest/heartbeat";
             JsonData data = new JsonData();
             data["appid"] = _appId;
