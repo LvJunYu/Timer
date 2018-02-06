@@ -364,7 +364,7 @@ namespace GameA.Game
         {
             Msg_MC_RoomUserInfo msgUser = msg.UserInfo;
             var user = new RoomUser();
-            user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
+            user.Init(msgUser.UserGuid, msgUser.NickName, true);
             _room.AddUser(user);
         }
 

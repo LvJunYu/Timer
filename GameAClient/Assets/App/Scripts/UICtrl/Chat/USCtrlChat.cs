@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameA
@@ -29,14 +30,13 @@ namespace GameA
             set { _scene = value; }
         }
 
-
         public override void Init(USViewChat view)
         {
             base.Init(view);
             AppData.Instance.ChatData.OnChatListAppend += OnChatListAppend;
             AppData.Instance.ChatData.OnChatListCutHead += OnChatListCutHead;
         }
-        
+
         public override void OnDestroy()
         {
             AppData.Instance.ChatData.OnChatListAppend -= OnChatListAppend;
@@ -50,7 +50,10 @@ namespace GameA
             _cachedView.SendContentBtn.onClick.AddListener(OnSendBtnClick);
             _cachedView.ChatInput.onEndEdit.AddListener(str =>
             {
-                OnSendBtnClick();
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    OnSendBtnClick();
+                }
             });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.ChatInput);
             for (int i = 0; i < _cachedView.ChatTypeTagArray.Length; i++)
@@ -65,15 +68,9 @@ namespace GameA
                     }
                 });
             }
+
             _cachedView.ChatTypeBtn.onClick.AddListener(OnSendChatTypeClick);
-            if (Scene == EScene.Home)
-            {
-                SetSendChatType(ChatData.EChatType.World);
-            }
-            else
-            {
-                SetSendChatType(ChatData.EChatType.Room);
-            }
+            SetSendChatType(Scene);
         }
 
         public override void Open()
@@ -89,6 +86,7 @@ namespace GameA
             {
                 return;
             }
+
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
         }
@@ -100,9 +98,29 @@ namespace GameA
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "世界";
             }
-            else
+            else if (chatType == ChatData.EChatType.Room)
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "房间";
+            }
+            else
+            {
+                _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "队伍";
+            }
+        }
+
+        private void SetSendChatType(EScene scene)
+        {
+            if (scene == EScene.Home)
+            {
+                SetSendChatType(ChatData.EChatType.World);
+            }
+            else if (scene == EScene.Room)
+            {
+                SetSendChatType(ChatData.EChatType.Room);
+            }
+            else
+            {
+                SetSendChatType(ChatData.EChatType.Team);
             }
         }
         
@@ -112,10 +130,12 @@ namespace GameA
             {
                 return;
             }
-            for (int i = _umList.Count-1; i >= 0; i--)
+
+            for (int i = _umList.Count - 1; i >= 0; i--)
             {
                 FreeUmItem(_umList[i]);
             }
+
             _umList.Clear();
             for (int i = 0; i < _contentList.Count; i++)
             {
@@ -125,9 +145,10 @@ namespace GameA
                 um.Set(item);
                 _umList.Add(um);
             }
+
             ScrolToEnd();
         }
-        
+
         private void OnSendBtnClick()
         {
             var inputContent = _cachedView.ChatInput.text;
@@ -135,6 +156,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_currentSendType == ChatData.EChatType.Room)
             {
                 if (!AppData.Instance.ChatData.SendRoomChat(inputContent))
@@ -149,6 +171,7 @@ namespace GameA
                     return;
                 }
             }
+
             _cachedView.ChatInput.text = String.Empty;
             _cachedView.ChatInput.ActivateInputField();
         }
@@ -159,14 +182,7 @@ namespace GameA
             {
                 return;
             }
-            if (_currentSendType == ChatData.EChatType.World)
-            {
-                SetSendChatType(ChatData.EChatType.Room);
-            }
-            else
-            {
-                SetSendChatType(ChatData.EChatType.World);
-            }
+            SetSendChatType(_currentSendType);
         }
 
         private void OnChatListAppend(ChatData.EChatType chatType, ChatData.Item item)
@@ -175,10 +191,12 @@ namespace GameA
             {
                 return;
             }
+
             if (chatType != _currentChatTypeTag)
             {
                 return;
             }
+
             var um = GetUmItem();
             um.SetParent(_cachedView.ChatContentDock);
             um.Set(item);
@@ -192,10 +210,12 @@ namespace GameA
             {
                 return;
             }
+
             if (chatType != _currentChatTypeTag)
             {
                 return;
             }
+
             RefreshView();
         }
 
@@ -211,6 +231,7 @@ namespace GameA
             {
                 return _umPool.Pop();
             }
+
             var um = new UMCtrlChat();
             um.MainCtrl = this;
             um.Init(_cachedView.PoolDock, _resScenary);
@@ -224,13 +245,14 @@ namespace GameA
                 _cachedView.ChatScrollRect.verticalNormalizedPosition = 0;
             }));
         }
-        
+
         public void OnChatItemClick(ChatData.Item item, string href)
         {
             if (_scene == EScene.Room)
             {
                 return;
             }
+
             if (href == "user")
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
@@ -249,11 +271,12 @@ namespace GameA
                 RoomManager.Instance.SendRequestJoinRoom(item.Param);
             }
         }
-        
+
         public enum EScene
         {
             Room,
             Home,
+            Team
         }
     }
 }

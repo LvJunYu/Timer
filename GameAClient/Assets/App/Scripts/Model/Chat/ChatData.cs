@@ -295,6 +295,7 @@ namespace GameA
             System,
             WorldInvite,
             Room,
+            Team
         }
     }
 }

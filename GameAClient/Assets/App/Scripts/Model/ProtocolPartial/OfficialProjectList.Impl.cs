@@ -8,32 +8,16 @@ namespace GameA
     public partial class OfficialProjectList
     {
         private List<Project> _projectSyncList;
-        private List<Project> _cooperationProjectList = new List<Project>();
-        private List<Project> _competeProjectList = new List<Project>();
 
-        public List<Project> CooperationProjectList
+        public List<Project> ProjectSyncList
         {
-            get { return _cooperationProjectList; }
+            get { return _projectSyncList; }
         }
 
-        public List<Project> CompeteProjectList
+        public void Request(EOfficailProjectType type, Action successCallback, Action failedCallback = null)
         {
-            get { return _competeProjectList; }
-        }
-
-        public void Request(EProjectType projectType, Action successCallback, Action failedCallback = null)
-        {
-            Request((int) projectType, () =>
+            Request((int) type, () =>
             {
-                switch (projectType)
-                {
-                    case EProjectType.PT_Cooperation:
-                        _cooperationProjectList = _projectSyncList;
-                        break;
-                    case EProjectType.PS_Compete:
-                        _competeProjectList = _projectSyncList;
-                        break;
-                }
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -54,5 +38,13 @@ namespace GameA
             _projectSyncList = ProjectManager.Instance.UpdateData(msg.ProjectList);
             base.OnSyncPartial(msg);
         }
+    }
+
+    public enum EOfficailProjectType
+    {
+        All,
+        Cooperation,
+        Compete,
+        Story
     }
 }

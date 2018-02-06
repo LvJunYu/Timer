@@ -85,6 +85,19 @@ namespace GameA.Game
         {
             base.Reset();
             _triggerDic.Clear();
+            if (_animation != null)
+            {
+                _animation.Reset();
+                _animation.PlayLoop("Run");
+                if (_viewExtras != null)
+                {
+                    for (int i = 0; i < _viewExtras.Length; i++)
+                    {
+                        _viewExtras[i].Animation.Reset();
+                        _viewExtras[i].Animation.PlayLoop("Run");
+                    }
+                }
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

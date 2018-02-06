@@ -221,7 +221,7 @@ namespace GameA
             SortRoomUsers();
             if (PlayMode.Instance.HasCreatedPlayer)
             {
-                user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
+                user.Player = PlayMode.Instance.AddPlayer(msg.Inx, false);
             }
         }
 

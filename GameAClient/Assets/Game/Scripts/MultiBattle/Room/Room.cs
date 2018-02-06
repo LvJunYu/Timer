@@ -214,7 +214,7 @@ namespace GameA.Game
             ret.Users.ForEach(msgUser =>
             {
                 var user = new RoomUser();
-                user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
+                user.Init(msgUser.UserGuid, msgUser.NickName, true);
                 _users.Add(user);
             });
 //            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);

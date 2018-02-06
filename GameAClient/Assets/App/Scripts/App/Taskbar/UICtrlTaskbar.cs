@@ -92,8 +92,7 @@ namespace GameA
             _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
             _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
-            _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
-            _cachedView.CooperationButton.onClick.AddListener(OnCooperationButton);
+            _cachedView.BattleButton.onClick.AddListener(OnMultiBattleBtn);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -355,14 +354,9 @@ namespace GameA
             }
         }
 
-        public void OnBattleBtn()
+        public void OnMultiBattleBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlCompete>();
-        }
-
-        private void OnCooperationButton()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlCooperation>();
+            SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
         }
 
         public void OnMailBtn()
