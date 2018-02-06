@@ -58,9 +58,9 @@ namespace GameA
             BadWordManger.Instance.InputFeidAddListen(_cachedView.ChatInput);
             for (int i = 0; i < _cachedView.ChatTypeTagArray.Length; i++)
             {
-                var tag = _cachedView.ChatTypeTagArray[i];
+                var tog = _cachedView.ChatTypeTagArray[i];
                 var chatType = (ChatData.EChatType) i;
-                tag.onValueChanged.AddListener(flag =>
+                tog.onValueChanged.AddListener(flag =>
                 {
                     if (flag)
                     {
@@ -70,12 +70,13 @@ namespace GameA
             }
 
             _cachedView.ChatTypeBtn.onClick.AddListener(OnSendChatTypeClick);
-            SetSendChatType(Scene);
+            SetChatTypeByScene(_scene);
         }
 
         public override void Open()
         {
             base.Open();
+            SetChatTypeByScene(_scene);
             SelectChatTypeTag(_currentChatTypeTag);
         }
 
@@ -108,7 +109,7 @@ namespace GameA
             }
         }
 
-        private void SetSendChatType(EScene scene)
+        private void SetChatTypeByScene(EScene scene)
         {
             if (scene == EScene.Home)
             {
@@ -123,7 +124,7 @@ namespace GameA
                 SetSendChatType(ChatData.EChatType.Team);
             }
         }
-        
+
         private void RefreshView()
         {
             if (_contentList == null)
@@ -164,6 +165,13 @@ namespace GameA
                     return;
                 }
             }
+            else if (_currentSendType == ChatData.EChatType.Team)
+            {
+                if (!AppData.Instance.ChatData.SendTeamChat(inputContent))
+                {
+                    return;
+                }
+            }
             else
             {
                 if (!AppData.Instance.ChatData.SendWorldChat(inputContent))
@@ -182,7 +190,21 @@ namespace GameA
             {
                 return;
             }
-            SetSendChatType(_currentSendType);
+            if (_currentSendType == ChatData.EChatType.World)
+            {
+                if (_scene == EScene.Room)
+                {
+                    SetSendChatType(ChatData.EChatType.Room);
+                }
+                else if (_scene == EScene.Team)
+                {
+                    SetSendChatType(ChatData.EChatType.Team);
+                }
+            }
+            else
+            {
+                SetSendChatType(ChatData.EChatType.World);
+            }
         }
 
         private void OnChatListAppend(ChatData.EChatType chatType, ChatData.Item item)

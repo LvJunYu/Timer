@@ -11,6 +11,7 @@ namespace GameA
         private const int ChatListHighWaterLine = 60;
         private const int ChatListLowWaterLine = 30;
         private const long RoomChatCDTimeTick = 1 * GameTimer.Second2Ticks;
+        private const long TeamChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long WorldChatCDTimeTick = 15 * GameTimer.Second2Ticks;
         private const string FrequentlyWarning = "您的发言太快，请{0}秒后再发送";
 
@@ -25,6 +26,7 @@ namespace GameA
         private List<Item> _roomChatList = new List<Item>();
 
         private GameTimer _roomCDTimer = new GameTimer();
+        private GameTimer _teamCDTimer = new GameTimer();
         private GameTimer _worldCDTimer = new GameTimer();
 
         public List<Item> AllChatList
@@ -68,6 +70,20 @@ namespace GameA
             Msg_CR_RoomChat msg = new Msg_CR_RoomChat();
             msg.Data = data;
             RoomManager.Instance.SendToRSServer(msg);
+            return true;
+        }
+        
+        public bool SendTeamChat(string data)
+        {
+            if (!_teamCDTimer.PassedTicks(TeamChatCDTimeTick))
+            {
+                return false;
+            }
+
+            Msg_CM_Chat msg = new Msg_CM_Chat();
+            msg.ChatType = ECMChatType.CMCT_TeamChat;
+            msg.Data = data;
+            RoomManager.Instance.SendToMSServer(msg);
             return true;
         }
 

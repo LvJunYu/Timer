@@ -17,6 +17,14 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainUI;
         }
 
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
+            SetPart(_cachedView.PannelRtf.transform, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -45,6 +53,17 @@ namespace GameA
             RefreshView();
         }
 
+        protected override void OnClose()
+        {
+            _chat.Close();
+            base.OnClose();
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
+        }
+
         private void RequestData()
         {
             _data.Request(EOfficailProjectType.All, () =>
@@ -66,25 +85,6 @@ namespace GameA
         private void RefreshView()
         {
             _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.RefuseTeamInvite;
-        }
-
-        protected override void OnClose()
-        {
-            _chat.Close();
-            base.OnClose();
-            if (_pushGoldEnergyStyle)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
-                _pushGoldEnergyStyle = false;
-            }
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, new Vector3(0, 100, 0), 0.17f);
-            SetPart(_cachedView.PannelRtf.transform, EAnimationType.MoveFromDown);
-            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }
 
         private void OnQuickStartBtn()
