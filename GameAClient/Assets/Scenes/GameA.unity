@@ -139,10 +139,10 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   _env: 1
-  _logLevel: 7
+  _logLevel: 4
   _publishChannel: 0
   _clearCache: 0
-  _masterServerAddress: 172.111.100.24
+  _masterServerAddress: 139.129.229.229
   _appServerAddress:
   - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
