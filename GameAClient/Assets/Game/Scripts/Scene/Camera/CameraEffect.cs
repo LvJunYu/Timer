@@ -16,7 +16,7 @@ namespace GameA.Game
         private bool _start;
         private const float HalfDuration = 0.6f;
 //        private const float MaxAngel = 200;
-        private const float MaxValue = 40;
+        private const float MaxValue = 200;
         private const float MaxBlur = 15;
         private float _curTime;
         private bool _advance;
