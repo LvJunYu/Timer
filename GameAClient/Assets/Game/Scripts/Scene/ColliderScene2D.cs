@@ -615,7 +615,7 @@ namespace GameA.Game
                     return;
                 }
 
-                if (!isSubscribe && !CheckCanDelete(tableUnit))
+                if (!CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
@@ -673,7 +673,7 @@ namespace GameA.Game
                     return;
                 }
 
-                if (!isSubscribe && !CheckCanDelete(tableUnit))
+                if (!CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
@@ -728,7 +728,7 @@ namespace GameA.Game
             }
             else
             {
-                LogHelper.Warning("GetValue Failed, {0}", unitDesc);
+                LogHelper.Warning("SetUnitInterest Failed, {0}", unitDesc);
             }
         }
 
