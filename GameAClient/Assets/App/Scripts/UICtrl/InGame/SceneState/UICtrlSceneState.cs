@@ -126,7 +126,6 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWinDataChanged, OnWinDataChanged);
             RegisterEvent(EMessengerType.OnLifeChanged, OnLifeChanged);
-            RegisterEvent(EMessengerType.OnMainPlayerCreated, OnLifeChanged);
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
@@ -177,6 +176,10 @@ namespace GameA
 //            UpdateShowHelper();
 
             UpdateTimeLimit();
+            for (int i = 0; i < _npcTask.Length; i++)
+            {
+                _npcTask[i].UpdataTimeLimit();
+            }
 
             if (_showStar)
             {
@@ -292,19 +295,19 @@ namespace GameA
                 _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(team));
                 _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == team);
             }
-            var netData = PlayMode.Instance.SceneState.Statistics.NetBattleData;
+            var netData = PlayMode.Instance.SceneState.MapStatistics.NetBattleData;
             _cachedView.TimeLimit.text = string.Format("游戏时间{0}", netData.GetTimeLimit());
             _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
             _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
             _cachedView.ArriveScore.SetActiveEx(PlayMode.Instance.SceneState.FinalCount > 0);
             _cachedView.CollectGemScore.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
             _cachedView.KillMonsterScore.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
-            _cachedView.KillPlayerScore.SetActiveEx(true);
+            _cachedView.KillPlayerScore.SetActiveEx(netData.KillPlayerScore != 0);
             _cachedView.WinScoreCondition.text = string.Format("达到{0}分即可获得胜利", netData.WinScore);
-            _cachedView.ArriveScore.text = string.Format("到达终点得分{0}", netData.ArriveScore);
-            _cachedView.CollectGemScore.text = string.Format("获得兽牙得分{0}", netData.CollectGemScore);
-            _cachedView.KillMonsterScore.text = string.Format("击杀怪物得分{0}", netData.KillMonsterScore);
-            _cachedView.KillPlayerScore.text = string.Format("击杀玩家得分{0}", netData.KillPlayerScore);
+            _cachedView.ArriveScore.text = string.Format("到达终点得{0}分", netData.ArriveScore);
+            _cachedView.CollectGemScore.text = string.Format("获得兽牙得{0}分", netData.CollectGemScore);
+            _cachedView.KillMonsterScore.text = string.Format("击杀怪物得{0}分", netData.KillMonsterScore);
+            _cachedView.KillPlayerScore.text = string.Format("击杀玩家得{0}分", netData.KillPlayerScore);
         }
 
         private void UpdateItemVisible()
@@ -665,7 +668,7 @@ namespace GameA
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
-            UpdateLifeItemValueText(EditMode.Instance.MapStatistics.LifeCount);
+            UpdateLifeItemValueText(PlayMode.Instance.SceneState.Life);
             UpdateCollectText(0);
             _lastFrame = 0;
             _lastValue = 0;
@@ -748,39 +751,32 @@ namespace GameA
             }
         }
 
-        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> _nowTaskDic,
-            Dictionary<int, NpcTaskDynamic>_finishTaskDic)
+        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> nowTaskDic,
+            Dictionary<int, NpcTaskDynamic>finishTaskDic)
         {
-            if (_nowTaskDic.Count > 0)
+            if (nowTaskDic.Count > 0)
             {
                 _cachedView.TaskPanel.SetActive(true);
             }
             else
             {
                 _cachedView.TaskPanel.SetActiveEx(false);
+                return;
             }
-            using (var enmotor = _nowTaskDic.GetEnumerator())
+            using (var enmotor = nowTaskDic.GetEnumerator())
             {
                 int index = 0;
                 while (enmotor.MoveNext())
                 {
                     bool finish = false;
-                    for (int i = 0; i < enmotor.Current.Value.Targets.Count; i++)
-                    {
-                        finish = _finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber
-                        );
-                        if (finish)
-                        {
-                            break;
-                        }
-                    }
 
+                    finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
                     UnitExtraDynamic extra;
                     if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
                     {
-                        _npcTask[index].SetNpcTask(extra, enmotor.Current.Value, finish);
+                        _npcTask[index].SetNpcTask(enmotor.Current.Key, extra, enmotor.Current.Value, finish);
                     }
-                    index++;
+                    ++index;
                 }
                 for (int i = index; i < _npcTask.Length; i++)
                 {

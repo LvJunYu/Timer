@@ -50,6 +50,11 @@ namespace GameA
             {
                 Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
+            _cachedView.Name.text = _table.Name;
+            _cachedView.NameObj.SetActiveEx(false);
+            _cachedView.RightClick.RightMouseCallback += OnRightClick;
+            _cachedView.MouseHover.SetCallback(3.0f, () => { _cachedView.NameObj.SetActive(true); },
+                () => { _cachedView.NameObj.SetActiveEx(false); });
         }
 
         public void Hide()
@@ -68,6 +73,9 @@ namespace GameA
             {
                 Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
+            _cachedView.RightClick.RightMouseCallback = null;
+            _cachedView.MouseHover.RemoveCallBack();
+            _cachedView.NameObj.SetActiveEx(false);
         }
 
         public void OnDestroyObject()
@@ -82,6 +90,7 @@ namespace GameA
             _cachedView.EventTrigger.AddListener(EventTriggerType.BeginDrag, OnBeginDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.Drag, OnDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.EndDrag, OnEndDrag);
+//            _cachedView.EventTrigger.AddListener(EventTriggerType.PointerEnter,);
         }
 
         private void OnBeginDrag(BaseEventData eventData)
@@ -304,6 +313,11 @@ namespace GameA
                 }
                 _cachedView.Number.gameObject.SetActive(true);
             }
+        }
+
+        private void OnRightClick()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(_table.Id);
         }
 
         private enum ECheckBehaviour

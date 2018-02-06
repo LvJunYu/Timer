@@ -96,10 +96,12 @@ namespace GameA.Game
                     Vector3 origPos = GM2DTools.TileToWorld(boardData.CurrentTouchUnitDesc.Guid);
                     if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
+                        data.CurrentConnectionUI.SetImage(NpcTaskDataTemp.Intance.TaskType);
                         data.CurrentConnectionUI.Set(0, origPos, targetPos);
                     }
                     else
                     {
+                        data.CurrentConnectionUI.SetImage(NpcTaskDataTemp.Intance.TaskType);
                         data.CurrentConnectionUI.Set(0, targetPos, origPos);
                     }
                 }
@@ -183,6 +185,11 @@ namespace GameA.Game
                     data.CurrentConnectionUI = null;
                 }
                 boardData.DragInCurrentState = false;
+                if (NpcTaskDataTemp.Intance.EndEdit)
+                {
+                    EditMode.Instance.StopSwitch();
+                    NpcTaskDataTemp.Intance.EndEdit = false;
+                }
             }
 
             public void DeleteSwitchConnection(int idx)

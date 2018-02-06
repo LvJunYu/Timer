@@ -13,8 +13,9 @@ namespace GameA
 
         private int _unitId;
         private float _startTime;
+
         #endregion
-        
+
         #region 属性
 
         #endregion
@@ -43,8 +44,10 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear).From());
-            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear));
+            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear)
+                .From());
+            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f)
+                .SetEase(Ease.Linear));
         }
 
         protected override void OnOpen(object parameter)
@@ -93,6 +96,7 @@ namespace GameA
             }
             DictionaryTools.SetContentText(_cachedView.Title, tableUnit.Name);
             DictionaryTools.SetContentText(_cachedView.Desc, tableUnit.Summary);
+            DictionaryTools.SetContentText(_cachedView.EffectDesc, tableUnit.EffectSummary);
         }
 
         private void OnCloseBtnClick()
@@ -107,6 +111,7 @@ namespace GameA
             }
             SocialGUIManager.Instance.CloseUI<UICtrlInGameUnitHandbook>();
         }
+
         #endregion
     }
 }

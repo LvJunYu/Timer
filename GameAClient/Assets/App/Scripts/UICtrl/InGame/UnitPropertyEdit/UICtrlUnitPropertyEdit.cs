@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -1103,7 +1105,7 @@ namespace GameA
             RefreshSpawmMenu();
         }
 
-        private void OnCloseBtnClick()
+        public void OnCloseBtnClick()
         {
             CheckCloseUpCtrlPanel();
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -1128,17 +1130,17 @@ namespace GameA
 
             if (_originData != EditData)
             {
-                if (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id))
+//                || UnitDefine.IsNpc(_tableUnit.Id)
+                if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
                 }
-
+                CheckNpcTaskNum();
                 EditHelper.CompleteEditUnitData(_originData, EditData);
             }
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
-//            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1218,15 +1220,12 @@ namespace GameA
                 EditNpcDiaType.Close();
                 EditNpcTaskDock.Open();
             }
-
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             EditNpcTaskDock.RefreshView();
             EditNpcDiaType.RefreshView();
             EditNpcTaskMonsterType.RefreshView();
             EditNpcTaskColltionType.RefreshView();
             EditNpcTaregtDialog.RefreshView();
-            EditNpcAddCondition.RefreshView();
-            EditBeforeTask.RefreshView();
             EditNpcDia.RefreshView();
             EditBeforeTaskAward.RefreshView();
             EditFinishTaskAward.RefreshView();
@@ -1362,6 +1361,27 @@ namespace GameA
             Normal,
             MonsterSettingFromMonsterCave,
             WeaponSettingFromSpawn
+        }
+
+        public void CheckNpcTaskNum()
+        {
+            int num = EditData.UnitExtra.NpcTask.Count;
+            for (int i = 0; i < num; i++)
+            {
+                NpcTaskDynamic task = EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i);
+                if (task.Targets.Count == 0)
+                {
+                    NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
+                    EditData.UnitExtra.NpcTask.RemoveAt(i);
+                }
+                else
+                {
+                    if (task.TargetNpcSerialNumber == 0)
+                    {
+                        task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;
+                    }
+                }
+            }
         }
     }
 }

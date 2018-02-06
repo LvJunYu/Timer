@@ -20,6 +20,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
+		public readonly Dictionary<int,Table_AIConfig> Table_AIConfigDic = new Dictionary<int, Table_AIConfig>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
@@ -58,6 +59,7 @@ namespace GameA.Game
 		[SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[SerializeField] private Table_Trap[] _tableTraps;
 		[SerializeField] private Table_Unit[] _tableUnits;
+		[SerializeField] private Table_AIConfig[] _tableAIConfigs;
 		[SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
@@ -119,6 +121,8 @@ namespace GameA.Game
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = JoyResManager.Instance.GetJson ("Unit", (int) EResScenary.TableAsset);
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
+			string AIConfigJsonStr = JoyResManager.Instance.GetJson ("AIConfig", (int) EResScenary.TableAsset);
+            _tableAIConfigs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AIConfig[]>(AIConfigJsonStr);
 			string CharacterUpgradeJsonStr = JoyResManager.Instance.GetJson ("CharacterUpgrade", (int) EResScenary.TableAsset);
             _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = JoyResManager.Instance.GetJson ("StarRequire", (int) EResScenary.TableAsset);
@@ -266,6 +270,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUnits table.Id {0} is duplicated!", _tableUnits[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableAIConfigs.Length; i++)
+			{
+				if (!Table_AIConfigDic.ContainsKey(_tableAIConfigs[i].Id))
+				{
+					Table_AIConfigDic.Add(_tableAIConfigs[i].Id,_tableAIConfigs[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableAIConfigs table.Id {0} is duplicated!", _tableAIConfigs[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableCharacterUpgrades.Length; i++)
@@ -669,6 +684,15 @@ namespace GameA.Game
 		{
 			Table_Unit tmp;
 			if (Table_UnitDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_AIConfig GetAIConfig(int key)
+		{
+			Table_AIConfig tmp;
+			if (Table_AIConfigDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

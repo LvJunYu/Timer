@@ -126,9 +126,9 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
             }
 
             if (HasStateType(EStateType.Stun))
@@ -396,6 +396,7 @@ namespace GameA.Game
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {
                 OnBoxHoldingChanged();
+                RpgTaskManger.Instance.AssitConShowDiaEvent();
             }
         }
 

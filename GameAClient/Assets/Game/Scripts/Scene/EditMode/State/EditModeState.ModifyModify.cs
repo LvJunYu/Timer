@@ -18,7 +18,7 @@ namespace GameA.Game
                 Drop();
                 base.Exit(owner);
             }
-            
+
             public override void Execute(EditMode owner)
             {
                 var boardData = GetBlackBoard();
@@ -66,6 +66,7 @@ namespace GameA.Game
                 boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                 boardData.DragInCurrentState = true;
                 data.MouseActualPos = mousePos;
+               
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -76,7 +77,8 @@ namespace GameA.Game
             public override void OnTap(Gesture gesture)
             {
                 UnitDesc touchedUnitDesc;
-                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), GetBlackBoard().EditorLayer, out touchedUnitDesc))
+                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position),
+                    GetBlackBoard().EditorLayer, out touchedUnitDesc))
                 {
                     return;
                 }
@@ -97,7 +99,7 @@ namespace GameA.Game
                     }
                 }
             }
-            
+
             private void Drag(Vector2 mousePos)
             {
                 var boardData = GetBlackBoard();
@@ -142,7 +144,7 @@ namespace GameA.Game
                     Mathf.Clamp(1f - delta.y * 0.005f, 0.8f, 1.2f),
                     1f);
             }
-            
+
             private void Drop()
             {
                 var boardData = GetBlackBoard();
@@ -151,9 +153,9 @@ namespace GameA.Game
                     return;
                 }
                 var stateData = boardData.GetStateData<Data>();
-                
+
                 ProcessDrop(boardData, stateData);
-                
+
                 boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
                 {
@@ -167,7 +169,7 @@ namespace GameA.Game
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 stateData.DragUnitExtra = null;
             }
-            
+
             private void ProcessDrop(EditMode.BlackBoard boardData, Data stateData)
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
@@ -181,7 +183,8 @@ namespace GameA.Game
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 float minDepth, maxDepth;
                 EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
+                var coverUnits =
+                    DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "只能移动或变换，不能覆盖");
@@ -198,7 +201,7 @@ namespace GameA.Game
                         new UnitEditData(target, stateData.DragUnitExtra));
                 }
             }
-            
+
             /// <summary>
             /// 检查是否可以改造修改
             /// </summary>
@@ -254,9 +257,8 @@ namespace GameA.Game
                 }
                 return true;
             }
-            
-            
-            
+
+
             protected void OnModifyModify(UnitEditData orig, UnitEditData modified)
             {
                 // 检查是否是对已修改地块再次进行修改
@@ -284,6 +286,7 @@ namespace GameA.Game
                 UpdateMaskEffects();
                 Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             }
+
             /// <summary>
             /// 撤销改造修改
             /// </summary>

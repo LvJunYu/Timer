@@ -48,6 +48,7 @@ namespace GameA
                 value => _target.ColOrKillNum = (ushort) value);
             _cachedView.ColltionDownBtn.onClick.AddListener(() => { _cachedView.ColltionMBar.value -= 0.1f; });
             _cachedView.ColltionUpBtn.onClick.AddListener(() => { _cachedView.ColltionMBar.value += 0.1f; });
+            _cachedView.NpcTaskColltionPanelExitBtn.onClick.AddListener(Close);
         }
 
         private void RefreshBtnGroup()

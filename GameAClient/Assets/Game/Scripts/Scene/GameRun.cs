@@ -110,6 +110,7 @@ namespace GameA.Game
             DeadMarkManager.Instance.Init();
             InputManager.Instance.Init();
             PlayMode.Instance.Init();
+                        NpcTaskDataTemp.Intance.Clear();
             MapManager.Instance.Init(eGameInitType, project);
             while (!MapManager.Instance.GenerateMapComplete)
             {
@@ -167,12 +168,10 @@ namespace GameA.Game
             {
                 return;
             }
-            InputManager.Instance.Update();
             GameParticleManager.Instance.Update();
             GameAudioManager.Instance.Update();
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
-            MapManager.Instance.Update();
 
             float debugSpeed = 1;
 
@@ -200,12 +199,14 @@ namespace GameA.Game
             CameraManager.Instance.UpdateLogic(deltaTime);
             var pos = CameraManager.Instance.MainCameraTrans.position;
             BgScene2D.Instance.UpdateLogic(pos);
+            ColliderScene2D.CurScene.UpdateLogic(GM2DTools.WorldToTile(pos));
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
             _logicFrameCnt++;
         }
+
 
         public void UpdateSkeletonAnimation()
         {

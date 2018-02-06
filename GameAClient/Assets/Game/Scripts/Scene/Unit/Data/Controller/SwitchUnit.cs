@@ -35,7 +35,7 @@ namespace GameA.Game
 
         internal override bool InstantiateView()
         {
-            if (_switchTrigger == null)
+            if (_switchTrigger == null && _guid != IntVec3.zero)
             {
                 CreateSwitchTrigger();
             }
@@ -78,7 +78,7 @@ namespace GameA.Game
             guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
             IntVec2 dataSize = tableUnit.GetDataSize(0, Vector2.one);
             var triggerDir = EDirectionType.Up;
-            _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
+            _colliderGrid = _tableUnit.GetColliderGrid(_curPos.x, _curPos.y, _unitDesc.Rotation, _unitDesc.Scale);
             switch ((EDirectionType) _unitDesc.Rotation)
             {
                 case EDirectionType.Up:

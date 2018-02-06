@@ -58,7 +58,7 @@ namespace GameA
             });
         }
 
-        protected override void OnSyncPartial(Msg_ProjectComment msg)
+        protected override void OnSyncPartial(Msg_SC_DAT_ProjectComment msg)
         {
             base.OnSyncPartial();
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
@@ -130,6 +130,18 @@ namespace GameA
             {
                 LogHelper.Error("DeleteProjectComment Fail code = {0}", code);
                 SocialGUIManager.ShowPopupDialog("删除失败");
+            });
+        }
+        
+        public void Request(Action successCallback, Action failedCallback = null)
+        {
+            Request(_id, successCallback, code =>
+            {
+                LogHelper.Error("ProjectComment Request fail, code = {0}", code);
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke();
+                }
             });
         }
     }

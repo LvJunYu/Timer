@@ -14,7 +14,7 @@ namespace GameA
         private Sequence _closeSequence;
         private bool _openAnim;
         private bool _completeAnim;
-        private NpcTaskDynamic _target = new NpcTaskDynamic();
+        private NpcTaskDynamic _target;
         private USCtrlSliderSetting _killNumSetting;
 
         protected override void OnViewCreated()
@@ -22,10 +22,11 @@ namespace GameA
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskBeforeConditionTypePanel;
             BadWordManger.Instance.InputFeidAddListen(_cachedView.BeforeConditionInputField);
-            _cachedView.BeforeConditionInputField.onValueChanged.AddListener((string str) =>
+            _cachedView.BeforeConditionInputField.onValueChanged.AddListener((str) =>
             {
                 _target.TriggerTaskNumber = Convert.ToUInt16(str);
             });
+            _cachedView.NpcTaskBeforeConditionTypePanelExitBtn.onClick.AddListener(Close);
         }
 
         public void OpenMenu(NpcTaskDynamic target)
@@ -39,11 +40,6 @@ namespace GameA
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
             OpenAnimation();
-        }
-
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
         }
 
         public override void Close()

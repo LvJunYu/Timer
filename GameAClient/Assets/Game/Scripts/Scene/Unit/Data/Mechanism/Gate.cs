@@ -104,6 +104,7 @@ namespace GameA.Game
                         {
                             _animation.PlayOnce("Open");
                         }
+                        RpgTaskManger.Instance.OnControlFinish(_guid);
                     }
                 }
             }

@@ -19,7 +19,8 @@ namespace GameA.Game
         protected bool _isClayOnWall;
         protected UnitBase _attactTarget;
         protected MonsterCave _monsterCave;
-
+        private int _lastGetTargetFrame;
+        
         public override bool IsMonster
         {
             get { return true; }
@@ -135,6 +136,7 @@ namespace GameA.Game
             _input = _input ?? new InputBase();
             _input.Clear();
             _fireTimer = 0;
+            _lastGetTargetFrame = -1000;
             if (_statusBar != null)
             {
                 _statusBar.Reset();
@@ -391,7 +393,16 @@ namespace GameA.Game
             }
             else
             {
-                _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+                int curFrame = GameRun.Instance.LogicFrameCnt;
+                if (curFrame - _lastGetTargetFrame > 10)
+                {
+                    _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+                    _lastGetTargetFrame = curFrame;
+                }
+                else
+                {
+                    _attactTarget = TeamManager.Instance.GetMonsterTarget(this, false);
+                }
             }
         }
 

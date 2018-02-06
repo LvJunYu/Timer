@@ -83,9 +83,9 @@ namespace GameA
 
         public void AddConnection(int inx, IntVec3 switchGuid, IntVec3 unitGuid)
         {
-            
             var um = GetUmConnection();
             um.SetButtonShow(true);
+            um.SetImage(NpcTaskDataTemp.Intance.GetTaskContype(switchGuid, unitGuid));
             um.Set(inx, GM2DTools.TileToWorld(switchGuid), GM2DTools.TileToWorld(unitGuid));
             _umConnectionDict.Add(inx, um);
         }
@@ -111,7 +111,7 @@ namespace GameA
         private void RefreshView(List<IntVec3> unitList)
         {
             if (null != unitList)
-            {     
+            {
                 for (int i = 0; i < unitList.Count; i++)
                 {
                     var umCount = GetUmCount();

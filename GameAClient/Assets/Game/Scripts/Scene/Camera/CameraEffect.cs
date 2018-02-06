@@ -7,28 +7,29 @@ namespace GameA.Game
     public class CameraEffect
     {
         private Camera _camera;
-        private Vortex _vortex;
-        private MotionBlur _motionBlur;
+//        private Vortex _vortex;
+//        private MotionBlur _motionBlur;
         private Blur _blur;
         private VignetteAndChromaticAberration _vignetteAndChromaticAberration;
         private Action _halfCallBack;
         private Action _endCallBack;
         private bool _start;
-        private const float HalfDuration = 1;
-        private const float MaxAngel = 500;
-        private const float MaxValue = 20;
+        private const float HalfDuration = 0.6f;
+//        private const float MaxAngel = 200;
+        private const float MaxValue = 200;
+        private const float MaxBlur = 15;
         private float _curTime;
         private bool _advance;
         
         public void Init(Camera camera)
         {
             _camera = camera;
-            _vortex = _camera.gameObject.AddComponent<Vortex>();
-            _vortex.radius = new Vector2(0.6f, 0.6f);
-            _vortex.shader = Shader.Find("Hidden/Twist Effect");
+//            _vortex = _camera.gameObject.AddComponent<Vortex>();
+//            _vortex.radius = new Vector2(0.6f, 0.6f);
+//            _vortex.shader = Shader.Find("Hidden/Twist Effect");
 
-            _motionBlur = _camera.gameObject.AddComponent<MotionBlur>();
-            _motionBlur.shader = Shader.Find("Hidden/MotionBlur");
+//            _motionBlur = _camera.gameObject.AddComponent<MotionBlur>();
+//            _motionBlur.shader = Shader.Find("Hidden/MotionBlur");
 
             _blur = _camera.gameObject.AddComponent<Blur>();
             _blur.blurShader = Shader.Find("Hidden/BlurEffectConeTap");
@@ -37,6 +38,7 @@ namespace GameA.Game
             _vignetteAndChromaticAberration.vignetteShader = Shader.Find("Hidden/Vignetting");
             _vignetteAndChromaticAberration.chromAberrationShader = Shader.Find("Hidden/ChromaticAberration");
             _vignetteAndChromaticAberration.separableBlurShader = Shader.Find("Hidden/SeparableBlur");
+            _vignetteAndChromaticAberration.blur = 100000;
             SetEnable(false);
         }
         
@@ -51,8 +53,8 @@ namespace GameA.Game
         private void SetEnable(bool value)
         {
             _start = value;
-            _vortex.enabled = value;
-            _motionBlur.enabled = value;
+//            _vortex.enabled = value;
+//            _motionBlur.enabled = value;
             _blur.enabled = value;
             _vignetteAndChromaticAberration.enabled = value;
         }
@@ -66,8 +68,9 @@ namespace GameA.Game
             _curTime += deltaTime;
             if (_advance)
             {
-                _vortex.angle = Mathf.Lerp(0, MaxAngel, _curTime / HalfDuration);
+//                _vortex.angle = Mathf.Lerp(0, MaxAngel, _curTime / HalfDuration);
                 _vignetteAndChromaticAberration.intensity = Mathf.Lerp(0, MaxValue, _curTime / HalfDuration);
+                _vignetteAndChromaticAberration.blurSpread = Mathf.Lerp(0, MaxBlur, _curTime / HalfDuration);
                 if (_curTime >= HalfDuration)
                 {
                     _advance = false;
@@ -79,8 +82,9 @@ namespace GameA.Game
             }
             else
             {
-                _vortex.angle = Mathf.Lerp(MaxAngel, 0, (_curTime - HalfDuration) / HalfDuration);
+//                _vortex.angle = Mathf.Lerp(MaxAngel, 0, (_curTime - HalfDuration) / HalfDuration);
                 _vignetteAndChromaticAberration.intensity = Mathf.Lerp(MaxValue, 0, (_curTime - HalfDuration) / HalfDuration);
+                _vignetteAndChromaticAberration.blurSpread = Mathf.Lerp(MaxBlur, 0, (_curTime - HalfDuration) / HalfDuration);
                 if (_curTime >= 2 * HalfDuration)
                 {
                     Stop();
@@ -94,7 +98,6 @@ namespace GameA.Game
 
         private void Reset()
         {
-            _vortex.angle = 0;
             _curTime = 0;
             _advance = true;
         }

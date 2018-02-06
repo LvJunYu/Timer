@@ -672,9 +672,9 @@ namespace GameA.Game
                     break;
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(), GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(), GetType().Name));
             }
         }
 
@@ -775,9 +775,13 @@ namespace GameA.Game
                 }
 
                 UpdateTransPos();
-                if (GameModeNetPlay.DebugEnable())
+                if (GameRun.Instance.LogicFrameCnt == 859)
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid = {0} _trans.position = {1} ", Guid,
+                    Debug.Log("1");
+                }
+                if (GameModeBase.DebugEnable())
+                {
+                    GameModeBase.WriteDebugData(string.Format("Type = {3}, Guid = X: {0} Y:{1},  _trans.position = {2} ", Guid.x, Guid.y,
                         _trans.position, GetType().Name));
                 }
             }

@@ -530,6 +530,7 @@ namespace GameA.Game
 
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
+
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
@@ -591,7 +592,6 @@ namespace GameA.Game
             {
                 collectUnit.StopTwenner();
             }
-
             var helperParentObj = new GameObject("DragHelperParent");
             var tran = helperParentObj.transform;
             pos.z = -50;
@@ -599,6 +599,7 @@ namespace GameA.Game
             unitBase.Trans.parent = tran;
             unitBase.Trans.localPosition = GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.localScale = Vector3.one;
+           
             return helperParentObj;
         }
 

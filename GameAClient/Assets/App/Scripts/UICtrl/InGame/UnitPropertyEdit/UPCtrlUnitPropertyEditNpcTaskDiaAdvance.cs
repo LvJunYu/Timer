@@ -29,12 +29,14 @@ namespace GameA
             {
                 _target.TargetNpcNum = Convert.ToUInt16(str);
             });
+            _cachedView.NpcTaskDiaPanelExitBtn.onClick.AddListener(Close);
         }
 
         public void OpenMenu(NpcTaskTargetDynamic target)
         {
             _target = target;
             Open();
+            _cachedView.DiaTargetNpcNum.text = _target.TargetNpcNum.ToString();
         }
 
         public override void Open()

@@ -62,9 +62,6 @@ namespace GameA
         public Button StoryGameButton;
         public GameObject StoryGameObj;
 
-        public Button CooperationButton;
-        public GameObject CooperationObj;
-
 //		public GameObject SingleModeDisable;
         /// <summary>
         /// 单人模式父物体，做动画用

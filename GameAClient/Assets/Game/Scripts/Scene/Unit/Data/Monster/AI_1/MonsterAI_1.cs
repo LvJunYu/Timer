@@ -82,9 +82,9 @@ namespace GameA.Game
         protected virtual void ChangeState(EAIState state)
         {
             _eState = state;
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_1 ChangeState {0}", _eState.ToString(), 
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, MonsterAi_1 ChangeState {0}", _eState.ToString(), 
                     GetType().Name));
             }
         }
@@ -98,23 +98,25 @@ namespace GameA.Game
             }
 
             ChangeState(EAIState.Idle);
-            IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
-            if (AttackTarget.CanMove)
+            if (CanHarm(AttackTarget))
             {
-                if (ConditionAttack(rel))
+                IntVec2 rel = CenterDownPos - AttackTarget.CenterDownPos;
+                if (AttackTarget.CanMove)
                 {
-                    ChangeState(EAIState.Attack);
-                }
-                else if (ConditionSeek(rel))
-                {
-                    ChangeState(EAIState.Seek);
-                }
-                else if (ConditionThink(rel))
-                {
-                    ChangeState(EAIState.Think);
+                    if (ConditionAttack(rel))
+                    {
+                        ChangeState(EAIState.Attack);
+                    }
+                    else if (ConditionSeek(rel))
+                    {
+                        ChangeState(EAIState.Seek);
+                    }
+                    else if (ConditionThink(rel))
+                    {
+                        ChangeState(EAIState.Think);
+                    }
                 }
             }
-
             if (_eState != EAIState.Seek)
             {
                 SetInput(EInputType.Right, false);
@@ -366,9 +368,9 @@ namespace GameA.Game
                 SetInput(EInputType.Right, false);
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, FindPath {0}", _path.Count, GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, FindPath {0}", _path.Count, GetType().Name));
             }
         }
 

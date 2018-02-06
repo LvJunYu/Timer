@@ -101,7 +101,7 @@ namespace GameA.Game
         {
             if (_paintObject != null)
             {
-                _paintObject.transform.parent = null;
+                _paintObject.transform.parent = PaintMask.Instance.transform;
                 _paintObject.transform.position = new Vector2(100000, 0);
             }
             base.OnObjectDestroy();

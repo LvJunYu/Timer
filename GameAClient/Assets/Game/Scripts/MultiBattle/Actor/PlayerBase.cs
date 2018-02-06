@@ -15,7 +15,6 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         protected Gun _gun;
-
         protected RoomUser _roomUser;
         protected UnitExtraDynamic _unitExtra;
         protected bool _siTouLe;
@@ -56,6 +55,11 @@ namespace GameA.Game
         public Box Box
         {
             get { return _box; }
+        }
+
+        public UnitBase[] HitUnit
+        {
+            get { return _hitUnits; }
         }
 
         public override bool CanAttack
@@ -203,9 +207,9 @@ namespace GameA.Game
                 return false;
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
+                GameModeBase.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
                     _roomUser == null ? -1 : _roomUser.Guid, weaponId));
             }
 
@@ -281,9 +285,9 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPlay",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnPlay",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -407,9 +411,9 @@ namespace GameA.Game
                 SetFacingDir((EMoveDirection) (_box.DirectionRelativeMain + 1));
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnBoxHoldingChanged {1}",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnBoxHoldingChanged {1}",
                     _roomUser == null ? -1 : _roomUser.Guid, _box.IsHoldingByPlayer));
             }
 
@@ -418,7 +422,7 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin && !((Box)unit).IsHoldingByPlayer;
         }
 
         public override bool IsHoldingBox()
@@ -458,9 +462,9 @@ namespace GameA.Game
             {
                 return;
             }
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnDead",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnDead",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
             LogHelper.Debug("{0}, OnDead", GetType().Name);
@@ -491,9 +495,9 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
                     _roomUser == null ? -1 : _roomUser.Guid, _revivePos, _reviveScene));
             }
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
@@ -543,7 +547,7 @@ namespace GameA.Game
                     {
                         _statusBar.SetHPActive(true);
                     }
-                    if (PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime > 0)
+                    if (PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime > 0)
                     {
                         AddStates(null, 61);
                     }
@@ -557,9 +561,9 @@ namespace GameA.Game
                 return;
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPortal",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnPortal",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -613,9 +617,9 @@ namespace GameA.Game
 
         public virtual void OnSucceed()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnSucceed",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnSucceed",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -718,7 +722,7 @@ namespace GameA.Game
                 {
                     if (_dieTime % ConstDefineGM2D.FixedFrameCount == 0)
                     {
-                        var reviveTime = PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime;
+                        var reviveTime = PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveTime;
                         int dieSecond = _dieTime / ConstDefineGM2D.FixedFrameCount;
                         if (dieSecond == Mathf.Max(1, reviveTime))
                         {
@@ -911,9 +915,9 @@ namespace GameA.Game
 
         protected override void OnJump()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnJump ",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnJump ",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -931,9 +935,9 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnLand ",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnLand ",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -1280,6 +1284,7 @@ namespace GameA.Game
             {
                 SetClimbState(EClimbState.None);
             }
+            _jumpState = EJumpState.Land;
         }
         
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)

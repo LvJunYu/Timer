@@ -311,7 +311,7 @@ namespace GameA.Game
                     return;
                 }
 
-                if (PlayMode.Instance.SceneState.Statistics.InfiniteLife)
+                if (PlayMode.Instance.SceneState.MapStatistics.InfiniteLife)
                 {
                     _life = 99;
                 }

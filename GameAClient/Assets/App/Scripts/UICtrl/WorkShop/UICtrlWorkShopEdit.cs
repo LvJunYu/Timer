@@ -111,7 +111,7 @@ namespace GameA
         private void RefreshDownLoadDock()
         {
             DictionaryTools.SetContentText(_cachedView.DownLoadTitle, _project.Name);
-            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ParentId.ToString());
+            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
             UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,

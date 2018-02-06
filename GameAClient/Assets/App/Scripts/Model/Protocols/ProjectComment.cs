@@ -1,4 +1,4 @@
-//  | 评论
+// 获取关卡评论数据 | 获取关卡评论数据
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,8 +6,9 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectComment : SyncronisticData<Msg_ProjectComment> {
+    public partial class ProjectComment : SyncronisticData<Msg_SC_DAT_ProjectComment> {
         #region 字段
+        // sc fields----------------------------------
         /// <summary>
         /// 
         /// </summary>
@@ -52,9 +53,16 @@ namespace GameA
         /// 
         /// </summary>
         private ProjectCommentReply _firstReply;
+
+        // cs fields----------------------------------
+        /// <summary>
+        /// 评论Id
+        /// </summary>
+        private long _cs_id;
         #endregion
 
         #region 属性
+        // sc properties----------------------------------
         /// <summary>
         /// 
         /// </summary>
@@ -165,26 +173,78 @@ namespace GameA
                 SetDirty();
             }}
         }
+        
+        // cs properties----------------------------------
+        /// <summary>
+        /// 评论Id
+        /// </summary>
+        public long CS_Id { 
+            get { return _cs_id; }
+            set { _cs_id = value; }
+        }
+
+        public override bool IsDirty {
+            get {
+                if (null != _userInfo && _userInfo.IsDirty) {
+                    return true;
+                }
+                if (null != _firstReply && _firstReply.IsDirty) {
+                    return true;
+                }
+                return base.IsDirty;
+            }
+        }
         #endregion
 
         #region 方法
-        public bool OnSync (Msg_ProjectComment msg)
+        /// <summary>
+		/// 获取关卡评论数据
+		/// </summary>
+		/// <param name="id">评论Id.</param>
+        public void Request (
+            long id,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            if (_isRequesting) {
+                if (_cs_id != id) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_id = id;
+                OnRequest (successCallback, failedCallback);
+
+                Msg_CS_DAT_ProjectComment msg = new Msg_CS_DAT_ProjectComment();
+                msg.Id = id;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_ProjectComment>(
+                    SoyHttpApiPath.ProjectComment, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
+        }
+
+        public bool OnSync (Msg_SC_DAT_ProjectComment msg)
         {
             if (null == msg) return false;
-            _id = msg.Id;     
+            _id = msg.Id;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
-            _comment = msg.Comment;     
-            _projectId = msg.ProjectId;     
-            _projectMainId = msg.ProjectMainId;     
-            _projectVersion = msg.ProjectVersion;     
-            _createTime = msg.CreateTime;     
-            _likeCount = msg.LikeCount;     
-            _userLike = msg.UserLike;     
-            _replyCount = msg.ReplyCount;     
+            _comment = msg.Comment;           
+            _projectId = msg.ProjectId;           
+            _projectMainId = msg.ProjectMainId;           
+            _projectVersion = msg.ProjectVersion;           
+            _createTime = msg.CreateTime;           
+            _likeCount = msg.LikeCount;           
+            _userLike = msg.UserLike;           
+            _replyCount = msg.ReplyCount;           
             if (null == _firstReply) {
                 _firstReply = new ProjectCommentReply(msg.FirstReply);
             } else {
@@ -193,8 +253,8 @@ namespace GameA
             OnSyncPartial(msg);
             return true;
         }
-
-        public bool CopyMsgData (Msg_ProjectComment msg)
+        
+        public bool CopyMsgData (Msg_SC_DAT_ProjectComment msg)
         {
             if (null == msg) return false;
             _id = msg.Id;           
@@ -248,13 +308,13 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_ProjectComment msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_ProjectComment msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public ProjectComment (Msg_ProjectComment msg) {
+        public ProjectComment (Msg_SC_DAT_ProjectComment msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
@@ -263,6 +323,7 @@ namespace GameA
         public ProjectComment () { 
             _userInfo = new UserInfoSimple();
             _firstReply = new ProjectCommentReply();
+            OnCreate();
         }
         #endregion
     }

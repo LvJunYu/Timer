@@ -298,6 +298,7 @@ namespace GameA.Game
             {
                 _allMonsterCaves.Add(unit);
             }
+
             return true;
         }
 
@@ -368,10 +369,12 @@ namespace GameA.Game
             {
                 _allOtherUnits.Remove(unit);
             }
+
             if (UnitDefine.MonsterCaveId == unit.Id)
             {
                 _allMonsterCaves.Remove(unit);
             }
+
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -612,7 +615,7 @@ namespace GameA.Game
                     return;
                 }
 
-                if (!isSubscribe && !CheckCanDelete(tableUnit))
+                if (!CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
@@ -670,7 +673,7 @@ namespace GameA.Game
                     return;
                 }
 
-                if (!isSubscribe && !CheckCanDelete(tableUnit))
+                if (!CheckCanDelete(tableUnit))
                 {
                     continue;
                 }
@@ -697,8 +700,16 @@ namespace GameA.Game
                         continue;
                     }
 
-                    DestroyView(unitObject);
-                    SetUnitInterest(unitObject, false);
+                    if (UnitDefine.IsBullet(unitObject.Id))
+                    {
+                        DestroyView(unitObject);
+                        DeleteUnit(unitObject, tableUnit, true);
+                    }
+                    else
+                    {
+                        DestroyView(unitObject);
+                        SetUnitInterest(unitObject, false);
+                    }
                 }
             }
         }
@@ -717,7 +728,7 @@ namespace GameA.Game
             }
             else
             {
-                LogHelper.Warning("GetValue Failed, {0}", unitDesc);
+                LogHelper.Warning("SetUnitInterest Failed, {0}", unitDesc);
             }
         }
 
@@ -765,7 +776,8 @@ namespace GameA.Game
             {
                 var hit = hits[i];
                 var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
-                               hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 :
+                               hit.normal.x < 0 ? -1 : 0,
+                               hit.normal.y > 0 ? 1 :
                                hit.normal.y < 0 ? -1 : 0);
                 GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             }
@@ -831,7 +843,8 @@ namespace GameA.Game
         {
             _cachedUnits.Clear();
             var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
-                           hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 :
+                           hit.normal.x < 0 ? -1 : 0,
+                           hit.normal.y > 0 ? 1 :
                            hit.normal.y < 0 ? -1 : 0);
             GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
             return _cachedUnits;
@@ -1087,7 +1100,7 @@ namespace GameA.Game
                 }
 
                 DataScene2D.CurScene.AfterAddData(unitDesc, tableUnit);
-                PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, true, true);
+                PlayMode.Instance.SceneState.MapStatistics.AddOrDeleteUnit(tableUnit, true, true);
             }
 
             _unitsOutofMap.Clear();
@@ -1109,7 +1122,7 @@ namespace GameA.Game
 
             _unitsOutofMap.Add(unitDesc);
             DataScene2D.CurScene.AfterDeleteData(unitDesc, tableUnit);
-            PlayMode.Instance.SceneState.Statistics.AddOrDeleteUnit(tableUnit, false, true);
+            PlayMode.Instance.SceneState.MapStatistics.AddOrDeleteUnit(tableUnit, false, true);
             return true;
         }
     }
