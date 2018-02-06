@@ -203,6 +203,7 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
                 SocialGUIManager.Instance.ShowAppView();
+                ReYunManager.Instance.Init();
                 if (LocalUser.Instance.User.LoginCount == 1)
                 {
                     ReYunManager.Instance.Register();

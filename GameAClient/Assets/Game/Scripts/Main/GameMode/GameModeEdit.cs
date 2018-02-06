@@ -249,7 +249,6 @@ namespace GameA.Game
             {
                 return;
             }
-
             GameRun.Instance.Update();
             if (_mode == EMode.Edit)
             {
@@ -270,11 +269,9 @@ namespace GameA.Game
                             _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
                             _inputDatas.Add(inputChangeList[i]);
                         }
-
                         localPlayerInput.ApplyInputData(inputChangeList);
                     }
                 }
-
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
             }
         }

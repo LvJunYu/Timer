@@ -379,20 +379,29 @@ namespace GameA.Game
                     EffectRange = (ushort) skill.EffectValues[0];
                 }
 
-                if (skill.KnockbackForces != null)
+                if (skill.KnockbackForces != null &&
+                    !(skill.KnockbackForces.Length == 1 && skill.KnockbackForces[0] == 0))
                 {
                     for (int i = 0; i < skill.KnockbackForces.Length; i++)
                     {
                         Set((ushort) skill.KnockbackForces[i], FieldTag.KnockbackForces, i);
                     }
                 }
+                else
+                {
+                    KnockbackForces = null;
+                }
 
-                if (skill.AddStates != null)
+                if (skill.AddStates != null && !(skill.AddStates.Length == 1 && skill.AddStates[0] == 0))
                 {
                     for (int i = 0; i < skill.AddStates.Length; i++)
                     {
                         Set((ushort) skill.AddStates[i], FieldTag.AddStates, i);
                     }
+                }
+                else
+                {
+                    AddStates = null;
                 }
             }
         }

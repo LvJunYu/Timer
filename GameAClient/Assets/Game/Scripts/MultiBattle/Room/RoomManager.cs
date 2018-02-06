@@ -307,6 +307,20 @@ namespace GameA.Game
             SendToRSServer(data);
         }
 
+        public void SendSelectProject(List<long> list)
+        {
+            var data = new Msg_CM_SelectProject();
+            data.ProjectIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
+        public void SendUnSelectProject(List<long> list)
+        {
+            var data = new Msg_CM_UnselectProject();
+            data.ProjectIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
         #endregion
 
         #region Room Receive
@@ -364,7 +378,7 @@ namespace GameA.Game
         {
             Msg_MC_RoomUserInfo msgUser = msg.UserInfo;
             var user = new RoomUser();
-            user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
+            user.Init(msgUser.UserGuid, msgUser.NickName, true);
             _room.AddUser(user);
         }
 

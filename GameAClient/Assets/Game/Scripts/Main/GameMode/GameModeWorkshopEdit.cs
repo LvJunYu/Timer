@@ -8,11 +8,6 @@ namespace GameA.Game
 {
     public class GameModeWorkshopEdit : GameModeEdit
     {
-        public override bool SaveShadowData
-        {
-            get { return true; }
-        }
-
         #region GuideTest
 
         private AdventureGuideBase _guideBase;

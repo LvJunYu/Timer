@@ -41,7 +41,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            if (!UnitDefine.CanTrigger(other) || _units.Contains(other))
+            if (other == _switchUnit || !UnitDefine.CanTrigger(other) || _units.Contains(other))
             {
                 return;
             }

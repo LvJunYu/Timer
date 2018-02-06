@@ -70,8 +70,8 @@ namespace GameA.Game
         {
             _guid = roomUserInfo.UserGuid;
             _name = roomUserInfo.NickName;
-            _ready = roomUserInfo.Ready == 1;
-            _inx = roomUserInfo.inx;
+            _ready = true;
+            _inx = 0;
         }
 
         public RoomUser(Msg_RC_RoomUserInfo roomUserInfo)
@@ -79,7 +79,7 @@ namespace GameA.Game
             _guid = roomUserInfo.UserGuid;
             _name = roomUserInfo.NickName;
             _ready = roomUserInfo.ReadyFlag;
-            _inx = roomUserInfo.inx;
+            _inx = roomUserInfo.Inx;
         }
         
         public void Init(long guid, string name, bool ready, int index = 0)

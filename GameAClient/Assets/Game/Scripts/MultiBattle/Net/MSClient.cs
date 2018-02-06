@@ -107,6 +107,18 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomListRet);
             RegisterHandler<Msg_MC_QueryRoom>(Msg_MC_QueryRoomRet);
             RegisterHandler<Msg_MC_Chat>(Msg_MC_Chat);
+            RegisterHandler<Msg_MC_SelectProject>(Msg_MC_SelectProject);
+            RegisterHandler<Msg_MC_UnselectProject>(Msg_MC_UnselectProject);
+        }
+
+        private void Msg_MC_UnselectProject(Msg_MC_UnselectProject msg, object netlink)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnUnselectProject(msg);
+        }
+
+        private void Msg_MC_SelectProject(Msg_MC_SelectProject msg, object netlink)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnSelectProject(msg);
         }
 
         private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)

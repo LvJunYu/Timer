@@ -6,7 +6,6 @@ namespace GameA.Game
     public class SpacetimeDoor : Magic
     {
         private UnitBase _outUnit;
-        private int _outTimer;
 
         protected override bool OnInit()
         {
@@ -41,16 +40,9 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_outTimer > 0)
+            if (_outUnit != null && !_colliderGrid.Intersects(_outUnit.ColliderGrid))
             {
-                _outTimer--;
-            }
-            else
-            {
-                if (_outUnit != null && !_colliderGrid.Intersects(_outUnit.ColliderGrid))
-                {
-                    _outUnit = null;
-                }
+                _outUnit = null;
             }
             base.UpdateLogic();
         }
@@ -66,11 +58,12 @@ namespace GameA.Game
                 LogHelper.Error("The Spacetime Door is in the same scene");
                 return;
             }
-                    
+
             if (!sender.EnterSpacetimeDoor())
             {
                 return;
             }
+
             UnitBase unit;
             SpacetimeDoor spacetimeDoor = null;
             CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
@@ -81,13 +74,15 @@ namespace GameA.Game
                     LogHelper.Error("can not get unit");
                     return;
                 }
+
                 spacetimeDoor = unit as SpacetimeDoor;
                 if (spacetimeDoor == null)
                 {
                     LogHelper.Error("the out spacetimeDoor is null");
                     return;
                 }
-                sender.SetPos(spacetimeDoor.CurPos); 
+
+                sender.SetPos(spacetimeDoor.CurPos);
             }, () =>
             {
                 sender.OutSpacetimeDoor();
@@ -95,6 +90,7 @@ namespace GameA.Game
                 {
                     spacetimeDoor.OnUnitOut(sender);
                 }
+
                 pairUnit.Sender = null;
             });
         }
@@ -102,7 +98,6 @@ namespace GameA.Game
         private void OnUnitOut(UnitBase unit)
         {
             _outUnit = unit;
-            _outTimer = 10;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -164,9 +159,8 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            base.Clear();
             _outUnit = null;
-            _outTimer = 0;
+            base.Clear();
         }
     }
 }

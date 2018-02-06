@@ -31,6 +31,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             SetSortingOrderBack();
             return true;
         }
@@ -53,7 +54,7 @@ namespace GameA.Game
 
         protected virtual void OnTrigger(UnitBase other)
         {
-            if (!UnitDefine.CanTrigger(other) || _units.Contains(other))
+            if (other == _switchUnit || !UnitDefine.CanTrigger(other) || _units.Contains(other))
             {
                 return;
             }
@@ -102,6 +103,7 @@ namespace GameA.Game
             {
                 _switchUnit.OnTriggerChanged(_trigger);
             }
+
             ChangView();
 //            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
         }

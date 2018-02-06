@@ -23,11 +23,6 @@ namespace GameA.Game
             get { return _eShadowBattleType; }
         }
 
-        public override bool SaveShadowData
-        {
-            get { return true; }
-        }
-
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {

@@ -1284,6 +1284,7 @@ namespace GameA.Game
             {
                 SetClimbState(EClimbState.None);
             }
+            _jumpState = EJumpState.Land;
         }
         
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
