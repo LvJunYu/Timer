@@ -1,23 +1,51 @@
 ﻿using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
     public class USCtrlMultiTeam : USCtrlBase<USViewMultiTeam>
     {
-        private UserInfoDetail _userInfo;
+        private Msg_MC_RoomUserInfo _user;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
         }
-        
-        private void OnDeleteBtn()
+
+        public void Set(Msg_MC_RoomUserInfo user)
         {
+            _user = user;
+            _cachedView.SetActiveEx(_user != null);
+            if (_user == null)
+            {
+                Unload();
+            }
+            else
+            {
+                RefreshView();
+            }
         }
 
-        public void SetSelected(bool value)
+        private void RefreshView()
         {
-            _cachedView.BgSelectedImg.SetActiveEx(value);
+            _cachedView.NameTxt.text = _user.NickName;
+            UserManager.Instance.GetDataOnAsync(_user.UserGuid, user =>
+            {
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg, user.UserInfoSimple.HeadImgUrl,
+                    _cachedView.DefaultCoverTexture);
+            });
+            bool isMyself = _user.UserGuid == LocalUser.Instance.UserGuid;
+            _cachedView.BgSelectedObj.SetActive(isMyself);
+        }
+
+        private void Unload()
+        {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.DefaultCoverTexture);
+        }
+  
+        private void OnDeleteBtn()
+        {
         }
     }
 }
