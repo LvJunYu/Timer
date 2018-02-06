@@ -67,7 +67,7 @@ namespace GameA.Game
         {
             get { return Get<ushort>(FieldTag.TriggerTaskNumber); }
 
-            set { Set(value, FieldTag.NpcTaskSerialNumber); }
+            set { Set(value, FieldTag.TriggerTaskNumber); }
         }
 
 

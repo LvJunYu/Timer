@@ -314,9 +314,6 @@ namespace GameA
                     {
                         if (extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber != 0)
                         {
-                        }
-                        else
-                        {
                             RecycleNpcTaskSerialNum(extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber);
                         }
                     }

@@ -10,7 +10,7 @@ using UnityEngine;
 namespace GameA
 {
     public class
-        //npc怪兽的设置
+        //npc收集的设置
         UPCtrlUnitPropertyEditNpcTaskColltionAdvance : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private GameObject _panel;

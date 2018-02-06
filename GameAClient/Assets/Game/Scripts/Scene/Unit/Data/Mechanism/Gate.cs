@@ -19,7 +19,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            
+
             if (_opened)
             {
                 if (_animation != null)
@@ -107,6 +107,16 @@ namespace GameA.Game
                         RpgTaskManger.Instance.OnControlFinish(_guid);
                     }
                 }
+            }
+        }
+
+        public void DirectOpen()
+        {
+            SetEnabled(false);
+            _timer = 50;
+            if (_animation != null)
+            {
+                _animation.PlayOnce("Open");
             }
         }
 

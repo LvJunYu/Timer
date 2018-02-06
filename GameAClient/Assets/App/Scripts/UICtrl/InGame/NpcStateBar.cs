@@ -16,6 +16,7 @@ namespace GameA.Game
         private Transform _trans;
         public SpriteRenderer TaskSignSprite;
         public TextMesh ConTip;
+        public TextMesh NameTextMesh;
 
 
         void Awake()

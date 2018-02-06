@@ -67,16 +67,16 @@ namespace GameA
                     _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     _taskDynamic.BeforeTaskAward.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     Close();
                     break;
-
                 case (int) ENpcTargetType.Contorl:
                     //选择控制
                     if (_mainCtrl.IsInMap)
                     {
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
-                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra);
+                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.BeforeTask, _mainCtrl.EditData.UnitExtra);
                         _mainCtrl.OnCloseBtnClick();
                     }
                     else

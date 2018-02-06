@@ -45,6 +45,7 @@ namespace GameA
             base.OnViewCreated();
 
             _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ExitMaskBtn.onClick.AddListener(Close);
             for (int i = 0; i < _cachedView.IconButtonAry.Length; i++)
             {
                 _iconImages.Add(_cachedView.IconButtonAry[i].transform.GetChild(0).GetComponent<Image>());

@@ -58,10 +58,10 @@ namespace GameA
                     _target.TaskType = (byte) ENpcTargetType.Colltion;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetColltionDic[_colltionList[0]].Id;
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     _taskDynamic.TaskFinishAward.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
                     Close();
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
                     break;
 
                 case (int) ENpcTargetType.Contorl:
@@ -70,7 +70,7 @@ namespace GameA
                     {
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
-                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.BeforeTask, _mainCtrl.EditData.UnitExtra);
+                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra);
                         _mainCtrl.OnCloseBtnClick();
                     }
                     else

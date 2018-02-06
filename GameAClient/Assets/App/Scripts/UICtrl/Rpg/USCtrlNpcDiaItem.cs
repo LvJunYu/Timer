@@ -47,7 +47,14 @@ namespace GameA
             _cachedView.IconImage.sprite = _sprite;
             _cachedView.DiaText.text = dia.Dia;
             Color textColor;
-            ColorUtility.TryParseHtmlString(dia.Color, out textColor);
+            if (dia.Color == NpcDia.brown)
+            {
+                textColor = Color.white;
+            }
+            else
+            {
+                ColorUtility.TryParseHtmlString(dia.Color, out textColor);
+            }
             _cachedView.DiaText.color = textColor;
         }
 

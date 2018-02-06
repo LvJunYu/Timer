@@ -67,7 +67,7 @@ namespace GameA
             {
                 if (NpcTaskDataTemp.Intance.NpcSerialNumberDic.ContainsKey(Convert.ToInt32(str)))
                 {
-                    _task.NpcTaskSerialNumber = (ushort) Convert.ToInt32(str);
+                    _task.TargetNpcSerialNumber = (ushort) Convert.ToInt32(str);
                 }
             });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TargetTaskNpc);

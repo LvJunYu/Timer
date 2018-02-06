@@ -98,7 +98,7 @@ namespace GameA
                     _unitIconName = MonsterSpriteName;
                     break;
                 case TrrigerTaskType.FinishOtherTask:
-                    _unitIconName = DialogSpriteName;
+                    _unitIconName = QianzhiTaskSpriteName;
                     break;
             }
             if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))

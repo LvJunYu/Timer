@@ -22,10 +22,25 @@ namespace GameA
             base.OnViewCreated();
             _panel = _cachedView.NpcTaskBeforeConditionTypePanel;
             BadWordManger.Instance.InputFeidAddListen(_cachedView.BeforeConditionInputField);
-            _cachedView.BeforeConditionInputField.onValueChanged.AddListener((str) =>
+            _cachedView.BeforeConditionInputField.onEndEdit.AddListener((str) =>
             {
-                _target.TriggerTaskNumber = Convert.ToUInt16(str);
+                if (str.Length > 0)
+                {
+                    int a = Int16.Parse(str);
+                    ushort b = (ushort) a;
+                    _target.TriggerTaskNumber = b;
+                    Debug.Log(_target.TriggerTaskNumber);
+                }
             });
+            _cachedView.BeforeConditionInputField.onValueChanged.AddListener(
+                (str) =>
+                {
+                    if (str.Length > 2)
+                    {
+                        _cachedView.BeforeConditionInputField.text = str.Substring(0, 2);
+                    }
+                });
+
             _cachedView.NpcTaskBeforeConditionTypePanelExitBtn.onClick.AddListener(Close);
         }
 

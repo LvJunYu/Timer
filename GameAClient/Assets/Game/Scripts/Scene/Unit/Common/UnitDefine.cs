@@ -209,5 +209,10 @@ namespace GameA.Game
         {
             return id == 6001;
         }
+
+        public static bool IsGate(int id)
+        {
+            return id == 5013;
+        }
     }
 }

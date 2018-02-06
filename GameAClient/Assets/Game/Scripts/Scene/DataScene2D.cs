@@ -329,6 +329,7 @@ namespace GameA.Game
                         LogHelper.Error("ProcessUnitExtra UnitBase missing");
                     }
                 }
+                NpcTaskDataTemp.Intance.AddNpc(unitDesc);
             }
             else
             {

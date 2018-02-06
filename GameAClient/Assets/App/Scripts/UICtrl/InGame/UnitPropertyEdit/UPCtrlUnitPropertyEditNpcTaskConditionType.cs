@@ -54,7 +54,6 @@ namespace GameA
                     _taskDynamic.TriggerTask = targetData;
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
                     _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
-                    Close();
                     break;
                 case (int) TrrigerTaskType.Colltion:
                     //选择收集
@@ -65,7 +64,6 @@ namespace GameA
                     _taskDynamic.TriggerTask = targetCol;
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
                     _mainCtrl.EditNpcTaskColltionType.OpenMenu(_taskDynamic.TriggerTask);
-                    Close();
                     break;
                 case (int) TrrigerTaskType.FinishOtherTask:
                     //选择其他的任务作为触发任务
@@ -79,8 +77,6 @@ namespace GameA
         {
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            _mainCtrl.EditNpcTaskColltionType.Close();
-            _mainCtrl.EditNpcTaskMonsterType.Close();
             OpenAnimation();
         }
 

@@ -483,7 +483,7 @@ namespace GameA
                 return sbh.ToString();
             }
         }
-        
+
         public static string GetLevelString(int level)
         {
             return string.Format("Lv.{0}", level);
@@ -584,6 +584,61 @@ namespace GameA
             int minute = seconds / 60 - hour * 60;
             int second = seconds - hour * 60 * 60 - minute * 60;
             return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+        }
+
+        /// <summary>
+        ////判断string的长度 中文站两个字符
+        /// </summary>
+        /// <param name="ni_intInput"></param>
+        /// <returns></returns>
+        public static int GetStrLength(string str)
+        {
+            int length = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c >= 0x4E00 && c <= 0x9FA5)
+                {
+                    length += 2;
+                }
+                else
+                {
+                    length += 1;
+                }
+            }
+            return length;
+        }
+
+        /// <summary>
+        ////截取规定长度的字符串
+        /// </summary>
+        /// <param name="ni_intInput"></param>
+        /// <returns></returns>
+        public static string GetMaxLengthStr(string str, int maxlength)
+        {
+            string newstr = "";
+            int length = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c >= 0x4E00 && c <= 0x9FA5)
+                {
+                    length += 2;
+                }
+                else
+                {
+                    length += 1;
+                }
+                if (length <= maxlength)
+                {
+                    newstr += c;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return newstr;
         }
     }
 }

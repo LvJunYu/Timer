@@ -35,6 +35,7 @@ namespace GameA.Game
         private readonly Dictionary<IntVec3, NpcTaskDynamic> _npcTaskDynamics =
             new Dictionary<IntVec3, NpcTaskDynamic>();
 
+        private readonly Dictionary<int, IntVec3> _deliverNpcDic = new Dictionary<int, IntVec3>();
         public readonly Dictionary<IntVec3, float> NpcTaskDynamicsTimeLimit = new Dictionary<IntVec3, float>();
         private readonly Dictionary<int, NpcTaskDynamic> _finishNpcTask = new Dictionary<int, NpcTaskDynamic>();
         private readonly Dictionary<IntVec3, bool> _controlDic = new Dictionary<IntVec3, bool>();
@@ -71,6 +72,15 @@ namespace GameA.Game
             _npcTaskDynamics.Clear();
             _finishNpcTask.Clear();
             _controlDic.Clear();
+            _deliverNpcDic.Clear();
+            foreach (var colltion in TableManager.Instance.Table_NpcTaskTargetColltionDic)
+            {
+                ColltionNum[colltion.Value.Id] = 0;
+            }
+            foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
+            {
+                KillMonstorNum[kill.Value.Id] = 0;
+            }
             NpcTaskDynamicsTimeLimit.Clear();
             _haveNpcInScene = false;
             using (var enumerator = DataScene2D.CurScene.UnitExtras.GetEnumerator())
@@ -90,6 +100,7 @@ namespace GameA.Game
                                 npcUnit.SetNoShow();
                             }
                         }
+                        _deliverNpcDic.Add(enumerator.Current.Value.NpcSerialNumber, enumerator.Current.Key);
                     }
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTaskPanelDis();
@@ -146,11 +157,14 @@ namespace GameA.Game
             NpcTaskDynamic task;
             if (_npcTaskDynamics.TryGetValue(npcguid, out task))
             {
-                if (task.TaskMiddle.Count > 0)
+                if (!_finishNpcTask.ContainsKey(task.NpcTaskSerialNumber))
                 {
-                    ShowTip(npcguid);
-                    _showDiaEvent = () => { SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(task.TaskMiddle); };
-                    canshow = true;
+                    if (task.TaskMiddle.Count > 0)
+                    {
+                        ShowTip(npcguid);
+                        _showDiaEvent = () => { SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(task.TaskMiddle); };
+                        canshow = true;
+                    }
                 }
             }
             return canshow;
@@ -241,6 +255,13 @@ namespace GameA.Game
                                 ShowTip(npcguid);
                                 _showDiaEvent = () =>
                                 {
+                                    for (int j = 0; j < enumerator.Current.Value.TaskFinishAward.Count; j++)
+                                    {
+                                        var award =
+                                            enumerator.Current.Value.TaskFinishAward.Get<NpcTaskTargetDynamic>(j);
+                                        GetAward(award);
+                                    }
+
                                     if (_npcTaskDynamics.ContainsKey(guid))
                                     {
                                         RemoveTask(guid, false);
@@ -305,21 +326,27 @@ namespace GameA.Game
             return canshow;
         }
 
+
         //获得奖励
         public void GetAward(NpcTaskTargetDynamic award)
         {
             switch (award.TaskType)
             {
                 case (byte) ENpcTargetType.Contorl:
-                    UnitExtraDynamic extarData;
-                    if (_allNpcExtraData.TryGetValue(award.TargetGuid, out extarData))
+                    UnitBase unit;
+                    if (ColliderScene2D.CurScene.TryGetUnit(award.TargetGuid, out unit))
                     {
-                        UnitBase unit;
-                        if (ColliderScene2D.CurScene.TryGetUnit(award.TargetGuid, out unit))
+                        if (UnitDefine.IsGate(unit.UnitDesc.Id))
+                        {
+                            Gate gate = unit as Gate;
+                            gate.DirectOpen();
+                        }
+                        else
                         {
                             unit.OnCtrlBySwitch();
                         }
                     }
+
                     break;
                 case (byte) ENpcTargetType.Colltion:
                     if (UnitDefine.IsKey(award.TargetUnitID))
@@ -350,10 +377,10 @@ namespace GameA.Game
                     finish = true;
                     break;
                 case (byte) TrrigerTaskType.Kill:
-                    finish = KillMonstorNum[task.TriggerTask.TargetUnitID] > task.TriggerTask.ColOrKillNum;
+                    finish = KillMonstorNum[task.TriggerTask.TargetUnitID] >= task.TriggerTask.ColOrKillNum;
                     break;
                 case (byte) TrrigerTaskType.Colltion:
-                    finish = ColltionNum[task.TriggerTask.TargetUnitID] > task.TriggerTask.ColOrKillNum;
+                    finish = ColltionNum[task.TriggerTask.TargetUnitID] >= task.TriggerTask.ColOrKillNum;
                     break;
                 case (byte) TrrigerTaskType.FinishOtherTask:
                     finish = _finishNpcTask.ContainsKey(task.TriggerTaskNumber);
@@ -472,9 +499,10 @@ namespace GameA.Game
                         !_finishNpcTask.ContainsKey(enumerator.Current.Value.NpcTaskSerialNumber))
                     {
                         _finishNpcTask.Add(enumerator.Current.Value.NpcTaskSerialNumber, enumerator.Current.Value);
+                        IntVec3 deliverNpcGuid = _deliverNpcDic[enumerator.Current.Value.TargetNpcSerialNumber];
                         UnitBase unit;
                         NPCBase npcUnit;
-                        ColliderScene2D.CurScene.TryGetUnit(enumerator.Current.Key, out unit);
+                        ColliderScene2D.CurScene.TryGetUnit(deliverNpcGuid, out unit);
                         npcUnit = unit as NPCBase;
                         if (npcUnit != null)
                         {
@@ -607,6 +635,11 @@ namespace GameA.Game
         public void AddTask(IntVec3 guid, NpcTaskDynamic task)
         {
             _npcTaskDynamics.Add(guid, task);
+            UnitBase unitold;
+            NPCBase npcUnitold;
+            ColliderScene2D.CurScene.TryGetUnit(guid, out unitold);
+            npcUnitold = unitold as NPCBase;
+            if (npcUnitold != null) npcUnitold.SetNoShow();
             NpcTaskTargetDynamic TriggerTask = task.TriggerTask;
             switch ((ENpcTargetType) TriggerTask.TaskType)
             {
@@ -624,9 +657,10 @@ namespace GameA.Game
                     break;
             }
             NpcTaskDynamicsTimeLimit.Add(guid, GameRun.Instance.GameTimeSinceGameStarted);
+            IntVec3 deliverNpcGuid = _deliverNpcDic[task.TargetNpcSerialNumber];
             UnitBase unit;
             NPCBase npcUnit;
-            ColliderScene2D.CurScene.TryGetUnit(guid, out unit);
+            ColliderScene2D.CurScene.TryGetUnit(deliverNpcGuid, out unit);
             npcUnit = unit as NPCBase;
             if (npcUnit != null) npcUnit.SetInTask();
             SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTask(_npcTaskDynamics, _finishNpcTask);

@@ -188,6 +188,7 @@ namespace GameA
             {
                 CurExtraNpcTaskData = taskData;
             }
+            CheckTargetType(CurExtraNpcTaskData);
             //刷新任务列表
             for (int i = 0; i < _usCtrlUnitNpcTaskIndexGroup.Length; i++)
             {
@@ -286,7 +287,7 @@ namespace GameA
                 case ENpcTargetType.Contorl:
                     break;
                 case ENpcTargetType.Dialog:
-
+                    _mainCtrl.EditNpcTaregtDialog.OpenMenu(target);
                     break;
             }
         }
@@ -295,10 +296,34 @@ namespace GameA
         private void SetNameLength(string str)
         {
             _cachedView.NameNumText.text =
-                String.Format("{0}/{1}", str.Length, UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength);
-            if (str.Length > UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength)
+                String.Format("{0}/{1}", GameATools.GetStrLength(str), UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength);
+            if (GameATools.GetStrLength(str) > UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength)
             {
-                _cachedView.TaskNpcName.text = str.Substring(0, UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength);
+                _cachedView.TaskNpcName.text = GameATools
+                    .GetMaxLengthStr(str, UPCtrlUnitPropertyEditNpcDiaType.NamMaxLength);
+            }
+        }
+
+        private void CheckTargetType(NpcTaskDynamic task)
+        {
+            DictionaryListObject targets = new DictionaryListObject();
+            if (task.Targets == null)
+            {
+                return;
+            }
+            for (int i = 0; i < task.Targets.Count; i++)
+            {
+                if (task.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
+                {
+                    targets.Clear();
+                    targets.Add(task.Targets.Get<NpcTaskTargetDynamic>(i));
+                    task.Targets = targets;
+                    break;
+                }
+                else
+                {
+                    targets.Add(task.Targets.Get<NpcTaskTargetDynamic>(i));
+                }
             }
         }
     }

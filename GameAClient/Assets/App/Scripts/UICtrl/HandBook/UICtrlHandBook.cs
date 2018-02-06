@@ -39,7 +39,6 @@ namespace GameA
         private readonly List<int> _decorationList = new List<int>();
         private readonly List<int> _controllerList = new List<int>();
         private readonly List<int> _effectList = new List<int>();
-        private List<float> _contentPosList = new List<float>();
 
         #endregion
 

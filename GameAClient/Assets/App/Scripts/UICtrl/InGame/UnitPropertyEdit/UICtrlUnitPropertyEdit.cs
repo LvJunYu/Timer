@@ -1365,6 +1365,10 @@ namespace GameA
 
         public void CheckNpcTaskNum()
         {
+            if (EditData.UnitExtra.NpcType == (byte) ENpcType.Dialog)
+            {
+                EditData.UnitExtra.NpcTask.Clear();
+            }
             int num = EditData.UnitExtra.NpcTask.Count;
             for (int i = 0; i < num; i++)
             {
@@ -1381,6 +1385,13 @@ namespace GameA
                         task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;
                     }
                 }
+            }
+            UnitBase unit;
+            ColliderScene2D.CurScene.TryGetUnit(EditData.UnitDesc.Guid, out unit);
+            if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+            {
+                NPCBase npc = unit as NPCBase;
+                if (npc != null) npc.SetNpcName();
             }
         }
     }

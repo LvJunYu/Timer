@@ -15,6 +15,7 @@ namespace GameA.Game
         private int _showIntervalTime;
         private int _timeIntervalDynamic;
         private int _showTime = 150;
+        private int _closeDis = 1;
         private NpcStateBar _stateBar;
         private Action _oldState;
 
@@ -48,6 +49,8 @@ namespace GameA.Game
             {
                 ChangeState(EMonsterState.Idle);
             }
+            SetNpcName();
+            SetNoShow();
         }
 
         protected override bool IsCheckClimb()
@@ -184,7 +187,7 @@ namespace GameA.Game
         private bool CheckPlayerPos()
         {
             float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
-            return x <= 3;
+            return x <= _closeDis;
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -249,6 +252,13 @@ namespace GameA.Game
         public void SetNoShow()
         {
             _stateBar.SetNoShow();
+            _oldState = null;
+            _nowState = SetFinishTask;
+        }
+
+        public void SetNpcName()
+        {
+            _stateBar.NameTextMesh.text = GetUnitExtra().NpcName;
         }
 
         internal override bool InstantiateView()
@@ -270,6 +280,7 @@ namespace GameA.Game
                 _stateBar = statusBarObj.GetComponent<NpcStateBar>();
                 CommonTools.SetParent(statusBarObj.transform, _trans);
                 SetNpcNum();
+                SetNpcName();
             }
         }
 

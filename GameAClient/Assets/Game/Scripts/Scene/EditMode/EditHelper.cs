@@ -256,7 +256,8 @@ namespace GameA.Game
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
 
-            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsNpc(table.Id))
+            if (UnitDefine.IsMonster(table.Id))
+//                || UnitDefine.IsNpc(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
@@ -599,7 +600,7 @@ namespace GameA.Game
             unitBase.Trans.parent = tran;
             unitBase.Trans.localPosition = GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.localScale = Vector3.one;
-           
+
             return helperParentObj;
         }
 

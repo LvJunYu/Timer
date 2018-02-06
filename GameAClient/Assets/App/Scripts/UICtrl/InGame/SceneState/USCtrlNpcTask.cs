@@ -16,6 +16,7 @@ namespace GameA
         public List<Text> TargetTypeTextGroup = new List<Text>();
         public List<Text> TargetNumTextGroup = new List<Text>();
         private IntVec3 _guid;
+        private bool _isFinish;
 
         public override void Init(UsViewNpcTask view)
         {
@@ -34,6 +35,7 @@ namespace GameA
         public void SetNpcTask(IntVec3 guid, UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool isFinish)
 
         {
+            _isFinish = isFinish;
             _guid = guid;
             _cachedView.SetActiveEx(true);
             _extarDynamicData = extraData;
@@ -117,6 +119,10 @@ namespace GameA
                 return;
             }
             if (_taskData.TaskimeLimit <= 0)
+            {
+                return;
+            }
+            if (_isFinish)
             {
                 return;
             }
