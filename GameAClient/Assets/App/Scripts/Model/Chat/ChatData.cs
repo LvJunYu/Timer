@@ -10,6 +10,7 @@ namespace GameA
     {
         private const int ChatListHighWaterLine = 60;
         private const int ChatListLowWaterLine = 30;
+        private const long InGameChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long RoomChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long TeamChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long WorldChatCDTimeTick = 15 * GameTimer.Second2Ticks;
@@ -28,6 +29,7 @@ namespace GameA
         private GameTimer _roomCDTimer = new GameTimer();
         private GameTimer _teamCDTimer = new GameTimer();
         private GameTimer _worldCDTimer = new GameTimer();
+        private GameTimer _ingameCDTimer = new GameTimer();
 
         public List<Item> AllChatList
         {
@@ -58,6 +60,24 @@ namespace GameA
         {
             _roomCDTimer.Zero();
             _worldCDTimer.Zero();
+        }
+        
+        public bool SendInGameCampChat(string data)
+        {
+            if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        public bool SendInGameAllChat(string data)
+        {
+            if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
+            {
+                return false;
+            }
+            return true;
         }
 
         public bool SendRoomChat(string data)
@@ -311,7 +331,9 @@ namespace GameA
             System,
             WorldInvite,
             Room,
-            Team
+            Team,
+            InGameCamp,
+            InGameAll
         }
     }
 }

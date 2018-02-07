@@ -58,7 +58,7 @@ namespace GameA
             _numFormat = numFormat;
         }
 
-        public void SetCur(int cur, bool init = true, int min = -1)
+        public void SetCur(int cur, bool init = true, int min = -1, int max = -1)
         {
             //用于更新最小值
             if (min > -1)
@@ -71,6 +71,19 @@ namespace GameA
                 {
                     _min = min;
                     _cachedView.Slider.minValue = _min;
+                }
+            }
+            //用于更新最大值
+            if (max > -1)
+            {
+                if (_min >= max)
+                {
+                    LogHelper.Error("min is equal or bigger than max");
+                }
+                else
+                {
+                    _max = max;
+                    _cachedView.Slider.maxValue = _max;
                 }
             }
             cur = Mathf.Clamp(cur, _min, _max);

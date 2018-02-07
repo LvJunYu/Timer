@@ -113,12 +113,12 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_UnselectProject(Msg_MC_UnselectProject msg, object netlink)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnUnselectProject(msg);
+            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnProjectSelectedChanged(msg.ProjectIdList, false);
         }
 
         private void Msg_MC_SelectProject(Msg_MC_SelectProject msg, object netlink)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnSelectProject(msg);
+            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnProjectSelectedChanged(msg.ProjectIdList, true);
         }
 
         private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)

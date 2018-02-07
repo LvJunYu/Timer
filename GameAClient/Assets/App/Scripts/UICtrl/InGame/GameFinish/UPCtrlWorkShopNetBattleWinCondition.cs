@@ -30,8 +30,8 @@ namespace GameA
             _usKillMonsterScoreSetting.Init(_cachedView.KillMonsterScoreSetting);
             _usKillPlayerScoreSetting.Init(_cachedView.KillPlayerScoreSetting);
             _usWinScoreSetting.Init(_cachedView.WinScoreSetting);
-            _usTimeLimitSetting.Set(60, 600, value => EditMode.Instance.MapStatistics.NetBattleTimeLimit = value, 30,
-                "{0:f1}分钟", 60);
+            _usTimeLimitSetting.Set(60, ConstDefineGM2D.MultiTimeLimitMaxValue * 10, 
+                value => EditMode.Instance.MapStatistics.NetBattleTimeLimit = value, 30, "{0:f1}分钟", 60);
             _usArriveScoreSetting.Set(0, 100, value => EditMode.Instance.MapStatistics.NetBattleArriveScore = value);
             _usCollectGemScoreSetting.Set(0, 100,
                 value => EditMode.Instance.MapStatistics.NetBattleCollectGemScore = value);
