@@ -29,12 +29,19 @@ namespace GameA.Game
         private ENetBattleTimeResult _eNetBattleTimeResult;
         private int _bestScore;
         private bool _scoreChanged;
-
-        private byte _myTeamId;
+        private PlayerBase _mainPlayer;
+        private Dictionary<byte, List<int>> _teamInxListDic;
 
         public byte MyTeamId
         {
-            get { return _myTeamId; }
+            get
+            {
+                if (_mainPlayer == null)
+                {
+                    return 0;
+                }
+                return _mainPlayer.TeamId;
+            }
         }
 
         public List<PlayerBase> Players
@@ -81,13 +88,15 @@ namespace GameA.Game
             _playerDic[teamId].Add(player.RoomUser.Guid);
             if (player.IsMain)
             {
-                _myTeamId = player.TeamId;
+                _mainPlayer = player;
                 Messenger.Broadcast(EMessengerType.OnTeamChanged);
             }
         }
 
         public void Reset()
         {
+            _mainPlayer = null;
+            _teamInxListDic = null;
             _curTeamCount = 0;
             _bestScore = 0;
             _eNetBattleTimeResult = ENetBattleTimeResult.None;
@@ -118,6 +127,31 @@ namespace GameA.Game
             }
         }
 
+        public List<int> GetMyTeamInxList()
+        {
+            if (_teamInxListDic == null)
+            {
+                _teamInxListDic = new Dictionary<byte, List<int>>();
+                var sortData = GetSortPlayerUnitExtras();
+                for (int i = 0; i < sortData.Count; i++)
+                {
+                    var teamId = sortData[i].TeamId;
+                    if (!_teamInxListDic.ContainsKey(teamId))
+                    {
+                        _teamInxListDic.Add(teamId, new List<int>());
+                    }
+                    _teamInxListDic[teamId].Add(i);
+                }
+            }
+            List<int> list;
+            if (_teamInxListDic.TryGetValue(MyTeamId, out list))
+            {
+                return list;
+            }
+            LogHelper.Error("GetMyTeamInxList fail");
+            return null;
+        }
+        
         public List<UnitExtraDynamic> GetSortPlayerUnitExtras()
         {
             _roomPlayerUnitExtras.Clear();
@@ -351,7 +385,7 @@ namespace GameA.Game
         {
             for (int i = 0; i < _players.Count; i++)
             {
-                if (_players[i].TeamId != _myTeamId && !_players[i].SiTouLe)
+                if (_players[i].TeamId != MyTeamId && !_players[i].SiTouLe)
                 {
                     return false;
                 }
@@ -388,13 +422,13 @@ namespace GameA.Game
 
             _scoreDic[teamId] += score;
             _scoreChanged = true;
-            if (teamId == _myTeamId)
+            if (teamId == MyTeamId)
             {
                 Messenger.Broadcast(EMessengerType.OnScoreChanged);
             }
 
             Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, _scoreDic[teamId]);
-            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == _myTeamId);
+            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == MyTeamId);
         }
 
         public int GetTeamScore(int teamId)
@@ -410,7 +444,7 @@ namespace GameA.Game
 
         public int GetMyTeamScore()
         {
-            return GetTeamScore(_myTeamId);
+            return GetTeamScore(MyTeamId);
         }
 
         public bool MyTeamScoreBest()
@@ -484,5 +518,6 @@ namespace GameA.Game
         }
 
         #endregion
+
     }
 }

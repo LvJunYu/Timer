@@ -70,6 +70,10 @@ namespace GameA
 
         public void SetSelected(bool value)
         {
+            if (_selected != value)
+            {
+                _lastClickTime = 0;
+            }
             _selected = value;
             _cachedView.SelectedObj.SetActive(value);
         }

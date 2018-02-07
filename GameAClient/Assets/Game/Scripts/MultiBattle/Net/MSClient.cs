@@ -45,6 +45,11 @@ namespace SoyEngine.MasterServer
             base.OnDisconnected(code);
             LogHelper.Debug("MSClient OnDisConnected");
             Loom.QueueOnMainThread(Reconnect);
+            //掉线时客户端自动推出队伍
+            Msg_MC_ExitTeam msg = new Msg_MC_ExitTeam();
+            msg.Reason = EMCExitTeamReason.MCETR_Disconnect;
+            msg.UserId = LocalUser.Instance.UserGuid;
+            LocalUser.Instance.MutiBattleData.OnExitTeam(msg);
         }
 
         private void TryReconnect()

@@ -196,6 +196,11 @@ namespace GameA
 
         private void OnQuickStartBtn()
         {
+            if (LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList.Count == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("至少选择一个关卡才能开始游戏");
+                return;
+            }
             RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Offical);
         }
 

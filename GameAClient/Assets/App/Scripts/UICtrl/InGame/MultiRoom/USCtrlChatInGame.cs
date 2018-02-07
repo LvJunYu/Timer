@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,8 +10,8 @@ namespace GameA
 {
     public class USCtrlChatInGame : USCtrlBase<USViewChatInGame>
     {
-        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.InGameAll;
-        private ChatData.EChatType _currentSendType = ChatData.EChatType.InGameCamp;
+        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.Room;
+        private ChatData.EChatType _currentSendType = ChatData.EChatType.Camp;
         private Stack<UMCtrlChatInGame> _umPool = new Stack<UMCtrlChatInGame>(70);
         private List<ChatData.Item> _contentList;
         private List<UMCtrlChatInGame> _umList = new List<UMCtrlChatInGame>(70);
@@ -47,21 +49,22 @@ namespace GameA
                 }
             });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.ChatInput);
-            for (int i = 0; i < _cachedView.ChatTypeTagArray.Length; i++)
+            _cachedView.RoomTog.onValueChanged.AddListener(value =>
             {
-                var tog = _cachedView.ChatTypeTagArray[i];
-                var chatType = (ChatData.EChatType) i;
-                tog.onValueChanged.AddListener(flag =>
+                if (value)
                 {
-                    if (flag)
-                    {
-                        SelectChatTypeTag(chatType);
-                    }
-                });
-            }
-
+                    SelectChatTypeTag(ChatData.EChatType.Room);
+                }
+            });
+            _cachedView.CampTog.onValueChanged.AddListener(value =>
+            {
+                if (value)
+                {
+                    SelectChatTypeTag(ChatData.EChatType.Camp);
+                }
+            });
             _cachedView.ChatTypeBtn.onClick.AddListener(OnSendChatTypeClick);
-            SetSendChatType(ChatData.EChatType.InGameCamp);
+            SetSendChatType(ChatData.EChatType.Camp);
         }
 
         public override void Open()
@@ -85,7 +88,7 @@ namespace GameA
         private void SetSendChatType(ChatData.EChatType chatType)
         {
             _currentSendType = chatType;
-            if (chatType == ChatData.EChatType.InGameCamp)
+            if (chatType == ChatData.EChatType.Camp)
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "阵营";
             }
@@ -128,16 +131,17 @@ namespace GameA
                 return;
             }
 
-            if (_currentSendType == ChatData.EChatType.InGameCamp)
+            if (_currentSendType == ChatData.EChatType.Camp)
             {
-                if (!AppData.Instance.ChatData.SendInGameCampChat(inputContent))
+                if (!AppData.Instance.ChatData.SendRoomChat(inputContent, ERoomChatType.ERCT_Camp,
+                    TeamManager.Instance.GetMyTeamInxList()))
                 {
                     return;
                 }
             }
-            else if (_currentSendType == ChatData.EChatType.InGameAll)
+            else if (_currentSendType == ChatData.EChatType.Room)
             {
-                if (!AppData.Instance.ChatData.SendInGameAllChat(inputContent))
+                if (!AppData.Instance.ChatData.SendRoomChat(inputContent, ERoomChatType.ERCT_Room))
                 {
                     return;
                 }
@@ -154,13 +158,13 @@ namespace GameA
 
         private void OnSendChatTypeClick()
         {
-            if (_currentSendType == ChatData.EChatType.InGameCamp)
+            if (_currentSendType == ChatData.EChatType.Camp)
             {
-                SetSendChatType(ChatData.EChatType.InGameAll);
+                SetSendChatType(ChatData.EChatType.Room);
             }
             else
             {
-                SetSendChatType(ChatData.EChatType.InGameCamp);
+                SetSendChatType(ChatData.EChatType.Camp);
             }
         }
 
@@ -170,10 +174,12 @@ namespace GameA
             {
                 return;
             }
+
             if (chatType != _currentChatTypeTag)
             {
                 return;
             }
+
             var um = GetUmItem();
             um.SetParent(_cachedView.ChatContentDock);
             um.Set(item);
@@ -187,10 +193,12 @@ namespace GameA
             {
                 return;
             }
+
             if (chatType != _currentChatTypeTag)
             {
                 return;
             }
+
             RefreshView();
         }
 
@@ -206,6 +214,7 @@ namespace GameA
             {
                 return _umPool.Pop();
             }
+
             var um = new UMCtrlChatInGame();
             um.Init(_cachedView.PoolDock, _resScenary);
             return um;

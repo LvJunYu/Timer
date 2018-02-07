@@ -10,7 +10,6 @@ namespace GameA
     {
         private const int ChatListHighWaterLine = 60;
         private const int ChatListLowWaterLine = 30;
-        private const long InGameChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long RoomChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long TeamChatCDTimeTick = 1 * GameTimer.Second2Ticks;
         private const long WorldChatCDTimeTick = 15 * GameTimer.Second2Ticks;
@@ -27,12 +26,10 @@ namespace GameA
         private List<Item> _roomChatList = new List<Item>();
         private List<Item> _teamChatList = new List<Item>();
         private List<Item> _inGameCampChatList = new List<Item>();
-        private List<Item> _inGameAllChatList = new List<Item>();
 
         private GameTimer _roomCDTimer = new GameTimer();
         private GameTimer _teamCDTimer = new GameTimer();
         private GameTimer _worldCDTimer = new GameTimer();
-        private GameTimer _ingameCDTimer = new GameTimer();
 
         public List<Item> AllChatList
         {
@@ -62,30 +59,11 @@ namespace GameA
         public ChatData()
         {
             _roomCDTimer.Zero();
+            _teamCDTimer.Zero();
             _worldCDTimer.Zero();
         }
 
-        public bool SendInGameCampChat(string data)
-        {
-            if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool SendInGameAllChat(string data)
-        {
-            if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool SendRoomChat(string data)
+        public bool SendRoomChat(string data, ERoomChatType type, List<int> targetInxList = null)
         {
             if (!_roomCDTimer.PassedTicks(RoomChatCDTimeTick))
             {
@@ -94,6 +72,11 @@ namespace GameA
 
             Msg_CR_RoomChat msg = new Msg_CR_RoomChat();
             msg.Data = data;
+            msg.Type = type;
+            if (targetInxList != null)
+            {
+                msg.TargetInxList.AddRange(targetInxList);
+            }
             RoomManager.Instance.SendToRSServer(msg);
             return true;
         }
@@ -160,7 +143,6 @@ namespace GameA
         {
             _roomChatList.Clear();
             _inGameCampChatList.Clear();
-            _inGameAllChatList.Clear();
             FireCutHeadEvent(EChatType.Room);
         }
 
@@ -180,6 +162,10 @@ namespace GameA
         {
             AddChatItem(EChatType.All, item);
             AddChatItem(item.ChatType, item);
+            if (item.ChatType == EChatType.Camp)
+            {
+                AddChatItem(EChatType.Room, item);
+            }
         }
 
         private void AddChatItem(EChatType chatType, Item item)
@@ -210,10 +196,8 @@ namespace GameA
                     return _roomChatList;
                 case EChatType.Team:
                     return _teamChatList;
-                case EChatType.InGameCamp:
+                case EChatType.Camp:
                     return _inGameCampChatList;
-                case EChatType.InGameAll:
-                    return _inGameAllChatList;
                 default:
                     throw new ArgumentOutOfRangeException("chatType", chatType, null);
             }
@@ -280,7 +264,20 @@ namespace GameA
                     _chatUser = new ChatUser(msg.PlayerId, "" + msg.PlayerId);
                 }
 
-                _chatType = EChatType.Room;
+                switch (msg.Type)
+                {
+                    case ERoomChatType.ERCT_None:
+                        LogHelper.Warning("ChatItem type error");
+                        break;
+                    case ERoomChatType.ERCT_Room:
+                        _chatType = EChatType.Room;
+                        break;
+                    case ERoomChatType.ERCT_Camp:
+                        _chatType = EChatType.Camp;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
                 _content = msg.Data;
                 _time = DateTime.Now;
             }
@@ -300,6 +297,9 @@ namespace GameA
                         break;
                     case ECMChatType.CMCT_System:
                         _chatType = EChatType.System;
+                        break;
+                    case ECMChatType.CMCT_TeamChat:
+                        _chatType = EChatType.Team;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -345,8 +345,7 @@ namespace GameA
             WorldInvite,
             Room,
             Team,
-            InGameCamp,
-            InGameAll
+            Camp,
         }
     }
 }

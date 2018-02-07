@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -147,7 +148,7 @@ namespace GameA
 
             if (_currentSendType == ChatData.EChatType.Room)
             {
-                if (!AppData.Instance.ChatData.SendRoomChat(inputContent))
+                if (!AppData.Instance.ChatData.SendRoomChat(inputContent, ERoomChatType.ERCT_Room))
                 {
                     return;
                 }
