@@ -203,7 +203,7 @@ namespace GameA
                 if (i < CurExtraNpcTaskData.Targets.Count)
                 {
                     _usCtrlUnitNpcTargetGroup[i].SetEnable(true);
-                    _usCtrlUnitNpcTargetGroup[i].SetSelectTarget(
+                    _usCtrlUnitNpcTargetGroup[i].SetSelectTarget(_mainCtrl.EditData.UnitDesc.Guid,
                         CurExtraNpcTaskData.Targets.ToList<NpcTaskTargetDynamic>()[i],
                         CurExtraNpcTaskData.Targets,
                         OpenAdvencePanel, RefreshView);

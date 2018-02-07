@@ -1365,6 +1365,10 @@ namespace GameA
 
         public void CheckNpcTaskNum()
         {
+            if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+            {
+                EditData.UnitDesc.Rotation = (byte) EDirectionType.Up;
+            }
             if (EditData.UnitExtra.NpcType == (byte) ENpcType.Dialog)
             {
                 EditData.UnitExtra.NpcTask.Clear();

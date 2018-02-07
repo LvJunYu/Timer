@@ -99,7 +99,7 @@ namespace GameA
                 if (i < _task.BeforeTaskAward.Count)
                 {
                     _beforeTaskAwardBtnGroup[i].SetEnable(true);
-                    _beforeTaskAwardBtnGroup[i].SetSelectTarget(
+                    _beforeTaskAwardBtnGroup[i].SetSelectTarget(_mainCtrl.EditData.UnitDesc.Guid,
                         _task.BeforeTaskAward.ToList<NpcTaskTargetDynamic>()[i],
                         _task.BeforeTaskAward,
                         OpenAdvencePanel, () => { RefreshTask(); });
@@ -117,7 +117,7 @@ namespace GameA
                 if (i < _task.TaskFinishAward.Count)
                 {
                     _finishTaskAwardBtnGroup[i].SetEnable(true);
-                    _finishTaskAwardBtnGroup[i].SetSelectTarget(
+                    _finishTaskAwardBtnGroup[i].SetSelectTarget(_mainCtrl.EditData.UnitDesc.Guid,
                         _task.TaskFinishAward.Get<NpcTaskTargetDynamic>(i),
                         _task.TaskFinishAward,
                         OpenAdvencePanel, () => { RefreshTask(); });

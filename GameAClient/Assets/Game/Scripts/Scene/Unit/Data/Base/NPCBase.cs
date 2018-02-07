@@ -95,14 +95,6 @@ namespace GameA.Game
                 }
             }
             SetDia();
-
-//            if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
-//            {
-//                foreach (var VARIABLE in _hitUnits)
-//                {
-//                    Debug.Log(VARIABLE.Id);
-//                }
-//            }
         }
 
         private void SetDia()
