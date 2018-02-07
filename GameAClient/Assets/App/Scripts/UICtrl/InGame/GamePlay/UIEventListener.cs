@@ -5,8 +5,6 @@
 ** Summary : UIEventListener  
 ***********************************************************************/
 
-
-using System;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
@@ -17,7 +15,6 @@ namespace GameA.Game
 		public class OnDownHandler : UnityEvent { }
 
 		public class OnUpHandler : UnityEvent{}
-
 
 		public OnDownHandler OnDown = new OnDownHandler();
 

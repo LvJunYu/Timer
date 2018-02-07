@@ -5,94 +5,109 @@
 ** Summary : UMViewGamePlayItemEx  
 ***********************************************************************/
 
-
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-
 
 namespace GameA.Game
 {
     public partial class UMViewGamePlayItemEx
     {
+        public const float PressAddWaitTime = 0.5f;
+        public const float PressAddInterval = 0.1f;
+        private const int ShowMinuteValue = 60;
 
-	    public const float PressAddWaitTime = 0.5f;
-	    public const float PressAddInterval = 0.1f;
+        public enum EGamePlayItemExPressState
+        {
+            None,
+            Minus,
+            Plus,
+        }
 
-		public enum EGamePlayItemExPressState
-		{
-			None,
-			Minus,
-			Plus,
-		}
+        private UIEventListener _minusEvnetListener;
+        private UIEventListener _plusEventListener;
+        private EGamePlayItemExPressState _curState = EGamePlayItemExPressState.None;
+        private float _enterStateTime;
+        private float _lastPressAddTime;
 
-		private UIEventListener _minusEvnetListener;
-	    private UIEventListener _plusEventListener;
-		private EGamePlayItemExPressState _curState = EGamePlayItemExPressState.None;
-	    private float _enterStateTime;
-	    private float _lastPressAddTime;
-
-		public override void InitItem(EWinCondition value, FinishCondition data)
+        public override void InitItem(EWinCondition value, FinishCondition data)
         {
             base.InitItem(value, data);
             Des.SetActiveEx(false);
             //MinusButton.onClick.AddListener(OnMinusTrigger);
             //PlusButton.onClick.AddListener(OnPlusTrigger);
-			_minusEvnetListener = MinusButton.gameObject.AddComponent<UIEventListener>();
-			_plusEventListener = PlusButton.gameObject.AddComponent<UIEventListener>();
-			_minusEvnetListener.OnDown.AddListener(OnMinusDown);
-			_minusEvnetListener.OnUp.AddListener(OnMinusUp);
-			_plusEventListener.OnDown.AddListener(OnPlusDown);
-			_plusEventListener.OnUp.AddListener(OnPlusUp);
-		}
+            _minusEvnetListener = MinusButton.gameObject.AddComponent<UIEventListener>();
+            _plusEventListener = PlusButton.gameObject.AddComponent<UIEventListener>();
+            _minusEvnetListener.OnDown.AddListener(OnMinusDown);
+            _minusEvnetListener.OnUp.AddListener(OnMinusUp);
+            _plusEventListener.OnDown.AddListener(OnPlusDown);
+            _plusEventListener.OnUp.AddListener(OnPlusUp);
+        }
 
         public override void UpdateShow()
         {
             base.UpdateShow();
-            TimeShow.text = (_refData.TimeLimit * 10).ToString();
+            if (_refData.TimeLimit >= ShowMinuteValue)
+            {
+                TimeUnit.text = "分";
+                TimeShow.text = (_refData.TimeLimit * 10 / 60).ToString();
+            }
+            else
+            {
+                TimeUnit.text = "秒";
+                TimeShow.text = (_refData.TimeLimit * 10).ToString();
+            }
         }
 
-	    private void Update()
-	    {
-		    if (_curState == EGamePlayItemExPressState.None)
-		    {
-				return;
-		    }
-		    UpdatePressAddLogic();
-	    }
+        private void Update()
+        {
+            if (_curState == EGamePlayItemExPressState.None)
+            {
+                return;
+            }
+
+            UpdatePressAddLogic();
+        }
 
 
         #region private 
 
-	    private void OnMinusDown()
-	    {
-			_curState = EGamePlayItemExPressState.Minus;
-		    _enterStateTime = Time.realtimeSinceStartup;
-		    OnMinusTrigger();
-	    }
+        private void OnMinusDown()
+        {
+            _curState = EGamePlayItemExPressState.Minus;
+            _enterStateTime = Time.realtimeSinceStartup;
+            OnMinusTrigger();
+        }
 
-	    private void OnMinusUp()
-	    {
-			_curState = EGamePlayItemExPressState.None;
-		}
+        private void OnMinusUp()
+        {
+            _curState = EGamePlayItemExPressState.None;
+        }
 
-	    private void OnPlusDown()
-	    {
-			_curState = EGamePlayItemExPressState.Plus;
-			_enterStateTime = Time.realtimeSinceStartup;
-			OnPlusTrigger();
-		}
+        private void OnPlusDown()
+        {
+            _curState = EGamePlayItemExPressState.Plus;
+            _enterStateTime = Time.realtimeSinceStartup;
+            OnPlusTrigger();
+        }
 
-	    private void OnPlusUp()
-	    {
-			_curState = EGamePlayItemExPressState.None;
-		}
+        private void OnPlusUp()
+        {
+            _curState = EGamePlayItemExPressState.None;
+        }
 
 
         private void OnMinusTrigger()
         {
             int value = _refData.TimeLimit;
-            value --;
+            if (value > ShowMinuteValue)
+            {
+                value -= 6;
+            }
+            else
+            {
+                value--;
+            }
             value = ClampValue(value);
             if (_refData.TimeLimit != value)
             {
@@ -104,7 +119,14 @@ namespace GameA.Game
         private void OnPlusTrigger()
         {
             int value = _refData.TimeLimit;
-            value++;
+            if (value >= ShowMinuteValue)
+            {
+                value += 6;
+            }
+            else
+            {
+                value++;
+            }
             value = ClampValue(value);
             if (_refData.TimeLimit != value)
             {
@@ -118,30 +140,29 @@ namespace GameA.Game
             return Mathf.Clamp(value, ConstDefineGM2D.TimeLimitMinValue, ConstDefineGM2D.TimeLimitMaxValue);
         }
 
-	    private void UpdatePressAddLogic()
-	    {
-		    float deltaTime = Time.realtimeSinceStartup - _enterStateTime;
-		    if (deltaTime > PressAddWaitTime)
-		    {
-			    float addInterval = Time.realtimeSinceStartup - _lastPressAddTime;
+        private void UpdatePressAddLogic()
+        {
+            float deltaTime = Time.realtimeSinceStartup - _enterStateTime;
+            if (deltaTime > PressAddWaitTime)
+            {
+                float addInterval = Time.realtimeSinceStartup - _lastPressAddTime;
 
-			    if (addInterval > PressAddInterval)
-			    {
-				    if (_curState == EGamePlayItemExPressState.Minus)
-				    {
-					    OnMinusTrigger();
-				    }
-				    else
-				    {
-						OnPlusTrigger();
-					}
-				    _lastPressAddTime = Time.realtimeSinceStartup;
-			    }
-		    }
-	    }
+                if (addInterval > PressAddInterval)
+                {
+                    if (_curState == EGamePlayItemExPressState.Minus)
+                    {
+                        OnMinusTrigger();
+                    }
+                    else
+                    {
+                        OnPlusTrigger();
+                    }
 
+                    _lastPressAddTime = Time.realtimeSinceStartup;
+                }
+            }
+        }
 
-
-	    #endregion
+        #endregion
     }
 }
