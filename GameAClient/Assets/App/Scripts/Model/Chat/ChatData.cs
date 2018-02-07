@@ -25,6 +25,8 @@ namespace GameA
         private List<Item> _worldInviteChatList = new List<Item>();
         private List<Item> _systemChatList = new List<Item>();
         private List<Item> _roomChatList = new List<Item>();
+        private List<Item> _inGameCampChatList = new List<Item>();
+        private List<Item> _inGameAllChatList = new List<Item>();
 
         private GameTimer _roomCDTimer = new GameTimer();
         private GameTimer _teamCDTimer = new GameTimer();
@@ -154,9 +156,11 @@ namespace GameA
         public void ClearRoomChat()
         {
             _roomChatList.Clear();
+            _inGameCampChatList.Clear();
+            _inGameAllChatList.Clear();
             FireCutHeadEvent(EChatType.Room);
         }
-
+        
         public void OnRCChat(Msg_RC_RoomChat msgChat)
         {
             var item = new Item(msgChat);
@@ -201,6 +205,10 @@ namespace GameA
                     return _systemChatList;
                 case EChatType.Room:
                     return _roomChatList;
+                case EChatType.InGameCamp:
+                    return _inGameCampChatList;
+                case EChatType.InGameAll:
+                    return _inGameAllChatList;
                 default:
                     throw new ArgumentOutOfRangeException("chatType", chatType, null);
             }

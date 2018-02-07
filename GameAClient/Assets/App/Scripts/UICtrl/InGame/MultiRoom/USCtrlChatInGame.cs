@@ -8,8 +8,8 @@ namespace GameA
 {
     public class USCtrlChatInGame : USCtrlBase<USViewChatInGame>
     {
-        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.All;
-        private ChatData.EChatType _currentSendType = ChatData.EChatType.World;
+        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.InGameAll;
+        private ChatData.EChatType _currentSendType = ChatData.EChatType.InGameCamp;
         private Stack<UMCtrlChatInGame> _umPool = new Stack<UMCtrlChatInGame>(70);
         private List<ChatData.Item> _contentList;
         private List<UMCtrlChatInGame> _umList = new List<UMCtrlChatInGame>(70);
