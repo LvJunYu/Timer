@@ -206,13 +206,13 @@ namespace GameA.Game
             for (int i = 0; i < data.BeforeTaskAward.Count; i++)
             {
                 var taskTarget = new NpcTaskTargetDynamic();
-                taskTarget.Set(data.TaskTarget[i]);
+                taskTarget.Set(data.BeforeTaskAward[i]);
                 Set(taskTarget, FieldTag.BeforeTaskAward, i);
             }
             for (int i = 0; i < data.TaskFinishAward.Count; i++)
             {
                 var taskTarget = new NpcTaskTargetDynamic();
-                taskTarget.Set(data.TaskTarget[i]);
+                taskTarget.Set(data.TaskFinishAward[i]);
                 Set(taskTarget, FieldTag.TaskFinishAward, i);
             }
             TaskimeLimit = (ushort) data.TaskimeLimit;

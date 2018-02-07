@@ -193,12 +193,13 @@ namespace GameA.Game
 
                                     if (enumerator.Current.Value.TaskAfter.Count > 0)
                                     {
+                                        ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
                                         taskAfter = enumerator.Current.Value.TaskAfter;
                                     }
                                     else
                                     {
                                         taskAfter.Add(
-                                            GetTaskFinishDia(enumerator.Current.Value, enumerator.Current.Key));
+                                            GetTaskFinishDia(enumerator.Current.Value, npcguid));
                                     }
                                     var taskguid1 = enumerator.Current.Key;
                                     _showDiaEvent = () =>
@@ -245,6 +246,7 @@ namespace GameA.Game
                             {
                                 if (enumerator.Current.Value.TaskAfter.Count > 0)
                                 {
+                                    ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
                                     diaList = enumerator.Current.Value.TaskAfter;
                                 }
                                 else
@@ -349,13 +351,20 @@ namespace GameA.Game
 
                     break;
                 case (byte) ENpcTargetType.Colltion:
+                    SocialGUIManager.Instance.GetUI<UICtrlSceneState>().GetAwardKeyCheck(award.TargetUnitID);
                     if (UnitDefine.IsKey(award.TargetUnitID))
                     {
-                        PlayMode.Instance.SceneState.AddKey();
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.SceneState.AddKey();
+                        }
                     }
                     if (UnitDefine.IsTeeth(award.TargetUnitID))
                     {
-                        PlayMode.Instance.SceneState.GemGain++;
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.SceneState.GemGain++;
+                        }
                     }
                     break;
                 case (byte) ENpcTargetType.Moster:
@@ -438,7 +447,7 @@ namespace GameA.Game
         // 判断任务是否完成首先判断的时间
         private void Judge()
         {
-            JudegeBeforeTask();
+//            JudegeBeforeTask();
             SetTemp(ColltionNum, ColltionNumtemp);
             SetTemp(KillMonstorNum, KillMonstorNumTemp);
             //判断时间的放到每个人物中判断
@@ -640,22 +649,27 @@ namespace GameA.Game
             ColliderScene2D.CurScene.TryGetUnit(guid, out unitold);
             npcUnitold = unitold as NPCBase;
             if (npcUnitold != null) npcUnitold.SetNoShow();
-            NpcTaskTargetDynamic TriggerTask = task.TriggerTask;
-            switch ((ENpcTargetType) TriggerTask.TaskType)
+            if (task.TriggerType == (int) TrrigerTaskType.Colltion ||
+                task.TriggerType == (int) TrrigerTaskType.Colltion)
             {
-                case ENpcTargetType.Colltion:
-                    if (ColltionNum.ContainsKey(TriggerTask.TargetUnitID))
-                    {
-                        ColltionNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
-                    }
-                    break;
-                case ENpcTargetType.Moster:
-                    if (KillMonstorNum.ContainsKey(TriggerTask.TargetUnitID))
-                    {
-                        KillMonstorNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
-                    }
-                    break;
+                NpcTaskTargetDynamic TriggerTask = task.TriggerTask;
+                switch ((ENpcTargetType) TriggerTask.TaskType)
+                {
+                    case ENpcTargetType.Colltion:
+                        if (ColltionNum.ContainsKey(TriggerTask.TargetUnitID))
+                        {
+                            ColltionNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
+                        }
+                        break;
+                    case ENpcTargetType.Moster:
+                        if (KillMonstorNum.ContainsKey(TriggerTask.TargetUnitID))
+                        {
+                            KillMonstorNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
+                        }
+                        break;
+                }
             }
+
             NpcTaskDynamicsTimeLimit.Add(guid, GameRun.Instance.GameTimeSinceGameStarted);
             IntVec3 deliverNpcGuid = _deliverNpcDic[task.TargetNpcSerialNumber];
             UnitBase unit;
@@ -743,6 +757,7 @@ namespace GameA.Game
             return isOldNpcOrNoNpc;
         }
 
+        //获得目标的描述
         private string GetTargetDes(NpcTaskTargetDynamic target)
         {
             string des = "";
@@ -764,12 +779,13 @@ namespace GameA.Game
                     }
                     break;
                 case (int) ENpcTargetType.Dialog:
-                    des = String.Format("传话给编号{0}的NPC", target.TargetNpcNum);
+                    des = String.Format("传话给名字是{0}的NPC", GetNpcNameByNum(target.TargetNpcNum));
                     break;
             }
             return des;
         }
 
+        //获得任务前的对话
         private string GetTaskBeforeDiA(NpcTaskDynamic task, IntVec3 npcguid)
         {
             UnitBase unitbase;
@@ -788,6 +804,7 @@ namespace GameA.Game
             return dia;
         }
 
+        // 获得任务后的对话
         private string GetTaskFinishDia(NpcTaskDynamic task, IntVec3 npcguid)
         {
             UnitBase unitbase;
@@ -798,6 +815,49 @@ namespace GameA.Game
                 (int) ENpcFace.Happy, "再见！", extra.NpcName, NpcDia.brown,
                 (int) EnpcWaggle.None);
             return dia;
+        }
+
+        //根据编号获得名字
+        public string GetNpcNameByNum(int num)
+        {
+            string name = "";
+            using (var allnpc = _allNpcExtraData.GetEnumerator())
+            {
+                while (allnpc.MoveNext())
+                {
+                    if (allnpc.Current.Value.NpcSerialNumber == num)
+                    {
+                        if (allnpc.Current.Value.NpcName != null)
+                        {
+                            name += allnpc.Current.Value.NpcName;
+                            break;
+                        }
+                    }
+                }
+            }
+            return name;
+        }
+
+        //改变对话的头像
+        private void ChangeDiaIcon(IntVec3 npcguid, DictionaryListObject diaList)
+        {
+            if (diaList == null)
+            {
+                return;
+            }
+            DictionaryListObject newDictionaryListObject = new DictionaryListObject();
+            for (int i = 0; i < diaList.Count; i++)
+            {
+                string dia = diaList.Get<string>(i);
+                NpcDia npcDia = new NpcDia();
+                npcDia.AnalysisNpcDia(dia);
+                UnitBase unitbase;
+                ColliderScene2D.CurScene.TryGetUnit(npcguid, out unitbase);
+                var unit = unitbase.UnitDesc;
+                npcDia.NpcId = NpcDia.GetNpcType(unit.Id);
+                newDictionaryListObject.Add(npcDia.ToString());
+            }
+            diaList = newDictionaryListObject;
         }
     }
 }

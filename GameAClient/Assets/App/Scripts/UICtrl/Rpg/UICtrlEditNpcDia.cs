@@ -103,7 +103,7 @@ namespace GameA
             //添加按钮
             _cachedView.ConfirmBtn.onClick.AddListener(() =>
             {
-                if (_npcDiaList.Count <= 5)
+                if (_npcDiaList.Count < 5)
                 {
                     _npcDiaList.Add(_curEditNpcDia);
                     _curEditNpcDia = new NpcDia();

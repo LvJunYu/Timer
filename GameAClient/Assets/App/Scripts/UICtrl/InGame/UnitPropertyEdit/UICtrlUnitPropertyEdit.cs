@@ -560,6 +560,10 @@ namespace GameA
                 _validEditPropertyList.Add(EEditType.Direction);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(true);
                 RefreshForwardMenu();
+//                if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+//                {
+//                    _menuButtonArray[(int) EEditType.Direction].SetEnable(false);
+//                }
             }
             else
             {

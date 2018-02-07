@@ -109,21 +109,26 @@ namespace GameA.Game
                 {
                     return;
                 }
-                if (_diaPop == null)
-                {
-                    _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
-                        .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
-                }
+
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
                     if (CheckPlayerPos())
                     {
+                        if (_diaPop == null)
+                        {
+                            _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
+                                .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                        }
                         _diaPop.Show();
                         SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
                     else
                     {
-                        _diaPop.Hide();
+                        if (_diaPop != null)
+                        {
+                            _diaPop.Hide();
+                            _diaPop = null;
+                        }
                     }
                 }
 
@@ -132,6 +137,11 @@ namespace GameA.Game
                     _showIntervalTime = GetUnitExtra().NpcShowInterval * 30;
                     if (_timeIntervalDynamic > _showIntervalTime)
                     {
+                        if (_diaPop == null)
+                        {
+                            _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
+                                .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                        }
                         _diaPop.Show();
                         SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
@@ -139,7 +149,11 @@ namespace GameA.Game
                     if (_timeIntervalDynamic > _showTime + _showIntervalTime)
                     {
                         _timeIntervalDynamic = 0;
-                        _diaPop.Hide();
+                        if (_diaPop != null)
+                        {
+                            _diaPop.Hide();
+                            _diaPop = null;
+                        }
                     }
                 }
             }
@@ -211,46 +225,67 @@ namespace GameA.Game
 
         public void SetReady()
         {
-            _stateBar.SetReady();
-            _oldState = null;
-            _nowState = SetReady;
+            if (_stateBar != null)
+            {
+                _stateBar.SetReady();
+                _oldState = null;
+                _nowState = SetReady;
+            }
         }
 
         public void SetInTask()
         {
-            _stateBar.SetInTask();
-            _oldState = null;
-            _nowState = SetInTask;
+            if (_stateBar != null)
+            {
+                _stateBar.SetInTask();
+                _oldState = null;
+                _nowState = SetInTask;
+            }
         }
 
         public void SetFinishTask()
         {
-            _stateBar.AllTaskFinish();
-            _oldState = null;
-            _nowState = SetFinishTask;
+            if (_stateBar != null)
+            {
+                _stateBar.AllTaskFinish();
+                _oldState = null;
+                _nowState = SetFinishTask;
+            }
         }
 
         public void SetNpcNum()
         {
-            _stateBar.SetNpcNum(GetUnitExtra().NpcSerialNumber);
+            if (_stateBar != null)
+            {
+                _stateBar.SetNpcNum(GetUnitExtra().NpcSerialNumber);
+            }
         }
 
         public void SetShowTip()
         {
-            _stateBar.ShowTip();
-            _oldState = _nowState;
+            if (_stateBar != null)
+            {
+                _stateBar.ShowTip();
+                _oldState = _nowState;
+            }
         }
 
         public void SetNoShow()
         {
-            _stateBar.SetNoShow();
-            _oldState = null;
-            _nowState = SetFinishTask;
+            if (_stateBar != null)
+            {
+                _stateBar.SetNoShow();
+                _oldState = null;
+                _nowState = SetFinishTask;
+            }
         }
 
         public void SetNpcName()
         {
-            _stateBar.NameTextMesh.text = GetUnitExtra().NpcName;
+            if (_stateBar != null)
+            {
+                _stateBar.NameTextMesh.text = GetUnitExtra().NpcName;
+            }
         }
 
         internal override bool InstantiateView()

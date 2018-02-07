@@ -18,7 +18,6 @@ namespace GameA
         private bool _openAnim;
         private bool _completeAnim;
         private NpcTaskTargetDynamic _target = new NpcTaskTargetDynamic();
-        private USCtrlSliderSetting _killNumSetting;
 
         protected override void OnViewCreated()
         {

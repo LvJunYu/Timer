@@ -64,7 +64,7 @@ namespace GameA
                     _target.TaskType = (byte) ENpcTargetType.Colltion;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetColltionDic[_colltionList[0]].Id;
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
+                    _target.ColOrKillNum = 1;
                     _taskDynamic.BeforeTaskAward.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
                     _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);

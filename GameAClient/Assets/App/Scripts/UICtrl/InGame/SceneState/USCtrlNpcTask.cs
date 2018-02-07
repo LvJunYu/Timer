@@ -84,8 +84,10 @@ namespace GameA
                     }
                     if (_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
                     {
-                        TargetNumTextGroup[i].SetActiveEx(false);
                         TargetTypeTextGroup[i].text = "传话";
+                        TargetNumTextGroup[i].text =
+                            RpgTaskManger.Instance.GetNpcNameByNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i)
+                                .TargetNpcNum);
                     }
                     else
                     {

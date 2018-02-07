@@ -784,5 +784,23 @@ namespace GameA
                 }
             }
         }
+
+        public void GetAwardKeyCheck(int id)
+        {
+            if (UnitDefine.IsKey(id))
+            {
+                if (!_cachedView.KeyRoot.activeSelf)
+                {
+                    _cachedView.KeyRoot.gameObject.SetActiveEx(true);
+                }
+            }
+            if (UnitDefine.IsTeeth(id))
+            {
+                if (!_cachedView.CollectionRoot.activeSelf)
+                {
+                    _cachedView.CollectionRoot.gameObject.SetActiveEx(true);
+                }
+            }
+        }
     }
 }

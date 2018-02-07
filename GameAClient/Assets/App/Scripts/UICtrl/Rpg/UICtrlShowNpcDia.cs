@@ -16,6 +16,7 @@ namespace GameA
         private Sprite _faceSprite;
         private string _colorName;
         private Color _textColor;
+        private float _time;
 
         public Sprite FaceSprite
         {
@@ -35,14 +36,19 @@ namespace GameA
             base.OnDestroy();
         }
 
-
         public override void OnUpdate()
         {
             base.OnUpdate();
-
             if (CrossPlatformInputManager.GetButtonDown(InputManager.TagAssist))
             {
                 OnNextDiaBtnClick();
+            }
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord)
+            {
+                if (Time.realtimeSinceStartup - _time > 3.0f)
+                {
+                    OnNextDiaBtnClick();
+                }
             }
         }
 
@@ -59,7 +65,7 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-//            _time = Time.realtimeSinceStartup;
+            _time = Time.realtimeSinceStartup;
             GM2DGame.Instance.Continue();
         }
 
@@ -87,10 +93,12 @@ namespace GameA
             {
                 ShowOneDia(0);
             }
+            _time = Time.realtimeSinceStartup;
         }
 
         private void OnNextDiaBtnClick()
         {
+            _time = Time.realtimeSinceStartup;
             if (_index < _diaCout - 1)
             {
                 ++_index;
