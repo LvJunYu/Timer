@@ -89,7 +89,7 @@ namespace GameA
                 _cachedView.WinScoreSetting.SetActiveEx(value);
             });
             _cachedView.WinScoreSetting.SetActiveEx(EditMode.Instance.MapStatistics.NetBattleScoreWinCondition);
-            _usTimeLimitSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleTimeLimit);
+            _usTimeLimitSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleTimeLimit, true, -1 , _mainCtrl.CurProject.MaxTimeLimit);
             _usArriveScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleArriveScore);
             _usCollectGemScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleCollectGemScore);
             _usKillMonsterScoreSetting.SetCur(EditMode.Instance.MapStatistics.NetBattleKillMonsterScore);

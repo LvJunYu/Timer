@@ -46,6 +46,18 @@ namespace GameA
 
         public static int ProjectTypeAllMask = 1 | (1<<1) | (1<<2);
 
+        public int MaxTimeLimit
+        {
+            get
+            {
+                if (_projectType == EProjectType.PT_Single)
+                {
+                    return 3600;
+                }
+                return 600;
+            }
+        }
+
         public UserInfoDetail UserInfoDetail
         {
             get { return _userInfoDetail; }
