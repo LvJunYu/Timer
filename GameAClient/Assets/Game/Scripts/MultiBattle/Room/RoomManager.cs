@@ -190,8 +190,7 @@ namespace GameA.Game
             SendToMSServer(msg);
         }
 
-        public void SendRequestQuickPlay(EQuickPlayType type = EQuickPlayType.EQPT_All, long projectId = 1,
-            EProjectType projectType = EProjectType.PT_Single)
+        public void SendRequestQuickPlay(EQuickPlayType type = EQuickPlayType.EQPT_All, long projectId = 1)
         {
             if (!_msClient.IsConnected())
             {
@@ -205,20 +204,17 @@ namespace GameA.Game
             switch (type)
             {
                 case EQuickPlayType.EQPT_All:
+                case EQuickPlayType.EQPT_Offical:
                     SendToMSServer(msg);
                     break;
                 case EQuickPlayType.EQPT_Specific:
                     msg.ProjectId = projectId;
                     ProjectManager.Instance.GetDataOnAsync(projectId, p =>
                     {
-                        msg.OfficalMultiBattleType = (int) p.ProjectType;
                         msg.MaxUserCount = p.NetData.PlayerCount;
+                        msg.MinUserCount = p.NetData.MinPlayer;
                         SendToMSServer(msg);
                     });
-                    break;
-                case EQuickPlayType.EQPT_Offical:
-                    msg.OfficalMultiBattleType = (int) projectType;
-                    SendToMSServer(msg);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("type", type, null);
@@ -321,6 +317,20 @@ namespace GameA.Game
             SendToMSServer(data);
         }
 
+        public void SendCreateTeam()
+        {
+            var data = new Msg_CM_CreateTeam();
+            data.ProjectId.AddRange(LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList);
+            SendToMSServer(data);
+        }
+        
+        public void SendExitTeam()
+        {
+            var data = new Msg_CM_ExitTeam();
+            data.Flag = 1;
+            SendToMSServer(data);
+        }
+        
         #endregion
 
         #region Room Receive
@@ -438,5 +448,6 @@ namespace GameA.Game
         }
 
         #endregion
+
     }
 }

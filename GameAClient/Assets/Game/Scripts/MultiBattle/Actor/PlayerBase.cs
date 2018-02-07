@@ -1131,13 +1131,11 @@ namespace GameA.Game
                 return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfPlayer) && IsSameTeam(unit.TeamId) ||
                        PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyPlayer) && !IsSameTeam(unit.TeamId);
             }
-
             if (unit.IsMonster)
             {
                 return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfMonster) && IsSameTeam(unit.TeamId) ||
                        PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
             }
-
             return true;
         }
 
@@ -1149,7 +1147,6 @@ namespace GameA.Game
                 {
                     _inLadders.Add(ladder);
                 }
-
                 _inLadder = true;
             }
             else
@@ -1158,7 +1155,6 @@ namespace GameA.Game
                 {
                     _inLadders.Remove(ladder);
                 }
-
                 if (_inLadders.Count == 0)
                 {
                     _inLadder = false;

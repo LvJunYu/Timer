@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -12,16 +13,23 @@ namespace GameA
         private bool _hasRequested;
         private bool _pushGoldEnergyStyle;
         private List<Project> _dataList;
-        private Dictionary<long, UMCtrlOfficialProject> _umDic;
+        private List<UMCtrlOfficialProject> _umList;
         private USCtrlChat _chat;
         private OfficialProjectList _data = new OfficialProjectList();
-        private Msg_MC_TeamInfo _teamInfo;
         private List<Msg_MC_RoomUserInfo> _userList;
         private USCtrlMultiTeam[] _usCtrlMultiTeams;
 
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainUI;
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnSelectedOfficalProjectListChanged, OnSelectedOfficalProjectListChanged);
+            RegisterEvent(EMessengerType.OnCreateTeam, OnCreateTeam);
+            RegisterEvent<Msg_MC_ExitTeam>(EMessengerType.OnTeamerExit, OnTeamerExit);
         }
 
         protected override void SetPartAnimations()
@@ -56,26 +64,22 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            _teamInfo = parameter as Msg_MC_TeamInfo;
-            if (_teamInfo == null)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
-                return;
-            }
-            _userList = _teamInfo.UserList;
             base.OnOpen(parameter);
             if (!_pushGoldEnergyStyle)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
             }
-
+            _chat.Open();
+            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.RefuseTeamInvite;
             if (!_hasRequested)
             {
                 RequestData();
             }
-
-            RefreshView();
+            else
+            {
+                CompleteRequestData();
+            }
         }
 
         protected override void OnClose()
@@ -91,33 +95,50 @@ namespace GameA
 
         private void RequestData()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在读取数据");
             _data.Request(EOfficailProjectType.All, () =>
             {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 _dataList = _data.ProjectSyncList;
                 if (_dataList != null)
                 {
-                    _umDic = new Dictionary<long, UMCtrlOfficialProject>(_dataList.Count);
+                    _umList = new List<UMCtrlOfficialProject>(_dataList.Count);
                     for (int i = 0; i < _dataList.Count; i++)
                     {
                         var um = new UMCtrlOfficialProject();
                         um.Init(_cachedView.GridRtf, ResScenary);
                         um.Set(_dataList[i]);
-                        _umDic.Add(_dataList[i].ProjectId, um);
+                        _umList.Add(um);
+                        LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
                     }
-
                     _hasRequested = true;
+                    CompleteRequestData();
                 }
+            }, () =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
+                SocialGUIManager.ShowPopupDialog("请求关卡数据失败");
             });
         }
 
-        private void RefreshView()
+        private void CompleteRequestData()
         {
-            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.RefuseTeamInvite;
-            RefreshTeamerPannel();
+            var teamInfo = LocalUser.Instance.MutiBattleData.TeamInfo;
+            _cachedView.TeamPannel.SetActive(teamInfo != null);
+            if (teamInfo == null)
+            {
+                RoomManager.Instance.SendCreateTeam();
+            }
+            else
+            {
+                RefreshTeamPannel();
+            }
         }
 
-        private void RefreshTeamerPannel()
+        private void RefreshTeamPannel()
         {
+            _userList = LocalUser.Instance.MutiBattleData.TeamInfo.UserList;
             _cachedView.QuitTeamBtn.SetActiveEx(_userList.Count > 1);
             _cachedView.InviteButton.SetActiveEx(_userList.Count < TeamManager.MaxTeamCount);
             for (int i = 0; i < _usCtrlMultiTeams.Length; i++)
@@ -133,16 +154,49 @@ namespace GameA
             }
         }
 
+        private void OnTeamerExit(Msg_MC_ExitTeam msg)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+
+            if (LocalUser.Instance.UserGuid == msg.UserId)
+            {
+                if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
+                {
+                    SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
+                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                }
+                else
+                {
+                    OnLeaveTeam();
+                }
+            }
+            else
+            {
+                RefreshTeamPannel();
+            }
+        }
+
+        private void OnLeaveTeam()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
+        }
+
         private void OnQuitTeamBtn()
         {
+            RoomManager.Instance.SendExitTeam();
         }
 
         private void OnInviteButton()
         {
+            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>();
         }
 
         private void OnQuickStartBtn()
         {
+            RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Offical);
         }
 
         private void OnReturnBtn()
@@ -150,21 +204,28 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
         }
 
-        public void OnProjectSelectedChanged(List<long> list, bool value)
+        private void OnSelectedOfficalProjectListChanged()
         {
-            if (_umDic == null)
+            if (_dataList == null || _umList == null)
             {
                 return;
             }
 
-            UMCtrlOfficialProject um;
-            for (int i = 0; i < list.Count; i++)
+            var list = LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList;
+            for (int i = 0; i < _dataList.Count; i++)
             {
-                if (_umDic.TryGetValue(list[i], out um))
-                {
-                    um.SetSelected(value);
-                }
+                _umList[i].SetSelected(list.Contains(_dataList[i].ProjectId));
             }
+        }
+
+        private void OnCreateTeam()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            _cachedView.TeamPannel.SetActive(true);
+            RefreshTeamPannel();
         }
     }
 }

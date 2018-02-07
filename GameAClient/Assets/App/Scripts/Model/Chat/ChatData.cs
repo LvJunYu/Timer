@@ -25,6 +25,7 @@ namespace GameA
         private List<Item> _worldInviteChatList = new List<Item>();
         private List<Item> _systemChatList = new List<Item>();
         private List<Item> _roomChatList = new List<Item>();
+        private List<Item> _teamChatList = new List<Item>();
         private List<Item> _inGameCampChatList = new List<Item>();
         private List<Item> _inGameAllChatList = new List<Item>();
 
@@ -63,22 +64,24 @@ namespace GameA
             _roomCDTimer.Zero();
             _worldCDTimer.Zero();
         }
-        
+
         public bool SendInGameCampChat(string data)
         {
             if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
             {
                 return false;
             }
+
             return true;
         }
-        
+
         public bool SendInGameAllChat(string data)
         {
             if (!_ingameCDTimer.PassedTicks(InGameChatCDTimeTick))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -94,7 +97,7 @@ namespace GameA
             RoomManager.Instance.SendToRSServer(msg);
             return true;
         }
-        
+
         public bool SendTeamChat(string data)
         {
             if (!_teamCDTimer.PassedTicks(TeamChatCDTimeTick))
@@ -160,7 +163,7 @@ namespace GameA
             _inGameAllChatList.Clear();
             FireCutHeadEvent(EChatType.Room);
         }
-        
+
         public void OnRCChat(Msg_RC_RoomChat msgChat)
         {
             var item = new Item(msgChat);
@@ -205,6 +208,8 @@ namespace GameA
                     return _systemChatList;
                 case EChatType.Room:
                     return _roomChatList;
+                case EChatType.Team:
+                    return _teamChatList;
                 case EChatType.InGameCamp:
                     return _inGameCampChatList;
                 case EChatType.InGameAll:
