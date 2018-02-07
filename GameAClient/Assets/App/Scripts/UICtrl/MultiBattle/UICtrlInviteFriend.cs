@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -8,12 +7,26 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlInviteFriend : UICtrlAnimationBase<UIViewInviteFriend>
     {
-        private long _battleId;
-        private long _selectFriendId;
+//        private const int _maxSharedNum = 10;
+        private bool _allSelected;
+        private List<long> _sharedList = new List<long>();
         private List<UserInfoDetail> _dataList;
 
         private List<CardDataRendererWrapper<UserInfoDetail>> _contentList =
             new List<CardDataRendererWrapper<UserInfoDetail>>();
+
+        public bool AllSelected
+        {
+            get { return _allSelected; }
+            set
+            {
+                _allSelected = value;
+                if (_cachedView.AllSelectTog.isOn != _allSelected)
+                {
+                    _cachedView.AllSelectTog.isOn = _allSelected;
+                }
+            }
+        }
 
         protected override void OnViewCreated()
         {
@@ -22,13 +35,13 @@ namespace GameA
             _cachedView.AddFriendsBtn.onClick.AddListener(OnAddFriendsBtn);
             _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
             _cachedView.CancelBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.AllSelectTog.onValueChanged.AddListener(OnAllSelectValueChanged);
             _cachedView.GridDataScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _selectFriendId = -1;
             RequestData();
             RefreshView();
         }
@@ -37,6 +50,8 @@ namespace GameA
         {
             _dataList = null;
             _contentList.Clear();
+            _sharedList.Clear();
+            AllSelected = false;
             base.OnClose();
         }
 
@@ -49,18 +64,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpDialog;
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent<long>(EMessengerType.OnShadowBattleStart, OnShadowBattleStart);
-        }
-
-        private void OnShadowBattleStart(long battleId)
-        {
-            _battleId = battleId;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void RequestData()
@@ -72,11 +76,7 @@ namespace GameA
                 {
                     RefreshView();
                 }
-            }, code =>
-            {
-                LogHelper.Error("RelationUserList request friendList fail, code = {0}", code);
-                SocialGUIManager.ShowPopupDialog("请求数据失败");
-            });
+            }, code => { SocialGUIManager.ShowPopupDialog("请求数据失败。"); });
         }
 
         private void RefreshView()
@@ -84,7 +84,7 @@ namespace GameA
             if (_dataList == null)
             {
                 _cachedView.GridDataScroller.SetEmpty();
-                _cachedView.FriendsPannel.SetActive(false);
+                _cachedView.FriendPannel.SetActive(false);
                 _cachedView.EmptyPannel.SetActive(true);
                 return;
             }
@@ -97,30 +97,28 @@ namespace GameA
                 _contentList.Add(w);
             }
             _cachedView.GridDataScroller.SetItemCount(_contentList.Count);
-            _cachedView.FriendsPannel.SetActive(_contentList.Count != 0);
+            _cachedView.FriendPannel.SetActive(_contentList.Count != 0);
             _cachedView.EmptyPannel.SetActive(_contentList.Count == 0);
+            _cachedView.AllSelectTog.isOn = AllSelected;
         }
 
         private void OnItemClick(CardDataRendererWrapper<UserInfoDetail> item)
         {
-            if (item.IsSelected)
+            if (item.IsSelected && !_sharedList.Contains(item.Content.UserInfoSimple.UserId))
             {
-                _selectFriendId = item.Content.UserInfoSimple.UserId;
+                _sharedList.Add(item.Content.UserInfoSimple.UserId);
             }
-            else
+            else if (!item.IsSelected && _sharedList.Contains(item.Content.UserInfoSimple.UserId))
             {
-                if (_selectFriendId == item.Content.UserInfoSimple.UserId)
-                {
-                    _selectFriendId = -1;
-                }
+                _sharedList.Remove(item.Content.UserInfoSimple.UserId);
+                AllSelected = false;
             }
         }
 
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlShadowBattleFriendHelp();
+            var item = new UMCtrlWorldShareProject();
             item.Init(parent, ResScenary);
-            item.SetToggleGroup(_cachedView.ToggleGroup);
             return item;
         }
 
@@ -141,33 +139,38 @@ namespace GameA
             }
         }
 
-        private void OnOKBtn()
+        private void OnAllSelectValueChanged(bool value)
         {
-            if (_selectFriendId == -1)
+            if (value)
             {
-                SocialGUIManager.ShowPopupDialog("请选择助战好友。");
+                if (!AllSelected)
+                {
+                    for (int i = 0; i < _contentList.Count; i++)
+                    {
+                        _contentList[i].IsSelected = true;
+                        _contentList[i].FireOnClick();
+                    }
+                    _cachedView.GridDataScroller.RefreshCurrent();
+                    AllSelected = true;
+                }
             }
             else
             {
-                RemoteCommands.RequestHelpShadowBattle(_battleId, _selectFriendId, msg =>
+                if (AllSelected)
                 {
-                    if (msg.ResultCode == (int) EShareProjectCode.SPC_Success)
+                    for (int i = 0; i < _contentList.Count; i++)
                     {
-                        SocialGUIManager.ShowPopupDialog("请求助战成功");
-                        SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleFriendHelp>();
-                        Messenger.Broadcast(EMessengerType.OnShadowBattleFriendHelp);
+                        _contentList[i].IsSelected = false;
+                        _contentList[i].FireOnClick();
                     }
-                    else
-                    {
-                        SocialGUIManager.ShowPopupDialog("请求助战失败");
-                        SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleFriendHelp>();
-                    }
-                }, code =>
-                {
-                    SocialGUIManager.ShowPopupDialog("请求助战失败");
-                    SocialGUIManager.Instance.CloseUI<UICtrlShadowBattleFriendHelp>();
-                });
+                    _cachedView.GridDataScroller.RefreshCurrent();
+                    AllSelected = false;
+                }
             }
+        }
+
+        private void OnOKBtn()
+        {
         }
 
         private void OnAddFriendsBtn()

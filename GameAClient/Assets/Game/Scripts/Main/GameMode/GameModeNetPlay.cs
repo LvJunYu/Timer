@@ -286,6 +286,7 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
             }
+            SocialGUIManager.Instance.OpenUI<UICtrlChatInGame>();
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)

@@ -68,7 +68,7 @@ namespace GameA.Game
             {
                 for (int i = _units.Count - 1; i >= 0; i--)
                 {
-                    if (_units[i] == null || !_colliderGrid.Intersects(_units[i].ColliderGrid))
+                    if (_units[i] == null || !_colliderGrid.Intersects(_units[i].ColliderGrid) || !_units[i].IsAlive)
                     {
                         _units.RemoveAt(i);
                     }

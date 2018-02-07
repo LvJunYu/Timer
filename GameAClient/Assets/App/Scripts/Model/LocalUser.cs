@@ -24,6 +24,7 @@ namespace GameA
         private readonly MailList _mailList = new MailList();
         private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
         private readonly RelationUserList _relationUserList = new RelationUserList();
+        private readonly MutiBattleData _mutiBattleData = new MutiBattleData();
 
         private readonly AddUserList _addUserList = new AddUserList();
 
@@ -214,6 +215,10 @@ namespace GameA
             get { return _npcDialogPreinstallList; }
         }
 
+        public MutiBattleData MutiBattleData
+        {
+            get { return _mutiBattleData; }
+        }
         #endregion
 
         #region 方法

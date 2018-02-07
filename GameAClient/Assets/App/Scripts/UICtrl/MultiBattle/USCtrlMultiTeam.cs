@@ -37,13 +37,14 @@ namespace GameA
             });
             bool isMyself = _user.UserGuid == LocalUser.Instance.UserGuid;
             _cachedView.BgSelectedObj.SetActive(isMyself);
+            _cachedView.DeleteBtn.SetActiveEx(!isMyself && LocalUser.Instance.MutiBattleData.IsMyTeam);
         }
 
         private void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.DefaultCoverTexture);
         }
-  
+
         private void OnDeleteBtn()
         {
         }

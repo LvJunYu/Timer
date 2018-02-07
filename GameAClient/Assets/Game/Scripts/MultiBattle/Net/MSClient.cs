@@ -10,7 +10,7 @@ namespace SoyEngine.MasterServer
         private float HeartBeatIntervalSecond = 50;
         private GameTimer _heartBeatGameTimer = new GameTimer();
         private int _reconnectAttempts;
-        
+
         public MSClient()
         {
             _handler = new MSHandler();
@@ -45,15 +45,22 @@ namespace SoyEngine.MasterServer
             base.OnDisconnected(code);
             LogHelper.Debug("MSClient OnDisConnected");
             Loom.QueueOnMainThread(Reconnect);
+            //掉线时客户端自动推出队伍
+            Msg_MC_ExitTeam msg = new Msg_MC_ExitTeam();
+            msg.Reason = EMCExitTeamReason.MCETR_Disconnect;
+            msg.UserId = LocalUser.Instance.UserGuid;
+            LocalUser.Instance.MutiBattleData.OnExitTeam(msg);
         }
 
         private void TryReconnect()
         {
-            if (_reconnectAttempts < 5) {
-                _reconnectAttempts++;  
+            if (_reconnectAttempts < 5)
+            {
+                _reconnectAttempts++;
             }
+
             //重连的间隔时间会越来越长  
-            int timeout = 2 << _reconnectAttempts;  
+            int timeout = 2 << _reconnectAttempts;
             LogHelper.Info("链接关闭，{0}秒后重新连接", timeout);
             Loom.QueueOnMainThread(Reconnect, timeout * 1000);
         }
@@ -62,7 +69,7 @@ namespace SoyEngine.MasterServer
         {
             Connect(_ip, _port, null, exception => TryReconnect(), 5000);
         }
-        
+
         private void StartHeartBeatCheck()
         {
             LogHelper.Debug("StartHeartBeatCheck TimerInterval: {0}", _heartBeatGameTimer.GetIntervalSeconds());
@@ -83,6 +90,7 @@ namespace SoyEngine.MasterServer
                     {
                         _heartBeatGameTimer.Reset();
                     }
+
                     StartHeartBeatCheck();
                 }));
         }
@@ -109,16 +117,36 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_Chat>(Msg_MC_Chat);
             RegisterHandler<Msg_MC_SelectProject>(Msg_MC_SelectProject);
             RegisterHandler<Msg_MC_UnselectProject>(Msg_MC_UnselectProject);
+            RegisterHandler<Msg_MC_CreateTeam>(Msg_MC_CreateTeam);
+            RegisterHandler<Msg_MC_ExitTeam>(Msg_MC_ExitTeam);
+        }
+
+        private void Msg_MC_ExitTeam(Msg_MC_ExitTeam msg, object netlink)
+        {
+            LocalUser.Instance.MutiBattleData.OnExitTeam(msg);
+        }
+
+        private void Msg_MC_CreateTeam(Msg_MC_CreateTeam msg, object netlink)
+        {
+            if (msg.ResultCode == EMCCreateTeamCode.MCCT_Success)
+            {
+                LocalUser.Instance.MutiBattleData.OnCreateTeam(msg);
+            }
+            else
+            {
+                LogHelper.Error("CreateTeam fail, ResultCode = {0}", msg.ResultCode);
+                SocialGUIManager.ShowPopupDialog("创建队伍失败");
+            }
         }
 
         private void Msg_MC_UnselectProject(Msg_MC_UnselectProject msg, object netlink)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnProjectSelectedChanged(msg.ProjectIdList, false);
+            LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, false);
         }
 
         private void Msg_MC_SelectProject(Msg_MC_SelectProject msg, object netlink)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlMultiBattle>().OnProjectSelectedChanged(msg.ProjectIdList, true);
+            LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, true);
         }
 
         private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)
@@ -211,7 +239,7 @@ namespace SoyEngine.MasterServer
         {
             RoomManager.Instance.OnCreateRoomRet(msg);
         }
-        
+
         private void Msg_MC_QueryRoomRet(Msg_MC_QueryRoom msg, object obj)
         {
             RoomManager.Instance.OnQueryRoomRet(msg);
