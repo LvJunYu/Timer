@@ -20,6 +20,13 @@ namespace GameA
         private UIRoot _uiRoot;
         private Vector3 _pos;
         private bool _isofficial;
+
+        public bool Isofficial
+        {
+            get { return _isofficial; }
+            set { _isofficial = value; }
+        }
+
         private List<Action> _callbackList;
         private Action<string> _addAction;
         private Action _refresh;
@@ -48,8 +55,9 @@ namespace GameA
             _cachedView.ApplyBtn.onClick.RemoveAllListeners();
         }
 
-        public void Set(int id, List<UMCtrlNpcInputDiaItem> list, NpcDialogPreinstallList datalist, bool isAdd,
-            bool isofficial, List<Action> callbackList, Action<string> addDiAction, Action refresh)
+        public void Set(int id, List<UMCtrlNpcInputDiaItem> list, bool isAdd,
+            bool isofficial, List<Action> callbackList, Action<string> addDiAction, Action refresh,
+            NpcDialogPreinstallList datalist = null, string officalDia = null)
         {
             _list = list;
             _datalist = datalist;
@@ -58,19 +66,39 @@ namespace GameA
             _isofficial = isofficial;
             _callbackList = callbackList;
             _callbackList.Add(NoSelectBtn);
-
-            if (!isAdd)
+            if (!isofficial)
             {
-                _idList.Add(datalist.DataList[id].Id);
-                _cachedView.InputField.text = datalist.DataList[id].Data;
+                if (!isAdd)
+                {
+                    _idList.Add(datalist.DataList[id].Id);
+                    _cachedView.InputField.text = datalist.DataList[id].Data;
+                }
+                else
+                {
+                    _cachedView.InputField.text = null;
+                }
             }
             else
             {
-                _cachedView.InputField.text = null;
+                _cachedView.InputField.text = officalDia;
             }
+
             _addAction = addDiAction;
             _refresh = refresh;
             Refresh();
+        }
+
+        public void SetOffcial(List<Action> callbackList, List<Action> callbackListTemp, string officalDia,
+            Action<string> addDiAction)
+        {
+            _cachedView.ApplyBtn.SetActiveEx(true);
+            _cachedView.DeleteBtn.SetActiveEx(false);
+            _callbackList = callbackList;
+            _callbackList.Add(NoSelectBtn);
+            callbackListTemp.Add(NoSelectBtn);
+            _addAction = addDiAction;
+            _cachedView.InputField.text = officalDia;
+            _cachedView.SelectImage.gameObject.SetActiveEx(false);
         }
 
         private void OnEndSaveDia(string data)
@@ -118,7 +146,7 @@ namespace GameA
             _cachedView.AddImage.SetActiveEx(false);
             UMCtrlNpcInputDiaItem item = UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_parent, EResScenary.Game);
             item.InitItem(_parent);
-            item.Set(0, _list, _datalist, true, false, _callbackList, _addAction, _refresh);
+            item.Set(0, _list, true, false, _callbackList, _addAction, _refresh, _datalist);
             _list.Add(item);
         }
 
