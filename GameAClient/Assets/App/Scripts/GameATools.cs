@@ -670,7 +670,7 @@ namespace GameA
             return newstr;
         }
 
-        public static string GetRawNickName(string str, int maxLengh)
+        public static string GetRawStr(string str, int maxLengh)
         {
             if (GetStrLength(str) <= maxLengh)
             {

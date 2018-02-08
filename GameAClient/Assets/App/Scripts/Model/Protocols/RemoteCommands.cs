@@ -477,6 +477,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUserInfoSimpleBatch {
+            get { return _isRequstingUserInfoSimpleBatch; }
+        }
+        private static bool _isRequstingUserInfoSimpleBatch = false;
+        /// <summary>
+		/// 用户简要信息
+		/// </summary>
+		/// <param name="userIdList">用户id</param>
+        public static void UserInfoSimpleBatch (
+            List<long> userIdList,
+            Action<Msg_SC_CMD_UserInfoSimpleBatch> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUserInfoSimpleBatch) {
+                return;
+            }
+            _isRequstingUserInfoSimpleBatch = true;
+            Msg_CS_CMD_UserInfoSimpleBatch msg = new Msg_CS_CMD_UserInfoSimpleBatch();
+            // 用户简要信息
+            msg.UserIdList.AddRange(userIdList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UserInfoSimpleBatch>(
+                SoyHttpApiPath.UserInfoSimpleBatch, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUserInfoSimpleBatch = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UserInfoSimpleBatch", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUserInfoSimpleBatch = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateUserInfo {
             get { return _isRequstingUpdateUserInfo; }
         }

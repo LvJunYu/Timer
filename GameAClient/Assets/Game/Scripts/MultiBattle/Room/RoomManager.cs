@@ -330,6 +330,34 @@ namespace GameA.Game
             data.Flag = 1;
             SendToMSServer(data);
         }
+
+        public void SendKickTeam(long userId)
+        {
+            var data = new Msg_CM_KickTeamUser();
+            data.UserId = userId;
+            SendToMSServer(data);
+        }
+        
+        public void SendInviteFriends(List<long> list)
+        {
+            var data = new Msg_CM_InviteToTeam();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+        
+        public void SendJoinTeam(long hostId)
+        {
+            var data = new Msg_CM_JoinTeam();
+            data.HostId = hostId;
+            SendToMSServer(data);
+        }
+         
+        public void SendQueryUserList(List<long> list)
+        {
+            var data = new Msg_CM_QueryUserList();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
         
         #endregion
 

@@ -119,6 +119,42 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_UnselectProject>(Msg_MC_UnselectProject);
             RegisterHandler<Msg_MC_CreateTeam>(Msg_MC_CreateTeam);
             RegisterHandler<Msg_MC_ExitTeam>(Msg_MC_ExitTeam);
+            RegisterHandler<Msg_MC_TeamInvite>(Msg_MC_TeamInvite);
+            RegisterHandler<Msg_MC_JoinTeam>(Msg_MC_JoinTeam);
+            RegisterHandler<Msg_MC_EnterTeam>(Msg_MC_EnterTeam);
+            RegisterHandler<Msg_MC_SyncUserStatusChange>(Msg_MC_SyncUserStatusChange);
+            RegisterHandler<Msg_MC_TeamQuickStartWarn>(Msg_MC_TeamQuickStartWarn);
+            RegisterHandler<Msg_MC_QueryUserList>(Msg_MC_QueryUserList);
+        }
+
+        private void Msg_MC_QueryUserList(Msg_MC_QueryUserList msg, object netlink)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlInviteFriend>().OnQueryUserList(msg.DataList);
+        }
+
+        private void Msg_MC_TeamQuickStartWarn(Msg_MC_TeamQuickStartWarn msg, object netlink)
+        {
+            SocialGUIManager.ShowPopupDialog("有玩家在游戏中，无法开始");
+        }
+
+        private void Msg_MC_SyncUserStatusChange(Msg_MC_SyncUserStatusChange msg, object netlink)
+        {
+            LocalUser.Instance.MutiBattleData.SyncUserStatusChange(msg);
+        }
+
+        private void Msg_MC_EnterTeam(Msg_MC_EnterTeam msg, object netlink)
+        {
+            LocalUser.Instance.MutiBattleData.OnEnterTeam(msg);
+        }
+
+        private void Msg_MC_JoinTeam(Msg_MC_JoinTeam msg, object netlink)
+        {
+            LocalUser.Instance.MutiBattleData.OnJoinTeam(msg);
+        }
+
+        private void Msg_MC_TeamInvite(Msg_MC_TeamInvite msg, object netlink)
+        {
+            LocalUser.Instance.MutiBattleData.OnTeamInvite(msg);
         }
 
         private void Msg_MC_ExitTeam(Msg_MC_ExitTeam msg, object netlink)

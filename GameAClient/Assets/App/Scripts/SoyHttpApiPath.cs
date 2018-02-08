@@ -36,6 +36,8 @@ namespace SoyEngine
         public const string LoginByQQGame = "/account/loginByQQGame";
         // 用户简要信息
         public const string UserInfoSimple = "/user/getSimple";
+        // 用户简要信息
+        public const string UserInfoSimpleBatch = "/user/getSimpleBatch";
         // 用户详细信息
         public const string UserInfoDetail = "/user/get";
         // 获取等级数据

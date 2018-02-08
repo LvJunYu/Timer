@@ -55,7 +55,7 @@ namespace GameA
             RefreshView();
         }
 
-        public void RefreshView()
+        protected virtual void RefreshView()
         {
             if (_wrapper == null)
             {
