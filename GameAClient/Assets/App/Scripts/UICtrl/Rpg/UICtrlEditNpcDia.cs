@@ -21,10 +21,13 @@ namespace GameA
         List<Image> _iconSelectImages = new List<Image>();
         List<USCtrlNpcDiaItem> _npcDiaItemList = new List<USCtrlNpcDiaItem>();
         private Enpc _oriENpcType;
+        private List<string> _officialDiaList = new List<string>();
 
         private List<UMCtrlNpcInputDiaItem> _inputItemList = new List<UMCtrlNpcInputDiaItem>();
 
         private List<Action> _callbackActions = new List<Action>();
+
+        private List<Action> _callbackofficialActions = new List<Action>();
         //动画
 
         private Sequence _openWaggleSequence;
@@ -43,6 +46,21 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _officialDiaList.Add("123");
+            _officialDiaList.Add("456");
+            _officialDiaList.Add("789");
+            _officialDiaList.Add("111");
+            _officialDiaList.Add("849");
+
+            //官方设置的常用对话
+            for (int i = 0; i < _officialDiaList.Count; i++)
+            {
+                UMCtrlNpcInputDiaItem item =
+                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
+                        EResScenary.UIInGame);
+                item.InitItem(_cachedView.ConmmonContentTrs);
+                item.SetOffcial(_callbackActions, _callbackofficialActions, _officialDiaList[i], UseCommonDia);
+            }
 
             _cachedView.ExitBtn.onClick.AddListener(Close);
             _cachedView.ExitMaskBtn.onClick.AddListener(Close);
@@ -164,7 +182,7 @@ namespace GameA
                     item.AnalysisNpcDia(_npcDiaStrList.ToList<string>()[i]);
                     _npcDiaList.Add(item);
                 }
-                _curEditNpcDia = _npcDiaList[0];
+                _curEditNpcDia = new NpcDia();
             }
             RefreshDiaList();
 
@@ -493,10 +511,14 @@ namespace GameA
         {
             for (int i = 0; i < _inputItemList.Count; i++)
             {
-                UMPoolManager.Instance.Free(_inputItemList[i]);
+                if (!_inputItemList[i].Isofficial)
+                {
+                    UMPoolManager.Instance.Free(_inputItemList[i]);
+                }
             }
             _inputItemList.Clear();
             _callbackActions.Clear();
+            _callbackActions.AddRange(_callbackofficialActions);
 
             for (int i = 0; i < _dialogPreinstallList.DataList.Count; i++)
             {
@@ -504,15 +526,15 @@ namespace GameA
                     UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                         EResScenary.UIInGame);
                 item.InitItem(_cachedView.ConmmonContentTrs);
-                item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions,
-                    UseCommonDia, RequestData);
+                item.Set(i, _inputItemList, false, false, _callbackActions,
+                    UseCommonDia, RequestData, _dialogPreinstallList);
                 _inputItemList.Add(item);
             }
             UMCtrlNpcInputDiaItem additem =
                 UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                     EResScenary.UIInGame);
-            additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions,
-                UseCommonDia, RequestData);
+            additem.Set(0, _inputItemList, true, false, _callbackActions,
+                UseCommonDia, RequestData, _dialogPreinstallList);
             additem.InitItem(_cachedView.ConmmonContentTrs);
             _inputItemList.Add(additem);
         }
