@@ -64,6 +64,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return true;
         }
 
@@ -310,9 +311,9 @@ namespace GameA.Game
                 default:
                     throw new ArgumentOutOfRangeException("gamePhase", gamePhase, null);
             }
-            
+
             _curGamePhase = gamePhase;
-            
+
             switch (_curGamePhase)
             {
                 case EGamePhase.None:
@@ -429,10 +430,8 @@ namespace GameA.Game
             if (msg.UserGuid == LocalUser.Instance.UserGuid)
             {
                 _ePhase = EPhase.Close;
-                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null, new KeyValuePair<string, Action>("确定", () =>
-                {
-                    SocialApp.Instance.ReturnToApp();
-                }));
+                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null,
+                    new KeyValuePair<string, Action>("确定", () => { SocialApp.Instance.ReturnToApp(); }));
             }
             else
             {
@@ -507,8 +506,10 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 SetGamePhase(EGamePhase.Battle);
             }
+
             if (msg.FrameDatas[0].FrameInx >= _preServerFrameCount)
             {
                 for (int i = 0; i < msg.FrameDatas.Count; i++)
@@ -542,6 +543,7 @@ namespace GameA.Game
                     {
                         return;
                     }
+
                     SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
                     break;
                 case ERoomCloseCode.ERCC_RoomNotExist:
@@ -557,6 +559,7 @@ namespace GameA.Game
                     SocialGUIManager.ShowPopupDialog("房间超时，正在退出");
                     break;
             }
+
             _ePhase = EPhase.Close;
             SocialApp.Instance.ReturnToApp();
         }
@@ -582,7 +585,7 @@ namespace GameA.Game
             {
                 return;
             }
-            
+
             SocialGUIManager.ShowPopupDialog("联机服务异常，正在退出");
             SocialApp.Instance.ReturnToApp();
         }
@@ -601,6 +604,7 @@ namespace GameA.Game
         protected enum EPhase
         {
             None,
+
             /// <summary>
             /// 模拟进入房间前的数据指令
             /// </summary>

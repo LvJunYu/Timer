@@ -12,7 +12,7 @@ namespace GameA
         private Camera _uiCamera;
         private bool _openState;
         private bool _isDraging;
-        private Vector2 _openPos;
+        private Vector2 _curPos;
 
         protected override void InitGroupId()
         {
@@ -23,19 +23,27 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.OpenBtn.AddListener(EventTriggerType.PointerClick, eventData => OnClickOpenBtn());
-            _cachedView.OpenBtn.AddListener(EventTriggerType.BeginDrag, eventData => OnBeginDrag(eventData as PointerEventData));
+            _cachedView.OpenBtn.AddListener(EventTriggerType.BeginDrag,
+                eventData => OnBeginDrag(eventData as PointerEventData));
             _cachedView.OpenBtn.AddListener(EventTriggerType.Drag, eventData => OnDrag(eventData as PointerEventData));
             _cachedView.OpenBtn.AddListener(EventTriggerType.EndDrag, eventData => OnEndDrag());
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
 
+            _cachedView.OpenPannelBtn.AddListener(EventTriggerType.BeginDrag,
+                eventData => OnBeginDrag(eventData as PointerEventData));
+            _cachedView.OpenPannelBtn.AddListener(EventTriggerType.Drag,
+                eventData => OnDrag(eventData as PointerEventData, true));
+            _cachedView.OpenPannelBtn.AddListener(EventTriggerType.EndDrag, eventData => OnEndDrag(true));
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _chat = new USCtrlChatInGame();
             _chat.ResScenary = ResScenary;
             _chat.Init(_cachedView.InGameChat);
+            _curPos = _cachedView.PannelRtf.anchoredPosition;
         }
 
         protected override void OnDestroy()
         {
             _cachedView.OpenBtn.RemoveAllListener();
+            _cachedView.OpenPannelBtn.RemoveAllListener();
             _cachedView.CloseBtn.onClick.RemoveAllListeners();
             _chat.OnDestroy();
             base.OnDestroy();
@@ -57,7 +65,7 @@ namespace GameA
         private void RefrshView()
         {
             _cachedView.OpenBtn.SetActiveEx(!_openState);
-            _cachedView.OpenPannel.SetActive(_openState);
+            _cachedView.OpenPannel.SetActiveEx(_openState);
         }
 
         private void OnCloseBtn()
@@ -71,6 +79,7 @@ namespace GameA
             {
                 return;
             }
+
             SetOpenState(true);
         }
 
@@ -80,12 +89,12 @@ namespace GameA
             RefrshView();
             if (value)
             {
-                _openPos = _cachedView.PannelRtf.anchoredPosition;
-                ClampWindow(_cachedView.PannelRtf);
+                _curPos = _cachedView.PannelRtf.anchoredPosition;
+                ClampWindow(_cachedView.OpenPannel);
             }
             else
             {
-                _cachedView.PannelRtf.anchoredPosition = _openPos;
+                _cachedView.PannelRtf.anchoredPosition = _curPos;
             }
         }
 
@@ -95,15 +104,26 @@ namespace GameA
             _offsetPos = _cachedView.PannelRtf.position - GetWorldPos(data.position);
         }
 
-        private void OnDrag(PointerEventData data)
+        private void OnDrag(PointerEventData data, bool isOpen = false)
         {
             _cachedView.PannelRtf.position = GetWorldPos(data.position) + _offsetPos;
-            ClampWindow(_cachedView.OpenBtn.rectTransform());
+            if (isOpen)
+            {
+                ClampWindow(_cachedView.OpenPannel);
+            }
+            else
+            {
+                ClampWindow(_cachedView.OpenBtn.rectTransform());
+            }
         }
 
-        private void OnEndDrag()
+        private void OnEndDrag(bool isOpen = false)
         {
             _isDraging = false;
+            if (isOpen)
+            {
+                _curPos = _cachedView.PannelRtf.anchoredPosition;
+            }
         }
 
         private Vector3 GetWorldPos(Vector3 screenPos)
@@ -112,14 +132,17 @@ namespace GameA
             {
                 _uiCamera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
             }
+
             return _uiCamera.ScreenToWorldPoint(screenPos);
         }
 
         private void ClampWindow(RectTransform rtf)
         {
             var curPos = _cachedView.PannelRtf.anchoredPosition;
-            curPos.x = Mathf.Clamp(curPos.x, 0, _cachedView.Trans.rect.width - rtf.rect.width);
-            curPos.y = Mathf.Clamp(curPos.y, 0,  _cachedView.Trans.rect.height - rtf.rect.height);
+            curPos.x = Mathf.Clamp(curPos.x, -rtf.anchoredPosition.x,
+                _cachedView.Trans.rect.width - rtf.rect.width - rtf.anchoredPosition.x);
+            curPos.y = Mathf.Clamp(curPos.y, -rtf.anchoredPosition.y,
+                _cachedView.Trans.rect.height - rtf.rect.height - rtf.anchoredPosition.y);
             _cachedView.PannelRtf.anchoredPosition = curPos;
         }
     }

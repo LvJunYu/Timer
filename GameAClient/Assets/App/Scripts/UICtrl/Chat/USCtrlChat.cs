@@ -94,6 +94,10 @@ namespace GameA
             }
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
+            if (chatType == ChatData.EChatType.Room ||chatType == ChatData.EChatType.World || chatType == ChatData.EChatType.Team)
+            {
+                SetSendChatType(chatType);
+            }
         }
 
         private void SetSendChatType(ChatData.EChatType chatType)
@@ -107,7 +111,7 @@ namespace GameA
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "房间";
             }
-            else
+            else if (chatType == ChatData.EChatType.Team)
             {
                 _cachedView.ChatTypeBtn.GetComponentInChildren<Text>().text = "队伍";
             }
@@ -160,12 +164,16 @@ namespace GameA
                     return;
                 }
             }
-            else
+            else if (_currentSendType == ChatData.EChatType.World)
             {
                 if (!AppData.Instance.ChatData.SendWorldChat(inputContent))
                 {
                     return;
                 }
+            }
+            else
+            {
+                LogHelper.Warning("Send Chat fail");
             }
 
             _cachedView.ChatInput.text = String.Empty;

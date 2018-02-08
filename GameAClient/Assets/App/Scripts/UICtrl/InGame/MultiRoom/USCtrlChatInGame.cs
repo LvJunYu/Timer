@@ -83,6 +83,7 @@ namespace GameA
 
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
+            SetSendChatType(chatType);
         }
 
         private void SetSendChatType(ChatData.EChatType chatType)
