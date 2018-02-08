@@ -26,7 +26,7 @@ namespace GameA
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DiaTargetNpcNum);
             _cachedView.DiaTargetNpcNum.onValueChanged.AddListener((string str) =>
             {
-                _target.TargetNpcNum = Convert.ToUInt16(str);
+                _target.TargetNpcNum = (ushort) int.Parse(str);
             });
             _cachedView.NpcTaskDiaPanelExitBtn.onClick.AddListener(Close);
         }

@@ -51,8 +51,38 @@ namespace GameA
             _cachedView.TaskAfterBeforeBtn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskAfter);
+                int id = _mainCtrl.EditData.UnitDesc.Id;
+                using (var allnpc = DataScene2D.CurScene.UnitExtras.GetEnumerator())
+                {
+                    while (allnpc.MoveNext())
+                    {
+                        if (allnpc.Current.Value.NpcSerialNumber == _task.TargetNpcSerialNumber)
+                        {
+                            UnitBase unit;
+                            if (ColliderScene2D.CurScene.TryGetUnit(allnpc.Current.Key, out unit))
+                            {
+                                id = unit.Id;
+                            }
+                        }
+                        for (int i = 0; i < _task.Targets.Count; i++)
+                        {
+                            if (_task.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
+                            {
+                                if (allnpc.Current.Value.NpcSerialNumber ==
+                                    _task.Targets.Get<NpcTaskTargetDynamic>(i).TargetNpcNum)
+                                {
+                                    UnitBase unit;
+                                    if (ColliderScene2D.CurScene.TryGetUnit(allnpc.Current.Key, out unit))
+                                    {
+                                        id = unit.Id;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
-                    .SetNpcType(NpcDia.GetNpcType(_mainCtrl.EditData.UnitDesc.Id));
+                    .SetNpcType(NpcDia.GetNpcType(id));
             });
             _cachedView.AddBeforeTaskAwardBtn.onClick.AddListener(() =>
             {

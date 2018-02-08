@@ -49,8 +49,6 @@ namespace GameA.Game
             {
                 ChangeState(EMonsterState.Idle);
             }
-            SetNpcName();
-            SetNoShow();
         }
 
         protected override bool IsCheckClimb()
@@ -276,7 +274,7 @@ namespace GameA.Game
             {
                 _stateBar.SetNoShow();
                 _oldState = null;
-                _nowState = SetFinishTask;
+                _nowState = SetNoShow;
             }
         }
 
@@ -290,6 +288,15 @@ namespace GameA.Game
 
         internal override bool InstantiateView()
         {
+            if (GameRun.Instance.IsPlaying)
+            {
+                if (base.InstantiateView())
+                {
+                    RpgTaskManger.Instance.JudegeBeforeTask();
+                    return true;
+                }
+                return false;
+            }
             return base.InstantiateView();
         }
 

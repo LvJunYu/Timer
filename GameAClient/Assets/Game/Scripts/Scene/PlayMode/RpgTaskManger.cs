@@ -127,10 +127,7 @@ namespace GameA.Game
                 return;
             }
             Judge();
-            if (MidleTaskDia(npcguid))
-            {
-                return;
-            }
+
             //任务是传话
             if (TaskMessageDia(npcguid))
             {
@@ -142,8 +139,14 @@ namespace GameA.Game
             {
                 return;
             }
+
             //加入新的任务
             if (AddNewTask(npcguid))
+            {
+                return;
+            }
+            //任务中的对话放到最后去判断
+            if (MidleTaskDia(npcguid))
             {
                 return;
             }
@@ -183,6 +186,7 @@ namespace GameA.Game
                         NpcTaskTargetDynamic target = enumerator.Current.Value.Targets.Get<NpcTaskTargetDynamic>(i);
                         if (target.TaskType == (byte) ENpcTargetType.Dialog)
                         {
+                            NpcTaskDynamic task = enumerator.Current.Value;
                             UnitExtraDynamic finishTaskDia;
                             if (_allNpcExtraData.TryGetValue(npcguid, out finishTaskDia))
                             {
@@ -191,21 +195,22 @@ namespace GameA.Game
                                     ShowTip(npcguid);
                                     DictionaryListObject taskAfter = new DictionaryListObject();
 
-                                    if (enumerator.Current.Value.TaskAfter.Count > 0)
+                                    if (task.TaskAfter.Count > 0)
                                     {
-                                        ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
-                                        taskAfter = enumerator.Current.Value.TaskAfter;
+//                                        ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
+                                        taskAfter = task.TaskAfter;
                                     }
                                     else
                                     {
                                         taskAfter.Add(
-                                            GetTaskFinishDia(enumerator.Current.Value, npcguid));
+                                            GetTaskFinishDia(task, npcguid));
                                     }
-                                    var taskguid1 = enumerator.Current.Key;
+                                    var key = enumerator.Current.Key;
+                                    var taskguid1 = key;
                                     _showDiaEvent = () =>
                                     {
-                                        _finishNpcTask.Add(enumerator.Current.Value.NpcTaskSerialNumber,
-                                            enumerator.Current.Value);
+                                        _finishNpcTask.Add(task.NpcTaskSerialNumber,
+                                            task);
                                         RemoveTask(taskguid1, false);
                                         SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(taskAfter);
                                     };
@@ -246,7 +251,7 @@ namespace GameA.Game
                             {
                                 if (enumerator.Current.Value.TaskAfter.Count > 0)
                                 {
-                                    ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
+//                                    ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
                                     diaList = enumerator.Current.Value.TaskAfter;
                                 }
                                 else
@@ -531,7 +536,7 @@ namespace GameA.Game
         }
 
         //判断触发任务是否完成
-        private void JudegeBeforeTask()
+        public void JudegeBeforeTask()
         {
             using (var enmoutor = _allNpcExtraData.GetEnumerator())
             {
@@ -553,15 +558,17 @@ namespace GameA.Game
                         }
                     }
                     UnitBase unit;
-                    ColliderScene2D.CurScene.TryGetUnit(enmoutor.Current.Key, out unit);
-                    NPCBase npc = unit as NPCBase;
-                    if (isready)
+                    if (ColliderScene2D.CurScene.TryGetUnit(enmoutor.Current.Key, out unit))
                     {
-                        npc.SetReady();
-                    }
-                    else
-                    {
-                        npc.SetNoShow();
+                        NPCBase npc = unit as NPCBase;
+                        if (isready)
+                        {
+                            npc.SetReady();
+                        }
+                        else
+                        {
+                            npc.SetNoShow();
+                        }
                     }
                 }
             }
