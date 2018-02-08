@@ -5,18 +5,22 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class MutiBattleData
+    public class MultiBattleData
     {
         private const string RefuseInviteKey = "RefuseTeamInvite";
+        private const int RefuseMins = 10;
+        private const int MaxInviteCache = 5;
+        private float _refuseTeamTime;
+        private float _refuseRoomTime;
         private Msg_MC_TeamInfo _teamInfo;
         private List<long> _selectedOfficalProjectList = new List<long>();
         private bool _isMyTeam;
-        private Queue<Msg_MC_TeamInvite> _inviteStack = new Queue<Msg_MC_TeamInvite>(5);
+        private Queue<Msg_MC_TeamInvite> _teamInviteStack = new Queue<Msg_MC_TeamInvite>(MaxInviteCache);
+        private Queue<Msg_MC_RoomInvite> _roomInviteStack = new Queue<Msg_MC_RoomInvite>(MaxInviteCache);
 
         public Msg_MC_TeamInfo TeamInfo
         {
             get { return _teamInfo; }
-            set { _teamInfo = value; }
         }
 
         public List<long> SelectedOfficalProjectList
@@ -33,6 +37,48 @@ namespace GameA
         {
             get { return PlayerPrefs.HasKey(RefuseInviteKey) && PlayerPrefs.GetInt(RefuseInviteKey) == 1; }
             set { PlayerPrefs.SetInt(RefuseInviteKey, value ? 1 : 0); }
+        }
+
+        public bool RefuseTeamInviteInMins
+        {
+            get { return Time.time - _refuseTeamTime < RefuseMins; }
+            set
+            {
+                if (value)
+                {
+                    _refuseTeamTime = Time.time;
+                }
+                else
+                {
+                    _refuseTeamTime = -RefuseMins;
+                }
+            }
+        }
+
+        public bool RefuseRoomInviteInMins
+        {
+            get { return Time.time - _refuseRoomTime < RefuseMins; }
+            set
+            {
+                if (value)
+                {
+                    _refuseRoomTime = Time.time;
+                }
+                else
+                {
+                    _refuseRoomTime = -RefuseMins;
+                }
+            }
+        }
+
+        public Queue<Msg_MC_TeamInvite> TeamInviteStack
+        {
+            get { return _teamInviteStack; }
+        }
+
+        public Queue<Msg_MC_RoomInvite> RoomInviteStack
+        {
+            get { return _roomInviteStack; }
         }
 
         public void OnProjectSelectedChanged(List<long> list, bool value)
@@ -90,17 +136,37 @@ namespace GameA
             }
         }
 
-        public void OnTeamInvite(Msg_MC_TeamInvite msg)
+        public void OnRoomInvite(Msg_MC_RoomInvite msg)
         {
-            if (RefuseTeamInvite)
+            if (RefuseRoomInviteInMins)
             {
                 return;
             }
-            while (_inviteStack.Count >= 5)
+
+            while (_roomInviteStack.Count >= MaxInviteCache)
             {
-                _inviteStack.Dequeue();
+                _roomInviteStack.Dequeue();
             }
-            _inviteStack.Enqueue(msg);
+            _roomInviteStack.Enqueue(msg);
+            Messenger.Broadcast(EMessengerType.OnRoomInviteChanged);
+            Messenger<Msg_MC_RoomInvite>.Broadcast(EMessengerType.OnRoomInviteChanged, msg);
+        }
+
+        public void OnTeamInvite(Msg_MC_TeamInvite msg)
+        {
+            if (RefuseTeamInvite || RefuseTeamInviteInMins)
+            {
+                return;
+            }
+
+            while (_teamInviteStack.Count >= MaxInviteCache)
+            {
+                _teamInviteStack.Dequeue();
+            }
+
+            _teamInviteStack.Enqueue(msg);
+            Messenger.Broadcast(EMessengerType.OnTeamInviteChanged);
+            Messenger<Msg_MC_TeamInvite>.Broadcast(EMessengerType.OnTeamInviteChanged, msg);
         }
 
         public void OnJoinTeam(Msg_MC_JoinTeam msg)
@@ -129,6 +195,7 @@ namespace GameA
                 LogHelper.Error("OnEnterTeam fail, user has in this team");
                 return;
             }
+
             _teamInfo.UserList.Add(msg.User);
             Messenger.Broadcast(EMessengerType.OnTeamUserChanged);
         }
@@ -139,6 +206,7 @@ namespace GameA
             {
                 return;
             }
+
             bool hasChanged = false;
             for (int i = 0; i < msg.UserList.Count; i++)
             {
@@ -149,6 +217,7 @@ namespace GameA
                     hasChanged = true;
                 }
             }
+
             if (hasChanged)
             {
                 Messenger.Broadcast(EMessengerType.OnTeamUserChanged);

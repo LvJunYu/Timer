@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
+    [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlInviteFriend : UICtrlAnimationBase<UIViewInviteFriend>
     {
         private const int MaxInviteNum = 20;
@@ -60,7 +60,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.AppGameUI;
         }
 
         private void RequestData()
@@ -74,12 +74,14 @@ namespace GameA
 //                    _cachedView.EmptyPannel.SetActive(true);
                     return;
                 }
+
                 var list = new List<long>();
                 for (int i = 0; i < friends.Count; i++)
                 {
                     list.Add(friends[i].UserInfoSimple.UserId);
                 }
-                RoomManager.Instance.SendQueryUserList(list); 
+
+                RoomManager.Instance.SendQueryUserList(list);
             }, code =>
             {
                 LogHelper.Error("RelationUserList RequestData fail, code = {0}", code);
@@ -156,7 +158,15 @@ namespace GameA
             }
             else
             {
-                RoomManager.Instance.SendInviteFriends(_inviteList);
+                if (_inviteType == EInviteType.Team)
+                {
+                    RoomManager.Instance.SendInviteFriendsToTeam(_inviteList);
+                }
+                else if (_inviteType == EInviteType.Room)
+                {
+                    RoomManager.Instance.SendInviteFriendsToRoom(_inviteList);
+                }
+
                 SocialGUIManager.Instance.CloseUI<UICtrlInviteFriend>();
             }
         }
@@ -176,12 +186,15 @@ namespace GameA
             var list = new List<long>();
             for (int i = 0; i < msgDataList.Count; i++)
             {
-                if (msgDataList[i].InTeam || msgDataList[i].Status == EMCUserStatus.MCUS_Offline || msgDataList[i].Status == EMCUserStatus.MCUS_None)
+                if (msgDataList[i].InTeam || msgDataList[i].Status == EMCUserStatus.MCUS_Offline ||
+                    msgDataList[i].Status == EMCUserStatus.MCUS_None)
                 {
                     continue;
                 }
+
                 list.Add(msgDataList[i].UserGuid);
             }
+
             UserManager.Instance.GetDataOnAsync(list, users =>
             {
                 for (int i = 0; i < users.Count; i++)
@@ -197,15 +210,16 @@ namespace GameA
                         LogHelper.Error("msgUser == null");
                     }
                 }
+
                 _dataList = users;
                 RefreshView();
             });
         }
-        
-        public enum EInviteType
-        {
-            Room,
-            Team
-        }
+    }
+
+    public enum EInviteType
+    {
+        Room,
+        Team
     }
 }

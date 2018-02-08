@@ -2624,6 +2624,120 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCreateRoomChatPreinstall {
+            get { return _isRequstingCreateRoomChatPreinstall; }
+        }
+        private static bool _isRequstingCreateRoomChatPreinstall = false;
+        /// <summary>
+		/// 创建快捷聊天
+		/// </summary>
+		/// <param name="data">预设数据</param>
+        public static void CreateRoomChatPreinstall (
+            string data,
+            Action<Msg_SC_CMD_CreateRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingCreateRoomChatPreinstall = true;
+            Msg_CS_CMD_CreateRoomChatPreinstall msg = new Msg_CS_CMD_CreateRoomChatPreinstall();
+            // 创建快捷聊天
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateRoomChatPreinstall>(
+                SoyHttpApiPath.CreateRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateRoomChatPreinstall {
+            get { return _isRequstingUpdateRoomChatPreinstall; }
+        }
+        private static bool _isRequstingUpdateRoomChatPreinstall = false;
+        /// <summary>
+		/// 更新快捷聊天
+		/// </summary>
+		/// <param name="id">预设Id</param>
+		/// <param name="data">数据</param>
+        public static void UpdateRoomChatPreinstall (
+            long id,
+            string data,
+            Action<Msg_SC_CMD_UpdateRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingUpdateRoomChatPreinstall = true;
+            Msg_CS_CMD_UpdateRoomChatPreinstall msg = new Msg_CS_CMD_UpdateRoomChatPreinstall();
+            // 更新快捷聊天
+            msg.Id = id;
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateRoomChatPreinstall>(
+                SoyHttpApiPath.UpdateRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteRoomChatPreinstall {
+            get { return _isRequstingDeleteRoomChatPreinstall; }
+        }
+        private static bool _isRequstingDeleteRoomChatPreinstall = false;
+        /// <summary>
+		/// 删除快捷聊天
+		/// </summary>
+		/// <param name="idList">预设Id</param>
+        public static void DeleteRoomChatPreinstall (
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingDeleteRoomChatPreinstall = true;
+            Msg_CS_CMD_DeleteRoomChatPreinstall msg = new Msg_CS_CMD_DeleteRoomChatPreinstall();
+            // 删除快捷聊天
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteRoomChatPreinstall>(
+                SoyHttpApiPath.DeleteRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

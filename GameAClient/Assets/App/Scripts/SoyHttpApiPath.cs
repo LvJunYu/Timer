@@ -244,6 +244,16 @@ namespace SoyEngine
         public const string DeleteUserMessage = "/home/deleteUserMessage";
         // 删除留言回复
         public const string DeleteUserMessageReply = "/home/deleteUserMessageReply";
+        // 获取快捷聊天列表
+        public const string RoomChatPreinstallList = "/home/getRoomChatPreinstallList";
+        // 获取快捷聊天
+        public const string RoomChatPreinstall = "/home/getRoomChatPreinstall";
+        // 创建快捷聊天
+        public const string CreateRoomChatPreinstall = "/home/createRoomChatPreinstall";
+        // 更新快捷聊天
+        public const string UpdateRoomChatPreinstall = "/home/updateRoomChatPreinstall";
+        // 删除快捷聊天
+        public const string DeleteRoomChatPreinstall = "/home/deleteRoomChatPreinstall";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

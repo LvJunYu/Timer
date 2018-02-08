@@ -1,6 +1,4 @@
 ﻿
-using SoyEngine.Proto;
-
 namespace GameA
 {
     public class UMCtrlInviteFriend : UMCtrlWorldShareProject
@@ -18,9 +16,9 @@ namespace GameA
                 return;
             }
             View.AdvLvTxt.text =
-                GameATools.GetLevelString(LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+                GameATools.GetLevelString(_wrapper.Content.UserInfoSimple.LevelData.PlayerLevel);
             View.CreateLvTxt.text =
-                GameATools.GetLevelString(LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel);
+                GameATools.GetLevelString(_wrapper.Content.UserInfoSimple.LevelData.CreatorLevel);
             View.InGameFlag.SetActive(_wrapper.Content.InGame);
         }
     }

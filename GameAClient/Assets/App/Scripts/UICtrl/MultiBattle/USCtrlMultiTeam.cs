@@ -39,7 +39,7 @@ namespace GameA
             bool isMyself = _user.UserGuid == LocalUser.Instance.UserGuid;
             _cachedView.BgSelectedObj.SetActive(isMyself);
             _cachedView.InGameObj.SetActive(_user.Status == EMCUserStatus.MCUS_InGame);
-            _cachedView.DeleteBtn.SetActiveEx(!isMyself && LocalUser.Instance.MutiBattleData.IsMyTeam);
+            _cachedView.DeleteBtn.SetActiveEx(!isMyself && LocalUser.Instance.MultiBattleData.IsMyTeam);
         }
 
         private void Unload()

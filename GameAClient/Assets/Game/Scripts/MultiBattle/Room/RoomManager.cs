@@ -320,7 +320,7 @@ namespace GameA.Game
         public void SendCreateTeam()
         {
             var data = new Msg_CM_CreateTeam();
-            data.ProjectId.AddRange(LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList);
+            data.ProjectId.AddRange(LocalUser.Instance.MultiBattleData.SelectedOfficalProjectList);
             SendToMSServer(data);
         }
         
@@ -338,9 +338,16 @@ namespace GameA.Game
             SendToMSServer(data);
         }
         
-        public void SendInviteFriends(List<long> list)
+        public void SendInviteFriendsToTeam(List<long> list)
         {
             var data = new Msg_CM_InviteToTeam();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+        
+        public void SendInviteFriendsToRoom(List<long> list)
+        {
+            var data = new Msg_CM_InviteToRoom();
             data.UserIdList.AddRange(list);
             SendToMSServer(data);
         }

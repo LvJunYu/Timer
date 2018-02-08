@@ -130,6 +130,8 @@ namespace GameA
         public static readonly int OnInTeam = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnTeamerExit = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnTeamUserChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnTeamInviteChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomInviteChanged = SoyEngine.EMessengerType.NextId++;
         
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;

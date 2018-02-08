@@ -49,7 +49,7 @@ namespace SoyEngine.MasterServer
             Msg_MC_ExitTeam msg = new Msg_MC_ExitTeam();
             msg.Reason = EMCExitTeamReason.MCETR_Disconnect;
             msg.UserId = LocalUser.Instance.UserGuid;
-            LocalUser.Instance.MutiBattleData.OnExitTeam(msg);
+            LocalUser.Instance.MultiBattleData.OnExitTeam(msg);
         }
 
         private void TryReconnect()
@@ -120,6 +120,7 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_CreateTeam>(Msg_MC_CreateTeam);
             RegisterHandler<Msg_MC_ExitTeam>(Msg_MC_ExitTeam);
             RegisterHandler<Msg_MC_TeamInvite>(Msg_MC_TeamInvite);
+            RegisterHandler<Msg_MC_RoomInvite>(Msg_MC_RoomInvite);
             RegisterHandler<Msg_MC_JoinTeam>(Msg_MC_JoinTeam);
             RegisterHandler<Msg_MC_EnterTeam>(Msg_MC_EnterTeam);
             RegisterHandler<Msg_MC_SyncUserStatusChange>(Msg_MC_SyncUserStatusChange);
@@ -139,34 +140,39 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_SyncUserStatusChange(Msg_MC_SyncUserStatusChange msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.SyncUserStatusChange(msg);
+            LocalUser.Instance.MultiBattleData.SyncUserStatusChange(msg);
         }
 
         private void Msg_MC_EnterTeam(Msg_MC_EnterTeam msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnEnterTeam(msg);
+            LocalUser.Instance.MultiBattleData.OnEnterTeam(msg);
         }
 
         private void Msg_MC_JoinTeam(Msg_MC_JoinTeam msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnJoinTeam(msg);
+            LocalUser.Instance.MultiBattleData.OnJoinTeam(msg);
+        }
+
+        private void Msg_MC_RoomInvite(Msg_MC_RoomInvite msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnRoomInvite(msg);
         }
 
         private void Msg_MC_TeamInvite(Msg_MC_TeamInvite msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnTeamInvite(msg);
+            LocalUser.Instance.MultiBattleData.OnTeamInvite(msg);
         }
 
         private void Msg_MC_ExitTeam(Msg_MC_ExitTeam msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnExitTeam(msg);
+            LocalUser.Instance.MultiBattleData.OnExitTeam(msg);
         }
 
         private void Msg_MC_CreateTeam(Msg_MC_CreateTeam msg, object netlink)
         {
             if (msg.ResultCode == EMCCreateTeamCode.MCCT_Success)
             {
-                LocalUser.Instance.MutiBattleData.OnCreateTeam(msg);
+                LocalUser.Instance.MultiBattleData.OnCreateTeam(msg);
             }
             else
             {
@@ -177,12 +183,12 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_UnselectProject(Msg_MC_UnselectProject msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, false);
+            LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, false);
         }
 
         private void Msg_MC_SelectProject(Msg_MC_SelectProject msg, object netlink)
         {
-            LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, true);
+            LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, true);
         }
 
         private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)

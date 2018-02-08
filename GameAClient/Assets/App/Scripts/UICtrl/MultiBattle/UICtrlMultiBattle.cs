@@ -21,7 +21,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         protected override void InitEventListener()
@@ -49,7 +49,7 @@ namespace GameA
             _cachedView.QuitTeamBtn.onClick.AddListener(OnQuitTeamBtn);
             _cachedView.InviteButton.onClick.AddListener(OnInviteButton);
             _cachedView.RefuseInviteTog.onValueChanged.AddListener(value =>
-                LocalUser.Instance.MutiBattleData.RefuseTeamInvite = value);
+                LocalUser.Instance.MultiBattleData.RefuseTeamInvite = value);
             _chat = new USCtrlChat();
             _chat.ResScenary = ResScenary;
             _chat.Scene = USCtrlChat.EScene.Team;
@@ -72,7 +72,7 @@ namespace GameA
                 _pushGoldEnergyStyle = true;
             }
             _chat.Open();
-            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.MutiBattleData.RefuseTeamInvite;
+            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.MultiBattleData.RefuseTeamInvite;
             if (!_hasRequested)
             {
                 RequestData();
@@ -110,7 +110,7 @@ namespace GameA
                         um.Init(_cachedView.GridRtf, ResScenary);
                         um.Set(_dataList[i]);
                         _umList.Add(um);
-                        LocalUser.Instance.MutiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
+                        LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
                     }
                     _hasRequested = true;
                     CompleteRequestData();
@@ -125,7 +125,7 @@ namespace GameA
 
         private void CompleteRequestData()
         {
-            var teamInfo = LocalUser.Instance.MutiBattleData.TeamInfo;
+            var teamInfo = LocalUser.Instance.MultiBattleData.TeamInfo;
             _cachedView.TeamPannel.SetActive(teamInfo != null);
             if (teamInfo == null)
             {
@@ -139,11 +139,11 @@ namespace GameA
 
         private void RefreshTeamPannel()
         {
-            if (!_isOpen || LocalUser.Instance.MutiBattleData.TeamInfo == null)
+            if (!_isOpen || LocalUser.Instance.MultiBattleData.TeamInfo == null)
             {
                 return;
             }
-            _userList = LocalUser.Instance.MutiBattleData.TeamInfo.UserList;
+            _userList = LocalUser.Instance.MultiBattleData.TeamInfo.UserList;
             _cachedView.QuitTeamBtn.SetActiveEx(_userList.Count > 1);
             _cachedView.InviteButton.SetActiveEx(_userList.Count < TeamManager.MaxTeamCount);
             for (int i = 0; i < _usCtrlMultiTeams.Length; i++)
@@ -196,12 +196,12 @@ namespace GameA
 
         private void OnInviteButton()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>().InviteType = UICtrlInviteFriend.EInviteType.Team;
+            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>().InviteType = EInviteType.Team;
         }
 
         private void OnQuickStartBtn()
         {
-            if (LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList.Count == 0)
+            if (LocalUser.Instance.MultiBattleData.SelectedOfficalProjectList.Count == 0)
             {
                 SocialGUIManager.ShowPopupDialog("至少选择一个关卡才能开始游戏");
                 return;
@@ -221,7 +221,7 @@ namespace GameA
                 return;
             }
 
-            var list = LocalUser.Instance.MutiBattleData.SelectedOfficalProjectList;
+            var list = LocalUser.Instance.MultiBattleData.SelectedOfficalProjectList;
             for (int i = 0; i < _dataList.Count; i++)
             {
                 _umList[i].SetSelected(list.Contains(_dataList[i].ProjectId));
