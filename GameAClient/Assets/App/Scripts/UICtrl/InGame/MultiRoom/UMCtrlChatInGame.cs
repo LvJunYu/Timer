@@ -23,7 +23,7 @@ namespace GameA
         private void RefreshView()
         {
             _cachedView.Text.text = String.Format(TemplateChatInGame,
-                GameATools.GetRawNickName(_item.ChatUser.UserNickName, 6), _item.Content);
+                GameATools.GetRawStr(_item.ChatUser.UserNickName, 6), _item.Content);
         }
     }
 }

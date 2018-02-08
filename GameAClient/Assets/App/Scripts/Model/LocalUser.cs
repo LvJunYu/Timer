@@ -8,7 +8,6 @@
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA
 {
@@ -17,7 +16,6 @@ namespace GameA
         #region 常量与字段
 
         public static readonly LocalUser Instance = new LocalUser();
-        private const string RefuseInviteKey = "RefuseTeamInvite";
         private readonly Account _account = Account.Instance;
         private UserInfoDetail _user;
         private readonly UsingAvatarPart _usingAvatarData = new UsingAvatarPart();
@@ -77,12 +75,6 @@ namespace GameA
         public long UserGuid
         {
             get { return _account.UserGuid; }
-        }
-
-        public bool RefuseTeamInvite
-        {
-            get { return PlayerPrefs.HasKey(RefuseInviteKey) && PlayerPrefs.GetInt(RefuseInviteKey) == 1; }
-            set { PlayerPrefs.SetInt(RefuseInviteKey, value ? 1 : 0); }
         }
 
         public Account Account

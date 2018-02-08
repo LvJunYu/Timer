@@ -28,8 +28,9 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnSelectedOfficalProjectListChanged, OnSelectedOfficalProjectListChanged);
-            RegisterEvent(EMessengerType.OnCreateTeam, OnCreateTeam);
+            RegisterEvent(EMessengerType.OnInTeam, OnInTeam);
             RegisterEvent<Msg_MC_ExitTeam>(EMessengerType.OnTeamerExit, OnTeamerExit);
+            RegisterEvent(EMessengerType.OnTeamUserChanged, RefreshTeamPannel);
         }
 
         protected override void SetPartAnimations()
@@ -48,7 +49,7 @@ namespace GameA
             _cachedView.QuitTeamBtn.onClick.AddListener(OnQuitTeamBtn);
             _cachedView.InviteButton.onClick.AddListener(OnInviteButton);
             _cachedView.RefuseInviteTog.onValueChanged.AddListener(value =>
-                LocalUser.Instance.RefuseTeamInvite = value);
+                LocalUser.Instance.MutiBattleData.RefuseTeamInvite = value);
             _chat = new USCtrlChat();
             _chat.ResScenary = ResScenary;
             _chat.Scene = USCtrlChat.EScene.Team;
@@ -71,7 +72,7 @@ namespace GameA
                 _pushGoldEnergyStyle = true;
             }
             _chat.Open();
-            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.RefuseTeamInvite;
+            _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.MutiBattleData.RefuseTeamInvite;
             if (!_hasRequested)
             {
                 RequestData();
@@ -138,6 +139,10 @@ namespace GameA
 
         private void RefreshTeamPannel()
         {
+            if (!_isOpen || LocalUser.Instance.MutiBattleData.TeamInfo == null)
+            {
+                return;
+            }
             _userList = LocalUser.Instance.MutiBattleData.TeamInfo.UserList;
             _cachedView.QuitTeamBtn.SetActiveEx(_userList.Count > 1);
             _cachedView.InviteButton.SetActiveEx(_userList.Count < TeamManager.MaxTeamCount);
@@ -191,7 +196,7 @@ namespace GameA
 
         private void OnInviteButton()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>();
+            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>().InviteType = UICtrlInviteFriend.EInviteType.Team;
         }
 
         private void OnQuickStartBtn()
@@ -223,7 +228,7 @@ namespace GameA
             }
         }
 
-        private void OnCreateTeam()
+        private void OnInTeam()
         {
             if (!_isOpen)
             {

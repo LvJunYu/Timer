@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using GameA.Game;
+using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA
@@ -29,7 +30,7 @@ namespace GameA
 
         private void RefreshView()
         {
-            _cachedView.NameTxt.text = _user.NickName;
+            _cachedView.NameTxt.text = GameATools.GetRawStr(_user.NickName, 6);
             UserManager.Instance.GetDataOnAsync(_user.UserGuid, user =>
             {
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg, user.UserInfoSimple.HeadImgUrl,
@@ -37,6 +38,7 @@ namespace GameA
             });
             bool isMyself = _user.UserGuid == LocalUser.Instance.UserGuid;
             _cachedView.BgSelectedObj.SetActive(isMyself);
+            _cachedView.InGameObj.SetActive(_user.Status == EMCUserStatus.MCUS_InGame);
             _cachedView.DeleteBtn.SetActiveEx(!isMyself && LocalUser.Instance.MutiBattleData.IsMyTeam);
         }
 
@@ -47,6 +49,7 @@ namespace GameA
 
         private void OnDeleteBtn()
         {
+            RoomManager.Instance.SendKickTeam(_user.UserGuid);
         }
     }
 }

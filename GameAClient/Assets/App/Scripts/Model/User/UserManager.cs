@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
 
@@ -24,6 +25,7 @@ namespace GameA
                 userInfoDetail.DeepCopy(newData);
                 return userInfoDetail;
             }
+
             _caches.Insert(newData.UserInfoSimple.UserId, newData);
             return newData;
         }
@@ -34,16 +36,30 @@ namespace GameA
             {
                 return null;
             }
+
             UserInfoDetail userInfoDetail;
             if (_caches.TryGetItem(msgData.UserId, out userInfoDetail))
             {
                 userInfoDetail.UserInfoSimple.CopyMsgData(msgData);
                 return userInfoDetail;
             }
+
             userInfoDetail = new UserInfoDetail();
             userInfoDetail.UserInfoSimple = new UserInfoSimple(msgData);
             _caches.Insert(msgData.UserId, userInfoDetail);
             return userInfoDetail;
+        }
+
+        public List<UserInfoDetail> UpdateData(List<Msg_SC_DAT_UserInfoSimple> msgDatas)
+        {
+            if (msgDatas == null) return null;
+            List<UserInfoDetail> users = new List<UserInfoDetail>(msgDatas.Count);
+            for (int i = 0; i < msgDatas.Count; i++)
+            {
+                users.Add(UpdateData(msgDatas[i]));
+            }
+
+            return users;
         }
 
         public UserInfoDetail UpdateData(UserInfoSimple newSimpleData)
@@ -54,6 +70,7 @@ namespace GameA
                 userInfoDetail.UserInfoSimple.DeepCopy(newSimpleData);
                 return userInfoDetail;
             }
+
             userInfoDetail = new UserInfoDetail();
             userInfoDetail.UserInfoSimple = newSimpleData;
             _caches.Insert(newSimpleData.UserId, userInfoDetail);
@@ -69,8 +86,10 @@ namespace GameA
                 {
                     successCallback(userInfoDetail);
                 }
+
                 return;
             }
+
             userInfoDetail = new UserInfoDetail();
             userInfoDetail.Request(userId, () =>
             {
@@ -81,9 +100,30 @@ namespace GameA
                 }
             }, code =>
             {
+                LogHelper.Error("UserInfoDetail Request fail, code = {0}", code);
                 if (failedCallback != null)
                 {
                     failedCallback();
+                }
+            });
+        }
+
+        public void GetDataOnAsync(List<long> userIdList, Action<List<UserInfoDetail>> successCallback,
+            Action failedCallback = null)
+        {
+            RemoteCommands.UserInfoSimpleBatch(userIdList, msg =>
+            {
+                var users = UpdateData(msg.DataList);
+                if (successCallback != null)
+                {
+                    successCallback.Invoke(users);
+                }
+            }, code =>
+            {
+                LogHelper.Error("Get UserInfoSimpleBatch fail, code = {0}", code);
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke();
                 }
             });
         }
@@ -94,6 +134,7 @@ namespace GameA
             {
                 return true;
             }
+
             return false;
         }
 
@@ -103,12 +144,14 @@ namespace GameA
             {
                 return null;
             }
+
             UserInfoDetail userInfoDetail;
             if (_caches.TryGetItem(msgData.UserInfoSimple.UserId, out userInfoDetail))
             {
                 userInfoDetail.CopyMsgData(msgData);
                 return userInfoDetail;
             }
+
             userInfoDetail = new UserInfoDetail(msgData);
             _caches.Insert(msgData.UserInfoSimple.UserId, userInfoDetail);
             return userInfoDetail;

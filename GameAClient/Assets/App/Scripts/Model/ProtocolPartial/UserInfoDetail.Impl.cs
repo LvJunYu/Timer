@@ -58,6 +58,8 @@ namespace GameA
             }
         }
 
+        public bool InGame { get; set; }
+
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
             _userInfoSimple = userInfoSimple;
