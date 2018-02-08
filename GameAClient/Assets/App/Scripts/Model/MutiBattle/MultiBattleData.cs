@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -8,10 +9,10 @@ namespace GameA
     public class MultiBattleData
     {
         private const string RefuseInviteKey = "RefuseTeamInvite";
-        private const int RefuseMins = 10;
+        private const int RefuseSeconds = 600;
         private const int MaxInviteCache = 5;
-        private float _refuseTeamTime;
-        private float _refuseRoomTime;
+        private float _refuseTeamTime = -RefuseSeconds;
+        private float _refuseRoomTime = -RefuseSeconds;
         private Msg_MC_TeamInfo _teamInfo;
         private List<long> _selectedOfficalProjectList = new List<long>();
         private bool _isMyTeam;
@@ -41,7 +42,7 @@ namespace GameA
 
         public bool RefuseTeamInviteInMins
         {
-            get { return Time.time - _refuseTeamTime < RefuseMins; }
+            get { return Time.time - _refuseTeamTime < RefuseSeconds; }
             set
             {
                 if (value)
@@ -50,14 +51,14 @@ namespace GameA
                 }
                 else
                 {
-                    _refuseTeamTime = -RefuseMins;
+                    _refuseTeamTime = -RefuseSeconds;
                 }
             }
         }
 
         public bool RefuseRoomInviteInMins
         {
-            get { return Time.time - _refuseRoomTime < RefuseMins; }
+            get { return Time.time - _refuseRoomTime < RefuseSeconds; }
             set
             {
                 if (value)
@@ -66,7 +67,7 @@ namespace GameA
                 }
                 else
                 {
-                    _refuseRoomTime = -RefuseMins;
+                    _refuseRoomTime = -RefuseSeconds;
                 }
             }
         }
@@ -147,6 +148,7 @@ namespace GameA
             {
                 _roomInviteStack.Dequeue();
             }
+
             _roomInviteStack.Enqueue(msg);
             Messenger.Broadcast(EMessengerType.OnRoomInviteChanged);
             Messenger<Msg_MC_RoomInvite>.Broadcast(EMessengerType.OnRoomInviteChanged, msg);
@@ -169,14 +171,27 @@ namespace GameA
             Messenger<Msg_MC_TeamInvite>.Broadcast(EMessengerType.OnTeamInviteChanged, msg);
         }
 
+        private void JoinTeam(Msg_MC_JoinTeam msg)
+        {
+            _teamInfo = msg.TeamInfo;
+            _isMyTeam = false;
+            Messenger.Broadcast(EMessengerType.OnInTeam);
+            SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
+        }
+
         public void OnJoinTeam(Msg_MC_JoinTeam msg)
         {
             if (msg.ResultCode == EMCJoinTeamCode.MCJT_Success)
             {
-                _teamInfo = msg.TeamInfo;
-                _isMyTeam = false;
-                Messenger.Broadcast(EMessengerType.OnInTeam);
-                SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
+                SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
+                if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+                {
+                    GM2DGame.Instance.QuitGame(() => JoinTeam(msg), null);
+                }
+                else
+                {
+                    JoinTeam(msg);
+                }
             }
             else if (msg.ResultCode == EMCJoinTeamCode.MCJT_Full)
             {

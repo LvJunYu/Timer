@@ -16,6 +16,7 @@ namespace GameA
         private List<Msg_MC_RoomInvite> _roomInviteList;
         private bool _onlyChangeView;
         private Text[] _tagTxts;
+        private Text[] _tagSelectedTxts;
         private Button[] _tagBtns;
         private Button[] _tagSelectedBtns;
         private int _curIndex;
@@ -28,8 +29,9 @@ namespace GameA
             _cachedView.CancelBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.RefuseTog.onValueChanged.AddListener(OnRefuseTogValueChanged);
             _tagTxts = _cachedView.TogDock.GetComponentsInChildren<Text>();
+            _tagSelectedTxts = _cachedView.TogSelectedDock.GetComponentsInChildren<Text>(true);
             _tagBtns = _cachedView.TogDock.GetComponentsInChildren<Button>();
-            _tagSelectedBtns = _cachedView.TogSelectedDock.GetComponentsInChildren<Button>();
+            _tagSelectedBtns = _cachedView.TogSelectedDock.GetComponentsInChildren<Button>(true);
             for (int i = 0; i < _tagBtns.Length; i++)
             {
                 var inx = i;
@@ -88,7 +90,7 @@ namespace GameA
                 {
                     if (i < _teamInviteList.Count)
                     {
-                        _tagTxts[i].text = GameATools.GetRawStr(_teamInviteList[i].Inviter.NickName, 6);
+                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_teamInviteList[i].Inviter.NickName, 6);
                     }
                     else
                     {
@@ -204,10 +206,8 @@ namespace GameA
             }
             else if (_inviteType == EInviteType.Room)
             {
-                 RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].RoomId);
+                RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].RoomId);
             }
-
-            SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
         }
 
         private void OnCloseBtn()

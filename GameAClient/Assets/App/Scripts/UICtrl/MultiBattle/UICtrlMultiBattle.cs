@@ -71,6 +71,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
             }
+
             _chat.Open();
             _cachedView.RefuseInviteTog.isOn = LocalUser.Instance.MultiBattleData.RefuseTeamInvite;
             if (!_hasRequested)
@@ -112,6 +113,7 @@ namespace GameA
                         _umList.Add(um);
                         LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
                     }
+
                     _hasRequested = true;
                     CompleteRequestData();
                 }
@@ -157,6 +159,7 @@ namespace GameA
                     _usCtrlMultiTeams[i].Set(null);
                 }
             }
+            _cachedView.QuickStartBtn.SetActiveEx(LocalUser.Instance.MultiBattleData.IsMyTeam);
         }
 
         private void OnTeamerExit(Msg_MC_ExitTeam msg)
@@ -171,6 +174,11 @@ namespace GameA
                 if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
                 {
                     SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
+                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                }
+                else if (msg.Reason == EMCExitTeamReason.MCETR_Disconnect)
+                {
+                    SocialGUIManager.ShowPopupDialog("失去连接", null,
                         new KeyValuePair<string, Action>("确定", OnLeaveTeam));
                 }
                 else
@@ -206,6 +214,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("至少选择一个关卡才能开始游戏");
                 return;
             }
+
             RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Offical);
         }
 
@@ -234,6 +243,7 @@ namespace GameA
             {
                 return;
             }
+
             _cachedView.TeamPannel.SetActive(true);
             RefreshTeamPannel();
         }
