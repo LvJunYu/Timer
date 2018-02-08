@@ -12,8 +12,8 @@ namespace GameA
     {
         private const string InviteRoomFormat = "邀请您加入关卡【{0}】";
         private EInviteType _inviteType;
-        private List<Msg_MC_TeamInvite> _teamInviteList;
-        private List<Msg_MC_RoomInvite> _roomInviteList;
+        private List<LocalTeamInvite> _teamInviteList;
+        private List<LocalRoomInvite> _roomInviteList;
         private bool _onlyChangeView;
         private Text[] _tagTxts;
         private Text[] _tagSelectedTxts;
@@ -72,6 +72,7 @@ namespace GameA
         {
             _cachedView.TeamPannel.SetActive(_inviteType == EInviteType.Team);
             _cachedView.RoomPannel.SetActive(_inviteType == EInviteType.Room);
+            
             if (_inviteType == EInviteType.Team)
             {
                 _teamInviteList = LocalUser.Instance.MultiBattleData.TeamInviteStack.ToList();
@@ -81,16 +82,11 @@ namespace GameA
                     _tagBtns[i].SetActiveEx(i < _teamInviteList.Count);
                 }
 
-                for (int i = 0; i < _tagSelectedBtns.Length; i++)
-                {
-                    _tagSelectedBtns[i].SetActiveEx(i < _teamInviteList.Count);
-                }
-
                 for (int i = 0; i < _tagTxts.Length; i++)
                 {
                     if (i < _teamInviteList.Count)
                     {
-                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_teamInviteList[i].Inviter.NickName, 6);
+                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_teamInviteList[i].Msg.Inviter.NickName, 6);
                     }
                     else
                     {
@@ -107,16 +103,11 @@ namespace GameA
                     _tagBtns[i].SetActiveEx(i < _roomInviteList.Count);
                 }
 
-                for (int i = 0; i < _tagSelectedBtns.Length; i++)
-                {
-                    _tagSelectedBtns[i].SetActiveEx(i < _roomInviteList.Count);
-                }
-
                 for (int i = 0; i < _tagTxts.Length; i++)
                 {
                     if (i < _roomInviteList.Count)
                     {
-                        _tagTxts[i].text = GameATools.GetRawStr(_roomInviteList[i].Inviter.NickName, 6);
+                        _tagTxts[i].text = GameATools.GetRawStr(_roomInviteList[i].Msg.Inviter.NickName, 6);
                     }
                     else
                     {
@@ -124,7 +115,11 @@ namespace GameA
                     }
                 }
             }
-
+            
+            for (int i = 0; i < _tagSelectedBtns.Length; i++)
+            {
+                _tagSelectedBtns[i].SetActiveEx(i == 0);
+            }
             ClickInvite(0, true);
         }
 
@@ -135,13 +130,13 @@ namespace GameA
             Msg_MC_RoomUserInfo _inviter = null;
             if (_inviteType == EInviteType.Team)
             {
-                _inviter = _teamInviteList[inx].Inviter;
+                _inviter = _teamInviteList[inx].Msg.Inviter;
             }
             else if (_inviteType == EInviteType.Room)
             {
                 var invite = _roomInviteList[inx];
-                _inviter = invite.Inviter;
-                ProjectManager.Instance.GetDataOnAsync(invite.ProjectId, p =>
+                _inviter = invite.Msg.Inviter;
+                ProjectManager.Instance.GetDataOnAsync(invite.Msg.ProjectId, p =>
                 {
                     _cachedView.InviteProjcetTxt.text = string.Format(InviteRoomFormat, p.Name);
                     ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
@@ -202,11 +197,11 @@ namespace GameA
         {
             if (_inviteType == EInviteType.Team)
             {
-                RoomManager.Instance.SendJoinTeam(_teamInviteList[_curIndex].TeamHostId);
+                RoomManager.Instance.SendJoinTeam(_teamInviteList[_curIndex].Msg.TeamHostId);
             }
             else if (_inviteType == EInviteType.Room)
             {
-                RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].RoomId);
+                RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].Msg.RoomId);
             }
         }
 

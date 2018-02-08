@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 
@@ -95,7 +96,7 @@ namespace GameA
                 {
                     _closeSequenceTeam.Complete(true);
                 }
-
+                _cachedView.TeamInviteRtf.SetActiveEx(true);
                 _openSequenceTeam.Restart();
             }
             else if (inviteType == EInviteType.Room)
@@ -109,7 +110,7 @@ namespace GameA
                 {
                     _closeSequenceRoom.Complete(true);
                 }
-
+                _cachedView.RoomInviteRtf.SetActiveEx(true);
                 _openSequenceRoom.Restart();
             }
         }
@@ -154,7 +155,7 @@ namespace GameA
                 _cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause();
             _closeSequenceTeam.Append(_cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f)
-                .SetEase(Ease.InOutQuad)).SetAutoKill(false).Pause();
+                .SetEase(Ease.InOutQuad)).OnComplete(OnTeamAnimComplete).SetAutoKill(false).Pause();
 
             _openSequenceRoom = DOTween.Sequence();
             _closeSequenceRoom = DOTween.Sequence();
@@ -162,7 +163,19 @@ namespace GameA
                 _cachedView.RoomInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause();
             _closeSequenceRoom.Append(_cachedView.RoomInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f)
-                .SetEase(Ease.InOutQuad)).SetAutoKill(false).Pause();
+                .SetEase(Ease.InOutQuad)).OnComplete(OnRoomAnimComplete).SetAutoKill(false).Pause();
+        }
+
+        private void OnRoomAnimComplete()
+        {
+            _cachedView.RoomInviteRtf.SetActiveEx(false);
+            _closeSequenceRoom.Rewind();
+        }
+
+        private void OnTeamAnimComplete()
+        {
+            _cachedView.TeamInviteRtf.SetActiveEx(false);
+            _closeSequenceTeam.Rewind();
         }
 
         public override void OnUpdate()

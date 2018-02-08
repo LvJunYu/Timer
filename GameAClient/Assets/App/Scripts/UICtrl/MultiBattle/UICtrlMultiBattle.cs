@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -29,7 +28,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnSelectedOfficalProjectListChanged, OnSelectedOfficalProjectListChanged);
             RegisterEvent(EMessengerType.OnInTeam, OnInTeam);
-            RegisterEvent<Msg_MC_ExitTeam>(EMessengerType.OnTeamerExit, OnTeamerExit);
+            RegisterEvent(EMessengerType.OnLeaveTeam, OnLeaveTeam);
             RegisterEvent(EMessengerType.OnTeamUserChanged, RefreshTeamPannel);
         }
 
@@ -162,36 +161,6 @@ namespace GameA
             _cachedView.QuickStartBtn.SetActiveEx(LocalUser.Instance.MultiBattleData.IsMyTeam);
         }
 
-        private void OnTeamerExit(Msg_MC_ExitTeam msg)
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-
-            if (LocalUser.Instance.UserGuid == msg.UserId)
-            {
-                if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
-                {
-                    SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
-                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
-                }
-                else if (msg.Reason == EMCExitTeamReason.MCETR_Disconnect)
-                {
-                    SocialGUIManager.ShowPopupDialog("失去连接", null,
-                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
-                }
-                else
-                {
-                    OnLeaveTeam();
-                }
-            }
-            else
-            {
-                RefreshTeamPannel();
-            }
-        }
-
         private void OnLeaveTeam()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
@@ -220,6 +189,7 @@ namespace GameA
 
         private void OnReturnBtn()
         {
+            RoomManager.Instance.SendExitTeam();
             SocialGUIManager.Instance.CloseUI<UICtrlMultiBattle>();
         }
 

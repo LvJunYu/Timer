@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -6,18 +7,43 @@ using UnityEngine;
 
 namespace GameA
 {
+    public class LocalTeamInvite
+    {
+        public Msg_MC_TeamInvite Msg;
+        public float CreateTime;
+
+        public LocalTeamInvite(Msg_MC_TeamInvite msg)
+        {
+            Msg = msg;
+            CreateTime = Time.time;
+        }
+    }
+
+    public class LocalRoomInvite
+    {
+        public Msg_MC_RoomInvite Msg;
+        public float CreateTime;
+
+        public LocalRoomInvite(Msg_MC_RoomInvite msg)
+        {
+            Msg = msg;
+            CreateTime = Time.time;
+        }
+    }
+
     public class MultiBattleData
     {
         private const string RefuseInviteKey = "RefuseTeamInvite";
-        private const int RefuseSeconds = 600;
+        private const int RefuseSecond = 600;
+        private const int MaxCacheSecond = 60;
         private const int MaxInviteCache = 5;
-        private float _refuseTeamTime = -RefuseSeconds;
-        private float _refuseRoomTime = -RefuseSeconds;
+        private float _refuseTeamTime = -RefuseSecond;
+        private float _refuseRoomTime = -RefuseSecond;
         private Msg_MC_TeamInfo _teamInfo;
         private List<long> _selectedOfficalProjectList = new List<long>();
         private bool _isMyTeam;
-        private Queue<Msg_MC_TeamInvite> _teamInviteStack = new Queue<Msg_MC_TeamInvite>(MaxInviteCache);
-        private Queue<Msg_MC_RoomInvite> _roomInviteStack = new Queue<Msg_MC_RoomInvite>(MaxInviteCache);
+        private Queue<LocalTeamInvite> _teamInviteStack = new Queue<LocalTeamInvite>(MaxInviteCache);
+        private Queue<LocalRoomInvite> _roomInviteStack = new Queue<LocalRoomInvite>(MaxInviteCache);
 
         public Msg_MC_TeamInfo TeamInfo
         {
@@ -42,7 +68,7 @@ namespace GameA
 
         public bool RefuseTeamInviteInMins
         {
-            get { return Time.time - _refuseTeamTime < RefuseSeconds; }
+            get { return Time.time - _refuseTeamTime < RefuseSecond; }
             set
             {
                 if (value)
@@ -51,14 +77,14 @@ namespace GameA
                 }
                 else
                 {
-                    _refuseTeamTime = -RefuseSeconds;
+                    _refuseTeamTime = -RefuseSecond;
                 }
             }
         }
 
         public bool RefuseRoomInviteInMins
         {
-            get { return Time.time - _refuseRoomTime < RefuseSeconds; }
+            get { return Time.time - _refuseRoomTime < RefuseSecond; }
             set
             {
                 if (value)
@@ -67,19 +93,35 @@ namespace GameA
                 }
                 else
                 {
-                    _refuseRoomTime = -RefuseSeconds;
+                    _refuseRoomTime = -RefuseSecond;
                 }
             }
         }
 
-        public Queue<Msg_MC_TeamInvite> TeamInviteStack
+        public Queue<LocalTeamInvite> TeamInviteStack
         {
-            get { return _teamInviteStack; }
+            get
+            {
+                while (_teamInviteStack.Count > 0 && Time.time - _teamInviteStack.Peek().CreateTime > MaxCacheSecond)
+                {
+                    _teamInviteStack.Dequeue();
+                }
+
+                return _teamInviteStack;
+            }
         }
 
-        public Queue<Msg_MC_RoomInvite> RoomInviteStack
+        public Queue<LocalRoomInvite> RoomInviteStack
         {
-            get { return _roomInviteStack; }
+            get
+            {
+                while (_roomInviteStack.Count > 0 && Time.time - _roomInviteStack.Peek().CreateTime > MaxCacheSecond)
+                {
+                    _roomInviteStack.Dequeue();
+                }
+
+                return _roomInviteStack;
+            }
         }
 
         public void OnProjectSelectedChanged(List<long> list, bool value)
@@ -127,14 +169,40 @@ namespace GameA
             var user = _teamInfo.UserList.Find(u => u.UserGuid == msg.UserId);
             if (user != null)
             {
-                _teamInfo.UserList.Remove(user);
-                if (msg.UserId == LocalUser.Instance.UserGuid)
+                if (LocalUser.Instance.UserGuid == msg.UserId)
                 {
-                    _teamInfo = null;
+                    if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
+                    {
+                        SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
+                            new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                    }
+                    else if (msg.Reason == EMCExitTeamReason.MCETR_Disconnect)
+                    {
+                        SocialGUIManager.ShowPopupDialog("已经失去连接", null,
+                            new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                    }
+                    else
+                    {
+                        OnLeaveTeam();
+                    }
                 }
-
-                Messenger<Msg_MC_ExitTeam>.Broadcast(EMessengerType.OnTeamerExit, msg);
+                else if (msg.UserId == _teamInfo.UserList[0].UserGuid)
+                {
+                    SocialGUIManager.ShowPopupDialog("队长已解散队伍", null,
+                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                }
+                else
+                {
+                    _teamInfo.UserList.Remove(user);
+                    Messenger.Broadcast(EMessengerType.OnTeamUserChanged);
+                }
             }
+        }
+
+        private void OnLeaveTeam()
+        {
+            _teamInfo = null;
+            Messenger.Broadcast(EMessengerType.OnLeaveTeam);
         }
 
         public void OnRoomInvite(Msg_MC_RoomInvite msg)
@@ -149,7 +217,7 @@ namespace GameA
                 _roomInviteStack.Dequeue();
             }
 
-            _roomInviteStack.Enqueue(msg);
+            _roomInviteStack.Enqueue(new LocalRoomInvite(msg));
             Messenger.Broadcast(EMessengerType.OnRoomInviteChanged);
             Messenger<Msg_MC_RoomInvite>.Broadcast(EMessengerType.OnRoomInviteChanged, msg);
         }
@@ -166,7 +234,7 @@ namespace GameA
                 _teamInviteStack.Dequeue();
             }
 
-            _teamInviteStack.Enqueue(msg);
+            _teamInviteStack.Enqueue(new LocalTeamInvite(msg));
             Messenger.Broadcast(EMessengerType.OnTeamInviteChanged);
             Messenger<Msg_MC_TeamInvite>.Broadcast(EMessengerType.OnTeamInviteChanged, msg);
         }
