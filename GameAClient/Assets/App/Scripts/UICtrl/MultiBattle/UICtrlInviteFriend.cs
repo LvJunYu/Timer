@@ -212,6 +212,7 @@ namespace GameA
                 }
 
                 _dataList = users;
+                _dataList.Sort((p, q) => p.InGame.CompareTo(q.InGame));
                 RefreshView();
             });
         }

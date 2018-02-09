@@ -163,6 +163,17 @@ namespace GameA.Game
                         break;
                     case EEffectId.Ice:
                         _target.RemoveEnvState(EEnvState.Ice);
+                        if (_target.IsPlayer)
+                        {
+                            var player = _target as PlayerBase;
+                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                            {
+                                if (player != null && player.IsAlive)
+                                {
+                                    player.ResetGun();
+                                }
+                            }));
+                        }
                         break;
                     case EEffectId.HpMax:
                         break;
