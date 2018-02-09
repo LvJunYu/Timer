@@ -126,6 +126,11 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_SyncUserStatusChange>(Msg_MC_SyncUserStatusChange);
             RegisterHandler<Msg_MC_TeamQuickStartWarn>(Msg_MC_TeamQuickStartWarn);
             RegisterHandler<Msg_MC_QueryUserList>(Msg_MC_QueryUserList);
+            RegisterHandler<Msg_MC_InviteToTeam>(Msg_MC_InviteToTeam);
+        }
+
+        private void Msg_MC_InviteToTeam(Msg_MC_InviteToTeam msg, object netlink)
+        {
         }
 
         private void Msg_MC_QueryUserList(Msg_MC_QueryUserList msg, object netlink)

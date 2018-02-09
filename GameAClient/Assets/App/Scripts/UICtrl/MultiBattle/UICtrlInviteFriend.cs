@@ -203,7 +203,7 @@ namespace GameA
                     var msgUser = msgDataList.Find(u => u.UserGuid == user.UserInfoSimple.UserId);
                     if (msgUser != null)
                     {
-                        user.InGame = msgDataList[i].Status == EMCUserStatus.MCUS_InGame;
+                        user.InGame = msgUser.Status == EMCUserStatus.MCUS_InGame;
                     }
                     else
                     {
