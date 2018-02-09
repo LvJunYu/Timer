@@ -226,7 +226,7 @@ namespace GameA.Game
             }
         }
 
-        public void AddNewScene()
+        private void AddNewScene()
         {
             var scene = new Scene2DEntity();
             var index = _sceneList.Count;
