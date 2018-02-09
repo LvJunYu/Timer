@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
@@ -46,11 +47,15 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _officialDiaList.Add("123");
-            _officialDiaList.Add("456");
-            _officialDiaList.Add("789");
-            _officialDiaList.Add("111");
-            _officialDiaList.Add("849");
+            foreach (var dia in TableManager.Instance.Table_NpcDefaultDiaDic)
+            {
+                _officialDiaList.Add(dia.Value.Dia);
+            }
+//            _officialDiaList.Add("123");
+//            _officialDiaList.Add("456");
+//            _officialDiaList.Add("789");
+//            _officialDiaList.Add("111");
+//            _officialDiaList.Add("849");
 
             //官方设置的常用对话
             for (int i = 0; i < _officialDiaList.Count; i++)

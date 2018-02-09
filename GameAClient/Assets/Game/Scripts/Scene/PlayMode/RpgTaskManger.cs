@@ -6,12 +6,12 @@ namespace GameA.Game
 {
     public class RpgTaskManger
     {
-        private static RpgTaskManger _instance;
-
-        public static RpgTaskManger Instance
-        {
-            get { return _instance ?? (_instance = new RpgTaskManger()); }
-        }
+//        private static RpgTaskManger _instance;
+//
+//        public static RpgTaskManger Instance
+//        {
+//            get { return _instance ?? (_instance = new RpgTaskManger()); }
+//        }
 
         static RpgTaskManger()
         {
@@ -458,7 +458,7 @@ namespace GameA.Game
         // 判断任务是否完成首先判断的时间
         private void Judge()
         {
-//            JudegeBeforeTask();
+            JudegeBeforeTask();
             SetTemp(ColltionNum, ColltionNumtemp);
             SetTemp(KillMonstorNum, KillMonstorNumTemp);
             //判断时间的放到每个人物中判断
@@ -567,6 +567,7 @@ namespace GameA.Game
                     if (ColliderScene2D.CurScene.TryGetUnit(enmoutor.Current.Key, out unit))
                     {
                         NPCBase npc = unit as NPCBase;
+
                         if (isready)
                         {
                             npc.SetReady();
@@ -689,7 +690,16 @@ namespace GameA.Game
             NPCBase npcUnit;
             ColliderScene2D.CurScene.TryGetUnit(deliverNpcGuid, out unit);
             npcUnit = unit as NPCBase;
-            if (npcUnit != null) npcUnit.SetInTask();
+            if (npcUnit != null)
+                if (task.Targets.Get<NpcTaskTargetDynamic>(0).TaskType == (int) ENpcTargetType.Dialog)
+                {
+                    npcUnit.SetFinishTask();
+                }
+                else
+                {
+                    npcUnit.SetInTask();
+                }
+
             SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTask(_npcTaskDynamics, _finishNpcTask);
         }
 

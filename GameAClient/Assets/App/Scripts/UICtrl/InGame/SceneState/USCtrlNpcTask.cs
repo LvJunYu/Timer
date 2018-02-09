@@ -86,8 +86,11 @@ namespace GameA
                     {
                         TargetTypeTextGroup[i].text = "传话";
                         TargetNumTextGroup[i].text =
-                            RpgTaskManger.Instance.GetNpcNameByNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i)
+                            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.GetNpcNameByNum(_taskData.Targets
+                                .Get<NpcTaskTargetDynamic>(i)
                                 .TargetNpcNum);
+//                        RpgTaskManger.Instance.GetNpcNameByNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i)
+//                            .TargetNpcNum);
                     }
                     else
                     {
@@ -128,17 +131,17 @@ namespace GameA
             {
                 return;
             }
-            if (RpgTaskManger.Instance.NpcTaskDynamicsTimeLimit.ContainsKey(_guid))
+            if ( Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit.ContainsKey(_guid))
             {
                 float lastTime = GameRun.Instance.GameTimeSinceGameStarted -
-                                 RpgTaskManger.Instance.NpcTaskDynamicsTimeLimit[_guid];
+                                 Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit[_guid];
                 if (lastTime < _taskData.TaskimeLimit)
                 {
                     _cachedView.TimeText1.text = String.Format("{0}秒", (int) (_taskData.TaskimeLimit - lastTime));
                 }
                 else
                 {
-                    RpgTaskManger.Instance.RemoveTask(_guid, true);
+                    Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.RemoveTask(_guid, true);
                 }
             }
         }

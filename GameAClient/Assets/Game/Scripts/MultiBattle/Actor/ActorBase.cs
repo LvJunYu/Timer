@@ -396,7 +396,8 @@ namespace GameA.Game
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {
                 OnBoxHoldingChanged();
-                RpgTaskManger.Instance.AssitConShowDiaEvent();
+                Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AssitConShowDiaEvent();
+//                RpgTaskManger.Instance.AssitConShowDiaEvent();
             }
         }
 
@@ -963,7 +964,7 @@ namespace GameA.Game
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
-        
+
         //检测子弹穿过
         private bool CheckProjectileHit(UnitBase other)
         {

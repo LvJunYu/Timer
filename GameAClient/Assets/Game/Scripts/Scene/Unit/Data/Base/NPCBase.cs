@@ -18,6 +18,7 @@ namespace GameA.Game
         private int _closeDis = 1;
         private NpcStateBar _stateBar;
         private Action _oldState;
+        private bool _isNoShow;
 
         public Action OldState
         {
@@ -292,7 +293,8 @@ namespace GameA.Game
             {
                 if (base.InstantiateView())
                 {
-                    RpgTaskManger.Instance.JudegeBeforeTask();
+                    Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.JudegeBeforeTask();
+//                    RpgTaskManger.Instance.JudegeBeforeTask();
                     return true;
                 }
                 return false;

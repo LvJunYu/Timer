@@ -1789,7 +1789,8 @@ namespace GameA.Game
 
         internal void OnCtrlBySwitch()
         {
-            RpgTaskManger.Instance.OnControlFinish(_guid);
+            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.OnControlFinish(_guid);
+//            RpgTaskManger.Instance.OnControlFinish(_guid);
             SetActiveState(_eActiveState == EActiveState.Deactive ? EActiveState.Active : EActiveState.Deactive);
         }
 

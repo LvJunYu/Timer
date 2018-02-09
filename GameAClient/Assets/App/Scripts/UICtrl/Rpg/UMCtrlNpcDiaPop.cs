@@ -25,7 +25,7 @@ namespace GameA
         public void Hide()
         {
             IsShow = false;
-            _cachedView.Trans.anchoredPosition = new Vector2(100000, 0);
+            _cachedView.Trans.anchoredPosition = new Vector2(1000000000000, 1000000000000);
         }
 
         public void Show()

@@ -20,7 +20,7 @@ namespace GameA.Game
         protected UnitBase _attactTarget;
         protected MonsterCave _monsterCave;
         private int _lastGetTargetFrame;
-        
+
         public override bool IsMonster
         {
             get { return true; }
@@ -354,7 +354,8 @@ namespace GameA.Game
         protected override void OnDead()
         {
             base.OnDead();
-            RpgTaskManger.Instance.AddKill(Id);
+            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AddKill(Id);
+//            RpgTaskManger.Instance.AddKill(Id);
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
         }
 

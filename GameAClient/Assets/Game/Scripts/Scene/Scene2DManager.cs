@@ -279,6 +279,11 @@ namespace GameA.Game
             return GetScene2DEntity(index).ColliderScene;
         }
 
+        public Scene2DEntity GetCurScene2DEntity()
+        {
+            return GetScene2DEntity(_curSceneIndex);
+        }
+
         public void InitWithMapData(GM2DMapData mapData)
         {
             var mainRect = GM2DTools.ToEngine(mapData.ValidMapRect);
@@ -512,6 +517,12 @@ namespace GameA.Game
         private ColliderScene2D _colliderScene = new ColliderScene2D();
         private IntVec2 _mapSize;
         private EditRecordManager _editRecordManager;
+        private RpgTaskManger _rpgManger;
+
+        public RpgTaskManger RpgManger
+        {
+            get { return _rpgManger; }
+        }
 
         public DataScene2D DataScene
         {
@@ -577,6 +588,8 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+            _rpgManger = new RpgTaskManger();
+            _rpgManger.GetAllTask();
         }
 
         public void AddUnitsOutofMap()
