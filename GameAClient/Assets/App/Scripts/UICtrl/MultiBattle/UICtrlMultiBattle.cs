@@ -39,6 +39,7 @@ namespace GameA
             {
                 return;
             }
+
             if (LocalUser.Instance.MultiBattleData.IsMyTeam)
             {
                 for (int i = 0; i < _dataList.Count; i++)
@@ -123,14 +124,24 @@ namespace GameA
                 _dataList = _data.MultiProjects;
                 if (_dataList != null)
                 {
+                    bool hasJoinTeam = LocalUser.Instance.MultiBattleData.TeamInfo != null;
                     _umList = new List<UMCtrlOfficialProject>(_dataList.Count);
                     for (int i = 0; i < _dataList.Count; i++)
                     {
                         var um = new UMCtrlOfficialProject();
                         um.Init(_cachedView.GridRtf, ResScenary);
                         um.Set(_dataList[i]);
+                        if (!hasJoinTeam)
+                        {
+                            LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
+                        }
+
                         _umList.Add(um);
-                        LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(_dataList[i].ProjectId, true);
+                    }
+                    //如果已经加入队伍，则刷新当前选中关卡
+                    if (hasJoinTeam)
+                    {
+                        OnSelectedOfficalProjectListChanged();
                     }
 
                     _hasRequested = true;
@@ -164,6 +175,7 @@ namespace GameA
             {
                 return;
             }
+
             _userList = LocalUser.Instance.MultiBattleData.TeamInfo.UserList;
             _cachedView.QuitTeamBtn.SetActiveEx(_userList.Count > 1);
             _cachedView.InviteButton.SetActiveEx(_userList.Count < TeamManager.MaxTeamCount);
@@ -178,6 +190,7 @@ namespace GameA
                     _usCtrlMultiTeams[i].Set(null);
                 }
             }
+
             _cachedView.QuickStartBtn.SetActiveEx(LocalUser.Instance.MultiBattleData.IsMyTeam);
         }
 

@@ -33,7 +33,7 @@ namespace GameA
             base.OnDestroy();
         }
 
-        public void Set(Project project)
+        public void Set(Project project, bool selected = true)
         {
             _project = project;
             if (_project == null) return;
@@ -51,7 +51,7 @@ namespace GameA
                 _cachedView.DefaultCoverTexture);
             _list.Clear();
             _list.Add(_project.ProjectId);
-            SetSelected(true);
+            SetSelected(selected);
             _lastClickTime = 0;
         }
 
