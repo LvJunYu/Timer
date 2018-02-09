@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -248,8 +249,22 @@ namespace GameA
             {
                 _cachedView.Icon.sprite = _unitIcon;
             }
-            _cachedView.Desc.text = _uint.Summary;
-            _cachedView.EffectText.text = _uint.EffectSummary;
+            if (_uint.Summary != null)
+            {
+                _cachedView.Desc.text = String.Format("<size=22>简介</size>\n{0}", _uint.Summary);
+            }
+            else
+            {
+                _cachedView.Desc.text = "";
+            }
+            if (_uint.EffectSummary != null)
+            {
+                _cachedView.EffectText.text = String.Format("<size=22>效果</size>\n{0}", _uint.EffectSummary);
+            }
+            else
+            {
+                _cachedView.EffectText.text = "";
+            }
         }
 
         public void OnRoleBtn()
