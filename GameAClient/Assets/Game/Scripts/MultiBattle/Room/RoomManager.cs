@@ -412,7 +412,9 @@ namespace GameA.Game
             SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
             if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
             {
-                GM2DGame.Instance.QuitGame(() => ConnectRS(msg.RSAddress, (ushort) msg.RSPort), null);
+                GM2DGame.Instance.QuitGame(
+                    () => CoroutineProxy.Instance.StartCoroutine(
+                        CoroutineProxy.RunWaitFrames(2, () => ConnectRS(msg.RSAddress, (ushort) msg.RSPort))), null);
             }
             else
             {

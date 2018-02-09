@@ -62,15 +62,25 @@ namespace GameA
             {
                 return;
             }
-            _lastClickTime = Time.time;
+
+
             if (_selected)
             {
                 RoomManager.Instance.SendUnSelectProject(_list);
             }
             else
             {
+                if (LocalUser.Instance.MultiBattleData.TeamInfo != null &&
+                    LocalUser.Instance.MultiBattleData.TeamInfo.UserList.Count > _project.NetData.PlayerCount)
+                {
+                    SocialGUIManager.ShowPopupDialog("队伍人数超过关卡最大人数限制");
+                    return;
+                }
+
                 RoomManager.Instance.SendSelectProject(_list);
             }
+
+            _lastClickTime = Time.time;
         }
 
         public void SetSelected(bool value)
@@ -79,6 +89,7 @@ namespace GameA
             {
                 _lastClickTime = 0;
             }
+
             _selected = value;
             _cachedView.SelectedObj.SetActive(value);
         }
