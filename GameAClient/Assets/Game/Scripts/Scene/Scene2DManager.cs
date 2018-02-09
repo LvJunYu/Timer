@@ -229,9 +229,21 @@ namespace GameA.Game
         public void CreateScene()
         {
             var scene = new Scene2DEntity();
-            int sceneIndex = _sceneList.Count;
-            scene.Init(_initialMapSize, sceneIndex);
+            var index = _sceneList.Count;
+            scene.Init(_initialMapSize, index);
             _sceneList.Add(scene);
+        }
+
+        public Scene2DEntity CreateScene(ESceneType sceneType = ESceneType.InHome)
+        {
+            var scene = new Scene2DEntity();
+            scene.Init(_initialMapSize, (int)sceneType);
+            return scene;
+        }
+
+        public void DesctroyScene(Scene2DEntity scene)
+        {
+            scene.Dispose();
         }
 
         /// <summary>
@@ -252,6 +264,13 @@ namespace GameA.Game
 
         private Scene2DEntity GetScene2DEntity(int index)
         {
+            if (index == -1)
+            {
+                LogHelper.Error("index is out of range");
+                index = 0;
+                _curSceneIndex = 0;
+                CreateScene();
+            }
             while (index >= _sceneList.Count)
             {
                 LogHelper.Error("index is out of range");
@@ -655,5 +674,11 @@ namespace GameA.Game
         EditCreated,
         ParseMap,
         ChangeScene
+    }
+
+    public enum ESceneType
+    {
+        InGame = 10,
+        InHome,
     }
 }

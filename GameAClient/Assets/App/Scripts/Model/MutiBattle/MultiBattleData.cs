@@ -7,30 +7,6 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class LocalTeamInvite
-    {
-        public Msg_MC_TeamInvite Msg;
-        public float CreateTime;
-
-        public LocalTeamInvite(Msg_MC_TeamInvite msg)
-        {
-            Msg = msg;
-            CreateTime = Time.time;
-        }
-    }
-
-    public class LocalRoomInvite
-    {
-        public Msg_MC_RoomInvite Msg;
-        public float CreateTime;
-
-        public LocalRoomInvite(Msg_MC_RoomInvite msg)
-        {
-            Msg = msg;
-            CreateTime = Time.time;
-        }
-    }
-
     public class MultiBattleData
     {
         private const string RefuseInviteKey = "RefuseTeamInvite";
@@ -305,6 +281,30 @@ namespace GameA
             {
                 Messenger.Broadcast(EMessengerType.OnTeamUserChanged);
             }
+        }
+    }
+
+    public class LocalTeamInvite
+    {
+        public Msg_MC_TeamInvite Msg;
+        public float CreateTime;
+
+        public LocalTeamInvite(Msg_MC_TeamInvite msg)
+        {
+            Msg = msg;
+            CreateTime = Time.time;
+        }
+    }
+
+    public class LocalRoomInvite
+    {
+        public Msg_MC_RoomInvite Msg;
+        public float CreateTime;
+
+        public LocalRoomInvite(Msg_MC_RoomInvite msg)
+        {
+            Msg = msg;
+            CreateTime = Time.time;
         }
     }
 }
