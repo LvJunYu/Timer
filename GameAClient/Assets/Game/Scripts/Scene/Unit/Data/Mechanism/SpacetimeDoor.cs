@@ -66,6 +66,7 @@ namespace GameA.Game
 
             UnitBase unit;
             SpacetimeDoor spacetimeDoor = null;
+            SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
             CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
             {
                 Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ChangeScene);
@@ -85,6 +86,7 @@ namespace GameA.Game
                 sender.SetPos(spacetimeDoor.CurPos);
             }, () =>
             {
+                SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
                 sender.OutSpacetimeDoor();
                 if (spacetimeDoor != null)
                 {

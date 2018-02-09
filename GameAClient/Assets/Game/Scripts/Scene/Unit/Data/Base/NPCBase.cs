@@ -335,6 +335,10 @@ namespace GameA.Game
                 Object.Destroy(_stateBar.gameObject);
                 _stateBar = null;
             }
+            if (_diaPop != null)
+            {
+                _diaPop.Hide();
+            }
             base.OnObjectDestroy();
         }
 
