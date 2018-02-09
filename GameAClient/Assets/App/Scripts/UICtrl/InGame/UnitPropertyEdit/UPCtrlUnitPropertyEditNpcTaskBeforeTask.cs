@@ -55,6 +55,14 @@ namespace GameA
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
             OpenAnimation();
+            if (_target.TriggerTaskNumber == 0)
+            {
+                _cachedView.BeforeConditionInputField.text = "";
+            }
+            else
+            {
+                _cachedView.BeforeConditionInputField.text = _target.TriggerTaskNumber.ToString();
+            }
         }
 
         public override void Close()

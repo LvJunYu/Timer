@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Lifetime;
 using SoyEngine;
-using SoyEngine.Proto;
 
 namespace GameA.Game
 {
-    public class
-        RpgTaskManger
+    public class RpgTaskManger
     {
         private static RpgTaskManger _instance;
 
@@ -44,7 +41,7 @@ namespace GameA.Game
         private NPCBase _curHitNpc;
         private IntVec3 _curNpcGuid;
         private const int JudgeInvterTime = 100;
-        private int _coutTime = 0;
+        private int _coutTime;
 
         private static void IintData()
         {
@@ -148,7 +145,6 @@ namespace GameA.Game
             //任务中的对话放到最后去判断
             if (MidleTaskDia(npcguid))
             {
-                return;
             }
         }
 
@@ -215,6 +211,7 @@ namespace GameA.Game
                                         SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(taskAfter);
                                     };
                                     canshow = true;
+                                    break;
                                 }
                             }
                         }
@@ -237,6 +234,11 @@ namespace GameA.Game
                     {
                         if (enumerator.Current.Value.TargetNpcSerialNumber == extraDynmic.NpcSerialNumber)
                         {
+                            NpcTaskDynamic task = enumerator.Current.Value;
+                            if (!_npcTaskDynamics.ContainsValue(task))
+                            {
+                                continue;
+                            }
                             DictionaryListObject diaList = new DictionaryListObject();
                             //找到任务的原guid
                             IntVec3 guid = IntVec3.zero;
@@ -249,23 +251,25 @@ namespace GameA.Game
                             }
                             if (guid != IntVec3.zero)
                             {
-                                if (enumerator.Current.Value.TaskAfter.Count > 0)
+                                if (task.TaskAfter.Count > 0)
                                 {
 //                                    ChangeDiaIcon(npcguid, enumerator.Current.Value.TaskAfter);
-                                    diaList = enumerator.Current.Value.TaskAfter;
+                                    diaList = task.TaskAfter;
                                 }
                                 else
                                 {
-                                    diaList.Add(GetTaskFinishDia(enumerator.Current.Value,
+                                    diaList.Add(GetTaskFinishDia(task,
                                         npcguid));
                                 }
                                 ShowTip(npcguid);
+                                DictionaryListObject awardlist;
+                                awardlist = GetAward(task.TaskFinishAward);
                                 _showDiaEvent = () =>
                                 {
-                                    for (int j = 0; j < enumerator.Current.Value.TaskFinishAward.Count; j++)
+                                    for (int j = 0; j < awardlist.Count; j++)
                                     {
                                         var award =
-                                            enumerator.Current.Value.TaskFinishAward.Get<NpcTaskTargetDynamic>(j);
+                                            awardlist.Get<NpcTaskTargetDynamic>(j);
                                         GetAward(award);
                                     }
 
@@ -277,6 +281,7 @@ namespace GameA.Game
                                     SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(diaList);
                                     canshow = true;
                                 };
+                                break;
                             }
                         }
                     }
@@ -297,9 +302,10 @@ namespace GameA.Game
                 UnitExtraDynamic extra;
                 if (_allNpcExtraData.TryGetValue(npcguid, out extra) && !_npcTaskDynamics.ContainsKey(npcguid))
                 {
+                    NpcTaskDynamic taskDynamic;
                     for (int i = 0; i < extra.NpcTask.Count; i++)
                     {
-                        NpcTaskDynamic taskDynamic = extra.NpcTask.Get<NpcTaskDynamic>(i);
+                        taskDynamic = extra.NpcTask.Get<NpcTaskDynamic>(i);
                         if (!_finishNpcTask.ContainsKey(taskDynamic.NpcTaskSerialNumber) &&
                             TriggerTaskFinish(taskDynamic))
                         {
@@ -865,6 +871,29 @@ namespace GameA.Game
                 newDictionaryListObject.Add(npcDia.ToString());
             }
             diaList = newDictionaryListObject;
+        }
+
+//        TaskType = _nextId++;
+//        public static readonly int ColOrKillNum = _nextId++;
+//        public static readonly int TargetUnitID = _nextId++;
+//        public static readonly int TargetGuid = _nextId++;
+//        public static readonly int TargetNpcNum
+        //copy数据
+        private DictionaryListObject GetAward(DictionaryListObject awardlist)
+        {
+            DictionaryListObject newawardlist = new DictionaryListObject();
+            for (int i = 0; i < awardlist.Count; i++)
+            {
+                NpcTaskTargetDynamic target = new NpcTaskTargetDynamic();
+                target.TaskType = awardlist.Get<NpcTaskTargetDynamic>(i).TaskType;
+                target.ColOrKillNum =
+                    awardlist.Get<NpcTaskTargetDynamic>(i).ColOrKillNum;
+                target.TargetUnitID = awardlist.Get<NpcTaskTargetDynamic>(i).TargetUnitID;
+                target.TargetGuid = awardlist.Get<NpcTaskTargetDynamic>(i).TargetGuid;
+                target.TargetNpcNum = awardlist.Get<NpcTaskTargetDynamic>(i).TargetNpcNum;
+                newawardlist.Add(target);
+            }
+            return newawardlist;
         }
     }
 }

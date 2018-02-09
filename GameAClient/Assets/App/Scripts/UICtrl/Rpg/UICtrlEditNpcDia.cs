@@ -530,13 +530,16 @@ namespace GameA
                     UseCommonDia, RequestData, _dialogPreinstallList);
                 _inputItemList.Add(item);
             }
-            UMCtrlNpcInputDiaItem additem =
-                UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
-                    EResScenary.UIInGame);
-            additem.Set(0, _inputItemList, true, false, _callbackActions,
-                UseCommonDia, RequestData, _dialogPreinstallList);
-            additem.InitItem(_cachedView.ConmmonContentTrs);
-            _inputItemList.Add(additem);
+            if (_dialogPreinstallList.DataList.Count < UMCtrlNpcInputDiaItem.MaxCommonUseDiaNum)
+            {
+                UMCtrlNpcInputDiaItem additem =
+                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
+                        EResScenary.UIInGame);
+                additem.Set(0, _inputItemList, true, false, _callbackActions,
+                    UseCommonDia, RequestData, _dialogPreinstallList);
+                additem.InitItem(_cachedView.ConmmonContentTrs);
+                _inputItemList.Add(additem);
+            }
         }
 
         private void SetNameLength(string str)

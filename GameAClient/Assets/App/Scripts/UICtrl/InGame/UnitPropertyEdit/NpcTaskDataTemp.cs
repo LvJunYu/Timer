@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using GameA.Game;
-using Microsoft.Win32;
-using NewResourceSolution;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -299,6 +296,18 @@ namespace GameA
             return sucess;
         }
 
+        public bool HavetNpcSerialNum(int num)
+        {
+            if (_npcSerialNumberDic.ContainsKey(num))
+            {
+                return _npcSerialNumberDic[num];
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void RemoveNpc(UnitDesc unitDesc)
         {
             UnitExtraDynamic extra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
@@ -413,7 +422,7 @@ namespace GameA
 
                 for (int j = 0; j < task.Targets.Count; j++)
                 {
-                    target = task.Targets.Get<NpcTaskTargetDynamic>(i);
+                    target = task.Targets.Get<NpcTaskTargetDynamic>(j);
                     if (target.TargetGuid == unitGuid)
                     {
                         type = ETaskContype.Task;
@@ -421,7 +430,7 @@ namespace GameA
                 }
                 for (int j = 0; j < task.BeforeTaskAward.Count; j++)
                 {
-                    target = task.BeforeTaskAward.Get<NpcTaskTargetDynamic>(i);
+                    target = task.BeforeTaskAward.Get<NpcTaskTargetDynamic>(j);
                     if (target.TargetGuid == unitGuid)
                     {
                         type = ETaskContype.BeforeTask;
@@ -429,7 +438,7 @@ namespace GameA
                 }
                 for (int j = 0; j < task.TaskFinishAward.Count; j++)
                 {
-                    target = task.TaskFinishAward.Get<NpcTaskTargetDynamic>(i);
+                    target = task.TaskFinishAward.Get<NpcTaskTargetDynamic>(j);
                     if (target.TargetGuid == unitGuid)
                     {
                         type = ETaskContype.AfterTask;

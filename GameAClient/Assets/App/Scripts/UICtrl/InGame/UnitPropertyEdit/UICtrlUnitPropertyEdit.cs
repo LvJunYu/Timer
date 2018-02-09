@@ -1381,6 +1381,15 @@ namespace GameA
             for (int i = 0; i < num; i++)
             {
                 NpcTaskDynamic task = EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i);
+                if (task == null)
+                {
+                    continue;
+                }
+                EditNpcTaregtDialog.CheckTargetType(task);
+                if (task.Targets == null)
+                {
+                    continue;
+                }
                 if (task.Targets.Count == 0)
                 {
                     NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
@@ -1388,6 +1397,10 @@ namespace GameA
                 }
                 else
                 {
+                    if (task.Targets.Get<NpcTaskTargetDynamic>(0).TaskType == (int) ENpcTargetType.Dialog)
+                    {
+                        task.TargetNpcSerialNumber = task.Targets.Get<NpcTaskTargetDynamic>(0).TargetNpcNum;
+                    }
                     if (task.TargetNpcSerialNumber == 0)
                     {
                         task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;

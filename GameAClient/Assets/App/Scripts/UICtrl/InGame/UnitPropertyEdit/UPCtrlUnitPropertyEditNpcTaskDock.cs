@@ -164,7 +164,6 @@ namespace GameA
         public override void Close()
         {
             _cachedView.NpcTaskDock.SetActiveEx(false);
-
             // 关闭的时候设置名字和对话内容
 //            if (_cachedView.NpcName.text != _mainCtrl.EditData.UnitExtra.NpcName)
 //            {
@@ -184,6 +183,10 @@ namespace GameA
 
         public void RefreshTask(NpcTaskDynamic taskData = null)
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             if (taskData != null)
             {
                 CurExtraNpcTaskData = taskData;
@@ -304,7 +307,7 @@ namespace GameA
             }
         }
 
-        private void CheckTargetType(NpcTaskDynamic task)
+        public void CheckTargetType(NpcTaskDynamic task)
         {
             DictionaryListObject targets = new DictionaryListObject();
             if (task.Targets == null)

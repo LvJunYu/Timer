@@ -9,7 +9,7 @@ namespace GameA
 {
     public class UMCtrlNpcInputDiaItem : UMCtrlBase<UMViewNpcInputDiaItem>, IUMPoolable
     {
-        public const int MaxCommonUseDiaNum = 20;
+        public const int MaxCommonUseDiaNum = 15;
         public bool IsShow { get; private set; }
         private List<UMCtrlNpcInputDiaItem> _list;
         private NpcDialogPreinstallList _datalist;
