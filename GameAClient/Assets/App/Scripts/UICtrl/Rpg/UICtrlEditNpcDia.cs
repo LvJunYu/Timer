@@ -51,12 +51,6 @@ namespace GameA
             {
                 _officialDiaList.Add(dia.Value.Dia);
             }
-//            _officialDiaList.Add("123");
-//            _officialDiaList.Add("456");
-//            _officialDiaList.Add("789");
-//            _officialDiaList.Add("111");
-//            _officialDiaList.Add("849");
-
             //官方设置的常用对话
             for (int i = 0; i < _officialDiaList.Count; i++)
             {
@@ -209,6 +203,14 @@ namespace GameA
                     _npcDiaItemList[i].setDiasble(i);
                 }
             }
+            if (cout >= 5)
+            {
+                _cachedView.ConfirmBtnMask.SetActiveEx(true);
+            }
+            else
+            {
+                _cachedView.ConfirmBtnMask.SetActiveEx(false);
+            }
         }
 
         private void ClickIcon(int inx, bool b)
@@ -279,6 +281,9 @@ namespace GameA
 
                         break;
                 }
+                Color textColor;
+                ColorUtility.TryParseHtmlString(_curEditNpcDia.Color, out textColor);
+                _cachedView.DiaInputField.textComponent.color = textColor;
             }
         }
 
