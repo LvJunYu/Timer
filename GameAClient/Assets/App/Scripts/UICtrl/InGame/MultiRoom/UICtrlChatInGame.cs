@@ -16,6 +16,11 @@ namespace GameA
         private EMenu _curMenu;
         private UPCtrlChatInGameQuickChat _upCtrlChatInGameQuickChat;
 
+        public USCtrlChatInGame Chat
+        {
+            get { return _chat; }
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameMainUI;
@@ -40,6 +45,7 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _chat = new USCtrlChatInGame();
             _chat.ResScenary = ResScenary;
+            _chat.MainCtrl = this;
             _chat.Init(_cachedView.InGameChat);
             _curPos = _cachedView.PannelRtf.anchoredPosition;
 
@@ -63,10 +69,19 @@ namespace GameA
             }
         }
 
-        private void SetMenu(EMenu menu)
+        public void SetMenu(EMenu menu, bool force = false)
         {
+            if (force)
+            {
+                _cachedView.ChatHistoryTog.isOn = menu == EMenu.ChatHistory;
+                _cachedView.QuickChatTog.isOn = menu == EMenu.QuickChat;
+            }
+            if (_curMenu == menu)
+            {
+                return;
+            }
             _curMenu = menu;
-            _cachedView.QuickChatPannel.SetActive(menu == EMenu.QuickChat);
+            _cachedView.ChatHistoryPannel.SetActive(menu == EMenu.ChatHistory);
             if (_curMenu == EMenu.ChatHistory)
             {
                 _upCtrlChatInGameQuickChat.Close();
@@ -100,7 +115,7 @@ namespace GameA
             base.OnClose();
         }
 
-        private void OnCloseBtn()
+        public void OnCloseBtn()
         {
             SetOpenState(false);
         }
@@ -122,7 +137,7 @@ namespace GameA
             _cachedView.OpenPannel.SetActiveEx(_openState);
             if (value)
             {
-                SetMenu(EMenu.ChatHistory);
+                SetMenu(EMenu.ChatHistory, true);
                 _curPos = _cachedView.PannelRtf.anchoredPosition;
                 ClampWindow(_cachedView.OpenPannel);
             }
@@ -132,7 +147,7 @@ namespace GameA
                 _cachedView.PannelRtf.anchoredPosition = _curPos;
             }
         }
-
+        
         private void OnBeginDrag(PointerEventData data)
         {
             _isDraging = true;

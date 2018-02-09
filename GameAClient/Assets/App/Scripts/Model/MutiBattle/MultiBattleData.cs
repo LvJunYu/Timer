@@ -20,6 +20,7 @@ namespace GameA
         private bool _isMyTeam;
         private Queue<LocalTeamInvite> _teamInviteStack = new Queue<LocalTeamInvite>(MaxInviteCache);
         private Queue<LocalRoomInvite> _roomInviteStack = new Queue<LocalRoomInvite>(MaxInviteCache);
+        private RoomChatPreinstallList _chatPreinstallList = new RoomChatPreinstallList();
 
         public Msg_MC_TeamInfo TeamInfo
         {
@@ -98,6 +99,11 @@ namespace GameA
 
                 return _roomInviteStack;
             }
+        }
+
+        public RoomChatPreinstallList ChatPreinstallList
+        {
+            get { return _chatPreinstallList; }
         }
 
         public void OnProjectSelectedChanged(List<long> list, bool value)

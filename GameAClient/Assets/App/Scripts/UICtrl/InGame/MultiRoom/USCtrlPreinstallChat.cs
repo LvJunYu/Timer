@@ -1,17 +1,27 @@
 ﻿using SoyEngine;
+using UnityEngine.Events;
 
 namespace GameA
 {
     public class USCtrlPreinstallChat : USCtrlBase<USViewPreinstallChat>
     {
-        protected override void OnViewCreated()
+        public void AddDeleteBtnListener(UnityAction action)
         {
-            base.OnViewCreated();
+            _cachedView.DeleteBtn.onClick.AddListener(action);
+        }
+        
+        public void AddBtnListener(UnityAction action)
+        {
+            _cachedView.Btn.onClick.AddListener(action);
         }
 
-        public override void Open()
+        public void Set(RoomChatPreinstall chat)
         {
-            base.Open();
+            _cachedView.SetActiveEx(chat!=null);
+            if (chat != null)
+            {
+                _cachedView.Content.text = chat.Data;
+            }
         }
     }
 }

@@ -376,7 +376,6 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("房间创建失败");
-//                _room.OnCreateFailed();
                 return;
             }
 
@@ -410,8 +409,15 @@ namespace GameA.Game
                 return;
             }
 
-//            _room.OnJoinSuccess();
-            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
+            if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+            {
+                GM2DGame.Instance.QuitGame(() => ConnectRS(msg.RSAddress, (ushort) msg.RSPort), null);
+            }
+            else
+            {
+                ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            }
         }
 
         public void OnTeamQuickStartWarn()
@@ -419,7 +425,7 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
             SocialGUIManager.ShowPopupDialog("有玩家在游戏中，无法开始");
         }
-        
+
         internal void OnRoomInfo(Msg_MC_RoomInfo msg)
         {
             _room.OnRoomInfo(msg);
@@ -489,6 +495,5 @@ namespace GameA.Game
         }
 
         #endregion
-
     }
 }
