@@ -12,7 +12,7 @@ namespace GameA
     {
         private const int MaxRawChat = 5;
         private const int MaxCacheSecond = 10;
-        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.Room;
+        private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.Camp;
         private ChatData.EChatType _currentSendType = ChatData.EChatType.Camp;
         private Stack<UMCtrlChatInGame> _umPool = new Stack<UMCtrlChatInGame>(70);
         private List<ChatData.Item> _contentList;
@@ -26,7 +26,6 @@ namespace GameA
             get { return _mainCtrl; }
             set { _mainCtrl = value; }
         }
-
 
         public EResScenary ResScenary
         {
@@ -179,6 +178,7 @@ namespace GameA
                 LogHelper.Error("OnSendBtn Fail, _currentSendType = {0}", _currentSendType);
                 return false;
             }
+            _mainCtrl.OnCloseBtn();
             return true;
         }
 
@@ -198,7 +198,7 @@ namespace GameA
         {
             if (!_isOpen)
             {
-                if (chatType == ChatData.EChatType.Camp || chatType == ChatData.EChatType.Room)
+                if (chatType == ChatData.EChatType.Room)
                 {
                     ShowRawChat(item);
                 }

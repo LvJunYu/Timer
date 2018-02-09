@@ -40,7 +40,6 @@ namespace GameA
             if (inx < _dataList.Count)
             {
                 _mainCtrl.Chat.SendChat(_dataList[inx].Data);
-                _mainCtrl.OnCloseBtn();
             }
         }
 

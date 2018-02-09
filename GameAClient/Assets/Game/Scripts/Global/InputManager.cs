@@ -193,6 +193,7 @@ namespace GameA.Game
             EasyTouch.On_DragStart2Fingers += EasyTouchOnDragStart2Fingers;
             EasyTouch.On_Drag2Fingers += EasyTouchOnDrag2Fingers;
             EasyTouch.On_DragEnd2Fingers += EasyTouchOnDragEnd2Fingers;
+            EasyTouch.SetSecondFingerSimulation(false);
         }
 
         private void EasyTouchOnDragStart2Fingers(Gesture gesture)

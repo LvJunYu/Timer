@@ -82,8 +82,7 @@ namespace GameA
             _cachedView.RoomPannel.SetActive(_inviteType == EInviteType.Room);
             if (_inviteType == EInviteType.Team)
             {
-                _teamInviteList = LocalUser.Instance.MultiBattleData.TeamInviteStack.ToList();
-                _teamInviteList.Reverse();
+                _teamInviteList = LocalUser.Instance.MultiBattleData.TeamInviteList;
                 for (int i = 0; i < _tagBtns.Length; i++)
                 {
                     _tagBtns[i].SetActiveEx(i < _teamInviteList.Count);
@@ -102,8 +101,7 @@ namespace GameA
             }
             else if (_inviteType == EInviteType.Room)
             {
-                _roomInviteList = LocalUser.Instance.MultiBattleData.RoomInviteStack.ToList();
-                _roomInviteList.Reverse();
+                _roomInviteList = LocalUser.Instance.MultiBattleData.RoomInviteStack;
                 for (int i = 0; i < _tagBtns.Length; i++)
                 {
                     _tagBtns[i].SetActiveEx(i < _roomInviteList.Count);

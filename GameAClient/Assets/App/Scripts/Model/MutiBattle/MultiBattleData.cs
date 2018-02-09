@@ -75,7 +75,7 @@ namespace GameA
             }
         }
 
-        public Queue<LocalTeamInvite> TeamInviteStack
+        public List<LocalTeamInvite> TeamInviteList
         {
             get
             {
@@ -84,11 +84,24 @@ namespace GameA
                     _teamInviteStack.Dequeue();
                 }
 
-                return _teamInviteStack;
+                var list = new List<LocalTeamInvite>();
+                while (_teamInviteStack.Count > 0)
+                {
+                    var invite = _teamInviteStack.Dequeue();
+                    //去掉同一个人的邀请
+                    int index = list.FindIndex(p => p.Msg.Inviter.UserGuid == invite.Msg.Inviter.UserGuid);
+                    if (index >= 0)
+                    {
+                        list.RemoveAt(index);
+                    }
+                    list.Add(invite);
+                }
+                list.Reverse();
+                return list;
             }
         }
 
-        public Queue<LocalRoomInvite> RoomInviteStack
+        public List<LocalRoomInvite> RoomInviteStack
         {
             get
             {
@@ -96,8 +109,20 @@ namespace GameA
                 {
                     _roomInviteStack.Dequeue();
                 }
-
-                return _roomInviteStack;
+                var list = new List<LocalRoomInvite>();
+                while (_roomInviteStack.Count > 0)
+                {
+                    var invite = _roomInviteStack.Dequeue();
+                    //去掉同一个人的邀请
+                    int index = list.FindIndex(p => p.Msg.Inviter.UserGuid == invite.Msg.Inviter.UserGuid);
+                    if (index >= 0)
+                    {
+                        list.RemoveAt(index);
+                    }
+                    list.Add(invite);
+                }
+                list.Reverse();
+                return list;
             }
         }
 
@@ -155,8 +180,15 @@ namespace GameA
                 {
                     if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
                     {
-                        SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
-                            new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                        if (SocialGUIManager.Instance.CurrentMode != SocialGUIManager.EMode.Game)
+                        {
+                            SocialGUIManager.ShowPopupDialog("您被踢出队伍", null,
+                                new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                        }
+                        else
+                        {
+                            OnLeaveTeam();
+                        }
                     }
                     else if (msg.Reason == EMCExitTeamReason.MCETR_Disconnect)
                     {
