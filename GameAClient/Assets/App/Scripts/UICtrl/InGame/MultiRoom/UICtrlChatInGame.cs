@@ -13,6 +13,8 @@ namespace GameA
         private bool _openState;
         private bool _isDraging;
         private Vector2 _curPos;
+        private EMenu _curMenu;
+        private UPCtrlChatInGameQuickChat _upCtrlChatInGameQuickChat;
 
         protected override void InitGroupId()
         {
@@ -22,7 +24,9 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.OpenBtn.AddListener(EventTriggerType.PointerClick, eventData => OnClickOpenBtn());
+            _upCtrlChatInGameQuickChat = new UPCtrlChatInGameQuickChat();
+            _upCtrlChatInGameQuickChat.Init(this, _cachedView);
+            _cachedView.OpenBtn.AddListener(EventTriggerType.PointerClick, eventData => OnOpenBtn());
             _cachedView.OpenBtn.AddListener(EventTriggerType.BeginDrag,
                 eventData => OnBeginDrag(eventData as PointerEventData));
             _cachedView.OpenBtn.AddListener(EventTriggerType.Drag, eventData => OnDrag(eventData as PointerEventData));
@@ -38,6 +42,41 @@ namespace GameA
             _chat.ResScenary = ResScenary;
             _chat.Init(_cachedView.InGameChat);
             _curPos = _cachedView.PannelRtf.anchoredPosition;
+
+            _cachedView.ChatHistoryTog.onValueChanged.AddListener(OnChatHistoryTog);
+            _cachedView.QuickChatTog.onValueChanged.AddListener(OnQuickChatTog);
+        }
+
+        private void OnQuickChatTog(bool value)
+        {
+            if (value)
+            {
+                SetMenu(EMenu.QuickChat);
+            }
+        }
+
+        private void OnChatHistoryTog(bool value)
+        {
+            if (value)
+            {
+                SetMenu(EMenu.ChatHistory);
+            }
+        }
+
+        private void SetMenu(EMenu menu)
+        {
+            _curMenu = menu;
+            _cachedView.QuickChatPannel.SetActive(menu == EMenu.QuickChat);
+            if (_curMenu == EMenu.ChatHistory)
+            {
+                _upCtrlChatInGameQuickChat.Close();
+                _chat.Open();
+            }
+            else
+            {
+                _upCtrlChatInGameQuickChat.Open();
+                _chat.Close();
+            }
         }
 
         protected override void OnDestroy()
@@ -52,7 +91,6 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _chat.Open();
             SetOpenState(false);
         }
 
@@ -62,18 +100,12 @@ namespace GameA
             base.OnClose();
         }
 
-        private void RefrshView()
-        {
-            _cachedView.OpenBtn.SetActiveEx(!_openState);
-            _cachedView.OpenPannel.SetActiveEx(_openState);
-        }
-
         private void OnCloseBtn()
         {
             SetOpenState(false);
         }
 
-        private void OnClickOpenBtn()
+        private void OnOpenBtn()
         {
             if (_isDraging)
             {
@@ -86,14 +118,17 @@ namespace GameA
         private void SetOpenState(bool value)
         {
             _openState = value;
-            RefrshView();
+            _cachedView.OpenBtn.SetActiveEx(!_openState);
+            _cachedView.OpenPannel.SetActiveEx(_openState);
             if (value)
             {
+                SetMenu(EMenu.ChatHistory);
                 _curPos = _cachedView.PannelRtf.anchoredPosition;
                 ClampWindow(_cachedView.OpenPannel);
             }
             else
             {
+                SetMenu(EMenu.None);
                 _cachedView.PannelRtf.anchoredPosition = _curPos;
             }
         }
@@ -144,6 +179,19 @@ namespace GameA
             curPos.y = Mathf.Clamp(curPos.y, -rtf.anchoredPosition.y,
                 _cachedView.Trans.rect.height - rtf.rect.height - rtf.anchoredPosition.y);
             _cachedView.PannelRtf.anchoredPosition = curPos;
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            _chat.OnUpdate();
+        }
+
+        public enum EMenu
+        {
+            None,
+            QuickChat,
+            ChatHistory
         }
     }
 }

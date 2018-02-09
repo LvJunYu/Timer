@@ -243,6 +243,14 @@ namespace GameA
                 _curSeleCtrlHandBookItem.OnSelect();
             }
             _uint = TableManager.Instance.GetUnit(unitID);
+            var scene = Scene2DManager.Instance.CreateScene();
+            var unit = UnitManager.Instance.GetUnit(unitID);
+            if (unit == null)
+            {
+                return;
+            }
+            unit.Init(new UnitDesc(unitID, IntVec3.one, 0, Vector2.one), _uint);
+            _uint = TableManager.Instance.GetUnit(unitID);
             _cachedView.Name.text = _uint.Name;
             _unitIconName = _uint.Icon;
             if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))

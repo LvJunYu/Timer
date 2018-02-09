@@ -135,7 +135,7 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_TeamQuickStartWarn(Msg_MC_TeamQuickStartWarn msg, object netlink)
         {
-            SocialGUIManager.ShowPopupDialog("有玩家在游戏中，无法开始");
+            RoomManager.Instance.OnTeamQuickStartWarn();
         }
 
         private void Msg_MC_SyncUserStatusChange(Msg_MC_SyncUserStatusChange msg, object netlink)

@@ -323,7 +323,7 @@ namespace GameA.Game
             data.ProjectId.AddRange(LocalUser.Instance.MultiBattleData.SelectedOfficalProjectList);
             SendToMSServer(data);
         }
-        
+
         public void SendExitTeam()
         {
             var data = new Msg_CM_ExitTeam();
@@ -337,35 +337,35 @@ namespace GameA.Game
             data.UserId = userId;
             SendToMSServer(data);
         }
-        
+
         public void SendInviteFriendsToTeam(List<long> list)
         {
             var data = new Msg_CM_InviteToTeam();
             data.UserIdList.AddRange(list);
             SendToMSServer(data);
         }
-        
+
         public void SendInviteFriendsToRoom(List<long> list)
         {
             var data = new Msg_CM_InviteToRoom();
             data.UserIdList.AddRange(list);
             SendToMSServer(data);
         }
-        
+
         public void SendJoinTeam(long hostId)
         {
             var data = new Msg_CM_JoinTeam();
             data.HostId = hostId;
             SendToMSServer(data);
         }
-         
+
         public void SendQueryUserList(List<long> list)
         {
             var data = new Msg_CM_QueryUserList();
             data.UserIdList.AddRange(list);
             SendToMSServer(data);
         }
-        
+
         #endregion
 
         #region Room Receive
@@ -414,6 +414,12 @@ namespace GameA.Game
             ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
         }
 
+        public void OnTeamQuickStartWarn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+            SocialGUIManager.ShowPopupDialog("有玩家在游戏中，无法开始");
+        }
+        
         internal void OnRoomInfo(Msg_MC_RoomInfo msg)
         {
             _room.OnRoomInfo(msg);

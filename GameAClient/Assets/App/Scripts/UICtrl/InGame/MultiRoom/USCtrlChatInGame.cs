@@ -10,11 +10,14 @@ namespace GameA
 {
     public class USCtrlChatInGame : USCtrlBase<USViewChatInGame>
     {
+        private const int MaxRawChat = 5;
+        private const int MaxCacheSecond = 10;
         private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.Room;
         private ChatData.EChatType _currentSendType = ChatData.EChatType.Camp;
         private Stack<UMCtrlChatInGame> _umPool = new Stack<UMCtrlChatInGame>(70);
         private List<ChatData.Item> _contentList;
         private List<UMCtrlChatInGame> _umList = new List<UMCtrlChatInGame>(70);
+        private Queue<UmChatItemRaw> _rawChatQueue = new Queue<UmChatItemRaw>(MaxRawChat);
         private EResScenary _resScenary;
 
         public EResScenary ResScenary
@@ -71,6 +74,7 @@ namespace GameA
         {
             base.Open();
             SelectChatTypeTag(_currentChatTypeTag);
+            ClearRawChat();
         }
 
         private void SelectChatTypeTag(ChatData.EChatType chatType)
@@ -173,6 +177,11 @@ namespace GameA
         {
             if (!_isOpen)
             {
+                if (chatType == ChatData.EChatType.Camp || chatType == ChatData.EChatType.Room)
+                {
+                    ShowRawChat(item);
+                }
+
                 return;
             }
 
@@ -186,6 +195,30 @@ namespace GameA
             um.Set(item);
             _umList.Add(um);
             ScrolToEnd();
+        }
+
+        private void ShowRawChat(ChatData.Item item)
+        {
+            _cachedView.RawChatPannel.SetActiveEx(true);
+            while (_rawChatQueue.Count >= MaxRawChat)
+            {
+                FreeUmItem(_rawChatQueue.Dequeue().UmCtrlChatInGame);
+            }
+
+            var um = GetUmItem();
+            um.SetParent(_cachedView.RawChatContentDock);
+            um.Set(item);
+            _rawChatQueue.Enqueue(new UmChatItemRaw(um));
+            ScrolToEnd();
+        }
+
+        private void ClearRawChat()
+        {
+            _cachedView.RawChatPannel.SetActiveEx(false);
+            while (_rawChatQueue.Count > 0)
+            {
+                FreeUmItem(_rawChatQueue.Dequeue().UmCtrlChatInGame);
+            }
         }
 
         private void OnChatListCutHead(ChatData.EChatType chatType)
@@ -227,6 +260,29 @@ namespace GameA
             {
                 _cachedView.ChatScrollRect.verticalNormalizedPosition = 0;
             }));
+        }
+
+        public void OnUpdate()
+        {
+            if (_rawChatQueue.Count > 0)
+            {
+                if (Time.time - _rawChatQueue.Peek().CreateTime > MaxCacheSecond)
+                {
+                    FreeUmItem(_rawChatQueue.Dequeue().UmCtrlChatInGame);
+                }
+            }
+        }
+
+        public class UmChatItemRaw
+        {
+            public UMCtrlChatInGame UmCtrlChatInGame;
+            public float CreateTime;
+
+            public UmChatItemRaw(UMCtrlChatInGame umCtrlChatInGame)
+            {
+                UmCtrlChatInGame = umCtrlChatInGame;
+                CreateTime = Time.time;
+            }
         }
     }
 }
