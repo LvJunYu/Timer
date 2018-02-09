@@ -28,7 +28,7 @@ namespace GameA.Game
                     {
                         _trigger = false;
                         _unit = null;
-                        Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
+                        Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardExit, _guid);
                     }
                 }
             }

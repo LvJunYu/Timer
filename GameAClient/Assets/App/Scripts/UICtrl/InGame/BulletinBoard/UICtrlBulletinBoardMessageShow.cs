@@ -6,71 +6,74 @@
 ***********************************************************************/
 
 
-
+using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 using GameA.Game;
 
 namespace GameA
 {
-
     [UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlBulletinBoardMessageShow: UICtrlInGameBase<UIViewBulletinBoardMessageShow>
-	{
-		private int _curShowCount =  0 ;
+    public class UICtrlBulletinBoardMessageShow : UICtrlInGameBase<UIViewBulletinBoardMessageShow>
+    {
+        private int _curShowCount = 0;
+        private IntVec3 _curUnitInx = IntVec3.zero;
 
-		protected override void InitGroupId()
-		{
-			_groupId = (int) EUIGroupType.InGameMainUI;
-		}
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.InGameMainUI;
+        }
 
 
-		protected override void OnViewCreated()
-		{
-			base.OnViewCreated();
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
 //			MessageOperator(true); 
-		}
+        }
 
-		protected override void OnDestroy()
-		{
+        protected override void OnDestroy()
+        {
 //			MessageOperator(false);
-			base.OnDestroy();
-		}
+            base.OnDestroy();
+        }
 
-		public override void Open(object parameter)
-		{
-			base.Open(parameter);
-			_curShowCount = 0;
-		}
+        public override void Open(object parameter)
+        {
+            base.Open(parameter);
+            _curShowCount = 0;
+            _curUnitInx = IntVec3.zero;
+        }
 
-		protected override void InitEventListener()
-		{
-			base.InitEventListener();
-			RegisterEvent(EMessengerType.OnEdit, OnEditMode);
-			RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
-            Messenger<IntVec3>.AddListener (EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
-            Messenger.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
-		}
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnEdit, OnEditMode);
+            RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
+            Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
+            Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
+        }
 
-		#region event
+        #region event
 
-		private void OnEditMode()
-		{
-			if (!_isViewCreated)
-			{
-				return;
-			}
-			ClearAndClose();
-		}
+        private void OnEditMode()
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
 
-		private void OnPlayMode()
-		{
-			if (!_isViewCreated)
-			{
-				return;
-			}
-			ClearAndClose();
-		}
+            ClearAndClose();
+        }
+
+        private void OnPlayMode()
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+
+            ClearAndClose();
+        }
 
 //		private void MessageOperator(bool value)
 //		{
@@ -86,64 +89,72 @@ namespace GameA
 //			}
 //		}
 
-		private void OnTriggerBulletinBoardEnter(IntVec3 index)
-		{
-			if (!IsOpen)
-			{
+        private void OnTriggerBulletinBoardEnter(IntVec3 index)
+        {
+            if (!IsOpen)
+            {
                 SocialGUIManager.Instance.OpenUI<UICtrlBulletinBoardMessageShow>();
-			}
-			_curShowCount ++;
-		    string value = DataScene2D.CurScene.GetUnitExtra(index).Msg;
-			_cachedView.ShowText.text = string.IsNullOrEmpty(value) ? GM2DUIConstDefine.GameBulletinBoardMessageDefaultMessage : value;
-			UpdateUIShow();
-			
-		}
+            }
 
-		private void OnTriggerBulletinBoardExit()
-		{
-			_curShowCount --;
-			if (_curShowCount <= 0)
-			{
-				_curShowCount = 0;
-				UpdateUIShow();
-			}
-		}
-		#endregion
+            if (_curUnitInx != index)
+            {
+                _curShowCount = 1;
+                _curUnitInx = index;
+                string value = DataScene2D.CurScene.GetUnitExtra(index).Msg;
+                _cachedView.ShowText.text = string.IsNullOrEmpty(value)
+                    ? GM2DUIConstDefine.GameBulletinBoardMessageDefaultMessage
+                    : value;
+                UpdateUIShow();
+            }
+            else
+            {
+                _curShowCount++;
+            }
+        }
 
-		#region private
+        private void OnTriggerBulletinBoardExit(IntVec3 index)
+        {
+            if (_curUnitInx != index)
+            {
+                return;
+            }
+            _curShowCount--;
+            if (_curShowCount == 0)
+            {
+                _curUnitInx = IntVec3.zero;
+                UpdateUIShow();
+            }
+        }
 
-		private void ClearAndClose()
-		{
-			_curShowCount = 0;
+        #endregion
+
+        #region private
+
+        private void ClearAndClose()
+        {
+            _curShowCount = 0;
+            _curUnitInx = IntVec3.zero;
             SocialGUIManager.Instance.CloseUI<UICtrlBulletinBoardMessageShow>();
-		}
+        }
 
-		private void UpdateUIShow()
-		{
-			if (_curShowCount == 0)
-			{
-				var bgColor = _cachedView.BgImage.color;
-				bgColor.a = 1;
-				_cachedView.BgImage.color = bgColor;
-				var textColor = _cachedView.ShowText.color;
-				textColor.a = 1;
-				_cachedView.ShowText.color = textColor;
-				_cachedView.BgImage.CrossFadeAlpha(0, 0.3f, true);
-				_cachedView.ShowText.CrossFadeAlpha(0, 0.3f, true);
-			}
-			else
-			{
-				var bgColor = _cachedView.BgImage.color;
-				bgColor.a = 0;
-				_cachedView.BgImage.color = bgColor;
-				var textColor = _cachedView.ShowText.color;
-				textColor.a = 0;
-				_cachedView.ShowText.color = textColor;
-				_cachedView.BgImage.CrossFadeAlpha(1, 0.5f, true);
-				_cachedView.ShowText.CrossFadeAlpha(1, 0.5f, true);
-			}
-		}
+        private void UpdateUIShow()
+        {
+            if (_curShowCount == 0)
+            {
+                _cachedView.BgImage.DOComplete();
+                _cachedView.ShowText.DOComplete();
+                _cachedView.BgImage.CrossFadeAlpha(0, 0.3f, true);
+                _cachedView.ShowText.CrossFadeAlpha(0, 0.3f, true);
+            }
+            else
+            {
+                _cachedView.BgImage.DOComplete();
+                _cachedView.ShowText.DOComplete();
+                _cachedView.BgImage.CrossFadeAlpha(1, 0.5f, true);
+                _cachedView.ShowText.CrossFadeAlpha(1, 0.5f, true);
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
