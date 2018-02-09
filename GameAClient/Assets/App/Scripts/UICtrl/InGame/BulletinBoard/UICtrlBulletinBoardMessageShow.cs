@@ -122,11 +122,23 @@ namespace GameA
 		{
 			if (_curShowCount == 0)
 			{
+				var bgColor = _cachedView.BgImage.color;
+				bgColor.a = 1;
+				_cachedView.BgImage.color = bgColor;
+				var textColor = _cachedView.ShowText.color;
+				textColor.a = 1;
+				_cachedView.ShowText.color = textColor;
 				_cachedView.BgImage.CrossFadeAlpha(0, 0.3f, true);
 				_cachedView.ShowText.CrossFadeAlpha(0, 0.3f, true);
 			}
 			else
 			{
+				var bgColor = _cachedView.BgImage.color;
+				bgColor.a = 0;
+				_cachedView.BgImage.color = bgColor;
+				var textColor = _cachedView.ShowText.color;
+				textColor.a = 0;
+				_cachedView.ShowText.color = textColor;
 				_cachedView.BgImage.CrossFadeAlpha(1, 0.5f, true);
 				_cachedView.ShowText.CrossFadeAlpha(1, 0.5f, true);
 			}
