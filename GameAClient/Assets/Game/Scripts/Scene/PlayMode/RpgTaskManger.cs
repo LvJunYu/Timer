@@ -590,6 +590,7 @@ namespace GameA.Game
             }
         }
 
+        //删除任务
         public void RemoveTask(IntVec3 guid, bool isovertime)
         {
             if (isovertime && _finishNpcTask.ContainsKey(_npcTaskDynamics[guid].NpcTaskSerialNumber))
@@ -655,6 +656,7 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTask(_npcTaskDynamics, _finishNpcTask);
         }
 
+        //添加任务
         public void AddTask(IntVec3 guid, NpcTaskDynamic task)
         {
             _npcTaskDynamics.Add(guid, task);
@@ -703,6 +705,7 @@ namespace GameA.Game
             SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTask(_npcTaskDynamics, _finishNpcTask);
         }
 
+        //控制键
         public void AssitConShowDiaEvent()
         {
             if (_curHitNpc == null)
@@ -716,6 +719,7 @@ namespace GameA.Game
             }
         }
 
+        //显示tip
         private void ShowTip(IntVec3 guid)
         {
             UnitBase unit;
@@ -727,6 +731,7 @@ namespace GameA.Game
             }
         }
 
+        // 判断是否是上一次碰到的npc
         private bool JudeOldHitNpc(IntVec3 npcguid)
         {
             _coutTime++;
@@ -889,6 +894,8 @@ namespace GameA.Game
 //        public static readonly int TargetGuid = _nextId++;
 //        public static readonly int TargetNpcNum
         //copy数据
+
+        // 获得奖励
         private DictionaryListObject GetAward(DictionaryListObject awardlist)
         {
             DictionaryListObject newawardlist = new DictionaryListObject();
