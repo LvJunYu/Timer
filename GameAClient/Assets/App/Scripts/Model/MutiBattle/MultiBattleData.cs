@@ -94,8 +94,10 @@ namespace GameA
                     {
                         list.RemoveAt(index);
                     }
+
                     list.Add(invite);
                 }
+
                 list.Reverse();
                 return list;
             }
@@ -109,6 +111,7 @@ namespace GameA
                 {
                     _roomInviteStack.Dequeue();
                 }
+
                 var list = new List<LocalRoomInvite>();
                 while (_roomInviteStack.Count > 0)
                 {
@@ -119,8 +122,10 @@ namespace GameA
                     {
                         list.RemoveAt(index);
                     }
+
                     list.Add(invite);
                 }
+
                 list.Reverse();
                 return list;
             }
@@ -176,6 +181,7 @@ namespace GameA
             var user = _teamInfo.UserList.Find(u => u.UserGuid == msg.UserId);
             if (user != null)
             {
+                //自己退出队伍
                 if (LocalUser.Instance.UserGuid == msg.UserId)
                 {
                     if (msg.Reason == EMCExitTeamReason.MCETR_Kicked)
@@ -192,7 +198,27 @@ namespace GameA
                     }
                     else if (msg.Reason == EMCExitTeamReason.MCETR_Disconnect)
                     {
-                        SocialGUIManager.ShowPopupDialog("已经失去连接", null,
+                        if (SocialGUIManager.Instance.CurrentMode != SocialGUIManager.EMode.Game)
+                        {
+                            SocialGUIManager.ShowPopupDialog("已经失去连接", null,
+                                new KeyValuePair<string, Action>("确定", OnLeaveTeam));
+                        }
+                        else
+                        {
+                            OnLeaveTeam();
+                        }
+                    }
+                    else
+                    {
+                        OnLeaveTeam();
+                    }
+                }
+                //队长退出队伍
+                else if (msg.UserId == _teamInfo.UserList[0].UserGuid)
+                {
+                    if (SocialGUIManager.Instance.CurrentMode != SocialGUIManager.EMode.Game)
+                    {
+                        SocialGUIManager.ShowPopupDialog("队长已解散队伍", null,
                             new KeyValuePair<string, Action>("确定", OnLeaveTeam));
                     }
                     else
@@ -200,15 +226,11 @@ namespace GameA
                         OnLeaveTeam();
                     }
                 }
-                else if (msg.UserId == _teamInfo.UserList[0].UserGuid)
-                {
-                    SocialGUIManager.ShowPopupDialog("队长已解散队伍", null,
-                        new KeyValuePair<string, Action>("确定", OnLeaveTeam));
-                }
                 else
                 {
                     _teamInfo.UserList.Remove(user);
                     Messenger.Broadcast(EMessengerType.OnTeamUserChanged);
+                    Messenger<int>.Broadcast(EMessengerType.OnTeamUserChanged, _teamInfo.UserList.Count);
                 }
             }
         }
@@ -259,6 +281,8 @@ namespace GameA
             _isMyTeam = false;
             Messenger.Broadcast(EMessengerType.OnInTeam);
             SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
+            _selectedOfficalProjectList = _teamInfo.ProjectId;
+            Messenger.Broadcast(EMessengerType.OnSelectedOfficalProjectListChanged);
         }
 
         public void OnJoinTeam(Msg_MC_JoinTeam msg)
@@ -295,6 +319,7 @@ namespace GameA
 
             _teamInfo.UserList.Add(msg.User);
             Messenger.Broadcast(EMessengerType.OnTeamUserChanged);
+            Messenger<int>.Broadcast(EMessengerType.OnTeamUserChanged, _teamInfo.UserList.Count);
         }
 
         public void SyncUserStatusChange(Msg_MC_SyncUserStatusChange msg)

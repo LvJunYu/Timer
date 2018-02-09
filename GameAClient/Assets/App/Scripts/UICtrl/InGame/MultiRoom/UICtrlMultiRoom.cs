@@ -307,8 +307,8 @@ namespace GameA
             _cachedView.RawPrepareBtn.SetActiveEx(!_isHost);
             _cachedView.StartBtn.SetActiveEx(_isHost);
             _cachedView.RawStartBtn.SetActiveEx(_isHost);
-            bool allReady = _roomInfo.CheckAllReady();
-            _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = allReady;
+            bool canStart = _roomInfo.CanStart();
+            _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = canStart;
         }
 
         private void RefreshStartBtns()

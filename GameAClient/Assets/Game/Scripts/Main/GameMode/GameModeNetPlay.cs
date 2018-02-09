@@ -56,7 +56,7 @@ namespace GameA.Game
         public override bool Stop()
         {
             _debugFile.Close();
-            TryCloseLoading();
+            TryCloseLoading(true);
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
             AppData.Instance.ChatData.ClearRoomChat();
@@ -590,11 +590,18 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
-        protected void TryCloseLoading()
+        protected void TryCloseLoading(bool isStop = false)
         {
             if (!_loadingHasClosed)
             {
-                base.OnGameStart();
+                if (isStop)
+                {
+                    Messenger.Broadcast(EMessengerType.OnLoadingErrorCloseUI);
+                }
+                else
+                {
+                    base.OnGameStart();
+                }
                 _loadingHasClosed = true;
             }
         }

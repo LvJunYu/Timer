@@ -15,6 +15,11 @@ namespace GameA
         private bool _selected;
         private List<long> _list = new List<long>(1);
 
+        public bool Selected
+        {
+            get { return _selected; }
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -50,7 +55,7 @@ namespace GameA
             _lastClickTime = 0;
         }
 
-        private void OnSelectBtn()
+        public void OnSelectBtn()
         {
             if (_project == null || _list == null) return;
             if (Time.time - _lastClickTime < ClickCD)
