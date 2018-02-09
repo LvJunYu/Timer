@@ -65,7 +65,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpDialog;
+            _groupId = (int) EUIGroupType.Purchase;
         }
 
         protected override void SetPartAnimations()

@@ -53,7 +53,7 @@ namespace GameA
             _chat.ResScenary = ResScenary;
             _chat.Scene = USCtrlChat.EScene.Team;
             _chat.Init(_cachedView.RoomChat);
-            var list = _cachedView.PlayerDock.GetComponentsInChildren<USViewMultiTeam>();
+            var list = _cachedView.PlayerDock.GetComponentsInChildren<USViewMultiTeam>(true);
             _usCtrlMultiTeams = new USCtrlMultiTeam[list.Length];
             for (int i = 0; i < list.Length; i++)
             {

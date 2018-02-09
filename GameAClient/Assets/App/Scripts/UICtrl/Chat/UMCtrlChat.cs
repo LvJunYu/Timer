@@ -69,7 +69,7 @@ namespace GameA
             else
             {
                 _cachedView.Text.text = String.Format(
-                    MainCtrl.Scene == USCtrlChat.EScene.Home ? TemplateHomeChat : TemplateRoomChat,
+                    MainCtrl.Scene == USCtrlChat.EScene.Room ? TemplateRoomChat : TemplateHomeChat,
                     _item.ChatUser.UserNickName,
                     _item.Content.Replace(' ', '\u3000'));
             }
