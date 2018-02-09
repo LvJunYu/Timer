@@ -1281,6 +1281,8 @@ namespace GameA.Game
                 SetClimbState(EClimbState.None);
             }
             _jumpState = EJumpState.Land;
+            _inLadders.Clear();
+            _inLadder = false;
         }
         
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)

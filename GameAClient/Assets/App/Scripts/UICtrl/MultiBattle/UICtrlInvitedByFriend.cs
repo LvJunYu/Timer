@@ -49,6 +49,14 @@ namespace GameA
             RefreshView();
         }
 
+        protected override void OnClose()
+        {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon,
+                _cachedView.DefaultUserIconTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultProjectTexture);
+            base.OnClose();
+        }
+
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
@@ -72,7 +80,6 @@ namespace GameA
         {
             _cachedView.TeamPannel.SetActive(_inviteType == EInviteType.Team);
             _cachedView.RoomPannel.SetActive(_inviteType == EInviteType.Room);
-            
             if (_inviteType == EInviteType.Team)
             {
                 _teamInviteList = LocalUser.Instance.MultiBattleData.TeamInviteStack.ToList();
@@ -81,7 +88,6 @@ namespace GameA
                 {
                     _tagBtns[i].SetActiveEx(i < _teamInviteList.Count);
                 }
-
                 for (int i = 0; i < _tagTxts.Length; i++)
                 {
                     if (i < _teamInviteList.Count)
@@ -107,7 +113,7 @@ namespace GameA
                 {
                     if (i < _roomInviteList.Count)
                     {
-                        _tagTxts[i].text = GameATools.GetRawStr(_roomInviteList[i].Msg.Inviter.NickName, 6);
+                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_roomInviteList[i].Msg.Inviter.NickName, 6);
                     }
                     else
                     {
@@ -207,9 +213,6 @@ namespace GameA
 
         private void OnCloseBtn()
         {
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon,
-                _cachedView.DefaultUserIconTexture);
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultProjectTexture);
             SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
         }
     }

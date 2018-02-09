@@ -18,7 +18,15 @@ namespace GameA
         private List<ChatData.Item> _contentList;
         private List<UMCtrlChatInGame> _umList = new List<UMCtrlChatInGame>(70);
         private Queue<UmChatItemRaw> _rawChatQueue = new Queue<UmChatItemRaw>(MaxRawChat);
+        private UICtrlChatInGame _mainCtrl;
         private EResScenary _resScenary;
+
+        public UICtrlChatInGame MainCtrl
+        {
+            get { return _mainCtrl; }
+            set { _mainCtrl = value; }
+        }
+
 
         public EResScenary ResScenary
         {
@@ -82,9 +90,13 @@ namespace GameA
             _currentChatTypeTag = chatType;
             if (!_isOpen)
             {
+                _mainCtrl.SetMenu(UICtrlChatInGame.EMenu.ChatHistory, true);
+            }
+            if (!_isOpen)
+            {
                 return;
             }
-
+            
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
             SetSendChatType(chatType);
@@ -136,29 +148,38 @@ namespace GameA
                 return;
             }
 
-            if (_currentSendType == ChatData.EChatType.Camp)
+            if (!SendChat(inputContent))
             {
-                if (!AppData.Instance.ChatData.SendRoomChat(inputContent, ERoomChatType.ERCT_Camp,
-                    TeamManager.Instance.GetMyTeamInxList()))
-                {
-                    return;
-                }
-            }
-            else if (_currentSendType == ChatData.EChatType.Room)
-            {
-                if (!AppData.Instance.ChatData.SendRoomChat(inputContent, ERoomChatType.ERCT_Room))
-                {
-                    return;
-                }
-            }
-            else
-            {
-                LogHelper.Error("OnSendBtn Fail, _currentSendType = {0}", _currentSendType);
                 return;
             }
 
             _cachedView.ChatInput.text = String.Empty;
             _cachedView.ChatInput.ActivateInputField();
+        }
+
+        public bool SendChat(string str)
+        {
+            if (_currentSendType == ChatData.EChatType.Camp)
+            {
+                if (!AppData.Instance.ChatData.SendRoomChat(str, ERoomChatType.ERCT_Camp,
+                    TeamManager.Instance.GetMyTeamInxList()))
+                {
+                    return false;
+                }
+            }
+            else if (_currentSendType == ChatData.EChatType.Room)
+            {
+                if (!AppData.Instance.ChatData.SendRoomChat(str, ERoomChatType.ERCT_Room))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                LogHelper.Error("OnSendBtn Fail, _currentSendType = {0}", _currentSendType);
+                return false;
+            }
+            return true;
         }
 
         private void OnSendChatTypeClick()

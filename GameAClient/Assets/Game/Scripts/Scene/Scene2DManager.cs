@@ -226,26 +226,6 @@ namespace GameA.Game
             }
         }
 
-        private void AddNewScene()
-        {
-            var scene = new Scene2DEntity();
-            var index = _sceneList.Count;
-            scene.Init(_initialMapSize, index);
-            _sceneList.Add(scene);
-        }
-
-        public Scene2DEntity CreateScene(ESceneType sceneType = ESceneType.InHome)
-        {
-            var scene = new Scene2DEntity();
-            scene.Init(_initialMapSize, (int)sceneType);
-            return scene;
-        }
-
-        public void DesctroyScene(Scene2DEntity scene)
-        {
-            scene.Dispose();
-        }
-
         /// <summary>
         /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
         /// </summary>
@@ -262,6 +242,14 @@ namespace GameA.Game
             ChangeScene(0);
         }
 
+        private void AddNewScene()
+        {
+            var scene = new Scene2DEntity();
+            var index = _sceneList.Count;
+            scene.Init(_initialMapSize, index);
+            _sceneList.Add(scene);
+        }
+
         private Scene2DEntity GetScene2DEntity(int index)
         {
             if (index == -1)
@@ -271,6 +259,7 @@ namespace GameA.Game
                 _curSceneIndex = 0;
                 AddNewScene();
             }
+
             while (index >= _sceneList.Count)
             {
                 LogHelper.Error("index is out of range");
@@ -611,6 +600,7 @@ namespace GameA.Game
                 {
                     checkUnit = unit;
                 }
+
                 var unitDesc = checkUnit.UnitDesc;
                 if (!_dataScene.IsInTileMap(checkUnit.TableUnit.GetDataGrid(ref unitDesc)))
                 {
@@ -664,6 +654,7 @@ namespace GameA.Game
             {
                 count += _dataScene.GetUnitExtra(caves[i].Guid).MaxCreatedMonster;
             }
+
             return count;
         }
     }
@@ -674,11 +665,5 @@ namespace GameA.Game
         EditCreated,
         ParseMap,
         ChangeScene
-    }
-
-    public enum ESceneType
-    {
-        InGame = 10,
-        InHome,
     }
 }
