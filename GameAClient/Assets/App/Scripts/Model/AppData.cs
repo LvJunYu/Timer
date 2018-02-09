@@ -20,7 +20,7 @@ namespace GameA
         private AdventureData _adventureData;
         private WorldData _worldData;
 		private ChatData _chatData;
-
+		private OfficialProjectList _officialProjectList;
 		private static AppData _instance = new AppData();
 
         #endregion field
@@ -51,6 +51,11 @@ namespace GameA
 			get { return _chatData; }
 		}
 
+		public OfficialProjectList OfficialProjectList
+		{
+			get { return _officialProjectList; }
+		}
+
 		#endregion property
 
         #region methond
@@ -60,6 +65,7 @@ namespace GameA
             _adventureData = new AdventureData();
             _worldData = new WorldData();
 	        _chatData = new ChatData();
+	        _officialProjectList = new OfficialProjectList();
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountLoginStateChanged);
         }
 

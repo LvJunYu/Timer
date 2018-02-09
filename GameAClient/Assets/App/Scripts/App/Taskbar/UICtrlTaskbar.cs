@@ -23,7 +23,7 @@ namespace GameA
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
         private bool _battleAvailable = true;
-        private bool _storyGameAvailable = false;
+        private bool _storyGameAvailable = true;
         private bool _cooperationGameAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
@@ -93,6 +93,7 @@ namespace GameA
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
             _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
             _cachedView.BattleButton.onClick.AddListener(OnMultiBattleBtn);
+            _cachedView.StoryGameButton.onClick.AddListener(OnStoryGameButton);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -134,6 +135,28 @@ namespace GameA
             _chat.ResScenary = EResScenary.Home;
             _chat.Scene = USCtrlChat.EScene.Home;
             _chat.Init(_cachedView.HomeChat);
+        }
+
+        private void OnStoryGameButton()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入关卡");
+            AppData.Instance.OfficialProjectList.RequestRpg(p =>
+            {
+                p.RequestPlay(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    GameManager.Instance.RequestPlay(p);
+                    SocialApp.Instance.ChangeToGame();
+                }, error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                }); 
+            }, () =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                SocialGUIManager.ShowPopupDialog("进入关卡失败");
+            });
         }
 
         protected override void OnDestroy()

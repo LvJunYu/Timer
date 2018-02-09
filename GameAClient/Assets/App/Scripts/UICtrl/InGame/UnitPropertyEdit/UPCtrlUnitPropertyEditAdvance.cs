@@ -200,7 +200,7 @@ namespace GameA
             _usDropsSetting.SetEnable(false);
             _usPlayerWeaponSetting.SetEnable(UnitDefine.IsSpawn(id));
             _usSpawnSetting.SetEnable(
-                UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PS_Compete);
+                UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PT_Compete);
             _usMaxHpSetting.SetCur(_mainCtrl.GetCurUnitExtra().MaxHp);
             _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
             var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;

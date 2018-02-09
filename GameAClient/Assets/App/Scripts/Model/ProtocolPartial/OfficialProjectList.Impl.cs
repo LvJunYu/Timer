@@ -8,15 +8,22 @@ namespace GameA
     public partial class OfficialProjectList
     {
         private List<Project> _projectSyncList;
+        private Project _rpgProject;
+        private List<Project> _multiProjects;
 
-        public List<Project> ProjectSyncList
+        public Project RpgProject
         {
-            get { return _projectSyncList; }
+            get { return _rpgProject; }
         }
 
-        public void Request(EOfficailProjectType type, Action successCallback, Action failedCallback = null)
+        public List<Project> MultiProjects
         {
-            Request((int) type, () =>
+            get { return _multiProjects; }
+        }
+
+        private void Request(int mask, Action successCallback, Action failedCallback)
+        {
+            Request(mask, () =>
             {
                 if (successCallback != null)
                 {
@@ -38,13 +45,56 @@ namespace GameA
             _projectSyncList = ProjectManager.Instance.UpdateData(msg.ProjectList);
             base.OnSyncPartial(msg);
         }
+
+        public void RequestOfficalMulti(Action successCallback, Action failedCallback = null)
+        {
+            Request(1 << (int) EProjectType.PT_Cooperation | 1 << (int) EProjectType.PT_Compete, () =>
+            {
+                _multiProjects = _projectSyncList;
+                //兼容老版本
+                for (int i = 0; i < _multiProjects.Count; i++)
+                {
+                    if (_multiProjects[i].NetData.MinPlayer == 0)
+                    {
+                        _multiProjects[i].NetData.MinPlayer = 2;
+                    }
+                }
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, failedCallback);
+        }
+
+        public void RequestRpg(Action<Project> successCallback , Action failedCallback = null)
+        {
+            Request(1 << 3, () =>
+            {
+                if (_projectSyncList.Count > 0)
+                {
+                    _rpgProject = _projectSyncList[0];
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke(_rpgProject);
+                    }
+                }
+                else
+                {
+                    LogHelper.Error("RequestRpg fail");
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke();
+                    }
+                }
+            }, failedCallback);
+        }
     }
 
     public enum EOfficailProjectType
     {
-        All,
+        Single,
         Cooperation,
         Compete,
-        Story
+        Rpg
     }
 }

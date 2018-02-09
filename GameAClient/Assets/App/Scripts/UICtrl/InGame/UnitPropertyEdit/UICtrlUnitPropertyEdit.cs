@@ -447,7 +447,7 @@ namespace GameA
             EditData = _originData;
             EditData.UnitExtra = _originData.UnitExtra.Clone();
             _project = GM2DGame.Instance.GameMode.Project;
-//            _project.ProjectType = EProjectType.PS_Compete; //todo 临时
+//            _project.ProjectType = EProjectType.PT_Compete; //todo 临时
             if (_project == null)
             {
                 LogHelper.Error("RefreshSpawmMenu, but project is null");

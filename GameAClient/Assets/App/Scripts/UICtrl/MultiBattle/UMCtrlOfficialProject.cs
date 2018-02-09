@@ -45,7 +45,7 @@ namespace GameA
                     _project.NetData.PlayerCount);
             }
 
-            _cachedView.CompeteObj.SetActive(_project.ProjectType == EProjectType.PS_Compete);
+            _cachedView.CompeteObj.SetActive(_project.ProjectType == EProjectType.PT_Compete);
             _cachedView.CooperateObj.SetActive(_project.ProjectType == EProjectType.PT_Cooperation);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
                 _cachedView.DefaultCoverTexture);

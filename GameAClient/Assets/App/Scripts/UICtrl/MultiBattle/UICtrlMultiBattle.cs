@@ -14,7 +14,7 @@ namespace GameA
         private List<Project> _dataList;
         private List<UMCtrlOfficialProject> _umList;
         private USCtrlChat _chat;
-        private OfficialProjectList _data = new OfficialProjectList();
+        private OfficialProjectList _data;
         private List<Msg_MC_RoomUserInfo> _userList;
         private USCtrlMultiTeam[] _usCtrlMultiTeams;
 
@@ -115,11 +115,12 @@ namespace GameA
 
         private void RequestData()
         {
+            _data = AppData.Instance.OfficialProjectList;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在读取数据");
-            _data.Request(EOfficailProjectType.All, () =>
+            _data.RequestOfficalMulti(() =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                _dataList = _data.ProjectSyncList;
+                _dataList = _data.MultiProjects;
                 if (_dataList != null)
                 {
                     _umList = new List<UMCtrlOfficialProject>(_dataList.Count);

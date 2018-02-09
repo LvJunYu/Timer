@@ -1,4 +1,4 @@
-// 获取官方多人关卡 | 获取官方多人关卡
+// 获取官方关卡 | 获取官方关卡
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -26,7 +26,7 @@ namespace GameA
         /// <summary>
         /// 关卡类型
         /// </summary>
-        private int _cs_projectType;
+        private int _cs_projectTypeMask;
         #endregion
 
         #region 属性
@@ -66,9 +66,9 @@ namespace GameA
         /// <summary>
         /// 关卡类型
         /// </summary>
-        public int CS_ProjectType { 
-            get { return _cs_projectType; }
-            set { _cs_projectType = value; }
+        public int CS_ProjectTypeMask { 
+            get { return _cs_projectTypeMask; }
+            set { _cs_projectTypeMask = value; }
         }
 
         public override bool IsDirty {
@@ -87,25 +87,25 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 获取官方多人关卡
+		/// 获取官方关卡
 		/// </summary>
-		/// <param name="projectType">关卡类型.</param>
+		/// <param name="projectTypeMask">关卡类型.</param>
         public void Request (
-            int projectType,
+            int projectTypeMask,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_projectType != projectType) {
+                if (_cs_projectTypeMask != projectTypeMask) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_projectType = projectType;
+                _cs_projectTypeMask = projectTypeMask;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_OfficialProjectList msg = new Msg_CS_DAT_OfficialProjectList();
-                msg.ProjectType = projectType;
+                msg.ProjectTypeMask = projectTypeMask;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_OfficialProjectList>(
                     SoyHttpApiPath.OfficialProjectList, msg, ret => {
                         if (OnSync(ret)) {

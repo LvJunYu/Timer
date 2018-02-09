@@ -255,7 +255,7 @@ namespace GameA
                     return;
                 }
 
-                if (_project.ProjectType == EProjectType.PS_Compete && _project.NetData.TeamCount < 2)
+                if (_project.ProjectType == EProjectType.PT_Compete && _project.NetData.TeamCount < 2)
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                     SocialGUIManager.ShowPopupDialog("【对抗】游戏至少设置【两个阵营】才能发布");

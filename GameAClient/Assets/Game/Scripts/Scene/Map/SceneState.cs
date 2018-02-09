@@ -612,7 +612,7 @@ namespace GameA.Game
                 return;
             }
             //竞技模式判断是否剩余自己一个队
-            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PS_Compete)
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
             {
                 if (TeamManager.Instance.CheckOnlyMyTeamLeft())
                 {

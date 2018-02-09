@@ -130,7 +130,7 @@ namespace SoyEngine
         public const string WorldRankList = "/world/getRankList";
         // 搜索关卡
         public const string SearchWorldProject = "/world/searchProject";
-        // 获取官方多人关卡
+        // 获取官方关卡
         public const string OfficialProjectList = "/world/getOfficialProjectList";
         // 录像
         public const string Record = "/record/get";
@@ -254,6 +254,8 @@ namespace SoyEngine
         public const string UpdateRoomChatPreinstall = "/home/updateRoomChatPreinstall";
         // 删除快捷聊天
         public const string DeleteRoomChatPreinstall = "/home/deleteRoomChatPreinstall";
+        // 获取通知
+        public const string NotificationPushStatistic = "/home/getNotificationPushStatistic";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

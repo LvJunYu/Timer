@@ -427,7 +427,7 @@ namespace GameA.Game
                 unitExtraDynamic = new UnitExtraDynamic();
             }
 
-            if (projectTpye == EProjectType.PS_Compete)
+            if (projectTpye == EProjectType.PT_Compete)
             {
                 unitExtraDynamic.TeamId = (byte) (index + 1);
             }

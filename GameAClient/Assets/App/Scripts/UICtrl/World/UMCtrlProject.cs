@@ -72,7 +72,7 @@ namespace GameA
             _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.MainId != 0);
             _cachedView.SingleObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Single && !emptyProject);
             _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation && !emptyProject);
-            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PS_Compete && !emptyProject);
+            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Compete && !emptyProject);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
 //            _cachedView.DownloadObj.SetActiveEx(false);
 //            _cachedView.OriginalObj.SetActiveEx(false);
