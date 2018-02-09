@@ -30,6 +30,25 @@ namespace GameA
             RegisterEvent(EMessengerType.OnInTeam, OnInTeam);
             RegisterEvent(EMessengerType.OnLeaveTeam, OnLeaveTeam);
             RegisterEvent(EMessengerType.OnTeamUserChanged, RefreshTeamPannel);
+            RegisterEvent<int>(EMessengerType.OnTeamUserChanged, OnTeamUserCountChanged);
+        }
+
+        private void OnTeamUserCountChanged(int count)
+        {
+            if (_dataList == null || _umList == null)
+            {
+                return;
+            }
+            if (LocalUser.Instance.MultiBattleData.IsMyTeam)
+            {
+                for (int i = 0; i < _dataList.Count; i++)
+                {
+                    if (_dataList[i].NetData.PlayerCount < count && _umList[i].Selected)
+                    {
+                        _umList[i].OnSelectBtn();
+                    }
+                }
+            }
         }
 
         protected override void SetPartAnimations()

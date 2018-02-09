@@ -1,4 +1,5 @@
 using GameA.Game;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -6,6 +7,16 @@ namespace GameA
     {
         private const string _secondFormat = "{0}秒";
         private const string _minFormat = "{0:f1}分钟";
+
+        protected override void OnSyncPartial()
+        {
+            base.OnSyncPartial();
+            //兼容老版本
+            if (_minPlayer == 0)
+            {
+                _minPlayer = 2;
+            }
+        }
 
         public string GetTimeOverCondition()
         {

@@ -197,12 +197,31 @@ namespace GameA
             }
         }
 
+        public bool CanStart()
+        {
+            if (_project == null || _users.Count < _project.NetData.MinPlayer || _project.NetData == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < _users.Count; i++)
+            {
+                if (!_users[i].Ready && _users[i].Guid != _hostUserId)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public bool CheckAllReady()
         {
             if (_project == null || _users.Count < _project.NetData.PlayerCount)
             {
                 return false;
             }
+
             for (int i = 0; i < _users.Count; i++)
             {
                 if (!_users[i].Ready && _users[i].Guid != _hostUserId)
