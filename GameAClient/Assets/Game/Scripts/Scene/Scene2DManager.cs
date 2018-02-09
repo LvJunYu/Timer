@@ -151,7 +151,7 @@ namespace GameA.Game
             if (eGameInitType == GameManager.EStartType.WorkshopStandaloneCreate ||
                 eGameInitType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                CreateScene();
+                AddNewScene();
             }
             else
             {
@@ -183,7 +183,7 @@ namespace GameA.Game
             {
                 if (eChangeSceneType == EChangeSceneType.EditCreated || eChangeSceneType == EChangeSceneType.ParseMap)
                 {
-                    CreateScene();
+                    AddNewScene();
                 }
             }
 
@@ -226,7 +226,7 @@ namespace GameA.Game
             }
         }
 
-        public void CreateScene()
+        public void AddNewScene()
         {
             var scene = new Scene2DEntity();
             var index = _sceneList.Count;
@@ -269,12 +269,12 @@ namespace GameA.Game
                 LogHelper.Error("index is out of range");
                 index = 0;
                 _curSceneIndex = 0;
-                CreateScene();
+                AddNewScene();
             }
             while (index >= _sceneList.Count)
             {
                 LogHelper.Error("index is out of range");
-                CreateScene();
+                AddNewScene();
             }
 
             return _sceneList[index];
