@@ -61,10 +61,11 @@ namespace GameA
 
         protected override void OnClose()
         {
-            if (GM2DGame.Instance != null)
+            if (GM2DGame.Instance != null && GM2DGame.Instance.EGameRunMode != EGameRunMode.Edit)
             {
                 GM2DGame.Instance.Continue();
             }
+
             base.OnClose();
         }
 
@@ -83,17 +84,20 @@ namespace GameA
             {
                 return;
             }
+
             var tableUnit = TableManager.Instance.GetUnit(_unitId);
             if (tableUnit == null)
             {
                 LogHelper.Error("TableUnit is null, id: {0}", _unitId);
                 return;
             }
+
             Sprite sprite;
             if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
             {
                 _cachedView.Icon.sprite = sprite;
             }
+
             DictionaryTools.SetContentText(_cachedView.Title, tableUnit.Name);
             DictionaryTools.SetContentText(_cachedView.Desc, tableUnit.Summary);
             DictionaryTools.SetContentText(_cachedView.EffectDesc, tableUnit.EffectSummary);
@@ -105,10 +109,12 @@ namespace GameA
             {
                 return;
             }
+
             if (Time.realtimeSinceStartup - _startTime < 0.5f)
             {
                 return;
             }
+
             SocialGUIManager.Instance.CloseUI<UICtrlInGameUnitHandbook>();
         }
 

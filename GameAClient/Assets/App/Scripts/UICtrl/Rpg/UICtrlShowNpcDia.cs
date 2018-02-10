@@ -8,7 +8,7 @@ using UnityStandardAssets.CrossPlatformInput;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlShowNpcDia : UICtrlAnimationBase<UIViewShowNpcDia>
+    public class UICtrlShowNpcDia : UICtrlInGameBase<UIViewShowNpcDia>
     {
         private int _index = 0;
         private DictionaryListObject _diaList;
@@ -175,6 +175,12 @@ namespace GameA
                     SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
                 }
             }
+        }
+
+        protected override void ExitGame()
+        {
+            _time = Time.realtimeSinceStartup;
+            base.ExitGame();
         }
     }
 
