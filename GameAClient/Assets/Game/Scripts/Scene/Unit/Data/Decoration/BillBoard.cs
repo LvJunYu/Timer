@@ -10,26 +10,22 @@ using Spine.Unity;
 
 namespace GameA.Game
 {
-    [Unit(Id = 7001, Type = typeof (BillBoard))]
+    [Unit(Id = 7001, Type = typeof(BillBoard))]
     public class BillBoard : DecorationBase
     {
         private bool _trigger;
         private UnitBase _unit;
-        private int _time;
+
 
         public override void UpdateLogic()
         {
             if (_trigger)
             {
-                _time++;
                 if (!_colliderGrid.Intersects(_unit.ColliderGrid))
                 {
-                    if (_time >= 100)
-                    {
-                        _trigger = false;
-                        _unit = null;
-                        Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardExit, _guid);
-                    }
+                    _trigger = false;
+                    _unit = null;
+                    Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardExit, _guid);
                 }
             }
         }
@@ -40,6 +36,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _animation.Init("Run");
             return true;
         }
@@ -47,7 +44,6 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _time = 0;
             _trigger = false;
             _unit = null;
         }
@@ -58,11 +54,11 @@ namespace GameA.Game
             {
                 _trigger = true;
                 _unit = other;
-                _time = 0;
                 if (_animation != null)
                 {
                     _animation.PlayOnce("Start", 1, 1);
                 }
+
                 Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
         }

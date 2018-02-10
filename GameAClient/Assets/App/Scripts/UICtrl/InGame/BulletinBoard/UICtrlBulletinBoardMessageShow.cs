@@ -18,16 +18,32 @@ namespace GameA
     {
         private int _curShowCount = 0;
         private IntVec3 _curUnitInx = IntVec3.zero;
+        private int _time;
+        private bool _exit;
+        private IntVec3 _tempVec3;
 
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameMainUI;
         }
 
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (_exit)
+            {
+                _time++;
+                if (_time > 100)
+                {
+                    OnTriggerBulletinBoardExit(_tempVec3);
+                }
+            }
+        }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+
 //			MessageOperator(true); 
         }
 
@@ -42,6 +58,8 @@ namespace GameA
             base.Open(parameter);
             _curShowCount = 0;
             _curUnitInx = IntVec3.zero;
+            _exit = false;
+            _time = 0;
         }
 
         protected override void InitEventListener()
@@ -50,7 +68,8 @@ namespace GameA
             RegisterEvent(EMessengerType.OnEdit, OnEditMode);
             RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
             Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
-            Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
+            Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExitStart);
+            Messenger.AddListener(EMessengerType.OnSceneChange, Close);
         }
 
         #region event
@@ -110,6 +129,16 @@ namespace GameA
             {
                 _curShowCount++;
             }
+
+            _exit = false;
+            _time = 0;
+        }
+
+        private void OnTriggerBulletinBoardExitStart(IntVec3 index)
+        {
+            _exit = true;
+            _time = 0;
+            _tempVec3 = index;
         }
 
         private void OnTriggerBulletinBoardExit(IntVec3 index)
@@ -118,6 +147,7 @@ namespace GameA
             {
                 return;
             }
+
             _curShowCount--;
             if (_curShowCount == 0)
             {
