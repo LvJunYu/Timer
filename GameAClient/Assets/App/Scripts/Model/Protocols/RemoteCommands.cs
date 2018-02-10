@@ -2738,6 +2738,83 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingMarkNotificationHasRead {
+            get { return _isRequstingMarkNotificationHasRead; }
+        }
+        private static bool _isRequstingMarkNotificationHasRead = false;
+        /// <summary>
+		/// 标记通知已读
+		/// </summary>
+		/// <param name="type">ENotificationDataType</param>
+		/// <param name="id"></param>
+        public static void MarkNotificationHasRead (
+            ENotificationDataType type,
+            long id,
+            Action<Msg_SC_CMD_MarkNotificationHasRead> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkNotificationHasRead) {
+                return;
+            }
+            _isRequstingMarkNotificationHasRead = true;
+            Msg_CS_CMD_MarkNotificationHasRead msg = new Msg_CS_CMD_MarkNotificationHasRead();
+            // 标记通知已读
+            msg.Type = type;
+            msg.Id = id;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkNotificationHasRead>(
+                SoyHttpApiPath.MarkNotificationHasRead, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkNotificationHasRead = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkNotificationHasRead", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkNotificationHasRead = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingMarkNotificationHasReadBatch {
+            get { return _isRequstingMarkNotificationHasReadBatch; }
+        }
+        private static bool _isRequstingMarkNotificationHasReadBatch = false;
+        /// <summary>
+		/// 标记通知已读
+		/// </summary>
+		/// <param name="typeMask">ENotificationDataType Mask</param>
+        public static void MarkNotificationHasReadBatch (
+            long typeMask,
+            Action<Msg_SC_CMD_MarkNotificationHasReadBatch> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkNotificationHasReadBatch) {
+                return;
+            }
+            _isRequstingMarkNotificationHasReadBatch = true;
+            Msg_CS_CMD_MarkNotificationHasReadBatch msg = new Msg_CS_CMD_MarkNotificationHasReadBatch();
+            // 标记通知已读
+            msg.TypeMask = typeMask;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkNotificationHasReadBatch>(
+                SoyHttpApiPath.MarkNotificationHasReadBatch, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkNotificationHasReadBatch = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkNotificationHasReadBatch", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkNotificationHasReadBatch = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

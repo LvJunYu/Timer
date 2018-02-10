@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
 {
     public class UPCtrlInfoNotificationBase : UPCtrlBase<UICtrlInfoNotification, UIViewInfoNotification>
     {
+        protected const int MaxCount = 20;
         protected EResScenary _resScenary;
-        protected UICtrlMail.EMenu _menu;
-        protected List<Mail> _dataList;
+        protected UICtrlInfoNotification.EMenu _menu;
+        protected List<NotificationDataItem> _dataList = new List<NotificationDataItem>();
+        protected NotificationData _notificationData = new NotificationData();
+        protected bool _isEnd;
 
         protected override void OnViewCreated()
         {
@@ -21,7 +24,7 @@ namespace GameA
         {
             base.Open();
             _cachedView.Pannels[(int) _menu].SetActiveEx(true);
-            RefreshData();
+            RequestData();
             RefreshView();
         }
 
@@ -37,28 +40,33 @@ namespace GameA
             _dataList = null;
         }
 
-        protected virtual void RefreshData()
+        protected virtual void RequestData(bool append = false)
         {
-        }
-
-        protected void TempData()
-        {
-            if (_dataList != null && _dataList.Count != 0) return;
-            _dataList = new List<Mail>(10);
-            for (int i = 0; i < 10; i++)
+            int startIndex = 0;
+            if (append)
             {
-                Msg_Mail mail = new Msg_Mail();
-                mail.FuncType = i % 2 == 0 ? EMailFuncType.MFT_Reward : EMailFuncType.MFT_ShareProject;
-                mail.UserInfo = new Msg_SC_DAT_UserInfoSimple();
-                mail.UserInfo.UserId = 3400 + i;
-                mail.UserInfo.NickName = "赵四" + i;
-                mail.CreateTime = 9000000000000 + i * 10000000;
-                mail.Title = "请赐予我力量！";
-                mail.Content = "你被神秘力量看中，快，拯救世界的使命就交给你了！";
-                mail.AttachItemList = new Msg_Reward();
+                if (_isEnd)
+                {
+                    return;
+                }
 
-                _dataList.Add(new Mail(mail));
+                startIndex = _dataList.Count;
             }
+
+            _notificationData.Request(InfoNotificationManager.GetMask(_menu), startIndex, MaxCount, () =>
+            {
+                if (!append)
+                {
+                    _dataList.Clear();
+                }
+
+                _dataList.AddRange(_notificationData.DataList);
+                _isEnd = _notificationData.DataList.Count < MaxCount;
+                if (_isOpen)
+                {
+                    RefreshView();
+                }
+            }, code => { LogHelper.Error("NotificationData Request fail, code = {0}", code); });
         }
 
         public void RefreshView()
@@ -83,29 +91,54 @@ namespace GameA
                 LogHelper.Error("OnItemRefresh Error Inx > count");
                 return;
             }
+
             item.Set(_dataList[inx]);
+            if (!_isEnd)
+            {
+                if (inx > _dataList.Count - 2)
+                {
+                    RequestData(true);
+                }
+            }
         }
 
         protected IDataItemRenderer GetTalkItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlMail();
+            var item = new UMCtrlInfoNotification();
+            item.MainCtrl = this;
             item.Init(parent, _resScenary);
             return item;
         }
 
-        public void SetResScenary(EResScenary resScenary)
+        public void Set(EResScenary resScenary)
         {
             _resScenary = resScenary;
         }
 
-        public void SetMenu(UICtrlMail.EMenu menu)
+        public void SetMenu(UICtrlInfoNotification.EMenu menu)
         {
             _menu = menu;
         }
 
-        public void OnMailListChanged()
+        public void SetReplyPannel(bool b, NotificationDataItem data)
         {
-            RefreshData();
+            _mainCtrl.SetReplyPannel(b, data);
+        }
+
+        public void OnMarkRead(NotificationDataItem data)
+        {
+            if (_dataList.Contains(data))
+            {
+                _dataList.Remove(data);
+                RefreshView();
+            }
+        }
+
+        public void ClearData()
+        {
+            InfoNotificationManager.Instance.MarkReadBatch(_menu);
+            _dataList.Clear();
+            RefreshView();
         }
     }
 }

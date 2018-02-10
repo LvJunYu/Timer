@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GameA.Game;
 using SoyEngine;
 using UnityEngine;
-using SoyEngine.Proto;
 
 namespace GameA
 {
     public class UMCtrlInfoNotification : UMCtrlBase<UMViewInfoNotification>, IDataItemRenderer
     {
-        private static string _receive = "接受";
-        private static string _findout = "查看";
-        private Mail _mail;
-        private List<long> _idList = new List<long>(1);
+        private NotificationDataItem _data;
+        private bool _isRawType;
         public int Index { get; set; }
+        private UPCtrlInfoNotificationBase _mainCtrl;
 
         public RectTransform Transform
         {
@@ -21,7 +18,21 @@ namespace GameA
 
         public object Data
         {
-            get { return _mail; }
+            get { return _data; }
+        }
+
+        public UPCtrlInfoNotificationBase MainCtrl
+        {
+            set { _mainCtrl = value; }
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
+            _cachedView.LeftBtn.onClick.AddListener(OnLeftBtn);
+            _cachedView.RightBtn.onClick.AddListener(OnRightBtn);
+            _cachedView.RawBtn.onClick.AddListener(OnRawBtn);
         }
 
         public void Set(object data)
@@ -31,87 +42,75 @@ namespace GameA
                 Unload();
                 return;
             }
-            _mail = data as Mail;
-            if (_mail != null)
+
+            _data = data as NotificationDataItem;
+            if (_data != null)
             {
-                _idList.Clear();
-                _idList.Add(_mail.Id);
                 RefreshView();
             }
         }
 
         private void RefreshView()
         {
-            if (_mail.FuncType == EMailFuncType.MFT_Reward)
+            _isRawType = InfoNotificationManager.IsStatisticsType(_data.Type);
+            _cachedView.LeftPannel.SetActive(!_isRawType);
+            _cachedView.RightPannel.SetActive(!_isRawType);
+            _cachedView.RawPannel.SetActive(_isRawType);
+            if (_isRawType)
             {
-                _cachedView.TextRff.anchoredPosition = Vector3.down * 20;
+                _cachedView.RawContentTxt.text = InfoNotificationManager.GetContentTxt(_data);
+                _cachedView.RawBtnTxt.text = InfoNotificationManager.GetBtnTxt(_data);
             }
             else
             {
-                _cachedView.TextRff.anchoredPosition = Vector3.zero;
+                _cachedView.TopTex.text = InfoNotificationManager.GetContentTxt(_data);
+                _cachedView.DateTxt.text = GameATools.DateCount(_data.CreateTime);
+                _cachedView.CenterTxt.text = InfoNotificationManager.GetDetailTxt(_data);
+                _cachedView.RightBtnTxt.text = InfoNotificationManager.GetBtnTxt(_data);
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
+                    _data.Sender.HeadImgUrl, _cachedView.HeadDefaltTexture);
             }
-            _cachedView.BtnsObj.SetActive(_mail.FuncType != EMailFuncType.MFT_Reward);
-            _cachedView.RewardImg.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_Reward);
-            _cachedView.GiveupBtn.SetActiveEx(_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp);
-            _cachedView.OKBtnTxt.text = GetOKText();
-            _cachedView.ContentTxt.text = UICtrlMailDetail.GetMailTile(_mail);
-            _cachedView.DateTxt.text = GameATools.DateCount(_mail.CreateTime);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
-                _mail.UserInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.HeadDefaltTexture);
         }
 
-        private string GetOKText()
+        private void OnLeftBtn()
         {
-            if (_mail.FuncType == EMailFuncType.MFT_ShadowBattleHelp)
+            if (!_isRawType)
             {
-                return _receive;
+                _mainCtrl.SetReplyPannel(true, _data);
             }
-            return _findout;
         }
 
-        protected override void OnViewCreated()
+        private void OnRightBtn()
         {
-            base.OnViewCreated();
-            _cachedView.MainDetailBtn.onClick.AddListener(OnMainDetailBtn);
-            _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
-            _cachedView.OKBtn.onClick.AddListener(OnMainDetailBtn);
-            _cachedView.GiveupBtn.onClick.AddListener(OnGiveupBtn);
+            if (!_isRawType)
+            {
+                InfoNotificationManager.OnBtnClick(_data);
+                _data.MarkRead();
+                _mainCtrl.OnMarkRead(_data);
+            }
         }
 
-        private void OnGiveupBtn()
+        private void OnRawBtn()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, String.Empty);
-            RemoteCommands.GiveUpShadowBattle(_mail.ContentId, shadowBattleData =>
+            if (_isRawType)
             {
-                if (shadowBattleData.ResultCode == (int) EGiveUpShadowBattleCode.GUSBC_Success)
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    Messenger.Broadcast(EMessengerType.OnMailListChanged);
-                }
-                else
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("放弃请求失败。");
-                }
-            }, code =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("放弃请求失败。");
-            });
+                InfoNotificationManager.OnBtnClick(_data);
+                _data.MarkRead();
+            }
         }
 
         private void OnHeadBtn()
         {
-            if (_mail.UserInfoDetail != null)
+            if (_isRawType)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_mail.UserInfoDetail);
+                return;
             }
-        }
 
-        private void OnMainDetailBtn()
-        {
-            if (_mail == null) return;
-            SocialGUIManager.Instance.OpenUI<UICtrlMailDetail>(_mail);
+            if (_data.Sender != null)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(
+                    UserManager.Instance.UpdateData(_data.Sender));
+            }
         }
 
         public void Unload()

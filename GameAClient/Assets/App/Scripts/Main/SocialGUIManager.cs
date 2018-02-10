@@ -117,7 +117,6 @@ namespace GameA
             }
             OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();
-//            OpenUI<UICtrlInfoNotificationRaw>();
             ChangeToAppMode();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
         }

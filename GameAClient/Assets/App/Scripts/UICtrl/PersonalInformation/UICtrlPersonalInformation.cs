@@ -124,7 +124,6 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
                 return;
             }
-
             _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);

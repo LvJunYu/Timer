@@ -1,18 +1,45 @@
-﻿namespace GameA
+﻿
+using SoyEngine;
+using SoyEngine.Proto;
+
+namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlInfoNotification : UICtrlAnimationBase<UIViewInfoNotification>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlInfoNotification : UICtrlAnimationBase<UIViewInfoNotification>, ICheckOverlay
     {
+        private const string ReplyFormat = "回复{0}";
         private EMenu _curMenu = EMenu.None;
         private UPCtrlInfoNotificationBase _curMenuCtrl;
         private UPCtrlInfoNotificationBase[] _menuCtrlArray;
+        private NotificationDataItem _curReplyData;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
+            _cachedView.ClearBtn.onClick.AddListener(OnClearBtn);
+            _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
             _menuCtrlArray = new UPCtrlInfoNotificationBase[(int) EMenu.Max];
+            
+            var upCtrlInfoNotificationBasic = new UPCtrlInfoNotificationBasic();
+            upCtrlInfoNotificationBasic.Set(ResScenary);
+            upCtrlInfoNotificationBasic.SetMenu(EMenu.Basic);
+            upCtrlInfoNotificationBasic.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Basic] = upCtrlInfoNotificationBasic;
 
+            var upCtrlInfoNotificationMyFollow = new UPCtrlInfoNotificationMyFollow();
+            upCtrlInfoNotificationMyFollow.Set(ResScenary);
+            upCtrlInfoNotificationMyFollow.SetMenu(EMenu.Follow);
+            upCtrlInfoNotificationMyFollow.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Follow] = upCtrlInfoNotificationMyFollow;
+
+            var upCtrlInfoNotificationMyProject = new UPCtrlInfoNotificationMyProject();
+            upCtrlInfoNotificationMyProject.Set(ResScenary);
+            upCtrlInfoNotificationMyProject.SetMenu(EMenu.MyProject);
+            upCtrlInfoNotificationMyProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.MyProject] = upCtrlInfoNotificationMyProject;
+            
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
@@ -29,6 +56,7 @@
         {
             base.OnOpen(parameter);
             SocialGUIManager.Instance.CloseUI<UICtrlInfoNotificationRaw>();
+            SetReplyPannel(false);
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Basic, true);
@@ -71,7 +99,50 @@
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.Purchase;
+        }
+
+        private void OnClearBtn()
+        {
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.ClearData();
+            }
+        }
+
+        private void OnSendBtn()
+        {
+            var str = _cachedView.ReplyInputField.text;
+            if (string.IsNullOrEmpty(str))
+            {
+                return;
+            }
+            if (_curReplyData != null)
+            {
+                if (_curReplyData.Type == ENotificationDataType.NDT_ProjectCommentReply)
+                {
+                    _curReplyData.ProjectCommentReply.Reply(str, ReplyFinish);
+                }
+                else if (_curReplyData.Type == ENotificationDataType.NDT_UserMessageBoardReply)
+                {
+                    _curReplyData.UserMessageReply.Reply(str, ReplyFinish);
+                }
+            }
+        }
+
+        private void ReplyFinish()
+        {
+            _curReplyData.MarkRead();
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.OnMarkRead(_curReplyData);
+            }
+            SetReplyPannel(false);
+        }
+
+        private void OnCancelBtn()
+        {
+            SetReplyPannel(false);
         }
 
         private void OnCloseBtn()
@@ -104,10 +175,27 @@
                 ChangeMenu((EMenu) selectInx);
             }
         }
+
+        public void SetReplyPannel(bool value, NotificationDataItem data = null)
+        {
+            _cachedView.ReplayPannel.SetActiveEx(value);
+            if (value)
+            {
+                _curReplyData = data;
+                if (data != null)
+                {
+                    _cachedView.ReplyTxt.text = string.Format(ReplyFormat, data.Sender.NickName);
+                }
+            }
+            else
+            {
+                _cachedView.ReplyInputField.text = string.Empty;
+            }
+        }
         
         public enum EMenu
         {
-            None,
+            None = -1,
             Basic,
             Follow,
             MyProject,

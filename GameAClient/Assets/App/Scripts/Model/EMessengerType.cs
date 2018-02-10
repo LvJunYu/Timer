@@ -196,6 +196,7 @@ namespace GameA
 
         //新消息通知
         public static readonly int OnInfoNotificationChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnInfoNotificationHasNew = SoyEngine.EMessengerType.NextId++;
 
         //绳子
         public static readonly int OnPlayerClimbRope = SoyEngine.EMessengerType.NextId++;

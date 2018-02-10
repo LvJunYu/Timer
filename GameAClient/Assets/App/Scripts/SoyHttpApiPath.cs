@@ -254,8 +254,16 @@ namespace SoyEngine
         public const string UpdateRoomChatPreinstall = "/home/updateRoomChatPreinstall";
         // 删除快捷聊天
         public const string DeleteRoomChatPreinstall = "/home/deleteRoomChatPreinstall";
-        // 获取通知
-        public const string NotificationPushStatistic = "/home/getNotificationPushStatistic";
+        // 获取通知统计
+        public const string NotificationPushStatistic = "/notification/getNotificationPushStatistic";
+        // 获取推送数据
+        public const string NotificationPushData = "/notification/getNotificationPushData";
+        // 获取通知数据
+        public const string NotificationData = "/notification/getNotificationData";
+        // 标记通知已读
+        public const string MarkNotificationHasRead = "/notification/markNotificationHasRead";
+        // 标记通知已读
+        public const string MarkNotificationHasReadBatch = "/notification/markNotificationHasReadBatch";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度
