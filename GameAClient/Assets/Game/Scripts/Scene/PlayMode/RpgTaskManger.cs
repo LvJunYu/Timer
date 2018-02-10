@@ -62,14 +62,17 @@ namespace GameA.Game
             {
                 ColltionNum.Add(colltion.Value.Id, 0);
             }
+
             foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 KillMonstorNum.Add(kill.Value.Id, 0);
             }
+
             foreach (var colltion in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
                 ColltionNumtemp.Add(colltion.Value.Id, 0);
             }
+
             foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 KillMonstorNumTemp.Add(kill.Value.Id, 0);
@@ -88,10 +91,12 @@ namespace GameA.Game
             {
                 ColltionNum[colltion.Value.Id] = 0;
             }
+
             foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 KillMonstorNum[kill.Value.Id] = 0;
             }
+
             HaveNpcInScene = false;
         }
     }
@@ -150,10 +155,12 @@ namespace GameA.Game
                                 npcUnit.SetNoShow();
                             }
                         }
+
                         _deliverNpcDic.Add(enumerator.Current.Value.NpcSerialNumber,
                             new UnitSceneGuid(enumerator.Current.Key, Scene2DManager.Instance.CurSceneIndex));
                     }
                 }
+
                 SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTaskPanelDis();
                 if (_allNpcExtraData.Count <= 0)
                 {
@@ -164,6 +171,7 @@ namespace GameA.Game
                     RpgTaskMangerData.Instance.HaveNpcInScene = true;
                 }
             }
+
             JudegeBeforeTask();
         }
 
@@ -173,10 +181,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (!RpgTaskMangerData.Instance.HaveNpcInScene)
             {
                 return;
             }
+
             Judge();
 
             //任务是传话
@@ -196,6 +206,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             //任务中的对话放到最后去判断
             if (MidleTaskDia(npcguid))
             {
@@ -220,6 +231,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return canshow;
         }
 
@@ -255,10 +267,18 @@ namespace GameA.Game
                                         taskAfter.Add(
                                             GetTaskFinishDia(task, npcguid));
                                     }
+
                                     var key = enumerator.Current.Key;
                                     var taskguid1 = key;
+                                    DictionaryListObject awardlist;
+                                    awardlist = GetAward(task.TaskFinishAward);
                                     _showDiaEvent = () =>
                                     {
+                                        for (int j = 0; j < awardlist.Count; j++)
+                                        {
+                                            GetAward(awardlist.Get<NpcTaskTargetDynamic>(j));
+                                        }
+
                                         _finishNpcTask.Add(task.NpcTaskSerialNumber,
                                             task);
                                         RemoveTask(taskguid1, false);
@@ -272,6 +292,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return canshow;
         }
 
@@ -293,6 +314,7 @@ namespace GameA.Game
                             {
                                 continue;
                             }
+
                             DictionaryListObject diaList = new DictionaryListObject();
                             //找到任务的原guid
                             UnitSceneGuid guid = new UnitSceneGuid(IntVec3.zero, 0);
@@ -303,6 +325,7 @@ namespace GameA.Game
                                     guid = taskinfo.Key;
                                 }
                             }
+
                             if (!guid.Equals(UnitSceneGuid.zore))
                             {
                                 if (task.TaskAfter.Count > 0)
@@ -315,6 +338,7 @@ namespace GameA.Game
                                     diaList.Add(GetTaskFinishDia(task,
                                         npcguid));
                                 }
+
                                 ShowTip(npcguid);
                                 DictionaryListObject awardlist;
                                 awardlist = GetAward(task.TaskFinishAward);
@@ -331,6 +355,7 @@ namespace GameA.Game
                                     {
                                         RemoveTask(guid, false);
                                     }
+
                                     JudegeBeforeTask();
                                     SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(diaList);
                                     canshow = true;
@@ -341,6 +366,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return canshow;
         }
 
@@ -373,6 +399,7 @@ namespace GameA.Game
                             {
                                 diaList.Add(GetTaskBeforeDiA(taskDynamic, npcguid));
                             }
+
                             ShowTip(npcguid);
                             _showDiaEvent = () =>
                             {
@@ -381,6 +408,7 @@ namespace GameA.Game
                                     var award = taskDynamic.BeforeTaskAward.Get<NpcTaskTargetDynamic>(j);
                                     GetAward(award);
                                 }
+
                                 AddTask(npcguid, taskDynamic);
                                 SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(diaList);
                             };
@@ -390,6 +418,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return canshow;
         }
 
@@ -424,6 +453,7 @@ namespace GameA.Game
                             PlayMode.Instance.SceneState.AddKey();
                         }
                     }
+
                     if (UnitDefine.IsTeeth(award.TargetUnitID))
                     {
                         for (int i = 0; i < award.ColOrKillNum; i++)
@@ -431,6 +461,7 @@ namespace GameA.Game
                             PlayMode.Instance.SceneState.GemGain++;
                         }
                     }
+
                     break;
                 case (byte) ENpcTargetType.Moster:
 
@@ -460,6 +491,7 @@ namespace GameA.Game
                     finish = _finishNpcTask.ContainsKey(task.TriggerTaskNumber);
                     break;
             }
+
             return finish;
         }
 
@@ -470,10 +502,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (ColltionNum.ContainsKey(id))
             {
                 ColltionNum[id]++;
             }
+
             Judge();
         }
 
@@ -484,10 +518,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (KillMonstorNum.ContainsKey(id))
             {
                 KillMonstorNum[id]++;
             }
+
             Judge();
         }
 
@@ -498,6 +534,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_controlDic.ContainsKey(guid))
             {
                 _controlDic[guid] = true;
@@ -506,6 +543,7 @@ namespace GameA.Game
             {
                 _controlDic.Add(guid, true);
             }
+
             Judge();
         }
 
@@ -550,6 +588,7 @@ namespace GameA.Game
                                         finishnum++;
                                     }
                                 }
+
                                 break;
                             case ENpcTargetType.Moster:
                                 if (KillMonstorNum.ContainsKey(target.TargetUnitID))
@@ -560,7 +599,7 @@ namespace GameA.Game
                                         finishnum++;
                                     }
                                 }
-                                
+
                                 break;
                             case ENpcTargetType.Contorl:
                                 if (_controlDic != null)
@@ -575,6 +614,7 @@ namespace GameA.Game
                                 break;
                         }
                     }
+
                     if (finishnum == enumerator.Current.Value.Targets.Count &&
                         !_finishNpcTask.ContainsKey(enumerator.Current.Value.NpcTaskSerialNumber))
                     {
@@ -588,6 +628,7 @@ namespace GameA.Game
                         {
                             npcUnit.SetFinishTask();
                         }
+
                         SocialGUIManager.Instance.GetUI<UICtrlSceneState>()
                             .SetNpcTask(_npcTaskDynamics, _finishNpcTask);
                         break;
@@ -612,6 +653,7 @@ namespace GameA.Game
                     {
                         return;
                     }
+
                     bool isready = false;
                     var extra = enmoutor.Current.Value;
                     for (int i = 0; i < extra.NpcTask.Count; i++)
@@ -623,6 +665,7 @@ namespace GameA.Game
                             break;
                         }
                     }
+
                     UnitBase unit;
                     if (Scene2DManager.Instance.TryGetUnit(enmoutor.Current.Key, out unit))
                     {
@@ -668,17 +711,21 @@ namespace GameA.Game
                             {
                                 ColltionNum[target.TargetUnitID] += target.ColOrKillNum;
                             }
+
                             break;
                         case ENpcTargetType.Moster:
                             if (KillMonstorNum.ContainsKey(target.TargetUnitID))
                             {
                                 KillMonstorNum[target.TargetUnitID] += target.ColOrKillNum;
                             }
+
                             break;
                     }
                 }
+
                 _finishNpcTask.Remove(_npcTaskDynamics[guid].NpcTaskSerialNumber);
             }
+
             _npcTaskDynamics.Remove(guid);
             NpcTaskDynamicsTimeLimit.Remove(guid);
 
@@ -697,6 +744,7 @@ namespace GameA.Game
                         allFinish = false;
                     }
                 }
+
                 UnitBase unit;
                 NPCBase npcUnit;
                 Scene2DManager.Instance.TryGetUnit(guid, out unit);
@@ -713,6 +761,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTask(_npcTaskDynamics, _finishNpcTask);
         }
 
@@ -736,12 +785,14 @@ namespace GameA.Game
                         {
                             ColltionNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
                         }
+
                         break;
                     case ENpcTargetType.Moster:
                         if (KillMonstorNum.ContainsKey(TriggerTask.TargetUnitID))
                         {
                             KillMonstorNum[TriggerTask.TargetUnitID] -= TriggerTask.ColOrKillNum;
                         }
+
                         break;
                 }
             }
@@ -772,6 +823,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_showDiaEvent != null)
             {
                 _showDiaEvent.Invoke();
@@ -812,9 +864,11 @@ namespace GameA.Game
                                 oldNpc.OldState.Invoke();
                                 JudegeBeforeTask();
                             }
+
                             _curNpcGuid = new UnitSceneGuid(IntVec3.zero, 0);
                         }
                     }
+
                     isOldNpcOrNoNpc = true;
                     return isOldNpcOrNoNpc;
                 }
@@ -824,11 +878,13 @@ namespace GameA.Game
                 isOldNpcOrNoNpc = true;
                 return isOldNpcOrNoNpc;
             }
+
             if (_curNpcGuid.Equals(npcguid))
             {
                 isOldNpcOrNoNpc = true;
                 return isOldNpcOrNoNpc;
             }
+
             _curHitNpc = null;
             if (Scene2DManager.Instance.TryGetUnit(_curNpcGuid, out unitOld))
             {
@@ -838,6 +894,7 @@ namespace GameA.Game
                     oldNpc.OldState.Invoke();
                 }
             }
+
             _curNpcGuid = npcguid;
             _coutTime = 0;
             _curHitNpc = unit as NPCBase;
@@ -865,11 +922,13 @@ namespace GameA.Game
                     {
                         des = String.Format("控制{0}", TableManager.Instance.Table_UnitDic[unit.Id].Name);
                     }
+
                     break;
                 case (int) ENpcTargetType.Dialog:
                     des = String.Format("传话给名字是{0}的NPC", GetNpcNameByNum(target.TargetNpcNum));
                     break;
             }
+
             return des;
         }
 
@@ -886,6 +945,7 @@ namespace GameA.Game
                 NpcTaskTargetDynamic target = task.Targets.Get<NpcTaskTargetDynamic>(j);
                 diaContent += GetTargetDes(target);
             }
+
             string dia = NpcDia.SetDiaData((int) NpcDia.GetNpcType(unit.Id),
                 (int) ENpcFace.Happy, diaContent, extra.NpcName, NpcDia.brown,
                 (int) EnpcWaggle.None);
@@ -923,6 +983,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             return name;
         }
 
@@ -933,6 +994,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             DictionaryListObject newDictionaryListObject = new DictionaryListObject();
             for (int i = 0; i < diaList.Count; i++)
             {
@@ -945,6 +1007,7 @@ namespace GameA.Game
                 npcDia.NpcId = NpcDia.GetNpcType(unit.Id);
                 newDictionaryListObject.Add(npcDia.ToString());
             }
+
             diaList = newDictionaryListObject;
         }
 
@@ -970,6 +1033,7 @@ namespace GameA.Game
                 target.TargetNpcNum = awardlist.Get<NpcTaskTargetDynamic>(i).TargetNpcNum;
                 newawardlist.Add(target);
             }
+
             return newawardlist;
         }
     }
