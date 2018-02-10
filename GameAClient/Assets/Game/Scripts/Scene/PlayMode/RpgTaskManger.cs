@@ -560,13 +560,18 @@ namespace GameA.Game
                                         finishnum++;
                                     }
                                 }
+                                
                                 break;
                             case ENpcTargetType.Contorl:
-                                if (_controlDic.ContainsKey(new UnitSceneGuid(target.TargetGuid,
-                                    Scene2DManager.Instance.CurSceneIndex))) ;
-                            {
-                                finishnum++;
-                            }
+                                if (_controlDic != null)
+                                {
+                                    if (_controlDic.ContainsKey(new UnitSceneGuid(target.TargetGuid,
+                                        Scene2DManager.Instance.CurSceneIndex)))
+                                    {
+                                        finishnum++;
+                                    }
+                                }
+
                                 break;
                         }
                     }

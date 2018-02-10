@@ -52,7 +52,7 @@ namespace GameA
             yield return null;
             WWW loadAnnoucement = new WWW(NetworkManager.AppHttpClient.BaseUrl + "/announcement");
             yield return loadAnnoucement;
-            _cachedView.ContentText.text = loadAnnoucement.text;
+//            _cachedView.ContentText.text = loadAnnoucement.text;
         }
     }
 }
