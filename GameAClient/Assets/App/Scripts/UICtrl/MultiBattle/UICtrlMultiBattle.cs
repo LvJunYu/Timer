@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlMultiBattle : UICtrlAnimationBase<UIViewMultiBattle>
+    public class UICtrlMultiBattle : UICtrlAnimationBase<UIViewMultiBattle>, ICheckOverlay
     {
         private bool _hasRequested;
         private bool _pushGoldEnergyStyle;

@@ -266,7 +266,7 @@ namespace GameA
 
         public void OnChatItemClick(ChatData.Item item, string href)
         {
-            if (_scene == EScene.Room)
+            if (_scene == EScene.Room || _scene == EScene.Team)
             {
                 return;
             }
