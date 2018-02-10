@@ -303,7 +303,7 @@ namespace GameA.Game
                                     guid = taskinfo.Key;
                                 }
                             }
-                            if (guid.Equals(UnitSceneGuid.zore))
+                            if (!guid.Equals(UnitSceneGuid.zore))
                             {
                                 if (task.TaskAfter.Count > 0)
                                 {

@@ -293,6 +293,10 @@ namespace GameA.Game
             {
                 if (base.InstantiateView())
                 {
+                    if (_nowState != null)
+                    {
+                        _nowState.Invoke();
+                    }
                     Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.JudegeBeforeTask();
 //                    RpgTaskManger.Instance.JudegeBeforeTask();
                     return true;
