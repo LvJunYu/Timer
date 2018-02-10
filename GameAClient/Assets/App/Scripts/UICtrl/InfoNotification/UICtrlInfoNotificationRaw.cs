@@ -29,16 +29,6 @@ namespace GameA
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             RegisterEvent(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
             RegisterEvent<List<NotificationPushDataItem>>(EMessengerType.OnInfoNotificationChanged, OnInfoNotificationChanged);
-            RegisterEvent(EMessengerType.OnInfoNotificationHasNew, OnInfoNotificationHasNew);
-        }
-
-        private void OnInfoNotificationHasNew()
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-            _cachedView.HasNewObj.SetActive(InfoNotificationManager.Instance.InfoNotificaitonNew);
         }
 
         protected override void OnViewCreated()
@@ -54,18 +44,13 @@ namespace GameA
         {
             base.OnOpen(parameter);
             BgWidth = _cachedView.BgRtf.rect.width;
-            RequestData();
-            _cachedView.HasNewObj.SetActive(InfoNotificationManager.Instance.InfoNotificaitonNew);
+            InfoNotificationManager.Instance.RequestData();
         }
 
         protected override void OnClose()
         {
             Clear();
             base.OnClose();
-        }
-
-        private void RequestData()
-        {
         }
 
         public override void OnUpdate()
@@ -86,6 +71,15 @@ namespace GameA
             {
                 SetOpen(false);
             }
+        }
+
+        public void OnInfoNotificationHasNew(bool value)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            _cachedView.HasNewObj.SetActive(value);
         }
 
         private void OnInfoNotificationChanged(List<NotificationPushDataItem> pushDatas)

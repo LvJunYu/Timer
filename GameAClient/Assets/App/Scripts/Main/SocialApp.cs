@@ -205,7 +205,6 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
                 SocialGUIManager.Instance.ShowAppView();
-                InfoNotificationManager.Instance.RequestData();
                 ReYunManager.Instance.Init();
                 if (LocalUser.Instance.User.LoginCount == 1)
                 {

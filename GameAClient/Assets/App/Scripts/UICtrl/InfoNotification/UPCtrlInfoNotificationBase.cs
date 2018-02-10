@@ -76,9 +76,11 @@ namespace GameA
             {
                 _cachedView.TableDataScrollers[(int) _menu].SetEmpty();
                 _cachedView.EmptyObj.SetActive(true);
+                _cachedView.ClearBtn.SetActiveEx(false);
             }
             else
             {
+                _cachedView.ClearBtn.SetActiveEx(_dataList.Count != 0);
                 _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
                 _cachedView.TableDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
             }

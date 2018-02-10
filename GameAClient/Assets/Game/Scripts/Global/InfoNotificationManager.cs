@@ -20,16 +20,112 @@ namespace GameA.Game
 
         private const int RequestInterval = 300;
         private float _lastRequestTime;
+        private bool _inGame;
         private NotificationPushStatistic _notificationPushStatistic = new NotificationPushStatistic();
         private NotificationPushData _notificationPushData = new NotificationPushData();
-        private bool _infoNotificaitonNew;
+        private UICtrlInfoNotificationRaw _uiCtrlInfoNotificationRaw;
 
-        public bool InfoNotificaitonNew
+        public static int MaskAll
         {
-            get { return _infoNotificaitonNew; }
+            get
+            {
+                return 1 << (int) ENotificationDataType.NDT_Follower |
+                       1 << (int) ENotificationDataType.NDT_ProjectComment |
+                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply |
+                       1 << (int) ENotificationDataType.NDT_ProjectDownload |
+                       1 << (int) ENotificationDataType.NDT_ProjectFavorite |
+                       1 << (int) ENotificationDataType.NDT_UserMessageBoard |
+                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
+            }
         }
 
-        public void MarkReadBatch(UICtrlInfoNotification.EMenu menu, Action successAction = null, Action failAction = null)
+        public InfoNotificationManager()
+        {
+            Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            Messenger.AddListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
+        }
+
+        public void RequestData()
+        {
+            _lastRequestTime = Time.time;
+            _notificationPushStatistic.Request(() =>
+            {
+                //查看推送消息
+                var pushData = _notificationPushStatistic.PushStatisticList;
+                int mask = 0;
+                for (int i = 0; i < pushData.Count; i++)
+                {
+                    if (CheckInfoValid(pushData[i]))
+                    {
+                        mask |= 1 << (int) pushData[i].Type;
+                    }
+                }
+
+                if (mask > 0)
+                {
+                    RequestPushData(mask);
+                }
+
+                //查看通知消息
+                var infoNotificaitonNew = false;
+                var notificationData = _notificationPushStatistic.NotificationStatisticList;
+                for (int i = 0; i < notificationData.Count; i++)
+                {
+                    if (CheckInfoValid(notificationData[i]))
+                    {
+                        infoNotificaitonNew = true;
+                        break;
+                    }
+                }
+
+                if (_uiCtrlInfoNotificationRaw == null)
+                {
+                    _uiCtrlInfoNotificationRaw = SocialGUIManager.Instance.GetUI<UICtrlInfoNotificationRaw>();
+                }
+
+                _uiCtrlInfoNotificationRaw.OnInfoNotificationHasNew(infoNotificaitonNew);
+            });
+        }
+
+        private void RequestPushData(int mask)
+        {
+            _notificationPushData.Request(mask, () =>
+            {
+                var pushDatas = _notificationPushData.DataList;
+                if (pushDatas.Count > 0)
+                {
+                    Messenger<List<NotificationPushDataItem>>.Broadcast(EMessengerType.OnInfoNotificationChanged,
+                        pushDatas);
+                }
+            }, code => { LogHelper.Error("NotificationPushData Request fail, code = {0}", code); });
+        }
+
+        private bool CheckInfoValid(NotificationPushStatisticItem info)
+        {
+            return info.Type != ENotificationDataType.NDT_None && info.Count > 0;
+        }
+
+        public void Update()
+        {
+            if (_inGame)
+            {
+                return;
+            }
+            if (Time.time - _lastRequestTime > RequestInterval)
+            {
+                RequestData();
+            }
+        }
+
+        public void Dispose()
+        {
+            Messenger.RemoveListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            Messenger.RemoveListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
+            _instance = null;
+        }
+
+        public void MarkReadBatch(UICtrlInfoNotification.EMenu menu, Action successAction = null,
+            Action failAction = null)
         {
             RemoteCommands.MarkNotificationHasReadBatch(GetMask(menu), msg =>
             {
@@ -56,86 +152,6 @@ namespace GameA.Game
                     failAction.Invoke();
                 }
             });
-        }
-        
-        public void RequestData()
-        {
-            _lastRequestTime = Time.time;
-            _notificationPushStatistic.Request(() =>
-            {
-                //查看推送消息
-                var pushData = _notificationPushStatistic.PushStatisticList;
-                int mask = 0;
-                for (int i = 0; i < pushData.Count; i++)
-                {
-                    if (CheckInfoValid(pushData[i]))
-                    {
-                        mask |= 1 << (int) pushData[i].Type;
-                    }
-                }
-
-                if (mask > 0)
-                {
-                    RequestPushData(mask);
-                }
-
-                //查看通知消息
-                var notificationData = _notificationPushStatistic.NotificationStatisticList;
-                for (int i = 0; i < notificationData.Count; i++)
-                {
-                    if (CheckInfoValid(notificationData[i]))
-                    {
-                        _infoNotificaitonNew = true;
-                        Messenger.Broadcast(EMessengerType.OnInfoNotificationHasNew);
-                        break;
-                    }
-                }
-            });
-        }
-
-        private void RequestPushData(int mask)
-        {
-            _notificationPushData.Request(mask, () =>
-            {
-                var pushDatas = _notificationPushData.DataList;
-                if (pushDatas.Count > 0)
-                {
-                    Messenger<List<NotificationPushDataItem>>.Broadcast(EMessengerType.OnInfoNotificationChanged,
-                        pushDatas);
-                }
-            }, code => { LogHelper.Error("NotificationPushData Request fail, code = {0}", code); });
-        }
-
-        private bool CheckInfoValid(NotificationPushStatisticItem info)
-        {
-            return info.Type != ENotificationDataType.NDT_None && info.Count > 0;
-        }
-
-        public void Update()
-        {
-            if (Time.time - _lastRequestTime > RequestInterval)
-            {
-                RequestData();
-            }
-        }
-
-        public void Dispose()
-        {
-            _instance = null;
-        }
-
-        public static int MaskAll
-        {
-            get
-            {
-                return 1 << (int) ENotificationDataType.NDT_Follower |
-                       1 << (int) ENotificationDataType.NDT_ProjectComment |
-                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply |
-                       1 << (int) ENotificationDataType.NDT_ProjectDownload |
-                       1 << (int) ENotificationDataType.NDT_ProjectFavorite |
-                       1 << (int) ENotificationDataType.NDT_UserMessageBoard |
-                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
-            }
         }
 
         private const string FollowerRawStr = "<color=#E37B17>{0}</color> 关注了你";
@@ -311,22 +327,27 @@ namespace GameA.Game
                     SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User);
                     break;
                 case ENotificationDataType.NDT_UserMessageBoardReply:
-                    UserManager.Instance.GetDataOnAsync(data.ContentId, user =>
-                    {
-                        SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(user);
-                    });
+                    UserManager.Instance.GetDataOnAsync(data.ContentId,
+                        user => { SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(user); });
                     break;
                 case ENotificationDataType.NDT_ProjectComment:
                 case ENotificationDataType.NDT_ProjectCommentReply:
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
-                    ProjectManager.Instance.GetDataOnAsync(data.ContentId, p =>
-                    {
-                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(p);
-                    });
+                    ProjectManager.Instance.GetDataOnAsync(data.ContentId,
+                        p => { SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(p); });
                     break;
             }
         }
 
+        private void OnChangeToGameMode()
+        {
+            _inGame = true;
+        }
+
+        private void OnChangeToAppMode()
+        {
+            _inGame = false;
+        }
     }
 }

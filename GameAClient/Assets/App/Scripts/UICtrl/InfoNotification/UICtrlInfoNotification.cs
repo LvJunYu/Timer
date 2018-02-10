@@ -7,7 +7,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlInfoNotification : UICtrlAnimationBase<UIViewInfoNotification>, ICheckOverlay
     {
-        private const string ReplyFormat = "回复{0}";
+        private const string ReplyFormat = "回复<color=#F4A251>{0}</color>";
         private EMenu _curMenu = EMenu.None;
         private UPCtrlInfoNotificationBase _curMenuCtrl;
         private UPCtrlInfoNotificationBase[] _menuCtrlArray;
