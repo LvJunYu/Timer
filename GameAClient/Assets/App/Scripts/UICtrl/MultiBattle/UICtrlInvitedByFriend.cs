@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -10,7 +9,7 @@ namespace GameA
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlInvitedByFriend : UICtrlAnimationBase<UIViewInvitedByFriend>
     {
-        private const string InviteRoomFormat = "邀请您加入关卡【{0}】";
+        private const string InviteRoomFormat = "邀请您加入关卡<color=#4CA2D4>【{0}】</color>";
         private EInviteType _inviteType;
         private List<LocalTeamInvite> _teamInviteList;
         private List<LocalRoomInvite> _roomInviteList;

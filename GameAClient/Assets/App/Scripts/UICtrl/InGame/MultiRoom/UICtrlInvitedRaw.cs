@@ -9,8 +9,8 @@ namespace GameA
     public class UICtrlInvitedRaw : UICtrlResManagedBase<UIViewInvitedRaw>
     {
         private const int MaxWaitTime = 10;
-        private const string InviteFormat1 = "{0}邀请您";
-        private const string InviteFormat2 = "加入关卡【{0}】";
+        private const string InviteFormat1 = "<color=#FEFEFF>{0}</color> 邀请您";
+        private const string InviteFormat2 = "加入关卡<color=#00659F>【{0}】</color>";
         private Sequence _openSequenceTeam;
         private Sequence _closeSequenceTeam;
         private Sequence _openSequenceRoom;
@@ -152,9 +152,9 @@ namespace GameA
             _openSequenceTeam = DOTween.Sequence();
             _closeSequenceTeam = DOTween.Sequence();
             _openSequenceTeam.Append(
-                _cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f).From()
+                _cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 220, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause();
-            _closeSequenceTeam.Append(_cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 200, 0.3f)
+            _closeSequenceTeam.Append(_cachedView.TeamInviteRtf.DOBlendableMoveBy(Vector3.right * 220, 0.3f)
                 .SetEase(Ease.InOutQuad)).OnComplete(OnTeamAnimComplete).SetAutoKill(false).Pause();
 
             _openSequenceRoom = DOTween.Sequence();

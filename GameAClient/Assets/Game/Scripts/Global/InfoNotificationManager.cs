@@ -138,24 +138,32 @@ namespace GameA.Game
             }
         }
 
+        private const string FollowerRawStr = "<color=#E37B17>{0}</color> 关注了你";
+        private const string MessageBoardRawStr = "<color=#E37B17>{0}</color> 给你留言了";
+        private const string MessageBoardReplyRawStr = "<color=#E37B17>{0}</color> 回复了你的留言";
+        private const string ProjectCommentRawStr = "<color=#E37B17>{0}</color> 评论了你的关卡";
+        private const string ProjectCommentReplyRawStr = "<color=#E37B17>{0}</color> 回复了你的关卡评论";
+        private const string ProjectFavoriteRawStr = "<color=#E37B17>{0}</color> 收藏了你的关卡";
+        private const string ProjectDownloadRawStr = "<color=#E37B17>{0}</color> 下载了你的关卡";
+
         public static string GetPushInfoFormat(ENotificationDataType pushDataType)
         {
             switch (pushDataType)
             {
                 case ENotificationDataType.NDT_Follower:
-                    return "{0}关注了你";
+                    return FollowerRawStr;
                 case ENotificationDataType.NDT_UserMessageBoard:
-                    return "{0}给你留言了";
+                    return MessageBoardRawStr;
                 case ENotificationDataType.NDT_UserMessageBoardReply:
-                    return "{0}回复了你的留言";
+                    return MessageBoardReplyRawStr;
                 case ENotificationDataType.NDT_ProjectComment:
-                    return "{0}评论了你的关卡";
+                    return ProjectCommentRawStr;
                 case ENotificationDataType.NDT_ProjectCommentReply:
-                    return "{0}回复了你的关卡评论";
+                    return ProjectCommentReplyRawStr;
                 case ENotificationDataType.NDT_ProjectFavorite:
-                    return "{0}收藏了你的关卡";
+                    return ProjectFavoriteRawStr;
                 case ENotificationDataType.NDT_ProjectDownload:
-                    return "{0}下载了你的关卡";
+                    return ProjectDownloadRawStr;
                 default:
                     LogHelper.Error("GetPushInfoFormat fail, dataType = {0}", pushDataType);
                     return string.Empty;
@@ -194,9 +202,9 @@ namespace GameA.Game
 
         private const string FollowFormat = "{0}个人关注了你";
         private const string UserMessageBoardFormat = "{0}个人给你留言了";
-        private const string UserMessageBoardReplyFormat = "{0}的回复：";
+        private const string UserMessageBoardReplyFormat = "<color=#F4A251>{0}</color>的回复：";
         private const string ProjectCommentFormat = "{0}个人评论了你的关卡{1}";
-        private const string ProjectCommentReplyFormat = "{0}在关卡{1}回复你：";
+        private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复：";
         private const string ProjectFavoriteFormat = "{0}个人收藏了你的关卡";
         private const string ProjectDownloadFormat = "{0}个人下载了你的关卡";
 
