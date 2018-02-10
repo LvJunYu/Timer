@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using FileTools = SoyEngine.FileTools;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -302,6 +304,10 @@ namespace GameA
             base.OnDestroy();
             CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
             ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
+            if (!Application.isEditor)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
         }
 
         protected override void Update()

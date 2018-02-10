@@ -28,6 +28,7 @@
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            SocialGUIManager.Instance.CloseUI<UICtrlInfoNotificationRaw>();
             if (_curMenu == EMenu.None)
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Basic, true);
@@ -44,6 +45,7 @@
             {
                 _curMenuCtrl.Close();
             }
+            SocialGUIManager.Instance.OpenUI<UICtrlInfoNotificationRaw>();
             base.OnClose();
         }
 
