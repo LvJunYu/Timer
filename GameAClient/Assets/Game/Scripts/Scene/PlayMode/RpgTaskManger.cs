@@ -4,46 +4,59 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    public class RpgTaskManger
+    public struct UnitSceneGuid : IEquatable<UnitSceneGuid>
     {
-//        private static RpgTaskManger _instance;
-//
-//        public static RpgTaskManger Instance
-//        {
-//            get { return _instance ?? (_instance = new RpgTaskManger()); }
-//        }
+        public UnitSceneGuid(IntVec3 guid, int index)
+        {
+            Guid = guid;
+            Index = index;
+        }
 
-        static RpgTaskManger()
+        public IntVec3 Guid;
+        public int Index;
+        public static UnitSceneGuid zore = new UnitSceneGuid(IntVec3.zero, 0);
+
+        public bool Equals(UnitSceneGuid other)
+        {
+            return Guid.Equals(other.Guid) && Index == other.Index;
+        }
+    }
+
+    public class RpgTaskMangerData
+    {
+        private RpgTaskMangerData()
         {
             IintData();
         }
 
-        private const int MaxTaskNum = 3;
+        private static RpgTaskMangerData _instance;
 
-        private readonly Dictionary<IntVec3, UnitExtraDynamic> _allNpcExtraData =
-            new Dictionary<IntVec3, UnitExtraDynamic>();
+        public static RpgTaskMangerData Instance
+        {
+            get { return _instance ?? (_instance = new RpgTaskMangerData()); }
+        }
 
+        public bool HaveNpcInScene;
 
-        private static readonly Dictionary<int, int> KillMonstorNum = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> ColltionNum = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> KillMonstorNumTemp = new Dictionary<int, int>();
-        private static readonly Dictionary<int, int> ColltionNumtemp = new Dictionary<int, int>();
+        public readonly Dictionary<UnitSceneGuid, NpcTaskDynamic> NpcTaskDynamics =
+            new Dictionary<UnitSceneGuid, NpcTaskDynamic>();
 
-        private readonly Dictionary<IntVec3, NpcTaskDynamic> _npcTaskDynamics =
-            new Dictionary<IntVec3, NpcTaskDynamic>();
+        public readonly Dictionary<UnitSceneGuid, UnitExtraDynamic> AllNpcExtraData =
+            new Dictionary<UnitSceneGuid, UnitExtraDynamic>();
 
-        private readonly Dictionary<int, IntVec3> _deliverNpcDic = new Dictionary<int, IntVec3>();
-        public readonly Dictionary<IntVec3, float> NpcTaskDynamicsTimeLimit = new Dictionary<IntVec3, float>();
-        private readonly Dictionary<int, NpcTaskDynamic> _finishNpcTask = new Dictionary<int, NpcTaskDynamic>();
-        private readonly Dictionary<IntVec3, bool> _controlDic = new Dictionary<IntVec3, bool>();
-        private bool _haveNpcInScene;
-        private Action _showDiaEvent;
-        private NPCBase _curHitNpc;
-        private IntVec3 _curNpcGuid;
-        private const int JudgeInvterTime = 100;
-        private int _coutTime;
+        public readonly Dictionary<int, UnitSceneGuid> DeliverNpcDic = new Dictionary<int, UnitSceneGuid>();
 
-        private static void IintData()
+        public readonly Dictionary<UnitSceneGuid, float> NpcTaskDynamicsTimeLimit =
+            new Dictionary<UnitSceneGuid, float>();
+
+        public readonly Dictionary<int, NpcTaskDynamic> FinishNpcTask = new Dictionary<int, NpcTaskDynamic>();
+        public readonly Dictionary<UnitSceneGuid, bool> ControlDic = new Dictionary<UnitSceneGuid, bool>();
+        public readonly Dictionary<int, int> KillMonstorNum = new Dictionary<int, int>();
+        public readonly Dictionary<int, int> ColltionNum = new Dictionary<int, int>();
+        public readonly Dictionary<int, int> KillMonstorNumTemp = new Dictionary<int, int>();
+        public readonly Dictionary<int, int> ColltionNumtemp = new Dictionary<int, int>();
+
+        private void IintData()
         {
             foreach (var colltion in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
@@ -63,13 +76,14 @@ namespace GameA.Game
             }
         }
 
-        public void GetAllTask()
+        public void ClearData()
         {
-            _allNpcExtraData.Clear();
-            _npcTaskDynamics.Clear();
-            _finishNpcTask.Clear();
-            _controlDic.Clear();
-            _deliverNpcDic.Clear();
+            AllNpcExtraData.Clear();
+            NpcTaskDynamics.Clear();
+            DeliverNpcDic.Clear();
+            NpcTaskDynamicsTimeLimit.Clear();
+            FinishNpcTask.Clear();
+            ControlDic.Clear();
             foreach (var colltion in TableManager.Instance.Table_NpcTaskTargetColltionDic)
             {
                 ColltionNum[colltion.Value.Id] = 0;
@@ -78,15 +92,54 @@ namespace GameA.Game
             {
                 KillMonstorNum[kill.Value.Id] = 0;
             }
-            NpcTaskDynamicsTimeLimit.Clear();
-            _haveNpcInScene = false;
+            HaveNpcInScene = false;
+        }
+    }
+
+    public class RpgTaskManger
+    {
+        private const int MaxTaskNum = 3;
+
+        private Dictionary<UnitSceneGuid, UnitExtraDynamic> _allNpcExtraData;
+        private Dictionary<int, int> KillMonstorNum;
+        private Dictionary<int, int> ColltionNum;
+        private Dictionary<int, int> KillMonstorNumTemp;
+        private Dictionary<int, int> ColltionNumtemp;
+
+        private Dictionary<UnitSceneGuid, NpcTaskDynamic> _npcTaskDynamics;
+
+        private Dictionary<int, UnitSceneGuid> _deliverNpcDic;
+        public Dictionary<UnitSceneGuid, float> NpcTaskDynamicsTimeLimit;
+        private Dictionary<int, NpcTaskDynamic> _finishNpcTask;
+        private Dictionary<UnitSceneGuid, bool> _controlDic;
+
+        private Action _showDiaEvent;
+        private NPCBase _curHitNpc;
+        private UnitSceneGuid _curNpcGuid;
+        private const int JudgeInvterTime = 100;
+        private int _coutTime;
+
+        public void GetAllTask()
+        {
+            ColltionNum = RpgTaskMangerData.Instance.ColltionNum;
+            KillMonstorNum = RpgTaskMangerData.Instance.KillMonstorNum;
+            KillMonstorNumTemp = RpgTaskMangerData.Instance.KillMonstorNumTemp;
+            ColltionNumtemp = RpgTaskMangerData.Instance.ColltionNumtemp;
+            _allNpcExtraData = RpgTaskMangerData.Instance.AllNpcExtraData;
+            _npcTaskDynamics = RpgTaskMangerData.Instance.NpcTaskDynamics;
+            _finishNpcTask = RpgTaskMangerData.Instance.FinishNpcTask;
+            _controlDic = RpgTaskMangerData.Instance.ControlDic;
+            _deliverNpcDic = RpgTaskMangerData.Instance.DeliverNpcDic;
+            NpcTaskDynamicsTimeLimit = RpgTaskMangerData.Instance.NpcTaskDynamicsTimeLimit;
             using (var enumerator = DataScene2D.CurScene.UnitExtras.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
                     if (enumerator.Current.Value.NpcSerialNumber != 0)
                     {
-                        _allNpcExtraData.Add(enumerator.Current.Key, enumerator.Current.Value);
+                        _allNpcExtraData.Add(
+                            new UnitSceneGuid(enumerator.Current.Key, Scene2DManager.Instance.CurSceneIndex),
+                            enumerator.Current.Value);
                         UnitBase unit;
                         NPCBase npcUnit;
                         if (ColliderScene2D.CurScene.TryGetUnit(enumerator.Current.Key, out unit))
@@ -97,29 +150,30 @@ namespace GameA.Game
                                 npcUnit.SetNoShow();
                             }
                         }
-                        _deliverNpcDic.Add(enumerator.Current.Value.NpcSerialNumber, enumerator.Current.Key);
+                        _deliverNpcDic.Add(enumerator.Current.Value.NpcSerialNumber,
+                            new UnitSceneGuid(enumerator.Current.Key, Scene2DManager.Instance.CurSceneIndex));
                     }
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlSceneState>().SetNpcTaskPanelDis();
                 if (_allNpcExtraData.Count <= 0)
                 {
-                    _haveNpcInScene = false;
+                    RpgTaskMangerData.Instance.HaveNpcInScene = false;
                 }
                 else
                 {
-                    _haveNpcInScene = true;
+                    RpgTaskMangerData.Instance.HaveNpcInScene = true;
                 }
             }
             JudegeBeforeTask();
         }
 
-        public void OnPlayHitNpc(IntVec3 npcguid)
+        public void OnPlayHitNpc(UnitSceneGuid npcguid)
         {
             if (JudeOldHitNpc(npcguid))
             {
                 return;
             }
-            if (!_haveNpcInScene)
+            if (!RpgTaskMangerData.Instance.HaveNpcInScene)
             {
                 return;
             }
@@ -149,7 +203,7 @@ namespace GameA.Game
         }
 
         //任务中的对话
-        public bool MidleTaskDia(IntVec3 npcguid)
+        public bool MidleTaskDia(UnitSceneGuid npcguid)
         {
             bool canshow = false;
             //任务中的对话
@@ -170,7 +224,7 @@ namespace GameA.Game
         }
 
         // 任务是传话
-        public bool TaskMessageDia(IntVec3 npcguid)
+        public bool TaskMessageDia(UnitSceneGuid npcguid)
         {
             bool canshow = false;
             using (var enumerator = _npcTaskDynamics.GetEnumerator())
@@ -222,7 +276,7 @@ namespace GameA.Game
         }
 
         // 任务后的对话
-        public bool AfterTaskDia(IntVec3 npcguid)
+        public bool AfterTaskDia(UnitSceneGuid npcguid)
         {
             bool canshow = false;
             using (var enumerator = _finishNpcTask.GetEnumerator())
@@ -241,7 +295,7 @@ namespace GameA.Game
                             }
                             DictionaryListObject diaList = new DictionaryListObject();
                             //找到任务的原guid
-                            IntVec3 guid = IntVec3.zero;
+                            UnitSceneGuid guid = new UnitSceneGuid(IntVec3.zero, 0);
                             foreach (var taskinfo in _npcTaskDynamics)
                             {
                                 if (taskinfo.Value.TargetNpcSerialNumber == extraDynmic.NpcSerialNumber)
@@ -249,7 +303,7 @@ namespace GameA.Game
                                     guid = taskinfo.Key;
                                 }
                             }
-                            if (guid != IntVec3.zero)
+                            if (guid.Equals(UnitSceneGuid.zore))
                             {
                                 if (task.TaskAfter.Count > 0)
                                 {
@@ -291,7 +345,7 @@ namespace GameA.Game
         }
 
         //加入新的任务
-        public bool AddNewTask(IntVec3 npcguid)
+        public bool AddNewTask(UnitSceneGuid npcguid)
         {
             bool canshow = false;
             if (_npcTaskDynamics.Count >= MaxTaskNum)
@@ -412,7 +466,7 @@ namespace GameA.Game
         // 收集物品增加
         public void AddColltion(int id)
         {
-            if (!_haveNpcInScene)
+            if (!RpgTaskMangerData.Instance.HaveNpcInScene)
             {
                 return;
             }
@@ -426,7 +480,7 @@ namespace GameA.Game
         // 击杀增加
         public void AddKill(int id)
         {
-            if (!_haveNpcInScene)
+            if (!RpgTaskMangerData.Instance.HaveNpcInScene)
             {
                 return;
             }
@@ -438,9 +492,9 @@ namespace GameA.Game
         }
 
         // 控制完成
-        public void OnControlFinish(IntVec3 guid)
+        public void OnControlFinish(UnitSceneGuid guid)
         {
-            if (!_haveNpcInScene)
+            if (!RpgTaskMangerData.Instance.HaveNpcInScene)
             {
                 return;
             }
@@ -462,7 +516,7 @@ namespace GameA.Game
             SetTemp(ColltionNum, ColltionNumtemp);
             SetTemp(KillMonstorNum, KillMonstorNumTemp);
             //判断时间的放到每个人物中判断
-//            List<IntVec3> removeGuid = new List<IntVec3>();
+//            List<UnitSceneGuid> removeGuid = new List<UnitSceneGuid>();
 //            foreach (var task in _npcTaskDynamics)
 //            {
 //                var time = (NpcTaskDynamicsTimeLimit[task.Key] + (float) task.Value.TaskimeLimit);
@@ -508,10 +562,11 @@ namespace GameA.Game
                                 }
                                 break;
                             case ENpcTargetType.Contorl:
-                                if (_controlDic.ContainsKey(target.TargetGuid))
-                                {
-                                    finishnum++;
-                                }
+                                if (_controlDic.ContainsKey(new UnitSceneGuid(target.TargetGuid,
+                                    Scene2DManager.Instance.CurSceneIndex))) ;
+                            {
+                                finishnum++;
+                            }
                                 break;
                         }
                     }
@@ -519,10 +574,10 @@ namespace GameA.Game
                         !_finishNpcTask.ContainsKey(enumerator.Current.Value.NpcTaskSerialNumber))
                     {
                         _finishNpcTask.Add(enumerator.Current.Value.NpcTaskSerialNumber, enumerator.Current.Value);
-                        IntVec3 deliverNpcGuid = _deliverNpcDic[enumerator.Current.Value.TargetNpcSerialNumber];
+                        UnitSceneGuid deliverNpcGuid = _deliverNpcDic[enumerator.Current.Value.TargetNpcSerialNumber];
                         UnitBase unit;
                         NPCBase npcUnit;
-                        ColliderScene2D.CurScene.TryGetUnit(deliverNpcGuid, out unit);
+                        Scene2DManager.Instance.TryGetUnit(deliverNpcGuid, out unit);
                         npcUnit = unit as NPCBase;
                         if (npcUnit != null)
                         {
@@ -564,7 +619,7 @@ namespace GameA.Game
                         }
                     }
                     UnitBase unit;
-                    if (ColliderScene2D.CurScene.TryGetUnit(enmoutor.Current.Key, out unit))
+                    if (Scene2DManager.Instance.TryGetUnit(enmoutor.Current.Key, out unit))
                     {
                         NPCBase npc = unit as NPCBase;
 
@@ -591,7 +646,7 @@ namespace GameA.Game
         }
 
         //删除任务
-        public void RemoveTask(IntVec3 guid, bool isovertime)
+        public void RemoveTask(UnitSceneGuid guid, bool isovertime)
         {
             if (isovertime && _finishNpcTask.ContainsKey(_npcTaskDynamics[guid].NpcTaskSerialNumber))
             {
@@ -639,7 +694,7 @@ namespace GameA.Game
                 }
                 UnitBase unit;
                 NPCBase npcUnit;
-                ColliderScene2D.CurScene.TryGetUnit(guid, out unit);
+                Scene2DManager.Instance.TryGetUnit(guid, out unit);
                 npcUnit = unit as NPCBase;
                 if (npcUnit != null)
                 {
@@ -657,12 +712,12 @@ namespace GameA.Game
         }
 
         //添加任务
-        public void AddTask(IntVec3 guid, NpcTaskDynamic task)
+        public void AddTask(UnitSceneGuid guid, NpcTaskDynamic task)
         {
             _npcTaskDynamics.Add(guid, task);
             UnitBase unitold;
             NPCBase npcUnitold;
-            ColliderScene2D.CurScene.TryGetUnit(guid, out unitold);
+            Scene2DManager.Instance.TryGetUnit(guid, out unitold);
             npcUnitold = unitold as NPCBase;
             if (npcUnitold != null) npcUnitold.SetNoShow();
             if (task.TriggerType == (int) TrrigerTaskType.Colltion ||
@@ -687,10 +742,10 @@ namespace GameA.Game
             }
 
             NpcTaskDynamicsTimeLimit.Add(guid, GameRun.Instance.GameTimeSinceGameStarted);
-            IntVec3 deliverNpcGuid = _deliverNpcDic[task.TargetNpcSerialNumber];
+            UnitSceneGuid deliverNpcGuid = _deliverNpcDic[task.TargetNpcSerialNumber];
             UnitBase unit;
             NPCBase npcUnit;
-            ColliderScene2D.CurScene.TryGetUnit(deliverNpcGuid, out unit);
+            Scene2DManager.Instance.TryGetUnit(deliverNpcGuid, out unit);
             npcUnit = unit as NPCBase;
             if (npcUnit != null)
                 if (task.Targets.Get<NpcTaskTargetDynamic>(0).TaskType == (int) ENpcTargetType.Dialog)
@@ -720,11 +775,11 @@ namespace GameA.Game
         }
 
         //显示tip
-        private void ShowTip(IntVec3 guid)
+        private void ShowTip(UnitSceneGuid guid)
         {
             UnitBase unit;
             NPCBase npcUnit;
-            if (ColliderScene2D.CurScene.TryGetUnit(guid, out unit))
+            if (Scene2DManager.Instance.TryGetUnit(guid, out unit))
             {
                 npcUnit = (NPCBase) unit;
                 npcUnit.SetShowTip();
@@ -732,17 +787,17 @@ namespace GameA.Game
         }
 
         // 判断是否是上一次碰到的npc
-        private bool JudeOldHitNpc(IntVec3 npcguid)
+        private bool JudeOldHitNpc(UnitSceneGuid npcguid)
         {
             _coutTime++;
             bool isOldNpcOrNoNpc = false;
             UnitBase unit;
             UnitBase unitOld;
-            if (ColliderScene2D.CurScene.TryGetUnit(npcguid, out unit))
+            if (Scene2DManager.Instance.TryGetUnit(npcguid, out unit))
             {
                 if (!UnitDefine.IsNpc(unit.Id))
                 {
-                    if (ColliderScene2D.CurScene.TryGetUnit(_curNpcGuid, out unitOld))
+                    if (Scene2DManager.Instance.TryGetUnit(_curNpcGuid, out unitOld))
                     {
                         NPCBase oldNpc = unitOld as NPCBase;
                         if (oldNpc != null && _coutTime > JudgeInvterTime)
@@ -752,7 +807,7 @@ namespace GameA.Game
                                 oldNpc.OldState.Invoke();
                                 JudegeBeforeTask();
                             }
-                            _curNpcGuid = IntVec3.zero;
+                            _curNpcGuid = new UnitSceneGuid(IntVec3.zero, 0);
                         }
                     }
                     isOldNpcOrNoNpc = true;
@@ -764,13 +819,13 @@ namespace GameA.Game
                 isOldNpcOrNoNpc = true;
                 return isOldNpcOrNoNpc;
             }
-            if (_curNpcGuid == npcguid)
+            if (_curNpcGuid.Equals(npcguid))
             {
                 isOldNpcOrNoNpc = true;
                 return isOldNpcOrNoNpc;
             }
             _curHitNpc = null;
-            if (ColliderScene2D.CurScene.TryGetUnit(_curNpcGuid, out unitOld))
+            if (Scene2DManager.Instance.TryGetUnit(_curNpcGuid, out unitOld))
             {
                 NPCBase oldNpc = unitOld as NPCBase;
                 if (oldNpc.OldState != null)
@@ -814,10 +869,10 @@ namespace GameA.Game
         }
 
         //获得任务前的对话
-        private string GetTaskBeforeDiA(NpcTaskDynamic task, IntVec3 npcguid)
+        private string GetTaskBeforeDiA(NpcTaskDynamic task, UnitSceneGuid npcguid)
         {
             UnitBase unitbase;
-            ColliderScene2D.CurScene.TryGetUnit(npcguid, out unitbase);
+            Scene2DManager.Instance.TryGetUnit(npcguid, out unitbase);
             var unit = unitbase.UnitDesc;
             UnitExtraDynamic extra = unitbase.GetUnitExtra();
             string diaContent = "";
@@ -833,10 +888,10 @@ namespace GameA.Game
         }
 
         // 获得任务后的对话
-        private string GetTaskFinishDia(NpcTaskDynamic task, IntVec3 npcguid)
+        private string GetTaskFinishDia(NpcTaskDynamic task, UnitSceneGuid npcguid)
         {
             UnitBase unitbase;
-            ColliderScene2D.CurScene.TryGetUnit(npcguid, out unitbase);
+            Scene2DManager.Instance.TryGetUnit(npcguid, out unitbase);
             var unit = unitbase.UnitDesc;
             UnitExtraDynamic extra = unitbase.GetUnitExtra();
             string dia = NpcDia.SetDiaData((int) NpcDia.GetNpcType(unit.Id),
@@ -867,7 +922,7 @@ namespace GameA.Game
         }
 
         //改变对话的头像
-        private void ChangeDiaIcon(IntVec3 npcguid, DictionaryListObject diaList)
+        private void ChangeDiaIcon(UnitSceneGuid npcguid, DictionaryListObject diaList)
         {
             if (diaList == null)
             {
@@ -880,7 +935,7 @@ namespace GameA.Game
                 NpcDia npcDia = new NpcDia();
                 npcDia.AnalysisNpcDia(dia);
                 UnitBase unitbase;
-                ColliderScene2D.CurScene.TryGetUnit(npcguid, out unitbase);
+                Scene2DManager.Instance.TryGetUnit(npcguid, out unitbase);
                 var unit = unitbase.UnitDesc;
                 npcDia.NpcId = NpcDia.GetNpcType(unit.Id);
                 newDictionaryListObject.Add(npcDia.ToString());

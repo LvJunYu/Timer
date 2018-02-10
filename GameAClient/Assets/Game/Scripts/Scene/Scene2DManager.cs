@@ -403,6 +403,7 @@ namespace GameA.Game
 
         public void OnPlay()
         {
+            RpgTaskMangerData.Instance.ClearData();
             int sqawnIndex = SqawnSceneIndex;
             for (int i = 0; i < _sceneList.Count; i++)
             {
@@ -508,6 +509,16 @@ namespace GameA.Game
             {
                 _curScene.CommitRecord(editRecordBatch);
             }
+        }
+
+        public bool TryGetUnitExtra(UnitSceneGuid guid, out UnitExtraDynamic unitExtra)
+        {
+            return GetScene2DEntity(guid.Index).DataScene.TryGetUnitExtra(guid.Guid, out unitExtra);
+        }
+
+        public bool TryGetUnit(UnitSceneGuid guid, out UnitBase unit)
+        {
+            return GetScene2DEntity(guid.Index).ColliderScene.TryGetUnit(guid.Guid, out unit);
         }
     }
 

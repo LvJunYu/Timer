@@ -15,7 +15,7 @@ namespace GameA
         public List<GameObject> TargeObjGroup = new List<GameObject>();
         public List<Text> TargetTypeTextGroup = new List<Text>();
         public List<Text> TargetNumTextGroup = new List<Text>();
-        private IntVec3 _guid;
+        private UnitSceneGuid _guid;
         private bool _isFinish;
 
         public override void Init(UsViewNpcTask view)
@@ -32,7 +32,7 @@ namespace GameA
             TargetNumTextGroup.Add(_cachedView.TargetNumText3);
         }
 
-        public void SetNpcTask(IntVec3 guid, UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool isFinish)
+        public void SetNpcTask(UnitSceneGuid guid, UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool isFinish)
 
         {
             _isFinish = isFinish;
@@ -131,10 +131,11 @@ namespace GameA
             {
                 return;
             }
-            if ( Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit.ContainsKey(_guid))
+            if (Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit.ContainsKey(_guid))
             {
                 float lastTime = GameRun.Instance.GameTimeSinceGameStarted -
-                                 Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit[_guid];
+                                 Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                                     .NpcTaskDynamicsTimeLimit[_guid];
                 if (lastTime < _taskData.TaskimeLimit)
                 {
                     _cachedView.TimeText1.text = String.Format("{0}秒", (int) (_taskData.TaskimeLimit - lastTime));

@@ -104,7 +104,8 @@ namespace GameA.Game
                         {
                             _animation.PlayOnce("Open");
                         }
-                        Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.OnControlFinish(_guid);
+                        Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                            .OnControlFinish(new UnitSceneGuid(_guid, Scene2DManager.Instance.CurSceneIndex));
 //                        RpgTaskManger.Instance.OnControlFinish(_guid);
                     }
                 }

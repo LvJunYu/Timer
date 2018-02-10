@@ -268,6 +268,7 @@ namespace GameA.Game
             return _unitExtras.TryGetValue(guid, out unitExtra);
         }
 
+
         public UnitExtraDynamic GetUnitExtra(IntVec3 guid)
         {
             UnitExtraDynamic unitExtra;

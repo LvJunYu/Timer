@@ -61,7 +61,8 @@ namespace GameA.Game
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             base.Hit(unit, eDirectionType);
-            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.OnPlayHitNpc(unit.Guid);
+            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                .OnPlayHitNpc(new UnitSceneGuid(unit.Guid, Scene2DManager.Instance.CurSceneIndex));
         }
     }
 }

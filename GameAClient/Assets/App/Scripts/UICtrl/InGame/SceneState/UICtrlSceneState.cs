@@ -751,7 +751,7 @@ namespace GameA
             }
         }
 
-        public void SetNpcTask(Dictionary<IntVec3, NpcTaskDynamic> nowTaskDic,
+        public void SetNpcTask(Dictionary<UnitSceneGuid, NpcTaskDynamic> nowTaskDic,
             Dictionary<int, NpcTaskDynamic>finishTaskDic)
         {
             if (nowTaskDic.Count > 0)
@@ -772,7 +772,7 @@ namespace GameA
 
                     finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
                     UnitExtraDynamic extra;
-                    if (Scene2DManager.Instance.CurDataScene2D.TryGetUnitExtra(enmotor.Current.Key, out extra))
+                    if (Scene2DManager.Instance.TryGetUnitExtra(enmotor.Current.Key, out extra))
                     {
                         _npcTask[index].SetNpcTask(enmotor.Current.Key, extra, enmotor.Current.Value, finish);
                     }
