@@ -64,8 +64,7 @@ namespace GameA
         protected override void RefreshView()
         {
             _cachedView.DeleteBtn.SetActiveEx(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
-                                             SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
-//            _cachedView.ReplayBtn.SetActiveEx(false);
+                                             SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
             UserInfoSimple user = _comment.UserInfoDetail.UserInfoSimple;

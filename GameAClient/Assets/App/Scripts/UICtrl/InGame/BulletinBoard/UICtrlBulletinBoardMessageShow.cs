@@ -69,7 +69,8 @@ namespace GameA
             RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
             Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
             Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExitStart);
-            Messenger.AddListener(EMessengerType.OnSceneChange, Close);
+            RegisterEvent(EMessengerType.OnSceneChange,
+                () => SocialGUIManager.Instance.CloseUI<UICtrlBulletinBoardMessageShow>());
         }
 
         #region event
