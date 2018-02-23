@@ -112,28 +112,30 @@ namespace GameA.Game
             {
                 return;
             }
+
             for (int i = 0; i < _joints.Count; i++)
             {
                 _joints[i].UpdateLogic();
             }
 
-            var keys = _timerDic.Keys.ToArray();
-            for (int i = 0; i < keys.Length; i++)
+            var ids = _timerDic.Keys.ToArray();
+            for (int i = 0; i < ids.Length; i++)
             {
-                if (_timerDic[keys[i]] > 0)
+                if (_timerDic[ids[i]] > 0)
                 {
-                    _timerDic[keys[i]]--;
+                    _timerDic[ids[i]]--;
                 }
             }
         }
 
-        public void UpdateView(float deltaTime, bool addForce = false)
+        public void UpdateView(float deltaTime)
         {
             if (!IsInterest)
             {
                 return;
             }
 
+            //从后往前传递
             for (int i = _joints.Count - 1; i >= 0; i--)
             {
                 _joints[i].CheckPreJointPos();
@@ -172,12 +174,12 @@ namespace GameA.Game
                     _carryPlayerCount--;
                 }
             }
+
             //跳下绳子CD时间
             if (!value)
             {
                 _timerDic.AddOrReplace(player.RoomUser.Guid, DropCD);
             }
-            
         }
 
         public int GetTimer(long playerId)
@@ -186,7 +188,7 @@ namespace GameA.Game
             _timerDic.TryGetValue(playerId, out timer);
             return timer;
         }
-        
+
         public void Clear()
         {
             _joints.Clear();
@@ -216,6 +218,7 @@ namespace GameA.Game
             {
                 wholeRope.Clear();
             }
+
             _ropes.Clear();
         }
 

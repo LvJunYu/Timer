@@ -20,6 +20,7 @@ namespace GameA.Game
         private int _jumpAwayTimer;
         private IntVec2 _jumpDir;
         private IntVec2 _jumpAwayDir;
+        private PlayerBase _curCarryPlayer;
 
         public UnitBase PreJoint
         {
@@ -87,6 +88,47 @@ namespace GameA.Game
 
             SpeedX = Mathf.Clamp(SpeedX, -MaxSpeed, MaxSpeed);
             SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
+        }
+
+        public void FixSpeedFromPre(bool afterMove = false)
+        {
+            var target = PreJoint.CurPos;
+            if (!afterMove)
+            {
+                target += PreJoint.Speed;
+            }
+
+            var from = CurPos + Speed;
+            if (!CheckDis(ref from, ref target, false))
+            {
+                Speed = from - CurPos;
+                if (NextJoint != null)
+                {
+                    NextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
+        public void CheckPreJointPos()
+        {
+            if (_preJoint.Id == UnitDefine.RopeJointId)
+            {
+                var target = _preJoint.CurPos + _preJoint.Speed;
+                var from = _curPos + _speed;
+                if (!CheckDis(ref from, ref target))
+                {
+                    _preJoint.Speed = target - _preJoint.CurPos;
+                }
+            }
+            //第一个物体固定在原物体下
+            else
+            {
+                _speed = _preJoint.CenterDownPos - CenterUpFloorPos;
+                if (_nextJoint != null)
+                {
+                    _nextJoint.FixSpeedFromPre();
+                }
+            }
         }
 
         public override void UpdateView(float deltaTime)
@@ -189,47 +231,6 @@ namespace GameA.Game
             _preJoint = _nextJoint = null;
         }
 
-        public void FixSpeedFromPre(bool afterMove = false)
-        {
-            var target = PreJoint.CurPos;
-            if (!afterMove)
-            {
-                target += PreJoint.Speed;
-            }
-
-            var from = CurPos + Speed;
-            if (!CheckDis(ref from, ref target, false))
-            {
-                Speed = from - CurPos;
-                if (NextJoint != null)
-                {
-                    NextJoint.FixSpeedFromPre();
-                }
-            }
-        }
-
-        public void CheckPreJointPos()
-        {
-            if (_preJoint.Id == UnitDefine.RopeJointId)
-            {
-                var target = _preJoint.CurPos + _preJoint.Speed;
-                var from = CurPos + Speed;
-                if (!CheckDis(ref from, ref target))
-                {
-                    _preJoint.Speed = target - _preJoint.CurPos;
-                }
-            }
-            //第一个物体固定在原物体下
-            else
-            {
-                Speed = _preJoint.CenterDownPos - CenterUpFloorPos;
-                if (NextJoint != null)
-                {
-                    NextJoint.FixSpeedFromPre();
-                }
-            }
-        }
-
         public bool CheckDis(ref IntVec2 from, ref IntVec2 target, bool changeTarget = true)
         {
             var relative = target - from;
@@ -264,13 +265,9 @@ namespace GameA.Game
             _wholeRope.AddForce(force, _jointIndex);
         }
 
-        public void CarryPlayer()
+        public void JumpOnRope(PlayerBase player)
         {
-//            SpeedY -= 20;
-        }
-
-        public void JumpOnRope(EMoveDirection moveDirection)
-        {
+            var moveDirection = player.MoveDirection;
             _jumpOnTimer = 20;
             if (moveDirection == EMoveDirection.Left)
             {
@@ -282,8 +279,9 @@ namespace GameA.Game
             }
         }
 
-        public void JumpAwayRope(EMoveDirection moveDirection)
+        public void JumpAwayRope(PlayerBase player)
         {
+            var moveDirection = player.MoveDirection;
             _jumpAwayTimer = 10;
             if (moveDirection == EMoveDirection.Left)
             {
@@ -292,6 +290,19 @@ namespace GameA.Game
             else
             {
                 _jumpAwayDir = IntVec2.right;
+            }
+        }
+
+        public void CarryPlayer(PlayerBase player)
+        {
+            _curCarryPlayer = player;
+        }
+
+        public void PlayerLeave(PlayerBase player)
+        {
+            if (_curCarryPlayer == player)
+            {
+                _curCarryPlayer = null;
             }
         }
 

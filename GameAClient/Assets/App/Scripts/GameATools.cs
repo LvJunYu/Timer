@@ -256,7 +256,6 @@ namespace GameA
                     LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel + 1].AdvExp)
             {
                 ++LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-                Debug.Log("LevelData2:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
             }
 
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -

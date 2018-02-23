@@ -232,6 +232,7 @@ namespace GameA.Game
                     _lastSlot = -1;
                 }
             }
+
             if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra))
             {
                 return false;
@@ -422,7 +423,8 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin && !((Box)unit).IsHoldingByPlayer;
+            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
+                   !((Box) unit).IsHoldingByPlayer;
         }
 
         public override bool IsHoldingBox()
@@ -462,31 +464,37 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (GameModeBase.DebugEnable())
             {
                 GameModeBase.WriteDebugData(string.Format("Player {0} OnDead",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
+
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             if (_gun != null)
             {
                 _gun.Stop();
             }
+
             if (_box != null)
             {
                 _box.IsHoldingByPlayer = false;
                 _box = null;
             }
+
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
             {
                 LogHelper.Debug("GameOver!");
             }
+
             if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
             {
                 GM2DGame.Instance.GameMode.ShadowData.RecordDeath();
             }
+
             if (IsMain)
             {
                 Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
@@ -500,11 +508,13 @@ namespace GameA.Game
                 GameModeBase.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
                     _roomUser == null ? -1 : _roomUser.Guid, _revivePos, _reviveScene));
             }
+
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
                 GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
             }
+
             _eUnitState = EUnitState.Reviving;
             Scene2DManager.Instance.ChangeScene(_reviveScene, EChangeSceneType.ChangeScene);
             _trans.eulerAngles = new Vector3(90, 0, 0);
@@ -530,6 +540,7 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.UpdateWorldRegion(_curPos);
                     }
+
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
                     if (_gun != null)
@@ -537,16 +548,19 @@ namespace GameA.Game
                         _gun.Play();
                         _gun.Revive();
                     }
+
                     if (IsMain)
                     {
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                         Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                     }
+
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
                     }
+
                     if (PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime > 0)
                     {
                         AddStates(null, 61);
@@ -604,10 +618,12 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowData.RecordOutPortal();
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
+
                     if (_gun != null)
                     {
                         _gun.Revive();
                     }
+
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
@@ -675,6 +691,7 @@ namespace GameA.Game
             {
                 _statusBar.SetHPActive(true);
             }
+
             return true;
         }
 
@@ -730,6 +747,7 @@ namespace GameA.Game
                             {
                                 CameraManager.Instance.CameraCtrlPlay.ResetCameraPlayer();
                             }
+
                             OnRevive();
                         }
 
@@ -1121,6 +1139,7 @@ namespace GameA.Game
             {
                 _unitExtra = new UnitExtraDynamic();
             }
+
             return _unitExtra;
         }
 
@@ -1131,11 +1150,13 @@ namespace GameA.Game
                 return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfPlayer) && IsSameTeam(unit.TeamId) ||
                        PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyPlayer) && !IsSameTeam(unit.TeamId);
             }
+
             if (unit.IsMonster)
             {
                 return PlayMode.Instance.SceneState.CanHarmType(EHarmType.SelfMonster) && IsSameTeam(unit.TeamId) ||
                        PlayMode.Instance.SceneState.CanHarmType(EHarmType.EnemyMonster) && !IsSameTeam(unit.TeamId);
             }
+
             return true;
         }
 
@@ -1147,6 +1168,7 @@ namespace GameA.Game
                 {
                     _inLadders.Add(ladder);
                 }
+
                 _inLadder = true;
             }
             else
@@ -1155,6 +1177,7 @@ namespace GameA.Game
                 {
                     _inLadders.Remove(ladder);
                 }
+
                 if (_inLadders.Count == 0)
                 {
                     _inLadder = false;
@@ -1179,9 +1202,11 @@ namespace GameA.Game
             if (_eClimbState != EClimbState.Rope && CanClimb && ropeJoint.GetTimer(this) == 0 && Speed != IntVec2.zero)
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
-                ropeJoint.JumpOnRope(_moveDirection);
+                ropeJoint.CarryPlayer(this);
+                ropeJoint.JumpOnRope(this);
                 _curRopeProgress = 0;
-                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true, this);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true,
+                    this);
             }
         }
 
@@ -1206,76 +1231,90 @@ namespace GameA.Game
             var ropeJoint = _curClimbUnit as RopeJoint;
             if (ropeJoint != null)
             {
-                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false, this);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false,
+                    this);
+                ropeJoint.PlayerLeave(this);
             }
+
             _ropeOffset = IntVec2.zero;
+        }
+
+        private void CalculateRopeClimb()
+        {
+            RopeJoint joint = _curClimbUnit as RopeJoint;
+            if (joint != null)
+            {
+                if (_input.GetKeyApplied(EInputType.Up))
+                {
+                    _curRopeProgress += 1f;
+                    if (joint.JointIndex == 0 && _curRopeProgress > 0)
+                    {
+                        _curRopeProgress = 0;
+                    }
+                }
+                else if (_input.GetKeyApplied(EInputType.Down))
+                {
+                    _curRopeProgress -= 1f;
+                    if (joint.NextJoint == null && _curRopeProgress < 0)
+                    {
+                        _curRopeProgress = 0;
+                    }
+                }
+
+                IntVec2 delta = IntVec2.zero;
+                if (_curRopeProgress >= 1)
+                {
+                    if (joint.JointIndex != 0)
+                    {
+                        joint.PlayerLeave(this);
+                        _curClimbUnit = joint.PreJoint;
+                    }
+
+                    _curRopeProgress = 0;
+                }
+                else if (_curRopeProgress > 0)
+                {
+                    delta = joint.GetNeighborRelativePos(true);
+                }
+                else if (_curRopeProgress <= -1)
+                {
+                    if (joint.NextJoint != null)
+                    {
+                        joint.PlayerLeave(this);
+                        _curClimbUnit = joint.NextJoint;
+                    }
+
+                    _curRopeProgress = 0;
+                }
+                else if (_curRopeProgress < 0)
+                {
+                    delta = -1 * joint.GetNeighborRelativePos(false);
+                }
+
+                joint = _curClimbUnit as RopeJoint;
+                if (joint != null)
+                {
+                    joint.CarryPlayer(this);
+                }
+
+                if (_moveDirection == EMoveDirection.Left)
+                {
+                    _ropeOffset = IntVec2.right * 150;
+                }
+                else
+                {
+                    _ropeOffset = IntVec2.left * 150;
+                }
+
+                Speed = _curClimbUnit.CenterPos + _ropeOffset - CenterPos + delta * _curRopeProgress;
+            }
         }
 
         public override void UpdateView(float deltaTime)
         {
             if (_eClimbState == EClimbState.Rope)
             {
-                RopeJoint joint = _curClimbUnit as RopeJoint;
-                if (joint != null)
-                {
-                    if (_input.GetKeyApplied(EInputType.Up))
-                    {
-                        _curRopeProgress += 1f;
-                    }
-                    else if (_input.GetKeyApplied(EInputType.Down))
-                    {
-                        _curRopeProgress -= 1f;
-                        if (joint.NextJoint == null && _curRopeProgress < 0)
-                        {
-                            _curRopeProgress = 0;
-                        }
-                    }
-
-                    IntVec2 delta = IntVec2.zero;
-                    if (_curRopeProgress >= 1)
-                    {
-                        if (joint.JointIndex != 0)
-                        {
-                            _curClimbUnit = joint.PreJoint;
-                        }
-
-                        _curRopeProgress = 0;
-                    }
-                    else if (_curRopeProgress > 0)
-                    {
-                        delta = joint.GetNeighborRelativePos(true);
-                    }
-                    else if (_curRopeProgress <= -1)
-                    {
-                        if (joint.NextJoint != null)
-                        {
-                            _curClimbUnit = joint.NextJoint;
-                        }
-
-                        _curRopeProgress = 0;
-                    }
-                    else if (_curRopeProgress < 0)
-                    {
-                        delta = -1 * joint.GetNeighborRelativePos(false);
-                    }
-
-                    joint = _curClimbUnit as RopeJoint;
-                    if (joint != null)
-                    {
-                        joint.CarryPlayer();
-                    }
-
-                    if (_moveDirection == EMoveDirection.Left)
-                    {
-                        _ropeOffset = IntVec2.right * 150;
-                    }
-                    else
-                    {
-                        _ropeOffset = IntVec2.left * 150;
-                    }
-
-                    Speed = _curClimbUnit.CenterPos + _ropeOffset - CenterPos + delta * _curRopeProgress;
-                }
+                CalculateRopeClimb();
             }
 
             base.UpdateView(deltaTime);
@@ -1288,6 +1327,7 @@ namespace GameA.Game
             {
                 SetClimbState(EClimbState.None);
             }
+
             _jumpState = EJumpState.Land;
         }
 
@@ -1304,6 +1344,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -1313,6 +1354,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -1322,6 +1364,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -1331,6 +1374,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
     }

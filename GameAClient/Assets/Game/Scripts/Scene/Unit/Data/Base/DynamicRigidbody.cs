@@ -775,10 +775,6 @@ namespace GameA.Game
                 }
 
                 UpdateTransPos();
-                if (GameRun.Instance.LogicFrameCnt == 859)
-                {
-                    Debug.Log("1");
-                }
                 if (GameModeBase.DebugEnable())
                 {
                     GameModeBase.WriteDebugData(string.Format("Type = {3}, Guid = X: {0} Y:{1},  _trans.position = {2} ", Guid.x, Guid.y,

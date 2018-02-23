@@ -340,7 +340,7 @@ namespace GameA.Game
                             RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
                             if (ropeJoint != null)
                             {
-                                ropeJoint.JumpAwayRope(_moveDirection);
+                                ropeJoint.JumpAwayRope(this as PlayerBase);
                             }
                         }
                     }
