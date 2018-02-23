@@ -1074,10 +1074,14 @@ namespace GameA.Game
 
             foreach (var unit in _units.Values)
             {
-                if (unit.View != null && CheckCanDelete(unit.TableUnit))
+                if (CheckCanDelete(unit.TableUnit))
                 {
-                    DestroyView(unit);
-                    SetUnitInterest(unit, false);
+                    unit.OnSceneExit();
+                    if (unit.View != null)
+                    {
+                        DestroyView(unit);
+                        SetUnitInterest(unit, false);
+                    }
                 }
             }
         }

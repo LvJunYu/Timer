@@ -30,7 +30,7 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-            if (_exit)
+            if (_exit && _curUnitInx != IntVec3.zero)
             {
                 _time++;
                 if (_time > 100)
@@ -69,7 +69,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
             Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
             Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExitStart);
-            RegisterEvent(EMessengerType.OnSceneChange,
+            RegisterEvent(EMessengerType.OnSceneChanged,
                 () => SocialGUIManager.Instance.CloseUI<UICtrlBulletinBoardMessageShow>());
         }
 

@@ -138,7 +138,7 @@ namespace GameA
         public static int OnEditUnitDefaultDataChange = SoyEngine.EMessengerType.NextId++;
         public static int OnEditUnitDataChange = SoyEngine.EMessengerType.NextId++;
 
-        //切换场景时广播的事件
-        public static int OnSceneChange = SoyEngine.EMessengerType.NextId++;
+        //游戏时切换场景时广播的事件
+        public static int OnSceneChanged = SoyEngine.EMessengerType.NextId++;
     }
 }

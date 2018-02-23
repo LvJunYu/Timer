@@ -68,7 +68,7 @@ namespace GameA.Game
             UnitBase unit;
             SpacetimeDoor spacetimeDoor = null;
             //广播改变场景的时的函数
-            Messenger.Broadcast(EMessengerType.OnSceneChange);
+            Messenger.Broadcast(EMessengerType.OnSceneChanged);
             SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
             CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
             {

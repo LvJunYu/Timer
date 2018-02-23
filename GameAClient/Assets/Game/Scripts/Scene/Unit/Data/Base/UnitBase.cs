@@ -1946,5 +1946,9 @@ namespace GameA.Game
         {
             return true;
         }
+
+        public virtual void OnSceneExit()
+        {
+        }
     }
 }
