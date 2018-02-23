@@ -20,7 +20,6 @@ namespace GameA.Game
         private int _jumpAwayTimer;
         private IntVec2 _jumpDir;
         private IntVec2 _jumpAwayDir;
-        private PlayerBase _curCarryPlayer;
 
         public UnitBase PreJoint
         {
@@ -71,6 +70,11 @@ namespace GameA.Game
 //            {
 //                SpeedX = Util.ConstantLerp(SpeedX, 0, airPower);
 //            }
+            if (_hitTimer > 0)
+            {
+                CheckHitSpeed();
+                _hitTimer--;
+            }
 
             //跳上绳子时的冲力
             if (_jumpOnTimer > 0)
@@ -127,6 +131,24 @@ namespace GameA.Game
                 if (_nextJoint != null)
                 {
                     _nextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
+        private void CheckHitSpeed()
+        {
+            if (_hitDir.x < 0)
+            {
+                if (SpeedX < 0)
+                {
+                    SpeedX = 0;
+                }
+            }
+            else
+            {
+                if (SpeedX > 0)
+                {
+                    SpeedX = 0;
                 }
             }
         }
@@ -229,6 +251,7 @@ namespace GameA.Game
         {
             base.Clear();
             _preJoint = _nextJoint = null;
+            _hitTimer = _jumpOnTimer = _jumpAwayTimer = 0;
         }
 
         public bool CheckDis(ref IntVec2 from, ref IntVec2 target, bool changeTarget = true)
@@ -262,7 +285,7 @@ namespace GameA.Game
 
         public void AddForce(IntVec2 force)
         {
-            _wholeRope.AddForce(force, _jointIndex);
+            _speed += force;
         }
 
         public void JumpOnRope(PlayerBase player)
@@ -295,20 +318,29 @@ namespace GameA.Game
 
         public void CarryPlayer(PlayerBase player)
         {
-            _curCarryPlayer = player;
         }
 
         public void PlayerLeave(PlayerBase player)
         {
-            if (_curCarryPlayer == player)
-            {
-                _curCarryPlayer = null;
-            }
         }
 
         public int GetTimer(PlayerBase player)
         {
             return _wholeRope.GetTimer(player.RoomUser.Guid);
+        }
+
+        private int _hitTimer;
+        private IntVec2 _hitDir;
+
+        public void OnPlayerHit(IntVec2 hitDir, bool broadcast = false)
+        {
+            if (broadcast)
+            {
+                _wholeRope.OnPlayerHit(hitDir);
+            }
+
+            _hitTimer = 10;
+            _hitDir = hitDir;
         }
     }
 }

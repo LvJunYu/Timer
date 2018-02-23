@@ -1315,9 +1315,21 @@ namespace GameA.Game
             if (_eClimbState == EClimbState.Rope)
             {
                 CalculateRopeClimb();
+                var expextPos = _curPos + _speed;
+                base.UpdateView(deltaTime);
+                if (expextPos.x != _curPos.x)
+                {
+                    RopeJoint joint = _curClimbUnit as RopeJoint;
+                    if (joint != null)
+                    {
+                        joint.OnPlayerHit(expextPos - _curPos, true);
+                    }
+                }
             }
-
-            base.UpdateView(deltaTime);
+            else
+            {
+                base.UpdateView(deltaTime);
+            }
         }
 
         protected override void ClearRunTime()

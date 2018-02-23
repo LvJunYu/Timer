@@ -7,11 +7,10 @@ namespace GameA.Game
 {
     public class WholeRope
     {
+        private const int DropCD = 20;
         private List<RopeJoint> _joints = new List<RopeJoint>(Rope.JointCount);
-        private int _addForceTimer;
         private int _carryPlayerCount;
         private Dictionary<long, int> _timerDic = new Dictionary<long, int>();
-        private const int DropCD = 20;
 
         public bool IsInterest
         {
@@ -147,20 +146,6 @@ namespace GameA.Game
             }
         }
 
-        public void AddForce(IntVec2 force, int jointIndex)
-        {
-            if (jointIndex < _joints.Count)
-            {
-                _addForceTimer = GameRun.Instance.LogicFrameCnt;
-                _joints[jointIndex].Speed += force;
-            }
-        }
-
-        public bool JustAddForce(int ropeIndex)
-        {
-            return GameRun.Instance.LogicFrameCnt - _addForceTimer < 10;
-        }
-
         public void OnPlayerClimbRope(bool value, PlayerBase player)
         {
             if (value)
@@ -192,6 +177,19 @@ namespace GameA.Game
         public void Clear()
         {
             _joints.Clear();
+        }
+
+        public void OnPlayerHit(IntVec2 hitDir)
+        {
+            var count = _joints.Count;
+            for (int i = 0; i < count; i++)
+            {
+                _joints[i].Speed = IntVec2.zero;
+                if (i == count - 1)
+                {
+                    _joints[i].OnPlayerHit(hitDir);
+                }
+            }
         }
     }
 
