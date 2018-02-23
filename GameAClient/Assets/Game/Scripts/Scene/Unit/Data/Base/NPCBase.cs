@@ -227,9 +227,10 @@ namespace GameA.Game
             if (_stateBar != null)
             {
                 _stateBar.SetReady();
-                _oldState = null;
-                _nowState = SetReady;
             }
+
+            _oldState = null;
+            _nowState = SetReady;
         }
 
         public void SetInTask()
@@ -237,9 +238,10 @@ namespace GameA.Game
             if (_stateBar != null)
             {
                 _stateBar.SetInTask();
-                _oldState = null;
-                _nowState = SetInTask;
             }
+
+            _oldState = null;
+            _nowState = SetInTask;
         }
 
         public void SetFinishTask()
@@ -247,9 +249,10 @@ namespace GameA.Game
             if (_stateBar != null)
             {
                 _stateBar.AllTaskFinish();
-                _oldState = null;
-                _nowState = SetFinishTask;
             }
+
+            _oldState = null;
+            _nowState = SetFinishTask;
         }
 
         public void SetNpcNum()
@@ -274,9 +277,10 @@ namespace GameA.Game
             if (_stateBar != null)
             {
                 _stateBar.SetNoShow();
-                _oldState = null;
-                _nowState = SetNoShow;
             }
+
+            _oldState = null;
+            _nowState = SetNoShow;
         }
 
         public void SetNpcName()
@@ -297,12 +301,15 @@ namespace GameA.Game
                     {
                         _nowState.Invoke();
                     }
+
                     Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.JudegeBeforeTask();
 //                    RpgTaskManger.Instance.JudegeBeforeTask();
                     return true;
                 }
+
                 return false;
             }
+
             return base.InstantiateView();
         }
 
