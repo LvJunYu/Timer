@@ -164,7 +164,6 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-            ReYunManager.Instance.Login();
 //            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
@@ -210,6 +209,7 @@ namespace GameA
                 {
                     ReYunManager.Instance.Register();
                 }
+                ReYunManager.Instance.Login();
                 RoomManager.Instance.Init();
             }, code =>
             {

@@ -109,6 +109,7 @@ namespace GameA
 
         public void Update()
         {
+            if (!_hasInited) return;
             if (Time.realtimeSinceStartup - _lastHeartbeatTime > _heartbeatInterval)
             {
                 Heartbeat();
