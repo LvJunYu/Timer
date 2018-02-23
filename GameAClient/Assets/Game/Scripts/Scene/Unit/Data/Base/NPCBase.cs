@@ -19,6 +19,7 @@ namespace GameA.Game
         private NpcStateBar _stateBar;
         private Action _oldState;
         private bool _isNoShow;
+        private Vector2 _distance;
 
         public Action OldState
         {
@@ -93,6 +94,7 @@ namespace GameA.Game
                     _unit = null;
                 }
             }
+
             SetDia();
         }
 
@@ -104,6 +106,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 if (GetUnitExtra().NpcDialog.Length == 0)
                 {
                     return;
@@ -118,6 +121,7 @@ namespace GameA.Game
                             _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
                                 .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
                         }
+
                         _diaPop.Show();
                         SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
@@ -141,6 +145,7 @@ namespace GameA.Game
                             _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
                                 .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
                         }
+
                         _diaPop.Show();
                         SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
@@ -167,10 +172,12 @@ namespace GameA.Game
             {
                 UMPoolManager.Instance.Free(_diaPop);
             }
+
             if (_stateBar != null)
             {
                 SetNpcNum();
             }
+
             _trigger = false;
             _diaPop = null;
             _showIntervalTime = 0;
@@ -189,9 +196,11 @@ namespace GameA.Game
             }
         }
 
+
         private bool CheckPlayerPos()
         {
-            float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
+            _distance = PlayerManager.Instance.MainPlayer.Trans.position - _trans.position;
+            float x = _distance.magnitude;
             return x <= _closeDis;
         }
 
@@ -319,6 +328,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             GameObject statusBarObj =
                 Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "NpcSerNumber")) as
                     GameObject;
@@ -346,10 +356,12 @@ namespace GameA.Game
                 Object.Destroy(_stateBar.gameObject);
                 _stateBar = null;
             }
+
             if (_diaPop != null)
             {
                 _diaPop.Hide();
             }
+
             base.OnObjectDestroy();
         }
 
