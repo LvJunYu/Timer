@@ -18,13 +18,14 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new InfoNotificationManager()); }
         }
 
-        private static int RequestInterval = 300;
+        private static int RequestInterval = 60;
         private float _lastRequestTime;
         private bool _inGame;
         private bool _hasInited;
         private NotificationPushStatistic _notificationPushStatistic = new NotificationPushStatistic();
         private NotificationPushData _notificationPushData = new NotificationPushData();
         private UICtrlInfoNotificationRaw _uiCtrlInfoNotificationRaw;
+        private List<NotificationPushStatisticItem> _notificationDataCache;
 
         public static int MaskAll
         {
@@ -38,6 +39,11 @@ namespace GameA.Game
                        1 << (int) ENotificationDataType.NDT_UserMessageBoard |
                        1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
             }
+        }
+
+        public List<NotificationPushStatisticItem> NotificationDataCache
+        {
+            get { return _notificationDataCache; }
         }
 
         public void RequestData()
@@ -63,10 +69,10 @@ namespace GameA.Game
 
                 //查看通知消息
                 var infoNotificaitonNew = false;
-                var notificationData = _notificationPushStatistic.NotificationStatisticList;
-                for (int i = 0; i < notificationData.Count; i++)
+                _notificationDataCache = _notificationPushStatistic.NotificationStatisticList;
+                for (int i = 0; i < _notificationDataCache.Count; i++)
                 {
-                    if (CheckInfoValid(notificationData[i]))
+                    if (CheckInfoValid(_notificationDataCache[i]))
                     {
                         infoNotificaitonNew = true;
                         break;
@@ -106,6 +112,7 @@ namespace GameA.Game
             {
                 RequestInterval = 10;
             }
+
             Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             Messenger.AddListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
             _hasInited = true;
@@ -199,19 +206,41 @@ namespace GameA.Game
             {
                 return 1 << (int) ENotificationDataType.NDT_Follower |
                        1 << (int) ENotificationDataType.NDT_UserMessageBoard |
-                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
+                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply |
+                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply;
             }
 
             if (menu == UICtrlInfoNotification.EMenu.MyProject)
             {
                 return 1 << (int) ENotificationDataType.NDT_ProjectDownload |
                        1 << (int) ENotificationDataType.NDT_ProjectFavorite |
-                       1 << (int) ENotificationDataType.NDT_ProjectComment |
-                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply;
+                       1 << (int) ENotificationDataType.NDT_ProjectComment;
             }
 
             LogHelper.Error("GetMask fail, menu = {0}", menu);
             return 0;
+        }
+
+        public static UICtrlInfoNotification.EMenu CheckMenu(NotificationPushStatisticItem data)
+        {
+            if (data == null || data.Count == 0)
+            {
+                return UICtrlInfoNotification.EMenu.None;
+            }
+            switch (data.Type)
+            {
+                case ENotificationDataType.NDT_Follower:
+                case ENotificationDataType.NDT_UserMessageBoard:
+                case ENotificationDataType.NDT_UserMessageBoardReply:
+                case ENotificationDataType.NDT_ProjectCommentReply:
+                    return UICtrlInfoNotification.EMenu.Basic;
+                case ENotificationDataType.NDT_ProjectComment:
+                case ENotificationDataType.NDT_ProjectFavorite:
+                case ENotificationDataType.NDT_ProjectDownload:
+                    return UICtrlInfoNotification.EMenu.MyProject;
+            }
+
+            return UICtrlInfoNotification.EMenu.None;
         }
 
         public static bool IsStatisticsType(ENotificationDataType dataType)
@@ -226,10 +255,10 @@ namespace GameA.Game
         private const string FollowFormat = "{0}个人关注了你";
         private const string UserMessageBoardFormat = "你有{0}条新留言";
         private const string UserMessageBoardReplyFormat = "<color=#F4A251>{0}</color>的回复：";
-        private const string ProjectCommentFormat = "{0}个人评论了你的<color=#5E96B7>{1}</color>关卡";
-        private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复：";
+        private const string ProjectCommentFormat = "你的<color=#5E96B7>{1}</color>关卡收到{0}条新的评论";
+        private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复你：";
         private const string ProjectFavoriteFormat = "{0}个人收藏了你的<color=#5E96B7>{1}</color>关卡";
-        private const string ProjectDownloadFormat = "{0}个人下载了你的<color=#5E96B7>{1}</color>关卡";
+        private const string ProjectDownloadFormat = "你的<color=#5E96B7>{1}</color>关卡被下载了{0}次";
 
         public static string GetContentTxt(NotificationDataItem data)
         {

@@ -10,6 +10,7 @@ namespace GameA
         private const float _speed = 70;
         private bool _isShow;
         private float _width;
+        private float _timer;
 
         public bool IsShow
         {
@@ -24,6 +25,8 @@ namespace GameA
                        _cachedView.rectTransform().rect.width;
             }
         }
+
+        public bool IsLast { get; set; }
 
         protected override void OnViewCreated()
         {
@@ -52,11 +55,22 @@ namespace GameA
                 string.Format(InfoNotificationManager.GetPushInfoFormat(pushData.Type), _data.Sender.NickName);
             Canvas.ForceUpdateCanvases();
             _width = _cachedView.rectTransform().rect.width;
+            _timer = 0;
         }
 
         public void OnUpdate()
         {
             if (!IsShow) return;
+            //最后一条停留5秒
+            if (IsLast && _timer < 5)
+            {
+                if (_cachedView.rectTransform().anchoredPosition.x < -UICtrlInfoNotificationRaw.BgWidth + 10)
+                {
+                    _timer += Time.deltaTime;
+                    return;
+                }
+            }
+
             if (_cachedView.rectTransform().anchoredPosition.x < -UICtrlInfoNotificationRaw.BgWidth - _width)
             {
                 SetDisplay(false);

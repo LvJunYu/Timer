@@ -96,14 +96,16 @@ namespace GameA
 
             for (int i = 0; i < pushDatas.Count; i++)
             {
-                float x = 0;
+                float curMaxX = 0;
                 if (_lastUm != null && _lastUm.IsShow)
                 {
-                    x = Mathf.Max(0, _lastUm.RightPosX + _disInterval);
+                    _lastUm.IsLast = false;
+                    curMaxX = Mathf.Max(0, _lastUm.RightPosX + _disInterval);
                 }
                 var item = GetUMCtrlInfoNotificationText();
-                item.Set(pushDatas[i], new Vector2(x, 0));
+                item.Set(pushDatas[i], new Vector2(curMaxX, 0));
                 _lastUm = item;
+                _lastUm.IsLast = true;
             }
         }
 

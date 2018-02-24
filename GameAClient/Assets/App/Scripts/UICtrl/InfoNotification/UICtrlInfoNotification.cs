@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using GameA.Game;
+using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA
@@ -21,7 +22,7 @@ namespace GameA
             _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
             _cachedView.MaskBtn.onClick.AddListener(OnCancelBtn);
             _menuCtrlArray = new UPCtrlInfoNotificationBase[(int) EMenu.Max];
-            
+
             var upCtrlInfoNotificationBasic = new UPCtrlInfoNotificationBasic();
             upCtrlInfoNotificationBasic.Set(ResScenary);
             upCtrlInfoNotificationBasic.SetMenu(EMenu.Basic);
@@ -39,7 +40,7 @@ namespace GameA
             upCtrlInfoNotificationMyProject.SetMenu(EMenu.MyProject);
             upCtrlInfoNotificationMyProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.MyProject] = upCtrlInfoNotificationMyProject;
-            
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
@@ -57,13 +58,52 @@ namespace GameA
             base.OnOpen(parameter);
             SocialGUIManager.Instance.CloseUI<UICtrlInfoNotificationRaw>();
             SetReplyPannel(false);
+            RefreshReds();
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.Basic, true);
+                _curMenu = EMenu.Basic;
             }
-            else
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
             {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+                if (_menuCtrlArray[i] != _curMenuCtrl)
+                {
+                    _menuCtrlArray[i].RequestData();
+                } 
+            }
+        }
+
+        public void RefreshReds()
+        {
+            var cache = InfoNotificationManager.Instance.NotificationDataCache;
+            var basicHasNew = false;
+            var projectHasNew = false;
+            if (cache != null)
+            {
+                for (int i = 0; i < cache.Count; i++)
+                {
+                    var menu = InfoNotificationManager.CheckMenu(cache[i]);
+                    if (menu == EMenu.Basic)
+                    {
+                        basicHasNew = true;
+                    }
+                    else if (menu == EMenu.MyProject)
+                    {
+                        projectHasNew = true;
+                    }
+                }
+            }
+
+            _cachedView.RedAry[(int) EMenu.Basic].SetActive(basicHasNew);
+            _cachedView.RedAry[(int) EMenu.MyProject].SetActive(projectHasNew);
+            if (basicHasNew)
+            {
+                _curMenu = EMenu.Basic;
+            }
+            else if (projectHasNew)
+            {
+                _curMenu = EMenu.MyProject;
             }
         }
 
@@ -73,6 +113,7 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             SocialGUIManager.Instance.OpenUI<UICtrlInfoNotificationRaw>();
             base.OnClose();
         }
@@ -86,6 +127,7 @@ namespace GameA
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -117,6 +159,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curReplyData != null)
             {
                 if (_curReplyData.Type == ENotificationDataType.NDT_ProjectCommentReply)
@@ -137,6 +180,7 @@ namespace GameA
             {
                 _curMenuCtrl.OnMarkRead(_curReplyData);
             }
+
             SetReplyPannel(false);
         }
 
@@ -156,12 +200,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -192,7 +238,7 @@ namespace GameA
                 _cachedView.ReplyInputField.text = string.Empty;
             }
         }
-        
+
         public enum EMenu
         {
             None = -1,

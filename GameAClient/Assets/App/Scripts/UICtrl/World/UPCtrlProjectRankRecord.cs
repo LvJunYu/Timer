@@ -123,6 +123,12 @@ namespace GameA
             }
         }
 
+        public override void OnChangeToApp()
+        {
+            _cachedView.RankGridDataScroller.ContentPosition = Vector2.zero;
+            RequestData();
+        }
+
         public override void Clear()
         {
             _dataList = null;

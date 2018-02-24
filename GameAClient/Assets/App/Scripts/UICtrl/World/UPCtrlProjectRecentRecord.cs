@@ -163,5 +163,11 @@ namespace GameA
             _contentList.Clear();
             _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
         }
+
+        public override void OnChangeToApp()
+        {
+            _cachedView.RecentGridDataScroller.ContentPosition = Vector2.zero;
+            RequestData();
+        }
     }
 }

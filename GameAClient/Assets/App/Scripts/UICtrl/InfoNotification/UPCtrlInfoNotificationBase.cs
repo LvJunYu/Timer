@@ -37,10 +37,10 @@ namespace GameA
         public override void OnDestroy()
         {
             base.OnDestroy();
-            _dataList = null;
+            _dataList.Clear();
         }
 
-        protected virtual void RequestData(bool append = false)
+        public virtual void RequestData(bool append = false)
         {
             int startIndex = 0;
             if (append)
@@ -62,6 +62,10 @@ namespace GameA
 
                 _dataList.AddRange(_notificationData.DataList);
                 _isEnd = _notificationData.DataList.Count < MaxCount;
+                if (_mainCtrl.IsViewCreated)
+                {
+                    _cachedView.RedAry[(int) _menu].SetActive(_dataList.Count > 0);
+                }
                 if (_isOpen)
                 {
                     RefreshView();
@@ -72,18 +76,10 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
-            if (_dataList == null)
-            {
-                _cachedView.TableDataScrollers[(int) _menu].SetEmpty();
-                _cachedView.EmptyObj.SetActive(true);
-                _cachedView.ClearBtn.SetActiveEx(false);
-            }
-            else
-            {
-                _cachedView.ClearBtn.SetActiveEx(_dataList.Count != 0);
-                _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
-                _cachedView.TableDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
-            }
+            _cachedView.ClearBtn.SetActiveEx(_dataList.Count > 0);
+            _cachedView.RedAry[(int) _menu].SetActive(_dataList.Count > 0);
+            _cachedView.EmptyObj.SetActive(_dataList.Count == 0);
+            _cachedView.TableDataScrollers[(int) _menu].SetItemCount(_dataList.Count);
         }
 
         protected void OnItemRefresh(IDataItemRenderer item, int inx)
