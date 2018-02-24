@@ -21,6 +21,7 @@ namespace GameA.Game
         private const int RequestInterval = 300;
         private float _lastRequestTime;
         private bool _inGame;
+        private bool _hasInited;
         private NotificationPushStatistic _notificationPushStatistic = new NotificationPushStatistic();
         private NotificationPushData _notificationPushData = new NotificationPushData();
         private UICtrlInfoNotificationRaw _uiCtrlInfoNotificationRaw;
@@ -37,12 +38,6 @@ namespace GameA.Game
                        1 << (int) ENotificationDataType.NDT_UserMessageBoard |
                        1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
             }
-        }
-
-        public InfoNotificationManager()
-        {
-            Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
-            Messenger.AddListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
         }
 
         public void RequestData()
@@ -105,12 +100,20 @@ namespace GameA.Game
             return info.Type != ENotificationDataType.NDT_None && info.Count > 0;
         }
 
+        public void Init()
+        {
+            Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            Messenger.AddListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
+            _hasInited = true;
+        }
+
         public void Update()
         {
-            if (_inGame)
+            if (!_hasInited || _inGame)
             {
                 return;
             }
+
             if (Time.time - _lastRequestTime > RequestInterval)
             {
                 RequestData();

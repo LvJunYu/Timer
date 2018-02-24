@@ -210,6 +210,7 @@ namespace GameA
                 }
                 ReYunManager.Instance.Login();
                 RoomManager.Instance.Init();
+                InfoNotificationManager.Instance.Init();
             }, code =>
             {
                 if (GlobalVar.Instance.Env != EEnvironment.Production)
@@ -314,7 +315,6 @@ namespace GameA
             base.Update();
             InputManager.Instance.Update();
             GameManager.Instance.Update();
-//            CompassManager.Instance.Update();
             ReYunManager.Instance.Update();
             RoomManager.Instance.Update();
             InfoNotificationManager.Instance.Update();
