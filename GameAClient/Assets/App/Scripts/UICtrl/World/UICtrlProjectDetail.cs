@@ -117,11 +117,6 @@ namespace GameA
                 return;
             }
 
-//            if (!CheckProjectValid())
-//            {
-//                return;
-//            }
-
             _isMyself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _isMulti = _project.IsMulti;
             _project.Request(_project.ProjectId, null, null);
@@ -636,6 +631,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Comment)
             {
+                _project.Request(_project.ProjectId, null, null);
                 ((UPCtrlProjectComment) _curMenuCtrl).OnDeleteUserMessage(comment);
             }
         }

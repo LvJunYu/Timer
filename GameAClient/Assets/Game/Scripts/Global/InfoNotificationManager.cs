@@ -18,7 +18,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new InfoNotificationManager()); }
         }
 
-        private const int RequestInterval = 10;
+        private static int RequestInterval = 300;
         private float _lastRequestTime;
         private bool _inGame;
         private bool _hasInited;
@@ -102,6 +102,10 @@ namespace GameA.Game
 
         public void Init()
         {
+            if (GlobalVar.Instance.Env != EEnvironment.Production)
+            {
+                RequestInterval = 10;
+            }
             Messenger.AddListener(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             Messenger.AddListener(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
             _hasInited = true;
@@ -220,12 +224,12 @@ namespace GameA.Game
         }
 
         private const string FollowFormat = "{0}个人关注了你";
-        private const string UserMessageBoardFormat = "{0}个人给你留言了";
+        private const string UserMessageBoardFormat = "你有{0}条新留言";
         private const string UserMessageBoardReplyFormat = "<color=#F4A251>{0}</color>的回复：";
-        private const string ProjectCommentFormat = "{0}个人评论了你的关卡{1}";
+        private const string ProjectCommentFormat = "{0}个人评论了你的<color=#5E96B7>{1}</color>关卡";
         private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复：";
-        private const string ProjectFavoriteFormat = "{0}个人收藏了你的关卡";
-        private const string ProjectDownloadFormat = "{0}个人下载了你的关卡";
+        private const string ProjectFavoriteFormat = "{0}个人收藏了你的<color=#5E96B7>{1}</color>关卡";
+        private const string ProjectDownloadFormat = "{0}个人下载了你的<color=#5E96B7>{1}</color>关卡";
 
         public static string GetContentTxt(NotificationDataItem data)
         {
@@ -242,9 +246,9 @@ namespace GameA.Game
                 case ENotificationDataType.NDT_ProjectCommentReply:
                     return string.Format(ProjectCommentReplyFormat, data.Sender.NickName, data.ProjectData.Name);
                 case ENotificationDataType.NDT_ProjectFavorite:
-                    return string.Format(ProjectFavoriteFormat, data.Count);
+                    return string.Format(ProjectFavoriteFormat, data.Count, data.ProjectData.Name);
                 case ENotificationDataType.NDT_ProjectDownload:
-                    return string.Format(ProjectDownloadFormat, data.Count);
+                    return string.Format(ProjectDownloadFormat, data.Count, data.ProjectData.Name);
             }
 
             LogHelper.Error("GetContentTxt fail");

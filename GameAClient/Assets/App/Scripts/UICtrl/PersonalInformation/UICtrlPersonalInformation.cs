@@ -124,6 +124,7 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
                 return;
             }
+
             _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshView, null);
             _cachedView.MessageNum.SetActiveEx(false);
             _cachedView.MessageSelectedNum.SetActiveEx(false);
@@ -172,6 +173,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu == EMenu.MessageBoard)
             {
                 ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnReplyMessage(messageId, reply);
@@ -321,9 +323,13 @@ namespace GameA
 
         private void OnDeleteUserMessage(UserMessage message)
         {
-            if (_isOpen && _curMenu == EMenu.MessageBoard)
+            if (_isOpen)
             {
-                ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnDeleteUserMessage(message);
+                _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshView, null);
+                if (_curMenu == EMenu.MessageBoard)
+                {
+                    ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnDeleteUserMessage(message);
+                }
             }
         }
 
