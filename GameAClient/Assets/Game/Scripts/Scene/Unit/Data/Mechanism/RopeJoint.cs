@@ -70,11 +70,6 @@ namespace GameA.Game
 //            {
 //                SpeedX = Util.ConstantLerp(SpeedX, 0, airPower);
 //            }
-            if (_hitTimer > 0)
-            {
-                CheckHitSpeed();
-                _hitTimer--;
-            }
 
             //跳上绳子时的冲力
             if (_jumpOnTimer > 0)
@@ -135,37 +130,13 @@ namespace GameA.Game
             }
         }
 
-        private void CheckHitSpeed()
-        {
-            if (_hitDir.x < 0)
-            {
-                if (SpeedX < 0)
-                {
-                    SpeedX = 0;
-                }
-            }
-            else
-            {
-                if (SpeedX > 0)
-                {
-                    SpeedX = 0;
-                }
-            }
-        }
-
         public override void UpdateView(float deltaTime)
         {
             _deltaPos = _speed;
             _curPos += _deltaPos;
-//            _expectPos = _curPos;
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
-            //如果发生碰撞导致预期位置变化，则调整后面关节的速度
-//            if (_expectPos != _curPos && _nextJoint != null)
-//            {
-//                _nextJoint.FixSpeedFromPre(true);
-//            }
 
             var relativePrePos = GetNeighborRelativePos(true);
             var angel = Mathf.Rad2Deg * Mathf.Atan2(relativePrePos.y, relativePrePos.x) - 90;
@@ -185,11 +156,10 @@ namespace GameA.Game
             return base.GetZ();
         }
 
-        public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
+        public void Set(Rope rope, int jointIndex)
         {
             _rope = rope;
             _jointIndex = jointIndex;
-//            _oriPos = oriPos;
         }
 
         public void Set(WholeRope wholeRope)
@@ -251,7 +221,7 @@ namespace GameA.Game
         {
             base.Clear();
             _preJoint = _nextJoint = null;
-            _hitTimer = _jumpOnTimer = _jumpAwayTimer = 0;
+            _jumpOnTimer = _jumpAwayTimer = 0;
         }
 
         public bool CheckDis(ref IntVec2 from, ref IntVec2 target, bool changeTarget = true)
@@ -329,18 +299,12 @@ namespace GameA.Game
             return _wholeRope.GetTimer(player.RoomUser.Guid);
         }
 
-        private int _hitTimer;
-        private IntVec2 _hitDir;
-
         public void OnPlayerHit(IntVec2 hitDir, bool broadcast = false)
         {
             if (broadcast)
             {
-                _wholeRope.OnPlayerHit(hitDir);
+                _wholeRope.OnPlayerHit();
             }
-
-            _hitTimer = 10;
-            _hitDir = hitDir;
         }
     }
 }

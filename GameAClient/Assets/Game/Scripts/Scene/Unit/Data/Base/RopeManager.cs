@@ -179,16 +179,11 @@ namespace GameA.Game
             _joints.Clear();
         }
 
-        public void OnPlayerHit(IntVec2 hitDir)
+        public void OnPlayerHit()
         {
-            var count = _joints.Count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < _joints.Count; i++)
             {
                 _joints[i].Speed = IntVec2.zero;
-                if (i == count - 1)
-                {
-                    _joints[i].OnPlayerHit(hitDir);
-                }
             }
         }
     }
