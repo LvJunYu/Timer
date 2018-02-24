@@ -1,5 +1,4 @@
-﻿
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
 
 namespace GameA
@@ -20,6 +19,7 @@ namespace GameA
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.ClearBtn.onClick.AddListener(OnClearBtn);
             _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.MaskBtn.onClick.AddListener(OnCancelBtn);
             _menuCtrlArray = new UPCtrlInfoNotificationBase[(int) EMenu.Max];
             
             var upCtrlInfoNotificationBasic = new UPCtrlInfoNotificationBasic();
@@ -99,7 +99,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Purchase;
+            _groupId = (int) EUIGroupType.Notification;
         }
 
         private void OnClearBtn()

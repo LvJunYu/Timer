@@ -11,7 +11,8 @@ namespace GameA.Game
         private List<RopeJoint> _joints = new List<RopeJoint>(Rope.JointCount);
         private int _carryPlayerCount;
         private Dictionary<long, int> _timerDic = new Dictionary<long, int>();
-
+        private bool _isInterest;
+        
         public bool IsInterest
         {
             get
@@ -107,7 +108,8 @@ namespace GameA.Game
 
         public void UpdateLogic()
         {
-            if (!IsInterest)
+            CalculateInterest();
+            if (!_isInterest)
             {
                 return;
             }
@@ -127,9 +129,9 @@ namespace GameA.Game
             }
         }
 
-        public void UpdateView(float deltaTime)
+        public void CalculateSpeed()
         {
-            if (!IsInterest)
+            if (!_isInterest)
             {
                 return;
             }
@@ -137,7 +139,15 @@ namespace GameA.Game
             //从后往前传递
             for (int i = _joints.Count - 1; i >= 0; i--)
             {
-                _joints[i].CheckPreJointPos();
+                _joints[i].CalculateSpeed();
+            }
+        }
+
+        public void UpdateView(float deltaTime)
+        {
+            if (!_isInterest)
+            {
+                return;
             }
 
             for (int i = 0; i < _joints.Count; i++)
@@ -181,10 +191,29 @@ namespace GameA.Game
 
         public void OnPlayerHit()
         {
+            var basicSpeed = IntVec2.zero;
             for (int i = 0; i < _joints.Count; i++)
             {
-                _joints[i].Speed = IntVec2.zero;
+                if (i == 0)
+                {
+                    basicSpeed = _joints[0].Speed;
+                }
+
+                _joints[i].Speed = basicSpeed;
             }
+        }
+
+        private void CalculateInterest()
+        {
+            for (int i = 0; i < _joints.Count; i++)
+            {
+                if (_joints[i] == null || !_joints[i].IsInterest)
+                {
+                    _isInterest = false;
+                    return;
+                }
+            }
+            _isInterest = true;
         }
     }
 
@@ -327,6 +356,14 @@ namespace GameA.Game
             foreach (var ropeUnit in _ropes.Values)
             {
                 ropeUnit.UpdateLogic();
+            }
+        }
+
+        public void CalculateSpeed()
+        {
+            foreach (var ropeUnit in _ropes.Values)
+            {
+                ropeUnit.CalculateSpeed();
             }
         }
 

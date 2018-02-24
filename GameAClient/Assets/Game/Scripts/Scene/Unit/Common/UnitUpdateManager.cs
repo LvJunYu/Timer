@@ -137,6 +137,7 @@ namespace GameA.Game
             }
 
             //绳子单独控制
+            RopeManager.Instance.CalculateSpeed();
             RopeManager.Instance.UpdateView(deltaTime);
             for (int i = 0; i < playerList.Count; i++)
             {

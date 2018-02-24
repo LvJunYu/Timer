@@ -41,6 +41,7 @@ namespace GameA
         FrontUI,
 
         FrontUI2,
+        Notification,
 
         /// <summary>
         /// 游戏内UI

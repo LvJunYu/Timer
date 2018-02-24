@@ -20,7 +20,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpDialog;
+            _groupId = (int) EUIGroupType.Notification;
         }
 
         protected override void InitEventListener()

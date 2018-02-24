@@ -108,7 +108,7 @@ namespace GameA.Game
             }
         }
 
-        public void CheckPreJointPos()
+        public void CalculateSpeed()
         {
             if (_preJoint.Id == UnitDefine.RopeJointId)
             {
@@ -299,12 +299,9 @@ namespace GameA.Game
             return _wholeRope.GetTimer(player.RoomUser.Guid);
         }
 
-        public void OnPlayerHit(IntVec2 hitDir, bool broadcast = false)
+        public void OnPlayerHit()
         {
-            if (broadcast)
-            {
-                _wholeRope.OnPlayerHit();
-            }
+            _wholeRope.OnPlayerHit();
         }
     }
 }

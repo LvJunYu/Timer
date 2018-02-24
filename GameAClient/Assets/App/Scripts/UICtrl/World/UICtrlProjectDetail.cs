@@ -87,7 +87,7 @@ namespace GameA
             upCtrlProjectMultiDetail.SetMenu(EMenu.MultiDetail);
             upCtrlProjectMultiDetail.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.MultiDetail] = upCtrlProjectMultiDetail;
-            
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
@@ -233,6 +233,16 @@ namespace GameA
 //                _cachedView.RecentGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
 //        }
 
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+        }
+
         public bool CheckPlayed(string content)
         {
             if (_isMulti)
@@ -313,7 +323,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _collected = _project.ProjectUserData != null && _project.ProjectUserData.Favorite;
-            _cachedView.FavoriteTxt.text = _collected ? RelationCommonString.CollectedStr : RelationCommonString.CollectStr;
+            _cachedView.FavoriteTxt.text =
+                _collected ? RelationCommonString.CollectedStr : RelationCommonString.CollectStr;
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = _project.ProjectUserData != null &&
                                        _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
@@ -549,6 +560,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_isMulti)
             {
                 RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Specific, _project.ProjectId);
@@ -565,7 +577,7 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                }); 
+                });
             }
         }
 
@@ -685,6 +697,7 @@ namespace GameA
             {
                 _curMenuCtrl.Open();
             }
+
             _cachedView.DownDock.SetActive(_curMenu != EMenu.MultiDetail);
         }
 

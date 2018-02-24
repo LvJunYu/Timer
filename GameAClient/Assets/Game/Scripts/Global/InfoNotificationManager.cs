@@ -18,7 +18,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new InfoNotificationManager()); }
         }
 
-        private const int RequestInterval = 300;
+        private const int RequestInterval = 10;
         private float _lastRequestTime;
         private bool _inGame;
         private bool _hasInited;
@@ -194,16 +194,16 @@ namespace GameA.Game
             if (menu == UICtrlInfoNotification.EMenu.Basic)
             {
                 return 1 << (int) ENotificationDataType.NDT_Follower |
-                       1 << (int) ENotificationDataType.NDT_ProjectComment |
-                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply;
+                       1 << (int) ENotificationDataType.NDT_UserMessageBoard |
+                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
             }
 
             if (menu == UICtrlInfoNotification.EMenu.MyProject)
             {
                 return 1 << (int) ENotificationDataType.NDT_ProjectDownload |
                        1 << (int) ENotificationDataType.NDT_ProjectFavorite |
-                       1 << (int) ENotificationDataType.NDT_UserMessageBoard |
-                       1 << (int) ENotificationDataType.NDT_UserMessageBoardReply;
+                       1 << (int) ENotificationDataType.NDT_ProjectComment |
+                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply;
             }
 
             LogHelper.Error("GetMask fail, menu = {0}", menu);
@@ -299,16 +299,17 @@ namespace GameA.Game
                     SocialGUIManager.Instance.OpenUI<UICtrlSocialRelationship>(UICtrlSocialRelationship.EMenu.Fans);
                     break;
                 case ENotificationDataType.NDT_UserMessageBoard:
-                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User)
+                        .OpenMenu(UICtrlPersonalInformation.EMenu.MessageBoard);
                     break;
                 case ENotificationDataType.NDT_UserMessageBoardReply:
-                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(data.UserMessageReply.UserInfoDetail);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(data.UserMessageReply.UserInfoDetail)
+                        .OpenMenu(UICtrlPersonalInformation.EMenu.MessageBoard);
                     break;
                 case ENotificationDataType.NDT_ProjectComment:
-                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData);
-                    break;
                 case ENotificationDataType.NDT_ProjectCommentReply:
-                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData);
+                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData)
+                        .OpenMenu(UICtrlProjectDetail.EMenu.Comment);
                     break;
                 case ENotificationDataType.NDT_ProjectFavorite:
                     SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData);
@@ -327,14 +328,26 @@ namespace GameA.Game
                     SocialGUIManager.Instance.OpenUI<UICtrlSocialRelationship>(UICtrlSocialRelationship.EMenu.Fans);
                     break;
                 case ENotificationDataType.NDT_UserMessageBoard:
-                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(LocalUser.Instance.User)
+                        .OpenMenu(UICtrlPersonalInformation.EMenu.MessageBoard);
                     break;
                 case ENotificationDataType.NDT_UserMessageBoardReply:
                     UserManager.Instance.GetDataOnAsync(data.ContentId,
-                        user => { SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(user); });
+                        user =>
+                        {
+                            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(user)
+                                .OpenMenu(UICtrlPersonalInformation.EMenu.MessageBoard);
+                        });
                     break;
                 case ENotificationDataType.NDT_ProjectComment:
                 case ENotificationDataType.NDT_ProjectCommentReply:
+                    ProjectManager.Instance.GetDataOnAsync(data.ContentId,
+                        p =>
+                        {
+                            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(p)
+                                .OpenMenu(UICtrlProjectDetail.EMenu.Comment);
+                        });
+                    break;
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
                     ProjectManager.Instance.GetDataOnAsync(data.ContentId,
