@@ -134,14 +134,13 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            _curScene = null;
-            _curSceneIndex = -1;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
                 _sceneList[i].Dispose();
             }
-
+            _curScene = null;
+            _curSceneIndex = -1;
             _sceneList.Clear();
             _instance = null;
         }

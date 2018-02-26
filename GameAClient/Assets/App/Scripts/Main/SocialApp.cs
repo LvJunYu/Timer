@@ -34,6 +34,7 @@ namespace GameA
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _masterServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
+        [SerializeField] private GameObject _logoObj;
         private float _startTime;
         private const float MinLoadingTime = 2f;
 
@@ -156,6 +157,8 @@ namespace GameA
             {
                 JoyResManager.Instance.CheckApplicationAndResourcesVersion();
             }
+
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => Destroy(_logoObj)));
         }
 
         public void LoginAfterUpdateResComplete()

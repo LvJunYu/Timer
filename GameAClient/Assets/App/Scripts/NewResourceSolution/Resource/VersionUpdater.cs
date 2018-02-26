@@ -32,6 +32,7 @@ namespace NewResourceSolution
         public static IEnumerator CheckVerInternal(CHRuntimeResManifest persistentManifest,
             CHRuntimeResManifest buildInManifest)
         {
+            yield return null;
             bool manifestUpdated = false;
             Messenger.Broadcast(EMessengerType.OnResourcesCheckStart);
             Messenger<string>.Broadcast(EMessengerType.OnVersionUpdateStateChange, "正在检查资源（不消耗流量）...");
