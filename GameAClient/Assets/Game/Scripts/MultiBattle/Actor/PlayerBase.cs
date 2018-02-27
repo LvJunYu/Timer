@@ -1185,6 +1185,31 @@ namespace GameA.Game
             }
         }
 
+        public void OnIntersectCirrus(Cirrus cirrus, bool value)
+        {
+            if (value)
+            {
+                if (!_inCirrusUnits.Contains(cirrus))
+                {
+                    _inCirrusUnits.Add(cirrus);
+                }
+
+                _inCirrus = true;
+            }
+            else
+            {
+                if (_inCirrusUnits.Contains(cirrus))
+                {
+                    _inCirrusUnits.Remove(cirrus);
+                }
+
+                if (_inCirrusUnits.Count == 0)
+                {
+                    _inCirrus = false;
+                }
+            }
+        }
+
         protected override void GetCarryUnits()
         {
             if (_eClimbState > EClimbState.None && _curClimbUnit != null)
@@ -1416,6 +1441,10 @@ namespace GameA.Game
             }
 
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public bool PickUpMagicBean()
+        {
         }
     }
 }
