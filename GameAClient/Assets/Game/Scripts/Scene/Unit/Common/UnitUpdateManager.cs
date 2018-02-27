@@ -100,6 +100,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CalculateExtraDeltaPos();
@@ -145,6 +146,7 @@ namespace GameA.Game
                     playerList[i].UpdateView(deltaTime);
                 }
             }
+
             RopeManager.Instance.UpdateView(deltaTime);
 
             for (int i = 0; i < allBulletUnits.Count; i++)

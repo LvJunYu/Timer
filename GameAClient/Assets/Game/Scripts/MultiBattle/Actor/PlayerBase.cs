@@ -1306,7 +1306,8 @@ namespace GameA.Game
                     _ropeOffset = IntVec2.left * 150;
                 }
 
-                _speed = _curClimbUnit.CenterPos + _curClimbUnit.Speed + _ropeOffset - CenterPos + delta * _curRopeProgress;
+                _speed = _curClimbUnit.CenterPos + _curClimbUnit.Speed + _ropeOffset - CenterPos +
+                         delta * _curRopeProgress;
             }
         }
 
@@ -1318,11 +1319,36 @@ namespace GameA.Game
                 var expextPos = _curPos + _speed;
                 base.UpdateView(deltaTime);
                 _speed = IntVec2.zero;
-                //若人发生碰撞
+                //若在绳子上发生碰撞
                 if (expextPos != _curPos)
                 {
                     RopeJoint joint = _curClimbUnit as RopeJoint;
-                    if (joint != null)
+                    if (joint == null)
+                    {
+                        return;
+                    }
+
+                    bool hit = true;
+                    for (int i = 0; i < _hitUnits.Length; i++)
+                    {
+                        if (_hitUnits[i] == null)
+                        {
+                            continue;
+                        }
+
+                        //若碰撞物体是玩家，则不算碰撞
+                        if (_hitUnits[i].IsPlayer)
+                        {
+                            hit = false;
+                        }
+                        else
+                        {
+                            hit = true;
+                            break;
+                        }
+                    }
+
+                    if (hit)
                     {
                         joint.OnPlayerHit();
                     }
