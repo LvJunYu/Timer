@@ -138,7 +138,7 @@ MonoBehaviour:
     _standaloneInputModule: {fileID: 0}
     _trans: {fileID: 0}
   _run: 0
-  _env: 1
+  _env: 4
   _logLevel: 4
   _publishChannel: 0
   _clearCache: 0
@@ -165,7 +165,7 @@ MonoBehaviour:
   - Enable: 1
     AppServerApiRoot: http://172.111.100.24:8080/GameAServer/gameaapi
     GameResoureRoot: http://192.168.0.73:7888/Joyyou
-  LogoObj: {fileID: 906296876}
+  _logoObj: {fileID: 906296876}
 --- !u!114 &574366973
 MonoBehaviour:
   m_ObjectHideFlags: 0
