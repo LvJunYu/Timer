@@ -1306,7 +1306,7 @@ namespace GameA.Game
                     _ropeOffset = IntVec2.left * 150;
                 }
 
-                Speed = _curClimbUnit.CenterPos + _ropeOffset - CenterPos + delta * _curRopeProgress;
+                _speed = _curClimbUnit.CenterPos + _curClimbUnit.Speed + _ropeOffset - CenterPos + delta * _curRopeProgress;
             }
         }
 
@@ -1315,16 +1315,18 @@ namespace GameA.Game
             if (_eClimbState == EClimbState.Rope)
             {
                 CalculateRopeClimb();
-//                var expextPos = _curPos + _speed;
+                var expextPos = _curPos + _speed;
                 base.UpdateView(deltaTime);
-//                if (expextPos.x != _curPos.x)
-//                {
-//                    RopeJoint joint = _curClimbUnit as RopeJoint;
-//                    if (joint != null)
-//                    {
-//                        joint.OnPlayerHit(expextPos - _curPos, true);
-//                    }
-//                }
+                _speed = IntVec2.zero;
+                //若人发生碰撞
+                if (expextPos != _curPos)
+                {
+                    RopeJoint joint = _curClimbUnit as RopeJoint;
+                    if (joint != null)
+                    {
+                        joint.OnPlayerHit();
+                    }
+                }
             }
             else
             {

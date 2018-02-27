@@ -189,7 +189,7 @@ namespace GameA.Game
             _joints.Clear();
         }
 
-        public void OnPlayerHit()
+        public void OnPlayerHit(int index)
         {
             var basicSpeed = IntVec2.zero;
             for (int i = 0; i < _joints.Count; i++)
@@ -198,8 +198,20 @@ namespace GameA.Game
                 {
                     basicSpeed = _joints[0].Speed;
                 }
+                else
+                {
+//                    _joints[i].Speed = basicSpeed;
+                    if (i <= index)
+                    {
+                        _joints[i].Speed = basicSpeed;
+                    }
+                    else
+                    {
+                        _joints[i].Speed = basicSpeed + (_joints[i].Speed - basicSpeed) / 3;
+                    }
+                }
 
-                _joints[i].Speed = basicSpeed;
+
             }
         }
 

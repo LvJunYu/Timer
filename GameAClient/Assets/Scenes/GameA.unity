@@ -138,7 +138,7 @@ MonoBehaviour:
     _standaloneInputModule: {fileID: 0}
     _trans: {fileID: 0}
   _run: 0
-  _env: 4
+  _env: 1
   _logLevel: 4
   _publishChannel: 0
   _clearCache: 0

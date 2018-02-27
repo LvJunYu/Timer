@@ -301,7 +301,11 @@ namespace GameA.Game
 
         public void OnPlayerHit()
         {
-            _wholeRope.OnPlayerHit();
+            _wholeRope.OnPlayerHit(_jointIndex);
+            if (_nextJoint != null)
+            {
+                _nextJoint.FixSpeedFromPre();
+            }
         }
     }
 }
