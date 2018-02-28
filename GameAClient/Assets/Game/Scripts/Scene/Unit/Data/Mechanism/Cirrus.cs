@@ -7,8 +7,8 @@ namespace GameA.Game
     public class Cirrus : UnitBase
     {
         public const int MaxCirrusCount = 20;
+        public const int GrowSpeed = 16;
         private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
-        private float _curGrowValue;
 
         public override bool IsIndividual
         {
@@ -44,6 +44,11 @@ namespace GameA.Game
             }
         }
 
+        public override void UpdateView(float deltaTime)
+        {
+            UpdateTransPos();
+        }
+
         public override void OnIntersect(UnitBase other)
         {
             if (other.IsPlayer)
@@ -60,12 +65,15 @@ namespace GameA.Game
         {
             base.Clear();
             _players.Clear();
-            _curGrowValue = 0;
+        }
+        
+        public void ChangeView(string spriteName)
+        {
+            if (_view != null)
+            {
+                _view.ChangeView(spriteName);
+            }
         }
 
-        public void SetCurGrowValue(float curGrowValue)
-        {
-            _curGrowValue = curGrowValue;
-        }
     }
 }

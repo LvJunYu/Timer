@@ -47,7 +47,7 @@ namespace GameA.Game
 
         public void CreateCirrus(IntVec2 pos)
         {
-            _cirrusDic.Add(_curDicIndex, new WholeCirrus(pos, _curDicIndex));
+            _cirrusDic.Add(_curDicIndex, new WholeCirrus(pos));
             _curDicIndex++;
         }
 
@@ -70,23 +70,22 @@ namespace GameA.Game
 
     public class WholeCirrus
     {
-        private const float GrowSpeed = 1;
+        private const int GrowSpeed = Cirrus.GrowSpeed;
         private const int CirrusId = UnitDefine.CirrusId;
-        private List<Cirrus> _cirrusJoints = new List<Cirrus>(Cirrus.MaxCirrusCount);
-        private IntVec2 _oriPos;
-        private Cirrus _curGrowCirrus;
-        private int _curGrowJointIndex;
-        private float _curGrowValue;
+        private readonly List<Cirrus> _cirrusJoints = new List<Cirrus>(Cirrus.MaxCirrusCount);
+        private readonly IntVec2 _oriPos;
+        private int _count;
+        private int _curGrowValue;
         private IntVec2 _cirrusSize;
         private bool _growFinish;
 
-        private bool _isInterest
+        public bool IsInterest
         {
             get
             {
                 for (int i = 0; i < _cirrusJoints.Count; i++)
                 {
-                    if (_cirrusJoints[i] == null || !_cirrusJoints[i].IsInterest)
+                    if (_cirrusJoints[i] != null && !_cirrusJoints[i].IsInterest)
                     {
                         return false;
                     }
@@ -96,70 +95,91 @@ namespace GameA.Game
             }
         }
 
-        public WholeCirrus(IntVec2 pos, int index)
+        public WholeCirrus(IntVec2 pos)
         {
-            _oriPos = pos;
             _cirrusSize = UnitManager.Instance.GetTableUnit(CirrusId).GetDataSize(0, Vector2.one);
-            _curGrowJointIndex = -1;
+            _oriPos = pos + IntVec2.down * _cirrusSize.y;
+            _count = 0;
             GrowNewJoint();
         }
 
+        private const string SpriteFormat = "M1Cirrus_{0}";
+
         private void GrowNewJoint()
         {
-            _curGrowJointIndex++;
-            var pos = _oriPos + _curGrowJointIndex * IntVec2.up * _cirrusSize.y;
-            _curGrowCirrus = PlayMode.Instance.CreateRuntimeUnit(CirrusId, pos) as Cirrus;
-            if (_curGrowCirrus == null)
+            var cirrus = PlayMode.Instance.CreateRuntimeUnit(CirrusId, _oriPos) as Cirrus;
+            if (cirrus == null)
             {
                 LogHelper.Error("Grow fail");
                 return;
             }
 
-            _cirrusJoints.Add(_curGrowCirrus);
+            if (_count > 0)
+            {
+                int spriteIndex;
+                if (_count == Cirrus.MaxCirrusCount - 1)
+                {
+                    spriteIndex = 3;
+                }
+                else
+                {
+                    spriteIndex = (_count + 1) % 2 + 1;
+                }
+
+                cirrus.ChangeView(string.Format(SpriteFormat, spriteIndex));
+            }
+
+            cirrus.OnPlay();
+            _cirrusJoints.Add(cirrus);
             _curGrowValue = 0;
+            _count++;
         }
 
-        private void Grow(float deltaTime)
+        private bool Grow()
         {
-            if (_curGrowValue >= 1)
+            if (_growFinish)
             {
-                if (_curGrowJointIndex < Cirrus.MaxCirrusCount)
+                return false;
+            }
+
+            if (_curGrowValue >= _cirrusSize.y)
+            {
+                if (_count < Cirrus.MaxCirrusCount)
                 {
                     GrowNewJoint();
                 }
                 else
                 {
                     _growFinish = true;
+                    return false;
                 }
             }
-            
-            var min = _curGrowCirrus.CurPos;
-            var targetValue = _curGrowValue + deltaTime * GrowSpeed;
-            Grid2D checkGrid = new Grid2D(min.x, min.y + (int) (_cirrusSize.y * _curGrowValue),
-                min.x + _cirrusSize.x - 1, min.y + (int) (_cirrusSize.y * targetValue) - 1);
+
+            var topCirrusPos = _cirrusJoints[0].CurPos;
+            Grid2D checkGrid = new Grid2D(topCirrusPos.x, topCirrusPos.y + _cirrusSize.y,
+                topCirrusPos.x + _cirrusSize.x - 1, topCirrusPos.y + _cirrusSize.y + GrowSpeed - 1);
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid);
             for (int i = 0; i < units.Count; i++)
             {
                 if (units[i].IsAlive)
                 {
-                    return;
+                    return false;
                 }
             }
 
-            _curGrowValue = targetValue;
-            _curGrowCirrus.SetCurGrowValue(_curGrowValue);
+            _curGrowValue += GrowSpeed;
+            return true;
         }
 
         public void Clear()
         {
             _growFinish = false;
-            _curGrowCirrus = null;
             _cirrusJoints.Clear();
         }
 
         public void UpdateLogic()
         {
-            if (!_isInterest)
+            if (!IsInterest)
             {
                 return;
             }
@@ -172,15 +192,19 @@ namespace GameA.Game
 
         public void UpdateView(float deltaTime)
         {
-            if (!_isInterest)
+            if (!IsInterest)
             {
                 return;
             }
 
-            Grow(deltaTime);
-            for (int i = 0; i < _cirrusJoints.Count; i++)
+            if (Grow())
             {
-                _cirrusJoints[i].UpdateView(deltaTime);
+                for (int i = 0; i < _cirrusJoints.Count; i++)
+                {
+                    _cirrusJoints[i].CurPos =
+                        _oriPos + ((_count - i - 1) * _cirrusSize.y + _curGrowValue) * IntVec2.up;
+                    _cirrusJoints[i].UpdateView(deltaTime);
+                }
             }
         }
     }
