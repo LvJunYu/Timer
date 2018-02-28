@@ -29,6 +29,7 @@ namespace GameA
                 item.Init(_cachedView.BeforeTaskAward[i]);
                 _beforeTaskAwardBtnGroup[i] = item;
             }
+
             _finishTaskAwardBtnGroup = new USCtrlUnitNpcTaskTargetBtn[_cachedView.FinishTaskAward.Length];
             for (int i = 0; i < _cachedView.FinishTaskAward.Length; i++)
             {
@@ -36,6 +37,7 @@ namespace GameA
                 item.Init(_cachedView.FinishTaskAward[i]);
                 _finishTaskAwardBtnGroup[i] = item;
             }
+
             _cachedView.TaskDiaBeforeBtn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlEditNpcDia>(_task.TaskBefore);
@@ -64,6 +66,7 @@ namespace GameA
                                 id = unit.Id;
                             }
                         }
+
                         for (int i = 0; i < _task.Targets.Count; i++)
                         {
                             if (_task.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
@@ -81,6 +84,7 @@ namespace GameA
                         }
                     }
                 }
+
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>()
                     .SetNpcType(NpcDia.GetNpcType(id));
             });
@@ -123,6 +127,7 @@ namespace GameA
             {
                 _task = taskData;
             }
+
             // 刷新任务前后的奖励
             for (int i = 0; i < _cachedView.BeforeTaskAward.Length; i++)
             {
@@ -139,6 +144,7 @@ namespace GameA
                     _beforeTaskAwardBtnGroup[i].SetEnable(false);
                 }
             }
+
             _cachedView.AddBeforeTaskAwardBtn.SetActiveEx((_task.BeforeTaskAward.Count !=
                                                            NpcTaskDynamic.MaxBeforeTasAwardCout));
 
@@ -157,6 +163,7 @@ namespace GameA
                     _finishTaskAwardBtnGroup[i].SetEnable(false);
                 }
             }
+
             _cachedView.AddFinishTaskAwardBtn.SetActiveEx((_task.TaskFinishAward.Count !=
                                                            NpcTaskDynamic.MaxFinishTasAwardCout));
         }
@@ -195,6 +202,7 @@ namespace GameA
             {
                 _panel.SetActiveEx(false);
             }
+
             base.Close();
         }
 
@@ -204,6 +212,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
@@ -234,16 +243,27 @@ namespace GameA
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
             _openSequence.Append(
-                _panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f).From()
+                _panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
             {
                 if (_closeSequence.IsPlaying())
                 {
                     _closeSequence.Complete(true);
                 }
+
+//                if (_openSequence.IsPlaying())
+//                {
+//                    _openSequence.Complete(true);
+//                }
+
                 _panel.SetActiveEx(true);
             });
-            _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
+            _openSequence.OnComplete(() =>
+            {
+                _panel.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
+                _panel.GetComponent<RectTransform>().offsetMax = new Vector2(-32, 0);
+            });
+            _closeSequence.Append(_panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f)
                     .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() =>
                 {
@@ -251,6 +271,11 @@ namespace GameA
                     {
                         _openSequence.Complete(true);
                     }
+
+//                    if (_closeSequence.IsPlaying())
+//                    {
+//                        _closeSequence.Complete(true);
+//                    }
                 });
         }
 

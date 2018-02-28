@@ -33,6 +33,7 @@ namespace GameA.Game
                 {
                     data.UnitMaskEffectCache[i].DestroySelf();
                 }
+
                 data.UnitMaskEffectCache.Clear();
                 if (null != data.CurrentConnectionUI)
                 {
@@ -87,6 +88,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(gesture.position);
 
                 var data = boardData.GetStateData<Data>();
@@ -114,11 +116,13 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 var mousePos = Input.mousePosition;
                 if (gesture != null)
                 {
                     mousePos = gesture.position;
                 }
+
                 var data = boardData.GetStateData<Data>();
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
                 var tile = DataScene2D.CurScene.GetTileIndex(mouseWorldPos, boardData.CurrentTouchUnitDesc.Id);
@@ -145,11 +149,18 @@ namespace GameA.Game
                                 if (UnitDefine.IsCanControlByNpc(unit.Id) &&
                                     NpcTaskDataTemp.Intance.IsEditNpcData)
                                 {
-                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                        coverUnits[0].Guid);
                                     if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
                                     {
-                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                        if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
+                                        {
+                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                coverUnits[0].Guid);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                            coverUnits[0].Guid);
                                     }
                                 }
                             }
@@ -157,11 +168,18 @@ namespace GameA.Game
                             {
                                 if (!UnitDefine.IsNpc(coverUnits[0].Id))
                                 {
-                                    AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                        coverUnits[0].Guid);
                                     if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
                                     {
-                                        NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid);
+                                        if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
+                                        {
+                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                coverUnits[0].Guid);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                            coverUnits[0].Guid);
                                     }
                                 }
                             }
@@ -179,17 +197,15 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 if (null != data.CurrentConnectionUI)
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().FreeEditingConnection();
                     data.CurrentConnectionUI = null;
                 }
+
                 boardData.DragInCurrentState = false;
-                if (NpcTaskDataTemp.Intance.EndEdit)
-                {
-                    EditMode.Instance.StopSwitch();
-                    NpcTaskDataTemp.Intance.EndEdit = false;
-                }
+
             }
 
             public void DeleteSwitchConnection(int idx)
@@ -219,6 +235,7 @@ namespace GameA.Game
                             return false;
                         }
                     }
+
                     if (UnitDefine.IsSwitch(outValue.Id))
                     {
                         SelectUnit(outValue);
@@ -237,6 +254,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 return false;
             }
 
@@ -265,6 +283,7 @@ namespace GameA.Game
                     switchGuid = data.CachedConnectedGUIDs[idx];
                     unitGuid = boardData.CurrentTouchUnitDesc.Guid;
                 }
+
                 if (DataScene2D.CurScene.UnbindSwitch(switchGuid, unitGuid))
                 {
                     GetRecordBatch().RecordRemoveSwitchConnection(switchGuid, unitGuid);
@@ -307,6 +326,7 @@ namespace GameA.Game
                         UpdateSwitchEffects();
                         return;
                     }
+
                     data.CachedConnectedGUIDs.Clear();
                     bool isFromSwitch = UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id);
                     if (isFromSwitch)
@@ -330,6 +350,7 @@ namespace GameA.Game
                             data.CachedConnectedGUIDs.Add(switchUnits[i]);
                         }
                     }
+
                     UpdateEffectsOnSwitchMode(boardData, data);
                 }
             }
@@ -354,10 +375,12 @@ namespace GameA.Game
                             boardData.CurrentTouchUnitDesc.Guid);
                     }
                 }
+
                 for (; cnt < data.UnitMaskEffectCache.Count; cnt++)
                 {
                     data.UnitMaskEffectCache[cnt].Stop();
                 }
+
                 SetMaskEffectPos(GetUnusedMaskEffect(data, data.CachedConnectedGUIDs.Count),
                     boardData.CurrentTouchUnitDesc.Guid);
             }
@@ -419,6 +442,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 SocialGUIManager.Instance.OpenUI<UICtrlEditSwitch>(allEditableGuiDs);
             }
 
@@ -438,6 +462,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 //退出连线模式
                 NpcTaskDataTemp.Intance.IsEditNpcData = false;
                 SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch>();
@@ -455,8 +480,10 @@ namespace GameA.Game
                         LogHelper.Error("Load mask effect failed, name is {0}", ParticleNameConstDefineGM2D.YellowMask);
                         return null;
                     }
+
                     data.UnitMaskEffectCache.Add(newYellowMask);
                 }
+
                 return data.UnitMaskEffectCache[idx];
             }
 

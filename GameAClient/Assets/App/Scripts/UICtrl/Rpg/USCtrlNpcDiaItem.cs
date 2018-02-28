@@ -77,6 +77,51 @@ namespace GameA
                 case 4:
                     _cachedView.IndexText.text = "对话五";
                     break;
+                case 5:
+                    _cachedView.IndexText.text = "对话六";
+                    break;
+                case 6:
+                    _cachedView.IndexText.text = "对话七";
+                    break;
+                case 7:
+                    _cachedView.IndexText.text = "对话八";
+                    break;
+                case 8:
+                    _cachedView.IndexText.text = "对话九";
+                    break;
+                case 9:
+                    _cachedView.IndexText.text = "对话十";
+                    break;
+                case 10:
+                    _cachedView.IndexText.text = "对话十一";
+                    break;
+                case 11:
+                    _cachedView.IndexText.text = "对话十二";
+                    break;
+                case 12:
+                    _cachedView.IndexText.text = "对话十三";
+                    break;
+                case 13:
+                    _cachedView.IndexText.text = "对话十四";
+                    break;
+                case 14:
+                    _cachedView.IndexText.text = "对话十五";
+                    break;
+                case 15:
+                    _cachedView.IndexText.text = "对话十六";
+                    break;
+                case 16:
+                    _cachedView.IndexText.text = "对话十七";
+                    break;
+                case 17:
+                    _cachedView.IndexText.text = "对话十八";
+                    break;
+                case 18:
+                    _cachedView.IndexText.text = "对话十九";
+                    break;
+                case 19:
+                    _cachedView.IndexText.text = "对话二十";
+                    break;
             }
         }
 
@@ -89,6 +134,7 @@ namespace GameA
                 _diaList[_index] = _diaList[newindex];
                 _diaList[newindex] = temp;
             }
+
             _callback.Invoke();
         }
 
@@ -101,6 +147,7 @@ namespace GameA
                 _diaList[_index] = _diaList[newindex];
                 _diaList[newindex] = temp;
             }
+
             _callback.Invoke();
         }
 

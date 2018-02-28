@@ -32,6 +32,7 @@ namespace GameA
             {
                 _colltionList.Add(VARIABLE.Key);
             }
+
             foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 _killtionList.Add(VARIABLE.Key);
@@ -49,8 +50,10 @@ namespace GameA
                         index = (int) ENpcTargetType.Contorl;
                         break;
                 }
+
                 _cachedView.BeforeAwardTypeTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+
             _cachedView.NpcTaskBeforeAwardTypePanelExitBtn.onClick.AddListener(Close);
         }
 
@@ -76,13 +79,15 @@ namespace GameA
                     {
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
-                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.BeforeTask, _mainCtrl.EditData.UnitExtra);
+                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.BeforeTask, _mainCtrl.EditData.UnitExtra,
+                            _mainCtrl.EditData);
                         _mainCtrl.OnCloseBtnClick();
                     }
                     else
                     {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "地块不在地图中！");
                     }
+
                     break;
             }
         }
@@ -115,6 +120,7 @@ namespace GameA
             {
                 _panel.SetActiveEx(false);
             }
+
             base.Close();
         }
 
@@ -124,6 +130,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
@@ -161,6 +168,7 @@ namespace GameA
                 {
                     _closeSequence.Complete(true);
                 }
+
                 _panel.SetActiveEx(true);
             });
             _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)

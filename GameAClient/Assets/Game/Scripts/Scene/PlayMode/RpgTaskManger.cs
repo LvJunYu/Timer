@@ -1036,5 +1036,22 @@ namespace GameA.Game
 
             return newawardlist;
         }
+
+        //获得击杀或者收集的数目
+        public int GetKillOrColltionNum(int typeid)
+        {
+            int num;
+            if (ColltionNum.TryGetValue(typeid, out num))
+            {
+                return num;
+            }
+
+            if (KillMonstorNum.TryGetValue(typeid, out num))
+            {
+                return num;
+            }
+
+            return num;
+        }
     }
 }

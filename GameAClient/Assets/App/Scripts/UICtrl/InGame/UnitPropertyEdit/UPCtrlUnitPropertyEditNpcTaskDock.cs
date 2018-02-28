@@ -34,7 +34,7 @@ namespace GameA
     public class UPCtrlUnitPropertyEditNpcTaskDock : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private bool _hasChanged;
-        private USCtrlUnitNpcTaskIndexBtn[] _usCtrlUnitNpcTaskIndexGroup;
+        private USCtrlUnitNpcTaskIndexBtn[] UsCtrlUnitNpcTaskIndexGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _usCtrlUnitNpcTargetGroup;
         private USCtrlUnitNpcTaskTargetBtn _usCtrlUnitNpcCondtionBtn;
         private USCtrlSliderSetting _timeLimitSliderSetting;
@@ -47,11 +47,11 @@ namespace GameA
         {
             base.OnViewCreated();
             //任务按钮
-            _usCtrlUnitNpcTaskIndexGroup = new USCtrlUnitNpcTaskIndexBtn[_cachedView.IndexBtnGroup.Length];
-            for (int i = 0; i < _usCtrlUnitNpcTaskIndexGroup.Length; i++)
+            UsCtrlUnitNpcTaskIndexGroup = new USCtrlUnitNpcTaskIndexBtn[_cachedView.IndexBtnGroup.Length];
+            for (int i = 0; i < UsCtrlUnitNpcTaskIndexGroup.Length; i++)
             {
-                _usCtrlUnitNpcTaskIndexGroup[i] = new USCtrlUnitNpcTaskIndexBtn();
-                _usCtrlUnitNpcTaskIndexGroup[i].Init(_cachedView.IndexBtnGroup[i]);
+                UsCtrlUnitNpcTaskIndexGroup[i] = new USCtrlUnitNpcTaskIndexBtn();
+                UsCtrlUnitNpcTaskIndexGroup[i].Init(_cachedView.IndexBtnGroup[i]);
             }
 
             //任务目标按钮
@@ -85,7 +85,17 @@ namespace GameA
                 _mainCtrl.EditNpcAddCondition.OpenMenu(CurExtraNpcTaskData);
             });
             //编辑对话按钮
-            _cachedView.DialogBtn.onClick.AddListener(() => { _mainCtrl.EditNpcDia.OpenMenu(CurExtraNpcTaskData); });
+            _cachedView.DialogBtn.onClick.AddListener(() =>
+            {
+                if (CurExtraNpcTaskData.Targets.Count != 0)
+                {
+                    _mainCtrl.EditNpcDia.OpenMenu(CurExtraNpcTaskData);
+                }
+                else
+                {
+                    _cachedView.NoTargetTip.SetActiveEx(true);
+                }
+            });
             //npc名字限制长度
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TaskNpcName);
             _cachedView.TaskNpcName.onValueChanged.AddListener(SetNameLength);
@@ -132,6 +142,7 @@ namespace GameA
                     NpcTaskDatas.Add(CurExtraNpcTaskData);
                 }
             }
+
             RefreshView();
         }
 
@@ -144,17 +155,17 @@ namespace GameA
             _cachedView.TaskSerialNumText.text = CurExtraNpcTaskData.NpcTaskSerialNumber.ToString();
             //设置任务的序列
             int taskNum = NpcTaskDatas.Count;
-            for (int i = 0; i < _usCtrlUnitNpcTaskIndexGroup.Length; i++)
+            for (int i = 0; i < UsCtrlUnitNpcTaskIndexGroup.Length; i++)
             {
                 if (i < taskNum)
                 {
-                    _usCtrlUnitNpcTaskIndexGroup[i].SetEnable(true);
-                    _usCtrlUnitNpcTaskIndexGroup[i]
-                        .InitData(RefreshTask, NpcTaskDatas, NpcTaskDatas.Get<NpcTaskDynamic>(i));
+                    UsCtrlUnitNpcTaskIndexGroup[i].SetEnable(true);
+                    UsCtrlUnitNpcTaskIndexGroup[i]
+                        .InitData(RefreshTask, NpcTaskDatas, NpcTaskDatas.Get<NpcTaskDynamic>(i), i);
                 }
                 else
                 {
-                    _usCtrlUnitNpcTaskIndexGroup[i].InitData(RefreshTask, NpcTaskDatas);
+                    UsCtrlUnitNpcTaskIndexGroup[i].InitData(RefreshTask, NpcTaskDatas);
                 }
             }
 
@@ -183,20 +194,24 @@ namespace GameA
 
         public void RefreshTask(NpcTaskDynamic taskData = null)
         {
+            _cachedView.NoTargetTip.SetActiveEx(false);
             if (!_isOpen)
             {
                 return;
             }
+
             if (taskData != null)
             {
                 CurExtraNpcTaskData = taskData;
             }
+
             CheckTargetType(CurExtraNpcTaskData);
             //刷新任务列表
-            for (int i = 0; i < _usCtrlUnitNpcTaskIndexGroup.Length; i++)
+            for (int i = 0; i < UsCtrlUnitNpcTaskIndexGroup.Length; i++)
             {
-                _usCtrlUnitNpcTaskIndexGroup[i].SetSelected(CurExtraNpcTaskData);
+                UsCtrlUnitNpcTaskIndexGroup[i].SetSelected(CurExtraNpcTaskData);
             }
+
             _cachedView.TaskSerialNumText.text = CurExtraNpcTaskData.NpcTaskSerialNumber.ToString();
 
             // 选中任务后的刷新
@@ -218,6 +233,7 @@ namespace GameA
                     _usCtrlUnitNpcTargetGroup[i].SetEnable(false);
                 }
             }
+
             //最大的任务目标
             if (listType.Count >= 3)
             {
@@ -227,6 +243,7 @@ namespace GameA
             {
                 _cachedView.AddTargetBtn.SetActiveEx(true);
             }
+
             for (int i = 0; i < listType.Count; i++)
             {
                 if (listType[i] == ENpcTargetType.Dialog)
@@ -246,6 +263,7 @@ namespace GameA
                 _usCtrlUnitNpcCondtionBtn.SetTriggerCondition(CurExtraNpcTaskData,
                     EditTriggerTaskEdit, () => { RefreshTask(); });
             }
+
             if (CurExtraNpcTaskData.TaskimeLimit == 0)
             {
                 _cachedView.TaskTimeLimitObj.SetActiveEx(false);
@@ -255,6 +273,7 @@ namespace GameA
                 _cachedView.TaskTimeLimitObj.SetActiveEx(true);
                 _timeLimitSliderSetting.SetCur(CurExtraNpcTaskData.TaskimeLimit);
             }
+
             _cachedView.AddConditionBtn.SetActiveEx(!(CurExtraNpcTaskData.TriggerType != (int) ENpcTargetType.None &&
                                                       CurExtraNpcTaskData.TaskimeLimit > 0));
             _mainCtrl.CloseUpCtrlPanel();
@@ -314,6 +333,7 @@ namespace GameA
             {
                 return;
             }
+
             for (int i = 0; i < task.Targets.Count; i++)
             {
                 if (task.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
@@ -327,6 +347,54 @@ namespace GameA
                 {
                     targets.Add(task.Targets.Get<NpcTaskTargetDynamic>(i));
                 }
+            }
+        }
+
+        public void ChooseTaskBtnIndex(IntVec3 guid)
+        {
+            int taskindex = 0;
+            for (int i = 0; i < NpcTaskDatas.Count; i++)
+            {
+                for (int j = 0; j < NpcTaskDatas.Get<NpcTaskDynamic>(i).Targets.Count; j++)
+                {
+                    if (NpcTaskDatas.Get<NpcTaskDynamic>(i).Targets.Get<NpcTaskTargetDynamic>(j).TargetGuid == guid)
+                    {
+                        taskindex = i;
+                    }
+                }
+
+                for (int j = 0; j < NpcTaskDatas.Get<NpcTaskDynamic>(i).TaskAfter.Count; j++)
+                {
+                    if (NpcTaskDatas.Get<NpcTaskDynamic>(i).TaskAfter.Get<NpcTaskTargetDynamic>(j).TargetGuid ==
+                        guid)
+                    {
+                        taskindex = i;
+                    }
+                }
+
+                for (int j = 0; j < NpcTaskDatas.Get<NpcTaskDynamic>(i).TaskBefore.Count; j++)
+                {
+                    if (NpcTaskDatas.Get<NpcTaskDynamic>(i).TaskBefore.Get<NpcTaskTargetDynamic>(j).TargetGuid ==
+                        guid)
+                    {
+                        taskindex = i;
+                    }
+                }
+            }
+
+            UsCtrlUnitNpcTaskIndexGroup[taskindex].View.ChoseBtn.onClick.Invoke();
+            UsCtrlUnitNpcTaskIndexGroup[taskindex].View.ChoseBtn.interactable = false;
+        }
+
+        public void OpenEditPanel()
+        {
+            if (CurExtraNpcTaskData.Targets.Count != 0)
+            {
+                _mainCtrl.EditNpcDia.OpenMenu(CurExtraNpcTaskData);
+            }
+            else
+            {
+                _cachedView.NoTargetTip.SetActiveEx(true);
             }
         }
     }

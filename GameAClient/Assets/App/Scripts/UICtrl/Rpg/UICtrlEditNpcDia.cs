@@ -120,7 +120,7 @@ namespace GameA
             //添加按钮
             _cachedView.ConfirmBtn.onClick.AddListener(() =>
             {
-                if (_npcDiaList.Count < 5)
+                if (_npcDiaList.Count < 20)
                 {
                     _npcDiaList.Add(_curEditNpcDia);
                     _curEditNpcDia = new NpcDia();
@@ -203,7 +203,7 @@ namespace GameA
                     _npcDiaItemList[i].setDiasble(i);
                 }
             }
-            if (cout >= 5)
+            if (cout >= 20)
             {
                 _cachedView.ConfirmBtnMask.SetActiveEx(true);
             }

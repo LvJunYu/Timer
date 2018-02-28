@@ -25,6 +25,11 @@ namespace GameA.Game
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
+        public static IntVec3 PubDefaultUnitGuid
+        {
+            get { return DefaultUnitGuid; }
+        }
+
         public static Dictionary<int, int> UnitIndexCount
         {
             get { return _unitIndexCount; }

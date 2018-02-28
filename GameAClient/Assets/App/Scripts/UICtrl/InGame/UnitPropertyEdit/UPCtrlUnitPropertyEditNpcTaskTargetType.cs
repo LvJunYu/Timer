@@ -32,6 +32,7 @@ namespace GameA
             {
                 _colltionList.Add(colltion.Key);
             }
+
             foreach (var kill in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 _killtionList.Add(kill.Key);
@@ -42,6 +43,7 @@ namespace GameA
                 int index = i + 1;
                 _cachedView.TargetTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+
             _cachedView.NpcTaskTypeExitBtn.onClick.AddListener(Close);
         }
 
@@ -78,7 +80,7 @@ namespace GameA
                     if (_mainCtrl.IsInMap)
                     {
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic, _mainCtrl.EditData.UnitDesc.Guid,
-                            ETaskContype.Task, _mainCtrl.EditData.UnitExtra);
+                            ETaskContype.Task, _mainCtrl.EditData.UnitExtra, _mainCtrl.EditData);
                         _mainCtrl.OnCloseBtnClick();
                         //打开连线界面
                     }
@@ -86,6 +88,7 @@ namespace GameA
                     {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "地块不在地图中！");
                     }
+
                     break;
                 case (int) ENpcTargetType.Dialog:
                     //选择传话
@@ -104,6 +107,7 @@ namespace GameA
                     {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "地块不在地图中！");
                     }
+
                     break;
             }
         }
@@ -141,6 +145,7 @@ namespace GameA
             {
                 CreateSequences();
             }
+
             _closeSequence.Complete(true);
             _openSequence.Restart();
             _openAnim = true;
@@ -178,6 +183,7 @@ namespace GameA
                 {
                     _closeSequence.Complete(true);
                 }
+
                 _panel.SetActiveEx(true);
             });
             _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)

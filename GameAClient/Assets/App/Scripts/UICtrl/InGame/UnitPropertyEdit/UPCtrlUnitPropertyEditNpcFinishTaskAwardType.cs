@@ -71,7 +71,7 @@ namespace GameA
                     {
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
-                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra);
+                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra,_mainCtrl.EditData);
                         _mainCtrl.OnCloseBtnClick();
                     }
                     else
