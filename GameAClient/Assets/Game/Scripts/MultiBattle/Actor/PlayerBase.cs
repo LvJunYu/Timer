@@ -761,11 +761,6 @@ namespace GameA.Game
                 {
                     if (_dieTime == 50)
                     {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                    }
-
-                    if (_dieTime == 100)
-                    {
                         _siTouLe = true;
                         if (GM2DGame.Instance.GameMode.IsMulti)
                         {
@@ -776,18 +771,22 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (IsMain)
-                            {
-                                PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                                Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
-                            }
-
+                            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                        }
+                    }
+                    //单人模式延迟1秒结算，用于播放DeadMark
+                    if (_dieTime == 100)
+                    {
+                        if (!GM2DGame.Instance.GameMode.IsMulti)
+                        {
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
                             return;
                         }
                     }
                 }
-
-                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
+                //多人模式死后可以看他人视角
+                if (GM2DGame.Instance.GameMode.IsMulti && _dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
                     UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
                 {
                     CameraManager.Instance.CameraCtrlPlay.SetNextCameraPlayer();
@@ -1445,6 +1444,7 @@ namespace GameA.Game
 
         public bool PickUpMagicBean()
         {
+            return true;
         }
     }
 }
