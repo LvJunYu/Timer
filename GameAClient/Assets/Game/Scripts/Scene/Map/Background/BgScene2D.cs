@@ -32,8 +32,6 @@ namespace GameA.Game
         private Transform[] _parents;
         private Transform _parent;
         private int _curBgGroup = 1;
-        private BgItem _sun;
-        private BgItem _seaLevel;
         private readonly int[] _maxDepthCount = new int[(int) EBgDepth.Max];
         private readonly float[] _moveRatio = new float[(int) EBgDepth.Max];
         private readonly Dictionary<string, Sprite> _spriteDic = new Dictionary<string, Sprite>();
@@ -247,18 +245,6 @@ namespace GameA.Game
             if (!_run)
             {
                 return;
-            }
-
-            if (GameRun.Instance.LogicFrameCnt == 0 && _curBgGroup == 2 && _sun != null)
-            {
-                //太阳跟着玩家
-                _sun.SetBasePos(pos + Vector3.down * 2f);
-                _sun.SetBaseFollowPos(pos);
-                _sun.ResetPos();
-
-                _seaLevel.SetBasePos(pos + Vector3.down * 6f);
-                _seaLevel.SetBaseFollowPos(pos);
-                _seaLevel.ResetPos();
             }
 
             using (var iter = _items.GetEnumerator())
@@ -553,12 +539,6 @@ namespace GameA.Game
                         min = new IntVec2(Random.Range(_cloudTileRect.XMin, _cloudTileRect.XMax + size.x),
                             Random.Range(_cloudTileRect.YMin, _cloudTileRect.YMax + size.y));
                         break;
-                    //海平面
-                    case EBgDepth.Depth23:
-                        break;
-                    //太阳
-                    case EBgDepth.Depth24:
-                        break;
                     //鬼魂
                     case EBgDepth.Depth18:
                     case EBgDepth.Depth19:
@@ -571,7 +551,7 @@ namespace GameA.Game
                             Random.Range(_starTileRect.YMin, _starTileRect.YMax + size.y));
                         break;
                     //背景
-                    case EBgDepth.Depth25:
+                    case EBgDepth.Depth23:
                         min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin - GM2DTools.WorldToTile(2f));
                         break;
                 }
@@ -642,18 +622,6 @@ namespace GameA.Game
             }
 
             _items.Add(node.Guid, bgItem);
-            if (_curBgGroup == 2)
-            {
-                if (tableBg.Model == "Sun")
-                {
-                    _sun = bgItem;
-                }
-                else if (tableBg.Model == "SeaLevel")
-                {
-                    _seaLevel = bgItem;
-                }
-            }
-
             return true;
         }
 
@@ -685,7 +653,7 @@ namespace GameA.Game
         private bool CanOverlap(Table_Background tableBackground)
         {
             //藤蔓可以重叠
-            return tableBackground.Model == "BJ_tree17" && _curBgGroup == 1;
+            return _curBgGroup == 1 && tableBackground.Model == "BJ_tree17";
         }
 
         private bool DeleteView(SceneNode node)
@@ -749,8 +717,6 @@ namespace GameA.Game
             Depth21,
             Depth22,
             Depth23,
-            Depth24,
-            Depth25,
             Max
         }
     }

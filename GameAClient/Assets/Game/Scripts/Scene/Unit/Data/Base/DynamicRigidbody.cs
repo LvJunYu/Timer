@@ -12,8 +12,10 @@ namespace GameA.Game
         protected float _speedRatio;
         protected int _motorAcc;
         protected bool _inLadder;
+        protected bool _inCirrus;
         protected int _dropLadderTimer;
         protected List<UnitBase> _inLadders = new List<UnitBase>(4);
+        protected List<UnitBase> _inCirrusUnits = new List<UnitBase>(4);
 
         protected InputBase _input;
 

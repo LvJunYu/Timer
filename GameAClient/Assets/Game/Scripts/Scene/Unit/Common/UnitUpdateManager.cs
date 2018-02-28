@@ -100,6 +100,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CalculateExtraDeltaPos();
@@ -136,9 +137,8 @@ namespace GameA.Game
                 }
             }
 
-            //绳子单独控制
+            //计算绳子速度，人再移动，绳子再移动
             RopeManager.Instance.CalculateSpeed();
-            RopeManager.Instance.UpdateView(deltaTime);
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (playerList[i] != null && playerList[i].GetBoxOperateType() != EBoxOperateType.Pull)
@@ -146,6 +146,8 @@ namespace GameA.Game
                     playerList[i].UpdateView(deltaTime);
                 }
             }
+
+            RopeManager.Instance.UpdateView(deltaTime);
 
             for (int i = 0; i < allBulletUnits.Count; i++)
             {

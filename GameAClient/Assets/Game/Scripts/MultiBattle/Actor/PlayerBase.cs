@@ -761,11 +761,6 @@ namespace GameA.Game
                 {
                     if (_dieTime == 50)
                     {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                    }
-
-                    if (_dieTime == 100)
-                    {
                         _siTouLe = true;
                         if (GM2DGame.Instance.GameMode.IsMulti)
                         {
@@ -776,18 +771,22 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (IsMain)
-                            {
-                                PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                                Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
-                            }
-
+                            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                        }
+                    }
+                    //单人模式延迟1秒结算，用于播放DeadMark
+                    if (_dieTime == 100)
+                    {
+                        if (!GM2DGame.Instance.GameMode.IsMulti)
+                        {
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
                             return;
                         }
                     }
                 }
-
-                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
+                //多人模式死后可以看他人视角
+                if (GM2DGame.Instance.GameMode.IsMulti && _dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
                     UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
                 {
                     CameraManager.Instance.CameraCtrlPlay.SetNextCameraPlayer();
@@ -1185,6 +1184,31 @@ namespace GameA.Game
             }
         }
 
+        public void OnIntersectCirrus(Cirrus cirrus, bool value)
+        {
+            if (value)
+            {
+                if (!_inCirrusUnits.Contains(cirrus))
+                {
+                    _inCirrusUnits.Add(cirrus);
+                }
+
+                _inCirrus = true;
+            }
+            else
+            {
+                if (_inCirrusUnits.Contains(cirrus))
+                {
+                    _inCirrusUnits.Remove(cirrus);
+                }
+
+                if (_inCirrusUnits.Count == 0)
+                {
+                    _inCirrus = false;
+                }
+            }
+        }
+
         protected override void GetCarryUnits()
         {
             if (_eClimbState > EClimbState.None && _curClimbUnit != null)
@@ -1306,7 +1330,8 @@ namespace GameA.Game
                     _ropeOffset = IntVec2.left * 150;
                 }
 
-                Speed = _curClimbUnit.CenterPos + _ropeOffset - CenterPos + delta * _curRopeProgress;
+                _speed = _curClimbUnit.CenterPos + _curClimbUnit.Speed + _ropeOffset - CenterPos +
+                         delta * _curRopeProgress;
             }
         }
 
@@ -1315,16 +1340,43 @@ namespace GameA.Game
             if (_eClimbState == EClimbState.Rope)
             {
                 CalculateRopeClimb();
-//                var expextPos = _curPos + _speed;
+                var expextPos = _curPos + _speed;
                 base.UpdateView(deltaTime);
-//                if (expextPos.x != _curPos.x)
-//                {
-//                    RopeJoint joint = _curClimbUnit as RopeJoint;
-//                    if (joint != null)
-//                    {
-//                        joint.OnPlayerHit(expextPos - _curPos, true);
-//                    }
-//                }
+                _speed = IntVec2.zero;
+                //若在绳子上发生碰撞
+                if (expextPos != _curPos)
+                {
+                    RopeJoint joint = _curClimbUnit as RopeJoint;
+                    if (joint == null)
+                    {
+                        return;
+                    }
+
+                    bool hit = true;
+                    for (int i = 0; i < _hitUnits.Length; i++)
+                    {
+                        if (_hitUnits[i] == null)
+                        {
+                            continue;
+                        }
+
+                        //若碰撞物体是玩家，则不算碰撞
+                        if (_hitUnits[i].IsPlayer)
+                        {
+                            hit = false;
+                        }
+                        else
+                        {
+                            hit = true;
+                            break;
+                        }
+                    }
+
+                    if (hit)
+                    {
+                        joint.OnPlayerHit();
+                    }
+                }
             }
             else
             {
@@ -1388,6 +1440,11 @@ namespace GameA.Game
             }
 
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public bool PickUpMagicBean()
+        {
+            return true;
         }
     }
 }

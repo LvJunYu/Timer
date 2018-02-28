@@ -11,7 +11,7 @@ namespace JoyGameBuildVersionTool
         public static void Main(string[] args)
         {
             Process("/Users/quan/Downloads/JoyGameRes/Game/",
-                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.1.2");
+                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.3.1");
         }
 
         private static void Process(string inputPath, string outputPath, string version)
@@ -84,6 +84,7 @@ namespace JoyGameBuildVersionTool
                 }
             }
             File.Delete(outputPath+"version/" +version+"/manifest.xml.raw");
+            Console.Out.WriteLine("Done");
         }
         private class DatFileInfo
         {

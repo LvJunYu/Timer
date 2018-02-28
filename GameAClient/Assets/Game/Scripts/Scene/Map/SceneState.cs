@@ -54,10 +54,10 @@ namespace GameA.Game
             //get { return _secondLeft; }
             get
             {
-                if (_runState == ESceneState.Fail || _runState == ESceneState.Fail)
-                {
-                    return 0;
-                }
+//                if (_runState == ESceneState.Fail)
+//                {
+//                    return 0;
+//                }
 
                 return (int) (RunTimeTimeLimit - _gameTimer);
             }

@@ -165,7 +165,7 @@ MonoBehaviour:
   - Enable: 1
     AppServerApiRoot: http://172.111.100.24:8080/GameAServer/gameaapi
     GameResoureRoot: http://192.168.0.73:7888/Joyyou
-  LogoObj: {fileID: 906296876}
+  _logoObj: {fileID: 906296876}
 --- !u!114 &574366973
 MonoBehaviour:
   m_ObjectHideFlags: 0

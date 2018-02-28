@@ -6,7 +6,14 @@ namespace GameA.Game
     [Unit(Id = 5020, Type = typeof(Rope))]
     public class Rope : UnitBase
     {
-        private bool _isPlaying;
+        public const int JointCount = 10;
+        private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
+        private bool _tied;
+        private int _ropeIndex;
+        private int _segmentIndex;
+        private UnitBase _tieUnit;
+        private Rope _preRope;
+        private Rope _nextRope;
 
         public override bool CanRope
         {
@@ -23,20 +30,6 @@ namespace GameA.Game
             get { return _segmentIndex; }
         }
 
-        public bool Tied
-        {
-            get { return _tied; }
-        }
-
-        public const int JointCount = 10;
-        private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
-        private bool _tied;
-        private int _ropeIndex;
-        private int _segmentIndex;
-        private UnitBase _tieUnit;
-        private Rope _preRope;
-        private Rope _nextRope;
-
         protected override bool OnInit()
         {
             //初始化时计算所在绳子的段数，用于限制绳子长度
@@ -51,6 +44,7 @@ namespace GameA.Game
                 {
                     _segmentIndex = 0;
                 }
+
                 CheckNextRopeSegmentIndex(_segmentIndex);
             }
 

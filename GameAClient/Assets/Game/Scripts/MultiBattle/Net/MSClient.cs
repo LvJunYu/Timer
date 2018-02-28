@@ -1,4 +1,6 @@
-﻿using GameA;
+﻿using System;
+using System.Collections.Generic;
+using GameA;
 using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -208,6 +210,19 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_LoginRet(Msg_MC_LoginRet msg, object netlink)
         {
+#if UNITY_STANDALONE_WIN
+            if (SocialApp.Instance.Env == EEnvironment.Production && msg.ResultCode == ECMLoginCode.ECMLC_NewVersion)
+            {
+                SocialGUIManager.ShowPopupDialog("检测到新版本，是否现在退出并下载", null,
+                    new KeyValuePair<string, Action>("取消", () => { }),
+                    new KeyValuePair<string, Action>("确定", () =>
+                    {
+//                        string lancherUrl = "";
+//                        Application.OpenURL(lancherUrl);
+                        SocialApp.Instance.Exit();
+                    }));
+            }
+#endif
             LogHelper.Info("Msg_MC_LoginRet: {0}", msg.ResultCode);
         }
 

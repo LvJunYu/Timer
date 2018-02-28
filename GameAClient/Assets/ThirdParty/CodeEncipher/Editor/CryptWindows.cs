@@ -1,8 +1,5 @@
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using UnityEngine;
 using UnityEditor;
 
 namespace J3Tech
@@ -48,13 +45,13 @@ namespace J3Tech
         public static void InitializeDlls()
         {
 #if UNITY_5
-            PluginImporter pluginImporter = AssetImporter.GetAtPath("Assets/CodeEncipher/Editor/Plugin/CryptWindows.dll") as PluginImporter;
+            PluginImporter pluginImporter = AssetImporter.GetAtPath("Assets/ThirdParty/CodeEncipher/Editor/Plugin/CryptWindows.dll") as PluginImporter;
             if (pluginImporter != null)
             {
                 pluginImporter.SetCompatibleWithEditor(true);
                 pluginImporter.SaveAndReimport();
             }
-            pluginImporter = AssetImporter.GetAtPath("Assets/CodeEncipher/Editor/Plugin/CryptWindowsX64.dll") as PluginImporter;
+            pluginImporter = AssetImporter.GetAtPath("Assets/ThirdParty/CodeEncipher/Editor/Plugin/CryptWindowsX64.dll") as PluginImporter;
             if (pluginImporter != null)
             {
                 pluginImporter.SetCompatibleWithEditor(true);
