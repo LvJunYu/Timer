@@ -322,8 +322,10 @@ namespace GameA.Game
                     {
                         _life = 99;
                     }
+
                     _life = value;
                 }
+
                 if (IsMain)
                 {
                     Messenger.Broadcast(EMessengerType.OnLifeChanged);
@@ -598,6 +600,11 @@ namespace GameA.Game
         public virtual bool CanRope
         {
             get { return _tableUnit.CanTieRope == 1; }
+        }
+
+        public virtual bool IsIndividual
+        {
+            get { return true; }
         }
 
         public virtual bool UseMagic()
@@ -1063,6 +1070,7 @@ namespace GameA.Game
                                         ConstDefineGM2D.InverseTextureSize;
                         }
                     }
+
                     IntVec2 tileTextureSize = GM2DTools.WorldToTile(modelSize);
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, tileTextureSize, _tableUnit);
                 }
@@ -1071,15 +1079,18 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
+
             var z = GetZ();
             if (UnitDefine.IsJet(Id))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
             }
+
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
+
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
@@ -1104,6 +1115,7 @@ namespace GameA.Game
                 z = Mathf.Clamp(z, min, max);
                 CheckClimbUnitZ(ref z);
             }
+
             return z;
         }
 
@@ -1224,6 +1236,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _eUnitState = EUnitState.Spacetiming;
             PlayMode.Instance.Freeze(this);
             ClearRunTime();
@@ -1887,7 +1900,8 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1)
+        public virtual bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1,
+            ESkillType skillType = ESkillType.Normal)
         {
             return true;
         }

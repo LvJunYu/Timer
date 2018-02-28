@@ -52,6 +52,11 @@ namespace GameA.Game
             get { return _targetUnit; }
         }
 
+        public int Id
+        {
+            get { return _tableUnit.Id; }
+        }
+
         public void OnGet()
         {
             _maskRandom = UnityEngine.Random.Range(0, 2);
@@ -163,6 +168,14 @@ namespace GameA.Game
                                     if (switchMagic != null)
                                     {
                                         switchMagic.OnTrigger();
+                                    }
+                                }
+                                else if (UnitDefine.MagicBeanId == unit.Id)
+                                {
+                                    var magicBean = unit as MagicBean;
+                                    if (magicBean != null)
+                                    {
+                                        magicBean.OnBulletHit(this);
                                     }
                                 }
                                 else if (UnitDefine.BrickId == unit.Id)

@@ -5,9 +5,6 @@
 ** Summary : JetBase
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Web;
 using SoyEngine;
 using UnityEngine;
 
@@ -49,7 +46,7 @@ namespace GameA.Game
 
         protected override void SetSkillValue()
         {
-            _skillCtrl.CurrentSkills[0].SetValue(_attackInterval, _castRange);
+            _skillCtrl.CurrentSkills[0].SkillBase.SetValue(_attackInterval, _castRange);
             if (_attackInterval < 10)
             {
                 _timeScale = 4;
@@ -133,7 +130,7 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1)
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1, ESkillType skillType = ESkillType.Normal)
         {
             if (id == 0)
             {
