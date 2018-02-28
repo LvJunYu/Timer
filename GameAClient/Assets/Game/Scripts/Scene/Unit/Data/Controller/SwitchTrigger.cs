@@ -6,6 +6,8 @@ namespace GameA.Game
     [Unit(Id = 8100, Type = typeof(SwitchTrigger))]
     public class SwitchTrigger : Magic
     {
+        private const string OnSpriteFormat = "M1SwitchTriggerPressOn_{0}";
+        private const string OffSpriteFormat = "M1SwitchTriggerPressOff_{0}";
         protected SwitchUnit _switchUnit;
         protected List<UnitBase> _units = new List<UnitBase>();
         protected EActiveState _trigger;
@@ -58,6 +60,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             _units.Add(other);
             SetTrigger(_trigger == EActiveState.Active ? EActiveState.Deactive : EActiveState.Active);
         }
@@ -108,17 +111,36 @@ namespace GameA.Game
 //            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
         }
 
+        protected override void InitAssetRotation(bool loop = false)
+        {
+            if (_animation == null)
+            {
+                if (_trigger == EActiveState.Active)
+                {
+                    _assetPath = string.Format(OnSpriteFormat, _unitDesc.Rotation);
+                }
+                else
+                {
+                    _assetPath = string.Format(OffSpriteFormat, _unitDesc.Rotation);
+                }
+            }
+            else
+            {
+                _animation.Init(((EDirectionType) Rotation).ToString(), loop);
+            }
+        }
+
         protected virtual void ChangView()
         {
             if (_view != null)
             {
                 if (_trigger == EActiveState.Active)
                 {
-                    _view.ChangeView("M1SwitchTriggerPressOn_" + _unitDesc.Rotation);
+                    _view.ChangeView(string.Format(OnSpriteFormat, _unitDesc.Rotation));
                 }
                 else
                 {
-                    _view.ChangeView("M1SwitchTriggerPressOff_" + _unitDesc.Rotation);
+                    _view.ChangeView(string.Format(OffSpriteFormat, _unitDesc.Rotation));
                 }
             }
         }

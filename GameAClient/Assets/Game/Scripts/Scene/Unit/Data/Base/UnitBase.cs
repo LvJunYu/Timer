@@ -681,7 +681,7 @@ namespace GameA.Game
             _assetPath = _tableUnit.Model;
         }
 
-        protected void InitAssetRotation(bool loop = false)
+        protected virtual void InitAssetRotation(bool loop = false)
         {
             if (_animation == null)
             {
