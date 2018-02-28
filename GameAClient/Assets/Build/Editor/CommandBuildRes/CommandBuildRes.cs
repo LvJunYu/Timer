@@ -12,7 +12,7 @@ public class CommandBuildRes
         var args = Environment.GetCommandLineArgs();
         BuildTarget buildTarget = BuildTarget.StandaloneWindows;
         
-        var inx = Array.FindIndex(args, s => s == "-buildTarget");
+        var inx = Array.FindIndex(args, s => s == "-bTarget");
         if (inx >= 0 && args.Length > inx+1)
         {
             var str = args[inx + 1];
@@ -32,14 +32,17 @@ public class CommandBuildRes
         if (inx >= 0  && args.Length > inx+1)
         {
             var str = args[inx + 1];
-            try
+            if (!string.IsNullOrEmpty(str) && str!="0")
             {
-                new Version(str);
-                resVersion = str;
-            }
-            catch (Exception)
-            {
-                // ignored
+                try
+                {
+                    new Version(str);
+                    resVersion = str;
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
 
