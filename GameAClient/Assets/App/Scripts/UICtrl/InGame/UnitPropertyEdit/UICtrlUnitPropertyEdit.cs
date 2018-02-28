@@ -1140,6 +1140,7 @@ namespace GameA
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
                 }
+
                 CheckNpcTaskNum();
                 EditHelper.CompleteEditUnitData(_originData, EditData);
             }
@@ -1154,7 +1155,7 @@ namespace GameA
             RefreshNpcTypeMenu();
         }
 
-        private void OnEditTypeMenuClick(EEditType editType)
+        public void OnEditTypeMenuClick(EEditType editType)
         {
             CloseUpCtrlPanel(false);
             _curEditType = editType;
@@ -1224,6 +1225,7 @@ namespace GameA
                 EditNpcDiaType.Close();
                 EditNpcTaskDock.Open();
             }
+
             _upCtrlUnitPropertyEditAdvance.RefreshView();
             EditNpcTaskDock.RefreshView();
             EditNpcDiaType.RefreshView();
@@ -1373,10 +1375,12 @@ namespace GameA
             {
                 EditData.UnitDesc.Rotation = (byte) EDirectionType.Up;
             }
+
             if (EditData.UnitExtra.NpcType == (byte) ENpcType.Dialog)
             {
                 EditData.UnitExtra.NpcTask.Clear();
             }
+
             int num = EditData.UnitExtra.NpcTask.Count;
             for (int i = 0; i < num; i++)
             {
@@ -1385,11 +1389,13 @@ namespace GameA
                 {
                     continue;
                 }
+
                 EditNpcTaregtDialog.CheckTargetType(task);
                 if (task.Targets == null)
                 {
                     continue;
                 }
+
                 if (task.Targets.Count == 0)
                 {
                     NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
@@ -1401,12 +1407,14 @@ namespace GameA
                     {
                         task.TargetNpcSerialNumber = task.Targets.Get<NpcTaskTargetDynamic>(0).TargetNpcNum;
                     }
+
                     if (task.TargetNpcSerialNumber == 0)
                     {
                         task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;
                     }
                 }
             }
+
             UnitBase unit;
             ColliderScene2D.CurScene.TryGetUnit(EditData.UnitDesc.Guid, out unit);
             if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
