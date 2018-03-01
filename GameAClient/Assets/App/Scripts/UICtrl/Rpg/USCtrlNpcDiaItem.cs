@@ -5,6 +5,7 @@ using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -23,7 +24,6 @@ namespace GameA
         private int _index;
         private Action _callback;
 
-
         private void Clear()
         {
             _cachedView.UpBtn.onClick.RemoveAllListeners();
@@ -33,6 +33,9 @@ namespace GameA
 
         public void Set(NpcDia dia, List<NpcDia> diaList, int index, Action callback)
         {
+            _cachedView.SelectImage.gameObject.SetActiveEx(false);
+            _cachedView.DragHelper.OnBeginDragAction = DragBegin;
+            _cachedView.DragHelper.OnEndDragAction = DragEnd;
             Clear();
             _cachedView.DelteBtn.onClick.AddListener(OnDelBtn);
             _cachedView.UpBtn.onClick.AddListener(OnUpBtn);
@@ -55,7 +58,35 @@ namespace GameA
             {
                 ColorUtility.TryParseHtmlString(dia.Color, out textColor);
             }
+
             _cachedView.DiaText.color = textColor;
+            if (dia.ColorList.Count > 0)
+            {
+                _cachedView.DiaText.color = Color.white;
+                string strtemp = "";
+                for (int i = 0; i < dia.Dia.Length; i++)
+                {
+                    string color;
+                    if (i > dia.ColorList.Count - 1)
+                    {
+                        color = NpcDia.brown;
+                    }
+                    else
+                    {
+                        color = dia.ColorList[i];
+                    }
+
+                    if (color == NpcDia.brown)
+                    {
+                        color = string.Format("#{0}", ColorUtility.ToHtmlStringRGBA(Color.white));
+                    }
+
+                    strtemp += String.Format("<color={0}>{1}</color>", color,
+                        dia.Dia[i]);
+                }
+
+                _cachedView.DiaText.text = strtemp;
+            }
         }
 
         private void SetIndex(int index)
@@ -160,6 +191,7 @@ namespace GameA
 
         public void setDiasble(int index)
         {
+            _cachedView.SelectImage.gameObject.SetActiveEx(false);
             _cachedView.DisableObj.SetActive(true);
             _cachedView.EnableObj.SetActive(false);
             SetIndex(index);
@@ -169,6 +201,27 @@ namespace GameA
         {
             _cachedView.DisableObj.SetActive(false);
             _cachedView.EnableObj.SetActive(true);
+        }
+
+        private void DragBegin()
+        {
+            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().transform;
+            _cachedView.transform.SetAsLastSibling();
+        }
+
+        private void DragEnd()
+        {
+            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent;
+            _cachedView.transform.SetSiblingIndex(_index);
+            SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent
+                .GetComponent<VerticalLayoutGroup>().SetLayoutVertical();
+            Rect rect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetInputRect();
+            if (Mathf.Abs(_cachedView.transform.position.x - rect.x) < rect.width / 2 &&
+                Mathf.Abs(_cachedView.transform.position.y - rect.y) < rect.height / 2)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().SetCurDiaItem(_dia);
+                _cachedView.SelectImage.gameObject.SetActiveEx(true);
+            }
         }
     }
 }
