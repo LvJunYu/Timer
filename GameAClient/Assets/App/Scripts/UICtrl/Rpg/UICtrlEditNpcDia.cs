@@ -317,6 +317,7 @@ namespace GameA
                         break;
                 }
 
+                SetSelectColor(_nowColor);
                 Color textColor;
                 ColorUtility.TryParseHtmlString(_curEditNpcDia.Color, out textColor);
                 _cachedView.DiaInputField.textComponent.color = textColor;
@@ -611,8 +612,10 @@ namespace GameA
 
         private void UseCommonDia(string str)
         {
+            _isRefreshDia = true;
             _cachedView.DiaInputField.onValueChanged.Invoke(str);
             _cachedView.DiaInputField.onEndEdit.Invoke(str);
+            _isRefreshDia = false;
         }
 
         public UIViewEditNpcDia GetVeiw()
@@ -684,22 +687,41 @@ namespace GameA
                 if (i > _curEditNpcDia.ColorList.Count - 1)
                 {
                     color = NpcDia.brown;
+                    _curEditNpcDia.ColorList.Add(color);
                 }
                 else
                 {
                     color = _curEditNpcDia.ColorList[i];
                 }
 
-                if (color == NpcDia.brown)
-                {
-                    color = string.Format("#{0}", ColorUtility.ToHtmlStringRGBA(Color.white));
-                }
+//                if (color == NpcDia.brown)
+//                {
+//                    color = string.Format("#{0}", ColorUtility.ToHtmlStringRGBA(Color.white));
+//                }
 
                 strtemp += String.Format("<color={0}>{1}</color>", color,
                     str[i]);
             }
 
             _cachedView.ShowDiaText.text = strtemp;
+        }
+
+        private void SetSelectColor(string color)
+        {
+            if (_cachedView.DiaInputField.SelectionBeginPosition == _cachedView.DiaInputField.SelectionEndPosition)
+            {
+                return;
+            }
+
+            for (int i = _cachedView.DiaInputField.SelectionBeginPosition - 1;
+                i < _cachedView.DiaInputField.SelectionEndPosition - 1;
+                i++)
+            {
+                _curEditNpcDia.ColorList[i] = color;
+            }
+
+            SetShowText(_cachedView.DiaInputField.text);
+            _cachedView.DiaInputField.SetDefaultValue();
         }
     }
 }
