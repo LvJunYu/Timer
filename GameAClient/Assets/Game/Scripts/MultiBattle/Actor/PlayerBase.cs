@@ -20,6 +20,7 @@ namespace GameA.Game
         protected bool _siTouLe;
         protected float _curRopeProgress;
         protected IntVec2 _ropeOffset;
+        protected int _curMagicBeanCount;
 
         [SerializeField] protected IntVec2 _revivePos;
         protected int _reviveScene;
@@ -107,6 +108,11 @@ namespace GameA.Game
             }
         }
 
+        public int CurMagicBeanCount
+        {
+            get { return _curMagicBeanCount; }
+        }
+
         public void Set(RoomUser roomUser)
         {
             _roomUser = roomUser;
@@ -148,6 +154,7 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
 
+            _curMagicBeanCount = 0;
             _gun = _gun ?? new Gun(this);
             _siTouLe = false;
             _dieTime = 0;
@@ -198,42 +205,64 @@ namespace GameA.Game
             return _unitExtra;
         }
 
-        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1)
+        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1,
+            ESkillType skillType = ESkillType.Normal)
         {
-            var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
-            if (tableEquipment == null)
-            {
-                LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
-                return false;
-            }
-
-            if (GameModeBase.DebugEnable())
-            {
-                GameModeBase.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
-                    _roomUser == null ? -1 : _roomUser.Guid, weaponId));
-            }
-
-            int skillId = tableEquipment.SkillId;
-            var tableSkill = TableManager.Instance.GetSkill(skillId);
-            if (tableSkill == null)
-            {
-                LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
-                return false;
-            }
-
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
-            _skillCtrl.RemoveSkill(skillId);
-            if (slot == -1 && !_skillCtrl.HasEmptySlot(out slot))
+            Table_Equipment tableEquipment;
+            int skillId = 0;
+            if (skillType == ESkillType.Normal)
             {
-                slot = _lastSlot + 1;
-                _lastSlot = slot;
-                if (_lastSlot == 2)
+                tableEquipment = TableManager.Instance.GetEquipment(weaponId);
+                if (tableEquipment == null)
                 {
-                    _lastSlot = -1;
+                    LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
+                    return false;
                 }
+
+                skillId = tableEquipment.SkillId;
+                var tableSkill = TableManager.Instance.GetSkill(skillId);
+                if (tableSkill == null)
+                {
+                    LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
+                    return false;
+                }
+
+                _skillCtrl.RemoveSkill(skillId);
+            }
+            else if (skillType == ESkillType.MagicBean)
+            {
+                tableEquipment = MagicBean.TableEquipment;
+            }
+            else
+            {
+                LogHelper.Error("SetWeapon Failed, skillType = {0}", skillType);
+                return false;
             }
 
-            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra))
+            if (slot == -1)
+            {
+                if (skillType == ESkillType.MagicBean)
+                {
+                    slot = _skillCtrl.GetMagicBeanSlot();
+                    if (slot == -1)
+                    {
+                        slot = _skillCtrl.CurrentSkills.Length - 1;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (slot == -1)
+                {
+                    slot = _skillCtrl.GetValidSlot(_lastSlot);
+                }
+
+                _lastSlot = slot;
+            }
+
+            if (!_skillCtrl.SetSkill(skillId, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra, skillType))
             {
                 return false;
             }
@@ -254,9 +283,17 @@ namespace GameA.Game
                 Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
             }
 
-//            CalculateMaxHp();
-//            OnHpChanged(_maxHp);
-            ChangeGunView(slot, null);
+            if (skillType == ESkillType.Normal)
+            {
+                ChangeGunView(slot, null);
+            }
+
+            if (GameModeBase.DebugEnable())
+            {
+                GameModeBase.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
+                    _roomUser == null ? -1 : _roomUser.Guid, weaponId));
+            }
+
             return true;
         }
 
@@ -267,19 +304,6 @@ namespace GameA.Game
             {
                 _gun.ChangeView(tableEquip.Model);
                 _gun.ChangeGun(tableEquip, eShootDir);
-            }
-        }
-
-        private void CalculateMaxHp()
-        {
-//            _maxHp = _tableUnit.Hp;
-            for (int i = 0; i < _tableEquipments.Length; i++)
-            {
-                var tableEquip = _tableEquipments[i];
-                if (tableEquip != null)
-                {
-                    _maxHp += tableEquip.HpAdd;
-                }
             }
         }
 
@@ -775,6 +799,7 @@ namespace GameA.Game
                             PlayMode.Instance.SceneState.MainUnitSiTouLe();
                         }
                     }
+
                     //单人模式延迟1秒结算，用于播放DeadMark
                     if (_dieTime == 100)
                     {
@@ -785,6 +810,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 //多人模式死后可以看他人视角
                 if (GM2DGame.Instance.GameMode.IsMulti && _dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
                     UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
@@ -1444,7 +1470,71 @@ namespace GameA.Game
 
         public bool PickUpMagicBean()
         {
-            return true;
+            if (_curMagicBeanCount < MagicBean.MaxCarryCount)
+            {
+                if (SetWeapon(0, null, -1, ESkillType.MagicBean))
+                {
+                    _curMagicBeanCount++;
+                    int slot = _skillCtrl.GetMagicBeanSlot();
+                    if (slot != -1 && IsMain)
+                    {
+                        Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged,
+                            slot, _curMagicBeanCount, MagicBean.MaxCarryCount);
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryUseMagicBean()
+        {
+            if (_curMagicBeanCount <= 0)
+            {
+                LogHelper.Error("TryUseMagicBean fail, _curMagicBeanCount <= 0");
+                return false;
+            }
+
+            IntVec2 pos = _curPos;
+            pos.y = CenterPos.y / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            if (_moveDirection == EMoveDirection.Left)
+            {
+                pos.x = _curPos.x / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            }
+            else if (_moveDirection == EMoveDirection.Right)
+            {
+                pos.x = CenterRightPos.x / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            }
+            else
+            {
+                LogHelper.Error("TryUseMagicBean fail, _moveDirection = {0}", _moveDirection);
+                return false;
+            }
+
+            var tableUnit = TableManager.Instance.GetUnit(UnitDefine.MagicBeanId);
+            var checkGrid = tableUnit.GetDataGrid(pos.x, pos.y, 0, Vector2.one);
+            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid);
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (units[i].IsAlive && units[i] != this)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
+                    return false;
+                }
+            }
+
+            var magicBean = PlayMode.Instance.CreateRuntimeUnit(UnitDefine.MagicBeanId, pos) as MagicBean;
+            if (magicBean != null)
+            {
+                magicBean.OnPlay();
+                magicBean.PutDownByPlayer(this);
+                _curMagicBeanCount--;
+                return true;
+            }
+
+            return false;
         }
     }
 }

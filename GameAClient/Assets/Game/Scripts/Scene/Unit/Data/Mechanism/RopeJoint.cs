@@ -21,6 +21,11 @@ namespace GameA.Game
         private IntVec2 _jumpDir;
         private IntVec2 _jumpAwayDir;
 
+        public override bool IsIndividual
+        {
+            get { return false; }
+        }
+
         public UnitBase PreJoint
         {
             get { return _preJoint; }

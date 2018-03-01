@@ -6,7 +6,14 @@ namespace GameA.Game
     [Unit(Id = 5024, Type = typeof(Cirrus))]
     public class Cirrus : UnitBase
     {
+        public const int MaxCirrusCount = 20;
+        public const int GrowSpeed = 16;
         private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
+
+        public override bool IsIndividual
+        {
+            get { return false; }
+        }
 
         protected override bool OnInit()
         {
@@ -18,7 +25,7 @@ namespace GameA.Game
             SetSortingOrderBackground();
             return true;
         }
-        
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
@@ -27,6 +34,7 @@ namespace GameA.Game
                 var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
                 _players[i].OnIntersectCirrus(this, _colliderGrid.Intersects(grid));
             }
+
             for (int i = _players.Count - 1; i >= 0; i--)
             {
                 if (!_colliderGrid.Intersects(_players[i].ColliderGrid))
@@ -35,7 +43,12 @@ namespace GameA.Game
                 }
             }
         }
-        
+
+        public override void UpdateView(float deltaTime)
+        {
+            UpdateTransPos();
+        }
+
         public override void OnIntersect(UnitBase other)
         {
             if (other.IsPlayer)
@@ -52,6 +65,14 @@ namespace GameA.Game
         {
             base.Clear();
             _players.Clear();
+        }
+        
+        public void ChangeView(string spriteName)
+        {
+            if (_view != null)
+            {
+                _view.ChangeView(spriteName);
+            }
         }
 
     }

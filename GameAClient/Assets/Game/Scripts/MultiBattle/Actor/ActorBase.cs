@@ -462,7 +462,7 @@ namespace GameA.Game
                         case EWeaponInputType.GetKey:
                             if (_input.GetKeyApplied(_skillInputs[i]))
                             {
-                                if (_skillCtrl.Fire(i))
+                                if (_skillCtrl.Fire(i) && skill.SkillType == ESkillType.Normal)
                                 {
                                     ChangeGunView(i, eShootDir);
                                 }
@@ -474,7 +474,7 @@ namespace GameA.Game
                         case EWeaponInputType.GetKeyUp:
                             if (_input.GetKeyUpApplied(_skillInputs[i]))
                             {
-                                if (_skillCtrl.Fire(i))
+                                if (_skillCtrl.Fire(i) && skill.SkillType == ESkillType.Normal)
                                 {
                                     ChangeGunView(i, eShootDir);
                                 }

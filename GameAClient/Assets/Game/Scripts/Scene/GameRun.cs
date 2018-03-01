@@ -80,6 +80,7 @@ namespace GameA.Game
             PlayerManager.Instance.Dispose();
             TeamManager.Instance.Dispose();
             RopeManager.Instance.Dispose();
+            CirrusManager.Instance.Dispose();
 
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();

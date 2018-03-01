@@ -33,7 +33,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1)
+        public override bool SetWeapon(int id, UnitExtraDynamic unitExtra = null, int slot = -1, ESkillType skillType = ESkillType.Normal)
         {
             if (id == 0)
             {

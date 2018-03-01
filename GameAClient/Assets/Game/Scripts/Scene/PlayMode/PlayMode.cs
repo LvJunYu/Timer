@@ -113,6 +113,7 @@ namespace GameA.Game
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
             RopeManager.Instance.Reset();
+            CirrusManager.Instance.Reset();
             PlayerManager.Instance.Reset();
             TeamManager.Instance.Reset();
             CameraManager.Instance.Reset();
