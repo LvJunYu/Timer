@@ -46,6 +46,16 @@ namespace GameA
             set { _env = value; }
         }
 
+        public PublishChannel.EType Channel
+        {
+            set { _publishChannel = value; }
+        }
+
+        public LogHelper.ELogLevel LogLevel
+        {
+            set { _logLevel = value; }
+        }
+
         public string MasterServerAddress
         {
             get { return _masterServerAddress; }
