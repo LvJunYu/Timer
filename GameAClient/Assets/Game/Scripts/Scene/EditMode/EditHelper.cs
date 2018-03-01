@@ -314,6 +314,13 @@ namespace GameA.Game
                 unitEditData.UnitExtra.MaxAliveMonster = 5;
             }
 
+            if (UnitDefine.TimerId == id)
+            {
+                unitEditData.UnitExtra.TimerSecond = 30;
+                unitEditData.UnitExtra.TimerMinSecond = 30;
+                unitEditData.UnitExtra.TimerMaxSecond = 30;
+            }
+
             return unitEditData;
         }
 

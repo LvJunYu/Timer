@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -447,7 +445,6 @@ namespace GameA
             EditData = _originData;
             EditData.UnitExtra = _originData.UnitExtra.Clone();
             _project = GM2DGame.Instance.GameMode.Project;
-//            _project.ProjectType = EProjectType.PT_Compete; //todo 临时
             if (_project == null)
             {
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
@@ -1320,6 +1317,12 @@ namespace GameA
             if (_curEditType == EEditType.Spawn)
             {
                 OnSpawnMenuClick(_curSelectedPlayerIndex, true);
+                return true;
+            }
+
+            if (_curEditType == EEditType.MoveDirection && _curId == UnitDefine.TimerId)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
                 return true;
             }
 

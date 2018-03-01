@@ -50,6 +50,7 @@ namespace GameA.Game
                         return unit.OnLeftHit(other, ref value, true);
                 }
             }
+
             return false;
         }
 
@@ -67,6 +68,7 @@ namespace GameA.Game
                 case 3:
                     return point.x - validRect.Min.x + 1;
             }
+
             return 1;
         }
 
@@ -139,6 +141,7 @@ namespace GameA.Game
                     return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMin - size.y,
                         centerPos.x + size.x / 2 - 1, colliderGrid.YMin - 1);
             }
+
             return Grid2D.zero;
         }
 
@@ -174,6 +177,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             qua = owner.rotation * Quaternion.Euler(0, 0, slot.Bone.WorldRotationX);
             pos = owner.position +
                   owner.rotation *
@@ -189,17 +193,20 @@ namespace GameA.Game
                 LogHelper.Error("FindSlot failed ani == null");
                 return false;
             }
+
             if (ani.Skeleton == null)
             {
                 LogHelper.Error("FindSlot failed Skeleton == null,{0}", ani.ToString());
                 return false;
             }
+
             slot = ani.Skeleton.FindSlot(eSlotType.ToString());
             if (slot == null)
             {
                 LogHelper.Warning("FindSlot failed,{0}|{1}", ani, eSlotType.ToString());
                 return false;
             }
+
             return true;
         }
 
@@ -209,6 +216,7 @@ namespace GameA.Game
             {
                 return null;
             }
+
             return skeleton.state.Data.skeletonData.FindAnimation(aniName);
         }
 
@@ -221,6 +229,7 @@ namespace GameA.Game
                 LogHelper.Error("GetAnimation Failed,{0} | {1}", skeleton, animationName);
                 return null;
             }
+
             return skeleton.state.SetAnimation(trackIndex, animation, loop);
         }
 
@@ -232,6 +241,7 @@ namespace GameA.Game
                 LogHelper.Error("GetAnimationDuration Failed,{0}", aniName);
                 return 0;
             }
+
             return ani.Duration;
         }
 
@@ -269,6 +279,7 @@ namespace GameA.Game
                 Vector3 p2 = new Vector3(hLineLength, y * tileSize.y) + origin;
                 Debug.DrawLine(p1, p2);
             }
+
             for (var x = 0; x <= hCount; ++x)
             {
                 Vector3 p1 = new Vector3(x * tileSize.x, 0) + origin;
@@ -283,6 +294,7 @@ namespace GameA.Game
             {
                 return Vector3.zero;
             }
+
             return CameraManager.Instance.RendererCamera.ScreenToWorldPoint(screenPosition);
         }
 
@@ -379,10 +391,12 @@ namespace GameA.Game
             {
                 return false;
             }
+
             if (outer.Min.x > inner.Min.x || outer.Min.y > inner.Min.y)
             {
                 return false;
             }
+
             return true;
         }
 
@@ -394,6 +408,7 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return false;
         }
 
@@ -412,6 +427,7 @@ namespace GameA.Game
             {
                 mapRect2D.Scale = ToProto(node.Scale);
             }
+
             return mapRect2D;
         }
 
@@ -441,6 +457,7 @@ namespace GameA.Game
                 res.IsNull = true;
                 return res;
             }
+
             res.Guid = ToProto(index);
             res.MoveDirection = (byte) data.MoveDirection;
             res.Active = data.Active;
@@ -468,6 +485,11 @@ namespace GameA.Game
             res.MonsterId = data.MonsterId;
             res.MaxAliveMonster = data.MaxAliveMonster;
             res.MaxCreatedMonster = data.MaxCreatedMonster;
+            res.TimerSecond = data.TimerSecond;
+            res.TimerMinSecond = data.TimerMinSecond;
+            res.TimerMaxSecond = data.TimerMaxSecond;
+            res.TimerRandom = data.TimerRandom;
+            res.TimerCirculation = data.TimerCirculation;
             var drops = data.Drops;
             for (int i = 0, count = drops.Count; i < count; i++)
             {
@@ -477,6 +499,7 @@ namespace GameA.Game
                     res.Drops.Add(val);
                 }
             }
+
             var knockbackForces = data.KnockbackForces;
             for (int i = 0, count = knockbackForces.Count; i < count; i++)
             {
@@ -486,6 +509,7 @@ namespace GameA.Game
                     res.KnockbackForces.Add(val);
                 }
             }
+
             var addStates = data.AddStates;
             for (int i = 0, count = addStates.Count; i < count; i++)
             {
@@ -495,11 +519,13 @@ namespace GameA.Game
                     res.AddStates.Add(val);
                 }
             }
+
             var internalUnitExtras = data.InternalUnitExtras;
             for (int i = 0, count = internalUnitExtras.Count; i < count; i++)
             {
                 res.InternalUnitExtras.Add(ToProto(IntVec3.zero, internalUnitExtras.Get<UnitExtraDynamic>(i)));
             }
+
             //Npc相关数据
             res.NpcType = data.NpcType;
             res.NpcName = data.NpcName;
@@ -516,6 +542,7 @@ namespace GameA.Game
                     res.NpcTask.Add(val);
                 }
             }
+
             return res;
         }
 
@@ -525,10 +552,12 @@ namespace GameA.Game
             {
                 return null;
             }
+
             if (unitExtra == null)
             {
                 unitExtra = new UnitExtraDynamic();
             }
+
             unitExtra.MoveDirection = (EMoveDirection) data.MoveDirection;
             unitExtra.Active = (byte) data.Active;
             unitExtra.ChildId = (ushort) data.ChildId;
@@ -547,6 +576,7 @@ namespace GameA.Game
             {
                 unitExtra.Set(data.Drops[i], UnitExtraDynamic.FieldTag.Drops, i);
             }
+
             unitExtra.EffectRange = (ushort) data.EffectRange;
             unitExtra.CastRange = (ushort) data.CastRange;
             unitExtra.ViewRange = (ushort) data.ViewRange;
@@ -558,15 +588,22 @@ namespace GameA.Game
             unitExtra.MonsterIntervalTime = (ushort) data.MonsterIntervalTime;
             unitExtra.MonsterId = (ushort) data.MonsterId;
             unitExtra.MaxAliveMonster = (byte) data.MaxAliveMonster;
+            unitExtra.TimerSecond = (byte) data.TimerSecond;
+            unitExtra.TimerMinSecond = (byte) data.TimerMinSecond;
+            unitExtra.TimerMaxSecond = (byte) data.TimerMaxSecond;
+            unitExtra.TimerRandom = data.TimerRandom;
+            unitExtra.TimerCirculation = data.TimerCirculation;
             unitExtra.MaxCreatedMonster = (ushort) data.MaxCreatedMonster;
             for (int i = 0; i < data.KnockbackForces.Count; i++)
             {
                 unitExtra.Set((ushort) data.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);
             }
+
             for (int i = 0; i < data.AddStates.Count; i++)
             {
                 unitExtra.Set((ushort) data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
             }
+
             for (int i = 0; i < TeamManager.MaxTeamCount; i++)
             {
                 if (i < data.InternalUnitExtras.Count)
@@ -579,6 +616,7 @@ namespace GameA.Game
                     unitExtra.Set<UnitExtraDynamic>(null, UnitExtraDynamic.FieldTag.InternalUnitExtras, i);
                 }
             }
+
             //Npc相关数据
             unitExtra.NpcType = (byte) data.NpcType;
             unitExtra.NpcName = data.NpcName;
@@ -592,6 +630,7 @@ namespace GameA.Game
                 npctaskDynamic.Set(data.NpcTask[i]);
                 unitExtra.Set(npctaskDynamic, UnitExtraDynamic.FieldTag.NpcTask, i);
             }
+
             return unitExtra;
         }
 
@@ -701,6 +740,7 @@ namespace GameA.Game
             {
                 return other;
             }
+
             int xMinLength = grid.XMin - other.XMin;
             int yMinLength = grid.YMin - other.YMin;
             int xMaxLength = other.XMax - grid.XMax;
@@ -709,18 +749,22 @@ namespace GameA.Game
             {
                 grid.XMin = other.XMin + xMinLength / size.x * size.x;
             }
+
             if (yMinLength % size.y != 0)
             {
                 grid.YMin = other.YMin + yMinLength / size.y * size.y;
             }
+
             if (xMaxLength % size.x != 0)
             {
                 grid.XMax = other.XMax - xMaxLength / size.x * size.x;
             }
+
             if (yMaxLength % size.y != 0)
             {
                 grid.YMax = other.YMax - yMaxLength / size.y * size.y;
             }
+
             return grid;
         }
 
@@ -735,6 +779,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
             unitDesc.Scale = targetNode.Scale;
@@ -744,6 +789,7 @@ namespace GameA.Game
                 LogHelper.Error("WorldPosToTileIndex failed,{0}", unitDesc.Id);
                 return false;
             }
+
             var grid = IntersectWith(tile, targetNode, tableUnit);
             unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
             return true;
@@ -764,6 +810,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             unitDesc.Id = targetNode.Id;
             unitDesc.Rotation = targetNode.Rotation;
             unitDesc.Scale = targetNode.Scale;
@@ -773,6 +820,7 @@ namespace GameA.Game
                 LogHelper.Error("WorldPosToTileIndex failed,{0}", unitDesc.Id);
                 return false;
             }
+
             var grid = IntersectWith(tile, targetNode, tableUnit);
             unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
             return true;
@@ -786,12 +834,14 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitObject failed,{0}", tile);
                 return false;
             }
+
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(colliderNode.Id);
             if (tableUnit == null)
             {
                 LogHelper.Error("TryGetUnitObject failed,{0}", colliderNode);
                 return false;
             }
+
             unitDesc.Id = colliderNode.Id;
             unitDesc.Rotation = colliderNode.Rotation;
             unitDesc.Scale = colliderNode.Scale;
@@ -805,6 +855,7 @@ namespace GameA.Game
                 unitDesc.Guid = tableUnit.ColliderToRenderer(new IntVec3(grid.XMin, grid.YMin, colliderNode.Depth),
                     colliderNode.Rotation);
             }
+
             return true;
         }
 
@@ -817,6 +868,7 @@ namespace GameA.Game
                 LogHelper.Error("GetUnitDragingOffset called but id is invalid {0}!", id);
                 return res;
             }
+
             if (tableUnit.EGeneratedType == EGeneratedType.Spine)
             {
                 IntVec2 size = tableUnit.GetDataSize(0, Vector2.one);
@@ -824,6 +876,7 @@ namespace GameA.Game
                 offset.x = 0;
                 res = offset;
             }
+
             return -res;
         }
 
@@ -891,10 +944,12 @@ namespace GameA.Game
                     break;
                 }
             }
+
             if (tableUnit.EGeneratedType == EGeneratedType.Spine && !UnitDefine.IsBullet(tableUnit.Id))
             {
                 offsetInWorld.y -= modelSizeInWorld.y * 0.5f;
             }
+
             return offsetInWorld;
         }
 
@@ -927,11 +982,13 @@ namespace GameA.Game
                 rotation = (byte) (angle / 90);
                 return true;
             }
+
             if ((angle + 45) % 90 == 0)
             {
                 rotation = (byte) ((angle + 45) / 90 + 3);
                 return true;
             }
+
             rotation = 0;
             return false;
         }
@@ -943,6 +1000,7 @@ namespace GameA.Game
                 rotation = (byte) (angle / 90);
                 return true;
             }
+
             rotation = 0;
             return false;
         }

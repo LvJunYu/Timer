@@ -36,6 +36,11 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.MonsterIntervalTime, "MonsterIntervalTime");
             DefineField<ushort>(FieldTag.MaxCreatedMonster, "MaxCreatedMonster");
             DefineField<byte>(FieldTag.MaxAliveMonster, "MaxAliveMonster");
+            DefineField<byte>(FieldTag.TimerSecond, "TimerSecond");
+            DefineField<byte>(FieldTag.TimerMinSecond, "TimerMinSecond");
+            DefineField<byte>(FieldTag.TimerMaxSecond, "TimerMaxSecond");
+            DefineField<bool>(FieldTag.TimerRandom, "TimerRandom");
+            DefineField<bool>(FieldTag.TimerCirculation, "TimerCirculation");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
@@ -78,6 +83,11 @@ namespace GameA.Game
             public static readonly int MonsterIntervalTime = _nextId++;
             public static readonly int MaxCreatedMonster = _nextId++;
             public static readonly int MaxAliveMonster = _nextId++;
+            public static readonly int TimerSecond = _nextId++;
+            public static readonly int TimerMinSecond = _nextId++;
+            public static readonly int TimerMaxSecond = _nextId++;
+            public static readonly int TimerRandom = _nextId++;
+            public static readonly int TimerCirculation = _nextId++;
             public static readonly int MonsterId = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
@@ -263,6 +273,36 @@ namespace GameA.Game
             set { Set(value, FieldTag.MaxAliveMonster); }
         }
 
+        public byte TimerSecond
+        {
+            get { return Get<byte>(FieldTag.TimerSecond); }
+            set { Set(value, FieldTag.TimerSecond); }
+        }
+
+        public byte TimerMinSecond
+        {
+            get { return Get<byte>(FieldTag.TimerMinSecond); }
+            set { Set(value, FieldTag.TimerMinSecond); }
+        }
+
+        public byte TimerMaxSecond
+        {
+            get { return Get<byte>(FieldTag.TimerMaxSecond); }
+            set { Set(value, FieldTag.TimerMaxSecond); }
+        }
+
+        public bool TimerRandom
+        {
+            get { return Get<bool>(FieldTag.TimerRandom); }
+            set { Set(value, FieldTag.TimerRandom); }
+        }
+
+        public bool TimerCirculation
+        {
+            get { return Get<bool>(FieldTag.TimerCirculation); }
+            set { Set(value, FieldTag.TimerCirculation); }
+        }
+        
         public ushort MonsterId
         {
             get { return Get<ushort>(FieldTag.MonsterId); }
@@ -507,6 +547,10 @@ namespace GameA.Game
                     return 1;
                 case EAdvanceAttribute.MaxAliveMonster:
                     return 1;
+                case EAdvanceAttribute.TimerSecond:
+                case EAdvanceAttribute.TimerMinSecond:
+                case EAdvanceAttribute.TimerMaxSecond:
+                    return 1;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 1;
                 case EAdvanceAttribute.MaxTaskTimeLimit:
@@ -554,6 +598,10 @@ namespace GameA.Game
                     return 300;
                 case EAdvanceAttribute.MaxAliveMonster:
                     return 10;
+                case EAdvanceAttribute.TimerSecond:
+                case EAdvanceAttribute.TimerMinSecond:
+                case EAdvanceAttribute.TimerMaxSecond:
+                    return 99;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 99;
                 case EAdvanceAttribute.MaxTaskTimeLimit:
@@ -584,6 +632,9 @@ namespace GameA.Game
                 case EAdvanceAttribute.CureIncrease:
                 case EAdvanceAttribute.MaxCreatedMonster:
                 case EAdvanceAttribute.MaxAliveMonster:
+                case EAdvanceAttribute.TimerSecond:
+                case EAdvanceAttribute.TimerMinSecond:
+                case EAdvanceAttribute.TimerMaxSecond:
                     return 1;
             }
 
@@ -721,6 +772,9 @@ namespace GameA.Game
         MonsterIntervalTime,
         MaxCreatedMonster,
         MaxAliveMonster,
+        TimerSecond,
+        TimerMinSecond,
+        TimerMaxSecond,
         MaxTaskKillOrColltionNum,
         MaxTaskTimeLimit,
         Spawn,

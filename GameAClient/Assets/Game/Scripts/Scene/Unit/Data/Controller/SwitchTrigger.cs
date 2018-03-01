@@ -108,7 +108,6 @@ namespace GameA.Game
             }
 
             ChangView();
-//            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
         }
 
         protected override void InitAssetRotation(bool loop = false)
