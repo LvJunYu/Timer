@@ -79,7 +79,7 @@ namespace GameA.Game
                 return;
             }
 
-            if (_downUnit != null && UnitDefine.IsEarth(_downUnit.Id))
+            if (_downUnit != null && UnitDefine.CanGrowCirrus(_downUnit))
             {
                 CirrusManager.Instance.CreateCirrus(_curPos);
                 PlayMode.Instance.DestroyUnit(this);

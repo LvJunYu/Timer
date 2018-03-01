@@ -14,6 +14,7 @@ namespace GameA.Game
         protected bool _inLadder;
         protected bool _inCirrus;
         protected int _dropLadderTimer;
+        protected int _dropCirrusTimer;
         protected List<UnitBase> _inLadders = new List<UnitBase>(4);
         protected List<UnitBase> _inCirrusUnits = new List<UnitBase>(4);
 
@@ -58,7 +59,8 @@ namespace GameA.Game
             get
             {
                 return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                       ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope;
+                       ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus ||
+                       ClimbState == EClimbState.Rope;
             }
         }
 
@@ -77,11 +79,6 @@ namespace GameA.Game
             get { return _eClimbState; }
         }
 
-        public bool InLadder
-        {
-            get { return _inLadder; }
-        }
-
         protected override void Clear()
         {
             base.Clear();
@@ -91,7 +88,10 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _inLadder = false;
             _inLadders.Clear();
+            _inCirrus = false;
+            _inCirrusUnits.Clear();
             _dropLadderTimer = 0;
+            _dropCirrusTimer = 0;
             _climbJump = false;
             _stepY = 0;
         }
@@ -219,7 +219,8 @@ namespace GameA.Game
 
                 SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
             }
-            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up || ClimbState == EClimbState.Ladder)
+            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up ||
+                     ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus)
             {
                 var friction = MaxFriction;
                 if (_fanForce.x == 0)
@@ -246,6 +247,18 @@ namespace GameA.Game
             return false;
         }
 
+        protected bool CheckCirrus()
+        {
+            if (_inCirrus && _dropCirrusTimer == 0)
+            {
+                SpeedX = 0;
+                SetClimbState(EClimbState.Cirrus, _inCirrusUnits[0]);
+                return true;
+            }
+
+            return false;
+        }
+
         protected virtual void CheckClimb()
         {
             switch (ClimbState)
@@ -253,7 +266,10 @@ namespace GameA.Game
                 case EClimbState.None:
                     if (_input.GetKeyApplied(EInputType.Down) && !_grounded || _input.GetKeyApplied(EInputType.Up))
                     {
-                        CheckLadder();
+                        if (!CheckLadder())
+                        {
+                            CheckCirrus();
+                        }
                     }
 
                     break;
@@ -285,6 +301,42 @@ namespace GameA.Game
                         {
                             ropeJoint.DragRope(IntVec2.left);
                         }
+                    }
+
+                    break;
+                case EClimbState.Cirrus:
+                    if (!CheckCirrusVerticalFloor())
+                    {
+                        SetClimbState(EClimbState.None);
+                        break;
+                    }
+
+                    if (_input.GetKeyApplied(EInputType.Down) && _grounded)
+                    {
+                        SetClimbState(EClimbState.None);
+                        break;
+                    }
+
+                    if (CheckCirrusHorizontalFloor())
+                    {
+                        if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            if (!CheckCirrusHorizontalFloor(_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            if (!CheckCirrusHorizontalFloor(-_curMaxSpeedX))
+                            {
+                                _motorAcc = 0;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SetClimbState(EClimbState.None);
                     }
 
                     break;
@@ -327,7 +379,10 @@ namespace GameA.Game
                 case EClimbState.Left:
                     if (_input.GetKeyApplied(EInputType.Right))
                     {
-                        CheckLadder();
+                        if (!CheckLadder())
+                        {
+                            CheckCirrus();
+                        }
                     }
 
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
@@ -345,7 +400,10 @@ namespace GameA.Game
                 case EClimbState.Right:
                     if (_input.GetKeyApplied(EInputType.Left))
                     {
-                        CheckLadder();
+                        if (!CheckLadder())
+                        {
+                            CheckCirrus();
+                        }
                     }
 
                     if (_input.GetKeyApplied(EInputType.Down) && _grounded)
@@ -363,7 +421,10 @@ namespace GameA.Game
                 case EClimbState.Up:
                     if (_input.GetKeyApplied(EInputType.Down))
                     {
-                        CheckLadder();
+                        if (!CheckLadder())
+                        {
+                            CheckCirrus();
+                        }
                     }
 
                     if (CheckUpClimbFloor())
@@ -375,6 +436,13 @@ namespace GameA.Game
                                 if (CheckLadder())
                                 {
                                     if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                                    {
+                                        _motorAcc = 0;
+                                    }
+                                }
+                                else if (CheckCirrus())
+                                {
+                                    if (!CheckCirrusHorizontalFloor(_curMaxSpeedX))
                                     {
                                         _motorAcc = 0;
                                     }
@@ -392,6 +460,13 @@ namespace GameA.Game
                                 if (CheckLadder())
                                 {
                                     if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                                    {
+                                        _motorAcc = 0;
+                                    }
+                                }
+                                else if (CheckCirrus())
+                                {
+                                    if (!CheckCirrusHorizontalFloor(-_curMaxSpeedX))
                                     {
                                         _motorAcc = 0;
                                     }
@@ -457,6 +532,46 @@ namespace GameA.Game
             return false;
         }
 
+        protected bool CheckCirrusVerticalFloor(int deltaPosY = 0)
+        {
+            if (!CanClimb) return false;
+            var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && unit.Id == UnitDefine.CirrusId)
+                {
+                    _curClimbUnit = unit;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected bool CheckCirrusHorizontalFloor(int deltaPosX = 0)
+        {
+            if (!CanClimb) return false;
+            var grid = new Grid2D(CenterPos.x + deltaPosX, CenterPos.y, CenterPos.x + deltaPosX, CenterPos.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && unit.Id == UnitDefine.CirrusId)
+                {
+                    _curClimbUnit = unit;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         protected virtual bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
             if (!CanClimb) return false;
@@ -491,6 +606,29 @@ namespace GameA.Game
 //                                {
 //                                    SpeedY = -_curMaxSpeedX;
 //                                }
+                                if (_grounded)
+                                {
+                                    _eClimbState = EClimbState.None;
+                                }
+                            }
+
+                            break;
+                        case EClimbState.Cirrus:
+                            SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                if (CheckCirrusVerticalFloor(_curMaxSpeedX))
+                                {
+                                    SpeedY = _curMaxSpeedX;
+                                }
+                            }
+                            else if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                if (CheckCirrusVerticalFloor(-_curMaxSpeedX))
+                                {
+                                    SpeedY = -_curMaxSpeedX;
+                                }
+
                                 if (_grounded)
                                 {
                                     _eClimbState = EClimbState.None;
@@ -535,6 +673,10 @@ namespace GameA.Game
                                     {
                                         SpeedY = _curMaxSpeedX;
                                     }
+                                    else if (CheckCirrus() && CheckCirrusVerticalFloor(_curMaxSpeedX))
+                                    {
+                                        SpeedY = _curMaxSpeedX;
+                                    }
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
@@ -546,6 +688,10 @@ namespace GameA.Game
                                 else
                                 {
                                     if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    {
+                                        SpeedY = -_curMaxSpeedX;
+                                    }
+                                    else if (CheckCirrus() && CheckCirrusVerticalFloor(-_curMaxSpeedX))
                                     {
                                         SpeedY = -_curMaxSpeedX;
                                     }
@@ -572,6 +718,10 @@ namespace GameA.Game
                                     {
                                         SpeedY = _curMaxSpeedX;
                                     }
+                                    else if (CheckCirrus() && CheckCirrusVerticalFloor(_curMaxSpeedX))
+                                    {
+                                        SpeedY = _curMaxSpeedX;
+                                    }
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
@@ -583,6 +733,10 @@ namespace GameA.Game
                                 else
                                 {
                                     if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    {
+                                        SpeedY = -_curMaxSpeedX;
+                                    }
+                                    else if (CheckCirrus() && CheckCirrusVerticalFloor(-_curMaxSpeedX))
                                     {
                                         SpeedY = -_curMaxSpeedX;
                                     }
@@ -661,6 +815,7 @@ namespace GameA.Game
             {
                 _onClay = false;
             }
+
             //进入状态
             switch (_eClimbState)
             {
@@ -676,7 +831,8 @@ namespace GameA.Game
 
             if (GameModeBase.DebugEnable())
             {
-                GameModeBase.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(), GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(),
+                    GetType().Name));
             }
         }
 
@@ -779,7 +935,8 @@ namespace GameA.Game
                 UpdateTransPos();
                 if (GameModeBase.DebugEnable())
                 {
-                    GameModeBase.WriteDebugData(string.Format("Type = {3}, Guid = X: {0} Y:{1},  _trans.position = {2} ", Guid.x, Guid.y,
+                    GameModeBase.WriteDebugData(string.Format(
+                        "Type = {3}, Guid = X: {0} Y:{1},  _trans.position = {2} ", Guid.x, Guid.y,
                         _trans.position, GetType().Name));
                 }
             }

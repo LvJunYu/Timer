@@ -70,6 +70,7 @@ namespace GameA.Game
 
     public class WholeCirrus
     {
+        private const string SpriteFormat = "M1Cirrus_{0}";
         private const int GrowSpeed = Cirrus.GrowSpeed;
         private const int CirrusId = UnitDefine.CirrusId;
         private readonly List<Cirrus> _cirrusJoints = new List<Cirrus>(Cirrus.MaxCirrusCount);
@@ -102,8 +103,6 @@ namespace GameA.Game
             _count = 0;
             GrowNewJoint();
         }
-
-        private const string SpriteFormat = "M1Cirrus_{0}";
 
         private void GrowNewJoint()
         {
@@ -161,7 +160,7 @@ namespace GameA.Game
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid);
             for (int i = 0; i < units.Count; i++)
             {
-                if (units[i].IsAlive)
+                if (units[i].IsAlive && UnitDefine.CanHitCirrus(units[i]))
                 {
                     return false;
                 }
@@ -201,8 +200,8 @@ namespace GameA.Game
             {
                 for (int i = 0; i < _cirrusJoints.Count; i++)
                 {
-                    _cirrusJoints[i].CurPos =
-                        _oriPos + ((_count - i - 1) * _cirrusSize.y + _curGrowValue) * IntVec2.up;
+                    _cirrusJoints[i].Speed = _oriPos + ((_count - i - 1) * _cirrusSize.y + _curGrowValue) * IntVec2.up -
+                                             _cirrusJoints[i].CurPos;
                     _cirrusJoints[i].UpdateView(deltaTime);
                 }
             }

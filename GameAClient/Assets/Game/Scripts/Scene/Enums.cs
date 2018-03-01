@@ -14,6 +14,7 @@ namespace GameA.Game
         Right,
         Up,
         Ladder,
+        Cirrus,
         Rope
     }
 

@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {

@@ -195,6 +195,11 @@ namespace GameA.Game
                 _dropLadderTimer--;
             }
 
+            if (_dropCirrusTimer > 0)
+            {
+                _dropCirrusTimer--;
+            }
+
             for (int i = 0; i < _currentStates.Count; i++)
             {
                 _currentStates[i].UpdateLogic();
@@ -214,7 +219,7 @@ namespace GameA.Game
                 {
                     case EClimbState.None:
                     case EClimbState.Ladder:
-//                    case EClimbState.Rope:
+                    case EClimbState.Cirrus:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -254,95 +259,115 @@ namespace GameA.Game
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
-                    if (ClimbState == EClimbState.Left)
+                    switch (ClimbState)
                     {
-                        _climbJump = true;
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            SpeedX = 100;
-                            SpeedY = 120;
-                            SetFacingDir(EMoveDirection.Right);
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Right)
-                    {
-                        _climbJump = true;
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            SpeedX = -100;
-                            SpeedY = 120;
-                            SetFacingDir(EMoveDirection.Left);
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Up)
-                    {
-                        _climbJump = true;
-                        SpeedY = -10;
-                    }
-                    else if (ClimbState == EClimbState.Ladder)
-                    {
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                            _dropLadderTimer = 15;
-                        }
-                        else
-                        {
-                            SpeedY = 120;
-                            if (_input.GetKeyApplied(EInputType.Up))
+                        case EClimbState.Left:
+                            _climbJump = true;
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
                             {
+                                SpeedX = 0;
+                                SpeedY = 0;
+                            }
+                            else
+                            {
+                                SpeedX = 100;
+                                SpeedY = 120;
+                                SetFacingDir(EMoveDirection.Right);
+                            }
+
+                            break;
+                        case EClimbState.Right:
+                            _climbJump = true;
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
+                            {
+                                SpeedX = 0;
+                                SpeedY = 0;
+                            }
+                            else
+                            {
+                                SpeedX = -100;
+                                SpeedY = 120;
+                                SetFacingDir(EMoveDirection.Left);
+                            }
+
+                            break;
+                        case EClimbState.Up:
+                            _climbJump = true;
+                            SpeedY = -10;
+                            break;
+                        case EClimbState.Ladder:
+                            if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                SpeedX = 0;
+                                SpeedY = 0;
                                 _dropLadderTimer = 15;
                             }
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Rope)
-                    {
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            Speed = _curClimbUnit.Speed * 2;
-                            if (SpeedX > 0)
+                            else
                             {
-                                SpeedX += 10;
-                            }
-                            else if (SpeedX < 0)
-                            {
-                                SpeedX -= 10;
+                                SpeedY = 120;
+                                if (_input.GetKeyApplied(EInputType.Up))
+                                {
+                                    _dropLadderTimer = 15;
+                                }
                             }
 
-                            SpeedX = Mathf.Clamp(SpeedX, -160, 160);
-
-                            SpeedY += 120;
-                            if (SpeedY > 0)
+                            break;
+                        case EClimbState.Cirrus:
+                            if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                                SpeedX = 0;
+                                SpeedY = 0;
+                                _dropCirrusTimer = 15;
+                            }
+                            else
+                            {
+                                SpeedY = 120;
+                                if (_input.GetKeyApplied(EInputType.Up))
+                                {
+                                    _dropCirrusTimer = 15;
+                                }
                             }
 
-                            RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
-                            if (ropeJoint != null)
+                            break;
+                        case EClimbState.Rope:
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                ropeJoint.JumpAwayRope(this as PlayerBase);
+                                SpeedX = 0;
+                                SpeedY = 0;
                             }
-                        }
+                            else
+                            {
+                                Speed = _curClimbUnit.Speed * 2;
+                                if (SpeedX > 0)
+                                {
+                                    SpeedX += 10;
+                                }
+                                else if (SpeedX < 0)
+                                {
+                                    SpeedX -= 10;
+                                }
+
+                                SpeedX = Mathf.Clamp(SpeedX, -160, 160);
+
+                                SpeedY += 120;
+                                if (SpeedY > 0)
+                                {
+                                    SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                                }
+
+                                RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
+                                if (ropeJoint != null)
+                                {
+                                    ropeJoint.JumpAwayRope(this as PlayerBase);
+                                }
+                            }
+
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     SetClimbState(EClimbState.None);
@@ -383,11 +408,13 @@ namespace GameA.Game
                     }
                 }
             }
+
             //如果掉下梯子时按上下则重新上梯子
-            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
+            if ((_dropLadderTimer > 0 || _dropCirrusTimer > 0) && _input.GetKeyUpApplied(EInputType.Down) ||
                 _input.GetKeyUpApplied(EInputType.Up))
             {
                 _dropLadderTimer = 0;
+                _dropCirrusTimer = 0;
             }
         }
 
@@ -935,6 +962,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -944,6 +972,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -953,6 +982,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -962,6 +992,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
