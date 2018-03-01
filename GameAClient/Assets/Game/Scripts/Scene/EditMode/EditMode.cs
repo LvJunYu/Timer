@@ -259,12 +259,12 @@ namespace GameA.Game
 
         public void StopSwitch()
         {
-            Messenger.Broadcast(EMessengerType.OnSwitchEnd);
             if (!IsInState(EditModeState.Switch.Instance))
             {
                 return;
             }
 
+         
             if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();

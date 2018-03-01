@@ -224,7 +224,7 @@ namespace GameA
         public const string brown = "#745334";
         public const string green = "#42ac37";
         public const string blue = "#2f73ff";
-        public const string red = "#ff343a";
+        public const string red =  "#ff343a";
         private Enpc _npcId;
         private ENpcFace _faceId;
         private string _dia;

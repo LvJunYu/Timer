@@ -57,6 +57,7 @@ namespace GameA.Game
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 OnExitSwitchMode(boardData, data);
                 owner.RevertEditorLayer();
+                Messenger.Broadcast(EMessengerType.OnSwitchEnd);
                 base.Exit(owner);
             }
 

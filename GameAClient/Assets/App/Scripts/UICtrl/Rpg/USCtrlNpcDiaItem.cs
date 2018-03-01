@@ -23,6 +23,8 @@ namespace GameA
         private List<NpcDia> _diaList;
         private int _index;
         private Action _callback;
+        private float _beginPos;
+        private float _height;
 
         private void Clear()
         {
@@ -207,6 +209,7 @@ namespace GameA
         {
             _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().transform;
             _cachedView.transform.SetAsLastSibling();
+            _beginPos = _cachedView.transform.position.y;
         }
 
         private void DragEnd()
@@ -224,10 +227,50 @@ namespace GameA
             }
             else
             {
-//                if ()
-//                {
-//                    
-//                }
+                Rect diaContentRect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetDiaContentRect();
+                if (Mathf.Abs(_cachedView.transform.position.x - diaContentRect.x) < diaContentRect.width / 2 &&
+                    Mathf.Abs(_cachedView.transform.position.y - diaContentRect.y) < diaContentRect.height / 2)
+                {
+                    _height = _cachedView.rectTransform().GetHeight();
+                    float posY = _cachedView.transform.position.y;
+                    int move = ((int) posY - (int) _beginPos) % (int) (_height);
+                    int moveindex = ((int) posY - (int) _beginPos) / (int) (_height);
+                    if ((move > 0 && move < _height / 2))
+                    {
+                        for (int i = 0; i < Mathf.Abs(moveindex); i++)
+                        {
+                            int newindex = _index - 1;
+                            if (newindex >= 0)
+                            {
+                                NpcDia temp = _diaList[_index];
+                                _diaList[_index] = _diaList[newindex];
+                                _diaList[newindex] = temp;
+                            }
+
+                            _index = newindex;
+                        }
+
+                        _callback.Invoke();
+                    }
+
+                    if (move < 0 && move < -_height / 2)
+                    {
+                        for (int i = 0; i < Mathf.Abs(moveindex) + 1; i++)
+                        {
+                            int newindex = _index + 1;
+                            if (newindex < _diaList.Count)
+                            {
+                                NpcDia temp = _diaList[_index];
+                                _diaList[_index] = _diaList[newindex];
+                                _diaList[newindex] = temp;
+                            }
+
+                            _index = newindex;
+                        }
+
+                        _callback.Invoke();
+                    }
+                }
             }
         }
     }

@@ -48,6 +48,14 @@ namespace GameA
         //是否编辑已经生成的ui
         private bool _isEditHaveDia;
         private Rect _rect = new Rect();
+        private Rect _diaContentRect = new Rect();
+
+        public Rect DiaContentRect
+        {
+            get { return _diaContentRect; }
+            set { _diaContentRect = value; }
+        }
+
         private string _oldStr = "";
         private string _nowColor = "";
         private bool _isRefreshDia = false;
@@ -191,6 +199,11 @@ namespace GameA
             _rect.y = _cachedView.DiaInputField.transform.position.y;
             _rect.width = _cachedView.DiaInputField.rectTransform().GetWidth();
             _rect.height = _cachedView.DiaInputField.rectTransform().GetHeight();
+
+            _diaContentRect.x = _cachedView.DiaItemContentView.transform.position.x;
+            _diaContentRect.y = _cachedView.DiaItemContentView.transform.position.y;
+            _diaContentRect.width = _cachedView.DiaItemContentView.rectTransform().GetWidth();
+            _diaContentRect.height = _cachedView.DiaItemContentView.rectTransform().GetHeight();
         }
 
 
@@ -633,6 +646,21 @@ namespace GameA
         public Rect GetInputRect()
         {
             return _rect;
+        }
+
+        public Rect GetDiaContentRect()
+        {
+            if (_diaContentRect.height < 100)
+            {
+                _diaContentRect.height = _cachedView.DiaItemContentView.GetHeight();
+            }
+
+            if (_diaContentRect.width < 100)
+            {
+                _diaContentRect.width = _cachedView.DiaItemContentView.GetWidth();
+            }
+
+            return _diaContentRect;
         }
 
         private void OnInputValueChange(string str)

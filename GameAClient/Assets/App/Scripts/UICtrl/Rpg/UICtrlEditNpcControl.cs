@@ -49,23 +49,7 @@ namespace GameA
 
         public void OnStopSwitch()
         {
-            if (NpcTaskDataTemp.Intance.EndEdit)
-            {
-                base.Close();
-                EditHelper.TryEditUnitData(NpcTaskDataTemp.Intance.EditData.UnitDesc);
-                SocialGUIManager.Instance.GetUI<UICtrlUnitPropertyEdit>().OnEditTypeMenuClick(EEditType.NpcTask);
-                SocialGUIManager.Instance.GetUI<UICtrlUnitPropertyEdit>().EditNpcTaskDock
-                    .ChooseTaskBtnIndex(NpcTaskDataTemp.Intance.TaskTargetData.TargetGuid);
-                switch (NpcTaskDataTemp.Intance.TaskType)
-                {
-                    case ETaskContype.AfterTask:
-                    case ETaskContype.BeforeTask:
-                        SocialGUIManager.Instance.GetUI<UICtrlUnitPropertyEdit>().EditNpcTaskDock.OpenEditPanel();
-                        break;
-                }
-
-                NpcTaskDataTemp.Intance.EndEdit = false;
-            }
+            base.Close();
         }
 
         public override void Close()
