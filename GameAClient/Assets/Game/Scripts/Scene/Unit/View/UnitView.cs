@@ -17,18 +17,15 @@ namespace GameA.Game
     {
         public static Color SelectedColor = Color.red;
         public static Color NormalColor = Color.white;
-
+        protected const string TimerFormat = "Timer_{0}";
         protected Transform _trans;
-
         protected Transform _pairTrans;
-
+        protected SpriteRenderer[] _timerSprites;
         protected UnitBase _unit;
         protected AnimationSystem _animation;
         protected Skeleton _skeleton;
         protected SkeletonAnimation _skeletonAnimation;
-
         protected UnitPropertyViewWrapper _propertyViewWrapper;
-
         protected bool _isPart;
 
         public Transform Trans
@@ -80,6 +77,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             Reset();
             return true;
         }
@@ -129,6 +127,7 @@ namespace GameA.Game
                 Object.Destroy(_pairTrans.gameObject);
                 _pairTrans = null;
             }
+
             if (_propertyViewWrapper != null)
             {
                 _propertyViewWrapper.Hide();
@@ -159,24 +158,29 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_animation != null)
             {
                 _animation.Reset();
             }
+
             if (_trans != null)
             {
                 _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
 //                _trans.localRotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
             }
+
             if (_pairTrans != null)
             {
                 _pairTrans.SetActiveEx(true);
             }
+
             if (_propertyViewWrapper != null)
             {
                 _propertyViewWrapper.Hide();
             }
+
             UpdateSign();
         }
 
@@ -191,6 +195,7 @@ namespace GameA.Game
             {
                 _pairTrans.SetActiveEx(active);
             }
+
             if (_propertyViewWrapper != null)
             {
                 if (active)
@@ -228,10 +233,12 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_unit.Guid == IntVec3.zero)
             {
                 return;
             }
+
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
@@ -243,12 +250,14 @@ namespace GameA.Game
                         {
                             _propertyViewWrapper = new UnitPropertyViewWrapper();
                         }
+
                         var unitDesc = _unit.UnitDesc;
                         var unitExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
                         _propertyViewWrapper.Show(ref unitDesc, unitExtra);
                     }
                 }
             }
+
             if (tableUnit.EPairType != EPairType.None)
             {
                 SetPairRenderer();
@@ -271,17 +280,53 @@ namespace GameA.Game
                     _pairTrans.localPosition = offset;
                 }
             }
+
             spriteRenderer = _pairTrans.GetComponent<SpriteRenderer>();
             PairUnit pairUnit;
-            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, Scene2DManager.Instance.CurSceneIndex, out pairUnit))
+            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc,
+                Scene2DManager.Instance.CurSceneIndex, out pairUnit))
             {
                 LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
                 return;
             }
+
             Sprite arrowSprite;
             if (JoyResManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
             {
                 spriteRenderer.sprite = arrowSprite;
+            }
+        }
+
+        public void SetTimeRenderer(bool show, int second)
+        {
+            if (_timerSprites == null)
+            {
+                _timerSprites = new SpriteRenderer[2];
+                for (int i = 0; i < _timerSprites.Length; i++)
+                {
+                    var trans = new GameObject(string.Format(TimerFormat, i + 1)).transform;
+                    CommonTools.SetParent(trans, _trans);
+                    _timerSprites[i] = trans.gameObject.AddComponent<SpriteRenderer>();
+                    _timerSprites[i].sortingOrder = (int) ESortingOrder.AttTexture2;
+                    if (i == 0)
+                    {
+                        trans.localPosition = Vector3.left * 0.4f;
+                    }
+                }
+            }
+
+            for (int i = 0; i < _timerSprites.Length; i++)
+            {
+                _timerSprites[i].SetActiveEx(show);
+                if (show)
+                {
+                    int value = i == 0 ? second / 10 : second % 10;
+                    Sprite sprite;
+                    if (JoyResManager.Instance.TryGetSprite(string.Format(TimerFormat, value), out sprite))
+                    {
+                        _timerSprites[i].sprite = sprite;
+                    }
+                }
             }
         }
 
@@ -291,6 +336,7 @@ namespace GameA.Game
             {
                 return Vector2.zero;
             }
+
             Vector2 res = Vector2.zero;
             Vector2 size = GM2DTools.TileToWorld(_unit.GetDataSize() * 0.5f);
             switch ((EDirectionType) _unit.Rotation)
@@ -307,6 +353,7 @@ namespace GameA.Game
                     res.y = size.y;
                     break;
             }
+
             return res;
         }
     }
