@@ -21,8 +21,8 @@ namespace GameA
         public void RequestMyFriends(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FriendList = _dataDetailList;
                     if (successCallBack != null)
@@ -36,8 +36,8 @@ namespace GameA
         public void RequestMyFans(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FanList = _dataDetailList;
                     if (successCallBack != null)
@@ -50,8 +50,8 @@ namespace GameA
         public void RequestMyFollows(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FollowList = _dataDetailList;
                     if (successCallBack != null)
@@ -64,8 +64,8 @@ namespace GameA
         public void RequestMyBlocks(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     BlockList = _dataDetailList;
                     if (successCallBack != null)

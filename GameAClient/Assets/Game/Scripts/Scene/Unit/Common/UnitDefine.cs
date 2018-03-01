@@ -60,6 +60,8 @@ namespace GameA.Game
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
+        public const int TimerId = 8108;
+        public const int TimerTriggerPressId = 8109;
         public const int WaterBulletId = 10001;
         public const int ShadowId = 65535;
 

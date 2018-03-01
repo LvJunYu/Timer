@@ -90,7 +90,7 @@ namespace GameA.Game
         {
             var grid = new Grid2D(_colliderGrid.XMin + 1, _colliderGrid.YMin - 1, _colliderGrid.XMax - 1,
                 _colliderGrid.YMin - 1);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, EnvManager.ItemLayer);
             if (units.Count == 1)
             {
                 _downUnit = units[0];
