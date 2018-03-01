@@ -868,7 +868,8 @@ namespace GameA.Game
                             speed = 50;
                         }
 
-                        if (speed == 0 && (_eClimbState == EClimbState.Ladder || _eClimbState == EClimbState.Rope))
+                        if (speed == 0 && (_eClimbState == EClimbState.Ladder || _eClimbState == EClimbState.Cirrus ||
+                                           _eClimbState == EClimbState.Rope))
                         {
                             _animation.PlayLoop(IdleAnimName());
                             if (IsMain)
@@ -945,14 +946,15 @@ namespace GameA.Game
         private bool IsClimbingSide()
         {
             return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope) &&
+                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus ||
+                    ClimbState == EClimbState.Rope) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
         private bool IsInputSideValid()
         {
             return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up ||
-                    ClimbState == EClimbState.Ladder) &&
+                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
 
@@ -1047,6 +1049,7 @@ namespace GameA.Game
                 case EClimbState.Left:
                 case EClimbState.Right:
                 case EClimbState.Ladder:
+                case EClimbState.Cirrus:
                 case EClimbState.Rope:
                     return "ClimbRunRight";
                 case EClimbState.Up:
@@ -1098,6 +1101,7 @@ namespace GameA.Game
                 case EClimbState.Left:
                 case EClimbState.Right:
                 case EClimbState.Ladder:
+                case EClimbState.Cirrus:
                 case EClimbState.Rope:
                     return "ClimbIdleRight";
                 case EClimbState.Up:
@@ -1426,6 +1430,8 @@ namespace GameA.Game
             base.OutSpacetimeDoor();
             _inLadders.Clear();
             _inLadder = false;
+            _inCirrusUnits.Clear();
+            _inCirrus = false;
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)

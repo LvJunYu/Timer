@@ -218,5 +218,15 @@ namespace GameA.Game
         {
             return id == 5013;
         }
+
+        public static bool CanHitCirrus(UnitBase unit)
+        {
+            return !unit.IsActor && unit.Id != BoxId;
+        }
+        
+        public static bool CanGrowCirrus(UnitBase unit)
+        {
+            return unit.Id == EarthId || unit.Id == TerrainId;
+        }
     }
 }

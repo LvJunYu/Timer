@@ -95,6 +95,8 @@ namespace GameA.Game
                 }
             }
 
+            CirrusManager.Instance.UpdateView(deltaTime);
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
                 if (allOtherUnits[i].IsPlayer)
@@ -138,7 +140,6 @@ namespace GameA.Game
                 }
             }
 
-            CirrusManager.Instance.UpdateView(deltaTime);
             //计算绳子速度，人再移动，绳子再移动
             RopeManager.Instance.CalculateSpeed();
             for (int i = 0; i < playerList.Count; i++)
