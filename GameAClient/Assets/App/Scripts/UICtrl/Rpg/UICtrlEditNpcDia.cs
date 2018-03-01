@@ -708,6 +708,7 @@ namespace GameA
 
         private void SetSelectColor(string color)
         {
+#if UNITY_STANDALONE_WIN
             if (_cachedView.DiaInputField.SelectionBeginPosition == _cachedView.DiaInputField.SelectionEndPosition)
             {
                 return;
@@ -719,7 +720,12 @@ namespace GameA
             {
                 _curEditNpcDia.ColorList[i] = color;
             }
-
+#else
+    for (int i = 0; i < _curEditNpcDia.ColorList.Count; i++)
+            {
+                _curEditNpcDia.ColorList[i] = color;
+            }
+#endif
             SetShowText(_cachedView.DiaInputField.text);
             _cachedView.DiaInputField.SetDefaultValue();
         }
