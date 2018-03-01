@@ -78,6 +78,7 @@ namespace GameA
                     FreeUmConnection(itor.Current.Value);
                 }
             }
+
             _umConnectionDict.Clear();
         }
 
@@ -96,6 +97,7 @@ namespace GameA
             {
                 _editingConnection = GetUmConnection();
             }
+
             return _editingConnection;
         }
 
@@ -141,6 +143,7 @@ namespace GameA
             {
                 return;
             }
+
             using (var itor = _umConnectionDict.GetEnumerator())
             {
                 while (itor.MoveNext())
@@ -148,6 +151,7 @@ namespace GameA
                     itor.Current.Value.RecalcPos();
                 }
             }
+
             using (var itor = _umCountDict.GetEnumerator())
             {
                 while (itor.MoveNext())
@@ -155,6 +159,7 @@ namespace GameA
                     itor.Current.Value.RecalcPos();
                 }
             }
+
             if (_editingConnection != null)
             {
                 _editingConnection.RecalcPos();
@@ -167,6 +172,7 @@ namespace GameA
             {
                 return;
             }
+
             var deltaCount = isAdd ? 1 : -1;
             var umA = _umCountDict[a];
             umA.SetCount(umA.Count + deltaCount);
@@ -183,6 +189,7 @@ namespace GameA
                     FreeUmConnection(itor.Current.Value);
                 }
             }
+
             _umConnectionDict.Clear();
             using (var itor = _umCountDict.GetEnumerator())
             {
@@ -191,15 +198,17 @@ namespace GameA
                     FreeUmCount(itor.Current.Value);
                 }
             }
+
             _umCountDict.Clear();
         }
 
         private UMCtrlEditSwitchConnection GetUmConnection()
         {
-            if (_umCountPool.Count > 0)
+            if (_umConnectionPool.Count > 0)
             {
                 return _umConnectionPool.Pop();
             }
+
             var um = new UMCtrlEditSwitchConnection();
             um.Init(_cachedView.ConnectionLayer, ResScenary);
             return um;
@@ -217,6 +226,7 @@ namespace GameA
             {
                 return _umCountPool.Pop();
             }
+
             var um = new UMCtrlEditSwitchCount();
             um.Init(_cachedView.CountLayer, ResScenary);
             return um;

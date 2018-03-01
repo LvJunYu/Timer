@@ -192,8 +192,15 @@ namespace GameA.Game
                         }
                         else
                         {
-                            AddSwitchConnection(coverUnits[0].Guid,
-                                boardData.CurrentTouchUnitDesc.Guid);
+                            UnitBase unit;
+                            if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
+                            {
+                                if (!UnitDefine.IsNpc(unit.Id))
+                                {
+                                    AddSwitchConnection(coverUnits[0].Guid,
+                                        boardData.CurrentTouchUnitDesc.Guid);
+                                }
+                            }
                         }
                     }
                 }
@@ -205,7 +212,6 @@ namespace GameA.Game
                 }
 
                 boardData.DragInCurrentState = false;
-
             }
 
             public void DeleteSwitchConnection(int idx)

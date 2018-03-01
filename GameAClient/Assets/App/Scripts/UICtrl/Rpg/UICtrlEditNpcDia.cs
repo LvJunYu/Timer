@@ -714,8 +714,8 @@ namespace GameA
                 return;
             }
 
-            for (int i = _cachedView.DiaInputField.SelectionBeginPosition - 1;
-                i < _cachedView.DiaInputField.SelectionEndPosition - 1;
+            for (int i = _cachedView.DiaInputField.SelectionBeginPosition;
+                i < _cachedView.DiaInputField.SelectionEndPosition;
                 i++)
             {
                 _curEditNpcDia.ColorList[i] = color;

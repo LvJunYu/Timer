@@ -62,6 +62,7 @@ namespace GameA
 
         public static readonly int OnSendRecordCommentSuccess = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRecordCommentChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnSwitchEnd = SoyEngine.EMessengerType.NextId++;
 
         /// <summary>
         /// 弹窗
@@ -132,7 +133,7 @@ namespace GameA
         public static readonly int OnTeamUserChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnTeamInviteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomInviteChanged = SoyEngine.EMessengerType.NextId++;
-        
+
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 

@@ -222,6 +222,13 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().SetCurDiaItem(_dia);
                 _cachedView.SelectImage.gameObject.SetActiveEx(true);
             }
+            else
+            {
+//                if ()
+//                {
+//                    
+//                }
+            }
         }
     }
 }

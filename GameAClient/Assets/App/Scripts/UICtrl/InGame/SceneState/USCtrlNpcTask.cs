@@ -118,8 +118,8 @@ namespace GameA
                         TargetTypeTextGroup[i].text = TableManager.Instance.Table_UnitDic[_taskData.Targets
                             .Get<NpcTaskTargetDynamic>(i)
                             .TargetUnitID].Name;
-                        TargetNumTextGroup[i].text = _taskData.Targets
-                            .Get<NpcTaskTargetDynamic>(i).ColOrKillNum.ToString();
+//                        TargetNumTextGroup[i].text = _taskData.Targets
+//                            .Get<NpcTaskTargetDynamic>(i).ColOrKillNum.ToString();
                     }
                 }
                 else

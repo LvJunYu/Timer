@@ -101,18 +101,21 @@ namespace GameA.Game
                 {
                     StopEdit();
                 }
+
                 _stateMachineHelper.Dispose();
                 _stateMachineHelper = null;
                 if (_backgroundObject != null)
                 {
                     Object.Destroy(_backgroundObject);
                 }
+
                 _backgroundObject = null;
                 if (_cameraMask != null)
                 {
                     Object.Destroy(_cameraMask.gameObject);
                     _cameraMask = null;
                 }
+
                 EditHelper.Clear();
                 _stateMachine = null;
                 _boardData.Clear();
@@ -121,6 +124,7 @@ namespace GameA.Game
                 _enable = false;
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
+
             _instance = null;
             LogHelper.Info("EditMode Dispose");
         }
@@ -155,6 +159,7 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGameUnitPropertyContainer>();
             }
+
             InternalStartEdit();
             if (_lastEditorLayer != EEditorLayer.None)
             {
@@ -188,6 +193,7 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlGameUnitPropertyContainer>();
             }
+
             _enable = false;
         }
 
@@ -213,6 +219,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();
@@ -234,6 +241,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();
@@ -251,10 +259,12 @@ namespace GameA.Game
 
         public void StopSwitch()
         {
+            Messenger.Broadcast(EMessengerType.OnSwitchEnd);
             if (!IsInState(EditModeState.Switch.Instance))
             {
                 return;
             }
+
             if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();
@@ -354,6 +364,7 @@ namespace GameA.Game
                     _stateMachine.ChangeState(EditModeState.Add.Instance);
                 }
             }
+
             if (euiType == EUIType.Effect)
             {
                 ChangeEditorLayer(EEditorLayer.Effect);
@@ -375,16 +386,19 @@ namespace GameA.Game
             {
                 return;
             }
+
             var oldLayer = _boardData.EditorLayer;
             var newLayer = editorLayer;
             if (_stateMachine.CurrentState != null)
             {
                 _stateMachine.CurrentState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
             }
+
             if (_stateMachine.GlobalState != null)
             {
                 _stateMachine.GlobalState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
             }
+
             switch (_boardData.EditorLayer)
             {
 //退出模式
@@ -399,6 +413,7 @@ namespace GameA.Game
                     BgScene2D.Instance.SetCirrus(true);
                     break;
             }
+
             _lastEditorLayer = oldLayer;
             _boardData.EditorLayer = newLayer;
 //            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
@@ -419,6 +434,7 @@ namespace GameA.Game
                             }
                         }
                     }
+
                     break;
                 case EEditorLayer.Normal:
                     using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())
@@ -437,6 +453,7 @@ namespace GameA.Game
                             }
                         }
                     }
+
                     break;
                 case EEditorLayer.Effect:
                     _cameraMask.SetLayerMaskSortOrder((int) ESortingOrder.EffectEditorLayMask);
@@ -455,6 +472,7 @@ namespace GameA.Game
                             }
                         }
                     }
+
                     break;
                 case EEditorLayer.Capture:
                     BgScene2D.Instance.SetCirrus(false);
@@ -472,16 +490,20 @@ namespace GameA.Game
                             }
                         }
                     }
+
                     break;
             }
+
             if (_stateMachine.CurrentState != null)
             {
                 _stateMachine.CurrentState.OnAfterChangeEditorLayer(oldLayer, newLayer);
             }
+
             if (_stateMachine.GlobalState != null)
             {
                 _stateMachine.GlobalState.OnAfterChangeEditorLayer(oldLayer, newLayer);
             }
+
             Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
         }
 
@@ -506,6 +528,7 @@ namespace GameA.Game
             {
                 Object.Destroy(data.MovingRoot.parent);
             }
+
             UnitBase unitBase;
             var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase);
             data.CurrentMovingUnitBase = unitBase;
@@ -541,6 +564,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             EditHelper.BeforeAddUnit(tableUnit);
             var oldExtra = DataScene2D.CurScene.GetUnitExtra(unitDesc.Guid);
             DataScene2D.CurScene.ProcessUnitExtra(unitDesc, unitExtra);
@@ -549,6 +573,7 @@ namespace GameA.Game
                 DataScene2D.CurScene.ProcessUnitExtra(unitDesc, oldExtra);
                 return false;
             }
+
             EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
@@ -566,23 +591,28 @@ namespace GameA.Game
                 LogHelper.Error("InternalAddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             if (!DataScene2D.CurScene.AddData(unitDesc, tableUnit))
             {
                 return false;
             }
+
             if (tableUnit.EPairType > 0)
             {
                 PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
+
             if (!ColliderScene2D.CurScene.AddUnit(unitDesc, tableUnit))
             {
                 return false;
             }
+
             if (!ColliderScene2D.CurScene.InstantiateView(unitDesc, tableUnit))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -604,6 +634,7 @@ namespace GameA.Game
             {
                 DeleteUnitWithCheck(rope.UnitDesc);
             }
+
             //地块上的植被自动删除
             if (UnitDefine.IsEarth(unitDesc.Id))
             {
@@ -614,6 +645,7 @@ namespace GameA.Game
                     DeleteUnit(new UnitDesc(unit.Id, up, 0, Vector3.one));
                 }
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
@@ -632,10 +664,12 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             if (!ColliderScene2D.CurScene.DestroyView(unitDesc))
             {
                 return false;
             }
+
             if (!ColliderScene2D.CurScene.DeleteUnit(unitDesc, tableUnit))
             {
                 //成对的不能返回false
@@ -644,15 +678,18 @@ namespace GameA.Game
                     return false;
                 }
             }
+
             if (!DataScene2D.CurScene.DeleteData(unitDesc, tableUnit))
             {
                 return false;
             }
+
             if (tableUnit.EPairType > 0)
             {
                 PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
+
             return true;
         }
 
@@ -676,6 +713,7 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
+
             var go = Object.Instantiate(JoyResManager.Instance.GetPrefab(
                 EResType.ModelPrefab,
                 ConstDefineGM2D.CameraMaskPrefabName)
