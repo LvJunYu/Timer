@@ -49,7 +49,10 @@ namespace GameA
 
         public void OnStopSwitch()
         {
-            base.Close();
+            if (_view != null)
+            {
+                base.Close();
+            }
         }
 
         public override void Close()
