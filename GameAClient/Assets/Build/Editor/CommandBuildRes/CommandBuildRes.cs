@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class CommandBuildRes
 {
-    [MenuItem("QuanTools/Build")]
+//    [MenuItem("QuanTools/BuildRes")]
     public static void BuildRes()
     {
         var args = Environment.GetCommandLineArgs();
