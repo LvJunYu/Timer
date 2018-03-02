@@ -20,6 +20,7 @@ namespace GameAClientEncrytion
         }
         static void Main(string[] args)
         {
+            //Console.WriteLine("" + CryptWindows.Get_Version());
             CommandEncrypt();
         }
 

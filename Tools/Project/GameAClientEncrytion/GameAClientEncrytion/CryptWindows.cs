@@ -13,15 +13,15 @@ namespace J3Tech
 {
     public class CryptWindows
     {
-        [DllImport("CryptWindows")]
+        [DllImport("CryptWindowsX64")]
         public static extern void SetApplicationPath(StringBuilder path);
-        [DllImport("CryptWindows")]
+        [DllImport("CryptWindowsX64")]
         public static extern void AddAssembly(StringBuilder filename);
-        [DllImport("CryptWindows")]
+        [DllImport("CryptWindowsX64")]
         public static extern void ClearAssembly();
-        [DllImport("CryptWindows")]
+        [DllImport("CryptWindowsX64")]
         public static extern int CryptAssembly(int version, int arch, StringBuilder key);
-        [DllImport("CryptWindows")]
+        [DllImport("CryptWindowsX64")]
         public static extern uint Get_Version();
     }
 
