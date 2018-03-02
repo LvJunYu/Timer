@@ -60,3 +60,5 @@ sh.exe.stackdump
 *.opt
 GameAClient/data.txt
 GameAClient/clientData.txt
+Tools/Project/GameAClientEncrytion/GameAClientEncrytion/bin
+Tools/Project/GameAClientEncrytion/GameAClientEncrytion/obj
