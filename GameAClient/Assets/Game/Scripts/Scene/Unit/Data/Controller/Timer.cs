@@ -22,13 +22,16 @@ namespace GameA.Game
             get { return UnitDefine.TimerTriggerPressId; }
         }
 
+        public override bool UseMagic()
+        {
+            return true;
+        }
+
         internal override void OnPlay()
         {
             base.OnPlay();
             _units = DataScene2D.CurScene.GetControlledUnits(_guid);
-            SetActiveState(EActiveState.Deactive);
-            ShowTime(false);
-            _run = false;
+            OnActiveStateChanged();
         }
 
         protected override void Clear()
@@ -55,11 +58,10 @@ namespace GameA.Game
                     if (_endTimer == 0)
                     {
                         DoControl();
-                        _endTimer = 100;
+                        _endTimer = 49;
                     }
                 }
 
-                //结束闪烁3次
                 if (_endTimer > 0)
                 {
                     _endTimer--;
@@ -69,11 +71,8 @@ namespace GameA.Game
                         if (_circulation)
                         {
                             SetActiveState(EActiveState.Active);
+                            _run = true;
                         }
-                    }
-                    else if (_endTimer % 20 == 0)
-                    {
-                        ShowTime(_endTimer / 20 % 2 != 0);
                     }
                 }
             }
@@ -100,12 +99,12 @@ namespace GameA.Game
 
         public override void OnTriggerChanged(EActiveState value)
         {
-            if (value == EActiveState.Deactive && _eActiveState == EActiveState.Deactive)
-            {
-                SetActiveState(EActiveState.Active);
-            }
+//            if (value == EActiveState.Deactive && _eActiveState == EActiveState.Deactive)
+//            {
+//                SetActiveState(EActiveState.Active);
+//            }
 
-            if (_endTimer > 0)
+            if (_endTimer > 0 || _eActiveState == EActiveState.Deactive)
             {
                 return;
             }
@@ -115,16 +114,12 @@ namespace GameA.Game
 
         protected override void OnActiveStateChanged()
         {
-            if (!GameRun.Instance.IsPlaying)
-            {
-                return;
-            }
-
             if (_eActiveState == EActiveState.Active)
             {
                 _timer = (_random ? GetRandomSecond() : _second) * ConstDefineGM2D.FixedFrameCount;
                 _endTimer = 0;
                 ShowTime(true);
+                _run = true;
             }
             else if (_eActiveState == EActiveState.Deactive)
             {
@@ -155,14 +150,7 @@ namespace GameA.Game
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        if (_switchTrigger.Trigger == EActiveState.Active)
-                        {
-                            unit.OnSwitchPressStart(this);
-                        }
-                        else if (_switchTrigger.Trigger == EActiveState.Deactive)
-                        {
-                            unit.OnSwitchPressEnd(this);
-                        }
+                        unit.OnCtrlBySwitch();
                     }
                 }
             }

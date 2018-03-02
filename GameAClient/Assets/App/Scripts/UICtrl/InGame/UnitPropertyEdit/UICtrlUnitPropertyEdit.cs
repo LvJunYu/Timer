@@ -1320,7 +1320,7 @@ namespace GameA
                 return true;
             }
 
-            if (_curEditType == EEditType.MoveDirection && _curId == UnitDefine.TimerId)
+            if (_curId == UnitDefine.TimerId && _curEditType == EEditType.Active)
             {
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
                 return true;

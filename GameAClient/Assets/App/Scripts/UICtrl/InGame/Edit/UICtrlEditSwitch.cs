@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -119,20 +118,18 @@ namespace GameA
                     var umCount = GetUmCount();
                     _umCountDict.Add(unitList[i], umCount);
                     umCount.Set(GM2DTools.TileToWorld(unitList[i]));
-                    umCount.SetCount(0);
+                    var count = 0;
                     var list = DataScene2D.CurScene.GetControlledUnits(unitList[i]);
                     if (null != list)
                     {
-                        umCount.SetCount(list.Count);
+                        count += list.Count;
                     }
-                    else
+                    var list2 = DataScene2D.CurScene.GetSwitchUnitsConnected(unitList[i]);
+                    if (null != list2)
                     {
-                        var list2 = DataScene2D.CurScene.GetSwitchUnitsConnected(unitList[i]);
-                        if (null != list2)
-                        {
-                            umCount.SetCount(list2.Count);
-                        }
+                        count += list2.Count;
                     }
+                    umCount.SetCount(count);
                 }
             }
         }

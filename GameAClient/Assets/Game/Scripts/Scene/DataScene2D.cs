@@ -545,7 +545,9 @@ namespace GameA.Game
                     }
                 }
             }
-            else
+
+            UnitBase unit;
+            if(ColliderScene2D.CurScene.TryGetUnit(newUnitDesc.Guid, out unit) && unit.CanControlledBySwitch)
             {
                 using (var itor = _switchedUnits.GetEnumerator())
                 {

@@ -2,7 +2,6 @@
 using HedgehogTeam.EasyTouch;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA.Game
 {
@@ -221,7 +220,6 @@ namespace GameA.Game
                 var data = boardData.GetStateData<Data>();
                 DeleteSwitchConnection(boardData, data, idx);
             }
-
 
             private bool TrySelectUnit(Vector3 mousePos)
             {

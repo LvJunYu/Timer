@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    [Unit(Id = 8109, Type = typeof(TimerTriggerPress))]
+    [Unit(Id = 8201, Type = typeof(TimerTriggerPress))]
     public class TimerTriggerPress : SwitchTrigger
     {
         private const string TimerTriggerOn = "M1TimerTriggerOn";
