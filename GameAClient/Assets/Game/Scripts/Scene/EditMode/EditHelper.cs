@@ -372,7 +372,7 @@ namespace GameA.Game
             }
             //怪物同屏数量不可过多
             {
-                if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)
+                if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.IsBox(tableUnit.Id))
                 {
                     IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
                     IntVec2 mapSize = ConstDefineGM2D.MapTileSize;

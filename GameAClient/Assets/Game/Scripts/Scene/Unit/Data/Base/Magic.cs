@@ -192,7 +192,7 @@ namespace GameA.Game
             //朝上运动时，如果是角色或者箱子。
             if (_moveDirection == EMoveDirection.Up)
             {
-                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                if (unit.IsActor || UnitDefine.IsBox(unit.Id))
                 {
                     //如果远离
                     if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)

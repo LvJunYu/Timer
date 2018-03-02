@@ -447,7 +447,7 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
+            return unit != null && UnitDefine.IsBox(unit.Id) && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
                    !((Box) unit).IsHoldingByPlayer;
         }
 
