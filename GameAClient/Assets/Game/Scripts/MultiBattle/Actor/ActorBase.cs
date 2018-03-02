@@ -538,7 +538,7 @@ namespace GameA.Game
                 }
                 else if (IsPlayer)
                 {
-                    Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, _curBreaker);
+                    Messenger<PlayerBase, UnitBase>.Broadcast(EMessengerType.OnPlayerDead, this as PlayerBase, _curBreaker);
                 }
 
                 _curBreaker = null;
@@ -905,7 +905,7 @@ namespace GameA.Game
                     }
                     else if (IsPlayer)
                     {
-                        Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, killer);
+                        Messenger<PlayerBase, UnitBase>.Broadcast(EMessengerType.OnPlayerDead,this as PlayerBase, killer);
                     }
                 }
             }

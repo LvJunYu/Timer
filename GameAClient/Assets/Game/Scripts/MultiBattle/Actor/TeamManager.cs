@@ -19,6 +19,10 @@ namespace GameA.Game
         public const int MaxTeamCount = PlayerManager.MaxTeamCount;
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
+        private Dictionary<IntVec3, int> _playerScoreDic = new Dictionary<IntVec3, int>(MaxTeamCount);
+        private Dictionary<IntVec3, int> _playerKillDic = new Dictionary<IntVec3, int>(MaxTeamCount);
+        private Dictionary<IntVec3, int> _playerKilledDic = new Dictionary<IntVec3, int>(MaxTeamCount);
+        private Dictionary<IntVec3, int> _playerKillMonsterDic = new Dictionary<IntVec3, int>(MaxTeamCount);
         private Dictionary<byte, List<long>> _playerDic = new Dictionary<byte, List<long>>(MaxTeamCount);
 
         private Dictionary<int, UnitExtraDynamic> _playerUnitExtraDic =
@@ -40,6 +44,7 @@ namespace GameA.Game
                 {
                     return 0;
                 }
+
                 return _mainPlayer.TeamId;
             }
         }
@@ -61,7 +66,7 @@ namespace GameA.Game
         {
             Messenger<UnitBase>.AddListener(EMessengerType.OnGemCollect, OnGemCollect);
             Messenger<UnitBase>.AddListener(EMessengerType.OnMonsterDead, OnMonsterKilled);
-            Messenger<UnitBase>.AddListener(EMessengerType.OnPlayerDead, OnPlayerKilled);
+            Messenger<PlayerBase, UnitBase>.AddListener(EMessengerType.OnPlayerDead, OnPlayerKilled);
             Messenger<UnitBase>.AddListener(EMessengerType.OnPlayerArrive, OnPlayerArrive);
         }
 
@@ -103,6 +108,10 @@ namespace GameA.Game
             _scoreChanged = false;
             Players.Clear();
             _scoreDic.Clear();
+            _playerScoreDic.Clear();
+            _playerKillDic.Clear();
+            _playerKilledDic.Clear();
+            _playerKillMonsterDic.Clear();
             _playerDic.Clear();
             _teams.Clear();
             _unitDatas.Clear();
@@ -114,7 +123,7 @@ namespace GameA.Game
             Reset();
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnGemCollect, OnGemCollect);
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterKilled);
-            Messenger<UnitBase>.RemoveListener(EMessengerType.OnPlayerDead, OnPlayerKilled);
+            Messenger<PlayerBase, UnitBase>.RemoveListener(EMessengerType.OnPlayerDead, OnPlayerKilled);
             Messenger<UnitBase>.RemoveListener(EMessengerType.OnPlayerArrive, OnPlayerArrive);
             _instance = null;
         }
@@ -140,18 +149,21 @@ namespace GameA.Game
                     {
                         _teamInxListDic.Add(teamId, new List<int>());
                     }
+
                     _teamInxListDic[teamId].Add(i);
                 }
             }
+
             List<int> list;
             if (_teamInxListDic.TryGetValue(MyTeamId, out list))
             {
                 return list;
             }
+
             LogHelper.Error("GetMyTeamInxList fail");
             return null;
         }
-        
+
         public List<UnitExtraDynamic> GetSortPlayerUnitExtras()
         {
             _roomPlayerUnitExtras.Clear();
@@ -298,6 +310,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
+
                     int relX = Mathf.Abs(relPos.x);
                     if (relX < minRelX)
                     {
@@ -305,11 +318,13 @@ namespace GameA.Game
                         target = _players[i];
                     }
                 }
+
                 if (target != null)
                 {
                     return target;
                 }
             }
+
             //随机一个目标
             int curStartIndex = GameRun.Instance.LogicFrameCnt;
             for (int i = 0; i < curPlayerCount; i++)
@@ -394,41 +409,34 @@ namespace GameA.Game
             return true;
         }
 
-        #region Score
+        #region MultiBattleStatistics 多人统计数据
 
-        public void AddScore(UnitBase unit, int score)
+        public int GetPlayerScore(IntVec3 playerGuid)
         {
-            var teamId = unit.TeamId;
-            //teamId == 0 自己一伙
-            if (teamId == 0)
-            {
-                if (unit.IsMain)
-                {
-                    AddScore(teamId, score);
-                }
-            }
-            else
-            {
-                AddScore(teamId, score);
-            }
+            int score;
+            _playerScoreDic.TryGetValue(playerGuid, out score);
+            return score;
         }
 
-        public void AddScore(byte teamId, int score)
+        public int GetPlayerKillCount(IntVec3 playerGuid)
         {
-            if (!_scoreDic.ContainsKey(teamId))
-            {
-                _scoreDic.Add(teamId, 0);
-            }
+            int count;
+            _playerKillDic.TryGetValue(playerGuid, out count);
+            return count;
+        }
 
-            _scoreDic[teamId] += score;
-            _scoreChanged = true;
-            if (teamId == MyTeamId)
-            {
-                Messenger.Broadcast(EMessengerType.OnScoreChanged);
-            }
+        public int GetPlayerKilledCount(IntVec3 playerGuid)
+        {
+            int count;
+            _playerKilledDic.TryGetValue(playerGuid, out count);
+            return count;
+        }
 
-            Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, _scoreDic[teamId]);
-            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == MyTeamId);
+        public int GetPlayerKillMonsterCount(IntVec3 playerGuid)
+        {
+            int count;
+            _playerKillMonsterDic.TryGetValue(playerGuid, out count);
+            return count;
         }
 
         public int GetTeamScore(int teamId)
@@ -472,6 +480,56 @@ namespace GameA.Game
             return true;
         }
 
+        private void AddScore(UnitBase unit, int score)
+        {
+            var teamId = unit.TeamId;
+            //teamId == 0 自己一伙
+            if (teamId == 0)
+            {
+                if (unit.IsMain)
+                {
+                    AddScore(teamId, score);
+                }
+            }
+            else
+            {
+                AddScore(teamId, score);
+            }
+
+            if (unit.IsPlayer)
+            {
+                var playerId = ((PlayerBase) unit).Guid;
+                if (!_playerScoreDic.ContainsKey(playerId))
+                {
+                    _playerScoreDic.Add(playerId, 0);
+                }
+
+                _playerScoreDic[playerId] += score;
+                if (unit.IsMain)
+                {
+                    //todo 展示数据
+                }
+            }
+        }
+
+        private void AddScore(byte teamId, int score)
+        {
+            if (!_scoreDic.ContainsKey(teamId))
+            {
+                _scoreDic.Add(teamId, 0);
+            }
+
+            _scoreDic[teamId] += score;
+            _scoreChanged = true;
+            if (teamId == MyTeamId)
+            {
+                Messenger.Broadcast(EMessengerType.OnScoreChanged);
+            }
+
+            Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, _scoreDic[teamId]);
+            PlayMode.Instance.SceneState.CheckNetBattleWin(_scoreDic[teamId], teamId == MyTeamId);
+        }
+
         private bool CheckTeamScoreBest(int teamId)
         {
             return GetTeamScore(teamId) >= GetBestScore();
@@ -499,15 +557,58 @@ namespace GameA.Game
             AddScore(unit, PlayMode.Instance.SceneState.ArriveScore);
         }
 
-        private void OnPlayerKilled(UnitBase unit)
+        private void OnPlayerKilled(PlayerBase deadPlayer, UnitBase killer)
         {
             if (!GM2DGame.Instance.GameMode.IsMulti) return;
-            AddScore(unit, PlayMode.Instance.SceneState.KillPlayerScore);
+            if (killer.IsPlayer)
+            {
+                var killerId = ((PlayerBase) killer).Guid;
+                if (!_playerKillDic.ContainsKey(killerId))
+                {
+                    _playerKillDic.Add(killerId, 0);
+                }
+
+                _playerKillDic[killerId]++;
+                if (killer.IsMain)
+                {
+                    //todo 展示数据
+                }
+            }
+
+            //被杀
+            var playerId = deadPlayer.Guid;
+            if (!_playerKilledDic.ContainsKey(playerId))
+            {
+                _playerKilledDic.Add(playerId, 0);
+            }
+
+            _playerScoreDic[playerId]++;
+            if (deadPlayer.IsMain)
+            {
+                //todo 展示数据
+            }
+
+            AddScore(killer, PlayMode.Instance.SceneState.KillPlayerScore);
         }
 
         private void OnMonsterKilled(UnitBase unit)
         {
             if (!GM2DGame.Instance.GameMode.IsMulti) return;
+            if (unit.IsPlayer)
+            {
+                var killerId = ((PlayerBase) unit).Guid;
+                if (!_playerKillMonsterDic.ContainsKey(killerId))
+                {
+                    _playerKillMonsterDic.Add(killerId, 0);
+                }
+
+                _playerKillMonsterDic[killerId]++;
+                if (unit.IsMain)
+                {
+                    //todo 展示数据
+                }
+            }
+
             AddScore(unit, PlayMode.Instance.SceneState.KillMonsterScore);
         }
 
@@ -518,6 +619,5 @@ namespace GameA.Game
         }
 
         #endregion
-
     }
 }
