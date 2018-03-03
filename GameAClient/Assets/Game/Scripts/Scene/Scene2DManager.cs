@@ -139,6 +139,7 @@ namespace GameA.Game
                 ChangeScene(i);
                 _sceneList[i].Dispose();
             }
+
             _curScene = null;
             _curSceneIndex = -1;
             _sceneList.Clear();
@@ -196,21 +197,8 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-//                if (GameRun.Instance.IsPlaying)
-//                {
-//                    GM2DGame.Instance.Pause();
-//                    CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
-//                    {
-//                        GM2DGame.Instance.Continue();
-//                        OnMapChanged();
-//                        _curScene.Enter();
-//                    });
-//                }
-//                else
-                {
-                    OnMapChanged();
-                    _curScene.Enter();
-                }
+                OnMapChanged();
+                _curScene.Enter();
             }
         }
 
@@ -598,6 +586,7 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+
             _rpgManger = new RpgTaskManger();
             _rpgManger.GetAllTask();
         }

@@ -10,6 +10,7 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected List<UnitBase> _fanEffectUnits = new List<UnitBase>();
+        protected bool _trigger;
 
         public override int SwitchTriggerId
         {
@@ -45,7 +46,7 @@ namespace GameA.Game
                 SetRelativeEffectPos(_withEffect.Trans, (EDirectionType) Rotation);
                 if (_switchTrigger != null)
                 {
-                    _withEffect.SetActiveStateEx(_switchTrigger.Trigger == EActiveState.Active);
+                    _withEffect.SetActiveStateEx(_trigger);
                 }
             }
 
@@ -54,6 +55,7 @@ namespace GameA.Game
 
         protected override void Clear()
         {
+            _trigger = _eActiveState == EActiveState.Active;
             base.Clear();
             _fanEffectUnits.Clear();
         }
@@ -72,7 +74,8 @@ namespace GameA.Game
 
         public override void OnTriggerChanged(EActiveState value)
         {
-            _withEffect.SetActiveStateEx(value == EActiveState.Active);
+            _trigger = value == EActiveState.Active;
+            _withEffect.SetActiveStateEx(_trigger);
         }
 
         public override void UpdateLogic()
@@ -174,6 +177,11 @@ namespace GameA.Game
                     _fanEffectUnits.Remove(unit);
                 }
             }
+        }
+
+        protected override void OnTriggerCreated()
+        {
+            _switchTrigger.SetTrigger(_trigger ? EActiveState.Active : EActiveState.Deactive);
         }
     }
 }

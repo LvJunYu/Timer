@@ -190,14 +190,9 @@ namespace GameA.Game
                 _jumpState = EJumpState.Fall;
             }
 
-            if (_dropLadderTimer > 0)
+            if (_dropClimbTimer > 0)
             {
-                _dropLadderTimer--;
-            }
-
-            if (_dropCirrusTimer > 0)
-            {
-                _dropCirrusTimer--;
+                _dropClimbTimer--;
             }
 
             for (int i = 0; i < _currentStates.Count; i++)
@@ -218,8 +213,7 @@ namespace GameA.Game
                 switch (ClimbState)
                 {
                     case EClimbState.None:
-                    case EClimbState.Ladder:
-                    case EClimbState.Cirrus:
+                    case EClimbState.ClimbLikeLadder:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -297,36 +291,19 @@ namespace GameA.Game
                             _climbJump = true;
                             SpeedY = -10;
                             break;
-                        case EClimbState.Ladder:
+                        case EClimbState.ClimbLikeLadder:
                             if (_input.GetKeyApplied(EInputType.Down))
                             {
                                 SpeedX = 0;
                                 SpeedY = 0;
-                                _dropLadderTimer = 15;
+                                _dropClimbTimer = 15;
                             }
                             else
                             {
                                 SpeedY = 120;
                                 if (_input.GetKeyApplied(EInputType.Up))
                                 {
-                                    _dropLadderTimer = 15;
-                                }
-                            }
-
-                            break;
-                        case EClimbState.Cirrus:
-                            if (_input.GetKeyApplied(EInputType.Down))
-                            {
-                                SpeedX = 0;
-                                SpeedY = 0;
-                                _dropCirrusTimer = 15;
-                            }
-                            else
-                            {
-                                SpeedY = 120;
-                                if (_input.GetKeyApplied(EInputType.Up))
-                                {
-                                    _dropCirrusTimer = 15;
+                                    _dropClimbTimer = 15;
                                 }
                             }
 
@@ -410,11 +387,10 @@ namespace GameA.Game
             }
 
             //如果掉下梯子时按上下则重新上梯子
-            if ((_dropLadderTimer > 0 || _dropCirrusTimer > 0) && _input.GetKeyUpApplied(EInputType.Down) ||
+            if (_dropClimbTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
                 _input.GetKeyUpApplied(EInputType.Up))
             {
-                _dropLadderTimer = 0;
-                _dropCirrusTimer = 0;
+                _dropClimbTimer = 0;
             }
         }
 
@@ -1002,7 +978,7 @@ namespace GameA.Game
             if (UnitDefine.UseProjectileBullet(other.Id))
             {
                 var projectile = other as ProjectileBase;
-                if (!projectile.Skill.Owner.CanHarm(this))
+                if (projectile != null && !projectile.Skill.Owner.CanHarm(this))
                 {
                     return false;
                 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
+﻿using SoyEngine;
 
 namespace GameA.Game
 {
@@ -8,7 +7,9 @@ namespace GameA.Game
     {
         public const int MaxCirrusCount = 20;
         public const int GrowSpeed = 16;
-        private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
+        private const string SpriteFormat = "{0}_{1}";
+        private ClimbUnit _climbUnit;
+        private int _index;
 
         public override bool IsIndividual
         {
@@ -17,6 +18,7 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
+            _climbUnit = new ClimbUnit(this);
             if (!base.OnInit())
             {
                 return false;
@@ -26,22 +28,15 @@ namespace GameA.Game
             return true;
         }
 
+        protected override void InitAssetPath()
+        {
+            _assetPath = string.Format(SpriteFormat, _tableUnit.Model, GetSpriteIndex(_index));
+        }
+
         public override void UpdateLogic()
         {
             _speed = _deltaPos = IntVec2.zero;
-            for (int i = 0; i < _players.Count; i++)
-            {
-                var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
-                _players[i].OnIntersectCirrus(this, _colliderGrid.Intersects(grid));
-            }
-
-            for (int i = _players.Count - 1; i >= 0; i--)
-            {
-                if (!_colliderGrid.Intersects(_players[i].ColliderGrid))
-                {
-                    _players.RemoveAt(i);
-                }
-            }
+            _climbUnit.UpdateLogic();
         }
 
         public override void UpdateView(float deltaTime)
@@ -57,32 +52,20 @@ namespace GameA.Game
         {
             if (other.IsPlayer)
             {
-                var player = other as PlayerBase;
-                if (!_players.Contains(player))
-                {
-                    _players.Add(player);
-                }
+                _climbUnit.OnIntersect(other as PlayerBase);
             }
         }
 
         protected override void Clear()
         {
             base.Clear();
-            _players.Clear();
+            _climbUnit.Clear();
         }
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             _deltaImpactPos = _deltaPos;
             return _deltaImpactPos;
-        }
-
-        public void ChangeView(string spriteName)
-        {
-            if (_view != null)
-            {
-                _view.ChangeView(spriteName);
-            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -123,6 +106,31 @@ namespace GameA.Game
             }
 
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public void SetJointIndex(int index)
+        {
+            _index = index;
+            InitAssetPath();
+            if (_view != null)
+            {
+                _view.ChangeView(_assetPath);
+            }
+        }
+
+        public static int GetSpriteIndex(int index)
+        {
+            if (index == 0)
+            {
+                return 0;
+            }
+
+            if (index == MaxCirrusCount - 1)
+            {
+                return 3;
+            }
+
+            return (index + 1) % 2 + 1;
         }
     }
 }

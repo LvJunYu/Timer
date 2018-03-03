@@ -13,8 +13,7 @@ namespace GameA.Game
         Left,
         Right,
         Up,
-        Ladder,
-        Cirrus,
+        ClimbLikeLadder,
         Rope
     }
 

@@ -612,9 +612,6 @@ namespace GameA.Game
             return !IsActor && _moveDirection != EMoveDirection.None;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             _unitDesc = unitDesc;
@@ -937,9 +934,6 @@ namespace GameA.Game
             }
         }
 
-        /// <summary>
-        /// 被电
-        /// </summary>
         internal virtual void InLazer()
         {
         }
@@ -965,7 +959,7 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 更新额外信息e
+        /// 更新额外信息
         /// </summary>
         public virtual UnitExtraDynamic UpdateExtraData()
         {

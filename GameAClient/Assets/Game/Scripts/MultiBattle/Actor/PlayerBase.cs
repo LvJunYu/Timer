@@ -868,8 +868,7 @@ namespace GameA.Game
                             speed = 50;
                         }
 
-                        if (speed == 0 && (_eClimbState == EClimbState.Ladder || _eClimbState == EClimbState.Cirrus ||
-                                           _eClimbState == EClimbState.Rope))
+                        if (speed == 0 && (_eClimbState == EClimbState.ClimbLikeLadder || _eClimbState == EClimbState.Rope))
                         {
                             _animation.PlayLoop(IdleAnimName());
                             if (IsMain)
@@ -946,15 +945,14 @@ namespace GameA.Game
         private bool IsClimbingSide()
         {
             return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus ||
-                    ClimbState == EClimbState.Rope) &&
+                    ClimbState == EClimbState.ClimbLikeLadder || ClimbState == EClimbState.Rope) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
         private bool IsInputSideValid()
         {
             return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up ||
-                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Cirrus) &&
+                    ClimbState == EClimbState.ClimbLikeLadder) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
 
@@ -1048,8 +1046,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
-                case EClimbState.Ladder:
-                case EClimbState.Cirrus:
+                case EClimbState.ClimbLikeLadder:
                 case EClimbState.Rope:
                     return "ClimbRunRight";
                 case EClimbState.Up:
@@ -1100,8 +1097,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
-                case EClimbState.Ladder:
-                case EClimbState.Cirrus:
+                case EClimbState.ClimbLikeLadder:
                 case EClimbState.Rope:
                     return "ClimbIdleRight";
                 case EClimbState.Up:
@@ -1189,52 +1185,27 @@ namespace GameA.Game
             return true;
         }
 
-        public void OnIntersectLadder(Ladder ladder, bool value)
+        public void OnIntersectClimbUnit(ClimbUnit climbUnit, bool value)
         {
             if (value)
             {
-                if (!_inLadders.Contains(ladder))
+                if (!_inClimbUnits.Contains(climbUnit))
                 {
-                    _inLadders.Add(ladder);
+                    _inClimbUnits.Add(climbUnit);
                 }
 
-                _inLadder = true;
+                _inClimbUnit = true;
             }
             else
             {
-                if (_inLadders.Contains(ladder))
+                if (_inClimbUnits.Contains(climbUnit))
                 {
-                    _inLadders.Remove(ladder);
+                    _inClimbUnits.Remove(climbUnit);
                 }
 
-                if (_inLadders.Count == 0)
+                if (_inClimbUnits.Count == 0)
                 {
-                    _inLadder = false;
-                }
-            }
-        }
-
-        public void OnIntersectCirrus(Cirrus cirrus, bool value)
-        {
-            if (value)
-            {
-                if (!_inCirrusUnits.Contains(cirrus))
-                {
-                    _inCirrusUnits.Add(cirrus);
-                }
-
-                _inCirrus = true;
-            }
-            else
-            {
-                if (_inCirrusUnits.Contains(cirrus))
-                {
-                    _inCirrusUnits.Remove(cirrus);
-                }
-
-                if (_inCirrusUnits.Count == 0)
-                {
-                    _inCirrus = false;
+                    _inClimbUnit = false;
                 }
             }
         }
@@ -1428,10 +1399,8 @@ namespace GameA.Game
         public override void OutSpacetimeDoor()
         {
             base.OutSpacetimeDoor();
-            _inLadders.Clear();
-            _inLadder = false;
-            _inCirrusUnits.Clear();
-            _inCirrus = false;
+            _inClimbUnits.Clear();
+            _inClimbUnit = false;
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)

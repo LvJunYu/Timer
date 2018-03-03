@@ -15,11 +15,7 @@ namespace GameA.Game
         public SwitchUnit SwitchUnit
         {
             get { return _switchUnit; }
-            set
-            {
-                _switchUnit = value;
-                SetTrigger(_switchUnit.EActiveState);
-            }
+            set { _switchUnit = value; }
         }
 
         public EActiveState Trigger
@@ -91,7 +87,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void SetTrigger(EActiveState value)
+        public virtual void SetTrigger(EActiveState value)
         {
             if (_trigger != value)
             {

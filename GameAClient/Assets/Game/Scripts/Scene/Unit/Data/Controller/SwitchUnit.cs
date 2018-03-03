@@ -74,8 +74,7 @@ namespace GameA.Game
                 return false;
             }
 
-            IntVec3 guid = _guid;
-            guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
+            IntVec3 guid = new IntVec3(_curPos.x, _curPos.y, GM2DTools.GetRuntimeCreatedUnitDepth());
             IntVec2 dataSize = tableUnit.GetDataSize(0, Vector2.one);
             var triggerDir = EDirectionType.Up;
             _colliderGrid = _tableUnit.GetColliderGrid(_curPos.x, _curPos.y, _unitDesc.Rotation, _unitDesc.Scale);
@@ -110,7 +109,13 @@ namespace GameA.Game
 
             _switchTrigger.OnPlay();
             _switchTrigger.SwitchUnit = this;
+            OnTriggerCreated();
             return true;
+        }
+
+        protected virtual void OnTriggerCreated()
+        {
+            _switchTrigger.SetTrigger(_eActiveState);
         }
 
         public virtual void OnTriggerChanged(EActiveState value)

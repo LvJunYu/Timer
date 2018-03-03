@@ -192,9 +192,9 @@ namespace GameA.Game
             return !IsBullet(unit.Id);
         }
 
-        public static bool IsLadder(int id)
+        public static bool CanClimbLikeLadder(int id)
         {
-            return id == 4016;
+            return id == 4016 || id == CirrusId;
         }
 
         public static bool IsNpc(int id)

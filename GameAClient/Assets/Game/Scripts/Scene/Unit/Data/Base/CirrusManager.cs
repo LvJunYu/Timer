@@ -113,21 +113,7 @@ namespace GameA.Game
                 return;
             }
 
-            if (_count > 0)
-            {
-                int spriteIndex;
-                if (_count == Cirrus.MaxCirrusCount - 1)
-                {
-                    spriteIndex = 3;
-                }
-                else
-                {
-                    spriteIndex = (_count + 1) % 2 + 1;
-                }
-
-                cirrus.ChangeView(string.Format(SpriteFormat, spriteIndex));
-            }
-
+            cirrus.SetJointIndex(_count);
             cirrus.OnPlay();
             _cirrusJoints.Add(cirrus);
             _curGrowValue = 0;
