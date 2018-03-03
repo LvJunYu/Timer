@@ -10,8 +10,16 @@ namespace JoyGameBuildVersionTool
         private static List<DatFileInfo> _fileInfoList;
         public static void Main(string[] args)
         {
-            Process("/Users/quan/Downloads/JoyGameRes/Game/",
-                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.3.1");
+            if (args.Length != 3)
+            {
+                Console.WriteLine("sourcePath/ destinationPath/ version");
+                throw new ArgumentException();
+            }
+            
+            Process(args[0], args[1], args[2]);
+            
+//            Process("/Users/quan/Downloads/JoyGameRes/Game/",
+//                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.3.1");
         }
 
         private static void Process(string inputPath, string outputPath, string version)
