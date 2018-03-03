@@ -17,10 +17,8 @@ namespace GameA.Game
     {
         public static Color SelectedColor = Color.red;
         public static Color NormalColor = Color.white;
-        protected const string TimerFormat = "Timer_{0}";
         protected Transform _trans;
         protected Transform _pairTrans;
-        protected SpriteRenderer[] _timerSprites;
         protected UnitBase _unit;
         protected AnimationSystem _animation;
         protected Skeleton _skeleton;
@@ -294,39 +292,6 @@ namespace GameA.Game
             if (JoyResManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
             {
                 spriteRenderer.sprite = arrowSprite;
-            }
-        }
-
-        public void SetTimeRenderer(bool show, int second)
-        {
-            if (_timerSprites == null)
-            {
-                _timerSprites = new SpriteRenderer[2];
-                for (int i = 0; i < _timerSprites.Length; i++)
-                {
-                    var trans = new GameObject(string.Format(TimerFormat, i + 1)).transform;
-                    CommonTools.SetParent(trans, _trans);
-                    _timerSprites[i] = trans.gameObject.AddComponent<SpriteRenderer>();
-                    _timerSprites[i].sortingOrder = (int) ESortingOrder.AttTexture2;
-                    if (i == 0)
-                    {
-                        trans.localPosition = Vector3.left * 0.4f;
-                    }
-                }
-            }
-
-            for (int i = 0; i < _timerSprites.Length; i++)
-            {
-                _timerSprites[i].SetActiveEx(show);
-                if (show)
-                {
-                    int value = i == 0 ? second / 10 : second % 10;
-                    Sprite sprite;
-                    if (JoyResManager.Instance.TryGetSprite(string.Format(TimerFormat, value), out sprite))
-                    {
-                        _timerSprites[i].sprite = sprite;
-                    }
-                }
             }
         }
 

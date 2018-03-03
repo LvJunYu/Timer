@@ -53,7 +53,7 @@ namespace GameA.Game
         public const int MonsterCaveId = 5022;
         public const int MagicBeanId = 5023;
         public const int CirrusId = 5024;
-        public const int SurpriseBoxId = 5024;
+        public const int SurpriseBoxId = 5025;
         public const int BillboardId = 7001;
         public const int EnergyPoolId = 8001;
         public const int TextId = 9001;

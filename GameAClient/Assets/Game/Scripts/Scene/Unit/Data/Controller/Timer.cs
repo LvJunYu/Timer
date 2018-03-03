@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
@@ -7,7 +8,9 @@ namespace GameA.Game
     [Unit(Id = 8108, Type = typeof(Timer))]
     public class Timer : SwitchUnit
     {
+        protected const string TimerFormat = "Timer_{0}";
         protected List<UnitBase> _units;
+        protected SpriteRenderer[] _timerSprites;
         private bool _random;
         private bool _circulation;
         private int _second;
@@ -22,9 +25,9 @@ namespace GameA.Game
             get { return UnitDefine.TimerTriggerPressId; }
         }
 
-        public override bool UseMagic()
+        public override bool CanControlledBySwitch
         {
-            return true;
+            get { return true; }
         }
 
         internal override void OnPlay()
@@ -78,14 +81,6 @@ namespace GameA.Game
             }
         }
 
-        private void ShowTime(bool show)
-        {
-            if (_view != null)
-            {
-                _view.SetTimeRenderer(show, Mathf.CeilToInt(_timer / (float) ConstDefineGM2D.FixedFrameCount));
-            }
-        }
-
         public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
@@ -128,6 +123,29 @@ namespace GameA.Game
             }
         }
 
+        internal override void OnObjectDestroy()
+        {
+            if (_timerSprites != null)
+            {
+                for (int i = 0; i < _timerSprites.Length; i++)
+                {
+                    Object.Destroy(_timerSprites[i].gameObject);
+                }
+
+                _timerSprites = null;
+            }
+
+            base.OnObjectDestroy();
+        }
+
+        private void ShowTime(bool show)
+        {
+            if (_view != null)
+            {
+                SetTimeRenderer(show, Mathf.CeilToInt(_timer / (float) ConstDefineGM2D.FixedFrameCount));
+            }
+        }
+
         private int GetRandomSecond()
         {
             var delta = _maxSecond + 1 - _minSecond;
@@ -151,6 +169,43 @@ namespace GameA.Game
                     if (unit != null && unit.IsAlive)
                     {
                         unit.OnCtrlBySwitch();
+                    }
+                }
+            }
+        }
+
+        private void SetTimeRenderer(bool show, int second)
+        {
+            if (_timerSprites == null)
+            {
+                _timerSprites = new SpriteRenderer[2];
+                for (int i = 0; i < _timerSprites.Length; i++)
+                {
+                    var trans = new GameObject(string.Format(TimerFormat, i + 1)).transform;
+                    CommonTools.SetParent(trans, _trans);
+                    _timerSprites[i] = trans.gameObject.AddComponent<SpriteRenderer>();
+                    _timerSprites[i].sortingOrder = (int) ESortingOrder.Item;
+                    if (i == 0)
+                    {
+                        trans.localPosition = new Vector3(-0.4f, 0, -0.01f);
+                    }
+                    else
+                    {
+                        trans.localPosition = new Vector3(0, 0, -0.01f);
+                    }
+                }
+            }
+
+            for (int i = 0; i < _timerSprites.Length; i++)
+            {
+                _timerSprites[i].SetActiveEx(show);
+                if (show)
+                {
+                    int value = i == 0 ? second / 10 : second % 10;
+                    Sprite sprite;
+                    if (JoyResManager.Instance.TryGetSprite(string.Format(TimerFormat, value), out sprite))
+                    {
+                        _timerSprites[i].sprite = sprite;
                     }
                 }
             }
