@@ -84,7 +84,7 @@ namespace GameA.Game
         public override UnitExtraDynamic UpdateExtraData()
         {
             var unitExtra = base.UpdateExtraData();
-            _random = unitExtra.TimerRandom;
+            _random = unitExtra.IsRandom;
             _circulation = unitExtra.TimerCirculation;
             _second = unitExtra.TimerSecond;
             _minSecond = unitExtra.TimerMinSecond;
@@ -148,15 +148,7 @@ namespace GameA.Game
 
         private int GetRandomSecond()
         {
-            var delta = _maxSecond + 1 - _minSecond;
-            if (delta > 0)
-            {
-                int curFrame = GameRun.Instance.LogicFrameCnt;
-                return curFrame % delta + _minSecond;
-            }
-
-            LogHelper.Error("max is less than min");
-            return _maxSecond;
+            return GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt, _maxSecond, _minSecond);
         }
 
         private void DoControl()

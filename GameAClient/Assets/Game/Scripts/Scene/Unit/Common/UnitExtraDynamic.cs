@@ -39,8 +39,11 @@ namespace GameA.Game
             DefineField<byte>(FieldTag.TimerSecond, "TimerSecond");
             DefineField<byte>(FieldTag.TimerMinSecond, "TimerMinSecond");
             DefineField<byte>(FieldTag.TimerMaxSecond, "TimerMaxSecond");
-            DefineField<bool>(FieldTag.TimerRandom, "TimerRandom");
+            DefineField<bool>(FieldTag.IsRandom, "TimerRandom");
             DefineField<bool>(FieldTag.TimerCirculation, "TimerCirculation");
+            DefineField<bool>(FieldTag.SurpriseBoxInterval, "SurpriseBoxInterval");
+            DefineField<bool>(FieldTag.SurpriseBoxCountLimit, "SurpriseBoxCountLimit");
+            DefineField<bool>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
@@ -86,8 +89,11 @@ namespace GameA.Game
             public static readonly int TimerSecond = _nextId++;
             public static readonly int TimerMinSecond = _nextId++;
             public static readonly int TimerMaxSecond = _nextId++;
-            public static readonly int TimerRandom = _nextId++;
+            public static readonly int IsRandom = _nextId++;
             public static readonly int TimerCirculation = _nextId++;
+            public static readonly int SurpriseBoxInterval = _nextId++;
+            public static readonly int SurpriseBoxCountLimit = _nextId++;
+            public static readonly int SurpriseBoxMaxCount = _nextId++;
             public static readonly int MonsterId = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
@@ -291,10 +297,10 @@ namespace GameA.Game
             set { Set(value, FieldTag.TimerMaxSecond); }
         }
 
-        public bool TimerRandom
+        public bool IsRandom
         {
-            get { return Get<bool>(FieldTag.TimerRandom); }
-            set { Set(value, FieldTag.TimerRandom); }
+            get { return Get<bool>(FieldTag.IsRandom); }
+            set { Set(value, FieldTag.IsRandom); }
         }
 
         public bool TimerCirculation
@@ -302,7 +308,25 @@ namespace GameA.Game
             get { return Get<bool>(FieldTag.TimerCirculation); }
             set { Set(value, FieldTag.TimerCirculation); }
         }
-        
+
+        public byte SurpriseBoxInterval
+        {
+            get { return Get<byte>(FieldTag.SurpriseBoxInterval); }
+            set { Set(value, FieldTag.SurpriseBoxInterval); }
+        }
+
+        public bool SurpriseBoxCountLimit
+        {
+            get { return Get<bool>(FieldTag.SurpriseBoxCountLimit); }
+            set { Set(value, FieldTag.SurpriseBoxCountLimit); }
+        }
+
+        public byte SurpriseBoxMaxCount
+        {
+            get { return Get<byte>(FieldTag.SurpriseBoxMaxCount); }
+            set { Set(value, FieldTag.SurpriseBoxMaxCount); }
+        }
+
         public ushort MonsterId
         {
             get { return Get<ushort>(FieldTag.MonsterId); }
@@ -550,6 +574,8 @@ namespace GameA.Game
                 case EAdvanceAttribute.TimerSecond:
                 case EAdvanceAttribute.TimerMinSecond:
                 case EAdvanceAttribute.TimerMaxSecond:
+                case EAdvanceAttribute.SurpriseBoxInterval:
+                case EAdvanceAttribute.SurpriseBoxMaxCount:
                     return 1;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 1;
@@ -564,48 +590,43 @@ namespace GameA.Game
         {
             switch (eAdvanceAttribute)
             {
-                case EAdvanceAttribute.TimeInterval:
-                    return 5000;
-                case EAdvanceAttribute.Damage:
-                    return 1000;
-                case EAdvanceAttribute.EffectRange:
-                    return 50;
-                case EAdvanceAttribute.ViewRange:
-                    return 300;
-                case EAdvanceAttribute.BulletCount:
-                    return 99;
-                case EAdvanceAttribute.CastRange:
-                    return 300;
-                case EAdvanceAttribute.BulletSpeed:
-                    return 20;
                 case EAdvanceAttribute.ChargeTime:
                     return 10000;
-                case EAdvanceAttribute.MaxHp:
-                    return 2000;
-                case EAdvanceAttribute.MaxSpeedX:
-                    return 120;
-                case EAdvanceAttribute.JumpAbility:
-                    return 260;
-                case EAdvanceAttribute.InjuredReduce:
-                    return 100;
-                case EAdvanceAttribute.CureIncrease:
-                    return 500;
-                case EAdvanceAttribute.NpcIntervalTiem:
-                    return 10;
+                case EAdvanceAttribute.TimeInterval:
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return 5000;
+                case EAdvanceAttribute.MaxHp:
+                    return 2000;
+                case EAdvanceAttribute.Damage:
+                    return 1000;
+                case EAdvanceAttribute.CureIncrease:
+                    return 500;
+                case EAdvanceAttribute.ViewRange:
+                case EAdvanceAttribute.CastRange:
                 case EAdvanceAttribute.MaxCreatedMonster:
+                case EAdvanceAttribute.MaxTaskTimeLimit:
                     return 300;
-                case EAdvanceAttribute.MaxAliveMonster:
-                    return 10;
+                case EAdvanceAttribute.JumpAbility:
+                    return 260;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return 120;
+                case EAdvanceAttribute.InjuredReduce:
+                case EAdvanceAttribute.SurpriseBoxMaxCount:
+                    return 100;
+                case EAdvanceAttribute.BulletCount:
                 case EAdvanceAttribute.TimerSecond:
                 case EAdvanceAttribute.TimerMinSecond:
                 case EAdvanceAttribute.TimerMaxSecond:
-                    return 99;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 99;
-                case EAdvanceAttribute.MaxTaskTimeLimit:
-                    return 300;
+                case EAdvanceAttribute.EffectRange:
+                    return 50;
+                case EAdvanceAttribute.BulletSpeed:
+                case EAdvanceAttribute.SurpriseBoxInterval:
+                    return 20;
+                case EAdvanceAttribute.NpcIntervalTiem:
+                case EAdvanceAttribute.MaxAliveMonster:
+                    return 10;
             }
 
             return 0;
@@ -619,26 +640,9 @@ namespace GameA.Game
                 case EAdvanceAttribute.ChargeTime:
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return 100;
-                case EAdvanceAttribute.Damage:
-                case EAdvanceAttribute.EffectRange:
-                case EAdvanceAttribute.ViewRange:
-                case EAdvanceAttribute.BulletCount:
-                case EAdvanceAttribute.CastRange:
-                case EAdvanceAttribute.BulletSpeed:
-                case EAdvanceAttribute.MaxHp:
-                case EAdvanceAttribute.MaxSpeedX:
-                case EAdvanceAttribute.JumpAbility:
-                case EAdvanceAttribute.InjuredReduce:
-                case EAdvanceAttribute.CureIncrease:
-                case EAdvanceAttribute.MaxCreatedMonster:
-                case EAdvanceAttribute.MaxAliveMonster:
-                case EAdvanceAttribute.TimerSecond:
-                case EAdvanceAttribute.TimerMinSecond:
-                case EAdvanceAttribute.TimerMaxSecond:
-                    return 1;
             }
 
-            return 0;
+            return 1;
         }
 
         private static string GetFormat(EAdvanceAttribute eAdvanceAttribute)
@@ -653,8 +657,8 @@ namespace GameA.Game
                 case EAdvanceAttribute.MonsterIntervalTime:
                     return "{0:f1}秒";
                 case EAdvanceAttribute.NpcIntervalTiem:
-                    return "{0}秒";
                 case EAdvanceAttribute.MaxTaskTimeLimit:
+                case EAdvanceAttribute.SurpriseBoxInterval:
                     return "{0}秒";
             }
 
@@ -775,6 +779,8 @@ namespace GameA.Game
         TimerSecond,
         TimerMinSecond,
         TimerMaxSecond,
+        SurpriseBoxInterval,
+        SurpriseBoxMaxCount,
         MaxTaskKillOrColltionNum,
         MaxTaskTimeLimit,
         Spawn,

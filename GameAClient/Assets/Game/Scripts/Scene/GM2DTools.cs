@@ -488,8 +488,11 @@ namespace GameA.Game
             res.TimerSecond = data.TimerSecond;
             res.TimerMinSecond = data.TimerMinSecond;
             res.TimerMaxSecond = data.TimerMaxSecond;
-            res.TimerRandom = data.TimerRandom;
+            res.IsRandom = data.IsRandom;
             res.TimerCirculation = data.TimerCirculation;
+            res.SurpriseBoxInterval = data.SurpriseBoxInterval;
+            res.SurpriseBoxCountLimit = data.SurpriseBoxCountLimit;
+            res.SurpriseBoxMaxCount = data.SurpriseBoxMaxCount;
             var drops = data.Drops;
             for (int i = 0, count = drops.Count; i < count; i++)
             {
@@ -591,8 +594,11 @@ namespace GameA.Game
             unitExtra.TimerSecond = (byte) data.TimerSecond;
             unitExtra.TimerMinSecond = (byte) data.TimerMinSecond;
             unitExtra.TimerMaxSecond = (byte) data.TimerMaxSecond;
-            unitExtra.TimerRandom = data.TimerRandom;
+            unitExtra.IsRandom = data.IsRandom;
             unitExtra.TimerCirculation = data.TimerCirculation;
+            unitExtra.SurpriseBoxInterval = (byte) data.SurpriseBoxInterval;
+            unitExtra.SurpriseBoxCountLimit = data.SurpriseBoxCountLimit;
+            unitExtra.SurpriseBoxMaxCount = (byte) data.SurpriseBoxMaxCount;
             unitExtra.MaxCreatedMonster = (ushort) data.MaxCreatedMonster;
             for (int i = 0; i < data.KnockbackForces.Count; i++)
             {

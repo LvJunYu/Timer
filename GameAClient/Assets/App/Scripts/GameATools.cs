@@ -675,7 +675,20 @@ namespace GameA
             {
                 return str;
             }
+
             return GetMaxLengthStr(str, maxLengh - 2) + "...";
+        }
+
+        public static int GetRandomByValue(int value, int maxSecond, int minSecond = 0)
+        {
+            var delta = maxSecond + 1 - minSecond;
+            if (delta > 0)
+            {
+                return value % delta + minSecond;
+            }
+
+            LogHelper.Error("max is less than min");
+            return maxSecond;
         }
     }
 }

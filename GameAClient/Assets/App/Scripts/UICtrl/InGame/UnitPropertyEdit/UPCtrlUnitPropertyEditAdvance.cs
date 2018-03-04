@@ -14,6 +14,7 @@ namespace GameA
             WeaponSetting,
             MonsterCave,
             Timer,
+            SurpriseBox
         }
 
         private Sequence _openSequence;
@@ -36,18 +37,15 @@ namespace GameA
         private USCtrlSliderSetting _usMonsterIntervalTimeSetting;
         private USCtrlSliderSetting _usMaxCreatedMonsterSetting;
         private USCtrlSliderSetting _usMaxAliveMonsterSetting;
-        private USCtrlSliderSetting _usTimerSecondSetting;
-        private USCtrlSliderSetting _usTimerMinSecondSetting;
-        private USCtrlSliderSetting _usTimerMaxSecondSetting;
         private USCtrlGameSettingItem _usCanMoveSetting;
-        private USCtrlGameSettingItem _usTimerRandomSetting;
-        private USCtrlGameSettingItem _usTimerCirculationSetting;
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
         private USCtrlDropdownSetting _usSpawnSetting;
         private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
         private UnitExtraDynamic _curUnitExtra;
+        private UPCtrlUnitPropertyAdvanceTimer _upCtrlTimer;
+        private UPCtrlUnitPropertyAdvanceSurpriseBox _upCtrlSurpriseBox;
 
         protected override void OnViewCreated()
         {
@@ -68,9 +66,6 @@ namespace GameA
             _usMonsterIntervalTimeSetting = new USCtrlSliderSetting();
             _usMaxCreatedMonsterSetting = new USCtrlSliderSetting();
             _usMaxAliveMonsterSetting = new USCtrlSliderSetting();
-            _usTimerSecondSetting = new USCtrlSliderSetting();
-            _usTimerMinSecondSetting = new USCtrlSliderSetting();
-            _usTimerMaxSecondSetting = new USCtrlSliderSetting();
             _usMaxHpSetting.Init(_cachedView.MaxHpSetting);
             _usJumpSetting.Init(_cachedView.JumpSetting);
             _usMoveSpeedSetting.Init(_cachedView.MoveSpeedSetting);
@@ -86,9 +81,6 @@ namespace GameA
             _usMonsterIntervalTimeSetting.Init(_cachedView.MonsterIntervalTimeSetting);
             _usMaxCreatedMonsterSetting.Init(_cachedView.MaxCreatedMonsterSetting);
             _usMaxAliveMonsterSetting.Init(_cachedView.MaxAliveMonsterSetting);
-            _usTimerSecondSetting.Init(_cachedView.TimerSecondSetting);
-            _usTimerMinSecondSetting.Init(_cachedView.TimerMinSecondSetting);
-            _usTimerMaxSecondSetting.Init(_cachedView.TimerMaxSecondSetting);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxHpSetting, EAdvanceAttribute.MaxHp,
                 value => _mainCtrl.GetCurUnitExtra().MaxHp = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usJumpSetting, EAdvanceAttribute.JumpAbility,
@@ -126,18 +118,8 @@ namespace GameA
                 value => _mainCtrl.EditData.UnitExtra.MaxCreatedMonster = (ushort) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usMaxAliveMonsterSetting, EAdvanceAttribute.MaxAliveMonster,
                 value => _mainCtrl.EditData.UnitExtra.MaxAliveMonster = (byte) value);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerSecondSetting, EAdvanceAttribute.TimerSecond,
-                value => _mainCtrl.EditData.UnitExtra.TimerSecond = (byte) value);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerMinSecondSetting, EAdvanceAttribute.TimerMinSecond,
-                value => _mainCtrl.EditData.UnitExtra.TimerMinSecond = (byte) value);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerMaxSecondSetting, EAdvanceAttribute.TimerMaxSecond,
-                value => _mainCtrl.EditData.UnitExtra.TimerMaxSecond = (byte) value);
             _usCanMoveSetting = new USCtrlGameSettingItem();
             _usCanMoveSetting.Init(_cachedView.CanMoveSetting);
-            _usTimerRandomSetting = new USCtrlGameSettingItem();
-            _usTimerRandomSetting.Init(_cachedView.TimerRandomSetting);
-            _usTimerCirculationSetting = new USCtrlGameSettingItem();
-            _usTimerCirculationSetting.Init(_cachedView.TimerCirculationSetting);
             _usDropsSetting = new USCtrlAddItem();
             _usDropsSetting.Init(_cachedView.DropsSetting);
             _usAddStatesSetting = new USCtrlAddItem();
@@ -166,6 +148,11 @@ namespace GameA
                     playerUnitExtra.InternalUnitExtras.Set<UnitExtraDynamic>(null, index);
                     _usPlayerWeaponSetting.SetCur(playerUnitExtra.InternalUnitExtras.ToList<UnitExtraDynamic>());
                 });
+
+            _upCtrlTimer = new UPCtrlUnitPropertyAdvanceTimer();
+            _upCtrlTimer.Init(_mainCtrl, _cachedView);
+            _upCtrlSurpriseBox = new UPCtrlUnitPropertyAdvanceSurpriseBox();
+            _upCtrlSurpriseBox.Init(_mainCtrl, _cachedView);
         }
 
         public override void Open()
@@ -210,11 +197,6 @@ namespace GameA
             _usMonsterIntervalTimeSetting.SetEnable(_curMenu == EMenu.MonsterCave);
             _usMaxCreatedMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
             _usMaxAliveMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
-            _usTimerSecondSetting.SetEnable(_curMenu == EMenu.Timer && !_mainCtrl.EditData.UnitExtra.TimerRandom);
-            _usTimerMinSecondSetting.SetEnable(_curMenu == EMenu.Timer && _mainCtrl.EditData.UnitExtra.TimerRandom);
-            _usTimerMaxSecondSetting.SetEnable(_curMenu == EMenu.Timer && _mainCtrl.EditData.UnitExtra.TimerRandom);
-            _usTimerRandomSetting.SetEnable(_curMenu == EMenu.Timer);
-            _usTimerCirculationSetting.SetEnable(_curMenu == EMenu.Timer);
             _usCanMoveSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
                                         UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
                                         !UnitDefine.IsSpawn(id));
@@ -254,18 +236,6 @@ namespace GameA
             _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
             _usMaxCreatedMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxCreatedMonster);
             _usMaxAliveMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxAliveMonster);
-            _usTimerSecondSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimerSecond);
-            _usTimerMinSecondSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimerMinSecond);
-            _usTimerMaxSecondSetting.SetCur(_mainCtrl.EditData.UnitExtra.TimerMaxSecond);
-            _usTimerRandomSetting.SetData(_mainCtrl.EditData.UnitExtra.TimerRandom, value =>
-            {
-                _usTimerSecondSetting.SetEnable(!value);
-                _usTimerMinSecondSetting.SetEnable(value);
-                _usTimerMaxSecondSetting.SetEnable(value);
-                _mainCtrl.EditData.UnitExtra.TimerRandom = value;
-            });
-            _usTimerCirculationSetting.SetData(_mainCtrl.EditData.UnitExtra.TimerCirculation,
-                value => { _mainCtrl.EditData.UnitExtra.TimerCirculation = value; });
             _usCanMoveSetting.SetData(_mainCtrl.EditData.UnitExtra.MaxSpeedX != ushort.MaxValue, value =>
             {
                 _usMoveSpeedSetting.SetEnable(value);
@@ -287,6 +257,9 @@ namespace GameA
                 _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras
                     .ToList<UnitExtraDynamic>());
             }
+
+            _upCtrlTimer.Refresh(_curMenu);
+            _upCtrlSurpriseBox.Refresh(_curMenu);
         }
 
         public override void Close()

@@ -14,9 +14,24 @@ namespace GameA.Game
         private const string QuestionSprite = "M1SurpriseBox_Question";
         private const string Ligt1Sprite = "M1SurpriseBox_Light1";
         private const string Ligt2Sprite = "M1SurpriseBox_Light2";
-        private List<UnitBase> _itemList = new List<UnitBase>();
+
+        private Dictionary<int, bool> _itemDic = new Dictionary<int, bool>
+        {
+            {6001, true},
+            {6002, true},
+            {6003, true},
+            {6004, true}
+        };
+
+        private List<int> _itemList = new List<int>();
         private SpriteRenderer _itemRenderer;
         private SpriteRenderer _lightRenderer;
+        private float _interval;
+        private bool _random;
+        private bool _limit;
+        private int _maxCount;
+        private int _curCount;
+        private int _timer;
 
         public override bool CanControlledBySwitch
         {
@@ -58,6 +73,118 @@ namespace GameA.Game
             base.OnObjectDestroy();
         }
 
+        public override UnitExtraDynamic UpdateExtraData()
+        {
+            var unitExtra = base.UpdateExtraData();
+            _interval = unitExtra.SurpriseBoxInterval;
+            _random = unitExtra.IsRandom;
+            _limit = unitExtra.SurpriseBoxCountLimit;
+            _maxCount = _limit ? unitExtra.SurpriseBoxMaxCount : int.MaxValue;
+            return unitExtra;
+        }
+
+        internal override void OnPlay()
+        {
+            GetItemList();
+            base.OnPlay();
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_curCount < _maxCount)
+            {
+                if (_timer > 0)
+                {
+                    _timer--;
+                }
+                else
+                {
+                    if (DoSurprise())
+                    {
+                        _timer = (int) (_interval * ConstDefineGM2D.FixedFrameCount);
+                        _curCount++;
+                    }
+                    else
+                    {
+                        _timer = 20;
+                    }
+                }
+            }
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _timer = 0;
+            _curCount = 0;
+        }
+
+        private bool DoSurprise()
+        {
+            var count = _itemList.Count;
+            if (count == 0)
+            {
+                return false;
+            }
+
+            int index;
+            if (_random)
+            {
+                index = GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt, count - 1);
+            }
+            else
+            {
+                index = _curCount % count;
+            }
+
+            if (index < count)
+            {
+                var id = _itemList[index];
+                if (CheckSpaceValid(id))
+                {
+                    var item = PlayMode.Instance.CreateRuntimeUnit(id, new IntVec2(_curPos.x, CenterUpFloorPos.y));
+                    if (item != null)
+                    {
+                        item.OnPlay();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool CheckSpaceValid(int id)
+        {
+            var checkGrid = GM2DTools.CalculateFireColliderGrid(id, _colliderGrid, _unitDesc.Rotation);
+            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (units[i].IsAlive)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void GetItemList()
+        {
+            _itemList.Clear();
+            foreach (var id in _itemDic.Keys)
+            {
+                if (_itemDic[id])
+                {
+                    _itemList.Add(id);
+                }
+            }
+
+            SetItemView();
+            SetLightView();
+        }
+
         private void SetItemView()
         {
             if (_view == null) return;
@@ -69,7 +196,9 @@ namespace GameA.Game
                 _itemRenderer.transform.localPosition = new Vector3(0, 0, -0.01f);
             }
 
-            string spriteName = _itemList.Count == 1 ? _itemList[0].TableUnit.Icon : QuestionSprite;
+            string spriteName = _itemList.Count == 1
+                ? UnitManager.Instance.GetTableUnit(_itemList[0]).Icon
+                : QuestionSprite;
 
             Sprite sprite;
             if (JoyResManager.Instance.TryGetSprite(spriteName, out sprite))
@@ -89,13 +218,26 @@ namespace GameA.Game
                 _lightRenderer.transform.localPosition = new Vector3(0, 0, -0.01f);
             }
 
-            string spriteName = _eActiveState == EActiveState.Active ? Ligt1Sprite : Ligt2Sprite;
+            string spriteName;
+            if (_eActiveState == EActiveState.Active && _itemList.Count > 0)
+            {
+                spriteName = Ligt1Sprite;
+            }
+            else
+            {
+                spriteName = Ligt2Sprite;
+            }
 
             Sprite sprite;
             if (JoyResManager.Instance.TryGetSprite(spriteName, out sprite))
             {
                 _lightRenderer.sprite = sprite;
             }
+        }
+
+        public void SetItem(int id, bool value)
+        {
+            _itemDic.AddOrReplace(id, value);
         }
     }
 }

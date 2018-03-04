@@ -1325,6 +1325,12 @@ namespace GameA
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
                 return true;
             }
+            
+            if (_curId == UnitDefine.SurpriseBoxId && _curEditType == EEditType.Active)
+            {
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
+                return true;
+            }
 
             return false;
         }

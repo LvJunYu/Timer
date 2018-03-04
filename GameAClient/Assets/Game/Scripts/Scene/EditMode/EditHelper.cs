@@ -321,6 +321,13 @@ namespace GameA.Game
                 unitEditData.UnitExtra.TimerMaxSecond = 30;
             }
 
+            if (UnitDefine.SurpriseBoxId == id)
+            {
+                unitEditData.UnitExtra.IsRandom = true;
+                unitEditData.UnitExtra.SurpriseBoxMaxCount = 100;
+                unitEditData.UnitExtra.SurpriseBoxInterval = 10;
+            }
+
             return unitEditData;
         }
 
