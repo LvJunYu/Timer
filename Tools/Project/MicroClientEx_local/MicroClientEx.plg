@@ -6,14 +6,44 @@
 --------------------Configuration: MicroClientEx - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x804 /fo"Debug/MicroClientEx.res" /d "_DEBUG" "Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx\MicroClientEx.rc"" 
-Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPB7F6.tmp" with contents
+Creating command line "rc.exe /l 0x804 /fo"Debug/MicroClientEx.res" /d "_DEBUG" "Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\MicroClientEx.rc"" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSP9FE3.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx\MicroClientExDlg.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\CaptionButton.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\common_function.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\CompressStream.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\CompressStreamBuf.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\ContainerDialog.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\CountChecksum.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\CustomControlSite.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\DecompressStream.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\DecompressStreamBuf.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\DrawAppearance.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\HttpClient.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\ImpIDispatch.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\LogUtil.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\MicroClientEx.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\MicroClientExDlg.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\PngBtn.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\ProgressBar.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\StreamException.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\tinystr.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\tinyxml.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\tinyxmlerror.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\tinyxmlparser.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\webbrowser2.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\ZlibStream.cpp"
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\ZlibStreamBuf.cpp"
 ]
-Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSPB7F6.tmp" 
-Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPB7F7.tmp" with contents
+Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSP9FE3.tmp" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSP9FE4.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fp"Debug/MicroClientEx.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"Y:\Work\WorkSpace\Soy\GameAClient\Tools\Project\MicroClientEx_local\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\quan\AppData\Local\Temp\RSP9FE4.tmp" 
+Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSP9FF5.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/JoyGame_Launcher.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/JoyGame_Launcher.exe" /pdbtype:sept 
 .\Debug\CaptionButton.obj
@@ -44,11 +74,40 @@ Creating temporary file "C:\Users\quan\AppData\Local\Temp\RSPB7F7.tmp" with cont
 .\Debug\ZlibStreamBuf.obj
 .\Debug\MicroClientEx.res
 ]
-Creating command line "link.exe @C:\Users\quan\AppData\Local\Temp\RSPB7F7.tmp"
+Creating command line "link.exe @C:\Users\quan\AppData\Local\Temp\RSP9FF5.tmp"
 <h3>Output Window</h3>
 Compiling resources...
 Compiling...
+StdAfx.cpp
+Compiling...
+CaptionButton.cpp
+common_function.cpp
+CompressStream.cpp
+CompressStreamBuf.cpp
+ContainerDialog.cpp
+CountChecksum.cpp
+CustomControlSite.cpp
+DecompressStream.cpp
+DecompressStreamBuf.cpp
+DrawAppearance.cpp
+HttpClient.cpp
+ImpIDispatch.cpp
+LogUtil.cpp
+MicroClientEx.cpp
 MicroClientExDlg.cpp
+PngBtn.cpp
+ProgressBar.cpp
+StreamException.cpp
+tinystr.cpp
+tinyxml.cpp
+Generating Code...
+Compiling...
+tinyxmlerror.cpp
+tinyxmlparser.cpp
+webbrowser2.cpp
+ZlibStream.cpp
+ZlibStreamBuf.cpp
+Generating Code...
 Linking...
    Creating library Debug/JoyGame_Launcher.lib and object Debug/JoyGame_Launcher.exp
 LINK : warning LNK4049: locally defined symbol ""protected: static struct AFX_INTERFACEMAP const COleControlSite::interfaceMap" (?interfaceMap@COleControlSite@@1UAFX_INTERFACEMAP@@B)" imported

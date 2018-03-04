@@ -144,89 +144,6 @@ BOOL CMicroClientExDlg::OnInitDialog()
 	//接受命令行参数
 	int argc = __argc;
 
-#ifndef _DEBUG
-	if (argc != 2)
-	{
-		Quit();
-	}
-	LPTSTR lpCmdLine = __argv[1];
-	//第一步：初步检查命令行是否符合要求：非空
-	if (NULL == lpCmdLine || _tcslen(lpCmdLine) == 0)
-	{
-		/*
-		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
-		*/
-		//::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
-		Quit();
-	}
-	m_strCmdline = lpCmdLine;
-
-	//第二步：解析命令行，先用,号分隔字符串，再用等号分隔
-	std::vector<std::string> vecPara;
-	std::string cmdLine = (std::string)lpCmdLine;
-	split(cmdLine, vecPara, ",");
-
-	typedef std::pair<std::string, std::string> CommandValuePair;
-	std::vector<CommandValuePair> vecKey2Data;
-
-	for (unsigned int i = 0; i < vecPara.size(); ++i)
-	{
-		std::vector<std::string> vecTmp;
-		split(vecPara[i], vecTmp, "=");
-		if (vecTmp.size() == 2)
-		{
-			vecKey2Data.push_back(CommandValuePair(vecTmp[0], vecTmp[1]));
-		}
-	}
-	//--命令行参数解析完毕
-
-	//--开始判断参数是否是指定格式的
-	BOOL bHaveID = FALSE;
-	BOOL bHaveKey = FALSE;
-	BOOL bHaveProcPara = FALSE;
-
-	for (i = 0; i < vecKey2Data.size(); ++i)
-	{
-		if (vecKey2Data[i].first.compare("ID") == 0 && !vecKey2Data[i].second.empty())
-		{
-			bHaveID = TRUE;
-			m_strOpenId = vecKey2Data[i].second;
-			continue;
-		}
-
-		if (vecKey2Data[i].first.compare("Key") == 0 && !vecKey2Data[i].second.empty())
-		{
-			bHaveKey = TRUE;
-			m_strOpenKey = vecKey2Data[i].second;
-			continue;
-		}
-
-		if (vecKey2Data[i].first.compare("PROCPARA") == 0 && !vecKey2Data[i].second.empty())
-		{
-			bHaveProcPara = TRUE;
-			m_strProcPara = vecKey2Data[i].second;
-			continue;
-		}
-	}
-
-	if (!bHaveID || !bHaveKey || !bHaveProcPara)
-	{
-		/*
-		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
-		*/
-		//::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
-		Quit();
-	}
-	//--不符合要求，缺少数据，则直接退出主程序
-
-	m_launcher->ConncetPipe();
-#endif
-
-//	starturl = "file://c:/Temp/index.html";
-	// TODO: Add extra initialization here
-// 	CString testurl = "www.t4game.com/auth=aaa&sign=bbb&channel=&ser=fff&version=eee";
-// 	CString testaddurl = FindurlParam(testurl,"channel","&");
-// 	AfxMessageBox(testaddurl);
 
 	hFuncInst = ::LoadLibrary("User32.DLL"); 
 	BOOL bRet=FALSE;
@@ -1390,13 +1307,9 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 		AnalyVersion(m_serversion,serversion);
 		for (int i=0; i<VERSIONNUM; i++)
 		{
-			if(serversion[i]>localversion[i])
+			if(serversion[i] != localversion[i])
 			{
 				return true;
-			}
-			else if (serversion[i]<localversion[i])
-			{
-				return false;
 			}
 		}
 	}
@@ -1747,12 +1660,6 @@ void CMicroClientExDlg::StartGameOnDebug()
 
 void CMicroClientExDlg::StartGame()
 {
-#ifdef _DEBUG
 	StartGameOnDebug();
-	return;
-#endif
-	PROCMSG_DATA stProcMsgData = { 0 };
-	stProcMsgData.nCommandID = CS_REQ_NEWCONNECTION;
-	SendMsgToGame(m_pProcMsgObj, &stProcMsgData);
 }
 

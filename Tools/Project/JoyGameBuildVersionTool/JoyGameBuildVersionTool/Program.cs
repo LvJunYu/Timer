@@ -28,6 +28,12 @@ namespace JoyGameBuildVersionTool
             var list = di.GetFiles("*", SearchOption.AllDirectories);
             _fileInfoList = new List<DatFileInfo>(list.Length);
             byte[] writeBuffer = new byte[1024];
+            var outputRoot = outputPath + "/version/" + version + "/";
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.Delete(outputRoot, true);
+            }
+            
             foreach (var fileInfo in list)
             {
                 var datFileInfo = new DatFileInfo();
@@ -36,11 +42,10 @@ namespace JoyGameBuildVersionTool
                 datFileInfo.Name = fileInfo.FullName.Substring(inputPath.Length);
                 string targetFileName = outputPath + "/version/" + version + "/" + datFileInfo.Name+".dat";
                 var targetDir = Path.GetDirectoryName(targetFileName);
-                if (Directory.Exists(targetDir))
+                if (!Directory.Exists(targetDir))
                 {
-                    Directory.Delete(targetDir, true);
+                    Directory.CreateDirectory(targetDir);
                 }
-                Directory.CreateDirectory(targetDir);
                 if (datFileInfo.Name.Replace("\\", "/").StartsWith("JoyGame_Data/StreamingAssets"))
                 {
                     fileInfo.CopyTo(targetFileName, true);
