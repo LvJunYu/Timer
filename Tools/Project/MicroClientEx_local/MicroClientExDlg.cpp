@@ -625,6 +625,9 @@ UINT CMicroClientExDlg::IvockeDownload(LPVOID lpParam)
 	m_launcher->Invalidate();
 	if (CheckNeedUpdate())
 	{
+		memset(szLogBuf,'\0',BUF_SIZE);
+		sprintf(szLogBuf,"need update");
+		WriteLog(szLogBuf);
 		swprintf(szInfo, L"%s", L"正在获取更新文件列表");
 		m_launcher->Invalidate();
 		bDownloadFlag = false;
@@ -1280,8 +1283,13 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	//更新下载地址为服务器的地址
 	root = GetConfigValue(m_strTempPath + CONFIG, cfRoot);
 	CString m_localversion = GetConfigValue(CString(CONFIG), cfVersion);
-	int serversion[VERSIONNUM];
-	int localversion[VERSIONNUM];
+
+	memset(szLogBuf,'\0',BUF_SIZE);
+	sprintf(szLogBuf,"ServerVersion: %s, LocalVersion: %s",m_serversion, m_localversion);
+	WriteLog(szLogBuf);
+
+	int serversion[VERSIONNUM]={0};
+	int localversion[VERSIONNUM]={0};
 	
 	if (m_serversion == "")
 	{
@@ -1301,14 +1309,15 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	}
 	else
 	{
-		memset(localversion,0,VERSIONNUM);
 		AnalyVersion(m_localversion,localversion);
-		memset(serversion,0,VERSIONNUM);
 		AnalyVersion(m_serversion,serversion);
 		for (int i=0; i<VERSIONNUM; i++)
 		{
 			if(serversion[i] != localversion[i])
 			{
+				memset(szLogBuf,'\0',BUF_SIZE);
+				sprintf(szLogBuf,"Inx: %d, ServerSubVersion: %d, LocalSubVersion: %d", i, serversion[i], localversion[i]);
+				WriteLog(szLogBuf);
 				return true;
 			}
 		}
@@ -1645,7 +1654,6 @@ void CMicroClientExDlg::ShowMsg(LPCTSTR lpszMsg)
 
 void CMicroClientExDlg::StartGameOnDebug()
 {
-	return;
 	//启动游戏
 	STARTUPINFOA siStartupInfo = { 0 };
 	siStartupInfo.cb = sizeof(siStartupInfo);
