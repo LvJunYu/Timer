@@ -16,9 +16,21 @@ namespace GameA.Game
                 /// <summary>
                 /// 与当前选择物体有连接的物体
                 /// </summary>
-                public List<IntVec3> CachedConnectedGUIDs = new List<IntVec3>();
+                public List<SwitchConnectedUnit> CachedConnectedUnits = new List<SwitchConnectedUnit>();
 
                 public UMCtrlEditSwitchConnection CurrentConnectionUI;
+            }
+
+            public struct SwitchConnectedUnit
+            {
+                public readonly IntVec3 UnitGuid;
+                public readonly bool IsSwitch;
+
+                public SwitchConnectedUnit(IntVec3 guid, bool isSwitch)
+                {
+                    UnitGuid = guid;
+                    IsSwitch = isSwitch;
+                }
             }
 
             private static readonly Color SwitchModeUnitMaskColor = new Color(0.3f, 0.3f, 0.3f, 1f);
@@ -274,19 +286,19 @@ namespace GameA.Game
             {
                 if (boardData.CurrentTouchUnitDesc == UnitDesc.zero)
                     return;
-                if (idx >= data.CachedConnectedGUIDs.Count)
+                if (idx >= data.CachedConnectedUnits.Count)
                     return;
                 IntVec3 switchGuid;
                 IntVec3 unitGuid;
-                if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
+                if (data.CachedConnectedUnits[idx].IsSwitch)
                 {
-                    switchGuid = boardData.CurrentTouchUnitDesc.Guid;
-                    unitGuid = data.CachedConnectedGUIDs[idx];
+                    switchGuid = data.CachedConnectedUnits[idx].UnitGuid;
+                    unitGuid = boardData.CurrentTouchUnitDesc.Guid;
                 }
                 else
                 {
-                    switchGuid = data.CachedConnectedGUIDs[idx];
-                    unitGuid = boardData.CurrentTouchUnitDesc.Guid;
+                    switchGuid = boardData.CurrentTouchUnitDesc.Guid;
+                    unitGuid = data.CachedConnectedUnits[idx].UnitGuid;
                 }
 
                 if (DataScene2D.CurScene.UnbindSwitch(switchGuid, unitGuid))
@@ -332,7 +344,7 @@ namespace GameA.Game
                         return;
                     }
 
-                    data.CachedConnectedGUIDs.Clear();
+                    data.CachedConnectedUnits.Clear();
                     bool isFromSwitch = UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id);
                     if (isFromSwitch)
                     {
@@ -342,17 +354,17 @@ namespace GameA.Game
                         {
                             for (int i = 0; i < controlledUnits.Count; i++)
                             {
-                                data.CachedConnectedGUIDs.Add(controlledUnits[i].Guid);
+                                data.CachedConnectedUnits.Add(new SwitchConnectedUnit(controlledUnits[i].Guid, false));
                             }
                         }
                     }
-                    else
+                    if(!isFromSwitch || UnitDefine.IsSwitchAndCanControlledBySwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
                         List<IntVec3> switchUnits =
                             DataScene2D.CurScene.GetSwitchUnitsConnected(boardData.CurrentTouchUnitDesc.Guid);
                         for (int i = 0; i < switchUnits.Count; i++)
                         {
-                            data.CachedConnectedGUIDs.Add(switchUnits[i]);
+                            data.CachedConnectedUnits.Add(new SwitchConnectedUnit(switchUnits[i], true));
                         }
                     }
 
@@ -364,20 +376,19 @@ namespace GameA.Game
             {
                 var uiCtrlEditSwitch = SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>();
                 uiCtrlEditSwitch.ClearConnection();
-                bool isFromSwitch = UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id);
                 int cnt = 0;
-                for (; cnt < data.CachedConnectedGUIDs.Count; cnt++)
+                for (; cnt < data.CachedConnectedUnits.Count; cnt++)
                 {
-                    SetMaskEffectPos(GetUnusedMaskEffect(data, cnt), data.CachedConnectedGUIDs[cnt]);
-                    if (isFromSwitch)
+                    SetMaskEffectPos(GetUnusedMaskEffect(data, cnt), data.CachedConnectedUnits[cnt].UnitGuid);
+                    if (data.CachedConnectedUnits[cnt].IsSwitch)
                     {
-                        uiCtrlEditSwitch.AddConnection(cnt, boardData.CurrentTouchUnitDesc.Guid,
-                            data.CachedConnectedGUIDs[cnt]);
+                        uiCtrlEditSwitch.AddConnection(cnt, data.CachedConnectedUnits[cnt].UnitGuid,
+                            boardData.CurrentTouchUnitDesc.Guid);
                     }
                     else
                     {
-                        uiCtrlEditSwitch.AddConnection(cnt, data.CachedConnectedGUIDs[cnt],
-                            boardData.CurrentTouchUnitDesc.Guid);
+                        uiCtrlEditSwitch.AddConnection(cnt, boardData.CurrentTouchUnitDesc.Guid,
+                            data.CachedConnectedUnits[cnt].UnitGuid);
                     }
                 }
 
@@ -386,7 +397,7 @@ namespace GameA.Game
                     data.UnitMaskEffectCache[cnt].Stop();
                 }
 
-                SetMaskEffectPos(GetUnusedMaskEffect(data, data.CachedConnectedGUIDs.Count),
+                SetMaskEffectPos(GetUnusedMaskEffect(data, data.CachedConnectedUnits.Count),
                     boardData.CurrentTouchUnitDesc.Guid);
             }
 
@@ -454,7 +465,7 @@ namespace GameA.Game
             private void OnExitSwitchMode(EditMode.BlackBoard boardData, Data data)
             {
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                data.CachedConnectedGUIDs.Clear();
+                data.CachedConnectedUnits.Clear();
                 UpdateSwitchEffects();
 
                 using (var itor = ColliderScene2D.CurScene.Units.GetEnumerator())

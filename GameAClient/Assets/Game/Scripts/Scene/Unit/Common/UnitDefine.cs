@@ -101,6 +101,11 @@ namespace GameA.Game
             return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002 || id == 30003;
         }
 
+        public static bool IsSwitchAndCanControlledBySwitch(int id)
+        {
+            return id == TimerId;
+        }
+
         public static bool IsSwitchTrigger(int id)
         {
             return id == SwitchTriggerId || id == SwitchTriggerPressId;
@@ -231,7 +236,7 @@ namespace GameA.Game
         {
             return id == BoxId || id == SurpriseBoxId;
         }
-        
+
         public static bool CanGrowCirrus(UnitBase unit)
         {
             return unit.Id == EarthId || unit.Id == TerrainId;
