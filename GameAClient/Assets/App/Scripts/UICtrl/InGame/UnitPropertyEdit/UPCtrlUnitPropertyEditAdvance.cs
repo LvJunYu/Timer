@@ -14,7 +14,8 @@ namespace GameA
             WeaponSetting,
             MonsterCave,
             Timer,
-            SurpriseBox
+            SurpriseBox,
+            LocationMissile
         }
 
         private Sequence _openSequence;

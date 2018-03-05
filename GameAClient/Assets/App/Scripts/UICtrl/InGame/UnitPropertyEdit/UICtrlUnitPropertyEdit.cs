@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -36,6 +37,8 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _moveDirectionMenuList;
         private USCtrlUnitPropertyEditButton[] _rotateMenuList;
         private USCtrlUnitPropertyEditButton[] _rotateEndMenuList;
+        private USCtrlUnitPropertyEditButton[] _angelMenuList;
+        private USCtrlUnitPropertyEditButton _angelSetting;
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
@@ -182,6 +185,7 @@ namespace GameA
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
             _rootArray[(int) EEditType.MoveDirection] = _cachedView.MoveDirectionDock;
             _rootArray[(int) EEditType.Rotate] = _cachedView.RotateDock;
+            _rootArray[(int) EEditType.Angel] = _cachedView.AngelDock;
             _rootArray[(int) EEditType.TimeDelay] = _cachedView.TriggerDelayDock;
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
             _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
@@ -202,6 +206,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.Child].Init(_cachedView.PayloadMenu);
             _menuButtonArray[(int) EEditType.MoveDirection].Init(_cachedView.MoveDirectionMenu);
             _menuButtonArray[(int) EEditType.Rotate].Init(_cachedView.RotateStateMenu);
+            _menuButtonArray[(int) EEditType.Angel].Init(_cachedView.AngelMenu);
             _menuButtonArray[(int) EEditType.TimeDelay].Init(_cachedView.TimeDelayMenu);
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
@@ -334,6 +339,39 @@ namespace GameA
                 else
                 {
                     button.SetPosAngle(45 + 90 * (i - 4), RotateEndOptionsPosRadius);
+                }
+            }
+
+            // 角度方向
+            list = _cachedView.AngelDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _angelMenuList = new USCtrlUnitPropertyEditButton[list.Length - 1];
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (i == list.Length - 1)
+                {
+                    _angelSetting = new USCtrlUnitPropertyEditButton();
+                    _angelSetting.Init(list[i]);
+                    _angelSetting.AddClickListener(() =>
+                    {
+                        EditData.UnitExtra.RotateMode = 0;
+                        RefreshAngelMenu();
+                    });
+                }
+                else
+                {
+                    var inx = i;
+                    var button = new USCtrlUnitPropertyEditButton();
+                    button.Init(list[i]);
+                    _angelMenuList[inx] = button;
+                    _angelMenuList[inx].AddClickListener(() => OnAngelMenuClick(inx));
+                    if (inx < 4)
+                    {
+                        button.SetPosAngle(90 * inx, RotateEndOptionsPosRadius);
+                    }
+                    else
+                    {
+                        button.SetPosAngle(45 + 90 * (inx - 4), RotateEndOptionsPosRadius);
+                    }
                 }
             }
 
@@ -590,6 +628,17 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Rotate].SetEnable(false);
             }
 
+            if (_tableUnit.CanEdit(EEditType.Angel))
+            {
+                _validEditPropertyList.Add(EEditType.Angel);
+                _menuButtonArray[(int) EEditType.Angel].SetEnable(true);
+                RefreshAngelMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
+            }
+
             if (_tableUnit.CanEdit(EEditType.Text))
             {
                 _validEditPropertyList.Add(EEditType.Text);
@@ -661,7 +710,17 @@ namespace GameA
 
         private void RefreshForwardMenu()
         {
-            var val = Mathf.Clamp(EditData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
+            int rotation;
+            if (_curId == UnitDefine.LocationMissileId)
+            {
+                rotation = EditData.UnitExtra.ChildRotation;
+            }
+            else
+            {
+                rotation = EditData.UnitDesc.Rotation;
+            }
+
+            var val = Mathf.Clamp(rotation, 0, _forwardMenuList.Length - 1);
             for (byte i = 0; i < _forwardMenuList.Length; i++)
             {
                 if (EditHelper.CheckMask(i, _tableUnit.DirectionMask))
@@ -681,6 +740,11 @@ namespace GameA
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
                 RefreshRotateEndMenu();
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Angel))
+            {
+                RefreshAngelMenu();
             }
         }
 
@@ -821,6 +885,32 @@ namespace GameA
             menuRotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * start / 8);
         }
 
+        private void RefreshAngelMenu()
+        {
+            byte rotation = EditData.UnitExtra.ChildRotation;
+            bool noAngel = EditData.UnitExtra.RotateMode == 0;
+            _angelSetting.SetSelected(noAngel);
+            _menuButtonArray[(int) EEditType.Angel].RotateMenuView.FgImage.SetActiveEx(noAngel);
+            _menuButtonArray[(int) EEditType.Angel].RotateMenuView.RotateDock.SetActiveEx(!noAngel);
+            var startSprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgForward);
+            var normalSprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgNormal);
+            int startIndex = EditHelper.CalcDirectionVal(rotation);
+            int endIndex = EditHelper.CalcDirectionVal(EditData.UnitExtra.RotateValue);
+            int count = noAngel ? 0 : (startIndex + 7 - endIndex) % 8 + 1;
+            for (int i = 0; i < _rotateEndMenuList.Length; i++)
+            {
+                var btn = _angelMenuList[i];
+                btn.SetBgImage(i == rotation ? startSprite : normalSprite);
+                btn.SetSelected(i == EditData.UnitExtra.RotateValue && !noAngel);
+            }
+
+            _cachedView.AngelViewImage.fillAmount = 1f * count / 8;
+            _cachedView.AngelViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * endIndex / 8);
+            var menuRotateViewImage = _menuButtonArray[(int) EEditType.Angel].RotateMenuView.RotateView;
+            menuRotateViewImage.fillAmount = 1f * count / 8;
+            menuRotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * endIndex / 8);
+        }
+
         private void RefreshTriggerDelayMenu()
         {
             for (int i = 0; i < _triggerDelayMenuList.Length; i++)
@@ -846,9 +936,12 @@ namespace GameA
         private void RefreshCampMenu()
         {
             var teamId = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
-            _menuButtonArray[(int) EEditType.Camp].SetFgImage(TeamManager.GetSpawnSprite(teamId));
+            bool isLocationMissile = UnitDefine.LocationMissileId == EditData.UnitDesc.Id;
             bool isMulti = GM2DGame.Instance.GameMode.IsMulti;
             bool isSpawn = UnitDefine.IsSpawn(EditData.UnitDesc.Id);
+            _menuButtonArray[(int) EEditType.Camp].SetFgImage(isLocationMissile
+                ? LocationMissile.GetLocationMissileIconSprite(teamId)
+                : TeamManager.GetSpawnSprite(teamId));
             for (int i = 0; i < _campMenuList.Length; i++)
             {
                 _campMenuList[i].SetSelected(i == teamId);
@@ -856,7 +949,14 @@ namespace GameA
                 {
                     _campMenuList[i].SetEnable(!isSpawn); //玩家没有Team0
                 }
-                else if (i > 1)
+                else
+                {
+                    _campMenuList[i].SetFgImage(isLocationMissile
+                        ? LocationMissile.GetLocationMissileIconSprite(i)
+                        : TeamManager.GetSpawnSprite(i));
+                }
+
+                if (i > 1)
                 {
                     _campMenuList[i].SetEnable(isMulti || !isSpawn); //玩家多人只有Team1
                 }
@@ -989,7 +1089,15 @@ namespace GameA
 
         private void OnForwardMenuClick(int inx)
         {
-            EditData.UnitDesc.Rotation = (byte) inx;
+            if (_curId == UnitDefine.LocationMissileId)
+            {
+                EditData.UnitExtra.ChildRotation = (byte) inx;
+            }
+            else
+            {
+                EditData.UnitDesc.Rotation = (byte) inx;
+            }
+
             RefreshForwardMenu();
         }
 
@@ -1022,6 +1130,13 @@ namespace GameA
         {
             EditData.UnitExtra.RotateValue = (byte) inx;
             RefreshRotateEndMenu();
+        }
+
+        private void OnAngelMenuClick(int inx)
+        {
+            EditData.UnitExtra.RotateValue = (byte) inx;
+            EditData.UnitExtra.RotateMode = (byte) ERotateMode.Anticlockwise;
+            RefreshAngelMenu();
         }
 
         private void OnTriggerDelayMenuClick(int inx)
@@ -1325,7 +1440,7 @@ namespace GameA
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
                 return true;
             }
-            
+
             if (_curId == UnitDefine.SurpriseBoxId && _curEditType == EEditType.Active)
             {
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);

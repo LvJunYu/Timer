@@ -527,6 +527,11 @@ namespace GameA.Game
                         return 800;
                     }
 
+                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.LocationMissile)
+                    {
+                        return 1000;
+                    }
+
                     return GetMin(eAdvanceAttribute);
             }
 
@@ -743,6 +748,7 @@ namespace GameA.Game
         Active,
         Child,
         Rotate,
+        Angel,
         TimeDelay,
         TimeInterval,
         Text,

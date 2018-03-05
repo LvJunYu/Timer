@@ -40,16 +40,18 @@ namespace GameA
             {
                 return;
             }
+
             _isShow = true;
             _cachedView.gameObject.SetActive(true);
             Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
-            if (UnitDefine.IsSpawn(_table.Id))
+            if (UnitDefine.ChangeViewByCamp(_table.Id))
             {
                 Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
+
             _cachedView.Name.text = _table.Name;
             _cachedView.NameObj.SetActiveEx(false);
             _cachedView.RightClick.RightMouseCallback += OnRightClick;
@@ -63,16 +65,18 @@ namespace GameA
             {
                 return;
             }
+
             _isShow = false;
             _cachedView.gameObject.SetActive(false);
             Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
-            if (UnitDefine.IsSpawn(_table.Id))
+            if (UnitDefine.ChangeViewByCamp(_table.Id))
             {
                 Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSprite);
             }
+
             _cachedView.RightClick.RightMouseCallback = null;
             _cachedView.MouseHover.RemoveCallBack();
             _cachedView.NameObj.SetActiveEx(false);
@@ -90,29 +94,28 @@ namespace GameA
             _cachedView.EventTrigger.AddListener(EventTriggerType.BeginDrag, OnBeginDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.Drag, OnDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.EndDrag, OnEndDrag);
-//            _cachedView.EventTrigger.AddListener(EventTriggerType.PointerEnter,);
         }
 
         private void OnBeginDrag(BaseEventData eventData)
         {
-//            Debug.Log("OnBeginDrag");
             PointerEventData pointerEventData = eventData as PointerEventData;
             if (null == pointerEventData)
             {
                 return;
             }
+
             _checkBehaviour = ECheckBehaviour.None;
             _startPos = pointerEventData.position;
         }
 
         private void OnDrag(BaseEventData eventData)
         {
-//            Debug.Log("OnDrag");
             PointerEventData pointerEventData = eventData as PointerEventData;
             if (null == pointerEventData)
             {
                 return;
             }
+
             if (ECheckBehaviour.None == _checkBehaviour)
             {
                 var delta = pointerEventData.position - _startPos;
@@ -127,6 +130,7 @@ namespace GameA
                     {
                         rotate = (EDirectionType) current.UnitDesc.Rotation;
                     }
+
                     var mouseWorldPos = GM2DTools.ScreenToWorldPoint(pointerEventData.position);
                     EditMode.Instance.StartDragUnit(mouseWorldPos, mouseWorldPos, _table.Id, rotate, ref unitExtra);
                 }
@@ -150,6 +154,7 @@ namespace GameA
             {
                 return;
             }
+
             if (ECheckBehaviour.Scroll == _checkBehaviour)
             {
                 _cachedView.SendMessageUpwards("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
@@ -164,6 +169,7 @@ namespace GameA
             {
                 return;
             }
+
             OnItem();
         }
 
@@ -196,6 +202,7 @@ namespace GameA
             {
                 return;
             }
+
             _cachedView.SpriteIcon.sprite = null;
             _cachedView.SpriteIcon.SetActiveEx(true);
             RefreshSprite();
@@ -209,6 +216,7 @@ namespace GameA
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
                 _cachedView.ShadowTrans.localScale = Vector3.one;
             }
+
             RefreshUnitProperty();
 
             int currentCnt = EditHelper.GetUnitCnt(_table.Id);
@@ -228,6 +236,7 @@ namespace GameA
                 //                    _cachedView.Unlimited.SetActive(false);
                 _cachedView.Number.text = number.ToString();
             }
+
             _cachedView.Number.gameObject.SetActive(true);
         }
 
@@ -237,6 +246,11 @@ namespace GameA
             {
                 var define = EditHelper.GetUnitDefaultData(UnitDefine.SpawnId);
                 _cachedView.SpriteIcon.sprite = TeamManager.GetSpawnSprite(define.UnitExtra.TeamId);
+            }
+            else if (UnitDefine.LocationMissileId == _table.Id)
+            {
+                var define = EditHelper.GetUnitDefaultData(UnitDefine.LocationMissileId);
+                _cachedView.SpriteIcon.sprite = LocationMissile.GetLocationMissileIconSprite(define.UnitExtra.TeamId);
             }
             else
             {
@@ -284,6 +298,7 @@ namespace GameA
                     .ReturnUmCtrlUnitProperty(_cachedView.Trans, _umCtrlUnitProperty);
                 return;
             }
+
             _umCtrlUnitProperty = SocialGUIManager.Instance.GetUI<UICtrlItem>().GetUmCtrlUnitProperty();
             _umCtrlUnitProperty.UITran.SetParent(_cachedView.Trans, false);
             _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
@@ -311,6 +326,7 @@ namespace GameA
 //                    _cachedView.Unlimited.SetActive(false);
                     _cachedView.Number.text = number.ToString();
                 }
+
                 _cachedView.Number.gameObject.SetActive(true);
             }
         }

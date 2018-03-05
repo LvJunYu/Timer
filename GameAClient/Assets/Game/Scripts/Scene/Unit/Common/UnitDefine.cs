@@ -54,6 +54,7 @@ namespace GameA.Game
         public const int MagicBeanId = 5023;
         public const int CirrusId = 5024;
         public const int SurpriseBoxId = 5025;
+        public const int LocationMissileId = 5026;
         public const int BillboardId = 7001;
         public const int EnergyPoolId = 8001;
         public const int TextId = 9001;
@@ -240,6 +241,11 @@ namespace GameA.Game
         public static bool CanGrowCirrus(UnitBase unit)
         {
             return unit.Id == EarthId || unit.Id == TerrainId;
+        }
+
+        public static bool ChangeViewByCamp(int id)
+        {
+            return id == SpawnId || id == LocationMissileId;
         }
     }
 }
