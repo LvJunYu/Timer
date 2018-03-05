@@ -41,9 +41,9 @@ namespace GameA.Game
             DefineField<byte>(FieldTag.TimerMaxSecond, "TimerMaxSecond");
             DefineField<bool>(FieldTag.IsRandom, "TimerRandom");
             DefineField<bool>(FieldTag.TimerCirculation, "TimerCirculation");
-            DefineField<bool>(FieldTag.SurpriseBoxInterval, "SurpriseBoxInterval");
+            DefineField<byte>(FieldTag.SurpriseBoxInterval, "SurpriseBoxInterval");
             DefineField<bool>(FieldTag.SurpriseBoxCountLimit, "SurpriseBoxCountLimit");
-            DefineField<bool>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
+            DefineField<byte>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");

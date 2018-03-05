@@ -16,6 +16,7 @@ namespace GameA
         private List<RoomUser> _users;
         private bool _requestFinish;
         private RoomUser[] _roomUserArray = new RoomUser[TeamManager.MaxTeamCount];
+        private bool _hasStarted;
 
         public long RoomId
         {
@@ -67,9 +68,15 @@ namespace GameA
             get { return _hostUserId; }
         }
 
+        public bool HasStarted
+        {
+            get { return _hasStarted; }
+        }
+
         public RoomInfo(Msg_MC_RoomInfo msg)
         {
             if (null == msg) return;
+            _hasStarted = msg.StartBattleFlag;
             _roomId = msg.RoomGuid;
             _projectId = msg.ProjectGuid;
             _maxUserCount = msg.MaxUserCount;

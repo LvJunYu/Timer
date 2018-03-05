@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
@@ -14,6 +15,10 @@ namespace GameA.Game
         private const string QuestionSprite = "M1SurpriseBox_Question";
         private const string Ligt1Sprite = "M1SurpriseBox_Light1";
         private const string Ligt2Sprite = "M1SurpriseBox_Light2";
+        private const string OpenSprite = "M1SurpriseBox_Open";
+        private const string CloseSprite = "M1SurpriseBox";
+        private const string OpeneEffectStr = "M1EffectSurpriseBoxOpen";
+        private static WaitForSeconds OpenTime = new WaitForSeconds(0.5f);
 
         private Dictionary<int, bool> _itemDic = new Dictionary<int, bool>
         {
@@ -32,6 +37,7 @@ namespace GameA.Game
         private int _maxCount;
         private int _curCount;
         private int _timer;
+        private UnityNativeParticleItem _openEffect;
 
         public override bool CanControlledBySwitch
         {
@@ -146,6 +152,8 @@ namespace GameA.Game
                     var item = PlayMode.Instance.CreateRuntimeUnit(id, new IntVec2(_curPos.x, CenterUpFloorPos.y));
                     if (item != null)
                     {
+                        ShowOpenEffect();
+                        CoroutineProxy.Instance.StartCoroutine(ShowOpenView());
                         item.OnPlay();
                         return true;
                     }
@@ -153,6 +161,33 @@ namespace GameA.Game
             }
 
             return false;
+        }
+
+        private IEnumerator ShowOpenView()
+        {
+            if (_view != null)
+            {
+                _view.ChangeView(OpenSprite);
+                yield return OpenTime;
+                _view.ChangeView(CloseSprite);
+            }
+        }
+
+        private void ShowOpenEffect()
+        {
+            if (_openEffect == null)
+            {
+                _openEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(OpeneEffectStr, _trans);
+                if (_openEffect != null)
+                {
+                    SetRelativeEffectPos(_openEffect.Trans, EDirectionType.Up);
+                }
+            }
+
+            if (_openEffect != null)
+            {
+                _openEffect.Play(1);
+            }
         }
 
         private bool CheckSpaceValid(int id)

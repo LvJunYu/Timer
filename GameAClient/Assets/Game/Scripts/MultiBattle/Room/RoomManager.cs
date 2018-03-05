@@ -256,7 +256,8 @@ namespace GameA.Game
             {
                 if (_roomList.Count > 0)
                 {
-                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId;
+                    data.MinRoomRunFlag = _roomList[_roomList.Count - 1].HasStarted;
+                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId + 1;
                 }
             }
             else
