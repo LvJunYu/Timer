@@ -114,6 +114,8 @@ namespace GameA
 
         public bool FinishAddTarget(IntVec3 guid)
         {
+            TaskTargetData = new NpcTaskTargetDynamic();
+            TaskTargetData.TaskType = (byte) ENpcTargetType.Contorl;
             bool canAdd = false;
 //            if (TaskTargetData.TargetGuid != guid)
 //            {

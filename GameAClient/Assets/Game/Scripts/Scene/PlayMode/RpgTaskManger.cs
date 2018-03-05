@@ -550,6 +550,8 @@ namespace GameA.Game
         // 判断任务是否完成首先判断的时间
         private void Judge()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlSceneState>()
+                .SetNpcTask(_npcTaskDynamics, _finishNpcTask);
             JudegeBeforeTask();
             SetTemp(ColltionNum, ColltionNumtemp);
             SetTemp(KillMonstorNum, KillMonstorNumTemp);

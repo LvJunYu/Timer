@@ -64,6 +64,7 @@ namespace GameA
                 _rewardCtrl[i] = new USCtrlGameFinishReward();
                 _rewardCtrl[i].Init(_cachedView.Rewards[i]);
             }
+
             _cachedView.UpGrade.SetActiveEx(false);
         }
 
@@ -76,6 +77,7 @@ namespace GameA
             UpdateView();
             //UpdateLifeItem();
             // JudgeExpAndLvl();
+//            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas);
         }
 
         protected override void OnClose()
@@ -84,8 +86,11 @@ namespace GameA
             {
                 _particleList[i].Particle.DestroySelf();
             }
+
             _particleList.Clear();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
+
+            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>();
             base.OnClose();
         }
 
@@ -197,6 +202,7 @@ namespace GameA
             {
                 return;
             }
+
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入下一关");
             gameMode.PlayNext(value =>
                 {
@@ -256,6 +262,7 @@ namespace GameA
                         RewardExp = AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Count;
                     }
                 }
+
             _cachedView.PlusExp.text = String.Format("+{0}", RewardExp);
             if (currentPlayerExp - RewardExp >= TableManager.Instance.Table_PlayerLvToExpDic[
                     LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp) //没有升级
@@ -280,6 +287,7 @@ namespace GameA
                     initialExp = (currentPlayerExp - RewardExp) - TableManager.Instance.Table_PlayerLvToExpDic[
                                      LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel - 2].AdvExp;
                 }
+
                 _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel - 1);
 
                 GainExperienceAnimation(1.0f, UpGrade);
@@ -310,11 +318,12 @@ namespace GameA
             _cachedView.MultiConfirmBtn.SetActiveEx(isMulti);
             _cachedView.MultiLoseObj.SetActiveEx(_showState == EShowState.MultiLose);
             _cachedView.MultiWinObj.SetActiveEx(_showState == EShowState.MultiWin);
-            
+
             _cachedView.GiveUpBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.RetryShadowBattleBtn.SetActiveEx(_showState == EShowState.ShadowBattleLose);
             _cachedView.ShadowBattleFailObj.SetActive(_showState == EShowState.ShadowBattleLose);
             _cachedView.ShadowBattleWinObj.SetActive(_showState == EShowState.ShadowBattleWin);
+            _cachedView.ScoreTextGroup.SetActiveEx(false);
             switch (_showState)
             {
                 case EShowState.MultiWin:
@@ -334,12 +343,20 @@ namespace GameA
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     _cachedView.ScoreOutLine.text = PlayMode.Instance.SceneState.CurScore.ToString();
+                    //分数
+                    _cachedView.ScoreTextGroup.SetActiveEx(true);
+                    _cachedView.GetTeethText.text =
+                        String.Format("拾取兽牙：  {0}", PlayMode.Instance.SceneState.GetGemGainScore());
+                    _cachedView.KillMonterNumText.text =
+                        String.Format("击杀怪物：  {0}", PlayMode.Instance.SceneState.GetKillMonsterScore());
+                    _cachedView.LastTimeText.text =
+                        String.Format("剩余时间：  {0}", PlayMode.Instance.SceneState.GetLastTimeScore());
+
                     // 奖励
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
                     //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
                     _cachedView.PlayRecordObj.SetActive(false);
-
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
@@ -391,6 +408,7 @@ namespace GameA
                             UpdateReward(_shadowBattleReward);
                         }
                     }
+
                     _cachedView.Animation.Play("UICtrlGameFinishWin3Star");
                     PlayWinEffect();
                     break;
@@ -474,6 +492,7 @@ namespace GameA
                     {
                         _cachedView.GetComponent<Animation>().Play("UICtrlGameFinishWin1Star");
                     }
+
                     PlayWinEffect();
                     break;
                 case EShowState.AdvBonusLose:
@@ -615,6 +634,7 @@ namespace GameA
                         ((int) (reward.ItemList[i].Count * percent)).ToString()
                     );
                 }
+
                 for (; i < _rewardCtrl.Length; i++)
                 {
                     _rewardCtrl[i].Hide();
@@ -662,6 +682,21 @@ namespace GameA
             _cachedView.Lose.SetActive(value);
             _cachedView.Win.SetActive(value);
             _cachedView.SiglePanel.SetActive(value);
+        }
+
+        public List<SettlePlayerData> GetSettlePlayerDatas()
+        {
+            List<SettlePlayerData> _datas = new List<SettlePlayerData>();
+            for (int i = 0; i < TeamManager.Instance.Players.Count; i++)
+            {
+                SettlePlayerData onedata = new SettlePlayerData();
+                onedata.killNum = TeamManager.Instance.GetPlayerKillCount(TeamManager.Instance.Players[i].Guid);
+                onedata.KilledNum = TeamManager.Instance.GetPlayerKilledCount(TeamManager.Instance.Players[i].Guid);
+                onedata.Score = TeamManager.Instance.GetPlayerScore(TeamManager.Instance.Players[i].Guid);
+                onedata.Name = TeamManager.Instance.Players[i].RoomUser.Name;
+            }
+
+            return _datas;
         }
     }
 }

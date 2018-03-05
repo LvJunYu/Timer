@@ -40,10 +40,11 @@ namespace GameA
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
             _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.RestartBtn.onClick.AddListener(OnRestartBtn);
-            
+
             _cachedView.ReturnBtn_2.onClick.AddListener(OnReturnBtn);
             _cachedView.ExitBtn_2.onClick.AddListener(OnExitBtn);
             _cachedView.RestartBtn_2.onClick.AddListener(OnRestartBtn);
+            _cachedView.PCLogoutBtn.onClick.AddListener(LoginOut);
         }
 
         protected override void OnOpen(object parameter)
@@ -54,6 +55,7 @@ namespace GameA
             {
                 _upCtrlGameSettingInputKeys.Open();
             }
+
             _cachedView.NickName.text = string.Format("账号：{0}", LocalUser.Instance.User.UserInfoSimple.NickName);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
@@ -67,11 +69,20 @@ namespace GameA
                     _openGamePlaying = true;
                 }
             }
+
             var isGuest = LocalUser.Instance.Account.IsGuest;
             _cachedView.BindingBtn.SetActiveEx(isGuest);
             _cachedView.ChangePwdBtn.SetActiveEx(!isGuest);
             _cachedView.RestartBtn.SetActiveEx(GM2DGame.Instance != null && !GM2DGame.Instance.GameMode.IsMulti);
             _cachedView.RestartBtn_2.SetActiveEx(GM2DGame.Instance != null && !GM2DGame.Instance.GameMode.IsMulti);
+            if (SocialApp.Instance.Env == EEnvironment.Production)
+            {
+                _cachedView.PCLogoutBtn.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.PCLogoutBtn.SetActiveEx(true);
+            }
         }
 
         protected override void OnClose()
@@ -81,15 +92,18 @@ namespace GameA
             {
                 _upCtrlGameSettingInputKeys.Close();
             }
+
             if (PlayMode.Instance == null)
             {
                 return;
             }
+
             if (GM2DGame.Instance != null && _openGamePlaying)
             {
                 GM2DGame.Instance.Continue();
                 _openGamePlaying = false;
             }
+
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
         }

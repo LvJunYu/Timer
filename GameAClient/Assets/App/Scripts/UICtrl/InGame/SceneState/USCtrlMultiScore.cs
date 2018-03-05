@@ -19,5 +19,10 @@ namespace GameA
             _cachedView.MyNum.SetActiveEx(value);
             _cachedView.Num.SetActiveEx(!value);
         }
+
+        public void SetIndex(int index)
+        {
+            _cachedView.Trans.SetSiblingIndex(index);
+        }
     }
 }

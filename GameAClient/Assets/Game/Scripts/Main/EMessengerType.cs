@@ -63,6 +63,7 @@ namespace GameA
         public static int OnSpawnDataChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
+        public static int OnMainPlayerDataChange = SoyEngine.EMessengerType.NextId++;
 
         // 到达终点
         public static int OnPlayerArrive = SoyEngine.EMessengerType.NextId++;
