@@ -1,5 +1,4 @@
-﻿using System;
-using NewResourceSolution;
+﻿using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -11,11 +10,13 @@ namespace GameA.Game
     {
         private const string SpriteFormat = "M1LocationMissile_{0}";
         private const string IconSprite = "M1LocationMissileIcon";
+        private const float RotateSpeed = 1;
         private SkillCtrl _skillCtrl;
         private ERotateMode _eRotateType;
         private float _startAngle;
         private float _endAngle;
         private float _curAngle;
+        private float _targetAngle;
         private int _attackInterval;
         private int _castRange;
         private int _teamId;
@@ -100,13 +101,12 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            base.UpdateLogic();
             if (_eActiveState != EActiveState.Active)
             {
                 return;
             }
 
-            base.UpdateLogic();
-            //Rotate
             switch (_curState)
             {
                 case EState.Normal:
@@ -115,10 +115,10 @@ namespace GameA.Game
                         switch (_eRotateType)
                         {
                             case ERotateMode.Clockwise:
-                                _curAngle += 1;
+                                _curAngle += RotateSpeed;
                                 break;
                             case ERotateMode.Anticlockwise:
-                                _curAngle += -1;
+                                _curAngle += -RotateSpeed;
                                 break;
                         }
 
@@ -134,13 +134,76 @@ namespace GameA.Game
                         }
 
                         RefreshGunDir();
+                        if (GameRun.Instance.LogicFrameCnt % 20 == 0 && CheckTarget())
+                        {
+                            ChangeState(EState.AimTarget);
+                        }
                     }
+
                     break;
                 case EState.AimTarget:
+                    _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, RotateSpeed * 5);
+                    RefreshGunDir();
+                    if (Util.IsFloatEqual(_curAngle, _targetAngle))
+                    {
+                        ChangeState(EState.Fire);
+                    }
+
                     break;
                 case EState.Fire:
                     break;
             }
+        }
+
+        private bool CheckTarget()
+        {
+            var players = TeamManager.Instance.Players;
+            float minDisSqr = int.MaxValue;
+            bool findTarget = false;
+            for (int i = 0; i < players.Count; i++)
+            {
+                var player = players[i];
+                if (player == null)
+                {
+                    continue;
+                }
+
+                var relPos = player.CenterDownPos - CenterDownPos;
+                var distanceSqr = relPos.SqrMagnitude();
+                if (distanceSqr <= _castRange * _castRange)
+                {
+                    var angle = Vector2.Angle(Vector2.up, GM2DTools.TileToWorld(relPos));
+                    Util.CorrectAngle360(ref angle);
+                    if (relPos.x < 0)
+                    {
+                        angle = 360 - angle;
+                    }
+
+                    if (IsAngleValid(angle) && distanceSqr < minDisSqr)
+                    {
+                        findTarget = true;
+                        minDisSqr = distanceSqr;
+                        _targetAngle = angle;
+                    }
+                }
+            }
+
+            return findTarget;
+        }
+
+        private bool IsAngleValid(float angle)
+        {
+            if (_endAngle < _startAngle)
+            {
+                return angle >= _endAngle && angle <= _startAngle;
+            }
+
+            if (_endAngle > _startAngle)
+            {
+                return angle >= _endAngle || angle <= _startAngle;
+            }
+
+            return Util.IsFloatEqual(_startAngle, angle);
         }
 
         private void ChangeState(EState state)

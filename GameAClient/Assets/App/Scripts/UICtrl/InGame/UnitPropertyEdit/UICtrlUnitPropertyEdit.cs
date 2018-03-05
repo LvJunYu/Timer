@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
@@ -1205,7 +1204,7 @@ namespace GameA
 
             _curSelectedPlayerIndex = inx;
             _curUnitExtra = playerUnitExtra;
-            _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+            _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
             RefreshSpawmMenu();
         }
 
@@ -1413,7 +1412,7 @@ namespace GameA
         {
             if (_curEditType == EEditType.Camp)
             {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
                 return true;
             }
 

@@ -515,21 +515,16 @@ namespace GameA.Game
             switch (eAdvanceAttribute)
             {
                 case EAdvanceAttribute.EffectRange:
-                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
+                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.Camp)
                     {
                         return 10;
                     }
 
                     return GetMin(eAdvanceAttribute);
                 case EAdvanceAttribute.TimeInterval:
-                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting)
+                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.Camp)
                     {
                         return 800;
-                    }
-
-                    if (eMenu == UPCtrlUnitPropertyEditAdvance.EMenu.LocationMissile)
-                    {
-                        return 1000;
                     }
 
                     return GetMin(eAdvanceAttribute);
@@ -689,50 +684,6 @@ namespace GameA.Game
             usCtrlSliderSetting.Set(GetMin(eAdvanceAttribute), GetMax(eAdvanceAttribute), callBack,
                 GetDelta(eAdvanceAttribute), GetFormat(eAdvanceAttribute),
                 GetConvertValue(eAdvanceAttribute));
-        }
-
-        public static bool CanEdit(EAdvanceAttribute eAdvanceAttribute, int id)
-        {
-            var table = TableManager.Instance.GetUnit(id);
-            if (table == null)
-            {
-                LogHelper.Error("cant get unit which id == {0}", id);
-                return false;
-            }
-
-            switch (eAdvanceAttribute)
-            {
-                case EAdvanceAttribute.TimeInterval:
-                    return table.SkillId > 0 || table.ChildState != null;
-                case EAdvanceAttribute.Damage:
-                    return table.SkillId > 0 || table.ChildState != null;
-                case EAdvanceAttribute.Drops:
-                    return UnitDefine.IsMonster(id);
-                case EAdvanceAttribute.EffectRange:
-                    return table.SkillId > 0;
-                case EAdvanceAttribute.ViewRange:
-                    return false;
-                case EAdvanceAttribute.BulletSpeed:
-                case EAdvanceAttribute.CastRange:
-                    return table.ChildState != null;
-                case EAdvanceAttribute.BulletCount:
-                case EAdvanceAttribute.ChargeTime:
-                    return UnitDefine.EnergyPoolId == id;
-                case EAdvanceAttribute.AddStates:
-                    return table.SkillId > 0 || table.ChildState != null;
-                case EAdvanceAttribute.MaxHp:
-                    return table.Hp > 0;
-                case EAdvanceAttribute.MaxSpeedX:
-                    return table.MaxSpeed > 0 && !UnitDefine.IsSpawn(id);
-                case EAdvanceAttribute.JumpAbility:
-                    return table.JumpAbility > 0 && !UnitDefine.IsSpawn(id);
-                case EAdvanceAttribute.InjuredReduce:
-                    return table.Hp > 0;
-                case EAdvanceAttribute.CureIncrease:
-                    return table.Hp > 0;
-            }
-
-            return false;
         }
     }
 
