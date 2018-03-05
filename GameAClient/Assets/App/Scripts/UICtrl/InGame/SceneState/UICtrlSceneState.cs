@@ -18,7 +18,7 @@ using PlayMode = GameA.Game.PlayMode;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame)]
-    public class 
+    public class
         UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
@@ -172,7 +172,8 @@ namespace GameA
                 return;
             }
 
-            List<byte> teamIds = TeamManager.Instance.Teams.OrderBy(a => -TeamManager.Instance.GetTeamScore(a)).ToList();
+            List<byte> teamIds = TeamManager.Instance.Teams.OrderBy(a => -TeamManager.Instance.GetTeamScore(a))
+                .ToList();
             int teamIndex = 0;
             for (int i = 0; i < teamIds.Count; i++)
             {
@@ -834,7 +835,7 @@ namespace GameA
 
                 for (int i = index; i < _npcTask.Length; i++)
                 {
-                        _npcTask[i].SetDisable();
+                    _npcTask[i].SetDisable();
                 }
             }
         }
@@ -873,5 +874,7 @@ namespace GameA
                     TeamManager.Instance.GetMainPlayerKillMonsterCount(), TeamManager.Instance.GetMainPlayerScore());
             }
         }
+
+        
     }
 }

@@ -7,6 +7,7 @@ namespace GameA
 {
     public class UMCtrlNpcDiaPop : UMCtrlBase<UMViewNpcDiaPop>, IUMPoolable
     {
+        private static readonly Vector2 HidePos = new Vector2(1000000000000, 1000000000000);
         public bool IsShow { get; private set; }
         private Vector3 _pos;
         private bool _diaIsNull;
@@ -25,7 +26,7 @@ namespace GameA
         public void Hide()
         {
             IsShow = false;
-            _cachedView.Trans.anchoredPosition = new Vector2(1000000000000, 1000000000000);
+            _cachedView.Trans.anchoredPosition = HidePos;
         }
 
         public void Show()
@@ -34,6 +35,7 @@ namespace GameA
             {
                 return;
             }
+
             IsShow = true;
             _cachedView.Trans.anchoredPosition = _pos;
         }

@@ -77,6 +77,7 @@ namespace GameA
             UpdateView();
             //UpdateLifeItem();
             // JudgeExpAndLvl();
+//            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas);
         }
 
         protected override void OnClose()
@@ -88,6 +89,8 @@ namespace GameA
 
             _particleList.Clear();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
+
+            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>();
             base.OnClose();
         }
 
@@ -679,6 +682,21 @@ namespace GameA
             _cachedView.Lose.SetActive(value);
             _cachedView.Win.SetActive(value);
             _cachedView.SiglePanel.SetActive(value);
+        }
+
+        public List<SettlePlayerData> GetSettlePlayerDatas()
+        {
+            List<SettlePlayerData> _datas = new List<SettlePlayerData>();
+            for (int i = 0; i < TeamManager.Instance.Players.Count; i++)
+            {
+                SettlePlayerData onedata = new SettlePlayerData();
+                onedata.killNum = TeamManager.Instance.GetPlayerKillCount(TeamManager.Instance.Players[i].Guid);
+                onedata.KilledNum = TeamManager.Instance.GetPlayerKilledCount(TeamManager.Instance.Players[i].Guid);
+                onedata.Score = TeamManager.Instance.GetPlayerScore(TeamManager.Instance.Players[i].Guid);
+                onedata.Name = TeamManager.Instance.Players[i].RoomUser.Name;
+            }
+
+            return _datas;
         }
     }
 }
