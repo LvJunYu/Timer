@@ -1363,8 +1363,8 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	//更新下载地址为服务器的地址
 	root = GetConfigValue(m_strTempPath + CONFIG, cfRoot);
 	CString m_localversion = GetConfigValue(CString(CONFIG), cfVersion);
-	int serversion[VERSIONNUM];
-	int localversion[VERSIONNUM];
+	int serversion[VERSIONNUM] = {0};
+	int localversion[VERSIONNUM] = {0};
 	
 	if (m_serversion == "")
 	{
@@ -1384,9 +1384,7 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	}
 	else
 	{
-		memset(localversion,0,VERSIONNUM);
 		AnalyVersion(m_localversion,localversion);
-		memset(serversion,0,VERSIONNUM);
 		AnalyVersion(m_serversion,serversion);
 		for (int i=0; i<VERSIONNUM; i++)
 		{

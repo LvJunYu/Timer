@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using SoyEngine;
@@ -90,6 +91,14 @@ namespace GameA
             });
         }
 
+        public override void Restart()
+        {
+            var msg = new Define.StProcMsgData()
+            {
+                CommandId = Define.CS_REQ_NEWCONNECTION
+            };
+            SendMsg(msg);
+        }
 
         private bool CheckStartArgument()
         {
@@ -208,6 +217,16 @@ namespace GameA
         {
             Define.StProcMsgData msg = Decode(len, data);
             LogHelper.Info("Receive Msg: {0}", msg.CommandId);
+            if (msg.CommandId == Define.SC_RESPONSE_NEWCONN)
+            {
+                string token = System.Text.Encoding.ASCII.GetString(msg.Data, 0, msg.DataLen);
+                LogHelper.Info("CurrentPath: {0}", Environment.CurrentDirectory);
+                
+                var args = Environment.GetCommandLineArgs();
+                var param = args[1].Substring(0, args[1].IndexOf("PROCPARA", StringComparison.Ordinal) + 9) + token;
+                Process.Start("../JoyGame_Launcher.exe", param);
+                SocialApp.Instance.Exit();
+            }
         }
 
         private int SendMsg(Define.StProcMsgData msg)
