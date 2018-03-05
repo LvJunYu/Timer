@@ -33,7 +33,6 @@ namespace GameA
         }
 
         public void SetNpcTask(UnitSceneGuid guid, UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool isFinish)
-
         {
             _isFinish = isFinish;
             _guid = guid;
@@ -98,17 +97,20 @@ namespace GameA
                     }
                     else
                     {
-                        TargetNumTextGroup[i].SetActiveEx(true);
-                        int targetNum = _taskData.Targets.Get<NpcTaskTargetDynamic>(i).ColOrKillNum;
-                        int nowNum = Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
-                            .GetKillOrColltionNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TargetUnitID);
-                        if (isFinish)
+                        if (_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TaskType != (int) ENpcTargetType.Contorl)
                         {
-                            TargetNumTextGroup[i].text = String.Format("{0}/{1}", targetNum, targetNum);
-                        }
-                        else
-                        {
-                            TargetNumTextGroup[i].text = String.Format("{0}/{1}", nowNum, targetNum);
+                            TargetNumTextGroup[i].SetActiveEx(true);
+                            int targetNum = _taskData.Targets.Get<NpcTaskTargetDynamic>(i).ColOrKillNum;
+                            int nowNum = Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                                .GetKillOrColltionNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TargetUnitID);
+                            if (isFinish)
+                            {
+                                TargetNumTextGroup[i].text = String.Format("{0}/{1}", targetNum, targetNum);
+                            }
+                            else
+                            {
+                                TargetNumTextGroup[i].text = String.Format("{0}/{1}", nowNum, targetNum);
+                            }
                         }
                     }
 

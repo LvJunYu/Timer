@@ -611,6 +611,7 @@ namespace GameA.Game
                 NetBattleWin(false);
                 return;
             }
+
             //竞技模式判断是否剩余自己一个队
             if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
             {
@@ -619,6 +620,21 @@ namespace GameA.Game
                     NetBattleWin(true);
                 }
             }
+        }
+
+        public int GetGemGainScore()
+        {
+            return _gemGain * 100;
+        }
+
+        public int GetLastTimeScore()
+        {
+            return (int) (RunTimeTimeLimit - _gameTimer) * 10;
+        }
+
+        public int GetKillMonsterScore()
+        {
+            return _monsterKilled * 200;
         }
     }
 }

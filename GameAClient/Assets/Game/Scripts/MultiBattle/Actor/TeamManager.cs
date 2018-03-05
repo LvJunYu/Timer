@@ -34,6 +34,12 @@ namespace GameA.Game
         private int _bestScore;
         private bool _scoreChanged;
         private PlayerBase _mainPlayer;
+
+        public PlayerBase MainPlayer
+        {
+            get { return _mainPlayer; }
+        }
+
         private Dictionary<byte, List<int>> _teamInxListDic;
 
         public byte MyTeamId
@@ -439,6 +445,35 @@ namespace GameA.Game
             return count;
         }
 
+        public int GetMainPlayerScore()
+        {
+            int score;
+            _playerScoreDic.TryGetValue(_mainPlayer.Guid, out score);
+            return score;
+        }
+
+        public int GetMainPlayerKillCount()
+        {
+            int count;
+            _playerKillDic.TryGetValue(_mainPlayer.Guid, out count);
+            return count;
+        }
+
+        public int GetMainPlayerKilledCount()
+        {
+            int count;
+            _playerKilledDic.TryGetValue(_mainPlayer.Guid, out count);
+            return count;
+        }
+
+        public int GetMainPlayerKillMonsterCount()
+        {
+            int count;
+            _playerKillMonsterDic.TryGetValue(_mainPlayer.Guid, out count);
+            return count;
+        }
+
+
         public int GetTeamScore(int teamId)
         {
             int score;
@@ -507,7 +542,8 @@ namespace GameA.Game
                 _playerScoreDic[playerId] += score;
                 if (unit.IsMain)
                 {
-                    //todo 展示数据
+                    Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
+
                 }
             }
         }
@@ -571,7 +607,7 @@ namespace GameA.Game
                 _playerKillDic[killerId]++;
                 if (killer.IsMain)
                 {
-                    //todo 展示数据
+                    Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
                 }
             }
 
@@ -582,10 +618,10 @@ namespace GameA.Game
                 _playerKilledDic.Add(playerId, 0);
             }
 
-            _playerScoreDic[playerId]++;
+            _playerKilledDic[playerId]++;
             if (deadPlayer.IsMain)
             {
-                //todo 展示数据
+                Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
             }
 
             AddScore(killer, PlayMode.Instance.SceneState.KillPlayerScore);
@@ -605,7 +641,7 @@ namespace GameA.Game
                 _playerKillMonsterDic[killerId]++;
                 if (unit.IsMain)
                 {
-                    //todo 展示数据
+                    Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
                 }
             }
 

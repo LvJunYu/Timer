@@ -5,7 +5,9 @@
 ** Summary : UICtrlSceneState  
 ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
@@ -16,7 +18,8 @@ using PlayMode = GameA.Game.PlayMode;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame)]
-    public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
+    public class 
+        UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
             new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
@@ -77,6 +80,7 @@ namespace GameA
                 _umCtrlCollectionItemCache[i].Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionItemCache[i].Hide();
             }
+
             _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
             for (int i = 0; i < _initUMCollectionLifeNum; i++)
             {
@@ -84,6 +88,7 @@ namespace GameA
                 _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionLifeItemCache[i].Hide();
             }
+
             var list = _cachedView.MultiObj.GetComponentsInChildren<USViewMultiScore>(_cachedView.MultiObj);
             _usCtrlMultiScores = new USCtrlMultiScore[list.Length];
             for (int i = 0; i < list.Length; i++)
@@ -91,6 +96,7 @@ namespace GameA
                 _usCtrlMultiScores[i] = new USCtrlMultiScore();
                 _usCtrlMultiScores[i].Init(list[i]);
             }
+
             _npcTask = new USCtrlNpcTask[_cachedView.TaskGroup.Length];
             for (int i = 0; i < _cachedView.TaskGroup.Length; i++)
             {
@@ -117,6 +123,7 @@ namespace GameA
                 _waiting = true;
                 _cachedView.LeftTimeText.text = "等待中";
             }
+
             Clear();
             UpdateAll();
         }
@@ -134,6 +141,7 @@ namespace GameA
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
             RegisterEvent(EMessengerType.OnTeamChanged, OnTeamChanged);
             RegisterEvent<int>(EMessengerType.OnMainPlayerReviveTime, OnMainPlayerReviveTime);
+            RegisterEvent(EMessengerType.OnMainPlayerDataChange, UpdataMainPalyData);
         }
 
         private void OnMainPlayerReviveTime(int second)
@@ -163,10 +171,22 @@ namespace GameA
             {
                 return;
             }
+
+            List<byte> teamIds = TeamManager.Instance.Teams.OrderBy(a => -TeamManager.Instance.GetTeamScore(a)).ToList();
+            int teamIndex = 0;
+            for (int i = 0; i < teamIds.Count; i++)
+            {
+                if (teamIds[i] == teamId)
+                {
+                    teamIndex = i;
+                }
+            }
+
             int index = teamId - 1;
             if (index >= 0 && index < _usCtrlMultiScores.Length)
             {
                 _usCtrlMultiScores[index].SetScore(score);
+                _usCtrlMultiScores[index].SetIndex(teamIndex);
             }
         }
 
@@ -195,6 +215,7 @@ namespace GameA
                     _cachedView.CountDownTxt.text = showTime.ToString();
                     _lastShowTime = showTime;
                 }
+
                 if (_countDownTimer > 0)
                 {
                     _countDownTimer -= Time.deltaTime;
@@ -226,6 +247,7 @@ namespace GameA
             {
                 return;
             }
+
             UpdateWinDataWithOutTimeLimit();
         }
 
@@ -235,6 +257,7 @@ namespace GameA
             {
                 return;
             }
+
             UpdateLifeItemValue();
         }
 
@@ -244,6 +267,7 @@ namespace GameA
             {
                 return;
             }
+
             UpdateAll();
         }
 
@@ -253,6 +277,7 @@ namespace GameA
             {
                 return;
             }
+
             UpdateKeyCount();
         }
 
@@ -262,6 +287,7 @@ namespace GameA
             {
                 return;
             }
+
             UpdateScore();
         }
 
@@ -271,6 +297,7 @@ namespace GameA
             UpdateTimeLimit();
             _cachedView.MultiObj.SetActive(_isMulti);
             _cachedView.StandaloneObj.SetActive(!_isMulti);
+            _cachedView.MutilPlayerDetail.SetActiveEx(_isMulti);
             if (_isMulti)
             {
                 UpdateMulti();
@@ -295,6 +322,7 @@ namespace GameA
                 _usCtrlMultiScores[i].SetScore(TeamManager.Instance.GetTeamScore(team));
                 _usCtrlMultiScores[i].SetMyTeam(TeamManager.Instance.MyTeamId == team);
             }
+
             var netData = PlayMode.Instance.SceneState.MapStatistics.NetBattleData;
             _cachedView.TimeLimit.text = string.Format("游戏时间{0}", netData.GetTimeLimit());
             _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
@@ -308,6 +336,7 @@ namespace GameA
             _cachedView.CollectGemScore.text = string.Format("获得兽牙得{0}分", netData.CollectGemScore);
             _cachedView.KillMonsterScore.text = string.Format("击杀怪物得{0}分", netData.KillMonsterScore);
             _cachedView.KillPlayerScore.text = string.Format("击杀玩家得{0}分", netData.KillPlayerScore);
+            UpdataMainPalyData();
         }
 
         private void UpdateItemVisible()
@@ -316,6 +345,7 @@ namespace GameA
             {
                 entry.Value.Destroy();
             }
+
             _winConditionItemDict.Clear();
             _cachedView.CollectionRoot.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
             _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
@@ -340,18 +370,21 @@ namespace GameA
                     {
                         winConditionItem.Show();
                     }
+
                     if (i != EWinCondition.WC_TimeLimit)
                     {
                         hasOtherLimit = true;
                     }
                 }
             }
+
             if (!hasOtherLimit)
             {
                 //没有其他条件，时间限制改为存活
                 _winConditionItemDict[EWinCondition.WC_TimeLimit]
                     .SetText(GetWinConditionString(EWinCondition.WC_TimeLimit, true));
             }
+
             UpdateWinDataWithOutTimeLimit();
             UpdateTimeLimit();
             _cachedView.LifeRoot.SetActiveEx(PlayMode.Instance.SceneState.IsMainPlayerCreated);
@@ -366,6 +399,7 @@ namespace GameA
                 _cachedView.LifeText.text = string.Empty;
                 return;
             }
+
             _cachedView.LifeRoot.SetActiveEx(true);
             int lifeCount = PlayMode.Instance.MainPlayer.Life;
             if (_cachedView.IsActive())
@@ -389,10 +423,12 @@ namespace GameA
                 _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
                     () => UpdateCollectText(curScore)));
             }
+
             if (_winConditionItemDict.ContainsKey(EWinCondition.WC_Collect))
             {
                 _winConditionItemDict[EWinCondition.WC_Collect].SetComplete(curScore == totalScore);
             }
+
             int killCount = PlayMode.Instance.SceneState.MonsterKilled;
             int totalCount = PlayMode.Instance.SceneState.MonsterCount;
             _cachedView.EnemyText.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
@@ -400,6 +436,7 @@ namespace GameA
             {
                 _winConditionItemDict[EWinCondition.WC_Monster].SetComplete(killCount == totalCount);
             }
+
             if (_winConditionItemDict.ContainsKey(EWinCondition.WC_Arrive))
             {
                 _winConditionItemDict[EWinCondition.WC_Arrive].SetComplete(PlayMode.Instance.SceneState.Arrived);
@@ -419,11 +456,13 @@ namespace GameA
             {
                 return;
             }
+
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
             if (curValue < _finalTimeMax)
             {
                 ShowFinalCountDown02(curValue);
             }
+
             if (curValue != _lastShowSceonds)
             {
                 _lastFrame = GameRun.Instance.LogicFrameCnt;
@@ -439,10 +478,12 @@ namespace GameA
                     _cachedView.LeftTimeText.text =
                         string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
                 }
+
                 if (curValue < _HeartbeatTimeMax)
                 {
                     ShowFinalCountDown();
                 }
+
                 _lastShowSceonds = curValue;
                 if (_winConditionItemDict.Count > 1)
                 {
@@ -469,6 +510,7 @@ namespace GameA
                 _scoreTweener = DOTween.To(() => _showValue, x => _showValue = x, curValue, 1f)
                     .OnUpdate(UpdateScoreText).SetAutoKill(false).Pause();
             }
+
             _scoreTweener.ChangeStartValue(_lastValue);
             _scoreTweener.ChangeEndValue(curValue);
             _scoreTweener.Restart();
@@ -487,6 +529,7 @@ namespace GameA
             {
                 _starConditionList[i].Destroy();
             }
+
             _starConditionList.Clear();
             _showStar = false;
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
@@ -520,6 +563,7 @@ namespace GameA
                             {
                                 item = _starConditionList[i];
                             }
+
                             var tableStarRequire = TableManager.Instance.GetStarRequire(table.StarConditions[i]);
                             if (null == tableStarRequire)
                             {
@@ -555,6 +599,7 @@ namespace GameA
                 {
                     _showHelpTimer = 0;
                 }
+
                 if (_showHelpTimer <= 0)
                 {
                     _cachedView.HelpPage.SetActive(false);
@@ -614,6 +659,7 @@ namespace GameA
                 case EWinCondition.WC_Monster:
                     return "杀死所有怪物";
             }
+
             return string.Empty;
         }
 
@@ -623,6 +669,7 @@ namespace GameA
             {
                 CreateFinalCountDownSequence();
             }
+
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
             _cachedView.LeftTimeText.color = Color.red;
             _finalCountDownSequence.Restart();
@@ -683,6 +730,7 @@ namespace GameA
             {
                 return;
             }
+
             CreateUmCtrlCollectionItem().CollectAnimation(InitialPos, _cachedView.CollectionIconRtf);
         }
 
@@ -692,6 +740,7 @@ namespace GameA
             {
                 return;
             }
+
             CreateUmCtrlCollectionLifeItem().CollectAnimation(InitialPos, _cachedView.CollectionLifeIconRtf);
         }
 
@@ -710,6 +759,7 @@ namespace GameA
                 umCtrlCollectionItem.Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionItemCache.Add(umCtrlCollectionItem);
             }
+
             return umCtrlCollectionItem;
         }
 
@@ -728,6 +778,7 @@ namespace GameA
                 umCtrlCollectionLifeItem.Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionLifeItemCache.Add(umCtrlCollectionLifeItem);
             }
+
             return umCtrlCollectionLifeItem;
         }
 
@@ -752,7 +803,7 @@ namespace GameA
         }
 
         public void SetNpcTask(Dictionary<UnitSceneGuid, NpcTaskDynamic> nowTaskDic,
-            Dictionary<int, NpcTaskDynamic>finishTaskDic)
+            Dictionary<int, NpcTaskDynamic> finishTaskDic)
         {
             if (nowTaskDic.Count > 0)
             {
@@ -763,6 +814,7 @@ namespace GameA
                 _cachedView.TaskPanel.SetActiveEx(false);
                 return;
             }
+
             using (var enmotor = nowTaskDic.GetEnumerator())
             {
                 int index = 0;
@@ -776,11 +828,13 @@ namespace GameA
                     {
                         _npcTask[index].SetNpcTask(enmotor.Current.Key, extra, enmotor.Current.Value, finish);
                     }
+
                     ++index;
                 }
+
                 for (int i = index; i < _npcTask.Length; i++)
                 {
-                    _npcTask[i].SetDisable();
+                        _npcTask[i].SetDisable();
                 }
             }
         }
@@ -794,12 +848,29 @@ namespace GameA
                     _cachedView.KeyRoot.gameObject.SetActiveEx(true);
                 }
             }
+
             if (UnitDefine.IsTeeth(id))
             {
                 if (!_cachedView.CollectionRoot.activeSelf)
                 {
                     _cachedView.CollectionRoot.gameObject.SetActiveEx(true);
                 }
+            }
+        }
+
+        public void UpdataMainPalyData()
+        {
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
+            {
+                _cachedView.MutilPlayerDetail.text = String.Format("击败：{0} 被击杀：{1} 得分：{2}",
+                    TeamManager.Instance.GetMainPlayerKillCount(), TeamManager.Instance.GetMainPlayerKilledCount(),
+                    TeamManager.Instance.GetMainPlayerScore());
+            }
+
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Cooperation)
+            {
+                _cachedView.MutilPlayerDetail.text = String.Format("击杀怪物：{0} 得分：{1}",
+                    TeamManager.Instance.GetMainPlayerKillMonsterCount(), TeamManager.Instance.GetMainPlayerScore());
             }
         }
     }
