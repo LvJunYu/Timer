@@ -10,11 +10,12 @@ namespace GameA
     {
         public enum EMenu
         {
-            ActorSetting,
+            Camp,
             WeaponSetting,
             MonsterCave,
             Timer,
-            SurpriseBox
+            SurpriseBox,
+            LocationMissile
         }
 
         private Sequence _openSequence;
@@ -93,7 +94,7 @@ namespace GameA
                 value =>
                 {
                     _mainCtrl.EditData.UnitExtra.EffectRange = (ushort) value;
-                    if (_curMenu == EMenu.ActorSetting)
+                    if (_curMenu == EMenu.Camp)
                     {
                         _mainCtrl.EditData.UnitExtra.CastRange = (ushort) value;
                     }
@@ -165,103 +166,6 @@ namespace GameA
             RefreshView();
         }
 
-        public void RefreshView()
-        {
-            if (!_isOpen) return;
-            int id = _mainCtrl.CurId;
-            var table = TableManager.Instance.GetUnit(id);
-            _usMaxHpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxHp, id));
-            _usJumpSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                     UnitExtraHelper.CanEdit(EAdvanceAttribute.JumpAbility, id));
-            _usMoveSpeedSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                          UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id));
-            _usEffectRangeSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                            UnitExtraHelper.CanEdit(EAdvanceAttribute.EffectRange, id));
-            _usCastRangeSetting.SetEnable(_curMenu == EMenu.WeaponSetting &&
-                                          UnitExtraHelper.CanEdit(EAdvanceAttribute.CastRange, id));
-            var b = _curMenu == EMenu.ActorSetting && table.SkillId > 0 ||
-                    _curMenu == EMenu.WeaponSetting && table.ChildState != null;
-            _usDamageSetting.SetEnable(b);
-            _usDamageIntervalSetting.SetEnable(b);
-            _usBulletSpeedSetting.SetEnable(_curMenu == EMenu.WeaponSetting &&
-                                            UnitExtraHelper.CanEdit(EAdvanceAttribute.BulletSpeed, id));
-            _usBulletCountSetting.SetEnable(_curMenu == EMenu.WeaponSetting &&
-                                            UnitExtraHelper.CanEdit(EAdvanceAttribute.BulletCount, id));
-            _usChargeTimeSetting.SetEnable(_curMenu == EMenu.WeaponSetting &&
-                                           UnitExtraHelper.CanEdit(EAdvanceAttribute.ChargeTime, id));
-            _usInjuredReduceSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                              UnitExtraHelper.CanEdit(EAdvanceAttribute.InjuredReduce, id));
-            _usCurIncreaseSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                            UnitExtraHelper.CanEdit(EAdvanceAttribute.CureIncrease, id));
-            _usMonsterIntervalTimeSetting.SetEnable(_curMenu == EMenu.MonsterCave);
-            _usMaxCreatedMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
-            _usMaxAliveMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
-            _usCanMoveSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-                                        UnitExtraHelper.CanEdit(EAdvanceAttribute.MaxSpeedX, id) &&
-                                        !UnitDefine.IsSpawn(id));
-            _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
-            _cachedView.BackBtn.SetActiveEx(_mainCtrl.CurEnterType != UICtrlUnitPropertyEdit.EEnterType.Normal);
-//            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
-//                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
-//            _usAddStatesSetting.SetEnable(b);
-            _usAddStatesSetting.SetEnable(false);
-            _usDropsSetting.SetEnable(false);
-            _usPlayerWeaponSetting.SetEnable(UnitDefine.IsSpawn(id));
-            _usSpawnSetting.SetEnable(
-                UnitDefine.IsSpawn(id) && _mainCtrl.Project.ProjectType == EProjectType.PT_Compete);
-            _usMaxHpSetting.SetCur(_mainCtrl.GetCurUnitExtra().MaxHp);
-            _usJumpSetting.SetCur(_mainCtrl.EditData.UnitExtra.JumpAbility);
-            var maxSpeedX = _mainCtrl.EditData.UnitExtra.MaxSpeedX;
-            if (maxSpeedX == ushort.MaxValue)
-            {
-                if (table != null)
-                {
-                    maxSpeedX = (ushort) table.MaxSpeed;
-                }
-            }
-
-            _usMoveSpeedSetting.SetCur(maxSpeedX);
-            _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
-            var minEffectRange = UnitExtraHelper.GetMin(EAdvanceAttribute.EffectRange, _curMenu);
-            _usEffectRangeSetting.SetCur(_mainCtrl.EditData.UnitExtra.EffectRange, true, minEffectRange);
-            _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
-            var minAttackInterval = UnitExtraHelper.GetMin(EAdvanceAttribute.TimeInterval, _curMenu);
-            _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval, true, minAttackInterval);
-            _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
-            _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
-            _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
-            _usInjuredReduceSetting.SetCur(_mainCtrl.GetCurUnitExtra().InjuredReduce);
-            _usCurIncreaseSetting.SetCur(_mainCtrl.GetCurUnitExtra().CureIncrease);
-            _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
-            _usMaxCreatedMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxCreatedMonster);
-            _usMaxAliveMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxAliveMonster);
-            _usCanMoveSetting.SetData(_mainCtrl.EditData.UnitExtra.MaxSpeedX != ushort.MaxValue, value =>
-            {
-                _usMoveSpeedSetting.SetEnable(value);
-                if (value)
-                {
-                    _mainCtrl.EditData.UnitExtra.MaxSpeedX = (ushort) _usMoveSpeedSetting.Cur;
-                }
-                else
-                {
-                    _mainCtrl.EditData.UnitExtra.MaxSpeedX = ushort.MaxValue;
-                }
-            });
-
-            _usDropsSetting.Set(_mainCtrl.EditData.UnitExtra.Drops, USCtrlAddItem.EItemType.Drops);
-            _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
-            if (_mainCtrl.CurEditType == EEditType.Spawn)
-            {
-                _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId - 1);
-                _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras
-                    .ToList<UnitExtraDynamic>());
-            }
-
-            _upCtrlTimer.Refresh(_curMenu);
-            _upCtrlSurpriseBox.Refresh(_curMenu);
-        }
-
         public override void Close()
         {
             if (_openAnim)
@@ -274,6 +178,235 @@ namespace GameA
             }
 
             base.Close();
+        }
+
+        public void OpenMenu(EMenu eMenu)
+        {
+            _curMenu = eMenu;
+            Open();
+        }
+
+        public void RefreshView()
+        {
+            if (!_isOpen) return;
+            int id = _mainCtrl.CurId;
+            var table = TableManager.Instance.GetUnit(id);
+            if (CanEdit(EAdvanceAttribute.MaxHp))
+            {
+                _usMaxHpSetting.SetEnable(true);
+                _usMaxHpSetting.SetCur(_mainCtrl.GetCurUnitExtra().MaxHp);
+            }
+            else
+            {
+                _usMaxHpSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.JumpAbility))
+            {
+                _usJumpSetting.SetEnable(true);
+                _usJumpSetting.SetCur(_mainCtrl.GetCurUnitExtra().JumpAbility);
+            }
+            else
+            {
+                _usJumpSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.MaxSpeedX))
+            {
+                _usMoveSpeedSetting.SetEnable(true);
+                var maxSpeedX = _mainCtrl.GetCurUnitExtra().MaxSpeedX;
+                if (maxSpeedX == ushort.MaxValue)
+                {
+                    if (table != null)
+                    {
+                        maxSpeedX = (ushort) table.MaxSpeed;
+                    }
+                }
+
+                _usMoveSpeedSetting.SetCur(maxSpeedX);
+            }
+            else
+            {
+                _usMoveSpeedSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.EffectRange))
+            {
+                _usEffectRangeSetting.SetEnable(true);
+                var minEffectRange = UnitExtraHelper.GetMin(EAdvanceAttribute.EffectRange, _curMenu);
+                _usEffectRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().EffectRange, true, minEffectRange);
+            }
+            else
+            {
+                _usEffectRangeSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.CastRange))
+            {
+                _usCastRangeSetting.SetEnable(true);
+                _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
+            }
+            else
+            {
+                _usCastRangeSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.Damage))
+            {
+                _usDamageSetting.SetEnable(true);
+                _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
+            }
+            else
+            {
+                _usDamageSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.TimeInterval))
+            {
+                _usDamageIntervalSetting.SetEnable(true);
+                var minAttackInterval = UnitExtraHelper.GetMin(EAdvanceAttribute.TimeInterval, _curMenu);
+                _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval, true, minAttackInterval);
+            }
+            else
+            {
+                _usDamageIntervalSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.BulletSpeed))
+            {
+                _usBulletSpeedSetting.SetEnable(true);
+                _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
+            }
+            else
+            {
+                _usBulletSpeedSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.BulletCount))
+            {
+                _usBulletCountSetting.SetEnable(true);
+                _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
+            }
+            else
+            {
+                _usBulletCountSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.ChargeTime))
+            {
+                _usChargeTimeSetting.SetEnable(true);
+                _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
+            }
+            else
+            {
+                _usChargeTimeSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.InjuredReduce))
+            {
+                _usInjuredReduceSetting.SetEnable(true);
+                _usInjuredReduceSetting.SetCur(_mainCtrl.GetCurUnitExtra().InjuredReduce);
+            }
+            else
+            {
+                _usInjuredReduceSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.CureIncrease))
+            {
+                _usCurIncreaseSetting.SetEnable(true);
+                _usCurIncreaseSetting.SetCur(_mainCtrl.GetCurUnitExtra().CureIncrease);
+            }
+            else
+            {
+                _usCurIncreaseSetting.SetEnable(false);
+            }
+
+            if (CanEdit(EAdvanceAttribute.MaxSpeedX))
+            {
+                _usCanMoveSetting.SetEnable(true);
+                _usCanMoveSetting.SetData(_mainCtrl.GetCurUnitExtra().MaxSpeedX != ushort.MaxValue, value =>
+                {
+                    _usMoveSpeedSetting.SetEnable(value);
+                    if (value)
+                    {
+                        _mainCtrl.GetCurUnitExtra().MaxSpeedX = (ushort) _usMoveSpeedSetting.Cur;
+                    }
+                    else
+                    {
+                        _mainCtrl.GetCurUnitExtra().MaxSpeedX = ushort.MaxValue;
+                    }
+                });
+            }
+            else
+            {
+                _usCanMoveSetting.SetEnable(false);
+            }
+
+            if (_mainCtrl.CurEditType == EEditType.Spawn)
+            {
+                _usPlayerWeaponSetting.SetEnable(true);
+                _usPlayerWeaponSetting.SetCur(_mainCtrl.GetCurUnitExtra().InternalUnitExtras
+                    .ToList<UnitExtraDynamic>());
+                if (_mainCtrl.Project.ProjectType == EProjectType.PT_Compete)
+                {
+                    _usSpawnSetting.SetCur(_mainCtrl.GetCurUnitExtra().TeamId - 1);
+                    _usSpawnSetting.SetEnable(true);
+                }
+                else
+                {
+                    _usSpawnSetting.SetEnable(false);
+                }
+            }
+            else
+            {
+                _usPlayerWeaponSetting.SetEnable(false);
+                _usSpawnSetting.SetEnable(false);
+            }
+
+//            _usDropsSetting.SetEnable(_curMenu == EMenu.ActorSetting &&
+//                                      UnitExtraHelper.CanEdit(EAdvanceAttribute.Drops, id));
+//            _usAddStatesSetting.SetEnable(b);
+            _usAddStatesSetting.SetEnable(false);
+            _usDropsSetting.SetEnable(false);
+//            _usDropsSetting.Set(_mainCtrl.EditData.UnitExtra.Drops, USCtrlAddItem.EItemType.Drops);
+//            _usAddStatesSetting.Set(_mainCtrl.EditData.UnitExtra.AddStates, USCtrlAddItem.EItemType.States);
+
+            _usMonsterIntervalTimeSetting.SetEnable(_curMenu == EMenu.MonsterCave);
+            _usMaxCreatedMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
+            _usMaxAliveMonsterSetting.SetEnable(_curMenu == EMenu.MonsterCave);
+            _cachedView.MonsterSettingBtn.SetActiveEx(_curMenu == EMenu.MonsterCave);
+            if (_curMenu == EMenu.MonsterCave)
+            {
+                _usMonsterIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.MonsterIntervalTime);
+                _usMaxCreatedMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxCreatedMonster);
+                _usMaxAliveMonsterSetting.SetCur(_mainCtrl.EditData.UnitExtra.MaxAliveMonster);
+            }
+
+            _cachedView.BackBtn.SetActiveEx(_mainCtrl.CurEnterType != UICtrlUnitPropertyEdit.EEnterType.Normal);
+
+            _upCtrlTimer.Refresh(_curMenu);
+            _upCtrlSurpriseBox.Refresh(_curMenu);
+        }
+
+        public void CheckClose()
+        {
+            if (_isOpen)
+            {
+                _completeAnim = true;
+                Close();
+            }
+        }
+
+        public void OnChildIdChanged()
+        {
+            _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
+            _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
+            _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval);
+            _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
+            _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
+            _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
+            _usAddStatesSetting.Set(_mainCtrl.GetCurUnitExtra().AddStates, USCtrlAddItem.EItemType.States);
         }
 
         private void OpenAnimation()
@@ -329,36 +462,54 @@ namespace GameA
                 .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause();
         }
 
-        public void OpenMenu(EMenu eMenu)
-        {
-            _curMenu = eMenu;
-            Open();
-        }
-
-        public void CheckClose()
-        {
-            if (_isOpen)
-            {
-                _completeAnim = true;
-                Close();
-            }
-        }
-
         private void OnCloseAnimationComplete()
         {
             _cachedView.AdvancePannel.SetActiveEx(false);
             _closeSequence.Rewind();
         }
 
-        public void OnChildIdChanged()
+        private bool CanEdit(EAdvanceAttribute eAdvanceAttribute)
         {
-            _usDamageSetting.SetCur(_mainCtrl.GetCurUnitExtra().Damage);
-            _usCastRangeSetting.SetCur(_mainCtrl.GetCurUnitExtra().CastRange);
-            _usDamageIntervalSetting.SetCur(_mainCtrl.GetCurUnitExtra().TimeInterval);
-            _usBulletSpeedSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletSpeed);
-            _usBulletCountSetting.SetCur(_mainCtrl.GetCurUnitExtra().BulletCount);
-            _usChargeTimeSetting.SetCur(_mainCtrl.GetCurUnitExtra().ChargeTime);
-            _usAddStatesSetting.Set(_mainCtrl.GetCurUnitExtra().AddStates, USCtrlAddItem.EItemType.States);
+            int id = _mainCtrl.CurId;
+            var table = TableManager.Instance.GetUnit(id);
+            if (table == null)
+            {
+                LogHelper.Error("cant get unit which id == {0}", id);
+                return false;
+            }
+
+            switch (eAdvanceAttribute)
+            {
+                case EAdvanceAttribute.TimeInterval:
+                case EAdvanceAttribute.Damage:
+                    return _curMenu == EMenu.Camp && table.SkillId > 0 ||
+                           _curMenu == EMenu.WeaponSetting && table.ChildState != null;
+                case EAdvanceAttribute.Drops:
+                    return UnitDefine.IsMonster(id);
+                case EAdvanceAttribute.EffectRange:
+                    return _curMenu == EMenu.Camp && table.SkillId > 0 && id != UnitDefine.LocationMissileId;
+                case EAdvanceAttribute.ViewRange:
+                    return false;
+                case EAdvanceAttribute.BulletSpeed:
+                case EAdvanceAttribute.CastRange:
+                    return _curMenu == EMenu.WeaponSetting && table.ChildState != null ||
+                           id == UnitDefine.LocationMissileId;
+                case EAdvanceAttribute.BulletCount:
+                case EAdvanceAttribute.ChargeTime:
+                    return _curMenu == EMenu.WeaponSetting && UnitDefine.EnergyPoolId == id;
+                case EAdvanceAttribute.AddStates:
+                    return table.SkillId > 0 || table.ChildState != null;
+                case EAdvanceAttribute.MaxSpeedX:
+                    return _curMenu == EMenu.Camp && table.MaxSpeed > 0 && !UnitDefine.IsSpawn(id);
+                case EAdvanceAttribute.JumpAbility:
+                    return _curMenu == EMenu.Camp && table.JumpAbility > 0 && !UnitDefine.IsSpawn(id);
+                case EAdvanceAttribute.MaxHp:
+                case EAdvanceAttribute.InjuredReduce:
+                case EAdvanceAttribute.CureIncrease:
+                    return _curMenu == EMenu.Camp && table.Hp > 0;
+            }
+
+            return false;
         }
     }
 }

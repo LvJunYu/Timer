@@ -6,7 +6,9 @@ namespace GameA
     public class UMCtrlMultiRoom : UMCtrlBase<UMViewMultiRoom>, IDataItemRenderer
     {
         private CardDataRendererWrapper<RoomInfo> _wrapper;
-        private static string _countFormat = "{0}/{1}";
+        private const string _countFormat = "{0}/{1}";
+        private const string WaitStr = "等待中";
+        private const string HasStartedStr = "游戏中";
         public int Index { get; set; }
 
         public RectTransform Transform
@@ -32,6 +34,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             base.OnDestroy();
         }
 
@@ -46,11 +49,13 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             _wrapper = obj as CardDataRendererWrapper<RoomInfo>;
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
             }
+
             RefreshView();
         }
 
@@ -61,6 +66,7 @@ namespace GameA
                 Unload();
                 return;
             }
+
             _cachedView.SelectObj.SetActive(_wrapper.IsSelected);
             var room = _wrapper.Content;
             if (room.Project != null)
@@ -72,7 +78,9 @@ namespace GameA
                         _cachedView.DefaultCoverTexture);
                 }
             }
+
             DictionaryTools.SetContentText(_cachedView.RoomId, room.RoomId.ToString());
+            DictionaryTools.SetContentText(_cachedView.StateTxt, room.HasStarted ? HasStartedStr : WaitStr);
             DictionaryTools.SetContentText(_cachedView.PlayCountTxt,
                 string.Format(_countFormat, room.UserCount, room.MaxUserCount));
         }

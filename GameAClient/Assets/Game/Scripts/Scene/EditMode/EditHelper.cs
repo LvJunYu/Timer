@@ -145,8 +145,7 @@ namespace GameA.Game
             if (origin.UnitDesc.Guid == DefaultUnitGuid)
             {
                 UpdateUnitDefaultData(editData);
-                //复活点阵营改变
-                if (UnitDefine.IsSpawn(origin.UnitDesc.Id) && editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
+                if (UnitDefine.ChangeViewByCamp(origin.UnitDesc.Id) && editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
                 {
                     Messenger.Broadcast(EMessengerType.OnTeamChanged);
                 }
@@ -193,6 +192,7 @@ namespace GameA.Game
                 defaultData = InternalGetUnitDefaultData(id);
                 _unitDefaultDataDict.Add(id, defaultData);
             }
+
             UnitEditData data = new UnitEditData();
             data.UnitDesc = defaultData.UnitDesc;
             data.UnitExtra = defaultData.UnitExtra.Clone();
@@ -205,6 +205,7 @@ namespace GameA.Game
                     data.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
                 }
             }
+
             //地块特殊处理
             if (UnitDefine.IsEarth(id))
             {
@@ -241,7 +242,14 @@ namespace GameA.Game
 
             if (table.CanEdit(EEditType.Direction))
             {
-                unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
+                if (id == UnitDefine.LocationMissileId)
+                {
+                    unitEditData.UnitExtra.ChildRotation = (byte) table.DefaultDirection;
+                }
+                else
+                {
+                    unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
+                }
             }
 
             if (table.CanEdit(EEditType.MoveDirection))
@@ -253,6 +261,12 @@ namespace GameA.Game
             {
                 unitEditData.UnitExtra.RotateMode = (byte) table.DefaultRotateMode;
                 unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
+            }
+            
+            if (id == UnitDefine.LocationMissileId)
+            {
+                unitEditData.UnitExtra.RotateMode = 0;
+                unitEditData.UnitExtra.RotateValue = (byte) table.DefaultDirection;
             }
 
             if (table.CanEdit(EEditType.TimeDelay))
@@ -281,6 +295,7 @@ namespace GameA.Game
                 {
                     unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
+
                 unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
@@ -289,20 +304,16 @@ namespace GameA.Game
                     unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i],
                         UnitExtraDynamic.FieldTag.KnockbackForces, i);
                 }
+
                 for (int i = 0; i < skill.AddStates.Length; i++)
                 {
                     unitEditData.UnitExtra.Set((ushort) skill.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
                 }
-            }
 
-            if (table.CanEdit(EEditType.Spawn))
-            {
-//                UnitExtraDynamic.GetDefaultPlayerValue(unitEditData.UnitExtra);
-//                if (Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex).SpawnDatas.Count ==
-//                    0)
-//                {
-//                    unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
-//                }
+                if (skill.ProjectileSpeed > 0)
+                {
+                    unitEditData.UnitExtra.BulletSpeed = (ushort) skill.ProjectileSpeed;
+                }
             }
 
             if (table.CanEdit(EEditType.MonsterCave))
@@ -351,12 +362,14 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             //检查在地图内
             var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale);
             if (!DataScene2D.CurScene.IsInTileMap(dataGrid))
             {
                 return false;
             }
+
             //绳子必须绑在石头上
             if (UnitDefine.RopeId == tableUnit.Id)
             {
@@ -377,6 +390,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             //怪物同屏数量不可过多
             {
                 if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.IsBox(tableUnit.Id))
@@ -612,6 +626,7 @@ namespace GameA.Game
             {
                 collectUnit.StopTwenner();
             }
+
             var helperParentObj = new GameObject("DragHelperParent");
             var tran = helperParentObj.transform;
             pos.z = -50;

@@ -213,8 +213,7 @@ namespace SoyEngine.MasterServer
 #if UNITY_STANDALONE_WIN
             if (SocialApp.Instance.Env == EEnvironment.Production && msg.ResultCode == ECMLoginCode.ECMLC_NewVersion)
             {
-                SocialGUIManager.ShowPopupDialog("检测到新版本，是否现在退出并下载", null,
-                    new KeyValuePair<string, Action>("取消", () => { }),
+                SocialGUIManager.ShowPopupDialog("检测到新版本，即将退出自动更新", null,
                     new KeyValuePair<string, Action>("确定", () =>
                     {
 //                        string lancherUrl = "";

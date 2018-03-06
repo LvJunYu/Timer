@@ -5,7 +5,6 @@
 //  ** Summary : SpriteNameDefine.cs
 //  ***********************************************************************/
 
-using System;
 using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;

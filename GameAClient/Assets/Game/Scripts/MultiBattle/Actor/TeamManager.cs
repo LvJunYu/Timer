@@ -234,57 +234,6 @@ namespace GameA.Game
             return true;
         }
 
-        public static Sprite GetSpawnSprite(int teamId)
-        {
-            return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
-        }
-
-        public static Color GetTeamColor(int teamId)
-        {
-            switch (teamId)
-            {
-                case 0:
-                    return Color.red;
-                case 1:
-                    return Color.green;
-                case 2:
-                    return new Color(1, 164 / (float) 255, 0);
-                case 3:
-                    return Color.yellow;
-                case 4:
-                    return new Color(0, 1, 200 / (float) 255);
-                case 5:
-                    return new Color(0, 110 / (float) 255, 1);
-                case 6:
-                    return Color.magenta;
-            }
-
-            return Color.red;
-        }
-
-        public static string GetTeamColorName(int teamId)
-        {
-            switch (teamId)
-            {
-                case 0:
-                    return "red";
-                case 1:
-                    return "green";
-                case 2:
-                    return "orange";
-                case 3:
-                    return "yellow";
-                case 4:
-                    return "cyan";
-                case 5:
-                    return "blue";
-                case 6:
-                    return "purple";
-            }
-
-            return "red";
-        }
-
         public PlayerBase GetNextPlayer(ref int curCameraPlayerIndex)
         {
             for (int i = 0; i < _players.Count; i++)
@@ -655,5 +604,56 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public static Sprite GetSpawnSprite(int teamId)
+        {
+            return JoyResManager.Instance.GetSprite(string.Format("M1Spawn{0}Icon", teamId));
+        }
+
+        public static Color GetTeamColor(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return Color.red;
+                case 1:
+                    return Color.green;
+                case 2:
+                    return new Color(1, 164 / (float) 255, 0);
+                case 3:
+                    return Color.yellow;
+                case 4:
+                    return new Color(0, 1, 200 / (float) 255);
+                case 5:
+                    return new Color(0, 110 / (float) 255, 1);
+                case 6:
+                    return Color.magenta;
+            }
+
+            return Color.red;
+        }
+
+        public static string GetTeamColorName(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0:
+                    return "red";
+                case 1:
+                    return "green";
+                case 2:
+                    return "orange";
+                case 3:
+                    return "yellow";
+                case 4:
+                    return "cyan";
+                case 5:
+                    return "blue";
+                case 6:
+                    return "purple";
+            }
+
+            return "red";
+        }
     }
 }
