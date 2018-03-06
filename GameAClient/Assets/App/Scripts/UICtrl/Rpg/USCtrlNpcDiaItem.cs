@@ -223,6 +223,7 @@ namespace GameA
                 Mathf.Abs(_cachedView.transform.position.y - rect.y) < rect.height / 2)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().SetCurDiaItem(_dia);
+                _callback.Invoke();
                 _cachedView.SelectImage.gameObject.SetActiveEx(true);
             }
             else

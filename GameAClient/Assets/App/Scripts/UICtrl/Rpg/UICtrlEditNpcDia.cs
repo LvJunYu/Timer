@@ -413,7 +413,7 @@ namespace GameA
             _isRefreshDia = true;
             _oldStr = "";
             _cachedView.NpcTypeTabGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.NpcId - 1, 0, 1), true);
-            _cachedView.IconGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 1), true);
+            _cachedView.IconGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 7), true);
             _cachedView.DiaInputField.text = _curEditNpcDia.Dia;
             int colorBtnIndex = 0;
             switch (_curEditNpcDia.Color)
