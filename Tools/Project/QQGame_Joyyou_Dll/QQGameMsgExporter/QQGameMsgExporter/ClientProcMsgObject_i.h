@@ -4,6 +4,8 @@
 class IClientProcMsgObject;
 class IClientProcMsgEventHandler;
 
+#undef SendMessage
+
 class IClientProcMsgObject
 {
 public:

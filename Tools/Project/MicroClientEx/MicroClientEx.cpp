@@ -46,6 +46,7 @@ CMicroClientExApp theApp;
 BOOL CMicroClientExApp::InitInstance()
 {
 	const char* UNIQUE_NAME = "JoyGame";
+	/*
 	HANDLE hMutex = CreateMutex(NULL,NULL,UNIQUE_NAME);
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
 	{
@@ -56,10 +57,11 @@ BOOL CMicroClientExApp::InitInstance()
 			SetForegroundWindow(hOldWnd);
 			return -1;
 		}
-		//AfxMessageBox("神游记微端正在运行");
+		AfxMessageBox("微端正在运行");
 		return -1;
 	}
 	ReleaseMutex(hMutex);
+	*/
 
 	m_pCustDisp = new CImpIDispatch();
 	AfxEnableControlContainer();

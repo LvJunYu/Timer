@@ -7,11 +7,11 @@ typedef void(__stdcall *FunLog)(const char*);
 typedef void(__stdcall *FunOnConnectSucc)(IClientProcMsgObject* pClientProcMsgObj);
 typedef void(__stdcall *FunOnConnectFailed)(IClientProcMsgObject* pClientProcMsgObj, DWORD dwErrorCode);
 typedef void(__stdcall *FunOnConnectionDestroyed)(IClientProcMsgObject* pClientProcMsgObj);
-typedef void(__stdcall *FunOnReceiveMsg)(IClientProcMsgObject* pClientProcMsgObj, long lRecvLen, const BYTE* pRecvBuf);
+typedef void(__stdcall *FunOnReceiveMsg)(IClientProcMsgObject* pClientProcMsgObj, long lRecvLen);
 
 extern "C"
 {
-	__declspec(dllexport) BOOL __stdcall Initialize(LPCWSTR);
+	__declspec(dllexport) BOOL __stdcall Initialize(LPCSTR);
 	__declspec(dllexport) IClientProcMsgObject* __stdcall CreateClientProcMsgObject();
 	__declspec(dllexport) void __stdcall ReleaseClientProcMsgObject(IClientProcMsgObject* pObj);
 	__declspec(dllexport) void __stdcall Release();
@@ -20,10 +20,10 @@ extern "C"
 	__declspec(dllexport) void __stdcall SetOnConnectionSuccCallback(FunOnConnectSucc fun);
 	__declspec(dllexport) void __stdcall SetOnConnectionFailedCallback(FunOnConnectFailed fun);
 	__declspec(dllexport) void __stdcall SetOnConnectionDestroyedCallback(FunOnConnectionDestroyed fun);
-	__declspec(dllexport) void __stdcall SetOnReceiveMsgCallback(FunOnReceiveMsg fun);
+	__declspec(dllexport) void __stdcall SetOnReceiveMsgCallback(FunOnReceiveMsg fun, BYTE* pRecvBuf, long lLen);
 
 	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Initialize(IClientProcMsgObject*);
-	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject*, LPCWSTR);
+	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject*, LPCSTR);
 	__declspec(dllexport) void __stdcall IClientProcMsgObject_Disconnect(IClientProcMsgObject*);
 	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_IsConnected(IClientProcMsgObject*);
 	__declspec(dllexport) DWORD __stdcall IClientProcMsgObject_SendMessage(IClientProcMsgObject*, long lLen, const BYTE* pbySendBuf);
@@ -47,6 +47,7 @@ FunOnConnectSucc m_OnConnectSucc;
 FunOnConnectFailed m_OnConnectFailed;
 FunOnConnectionDestroyed m_OnConnectionDestroyed;
 FunOnReceiveMsg m_OnReceiveMsg;
-void log(const char*);
+BYTE* m_ReceiveBuffer;
+long m_ReceiveBufferLen;
 char buf[1024];
 

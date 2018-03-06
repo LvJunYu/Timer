@@ -8,7 +8,15 @@ const char* szReleaseClientObjFunc = "ReleaseClientProcMsgObject";
 typedef IClientProcMsgObject* (*CreateObjFunc)();
 typedef void(*ReleaseObjFunc)(IClientProcMsgObject*);
 
-BOOL __stdcall Initialize(LPCWSTR path)
+void logInfo(const char* msg)
+{
+	if (NULL != m_loger)
+	{
+		m_loger(msg);
+	}
+}
+
+BOOL __stdcall Initialize(LPCSTR path)
 {
 	m_hModule = LoadLibrary(path);
 	if (m_hModule)
@@ -17,8 +25,8 @@ BOOL __stdcall Initialize(LPCWSTR path)
 	}
 	else
 	{
-		itoa(GetLastError(), buf, 10);
-		log(buf);
+		_itoa_s(GetLastError(), buf, 10);
+		logInfo(buf);
 		return FALSE;
 	}
 }
@@ -88,16 +96,18 @@ void __stdcall SetOnConnectionDestroyedCallback(FunOnConnectionDestroyed fun)
 {
 	m_OnConnectionDestroyed = fun;
 }
-void __stdcall SetOnReceiveMsgCallback(FunOnReceiveMsg fun)
+void __stdcall SetOnReceiveMsgCallback(FunOnReceiveMsg fun, BYTE* pRecvBuf, long lLen)
 {
 	m_OnReceiveMsg = fun;
+	m_ReceiveBuffer = pRecvBuf;
+	m_ReceiveBufferLen = lLen;
 }
 
 
 
 BOOL __stdcall IClientProcMsgObject_Initialize(IClientProcMsgObject* obj)
 {
-	log("IClientProcMsgObject.Initialize");
+	logInfo("IClientProcMsgObject.Initialize");
 	if (!obj->Initialize())
 	{
 		return FALSE;
@@ -106,14 +116,15 @@ BOOL __stdcall IClientProcMsgObject_Initialize(IClientProcMsgObject* obj)
 	return TRUE;
 }
 
-BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject* obj, LPCWSTR lpszConnectionName)
+BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject* obj, LPCSTR lpszConnectionName)
 {
-	log("IClientProcMsgObject.Connect");
-	LPCSTR str = CW2A(lpszConnectionName);
+	logInfo("IClientProcMsgObject.Connect");
+	//LPCSTR str = CW2A(lpszConnectionName);
+	LPCSTR str = lpszConnectionName;
 	BOOL ret = obj->Connect(str);
 	char c[128] = { 0 };
-	int length = sprintf(c, "IClientProcMsgObject.Connect, Result: %d", ret);
-	log(c);
+	int length = sprintf_s(c, "IClientProcMsgObject.Connect, Result: %d", ret);
+	logInfo(c);
 	return ret;
 }
 
@@ -129,7 +140,13 @@ BOOL __stdcall IClientProcMsgObject_IsConnected(IClientProcMsgObject* obj)
 
 DWORD __stdcall IClientProcMsgObject_SendMessage(IClientProcMsgObject* obj, long lLen, const BYTE* pbySendBuf)
 {
-	return obj->SendMessage(lLen, pbySendBuf);
+	char c[128] = { 0 };
+	sprintf_s(c, "IClientProcMsgObject_SendMessage, CommandId: %d", *((int *)pbySendBuf));
+	logInfo(c);
+	DWORD ret = (obj->SendMessage)(lLen, pbySendBuf);
+	sprintf_s(c, "IClientProcMsgObject_SendMessage Success");
+	logInfo(c);
+	return ret;
 }
 
 void __stdcall IClientProcMsgObject_AddEventHandler(IClientProcMsgObject* obj, IClientProcMsgEventHandler* pEventHandler)
@@ -144,24 +161,26 @@ void __stdcall IClientProcMsgObject_RemoveEventHandler(IClientProcMsgObject* obj
 
 void EventHandler::OnConnectSucc(IClientProcMsgObject* pClientProcMsgObj)
 {
-	log("OnConnectSucc");
+	logInfo("OnConnectSucc");
 	if (NULL == m_EventHandler)
 	{
 		return;
 	}
 	m_OnConnectSucc(pClientProcMsgObj);
 }
+
 void EventHandler::OnConnectFailed(IClientProcMsgObject* pClientProcMsgObj, DWORD dwErrorCode)
 {
 	char c[128] = {0};
-	int length = sprintf(c, "OnConnectFailed, ErrorCode: %d", dwErrorCode);
-	log(c);
+	int length = sprintf_s(c, "OnConnectFailed, ErrorCode: %d", dwErrorCode);
+	logInfo(c);
 	if (NULL == m_EventHandler)
 	{
 		return;
 	}
 	m_OnConnectFailed(pClientProcMsgObj, dwErrorCode);
 }
+
 void EventHandler::OnConnectionDestroyed(IClientProcMsgObject* pClientProcMsgObj)
 {
 	if (NULL == m_EventHandler)
@@ -172,17 +191,17 @@ void EventHandler::OnConnectionDestroyed(IClientProcMsgObject* pClientProcMsgObj
 }
 void EventHandler::OnReceiveMsg(IClientProcMsgObject* pClientProcMsgObj, long lRecvLen, const BYTE* pRecvBuf)
 {
+	char c[128] = { 0 };
+	int length = sprintf_s(c, "OnReceiveMsg, len: %d, commandId: %d", lRecvLen, *((int*)pRecvBuf));
+	logInfo(c);
 	if (NULL == m_EventHandler)
 	{
 		return;
 	}
-	m_OnReceiveMsg(pClientProcMsgObj, lRecvLen, pRecvBuf);
-}
-
-void log(const char* msg)
-{
-	if (NULL != m_loger)
+	for (int i = 0; i < lRecvLen; i++)
 	{
-		m_loger(msg);
+		*(m_ReceiveBuffer + i) = *(pRecvBuf + i);
 	}
+
+	m_OnReceiveMsg(pClientProcMsgObj, lRecvLen);
 }
