@@ -15,7 +15,6 @@ namespace GameA
             MonsterCave,
             Timer,
             SurpriseBox,
-            LocationMissile
         }
 
         private Sequence _openSequence;
@@ -42,11 +41,11 @@ namespace GameA
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
         private USCtrlDropdownSetting _usSpawnSetting;
+        private USCtrlItemsSetting _usSurpriseBoxItemSetting;
         private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
         private UnitExtraDynamic _curUnitExtra;
         private UPCtrlUnitPropertyAdvanceTimer _upCtrlTimer;
-        private UPCtrlUnitPropertyAdvanceSurpriseBox _upCtrlSurpriseBox;
 
         protected override void OnViewCreated()
         {
@@ -152,8 +151,10 @@ namespace GameA
 
             _upCtrlTimer = new UPCtrlUnitPropertyAdvanceTimer();
             _upCtrlTimer.Init(_mainCtrl, _cachedView);
-            _upCtrlSurpriseBox = new UPCtrlUnitPropertyAdvanceSurpriseBox();
-            _upCtrlSurpriseBox.Init(_mainCtrl, _cachedView);
+
+            _usSurpriseBoxItemSetting = new USCtrlItemsSetting();
+            _usSurpriseBoxItemSetting.SetResScenary(_mainCtrl.ResScenary);
+            _usSurpriseBoxItemSetting.Init(_cachedView.SurpriseBoxItemSetting);
         }
 
         public override void Open()
@@ -385,8 +386,24 @@ namespace GameA
 
             _cachedView.BackBtn.SetActiveEx(_mainCtrl.CurEnterType != UICtrlUnitPropertyEdit.EEnterType.Normal);
 
-            _upCtrlTimer.Refresh(_curMenu);
-            _upCtrlSurpriseBox.Refresh(_curMenu);
+            if (_curMenu == EMenu.SurpriseBox)
+            {
+                _usSurpriseBoxItemSetting.SetUnitExtra(_mainCtrl.GetCurUnitExtra());
+                _usSurpriseBoxItemSetting.Open();
+            }
+            else
+            {
+                _usSurpriseBoxItemSetting.Close();
+            }
+
+            if (_curMenu == EMenu.Timer)
+            {
+                _upCtrlTimer.Open();
+            }
+            else
+            {
+                _upCtrlTimer.Close();
+            }
         }
 
         public void CheckClose()

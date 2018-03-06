@@ -53,6 +53,7 @@ namespace GameA
         private Project _project;
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
+        private UPCtrlUnitPropertyAdvanceSurpriseBox _upCtrlSurpriseBox;
 
         public bool IsInMap
         {
@@ -178,7 +179,10 @@ namespace GameA
             //任务完成后的奖励
             EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
             EditFinishTaskAward.Init(this, _cachedView);
-
+            //惊喜盒子
+            _upCtrlSurpriseBox = new UPCtrlUnitPropertyAdvanceSurpriseBox();
+            _upCtrlSurpriseBox.Init(this, _cachedView);
+            
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -194,6 +198,7 @@ namespace GameA
             _rootArray[(int) EEditType.NpcTask] = _cachedView.NpcDiaLogDock;
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
+            _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -215,6 +220,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.NpcTask].Init(_cachedView.NpcTaskSettingMenu);
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
+            _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -637,6 +643,17 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
             }
+            
+            if (_curId == UnitDefine.SurpriseBoxId)
+            {
+                _validEditPropertyList.Add(EEditType.SurpriseBox);
+                _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(true);
+                RefreshSurpriseBoxMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(false);
+            }
 
             if (_tableUnit.CanEdit(EEditType.Text))
             {
@@ -1050,6 +1067,11 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>().AvatarRenderTexture;
         }
 
+        private void RefreshSurpriseBoxMenu()
+        {
+            _upCtrlSurpriseBox.RefreshView();
+        }
+
         private Sprite GetSpawnSprite(int teamId, bool disable = false)
         {
             if (disable)
@@ -1440,7 +1462,7 @@ namespace GameA
                 return true;
             }
 
-            if (_curId == UnitDefine.SurpriseBoxId && _curEditType == EEditType.Active)
+            if (_curEditType == EEditType.SurpriseBox)
             {
                 _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
                 return true;

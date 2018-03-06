@@ -26,6 +26,7 @@ namespace GameA.Game
             DefineField<ushort>(FieldTag.BulletCount, "BulletCount");
             DefineFieldList<ushort>(FieldTag.KnockbackForces, "KnockbackForces");
             DefineFieldList<ushort>(FieldTag.AddStates, "AddStates");
+            DefineFieldList<ushort>(FieldTag.SurpriseBoxItems, "SurpriseBoxItems");
             DefineField<ushort>(FieldTag.BulletSpeed, "BulletSpeed");
             DefineField<ushort>(FieldTag.ChargeTime, "ChargeTime");
             DefineField<ushort>(FieldTag.MaxHp, "MaxHp");
@@ -94,6 +95,7 @@ namespace GameA.Game
             public static readonly int SurpriseBoxInterval = _nextId++;
             public static readonly int SurpriseBoxCountLimit = _nextId++;
             public static readonly int SurpriseBoxMaxCount = _nextId++;
+            public static readonly int SurpriseBoxItems = _nextId++;
             public static readonly int MonsterId = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
@@ -217,6 +219,12 @@ namespace GameA.Game
         {
             get { return Get<DictionaryListObject>(FieldTag.AddStates); }
             set { Set(value, FieldTag.AddStates); }
+        }
+
+        public DictionaryListObject SurpriseBoxItems
+        {
+            get { return Get<DictionaryListObject>(FieldTag.SurpriseBoxItems); }
+            set { Set(value, FieldTag.SurpriseBoxItems); }
         }
 
         public ushort BulletSpeed
@@ -706,6 +714,7 @@ namespace GameA.Game
         Camp,
         MonsterCave,
         Spawn,
+        SurpriseBox,
         Style,
         NpcType,
         NpcTask,

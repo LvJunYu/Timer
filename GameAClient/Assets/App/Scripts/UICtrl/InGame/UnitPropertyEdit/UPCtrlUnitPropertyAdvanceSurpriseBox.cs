@@ -27,39 +27,19 @@ namespace GameA
             _usSurpriseBoxLimitSetting.Init(_cachedView.SurpriseBoxLimitSetting);
         }
 
-        public void Refresh(UPCtrlUnitPropertyEditAdvance.EMenu menu)
+        public void RefreshView()
         {
-            if (menu == UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox)
-            {
-                Open();
-            }
-            else
-            {
-                Close();
-            }
-
-            RefreshView();
-        }
-
-        private void RefreshView()
-        {
-            _usSurpriseBoxIntervalSetting.SetEnable(_isOpen);
-            _usSurpriseBoxMaxCountSetting.SetEnable(_isOpen && _mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit);
-            _usSurpriseBoxRandomSetting.SetEnable(_isOpen);
-            _usSurpriseBoxLimitSetting.SetEnable(_isOpen);
-            if (_isOpen)
-            {
-                _usSurpriseBoxIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.SurpriseBoxInterval);
-                _usSurpriseBoxMaxCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.SurpriseBoxMaxCount);
-                _usSurpriseBoxRandomSetting.SetData(_mainCtrl.EditData.UnitExtra.IsRandom,
-                    value => { _mainCtrl.EditData.UnitExtra.IsRandom = value; });
-                _usSurpriseBoxLimitSetting.SetData(_mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit,
-                    value =>
-                    {
-                        _mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit = value;
-                        _usSurpriseBoxMaxCountSetting.SetEnable(value);
-                    });
-            }
+            _usSurpriseBoxMaxCountSetting.SetEnable(_mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit);
+            _usSurpriseBoxIntervalSetting.SetCur(_mainCtrl.EditData.UnitExtra.SurpriseBoxInterval);
+            _usSurpriseBoxMaxCountSetting.SetCur(_mainCtrl.EditData.UnitExtra.SurpriseBoxMaxCount);
+            _usSurpriseBoxRandomSetting.SetData(_mainCtrl.EditData.UnitExtra.IsRandom,
+                value => { _mainCtrl.EditData.UnitExtra.IsRandom = value; });
+            _usSurpriseBoxLimitSetting.SetData(_mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit,
+                value =>
+                {
+                    _mainCtrl.EditData.UnitExtra.SurpriseBoxCountLimit = value;
+                    _usSurpriseBoxMaxCountSetting.SetEnable(value);
+                });
         }
     }
 }

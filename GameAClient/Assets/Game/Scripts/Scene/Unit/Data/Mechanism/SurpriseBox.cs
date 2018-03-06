@@ -20,15 +20,7 @@ namespace GameA.Game
         private const string OpeneEffectStr = "M1EffectSurpriseBoxOpen";
         private static WaitForSeconds OpenTime = new WaitForSeconds(0.5f);
 
-        private Dictionary<int, bool> _itemDic = new Dictionary<int, bool>
-        {
-            {6001, true},
-            {6002, true},
-            {6003, true},
-            {6004, true}
-        };
-
-        private List<int> _itemList = new List<int>();
+        private List<ushort> _itemList = new List<ushort>();
         private SpriteRenderer _itemRenderer;
         private SpriteRenderer _lightRenderer;
         private float _interval;
@@ -86,12 +78,13 @@ namespace GameA.Game
             _random = unitExtra.IsRandom;
             _limit = unitExtra.SurpriseBoxCountLimit;
             _maxCount = _limit ? unitExtra.SurpriseBoxMaxCount : int.MaxValue;
+            _itemList = unitExtra.SurpriseBoxItems.ToList<ushort>();
             return unitExtra;
         }
 
         internal override void OnPlay()
         {
-            GetItemList();
+            RefreshView();
             base.OnPlay();
         }
 
@@ -153,7 +146,7 @@ namespace GameA.Game
                     if (item != null)
                     {
                         ShowOpenEffect();
-                        CoroutineProxy.Instance.StartCoroutine(ShowOpenView());
+                        CoroutineProxy.Instance.StartCoroutine(ShowOpenView(item));
                         item.OnPlay();
                         return true;
                     }
@@ -163,12 +156,14 @@ namespace GameA.Game
             return false;
         }
 
-        private IEnumerator ShowOpenView()
+        private IEnumerator ShowOpenView(UnitBase unit)
         {
             if (_view != null)
             {
+                unit.IsAlive = false;
                 _view.ChangeView(OpenSprite);
                 yield return OpenTime;
+                unit.IsAlive = true;
                 _view.ChangeView(CloseSprite);
             }
         }
@@ -205,17 +200,8 @@ namespace GameA.Game
             return true;
         }
 
-        private void GetItemList()
+        private void RefreshView()
         {
-            _itemList.Clear();
-            foreach (var id in _itemDic.Keys)
-            {
-                if (_itemDic[id])
-                {
-                    _itemList.Add(id);
-                }
-            }
-
             SetItemView();
             SetLightView();
         }
@@ -268,11 +254,6 @@ namespace GameA.Game
             {
                 _lightRenderer.sprite = sprite;
             }
-        }
-
-        public void SetItem(int id, bool value)
-        {
-            _itemDic.AddOrReplace(id, value);
         }
     }
 }

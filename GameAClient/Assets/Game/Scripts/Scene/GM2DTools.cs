@@ -523,6 +523,16 @@ namespace GameA.Game
                 }
             }
 
+            var surpriseBoxItems = data.SurpriseBoxItems;
+            for (int i = 0, count = surpriseBoxItems.Count; i < count; i++)
+            {
+                ushort val = surpriseBoxItems.Get<ushort>(i);
+                if (val != 0)
+                {
+                    res.SurpriseBoxItems.Add(val);
+                }
+            }
+
             var internalUnitExtras = data.InternalUnitExtras;
             for (int i = 0, count = internalUnitExtras.Count; i < count; i++)
             {
@@ -608,6 +618,11 @@ namespace GameA.Game
             for (int i = 0; i < data.AddStates.Count; i++)
             {
                 unitExtra.Set((ushort) data.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
+            }
+
+            for (int i = 0; i < data.SurpriseBoxItems.Count; i++)
+            {
+                unitExtra.Set((ushort) data.SurpriseBoxItems[i], UnitExtraDynamic.FieldTag.SurpriseBoxItems, i);
             }
 
             for (int i = 0; i < TeamManager.MaxTeamCount; i++)

@@ -46,17 +46,15 @@ namespace GameA
             _usTimerCirculationSetting.Init(_cachedView.TimerCirculationSetting);
         }
 
-        public void Refresh(UPCtrlUnitPropertyEditAdvance.EMenu menu)
+        public override void Open()
         {
-            if (menu == UPCtrlUnitPropertyEditAdvance.EMenu.Timer)
-            {
-                Open();
-            }
-            else
-            {
-                Close();
-            }
+            base.Open();
+            RefreshView();
+        }
 
+        public override void Close()
+        {
+            base.Close();
             RefreshView();
         }
 
