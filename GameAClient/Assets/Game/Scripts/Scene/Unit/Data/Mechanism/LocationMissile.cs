@@ -9,6 +9,7 @@ namespace GameA.Game
     public class LocationMissile : BlockBase
     {
         private const string SpriteFormat = "M1LocationMissile_{0}";
+        private const string IconSpriteFormat = "M1LocationMissileIcon_{0}";
         private const string IconSprite = "M1LocationMissileIcon";
         private const float RotateSpeed = 1;
         private SkillCtrl _skillCtrl;
@@ -134,7 +135,7 @@ namespace GameA.Game
                         }
 
                         RefreshGunDir();
-                        if (GameRun.Instance.LogicFrameCnt % 20 == 0 && CheckTarget())
+                        if (GameRun.Instance.LogicFrameCnt % 20 == 0 && CheckFindTarget())
                         {
                             ChangeState(EState.AimTarget);
                         }
@@ -144,7 +145,7 @@ namespace GameA.Game
                 case EState.AimTarget:
                     _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, RotateSpeed * 5);
                     RefreshGunDir();
-                    if (Util.IsFloatEqual(_curAngle, _targetAngle))
+                    if (CheckCanAttack())
                     {
                         ChangeState(EState.Fire);
                     }
@@ -155,7 +156,12 @@ namespace GameA.Game
             }
         }
 
-        private bool CheckTarget()
+        private bool CheckCanAttack()
+        {
+            return Util.IsFloatEqual(_curAngle, _targetAngle);
+        }
+        
+        private bool CheckFindTarget()
         {
             var players = TeamManager.Instance.Players;
             float minDisSqr = int.MaxValue;
@@ -190,7 +196,7 @@ namespace GameA.Game
 
             return findTarget;
         }
-
+        
         private bool IsAngleValid(float angle)
         {
             if (_endAngle < _startAngle)
@@ -238,7 +244,7 @@ namespace GameA.Game
                 _gunRenderer = new GameObject("Gun").AddComponent<SpriteRenderer>();
                 CommonTools.SetParent(_gunRenderer.transform, _trans);
                 _gunRenderer.sortingOrder = (int) ESortingOrder.Item;
-                _gunRenderer.transform.localPosition = new Vector3(0, 0, -0.01f);
+                _gunRenderer.transform.localPosition = new Vector3(-0.144f, -0.07f, -0.01f);
             }
 
             _gunRenderer.sprite = GetLocationMissileSprite(_teamId);
@@ -278,7 +284,7 @@ namespace GameA.Game
                 return JoyResManager.Instance.GetSprite(IconSprite);
             }
 
-            return JoyResManager.Instance.GetSprite(string.Format(SpriteFormat, TeamManager.GetTeamColorName(teamId)));
+            return JoyResManager.Instance.GetSprite(string.Format(IconSpriteFormat, TeamManager.GetTeamColorName(teamId)));
         }
 
         public enum EState
