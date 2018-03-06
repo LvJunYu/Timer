@@ -11,7 +11,10 @@ namespace GameA.Game
         private const string SpriteFormat = "M1LocationMissile_{0}";
         private const string IconSpriteFormat = "M1LocationMissileIcon_{0}";
         private const string IconSprite = "M1LocationMissileIcon";
+        private const int AttackAimTime = 20;
+        private const int LineAngle = 5; //用于判断直线射程时的角度
         private const float RotateSpeed = 1;
+        private const float AimSpeed = 5;
         private SkillCtrl _skillCtrl;
         private ERotateMode _eRotateType;
         private float _startAngle;
@@ -23,6 +26,7 @@ namespace GameA.Game
         private int _teamId;
         private SpriteRenderer _gunRenderer;
         private EState _curState;
+        private int _attackTimer;
 
         public override bool CanControlledBySwitch
         {
@@ -34,15 +38,11 @@ namespace GameA.Game
             get { return _curAngle; }
         }
 
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
+        private IntVec2 _bulletOffsetPos;
 
-            SetSortingOrderBackground();
-            return true;
+        public IntVec2 BulletOffsetPos
+        {
+            get { return _bulletOffsetPos; }
         }
 
         protected override void SetSkillValue()
@@ -79,7 +79,7 @@ namespace GameA.Game
             _curAngle = _startAngle;
             RefreshGunDir();
             _skillCtrl = null;
-            _curState = EState.Normal;
+            _curState = EState.Rotate;
             base.Clear();
         }
 
@@ -102,65 +102,123 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            if (_attackTimer > 0)
+            {
+                _attackTimer--;
+            }
+
             base.UpdateLogic();
+
+
             if (_eActiveState != EActiveState.Active)
             {
                 return;
             }
 
-            switch (_curState)
+            if (_skillCtrl != null)
             {
-                case EState.Normal:
-                    if (_eRotateType != ERotateMode.None)
+                _skillCtrl.UpdateLogic();
+            }
+
+            if (_curState == EState.Rotate)
+            {
+                if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CheckFindTarget())
+                {
+                    ChangeState(EState.AimTarget);
+                }
+                else
+                {
+                    DoRotate();
+                }
+            }
+
+            if (_curState == EState.AimTarget)
+            {
+                DoAimTarget();
+                if (CheckCanAttack())
+                {
+                    ChangeState(EState.Fire);
+                }
+            }
+            else if (_curState == EState.Fire)
+            {
+                if (_attackTimer > 0)
+                {
+                    if (_attackTimer == 1)
                     {
-                        switch (_eRotateType)
-                        {
-                            case ERotateMode.Clockwise:
-                                _curAngle += RotateSpeed;
-                                break;
-                            case ERotateMode.Anticlockwise:
-                                _curAngle += -RotateSpeed;
-                                break;
-                        }
-
-                        Util.CorrectAngle360(ref _curAngle);
-                        if (!Util.IsFloatEqual(_startAngle, _endAngle))
-                        {
-                            if (Util.IsFloatEqual(_curAngle, _startAngle) || Util.IsFloatEqual(_curAngle, _endAngle))
-                            {
-                                _eRotateType = _eRotateType == ERotateMode.Clockwise
-                                    ? ERotateMode.Anticlockwise
-                                    : ERotateMode.Clockwise;
-                            }
-                        }
-
-                        RefreshGunDir();
-                        if (GameRun.Instance.LogicFrameCnt % 20 == 0 && CheckFindTarget())
+                        if (CheckFindTarget())
                         {
                             ChangeState(EState.AimTarget);
                         }
+                        else
+                        {
+                            ChangeState(EState.Rotate);
+                        }
                     }
+                }
+            }
+        }
 
-                    break;
-                case EState.AimTarget:
-                    _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, RotateSpeed * 5);
-                    RefreshGunDir();
-                    if (CheckCanAttack())
-                    {
-                        ChangeState(EState.Fire);
-                    }
+        private void DoAttack()
+        {
+            _attackTimer = 5;
+            if (_skillCtrl != null && _skillCtrl.Fire(0))
+            {
+                _attackTimer = AttackAimTime;
+//                if (_animation != null)
+//                {
+//                    _animation.PlayOnce("Start");
+//                }
+            }
+        }
 
+        private void DoAimTarget()
+        {
+            if (_eRotateType == ERotateMode.None)
+            {
+                return;
+            }
+
+            _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, AimSpeed);
+            RefreshGunDir();
+        }
+
+        private void DoRotate()
+        {
+            if (_eRotateType == ERotateMode.None)
+            {
+                return;
+            }
+
+            switch (_eRotateType)
+            {
+                case ERotateMode.Clockwise:
+                    _curAngle += RotateSpeed;
                     break;
-                case EState.Fire:
+                case ERotateMode.Anticlockwise:
+                    _curAngle += -RotateSpeed;
                     break;
             }
+
+            Util.CorrectAngle360(ref _curAngle);
+            if (!Util.IsFloatEqual(_startAngle, _endAngle))
+            {
+                if (Util.IsFloatEqual(_curAngle, _startAngle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                {
+                    _eRotateType = _eRotateType == ERotateMode.Clockwise
+                        ? ERotateMode.Anticlockwise
+                        : ERotateMode.Clockwise;
+                }
+            }
+
+            RefreshGunDir();
         }
 
         private bool CheckCanAttack()
         {
-            return Util.IsFloatEqual(_curAngle, _targetAngle);
+            return _eRotateType == ERotateMode.None || Util.IsFloatEqual(_curAngle, _targetAngle);
         }
-        
+
         private bool CheckFindTarget()
         {
             var players = TeamManager.Instance.Players;
@@ -194,9 +252,14 @@ namespace GameA.Game
                 }
             }
 
+            if (findTarget)
+            {
+                _targetAngle = (int) _targetAngle;
+            }
+
             return findTarget;
         }
-        
+
         private bool IsAngleValid(float angle)
         {
             if (_endAngle < _startAngle)
@@ -209,7 +272,14 @@ namespace GameA.Game
                 return angle >= _endAngle || angle <= _startAngle;
             }
 
-            return Util.IsFloatEqual(_startAngle, angle);
+            //直线
+            if (_eRotateType == ERotateMode.None)
+            {
+                return Mathf.Abs(_startAngle - angle) < LineAngle;
+            }
+
+            //360°旋转
+            return true;
         }
 
         private void ChangeState(EState state)
@@ -222,17 +292,7 @@ namespace GameA.Game
             _curState = state;
             if (_curState == EState.Fire)
             {
-                if (_skillCtrl != null)
-                {
-                    _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.Fire(0))
-                    {
-//                    if (_animation != null)
-//                    {
-//                        _animation.PlayOnce("Start");
-//                    }
-                    }
-                }
+                DoAttack();
             }
         }
 
@@ -245,6 +305,7 @@ namespace GameA.Game
                 CommonTools.SetParent(_gunRenderer.transform, _trans);
                 _gunRenderer.sortingOrder = (int) ESortingOrder.Item;
                 _gunRenderer.transform.localPosition = new Vector3(-0.144f, -0.07f, -0.01f);
+                _bulletOffsetPos = GM2DTools.WorldToTile(new Vector2(-0.444f, -0.37f));
             }
 
             _gunRenderer.sprite = GetLocationMissileSprite(_teamId);
@@ -284,12 +345,13 @@ namespace GameA.Game
                 return JoyResManager.Instance.GetSprite(IconSprite);
             }
 
-            return JoyResManager.Instance.GetSprite(string.Format(IconSpriteFormat, TeamManager.GetTeamColorName(teamId)));
+            return JoyResManager.Instance.GetSprite(string.Format(IconSpriteFormat,
+                TeamManager.GetTeamColorName(teamId)));
         }
 
         public enum EState
         {
-            Normal,
+            Rotate,
             AimTarget,
             Fire
         }

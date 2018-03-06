@@ -97,15 +97,10 @@ namespace GameA.Game
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             SetAngle(angle);
-            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
-            if (_effectBullet != null)
-            {
-                _effectBullet.Play();
-            }
             OnRun();
         }
 
-        protected void SetAngle(float angle)
+        protected virtual void SetAngle(float angle)
         {
             _angle = angle;
             _direction = GM2DTools.GetDirection(_angle);
@@ -116,6 +111,11 @@ namespace GameA.Game
 
         protected virtual void OnRun()
         {
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+            }
         }
 
         protected virtual void UpdateAngle(float angle, EDirectionType eDirectionType)

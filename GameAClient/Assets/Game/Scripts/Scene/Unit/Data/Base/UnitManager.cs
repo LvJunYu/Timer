@@ -235,6 +235,8 @@ namespace GameA.Game
                     return PoolFactory<ProjectileFire>.Get();
                 case 10003:
                     return PoolFactory<ProjectileIce>.Get();
+                case 11001:
+                    return PoolFactory<ProjectileMissile>.Get();
             }
             return (UnitBase) Activator.CreateInstance(type);
         }
@@ -249,6 +251,9 @@ namespace GameA.Game
                 case 10003:
                     PoolFactory<ProjectileIce>.Free((ProjectileIce) unit);
                     break;
+                case 11001:
+                    PoolFactory<ProjectileMissile>.Free((ProjectileMissile) unit);
+                    break; 
             }
             if (unit.View == null)
             {

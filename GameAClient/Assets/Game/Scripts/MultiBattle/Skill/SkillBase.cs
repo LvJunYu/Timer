@@ -374,6 +374,11 @@ namespace GameA.Game
                 return _owner.CenterPos;
             }
 
+            if (_owner.Id == UnitDefine.LocationMissileId)
+            {
+                return ((LocationMissile) _owner).BulletOffsetPos + _owner.CenterPos;
+            }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {

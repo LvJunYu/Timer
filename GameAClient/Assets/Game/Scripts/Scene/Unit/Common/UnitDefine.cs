@@ -38,6 +38,7 @@ namespace GameA.Game
         public const int EarthId = 4001;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
+        public const int StoneId = 4007;
         public const int ClayId = 4011;
         public const int ScorchedEarthId = 4013;
         public const int CloudId = 4015;
@@ -65,6 +66,7 @@ namespace GameA.Game
         public const int TimerId = 8108;
         public const int TimerTriggerPressId = 8201;
         public const int WaterBulletId = 10001;
+        public const int MissileId = 11001;
         public const int ShadowId = 65535;
 
         public static bool IsSpawn(int id)
@@ -134,7 +136,7 @@ namespace GameA.Game
 
         public static bool IsBullet(int id)
         {
-            return id >= 10001 && id <= 10010;
+            return id >= 10001 && id <= 12000;
         }
 
         public static bool IsShadow(int id)
