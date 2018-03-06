@@ -41,7 +41,7 @@ namespace GameA
         private USCtrlAddItem _usDropsSetting;
         private USCtrlAddItem _usAddStatesSetting;
         private USCtrlDropdownSetting _usSpawnSetting;
-        private USCtrlItemsSetting _usSurpriseBoxItemSetting;
+        private USCtrlSurpriseBoxItemsSetting _usSurpriseBoxItemSetting;
         private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
         private UnitExtraDynamic _curUnitExtra;
@@ -152,7 +152,7 @@ namespace GameA
             _upCtrlTimer = new UPCtrlUnitPropertyAdvanceTimer();
             _upCtrlTimer.Init(_mainCtrl, _cachedView);
 
-            _usSurpriseBoxItemSetting = new USCtrlItemsSetting();
+            _usSurpriseBoxItemSetting = new USCtrlSurpriseBoxItemsSetting();
             _usSurpriseBoxItemSetting.SetResScenary(_mainCtrl.ResScenary);
             _usSurpriseBoxItemSetting.Init(_cachedView.SurpriseBoxItemSetting);
         }

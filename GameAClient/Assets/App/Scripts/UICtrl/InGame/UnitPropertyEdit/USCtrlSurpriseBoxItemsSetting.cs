@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    public class USCtrlItemsSetting : USCtrlBase<USViewItemsSetting>
+    public class USCtrlSurpriseBoxItemsSetting : USCtrlBase<USViewSurpriseBoxItemsSetting>
     {
-        public static int[] Items = {6001, 6002, 6003, 6004};
+        private static int[] Items = {6001, 6002, 6003, 6004};
+        private const int MaxItemCount = 30;
         private EResScenary _resScenary;
         private UnitExtraDynamic _unitExtra;
         private Stack<UMCtrlSurpriseBoxItem> _umPool = new Stack<UMCtrlSurpriseBoxItem>(70);
@@ -27,6 +29,8 @@ namespace GameA
         {
             base.Open();
             _cachedView.SetActiveEx(true);
+            _cachedView.AddedItemRtf.anchoredPosition = Vector2.zero;
+            _cachedView.AddedItemRtf.anchoredPosition = Vector2.zero;
             RefreshView();
         }
 
@@ -53,6 +57,12 @@ namespace GameA
 
         public void AddItem(int id, bool init = false)
         {
+            if (_umList.Count == MaxItemCount)
+            {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "盒子已经满了哦~");
+                return;
+            }
+
             if (!init)
             {
                 _unitExtra.SurpriseBoxItems.Add((ushort) id);
@@ -70,6 +80,7 @@ namespace GameA
             {
                 _unitExtra.SurpriseBoxItems.RemoveAt(index);
                 FreeUmItem(_umList[index]);
+                _umList.RemoveAt(index);
             }
         }
 

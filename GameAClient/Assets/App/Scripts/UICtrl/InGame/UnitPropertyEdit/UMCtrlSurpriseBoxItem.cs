@@ -1,13 +1,12 @@
 ﻿using GameA.Game;
 using NewResourceSolution;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
     public class UMCtrlSurpriseBoxItem : UMCtrlBase<UMViewSurpriseBoxItem>
     {
-        private USCtrlItemsSetting _mainCtrl;
+        private USCtrlSurpriseBoxItemsSetting _mainCtrl;
         private bool _add;
         private int _id;
         private int _index;
@@ -15,11 +14,10 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.AddBtn.onClick.AddListener(OnAddBtn);
-            _cachedView.DeleteBtn.onClick.AddListener(OnDeleteBtn);
+            _cachedView.Btn.onClick.AddListener(OnBtn);
         }
 
-        public void Set(int id, bool add, USCtrlItemsSetting ctrl, int index = 0)
+        public void Set(int id, bool add, USCtrlSurpriseBoxItemsSetting ctrl, int index = 0)
         {
             _id = id;
             _add = add;
@@ -36,18 +34,20 @@ namespace GameA
                 _cachedView.Icon.sprite = JoyResManager.Instance.GetSprite(table.Icon);
             }
 
-            _cachedView.AddBtn.SetActiveEx(_add);
-            _cachedView.DeleteBtn.SetActiveEx(!_add);
+            _cachedView.AddObj.SetActive(_add);
+            _cachedView.DeleteObj.SetActive(!_add);
         }
 
-        private void OnDeleteBtn()
+        private void OnBtn()
         {
-            _mainCtrl.DeleteItem(_index);
-        }
-
-        private void OnAddBtn()
-        {
-            _mainCtrl.AddItem(_id);
+            if (_add)
+            {
+                _mainCtrl.AddItem(_id);
+            }
+            else
+            {
+                _mainCtrl.DeleteItem(_index);
+            }
         }
 
         public void SetParent(RectTransform parent)
