@@ -164,9 +164,9 @@ namespace GameA.Game
             _lastSlot = -1;
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            base.UpdateExtraData();
+            base.UpdateExtraData(unitExtraDynamic);
             //玩家的UnitExtra来自复活点的Extra
             if (_unitExtra.MaxHp > 0)
             {

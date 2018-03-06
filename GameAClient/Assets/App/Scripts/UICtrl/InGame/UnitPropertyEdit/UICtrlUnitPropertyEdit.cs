@@ -1395,7 +1395,7 @@ namespace GameA
             }
 
             _curUnitExtra = curWeaponExtra;
-            Enter(EEnterType.WeaponSettingFromSpawn, UnitDefine.EnergyPoolId);
+            Enter(EEnterType.WeaponSettingFromSpawn, UnitDefine.WeaponDepotId);
         }
 
         private void Enter(EEnterType eEnterType, int unitId)

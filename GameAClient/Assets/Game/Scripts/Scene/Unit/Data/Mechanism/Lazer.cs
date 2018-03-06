@@ -43,9 +43,9 @@ namespace GameA.Game
             return true;
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             return unitExtra;

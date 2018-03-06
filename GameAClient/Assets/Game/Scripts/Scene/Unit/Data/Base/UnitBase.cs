@@ -612,12 +612,12 @@ namespace GameA.Game
             return !IsActor && _moveDirection != EMoveDirection.None;
         }
 
-        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
+        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit, UnitExtraDynamic unitExtra)
         {
             _unitDesc = unitDesc;
             _tableUnit = tableUnit;
             _angle = GM2DTools.GetAngle(Rotation);
-            UpdateExtraData();
+            UpdateExtraData(unitExtra);
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
@@ -961,11 +961,15 @@ namespace GameA.Game
         /// <summary>
         /// 更新额外信息
         /// </summary>
-        public virtual UnitExtraDynamic UpdateExtraData()
+        /// <param name="unitExtraDynamic"></param>
+        public virtual UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = GetUnitExtra();
-            _moveDirection = unitExtra.MoveDirection;
-            _eActiveState = (EActiveState) unitExtra.Active;
+            if (unitExtraDynamic == null)
+            {
+                unitExtraDynamic = GetUnitExtra();
+            }
+            _moveDirection = unitExtraDynamic.MoveDirection;
+            _eActiveState = (EActiveState) unitExtraDynamic.Active;
             if (_eActiveState == EActiveState.None)
             {
                 _eActiveState = EActiveState.Active;
@@ -976,9 +980,9 @@ namespace GameA.Game
                 _moveDirection = EMoveDirection.Right;
             }
 
-            if (unitExtra.MaxHp > 0)
+            if (unitExtraDynamic.MaxHp > 0)
             {
-                _maxHp = unitExtra.MaxHp;
+                _maxHp = unitExtraDynamic.MaxHp;
             }
             else
             {
@@ -989,7 +993,7 @@ namespace GameA.Game
             }
 
             _hp = _maxHp;
-            return unitExtra;
+            return unitExtraDynamic;
         }
 
         public virtual UnitExtraDynamic GetUnitExtra()

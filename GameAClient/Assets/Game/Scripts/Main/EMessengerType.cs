@@ -43,6 +43,7 @@ namespace GameA
         public static int OnTeamChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnMainPlayerCreated = SoyEngine.EMessengerType.NextId++;
         public static int OnMainPlayerReviveTime = SoyEngine.EMessengerType.NextId++;
+        public static int OnUnitExtraDefaultValueChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int GameLog = SoyEngine.EMessengerType.NextId++;
         public static int GameErrorLog = SoyEngine.EMessengerType.NextId++;

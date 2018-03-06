@@ -47,9 +47,9 @@ namespace GameA
             Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
-            if (UnitDefine.ChangeViewByCamp(_table.Id))
+            if (UnitDefine.ChangeViewByUnitExtra(_table.Id))
             {
-                Messenger.AddListener(EMessengerType.OnTeamChanged, RefreshSprite);
+                Messenger.AddListener(EMessengerType.OnUnitExtraDefaultValueChanged, OnSpriteChanged);
             }
 
             _cachedView.Name.text = _table.Name;
@@ -72,9 +72,9 @@ namespace GameA
             Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
-            if (UnitDefine.ChangeViewByCamp(_table.Id))
+            if (UnitDefine.ChangeViewByUnitExtra(_table.Id))
             {
-                Messenger.RemoveListener(EMessengerType.OnTeamChanged, RefreshSprite);
+                Messenger.RemoveListener(EMessengerType.OnUnitExtraDefaultValueChanged, OnSpriteChanged);
             }
 
             _cachedView.RightClick.RightMouseCallback = null;
@@ -240,7 +240,7 @@ namespace GameA
             _cachedView.Number.gameObject.SetActive(true);
         }
 
-        private void RefreshSprite()
+        private void OnSpriteChanged()
         {
             if (UnitDefine.IsSpawn(_table.Id))
             {
@@ -251,6 +251,19 @@ namespace GameA
             {
                 var define = EditHelper.GetUnitDefaultData(UnitDefine.LocationMissileId);
                 _cachedView.SpriteIcon.sprite = LocationMissile.GetLocationMissileIconSprite(define.UnitExtra.TeamId);
+            }
+            else if (UnitDefine.WeaponDepotId == _table.Id)
+            {
+                var define = EditHelper.GetUnitDefaultData(UnitDefine.WeaponDepotId);
+                _cachedView.SpriteIcon.sprite = WeaponDepot.GetSpriteIcon(define.UnitExtra.ChildId);
+            }
+        }
+
+        private void RefreshSprite()
+        {
+            if (UnitDefine.ChangeViewByUnitExtra(_table.Id))
+            {
+                OnSpriteChanged();
             }
             else
             {

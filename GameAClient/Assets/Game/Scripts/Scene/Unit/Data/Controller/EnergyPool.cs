@@ -51,9 +51,9 @@ namespace GameA.Game
             _efffectWeapon = null;
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _weaponId = unitExtra.ChildId;
             return unitExtra;
         }

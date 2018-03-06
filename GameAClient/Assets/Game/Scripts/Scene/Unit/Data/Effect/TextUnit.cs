@@ -73,9 +73,9 @@ namespace GameA.Game
             ShowHide(false);
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var extra = base.UpdateExtraData();
+            var extra = base.UpdateExtraData(unitExtraDynamic);
             _eActiveState = EActiveState.Deactive;
             return extra;
         }

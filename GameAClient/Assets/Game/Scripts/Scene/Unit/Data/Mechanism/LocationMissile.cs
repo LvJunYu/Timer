@@ -50,9 +50,9 @@ namespace GameA.Game
             _skillCtrl.CurrentSkills[0].SkillBase.SetValue(_attackInterval, _castRange);
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _startAngle = GM2DTools.GetAngle(unitExtra.ChildRotation);
             _endAngle = _eRotateType == ERotateMode.None ? _startAngle : GM2DTools.GetAngle(unitExtra.RotateValue);

@@ -81,9 +81,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _random = unitExtra.IsRandom;
             _circulation = unitExtra.TimerCirculation;
             _second = unitExtra.TimerSecond;

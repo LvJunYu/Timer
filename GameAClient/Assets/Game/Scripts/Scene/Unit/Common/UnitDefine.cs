@@ -51,6 +51,7 @@ namespace GameA.Game
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
+        public const int WeaponDepotId = 5007;
         public const int MonsterCaveId = 5022;
         public const int MagicBeanId = 5023;
         public const int CirrusId = 5024;
@@ -92,6 +93,11 @@ namespace GameA.Game
         public static bool IsMonster(int id)
         {
             return id > 2000 && id < 3000;
+        }
+
+        public static bool IsWeaponPool(int id)
+        {
+            return id == EnergyPoolId || id == WeaponDepotId;
         }
 
         public static bool IsJet(int id)
@@ -245,9 +251,9 @@ namespace GameA.Game
             return unit.Id == EarthId || unit.Id == TerrainId;
         }
 
-        public static bool ChangeViewByCamp(int id)
+        public static bool ChangeViewByUnitExtra(int id)
         {
-            return id == SpawnId || id == LocationMissileId;
+            return id == SpawnId || id == LocationMissileId || id == WeaponDepotId;
         }
     }
 }

@@ -530,7 +530,7 @@ namespace GameA.Game
             }
 
             UnitBase unitBase;
-            var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase);
+            var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase, unitExtra);
             data.CurrentMovingUnitBase = unitBase;
             data.MouseObjectOffsetInWorld = unitWorldPos - mouseWorldPos;
             data.DragUnitExtra = unitExtra;

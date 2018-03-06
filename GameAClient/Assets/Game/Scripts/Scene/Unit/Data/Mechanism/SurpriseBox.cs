@@ -71,9 +71,9 @@ namespace GameA.Game
             base.OnObjectDestroy();
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _interval = unitExtra.SurpriseBoxInterval;
             _random = unitExtra.IsRandom;
             _limit = unitExtra.SurpriseBoxCountLimit;

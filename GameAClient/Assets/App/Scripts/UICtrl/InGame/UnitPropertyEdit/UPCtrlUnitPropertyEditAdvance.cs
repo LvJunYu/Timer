@@ -513,7 +513,7 @@ namespace GameA
                            id == UnitDefine.LocationMissileId;
                 case EAdvanceAttribute.BulletCount:
                 case EAdvanceAttribute.ChargeTime:
-                    return _curMenu == EMenu.WeaponSetting && UnitDefine.EnergyPoolId == id;
+                    return _curMenu == EMenu.WeaponSetting && UnitDefine.IsWeaponPool(id);
                 case EAdvanceAttribute.AddStates:
                     return table.SkillId > 0 || table.ChildState != null;
                 case EAdvanceAttribute.MaxSpeedX:

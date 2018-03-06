@@ -13,9 +13,9 @@
             get { return true; }
         }
         
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             if (unitExtra.MaxSpeedX > 0)
             {
                 _maxSpeedX = unitExtra.MaxSpeedX;

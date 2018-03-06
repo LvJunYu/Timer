@@ -100,9 +100,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
             return unitExtra;

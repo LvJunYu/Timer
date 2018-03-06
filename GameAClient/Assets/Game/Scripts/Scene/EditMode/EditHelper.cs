@@ -145,9 +145,14 @@ namespace GameA.Game
             if (origin.UnitDesc.Guid == DefaultUnitGuid)
             {
                 UpdateUnitDefaultData(editData);
-                if (UnitDefine.ChangeViewByCamp(origin.UnitDesc.Id) && editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
+                if (editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
                 {
                     Messenger.Broadcast(EMessengerType.OnTeamChanged);
+                }
+
+                if (UnitDefine.ChangeViewByUnitExtra(origin.UnitDesc.Id))
+                {
+                    Messenger.Broadcast(EMessengerType.OnUnitExtraDefaultValueChanged);
                 }
 
                 Messenger<int>.Broadcast(EMessengerType.OnEditUnitDefaultDataChange, origin.UnitDesc.Id);
@@ -262,7 +267,7 @@ namespace GameA.Game
                 unitEditData.UnitExtra.RotateMode = (byte) table.DefaultRotateMode;
                 unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
             }
-            
+
             if (id == UnitDefine.LocationMissileId)
             {
                 unitEditData.UnitExtra.RotateMode = 0;
@@ -616,11 +621,12 @@ namespace GameA.Game
             return tableUnit.Count;
         }
 
-        public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
+        public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase
+            , UnitExtraDynamic unitExtra = null)
         {
             Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
 
-            unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate);
+            unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate, unitExtra);
             CollectionBase collectUnit = unitBase as CollectionBase;
             if (null != collectUnit)
             {

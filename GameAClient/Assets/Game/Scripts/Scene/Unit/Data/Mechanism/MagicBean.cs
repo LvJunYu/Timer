@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using DG.Tweening;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -23,6 +24,20 @@ namespace GameA.Game
         private PlayerBase _putDownPlayer;
         private bool _justPutDown;
         private int _justPutDownTimer;
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+
+            _tweener = _trans.DOMoveY(_trans.position.y + 0.1f, 0.6f);
+            _tweener.Play();
+            _tweener.SetLoops(-1, LoopType.Yoyo);
+
+            return true;
+        }
 
         protected override void OnTrigger(UnitBase other)
         {

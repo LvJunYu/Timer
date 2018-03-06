@@ -61,9 +61,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             //todo 兼容老版本
             if (unitExtra.ChildId < 1000)
             {

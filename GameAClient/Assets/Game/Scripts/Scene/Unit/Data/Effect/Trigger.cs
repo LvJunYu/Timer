@@ -39,9 +39,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _eActiveState = EActiveState.Deactive;
             _triggerName = DataScene2D.CurScene.GetUnitExtra(_guid).Msg;
             return unitExtra;

@@ -207,9 +207,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             if (unitExtra.CastRange > 0)
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
