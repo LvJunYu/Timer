@@ -119,6 +119,7 @@ namespace GameA
         {
             _cachedView.NpcIcon.GetComponent<Animation>().Stop();
             _cachedView.NpcIconLeft.GetComponent<Animation>().Stop();
+
             diaData.AnalysisNpcDia(_diaList.Get<string>(index));
             if (diaData.NpcId == Enpc.Lead)
             {
@@ -224,7 +225,7 @@ namespace GameA
         public const string brown = "#745334";
         public const string green = "#42ac37";
         public const string blue = "#2f73ff";
-        public const string red =  "#ff343a";
+        public const string red = "#ff343a";
         private Enpc _npcId;
         private ENpcFace _faceId;
         private string _dia;
@@ -305,6 +306,7 @@ namespace GameA
             _npcName = dataList[3];
             _npcFaceSpriteName = GetNpcFaceSpriteName((Enpc) _npcId, _faceId);
             _color = dataList[4];
+            _colorList.Clear();
             if (dataList[4].Contains("#"))
             {
             }

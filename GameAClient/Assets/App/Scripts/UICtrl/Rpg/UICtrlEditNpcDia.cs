@@ -400,12 +400,13 @@ namespace GameA
                 _cachedView.CommonContentParentTrs.SetActiveEx(false);
             }
 
-            base.Close();
             _npcDiaStrList.Clear();
             for (int i = 0; i < _npcDiaList.Count; i++)
             {
                 _npcDiaStrList.Add(_npcDiaList[i].ToString());
             }
+
+            base.Close();
         }
 
         private void RefreshCurDia()
