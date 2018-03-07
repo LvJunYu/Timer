@@ -7,7 +7,7 @@ namespace GameA
 {
     public class USCtrlSurpriseBoxItemsSetting : USCtrlBase<USViewSurpriseBoxItemsSetting>
     {
-        private static int[] Items = {6001, 6002, 6003, 6004};
+        private static int[] Items = {6001, 6002, 6003, 6004, 8002, 8005, 8006, 8007, 8008, 8009, 8010};
         private const int MaxItemCount = 30;
         private EResScenary _resScenary;
         private UnitExtraDynamic _unitExtra;
@@ -81,6 +81,10 @@ namespace GameA
                 _unitExtra.SurpriseBoxItems.RemoveAt(index);
                 FreeUmItem(_umList[index]);
                 _umList.RemoveAt(index);
+                for (int i = index; i < _umList.Count; i++)
+                {
+                    _umList[i].RefreshIndex(i);
+                }
             }
         }
 
