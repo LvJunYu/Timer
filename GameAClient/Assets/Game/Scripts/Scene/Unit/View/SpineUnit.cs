@@ -39,9 +39,17 @@ namespace GameA.Game
                 LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
                 return false;
             }
+
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;
+            _skeleton = _skeletonAnimation.skeleton;
+            if (_skeleton == null)
+            {
+                LogHelper.Error("Try get skeleton failed when init {0}", _unit.TableUnit.Name);
+                return false;
+            }
+
             _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
@@ -75,11 +83,13 @@ namespace GameA.Game
 //                LogHelper.Error("SetDamageShaderValue , but _renderer == null");
                 return;
             }
+
             if (_unit == null)
             {
                 LogHelper.Error("SetDamageShaderValue , but _unit == null");
                 return;
             }
+
             Material[] materials;
             //主玩家只有一個，直接改shareMals，不頻繁創創建实例
 //            if (_unit.IsMain)
@@ -130,6 +140,7 @@ namespace GameA.Game
             {
                 _damageShader = Shader.Find("Spine/SkeletonWhite");
             }
+
             var materials = _renderer.sharedMaterials;
             for (int i = 0; i < materials.Length; i++)
             {
@@ -138,6 +149,7 @@ namespace GameA.Game
                     materials[i].shader = _damageShader;
                 }
             }
+
             _hasSetShader = true;
         }
 
@@ -154,11 +166,13 @@ namespace GameA.Game
             {
                 _animation.OnFree();
             }
+
             if (_skeletonAnimation != null)
             {
                 _skeletonAnimation.Clear();
                 _skeletonAnimation.enabled = false;
             }
+
             ClearComponents();
             base.OnFree();
         }
@@ -171,6 +185,7 @@ namespace GameA.Game
                 Object.Destroy(skeletonUtility.GetBoneRoot().gameObject);
                 Object.Destroy(skeletonUtility);
             }
+
             var monos = _trans.GetComponents<MonoBehaviour>();
             for (int i = monos.Length - 1; i >= 0; i--)
             {
@@ -179,6 +194,7 @@ namespace GameA.Game
                     monos[i].enabled = false;
                     continue;
                 }
+
                 Object.Destroy(monos[i]);
             }
         }

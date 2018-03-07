@@ -638,22 +638,30 @@ namespace GameA.Game
             switch (teamId)
             {
                 case 0:
-                    return "red";
+                    return Red;
                 case 1:
-                    return "green";
+                    return Green;
                 case 2:
-                    return "orange";
+                    return Orange;
                 case 3:
-                    return "yellow";
+                    return Yellow;
                 case 4:
-                    return "cyan";
+                    return Cyan;
                 case 5:
-                    return "blue";
+                    return Blue;
                 case 6:
-                    return "purple";
+                    return Purple;
             }
 
-            return "red";
+            return Red;
         }
+
+        private const string Red = "red";
+        private const string Green = "green";
+        private const string Orange = "orange";
+        private const string Yellow = "yellow";
+        private const string Cyan = "cyan";
+        private const string Blue = "blue";
+        private const string Purple = "purple";
     }
 }
