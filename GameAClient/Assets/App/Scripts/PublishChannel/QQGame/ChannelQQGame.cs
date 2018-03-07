@@ -10,7 +10,7 @@ using Microsoft.Win32;
 
 #endif
 
-#pragma warning disable 0649
+#pragma warning disable 0649 0414
 namespace GameA
 {
     public class ChannelQQGame : PublishChannel
@@ -504,9 +504,11 @@ namespace GameA
 
         public static IntPtr GetCurrentWindowHandle()
         {
-            IntPtr ptrWnd = IntPtr.Zero;
-            uint uiPid = (uint) Process.GetCurrentProcess().Id; // 当前进程 ID
-            bool bResult = EnumWindows(new WNDENUMPROC(EnumWindowsProc), uiPid);
+            if (_hWnd == IntPtr.Zero)
+            {
+                uint uiPid = (uint) Process.GetCurrentProcess().Id; // 当前进程 ID
+                EnumWindows(new WNDENUMPROC(EnumWindowsProc), uiPid);
+            }
             return _hWnd;
         }
 
