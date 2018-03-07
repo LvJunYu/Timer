@@ -35,6 +35,11 @@ namespace GameA.Game
 
         protected UnitBase _excludeUnit;
 
+        public override bool IsRigidbody
+        {
+            get { return true; }
+        }
+
         protected override void Clear()
         {
             base.Clear();
@@ -42,6 +47,7 @@ namespace GameA.Game
             {
                 _hitUnits[i] = null;
             }
+
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
@@ -76,6 +82,7 @@ namespace GameA.Game
             {
                 _hitUnits[i] = null;
             }
+
             _cacheIntersectUnits.Clear();
             if (_isFreezed)
             {
@@ -91,6 +98,7 @@ namespace GameA.Game
                     CheckUp();
                     CheckDown();
                 }
+
                 _colliderGrid = GetColliderGrid(_colliderPos);
 
                 _colliderPos.x = min.x;
@@ -99,6 +107,7 @@ namespace GameA.Game
                     CheckLeft();
                     CheckRight();
                 }
+
                 _colliderGrid = GetColliderGrid(_colliderPos);
             }
 
@@ -139,7 +148,7 @@ namespace GameA.Game
         }
 
         protected IntVec2 _colliderDeltaPos;
-        
+
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
@@ -164,6 +173,7 @@ namespace GameA.Game
                         {
                             CheckHit(unit, EDirectionType.Up);
                         }
+
                         if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
                         {
                             flag = true;
@@ -175,6 +185,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 if (flag)
                 {
                     _colliderPos.y = y;
@@ -211,6 +222,7 @@ namespace GameA.Game
                         {
                             CheckHit(unit, EDirectionType.Down);
                         }
+
                         if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
                         {
                             flag = true;
@@ -227,6 +239,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 if (flag)
                 {
                     _colliderPos.y = y;
@@ -235,6 +248,7 @@ namespace GameA.Game
                     CheckClimbUnitChangeDir(EClimbState.Up);
                 }
             }
+
             for (int i = 0; i < _downUnits.Count; i++)
             {
                 var unit = _downUnits[i];
@@ -242,6 +256,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
+
                 if (unit.IsAlive && unit != _excludeUnit)
                 {
                     CheckIntersect(unit);
@@ -278,6 +293,7 @@ namespace GameA.Game
                         {
                             CheckHit(unit, EDirectionType.Left);
                         }
+
                         if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
                         {
                             flag = true;
@@ -289,6 +305,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 if (flag)
                 {
                     _colliderPos.x = x;
@@ -322,6 +339,7 @@ namespace GameA.Game
                         {
                             CheckHit(unit, EDirectionType.Right);
                         }
+
                         if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
                         {
                             flag = true;
@@ -333,6 +351,7 @@ namespace GameA.Game
                         }
                     }
                 }
+
                 if (flag)
                 {
                     _colliderPos.x = x;
@@ -370,12 +389,14 @@ namespace GameA.Game
             {
                 _fanForces.Add(fanUnit.Guid, force);
             }
+
             _fanForce = IntVec2.zero;
             var iter = _fanForces.GetEnumerator();
             while (iter.MoveNext())
             {
                 _fanForce += iter.Current.Value;
             }
+
             ExtraSpeed.x = _fanForce.x;
         }
 
@@ -410,22 +431,26 @@ namespace GameA.Game
                         {
                             right = deltaPos.x;
                         }
+
                         if (deltaPos.x < 0 && deltaPos.x < left)
                         {
                             left = deltaPos.x;
                         }
+
                         if (deltaPos.y > deltaY)
                         {
                             deltaY = deltaPos.y;
                         }
                     }
+
                     int deltaX = right + left;
                     deltaImpactPos = new IntVec2(deltaX, deltaY);
                 }
+
                 _isCalculated = true;
             }
+
             return deltaImpactPos;
         }
-        
     }
 }

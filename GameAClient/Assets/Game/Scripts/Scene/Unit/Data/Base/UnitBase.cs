@@ -607,6 +607,11 @@ namespace GameA.Game
             get { return true; }
         }
 
+        public virtual bool IsRigidbody
+        {
+            get { return false; }
+        }
+
         public virtual bool UseMagic()
         {
             return !IsActor && _moveDirection != EMoveDirection.None;
@@ -968,6 +973,7 @@ namespace GameA.Game
             {
                 unitExtraDynamic = GetUnitExtra();
             }
+
             _moveDirection = unitExtraDynamic.MoveDirection;
             _eActiveState = (EActiveState) unitExtraDynamic.Active;
             if (_eActiveState == EActiveState.None)
