@@ -69,6 +69,7 @@ namespace GameA.Game
         public const int WaterBulletId = 10001;
         public const int MissileId = 11001;
         public const int ShadowId = 65535;
+        public const int TeethId = 6001;
 
         public static bool IsSpawn(int id)
         {

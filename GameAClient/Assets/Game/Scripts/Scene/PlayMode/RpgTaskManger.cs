@@ -411,6 +411,7 @@ namespace GameA.Game
 
                                 AddTask(npcguid, taskDynamic);
                                 SocialGUIManager.Instance.OpenUI<UICtrlShowNpcDia>(diaList);
+                                Judge();
                             };
                             canshow = true;
                             break;
@@ -459,6 +460,7 @@ namespace GameA.Game
                         for (int i = 0; i < award.ColOrKillNum; i++)
                         {
                             PlayMode.Instance.SceneState.GemGain++;
+                            AddColltion(UnitDefine.TeethId);
                         }
                     }
 

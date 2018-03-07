@@ -101,7 +101,18 @@ namespace GameA
             {
                 if (NpcTaskDataTemp.Intance.NpcSerialNumberDic.ContainsKey(Convert.ToInt32(str)))
                 {
-                    _task.TargetNpcSerialNumber = (ushort) Convert.ToInt32(str);
+                    if (NpcTaskDataTemp.Intance.NpcSerialNumberDic[Convert.ToInt32(str)])
+                    {
+                        _task.TargetNpcSerialNumber = (ushort) Convert.ToInt32(str);
+                    }
+                    else
+                    {
+                        _task.TargetNpcSerialNumber = _mainCtrl.EditData.UnitExtra.NpcSerialNumber;
+                    }
+                }
+                else
+                {
+                    _task.TargetNpcSerialNumber = _mainCtrl.EditData.UnitExtra.NpcSerialNumber;
                 }
             });
             BadWordManger.Instance.InputFeidAddListen(_cachedView.TargetTaskNpc);
@@ -164,6 +175,7 @@ namespace GameA
                 }
             }
 
+            _cachedView.TargetTaskNpc.text = _task.TargetNpcSerialNumber.ToString();
             _cachedView.AddFinishTaskAwardBtn.SetActiveEx((_task.TaskFinishAward.Count !=
                                                            NpcTaskDynamic.MaxFinishTasAwardCout));
         }
