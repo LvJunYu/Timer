@@ -12,16 +12,7 @@ namespace GameA.Game
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
             var unitExtra = base.UpdateExtraData(unitExtraDynamic);
-            var list = unitExtra.SurpriseBoxItems.ToList<ushort>();
-            if (list.Count > 0)
-            {
-                _itemId = list[0];
-            }
-            else
-            {
-                _itemId = 6001;
-            }
-
+            _itemId = unitExtra.CommonValue;
             return unitExtra;
         }
 

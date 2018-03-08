@@ -493,6 +493,7 @@ namespace GameA.Game
             res.SurpriseBoxInterval = data.SurpriseBoxInterval;
             res.SurpriseBoxCountLimit = data.SurpriseBoxCountLimit;
             res.SurpriseBoxMaxCount = data.SurpriseBoxMaxCount;
+            res.CommonValue = data.CommonValue;
             var drops = data.Drops;
             for (int i = 0, count = drops.Count; i < count; i++)
             {
@@ -610,6 +611,7 @@ namespace GameA.Game
             unitExtra.SurpriseBoxCountLimit = data.SurpriseBoxCountLimit;
             unitExtra.SurpriseBoxMaxCount = (byte) data.SurpriseBoxMaxCount;
             unitExtra.MaxCreatedMonster = (ushort) data.MaxCreatedMonster;
+            unitExtra.CommonValue = (ushort) data.CommonValue;
             for (int i = 0; i < data.KnockbackForces.Count; i++)
             {
                 unitExtra.Set((ushort) data.KnockbackForces[i], UnitExtraDynamic.FieldTag.KnockbackForces, i);

@@ -46,6 +46,7 @@ namespace GameA.Game
             DefineField<bool>(FieldTag.SurpriseBoxCountLimit, "SurpriseBoxCountLimit");
             DefineField<byte>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
+            DefineField<ushort>(FieldTag.CommonValue, "CommonValue");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
             DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
@@ -97,6 +98,7 @@ namespace GameA.Game
             public static readonly int SurpriseBoxMaxCount = _nextId++;
             public static readonly int SurpriseBoxItems = _nextId++;
             public static readonly int MonsterId = _nextId++;
+            public static readonly int CommonValue = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
             public static readonly int NpcSerialNumber = _nextId++;
@@ -339,6 +341,12 @@ namespace GameA.Game
         {
             get { return Get<ushort>(FieldTag.MonsterId); }
             set { Set(value, FieldTag.MonsterId); }
+        }
+
+        public ushort CommonValue
+        {
+            get { return Get<ushort>(FieldTag.CommonValue); }
+            set { Set(value, FieldTag.CommonValue); }
         }
 
         public byte NpcType
@@ -715,6 +723,7 @@ namespace GameA.Game
         MonsterCave,
         Spawn,
         SurpriseBox,
+        PasswordDoor,
         Style,
         NpcType,
         NpcTask,

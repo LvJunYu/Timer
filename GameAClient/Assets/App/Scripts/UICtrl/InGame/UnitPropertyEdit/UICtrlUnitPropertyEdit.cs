@@ -53,7 +53,8 @@ namespace GameA
         private Project _project;
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
-        private UPCtrlUnitPropertyAdvanceSurpriseBox _upCtrlSurpriseBox;
+        private UPCtrlUnitPropertySurpriseBox _upCtrlSurpriseBox;
+        private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor;
 
         public bool IsInMap
         {
@@ -180,9 +181,12 @@ namespace GameA
             EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
             EditFinishTaskAward.Init(this, _cachedView);
             //惊喜盒子
-            _upCtrlSurpriseBox = new UPCtrlUnitPropertyAdvanceSurpriseBox();
+            _upCtrlSurpriseBox = new UPCtrlUnitPropertySurpriseBox();
             _upCtrlSurpriseBox.Init(this, _cachedView);
-            
+            //密码门
+            _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
+            _upCtrlPasswordDoor.Init(this, _cachedView);
+
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -199,6 +203,7 @@ namespace GameA
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
             _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
+            _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -221,6 +226,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
             _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
+            _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -643,7 +649,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
             }
-            
+
             if (_curId == UnitDefine.SurpriseBoxId)
             {
                 _validEditPropertyList.Add(EEditType.SurpriseBox);
@@ -653,6 +659,18 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(false);
+            }
+
+            if (_curId == UnitDefine.PasswordDoorId)
+            {
+                _validEditPropertyList.Add(EEditType.PasswordDoor);
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(true);
+                _upCtrlPasswordDoor.Open();
+            }
+            else
+            {
+                _upCtrlPasswordDoor.Close();
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(false);
             }
 
             if (_tableUnit.CanEdit(EEditType.Text))
@@ -1071,7 +1089,7 @@ namespace GameA
         {
             _upCtrlSurpriseBox.RefreshView();
         }
-
+        
         private Sprite GetSpawnSprite(int teamId, bool disable = false)
         {
             if (disable)
