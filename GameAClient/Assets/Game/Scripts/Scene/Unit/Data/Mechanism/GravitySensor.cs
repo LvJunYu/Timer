@@ -6,9 +6,12 @@ namespace GameA.Game
     [Unit(Id = 5027, Type = typeof(GravitySensor))]
     public class GravitySensor : BlockBase
     {
-        private const int MoveSpeed = 20;
         private bool _trigger;
         private int _oriY;
+        private EMoveDirection _lastDirection;
+        private int _lastSpeedX;
+        private int _activeSpeedX;
+        private bool _isUpDown;
 
         public override bool UseMagic()
         {
@@ -50,8 +53,6 @@ namespace GameA.Game
             }
         }
 
-        private EMoveDirection _lastDirection;
-
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
             var unitExtra = base.UpdateExtraData(unitExtraDynamic);
@@ -61,53 +62,38 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            SpeedY = 0;
-            if (_moveDirection == EMoveDirection.Down || _moveDirection == EMoveDirection.Up)
+            if (!_isAlive) return;
+            if (_isUpDown)
             {
-                _moveDirection = _lastDirection;
+                IsUpDown(false);
             }
 
             if (_trigger)
             {
-                _lastDirection = _moveDirection;
-                _moveDirection = EMoveDirection.Down;
-                SpeedY = -MoveSpeed;
+                IsUpDown(true, EMoveDirection.Down);
                 _trigger = false;
             }
             else
             {
                 if (_curPos.y < _oriY)
                 {
-                    _lastDirection = _moveDirection;
-                    _moveDirection = EMoveDirection.Up;
-                    SpeedY = Mathf.Min(MoveSpeed, _oriY - _curPos.y) ;
+                    IsUpDown(true, EMoveDirection.Up);
                 }
             }
 
-            base.UpdateLogic();
-        }
-
-        protected override bool CheckMagicPassAfterHit(UnitBase unit)
-        {
-            return false;
-        }
-
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsRigidbody)
+            if (Speed == IntVec2.zero && _eActiveState == EActiveState.Active)
             {
-                _trigger = true;
+                CheckMagicDir();
             }
 
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
-        {
-            base.Hit(unit, eDirectionType);
-            if (eDirectionType == EDirectionType.Up && unit.IsRigidbody)
+            if (Speed != IntVec2.zero)
             {
-                _speed = IntVec2.zero;
+                DoMagic();
+            }
+
+            if (!_isUpDown)
+            {
+                _lastSpeedX = SpeedX;
             }
         }
 
@@ -128,10 +114,81 @@ namespace GameA.Game
             }
         }
 
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (!checkOnly && other.IsRigidbody)
+            {
+                if (other.DownUnits.Count <= 1)
+                {
+                    _trigger = true;
+                }
+            }
+
+            return base.OnUpHit(other, ref y, checkOnly);
+        }
+
+        public override IntVec2 GetDeltaImpactPos(UnitBase unit)
+        {
+            if (!_enabled)
+            {
+                return IntVec2.zero;
+            }
+
+            _deltaImpactPos = _deltaPos;
+            return _deltaImpactPos;
+        }
+
+        protected override void OnActiveStateChanged()
+        {
+            base.OnActiveStateChanged();
+            if (GameRun.Instance.IsPlaying)
+            {
+                if (_eActiveState == EActiveState.Active)
+                {
+                    _lastSpeedX = SpeedX = _activeSpeedX;
+                }
+                else
+                {
+                    _activeSpeedX = _lastSpeedX;
+                    _lastSpeedX = SpeedX = 0;
+                }
+            }
+        }
+
         protected override void Clear()
         {
             base.Clear();
+            _isUpDown = false;
             _trigger = false;
+            _lastSpeedX = SpeedX;
+            _activeSpeedX = 0;
+        }
+
+        private void IsUpDown(bool value, EMoveDirection dir = EMoveDirection.None)
+        {
+            _isUpDown = value;
+            if (value)
+            {
+                SpeedX = 0;
+                _lastDirection = _moveDirection;
+                switch (dir)
+                {
+                    case EMoveDirection.Up:
+                        SpeedY = Mathf.Min(_velocity, _oriY - _curPos.y);
+                        _moveDirection = EMoveDirection.Up;
+                        break;
+                    case EMoveDirection.Down:
+                        SpeedY = -_velocity;
+                        _moveDirection = EMoveDirection.Down;
+                        break;
+                }
+            }
+            else
+            {
+                SpeedX = _lastSpeedX;
+                _moveDirection = _lastDirection;
+                SpeedY = 0;
+            }
         }
     }
 }

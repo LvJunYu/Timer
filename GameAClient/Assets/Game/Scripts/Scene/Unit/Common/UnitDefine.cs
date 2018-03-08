@@ -199,7 +199,7 @@ namespace GameA.Game
 
         public static bool UseProjectileBullet(int id)
         {
-            return id == 10002 || id == 10003;
+            return id == 10002 || id == 10003 || id == 11001;
         }
 
         public static bool CanTrigger(UnitBase unit)

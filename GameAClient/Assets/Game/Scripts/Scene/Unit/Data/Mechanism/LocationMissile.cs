@@ -56,9 +56,9 @@ namespace GameA.Game
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _startAngle = GM2DTools.GetAngle(unitExtra.ChildRotation);
             _endAngle = _eRotateType == ERotateMode.None ? _startAngle : GM2DTools.GetAngle(unitExtra.RotateValue);
-            _allCircle = _startAngle == _endAngle;
+            _allCircle = Util.IsFloatEqual(_startAngle, _endAngle) && _eRotateType != ERotateMode.None;
             //保证startAngle比endAngle大
-            if (_startAngle < _endAngle)
+            if (_startAngle < _endAngle || _allCircle)
             {
                 _startAngle += 360;
             }
@@ -163,6 +163,11 @@ namespace GameA.Game
             }
         }
 
+        public override bool CanHarm(UnitBase unit)
+        {
+            return !IsSameTeam(unit.TeamId);
+        }
+
         private void DoAttack()
         {
             _attackTimer = 5;
@@ -236,7 +241,7 @@ namespace GameA.Game
             for (int i = 0; i < players.Count; i++)
             {
                 var player = players[i];
-                if (player == null)
+                if (player == null || !CanHarm(player))
                 {
                     continue;
                 }
