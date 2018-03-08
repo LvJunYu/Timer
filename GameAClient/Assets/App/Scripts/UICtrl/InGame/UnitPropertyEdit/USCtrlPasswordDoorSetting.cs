@@ -1,10 +1,14 @@
-﻿using SoyEngine;
+﻿using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
     public class USCtrlPasswordDoorSetting : USCtrlBase<USViewPasswordDoorSetting>
     {
+        private const string NumSpriteFormat = "img_{0}";
         private USCtrlUnitPropertyEditButton[] _numCtrlArray;
+        private UPCtrlUnitPropertyPasswordDoor _mainCtrl;
 
         protected override void OnViewCreated()
         {
@@ -19,15 +23,44 @@ namespace GameA
                 {
                     _numCtrlArray[i + 1] = button;
                 }
-                else if ( i == list.Length-1)
+                else if (i == list.Length - 1)
                 {
                     _numCtrlArray[0] = button;
                 }
                 else
                 {
-                    
+                    button.AddClickListener(() => _mainCtrl.ClearNums());
                 }
             }
+
+            for (int j = 0; j < _numCtrlArray.Length; j++)
+            {
+                var inx = j;
+                _numCtrlArray[j].AddClickListener(() => _mainCtrl.SetNum(inx));
+                _numCtrlArray[j].SetFgImage(GetSprite(j));
+            }
+        }
+
+        public override void Open()
+        {
+            base.Open();
+            _cachedView.SetActiveEx(true);
+        }
+
+        public override void Close()
+        {
+            base.Close();
+            _cachedView.SetActiveEx(false);
+        }
+
+        public void SetMainCtrl(UPCtrlUnitPropertyPasswordDoor mainCtrl)
+        {
+            _mainCtrl = mainCtrl;
+        }
+
+        private Sprite GetSprite(int num)
+        {
+            return JoyResManager.Instance.GetSprite(string.Format(NumSpriteFormat, num));
         }
     }
 }
