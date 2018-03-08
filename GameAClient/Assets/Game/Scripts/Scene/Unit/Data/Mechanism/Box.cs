@@ -16,6 +16,7 @@ namespace GameA.Game
     {
         protected bool _isHoldingByPlayer;
         protected PlayerBase _holder;
+        protected int _fallDistance;
 
         protected EDirectionType _directionRelativeMain;
 
@@ -41,9 +42,15 @@ namespace GameA.Game
             set { _directionRelativeMain = value; }
         }
 
+        public int FallDistance
+        {
+            get { return _fallDistance; }
+        }
+
         protected override void Clear()
         {
             _isHoldingByPlayer = false;
+            _fallDistance = 0;
             base.Clear();
         }
 
@@ -64,6 +71,7 @@ namespace GameA.Game
                 bool air = SpeedY != 0;
                 if (!air)
                 {
+                    _fallDistance = 0;
                     _onClay = false;
                     _onIce = false;
                     bool downExist = false;
@@ -127,9 +135,15 @@ namespace GameA.Game
                         _deltaPos += IntVec2.right * deltaMainPos.x;
                     }
                 }
+
+                var lasPos = _curPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
+                if (_curPos.y < lasPos.y)
+                {
+                    _fallDistance += lasPos.y - _curPos.y;
+                }
                 UpdateTransPos();
             }
         }

@@ -147,8 +147,6 @@ namespace GameA.Game
         {
         }
 
-        protected IntVec2 _colliderDeltaPos;
-
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
@@ -391,10 +389,13 @@ namespace GameA.Game
             }
 
             _fanForce = IntVec2.zero;
-            var iter = _fanForces.GetEnumerator();
-            while (iter.MoveNext())
+
+            using (var iter = _fanForces.GetEnumerator())
             {
-                _fanForce += iter.Current.Value;
+                while (iter.MoveNext())
+                {
+                    _fanForce += iter.Current.Value;
+                }
             }
 
             ExtraSpeed.x = _fanForce.x;
@@ -406,10 +407,12 @@ namespace GameA.Game
             _fanForce = IntVec2.zero;
             if (_fanForces.Count > 0)
             {
-                var iter = _fanForces.GetEnumerator();
-                while (iter.MoveNext())
+                using (var iter = _fanForces.GetEnumerator())
                 {
-                    _fanForce += iter.Current.Value;
+                    while (iter.MoveNext())
+                    {
+                        _fanForce += iter.Current.Value;
+                    }
                 }
             }
         }

@@ -114,6 +114,7 @@ namespace GameA.Game
             {
                 _effectBullet.Play();
             }
+
             _trans.eulerAngles = new Vector3(0, 0, -angle);
             UpdateTransPos();
             _run = true;
@@ -131,13 +132,14 @@ namespace GameA.Game
         {
             return -(_curPos.x + _curPos.y) * UnitDefine.UnitSorttingLayerRatio + (_zFront ? -1.99f : 1.99f);
         }
-        
+
         public void UpdateLogic()
         {
             if (!_run)
             {
                 return;
             }
+
             //MagicSwith Brick Cloud
             var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer,
                 float.MinValue, float.MaxValue, _skill.Owner.DynamicCollider);
@@ -161,6 +163,7 @@ namespace GameA.Game
                                 {
                                     _zFront = true;
                                 }
+
                                 _destroy = 1;
                                 if (unit.Id == UnitDefine.MagicSwitchId)
                                 {
@@ -186,12 +189,22 @@ namespace GameA.Game
                                         brick.DestroyBrick();
                                     }
                                 }
+                                else if (UnitDefine.WoodCaseId == unit.Id)
+                                {
+                                    var woodCase = unit as WoodCase;
+                                    if (woodCase != null)
+                                    {
+                                        woodCase.DestroyWoodCase();
+                                    }
+                                }
+
                                 break;
                             }
                         }
                     }
                 }
             }
+
             UpdateTransPos();
             if (_destroy > 0)
             {
@@ -227,11 +240,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             if (tableUnit == null)
             {
                 return false;
             }
+
             return tableUnit.IsBulletBlock == 1;
         }
 
@@ -244,6 +259,7 @@ namespace GameA.Game
                 GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position,
                     new Vector3(0, 0, _angle), Vector3.one);
             }
+
             _skill.OnBulletHit(this);
         }
     }
