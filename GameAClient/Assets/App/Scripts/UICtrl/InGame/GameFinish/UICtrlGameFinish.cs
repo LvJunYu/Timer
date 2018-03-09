@@ -90,7 +90,7 @@ namespace GameA
             _particleList.Clear();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
 
-            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>();
+            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
             base.OnClose();
         }
 
@@ -324,6 +324,8 @@ namespace GameA
             _cachedView.ShadowBattleFailObj.SetActive(_showState == EShowState.ShadowBattleLose);
             _cachedView.ShadowBattleWinObj.SetActive(_showState == EShowState.ShadowBattleWin);
             _cachedView.ScoreTextGroup.SetActiveEx(false);
+            _cachedView.WorkShopScoreTextGroup.SetActiveEx(false);
+            _cachedView.BtnsGroup.anchoredPosition = new Vector2(2, -276);
             switch (_showState)
             {
                 case EShowState.MultiWin:
@@ -333,6 +335,7 @@ namespace GameA
                     _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
                     break;
                 case EShowState.Win:
+                    _cachedView.BtnsGroup.anchoredPosition = new Vector2(2, -220);
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
                     _cachedView.RetryBtn.gameObject.SetActive(_showState == EShowState.Win);
@@ -344,14 +347,11 @@ namespace GameA
                     _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     _cachedView.ScoreOutLine.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     //分数
-                    _cachedView.ScoreTextGroup.SetActiveEx(true);
-                    _cachedView.GetTeethText.text =
-                        String.Format("拾取兽牙：  {0}", PlayMode.Instance.SceneState.GetGemGainScore());
-                    _cachedView.KillMonterNumText.text =
-                        String.Format("击杀怪物：  {0}", PlayMode.Instance.SceneState.GetKillMonsterScore());
-                    _cachedView.LastTimeText.text =
-                        String.Format("剩余时间：  {0}", PlayMode.Instance.SceneState.GetLastTimeScore());
-
+                    _cachedView.WorkShopScoreTextGroup.SetActiveEx(true);
+                    _cachedView.WorkShopGetTeethText.text = PlayMode.Instance.SceneState.GetGemGainScore().ToString();
+                    _cachedView.WorkShopKillMonterNumText.text =
+                        PlayMode.Instance.SceneState.GetKillMonsterScore().ToString();
+                    _cachedView.WorkShopLastTimeText.text = PlayMode.Instance.SceneState.GetLastTimeScore().ToString();
                     // 奖励
                     _cachedView.RewardObj.SetActive(false);
                     _cachedView.ExpBarObj.SetActive(false);
@@ -467,6 +467,17 @@ namespace GameA
                     _cachedView.ScoreOutLine.gameObject.SetActive(true);
                     _cachedView.Score.text = PlayMode.Instance.SceneState.CurScore.ToString();
                     _cachedView.ScoreOutLine.text = PlayMode.Instance.SceneState.CurScore.ToString();
+                    //分数
+                    _cachedView.ScoreTextGroup.SetActiveEx(true);
+                    _cachedView.GetTeethText.text =
+                        String.Format("<color=#ffffff>拾取兽牙</color> <color=#ffcb62>{0}</color>",
+                            PlayMode.Instance.SceneState.GetGemGainScore());
+                    _cachedView.KillMonterNumText.text =
+                        String.Format("<color=#ffffff>击杀怪物</color> <color=#ffcb62>{0}</color>",
+                            PlayMode.Instance.SceneState.GetKillMonsterScore());
+                    _cachedView.LastTimeText.text =
+                        String.Format("<color=#ffffff>剩余时间</color> <color=#ffcb62>{0}</color>",
+                            PlayMode.Instance.SceneState.GetLastTimeScore());
                     // 奖励
                     _cachedView.RewardObj.SetActive(true);
                     _cachedView.ExpBarObj.SetActive(true);
@@ -694,6 +705,10 @@ namespace GameA
                 onedata.KilledNum = TeamManager.Instance.GetPlayerKilledCount(TeamManager.Instance.Players[i].Guid);
                 onedata.Score = TeamManager.Instance.GetPlayerScore(TeamManager.Instance.Players[i].Guid);
                 onedata.Name = TeamManager.Instance.Players[i].RoomUser.Name;
+                onedata.TeamId = TeamManager.Instance.Players[i].TeamId;
+                onedata.TeamScore = TeamManager.Instance.GetTeamScore(onedata.TeamId);
+                onedata.IsWin = TeamManager.Instance.CheckTeamWin(onedata.TeamId);
+                _datas.Add(onedata);
             }
 
             return _datas;

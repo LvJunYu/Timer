@@ -51,6 +51,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_NpcTaskTargetColltion> Table_NpcTaskTargetColltionDic = new Dictionary<int, Table_NpcTaskTargetColltion>();
 		public readonly Dictionary<int,Table_NpcTaskTargetKill> Table_NpcTaskTargetKillDic = new Dictionary<int, Table_NpcTaskTargetKill>();
 		public readonly Dictionary<int,Table_NpcDefaultDia> Table_NpcDefaultDiaDic = new Dictionary<int, Table_NpcDefaultDia>();
+		public readonly Dictionary<int,Table_WorkShopNumberOfSlot> Table_WorkShopNumberOfSlotDic = new Dictionary<int, Table_WorkShopNumberOfSlot>();
 		[SerializeField] private Table_State[] _tableStates;
 		[SerializeField] private Table_Skill[] _tableSkills;
 		[SerializeField] private Table_Reward[] _tableRewards;
@@ -90,6 +91,7 @@ namespace GameA.Game
 		[SerializeField] private Table_NpcTaskTargetColltion[] _tableNpcTaskTargetColltions;
 		[SerializeField] private Table_NpcTaskTargetKill[] _tableNpcTaskTargetKills;
 		[SerializeField] private Table_NpcDefaultDia[] _tableNpcDefaultDias;
+		[SerializeField] private Table_WorkShopNumberOfSlot[] _tableWorkShopNumberOfSlots;
 
 		#endregion
 		#region 属性
@@ -183,6 +185,8 @@ namespace GameA.Game
             _tableNpcTaskTargetKills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetKill[]>(NpcTaskTargetKillJsonStr);
 			string NpcDefaultDiaJsonStr = JoyResManager.Instance.GetJson ("NpcDefaultDia", (int) EResScenary.TableAsset);
             _tableNpcDefaultDias = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcDefaultDia[]>(NpcDefaultDiaJsonStr);
+			string WorkShopNumberOfSlotJsonStr = JoyResManager.Instance.GetJson ("WorkShopNumberOfSlot", (int) EResScenary.TableAsset);
+            _tableWorkShopNumberOfSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_WorkShopNumberOfSlot[]>(WorkShopNumberOfSlotJsonStr);
 			JoyResManager.Instance.UnloadScenary((int) EResScenary.TableAsset);
 			for (int i = 0; i < _tableStates.Length; i++)
 			{
@@ -613,6 +617,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableNpcDefaultDias table.Id {0} is duplicated!", _tableNpcDefaultDias[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableWorkShopNumberOfSlots.Length; i++)
+			{
+				if (!Table_WorkShopNumberOfSlotDic.ContainsKey(_tableWorkShopNumberOfSlots[i].Id))
+				{
+					Table_WorkShopNumberOfSlotDic.Add(_tableWorkShopNumberOfSlots[i].Id,_tableWorkShopNumberOfSlots[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableWorkShopNumberOfSlots table.Id {0} is duplicated!", _tableWorkShopNumberOfSlots[i].Id);
+				}
+			}
 			
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
@@ -963,6 +978,15 @@ namespace GameA.Game
 		{
 			Table_NpcDefaultDia tmp;
 			if (Table_NpcDefaultDiaDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_WorkShopNumberOfSlot GetWorkShopNumberOfSlot(int key)
+		{
+			Table_WorkShopNumberOfSlot tmp;
+			if (Table_WorkShopNumberOfSlotDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

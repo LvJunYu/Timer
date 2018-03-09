@@ -50,12 +50,19 @@ namespace GameA
             upCtrlWorldFollowedUserProject.SetMenu(EMenu.Collect);
             upCtrlWorldFollowedUserProject.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Collect] = upCtrlWorldFollowedUserProject;
-            
+
             var uPCtrlWorldRanklistPanel = new UPCtrlWorldRanklistPanel();
             uPCtrlWorldRanklistPanel.Set(ResScenary);
             uPCtrlWorldRanklistPanel.SetMenu(EMenu.RankList);
             uPCtrlWorldRanklistPanel.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.RankList] = uPCtrlWorldRanklistPanel;
+
+            var upCtrlWorldSelfRecommendProject = new UPCtrlWorldSelfRecommendProject();
+            upCtrlWorldSelfRecommendProject.Set(ResScenary);
+            upCtrlWorldSelfRecommendProject.SetMenu(EMenu.SelfRecommend);
+            upCtrlWorldSelfRecommendProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.SelfRecommend] = upCtrlWorldSelfRecommendProject;
+
 
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
@@ -74,11 +81,11 @@ namespace GameA
                 {
                     if (_isOpen && _curMenuCtrl is UPCtrlWorldProjectBase)
                     {
-                        ((UPCtrlWorldProjectBase)_curMenuCtrl).OnProjectTypesChanged();
+                        ((UPCtrlWorldProjectBase) _curMenuCtrl).OnProjectTypesChanged();
                     }
                 });
             }
-            
+
             BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchInputField);
             BadWordManger.Instance.InputFeidAddListen(_cachedView.SearchRoomInputField);
         }
@@ -92,6 +99,7 @@ namespace GameA
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -126,13 +134,14 @@ namespace GameA
             {
                 _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
+
             if (!_pushGoldEnergyStyle)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
             }
         }
-        
+
         protected override void OnClose()
         {
             if (_pushGoldEnergyStyle)
@@ -140,6 +149,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
                 _pushGoldEnergyStyle = false;
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();
@@ -149,6 +159,7 @@ namespace GameA
             {
                 _cachedView.ProjectTypeTogs[i].isOn = false;
             }
+
             base.OnClose();
         }
 
@@ -170,6 +181,7 @@ namespace GameA
                     _menuCtrlArray[i].Clear();
                 }
             }
+
             _cachedView.SearchInputField.text = String.Empty;
             _cachedView.SearchRoomInputField.text = String.Empty;
         }
@@ -178,7 +190,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Multi)
             {
-                ((UPCtrlWorldMulti)_curMenuCtrl).OnChangeToAppMode();
+                ((UPCtrlWorldMulti) _curMenuCtrl).OnChangeToAppMode();
             }
         }
 
@@ -186,7 +198,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Multi)
             {
-                ((UPCtrlWorldMulti)_curMenuCtrl).OnJoinRoomFail();
+                ((UPCtrlWorldMulti) _curMenuCtrl).OnJoinRoomFail();
             }
         }
 
@@ -194,7 +206,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Multi)
             {
-                ((UPCtrlWorldMulti)_curMenuCtrl).OnRoomListChanged();
+                ((UPCtrlWorldMulti) _curMenuCtrl).OnRoomListChanged();
             }
         }
 
@@ -202,7 +214,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Multi)
             {
-                ((UPCtrlWorldMulti)_curMenuCtrl).OnQueryRoomRet(msg);
+                ((UPCtrlWorldMulti) _curMenuCtrl).OnQueryRoomRet(msg);
             }
         }
 
@@ -222,6 +234,7 @@ namespace GameA
                         SocialGUIManager.ShowPopupDialog("关卡0不存在。");
                         return;
                     }
+
                     RemoteCommands.SearchWorldProject(projectId,
                         msg =>
                         {
@@ -252,6 +265,7 @@ namespace GameA
                 _sarchUmCtrlProject.SetCurUI(UMCtrlProject.ECurUI.Search);
                 _sarchUmCtrlProject.Init(_cachedView.SearchPannelRtf, ResScenary);
             }
+
             CardDataRendererWrapper<Project> w =
                 new CardDataRendererWrapper<Project>(project, OnItemClick);
             _sarchUmCtrlProject.Set(w);
@@ -272,12 +286,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -311,6 +327,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu != EMenu.Multi && _curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
@@ -323,6 +340,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_curMenu == EMenu.Multi && _curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(roomId);
@@ -346,6 +364,7 @@ namespace GameA
             UserFavorite,
             Collect,
             RankList,
+            SelfRecommend,
             Max
         }
     }

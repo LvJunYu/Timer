@@ -492,7 +492,6 @@ namespace GameA.Game
                 if (unit.IsMain)
                 {
                     Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
-
                 }
             }
         }

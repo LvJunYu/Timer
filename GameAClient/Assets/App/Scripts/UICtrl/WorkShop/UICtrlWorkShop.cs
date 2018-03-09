@@ -35,6 +35,12 @@ namespace GameA
             upCtrlWorkShopProjectDownload.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Downoad] = upCtrlWorkShopProjectDownload;
 
+            var upCtrlWorkShopSelfRecommen = new UPCtrlWorkShopSelfRecommen();
+            upCtrlWorkShopSelfRecommen.Set(ResScenary);
+            upCtrlWorkShopSelfRecommen.SetMenu(EMenu.SelfRecommen);
+            upCtrlWorkShopSelfRecommen.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.SelfRecommen] = upCtrlWorkShopSelfRecommen;
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -229,6 +235,7 @@ namespace GameA
             EditingProjects,
             PublishedProjects,
             Downoad,
+            SelfRecommen,
             Max
         }
     }

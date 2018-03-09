@@ -10,14 +10,14 @@ using PlayMode = GameA.Game.PlayMode;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlSettlePlayersData : UICtrlInGameBase<UIViewSettlePlayersData>
+    public class UICtrlSettlePlayersData : UICtrlAnimationBase<UIViewSettlePlayersData>
     {
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
-        private List<UMCtrlSettlePlayersData> _allPlayDataItems = new List<UMCtrlSettlePlayersData>();
+        private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.InGamePopup;
+            _groupId = (int) EUIGroupType.LittleLoading;
         }
 
         protected override void OnViewCreated()
@@ -37,10 +37,24 @@ namespace GameA
         {
             for (int i = 0; i < _allPlayerDatas.Count; i++)
             {
-                UMCtrlSettlePlayersData _playersData =
-                    UMPoolManager.Instance.Get<UMCtrlSettlePlayersData>(_cachedView.WinContentTrans, EResScenary.Game);
-                _playersData.SetItemData(_allPlayerDatas[i]);
-                _allPlayDataItems.Add(_playersData);
+                if (_allPlayerDatas[i].IsWin)
+                {
+                    UMCtlSettlePalyerDataItem palyerDataItem = UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
+                        _cachedView.WinContentTrans,
+                        EResScenary.UIHome);
+                    palyerDataItem.SetItemData(_allPlayerDatas[i]);
+                    palyerDataItem.Show();
+                    _allPlayDataItems.Add(palyerDataItem);
+                }
+                else
+                {
+                    UMCtlSettlePalyerDataItem palyerDataItem = UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
+                        _cachedView.LoseContentTrans,
+                        EResScenary.UIHome);
+                    palyerDataItem.SetItemData(_allPlayerDatas[i]);
+                    palyerDataItem.Show();
+                    _allPlayDataItems.Add(palyerDataItem);
+                }
             }
         }
 

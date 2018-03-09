@@ -132,6 +132,8 @@ namespace SoyEngine
         public const string SearchWorldProject = "/world/searchProject";
         // 获取官方关卡
         public const string OfficialProjectList = "/world/getOfficialProjectList";
+        // 获取世界自荐关卡
+        public const string WorldSelfRecommendProjectList = "/world/getSelfRecommendProjectList";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据
@@ -254,6 +256,16 @@ namespace SoyEngine
         public const string UpdateRoomChatPreinstall = "/home/updateRoomChatPreinstall";
         // 删除快捷聊天
         public const string DeleteRoomChatPreinstall = "/home/deleteRoomChatPreinstall";
+        // 用户自荐槽数据统计
+        public const string UserSelfRecommendProjectStatistic = "/home/getUserSelfRecommendProjectStatistic";
+        // 用户自荐关卡列表
+        public const string UserSelfRecommendProjectList = "/home/getUserSelfRecommendProjectList";
+        // 排序自荐关卡
+        public const string SortSelfRecommendProject = "/home/sortSelfRecommendProject";
+        // 添加自荐关卡
+        public const string AddSelfRecommendProject = "/home/addSelfRecommendProject";
+        // 删除自荐关卡
+        public const string RemoveSelfRecommendProject = "/home/RemoveSelfRecommendProject";
         // 获取通知统计
         public const string NotificationPushStatistic = "/notification/getNotificationPushStatistic";
         // 获取推送数据
