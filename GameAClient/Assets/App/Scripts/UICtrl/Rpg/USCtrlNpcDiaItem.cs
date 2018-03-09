@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
@@ -24,7 +25,11 @@ namespace GameA
         private int _index;
         private Action _callback;
         private float _beginPos;
+
         private float _height;
+
+        //拖动的时候的储存的临时变量
+        private int newindex;
 
         private void Clear()
         {
@@ -38,12 +43,14 @@ namespace GameA
             _cachedView.SelectImage.gameObject.SetActiveEx(false);
             _cachedView.DragHelper.OnBeginDragAction = DragBegin;
             _cachedView.DragHelper.OnEndDragAction = DragEnd;
+            _cachedView.DragHelper.OnDragAction = OnDrag;
+            _cachedView.DragHelper.ScrollRect =
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaScorllRect;
             Clear();
             _cachedView.DelteBtn.onClick.AddListener(OnDelBtn);
             _cachedView.UpBtn.onClick.AddListener(OnUpBtn);
             _cachedView.DownBtn.onClick.AddListener(OnDownBtn);
             _diaList = diaList;
-            _index = index;
             SetIndex(_index);
             _dia = dia;
             _callback = callback;
@@ -93,6 +100,7 @@ namespace GameA
 
         private void SetIndex(int index)
         {
+            _index = index;
             switch (index)
             {
                 case 0:
@@ -197,6 +205,11 @@ namespace GameA
             _cachedView.DisableObj.SetActive(true);
             _cachedView.EnableObj.SetActive(false);
             SetIndex(index);
+            _cachedView.DragHelper.OnBeginDragAction = null;
+            _cachedView.DragHelper.OnEndDragAction = null;
+            _cachedView.DragHelper.OnDragAction = null;
+            _cachedView.DragHelper.ScrollRect =
+                SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaScorllRect;
         }
 
         public void setEenable()
@@ -210,6 +223,8 @@ namespace GameA
             _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().transform;
             _cachedView.transform.SetAsLastSibling();
             _beginPos = _cachedView.transform.position.y;
+            newindex = 0;
+            _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
         }
 
         private void DragEnd()
@@ -272,6 +287,53 @@ namespace GameA
                         _callback.Invoke();
                     }
                 }
+            }
+        }
+
+
+        private void OnDrag()
+        {
+            Rect diaContentRect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetDiaContentRect();
+            if (Mathf.Abs(_cachedView.transform.position.x - diaContentRect.x) < diaContentRect.width / 2 &&
+                Mathf.Abs(_cachedView.transform.position.y - diaContentRect.y) < diaContentRect.height / 2)
+            {
+                _height = _cachedView.rectTransform().GetHeight();
+                float posY = _cachedView.transform.position.y;
+                int move = ((int) posY - (int) _beginPos) % (int) (_height);
+                int moveindex = ((int) posY - (int) _beginPos) / (int) (_height);
+                if ((move > 0 && move < _height / 2))
+                {
+                    newindex = _index - Mathf.Abs(moveindex);
+                    SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
+                }
+                else
+                {
+                    if (move < 0 && move < -_height / 2)
+                    {
+                        newindex = Mathf.Abs(moveindex) + _index + 1;
+                        SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
+                    }
+                    else
+                    {
+                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
+                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+                    }
+                }
+            }
+            else
+            {
+                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
+                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+            }
+        }
+
+        public void MoveByIndex(int index, int dragingIndex)
+        {
+            if (_index != dragingIndex)
+            {
+                float newpos = _cachedView.transform.position.y +
+                               (index - _index) * _cachedView.rectTransform().GetHeight();
+                _cachedView.transform.DOLocalMoveY(newpos, 0.2f);
             }
         }
     }

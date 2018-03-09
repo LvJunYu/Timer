@@ -2738,6 +2738,129 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSortSelfRecommendProject {
+            get { return _isRequstingSortSelfRecommendProject; }
+        }
+        private static bool _isRequstingSortSelfRecommendProject = false;
+        /// <summary>
+		/// 排序自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+        public static void SortSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            Action<Msg_SC_CMD_SortSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSortSelfRecommendProject) {
+                return;
+            }
+            _isRequstingSortSelfRecommendProject = true;
+            Msg_CS_CMD_SortSelfRecommendProject msg = new Msg_CS_CMD_SortSelfRecommendProject();
+            // 排序自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SortSelfRecommendProject>(
+                SoyHttpApiPath.SortSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSortSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SortSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSortSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingAddSelfRecommendProject {
+            get { return _isRequstingAddSelfRecommendProject; }
+        }
+        private static bool _isRequstingAddSelfRecommendProject = false;
+        /// <summary>
+		/// 添加自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+		/// <param name="projectId">关卡</param>
+		/// <param name="slotInx"></param>
+        public static void AddSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            long projectId,
+            int slotInx,
+            Action<Msg_SC_CMD_AddSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingAddSelfRecommendProject) {
+                return;
+            }
+            _isRequstingAddSelfRecommendProject = true;
+            Msg_CS_CMD_AddSelfRecommendProject msg = new Msg_CS_CMD_AddSelfRecommendProject();
+            // 添加自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            msg.ProjectId = projectId;
+            msg.SlotInx = slotInx;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_AddSelfRecommendProject>(
+                SoyHttpApiPath.AddSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingAddSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "AddSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingAddSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingRemoveSelfRecommendProject {
+            get { return _isRequstingRemoveSelfRecommendProject; }
+        }
+        private static bool _isRequstingRemoveSelfRecommendProject = false;
+        /// <summary>
+		/// 删除自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+		/// <param name="projectId">关卡</param>
+		/// <param name="slotInx"></param>
+        public static void RemoveSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            long projectId,
+            int slotInx,
+            Action<Msg_SC_CMD_RemoveSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingRemoveSelfRecommendProject) {
+                return;
+            }
+            _isRequstingRemoveSelfRecommendProject = true;
+            Msg_CS_CMD_RemoveSelfRecommendProject msg = new Msg_CS_CMD_RemoveSelfRecommendProject();
+            // 删除自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            msg.ProjectId = projectId;
+            msg.SlotInx = slotInx;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_RemoveSelfRecommendProject>(
+                SoyHttpApiPath.RemoveSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingRemoveSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "RemoveSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingRemoveSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingMarkNotificationHasRead {
             get { return _isRequstingMarkNotificationHasRead; }
         }

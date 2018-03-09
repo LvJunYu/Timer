@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -37,6 +38,9 @@ namespace GameA
 
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
 
+        private readonly UserSelfRecommendProjectList
+            _userSelfRecommendProjectData = new UserSelfRecommendProjectList();
+
         private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList =
             new UserPublishedWorldProjectList();
 
@@ -67,6 +71,14 @@ namespace GameA
         private readonly QQGameReward _qqGameReward = new QQGameReward();
 
         private readonly NpcDialogPreinstallList _npcDialogPreinstallList = new NpcDialogPreinstallList();
+
+        //处理后有序的自荐的关卡列表
+        private readonly List<UserSelfRecommendProject> _userSelfRecommendProjectList =
+            new List<UserSelfRecommendProject>();
+
+        //用户自荐的数据
+        private readonly UserSelfRecommendProjectStatistic _userSelfRecommendProjectStatistic =
+            new UserSelfRecommendProjectStatistic();
 
         #endregion
 
@@ -141,6 +153,21 @@ namespace GameA
             get { return _personalProjectList; }
         }
 
+        public UserSelfRecommendProjectList UserSelfRecommendProjectData
+        {
+            get { return _userSelfRecommendProjectData; }
+        }
+
+        public List<UserSelfRecommendProject> UserSelfRecommendProjectList
+        {
+            get { return _userSelfRecommendProjectList; }
+        }
+
+        public UserSelfRecommendProjectStatistic UserSelfRecommendProjectStatistic
+        {
+            get { return _userSelfRecommendProjectStatistic; }
+        }
+
         public UserPublishedWorldProjectList UserPublishedWorldProjectList
         {
             get { return _userPublishedWorldProjectList; }
@@ -211,6 +238,7 @@ namespace GameA
         {
             get { return _multiBattleData; }
         }
+
         #endregion
 
         #region 方法

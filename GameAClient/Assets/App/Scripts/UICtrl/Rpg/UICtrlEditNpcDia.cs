@@ -758,5 +758,13 @@ namespace GameA
             SetShowText(_cachedView.DiaInputField.text);
             _cachedView.DiaInputField.SetDefaultValue();
         }
+
+        public void MoveDiaItem(int newIndex, int dragingIndex)
+        {
+            for (int i = 0; i < _npcDiaItemList.Count; i++)
+            {
+                _npcDiaItemList[i].MoveByIndex(newIndex, dragingIndex);
+            }
+        }
     }
 }
