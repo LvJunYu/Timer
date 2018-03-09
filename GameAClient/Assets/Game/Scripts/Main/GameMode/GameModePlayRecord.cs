@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game

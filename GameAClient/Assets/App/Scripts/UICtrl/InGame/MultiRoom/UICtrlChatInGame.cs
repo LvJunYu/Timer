@@ -116,6 +116,24 @@ namespace GameA
             base.OnClose();
         }
 
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            _chat.OnUpdate();
+            if (!_openState)
+            {
+                if (_closeTimer == 0 && Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    OnOpenBtn();
+                }
+            }
+
+            if (_closeTimer > 0)
+            {
+                _closeTimer--;
+            }
+        }
+
         public void OnCloseBtn()
         {
             SetOpenState(false);
@@ -196,24 +214,6 @@ namespace GameA
             curPos.y = Mathf.Clamp(curPos.y, -rtf.anchoredPosition.y,
                 _cachedView.Trans.rect.height - rtf.rect.height - rtf.anchoredPosition.y);
             _cachedView.PannelRtf.anchoredPosition = curPos;
-        }
-
-        public override void OnUpdate()
-        {
-            base.OnUpdate();
-            _chat.OnUpdate();
-            if (!_openState)
-            {
-                if(_closeTimer == 0 && Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-                {
-                    OnOpenBtn();
-                }
-            }
-
-            if (_closeTimer > 0)
-            {
-                _closeTimer--;
-            }
         }
 
         public enum EMenu

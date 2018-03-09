@@ -32,8 +32,8 @@ namespace GameA.Game
         #region base data
 
         protected bool _isFreezed;
-
         protected bool _isInterest = true;
+        protected bool _enabled = true;
 
         [SerializeField] protected int _life;
 
@@ -610,6 +610,11 @@ namespace GameA.Game
         public virtual bool IsRigidbody
         {
             get { return false; }
+        }
+
+        public bool Enabled
+        {
+            get { return _enabled; }
         }
 
         public virtual bool UseMagic()

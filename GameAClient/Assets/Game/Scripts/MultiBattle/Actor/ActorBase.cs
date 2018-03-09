@@ -237,7 +237,7 @@ namespace GameA.Game
                         break;
                 }
             }
-
+            
             CheckJump();
             CheckAssist();
             CheckSkill();

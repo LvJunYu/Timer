@@ -90,7 +90,7 @@ namespace GameA
             _particleList.Clear();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
 
-            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>();
             base.OnClose();
         }
 

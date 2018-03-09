@@ -4,8 +4,34 @@
     public class PasswordDoor : BlockBase
     {
         private bool _opened;
-        protected int _timer;
+        private int _timer;
+        private int _uiTimer;
         private int _password;
+        private MainPlayer _mainPlayer;
+        private bool _uiOpen;
+        private EDirectionType _directionRelativeMain;
+
+        public int UiTimer
+        {
+            get { return _uiTimer; }
+            set { _uiTimer = value; }
+        }
+
+        public bool UiOpen
+        {
+            get { return _uiOpen; }
+        }
+
+        public bool HasOpened
+        {
+            get { return _timer > 0 || _opened; }
+        }
+
+        public EDirectionType DirectionRelativeMain
+        {
+            get { return _directionRelativeMain; }
+            set { _directionRelativeMain = value; }
+        }
 
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
@@ -21,11 +47,11 @@
                 return false;
             }
 
-            if (_opened)
+            if (HasOpened)
             {
                 if (_animation != null)
                 {
-                    var entry = _animation.PlayOnce("Open");
+                    var entry = _animation.PlayOnce("Open3");
                     entry.time = entry.endTime;
                 }
 
@@ -35,11 +61,32 @@
             return true;
         }
 
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_uiTimer > 0)
+            {
+                _uiTimer--;
+            }
+
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    _opened = true;
+                    SetOpen(true);
+                }
+            }
+        }
+
         protected override void Clear()
         {
             base.Clear();
             _timer = 0;
+            _uiTimer = 0;
             _opened = false;
+            _mainPlayer = null;
             SetOpen(false);
         }
 
@@ -83,9 +130,17 @@
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
-        public bool CheckOpen(int value)
+        public bool CheckOpen(ushort value)
         {
             return _password == value;
+        }
+
+        public void OnPasswordDoorOpen()
+        {
+            if (_mainPlayer != null)
+            {
+                _mainPlayer.OnPasswordDoorOpen();
+            }
         }
 
         public void ShowOpen()
@@ -95,6 +150,30 @@
             if (_animation != null)
             {
                 _animation.PlayOnce("Open3");
+            }
+
+            _mainPlayer = null;
+        }
+
+        public void OnUiOpen(bool value, UICtrlPasswordDoorInGame uiCtrlPasswordDoorInGame)
+        {
+            _uiOpen = value;
+            if (_mainPlayer != null)
+            {
+                _mainPlayer.SetInputValid(!value);
+            }
+        }
+
+        public void OnPlayerDead(PlayerBase player)
+        {
+            if (_mainPlayer == player)
+            {
+                if (_uiOpen)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlPasswordDoorInGame>();
+                }
+
+                _mainPlayer = null;
             }
         }
 
@@ -109,21 +188,13 @@
             {
                 SetSortingOrderNormal();
             }
+
             UpdateTransPos();
         }
 
-        public override void UpdateLogic()
+        public void SetPlayer(MainPlayer mainPlayer)
         {
-            base.UpdateLogic();
-            if (_timer > 0)
-            {
-                _timer--;
-                if (_timer == 0)
-                {
-                    _opened = true;
-                    SetOpen(true);
-                }
-            }
+            _mainPlayer = mainPlayer;
         }
     }
 }
