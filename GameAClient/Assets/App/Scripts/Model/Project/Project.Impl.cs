@@ -44,7 +44,7 @@ namespace GameA
 
         public static Project EmptyProject = new Project();
 
-        public static int ProjectTypeAllMask = 1 | (1<<1) | (1<<2);
+        public static int ProjectTypeAllMask = 1 | (1 << 1) | (1 << 2);
 
         public UserInfoDetail UserInfoDetail
         {
@@ -77,6 +77,7 @@ namespace GameA
                 {
                     return _extendData.Score;
                 }
+
                 return 0;
             }
         }
@@ -98,6 +99,7 @@ namespace GameA
                 {
                     return _extendData.LikeCount;
                 }
+
                 return 0;
             }
         }
@@ -110,6 +112,7 @@ namespace GameA
                 {
                     return _extendData.UnlikeCount;
                 }
+
                 return 0;
             }
         }
@@ -122,6 +125,7 @@ namespace GameA
                 {
                     return _extendData.UnlikeCount + _extendData.LikeCount;
                 }
+
                 return 0;
             }
         }
@@ -134,6 +138,7 @@ namespace GameA
                 {
                     return _extendData.FavoriteCount;
                 }
+
                 return 0;
             }
         }
@@ -146,6 +151,7 @@ namespace GameA
                 {
                     return _extendData.CommentCount;
                 }
+
                 return 0;
             }
         }
@@ -158,6 +164,7 @@ namespace GameA
                 {
                     return _extendData.PlayCount;
                 }
+
                 return 0;
             }
         }
@@ -170,6 +177,7 @@ namespace GameA
                 {
                     return _extendData.CompleteCount;
                 }
+
                 return 0;
             }
         }
@@ -182,6 +190,7 @@ namespace GameA
                 {
                     return _extendData.FailCount;
                 }
+
                 return 0;
             }
         }
@@ -222,6 +231,7 @@ namespace GameA
                 {
                     return _projectUserData.LikeState;
                 }
+
                 return EProjectLikeState.PLS_None;
             }
         }
@@ -234,6 +244,7 @@ namespace GameA
                 {
                     return _projectUserData.Favorite;
                 }
+
                 return false;
             }
         }
@@ -246,6 +257,7 @@ namespace GameA
                 {
                     return _projectUserData.CompleteCount;
                 }
+
                 return 0;
             }
         }
@@ -258,6 +270,7 @@ namespace GameA
                 {
                     return _projectUserData.LastPlayTime;
                 }
+
                 return 0;
             }
         }
@@ -277,13 +290,31 @@ namespace GameA
                     _recentPlayedUserList = new WorldProjectRecentPlayedUserList();
                     _recentPlayedUserList.CS_ProjectId = _projectId;
                 }
+
                 return _recentPlayedUserList;
             }
         }
 
         public Msg_SC_DAT_ShadowBattleData ShadowBattleParam { get; private set; }
-        public bool IsMulti {
+
+        public bool IsMulti
+        {
             get { return _projectType > EProjectType.PT_Single; }
+        }
+
+        public int NewestProjectVersion
+        {
+            get
+            {
+                if (_extendData != null)
+                {
+                    return _extendData.NewestProjectVersion;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
 
         #endregion 属性
@@ -307,6 +338,7 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
+
                     //判断是否是乱入对决
                     if (ret.ShadowBattleData != null)
                     {
@@ -325,6 +357,7 @@ namespace GameA
                                 {
                                     successCallback.Invoke();
                                 }
+
                                 ShadowBattleParam = null;
                             }, () =>
                             {
@@ -387,6 +420,7 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
+
                     PrepareRes(() =>
                     {
                         ShadowBattleParam = msg.PlayProjectData.ShadowBattleData;
@@ -397,6 +431,7 @@ namespace GameA
                         {
                             successCallback.Invoke();
                         }
+
                         ShadowBattleParam = null;
                     }, () =>
                     {
@@ -424,10 +459,12 @@ namespace GameA
                 targetRes = AppData.Instance.AdventureData.ProjectList.SectionList[TargetSection - 1]
                     .NormalProjectList[TargetLevel - 1].ResPath;
             }
+
             if (_projectStatus == EProjectStatus.PS_Reform && null != _bytesData)
             {
                 return _bytesData;
             }
+
             return LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, targetRes);
         }
 
@@ -457,6 +494,7 @@ namespace GameA
                 LogHelper.Error("Save Project is readonly");
                 return;
             }
+
 //            if (string.IsNullOrEmpty(name))
 //            {
 //                name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
@@ -470,20 +508,24 @@ namespace GameA
             {
                 form.AddBinaryData("levelFile", dataBytes);
             }
+
             if (iconBytes != null)
             {
                 form.AddBinaryData("iconFile", iconBytes);
             }
+
             if (recordBytes != null)
             {
                 form.AddBinaryData("recordFile", recordBytes);
             }
+
             String oldIconPath = _iconPath;
             // 如果是在工坊界面修改关卡的信息，就不用更新附加参数
             if (null != dataBytes)
             {
                 RefreshProjectUploadParam();
             }
+
             Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
             {
                 Success = success,
@@ -568,6 +610,7 @@ namespace GameA
                                 ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath,
                                     iconBytes);
                             }
+
                             Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
                             if (successCallback != null)
                             {
@@ -612,6 +655,7 @@ namespace GameA
                     teamList.Add(teamId);
                 }
             }
+
             msg.PlayerCount = netBattleData.PlayerCount = spawns.Count;
             msg.TeamCount = netBattleData.TeamCount = teamList.Count;
             msg.LifeCount = netBattleData.LifeCount;
@@ -667,6 +711,7 @@ namespace GameA
                         {
                             onSuccess.Invoke();
                         }
+
                         SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(
                             ProjectManager.Instance.UpdateData(ret.ProjectData));
                     }
@@ -688,56 +733,53 @@ namespace GameA
                     }
                 });
         }
-        
+
         public void UnPublish(Action onSuccess = null, Action onFail = null)
         {
             var projectList = new List<long> {_projectId};
             RemoteCommands.UnpublishWorldProject(projectList, msg =>
-            {
-                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                 {
-                    Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectUnPublished, _projectId);
-                    if (onSuccess != null)
+                    if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
-                        onSuccess.Invoke();
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectUnPublished, _projectId);
+                        if (onSuccess != null)
+                        {
+                            onSuccess.Invoke();
+                        }
                     }
-                }
-                else
+                    else
+                    {
+                        LogHelper.Error("UnPublish project error, code: {0}", msg.ResultCode);
+                        if (onFail != null)
+                        {
+                            onFail.Invoke();
+                        }
+                    }
+                },
+                code =>
                 {
-                    LogHelper.Error("UnPublish project error, code: {0}", msg.ResultCode);
+                    SoyHttpClient.ShowErrorTip(code);
                     if (onFail != null)
                     {
                         onFail.Invoke();
                     }
-                }
-            },
-            code =>
-            {
-                SoyHttpClient.ShowErrorTip(code);
-                if (onFail != null)
-                {
-                    onFail.Invoke();
-                }
-            });
+                });
         }
 
         public void Edit()
         {
             RemoteCommands.EditProject(_mainId, msg =>
-            {
-                if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                 {
-                    AppLogicUtil.EditPersonalProject(new Project(msg.ProjectData));
-                }
-                else
-                {
-                    LogHelper.Error("Edit project error, code: {0}", msg.ResultCode);
-                }
-            },
-            code =>
-            {
-                SoyHttpClient.ShowErrorTip(code);
-            });
+                    if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
+                    {
+                        AppLogicUtil.EditPersonalProject(new Project(msg.ProjectData));
+                    }
+                    else
+                    {
+                        LogHelper.Error("Edit project error, code: {0}", msg.ResultCode);
+                    }
+                },
+                code => { SoyHttpClient.ShowErrorTip(code); });
         }
 
 
@@ -753,8 +795,10 @@ namespace GameA
                     {
                         successCallback.Invoke();
                     }
+
                     return;
                 }
+
                 if (string.IsNullOrEmpty(ResPath))
                 {
                     if ((TargetSection - 1) < AppData.Instance.AdventureData.ProjectList.SectionList.Count &&
@@ -774,10 +818,12 @@ namespace GameA
                             {
                                 failedCallback.Invoke();
                             }
+
                             return;
                         }
                     }
                 }
+
                 // else 正常往后执行，检查自己的respath
             }
             else
@@ -788,9 +834,11 @@ namespace GameA
                     {
                         failedCallback.Invoke();
                     }
+
                     return;
                 }
             }
+
             byte[] data = LocalCacheManager.Instance.LoadSync(LocalCacheManager.EType.File, targetRes);
             if (data != null)
             {
@@ -798,8 +846,10 @@ namespace GameA
                 {
                     successCallback.Invoke();
                 }
+
                 return;
             }
+
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
             //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
@@ -828,8 +878,10 @@ namespace GameA
                 {
                     failedCallback.Invoke(ENetResultCode.NR_None);
                 }
+
                 return;
             }
+
             RemoteCommands.UpdateWorldProjectLike(_projectId, likeState, ret =>
             {
                 if (ret.ResultCode != (int) EUpdateWorldProjectLikeCode.UWPLC_Success)
@@ -838,12 +890,15 @@ namespace GameA
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
                     }
+
                     return;
                 }
+
                 if (_projectUserData != null)
                 {
                     _projectUserData.LikeState = likeState;
                 }
+
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -898,8 +953,10 @@ namespace GameA
                 {
                     failedCallback.Invoke(ENetResultCode.NR_None);
                 }
+
                 return;
             }
+
             RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret =>
             {
                 if (ret.ResultCode != (int) EUpdateWorldProjectFavoriteCode.UWPFC_Success)
@@ -909,17 +966,22 @@ namespace GameA
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
                     }
+
                     return;
                 }
+
                 if (_projectUserData != null)
                 {
                     _projectUserData.Favorite = favorite;
                 }
+
                 if (_extendData != null)
                 {
                     _extendData.FavoriteCount += favorite ? 1 : -1;
                 }
-                Messenger<Project, bool>.Broadcast(EMessengerType.OnProjectMyFavoriteChanged, this, _projectUserData.Favorite);
+
+                Messenger<Project, bool>.Broadcast(EMessengerType.OnProjectMyFavoriteChanged, this,
+                    _projectUserData.Favorite);
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -941,6 +1003,7 @@ namespace GameA
             {
                 OnSyncProjectExtendData(_extendData);
             }
+
             _userInfoDetail = UserManager.Instance.UpdateData(msg.UserInfo);
             Messenger<long>.Broadcast(EMessengerType.OnProjectDataChanged, _projectId);
         }
@@ -975,13 +1038,16 @@ namespace GameA
                     {
                         failedCallback.Invoke(ENetResultCode.NR_None);
                     }
+
                     return;
                 }
+
                 WWWForm wwwForm = new WWWForm();
                 if (recordBytes != null)
                 {
                     wwwForm.AddBinaryData("recordFile", recordBytes);
                 }
+
                 Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
                 {
                     Success = success,

@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserSelfRecommendProjectStatistic : SyncronisticData<Msg_SC_DAT_UserSelfRecommendProjectStatic> {
+    public partial class UserSelfRecommendProjectStatistic : SyncronisticData<Msg_SC_DAT_UserSelfRecommendProjectStatistic> {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -85,7 +85,7 @@ namespace GameA
 
                 Msg_CS_DAT_UserSelfRecommendProjectStatistic msg = new Msg_CS_DAT_UserSelfRecommendProjectStatistic();
                 msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserSelfRecommendProjectStatic>(
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserSelfRecommendProjectStatistic>(
                     SoyHttpApiPath.UserSelfRecommendProjectStatistic, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
@@ -96,7 +96,7 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_UserSelfRecommendProjectStatic msg)
+        public bool OnSync (Msg_SC_DAT_UserSelfRecommendProjectStatistic msg)
         {
             if (null == msg) return false;
             _currentUsedCount = msg.CurrentUsedCount;           
@@ -105,7 +105,7 @@ namespace GameA
             return true;
         }
         
-        public bool CopyMsgData (Msg_SC_DAT_UserSelfRecommendProjectStatic msg)
+        public bool CopyMsgData (Msg_SC_DAT_UserSelfRecommendProjectStatistic msg)
         {
             if (null == msg) return false;
             _currentUsedCount = msg.CurrentUsedCount;           
@@ -121,13 +121,13 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_UserSelfRecommendProjectStatic msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_UserSelfRecommendProjectStatistic msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserSelfRecommendProjectStatistic (Msg_SC_DAT_UserSelfRecommendProjectStatic msg) {
+        public UserSelfRecommendProjectStatistic (Msg_SC_DAT_UserSelfRecommendProjectStatistic msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }

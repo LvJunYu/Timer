@@ -53,6 +53,18 @@ namespace GameA
         /// 分享次数
         /// </summary>
         private int _shareCount;
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        private int _newestProjectVersion;
+        /// <summary>
+        /// 自荐标记
+        /// </summary>
+        private bool _selfRecommendFlag;
+        /// <summary>
+        /// 最后一次自荐时间
+        /// </summary>
+        private long _lastSelfRecommendTime;
 
         // cs fields----------------------------------
         /// <summary>
@@ -173,6 +185,36 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 最新关卡版本号
+        /// </summary>
+        public int NewestProjectVersion { 
+            get { return _newestProjectVersion; }
+            set { if (_newestProjectVersion != value) {
+                _newestProjectVersion = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 自荐标记
+        /// </summary>
+        public bool SelfRecommendFlag { 
+            get { return _selfRecommendFlag; }
+            set { if (_selfRecommendFlag != value) {
+                _selfRecommendFlag = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最后一次自荐时间
+        /// </summary>
+        public long LastSelfRecommendTime { 
+            get { return _lastSelfRecommendTime; }
+            set { if (_lastSelfRecommendTime != value) {
+                _lastSelfRecommendTime = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -236,6 +278,9 @@ namespace GameA
             _favoriteCount = msg.FavoriteCount;           
             _downloadCount = msg.DownloadCount;           
             _shareCount = msg.ShareCount;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
+            _selfRecommendFlag = msg.SelfRecommendFlag;           
+            _lastSelfRecommendTime = msg.LastSelfRecommendTime;           
             OnSyncPartial(msg);
             return true;
         }
@@ -254,6 +299,9 @@ namespace GameA
             _favoriteCount = msg.FavoriteCount;           
             _downloadCount = msg.DownloadCount;           
             _shareCount = msg.ShareCount;           
+            _newestProjectVersion = msg.NewestProjectVersion;           
+            _selfRecommendFlag = msg.SelfRecommendFlag;           
+            _lastSelfRecommendTime = msg.LastSelfRecommendTime;           
             return true;
         } 
 
@@ -271,6 +319,9 @@ namespace GameA
             _favoriteCount = obj.FavoriteCount;           
             _downloadCount = obj.DownloadCount;           
             _shareCount = obj.ShareCount;           
+            _newestProjectVersion = obj.NewestProjectVersion;           
+            _selfRecommendFlag = obj.SelfRecommendFlag;           
+            _lastSelfRecommendTime = obj.LastSelfRecommendTime;           
             return true;
         }
 

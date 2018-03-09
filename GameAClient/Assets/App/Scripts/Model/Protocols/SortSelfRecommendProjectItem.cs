@@ -15,11 +15,11 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private long _oldProjectId;
+        private long _oldProjectMainId;
         /// <summary>
         /// 
         /// </summary>
-        private long _newProjectId;
+        private long _newProjectMainId;
         #endregion
 
         #region 属性
@@ -36,20 +36,20 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public long OldProjectId { 
-            get { return _oldProjectId; }
-            set { if (_oldProjectId != value) {
-                _oldProjectId = value;
+        public long OldProjectMainId { 
+            get { return _oldProjectMainId; }
+            set { if (_oldProjectMainId != value) {
+                _oldProjectMainId = value;
                 SetDirty();
             }}
         }
         /// <summary>
         /// 
         /// </summary>
-        public long NewProjectId { 
-            get { return _newProjectId; }
-            set { if (_newProjectId != value) {
-                _newProjectId = value;
+        public long NewProjectMainId { 
+            get { return _newProjectMainId; }
+            set { if (_newProjectMainId != value) {
+                _newProjectMainId = value;
                 SetDirty();
             }}
         }
@@ -60,8 +60,8 @@ namespace GameA
         {
             if (null == msg) return false;
             _slotInx = msg.SlotInx;     
-            _oldProjectId = msg.OldProjectId;     
-            _newProjectId = msg.NewProjectId;     
+            _oldProjectMainId = msg.OldProjectMainId;     
+            _newProjectMainId = msg.NewProjectMainId;     
             OnSyncPartial(msg);
             return true;
         }
@@ -70,8 +70,8 @@ namespace GameA
         {
             if (null == msg) return false;
             _slotInx = msg.SlotInx;           
-            _oldProjectId = msg.OldProjectId;           
-            _newProjectId = msg.NewProjectId;           
+            _oldProjectMainId = msg.OldProjectMainId;           
+            _newProjectMainId = msg.NewProjectMainId;           
             return true;
         } 
 
@@ -79,8 +79,8 @@ namespace GameA
         {
             if (null == obj) return false;
             _slotInx = obj.SlotInx;           
-            _oldProjectId = obj.OldProjectId;           
-            _newProjectId = obj.NewProjectId;           
+            _oldProjectMainId = obj.OldProjectMainId;           
+            _newProjectMainId = obj.NewProjectMainId;           
             return true;
         }
 

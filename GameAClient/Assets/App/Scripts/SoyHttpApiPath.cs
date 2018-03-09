@@ -265,7 +265,7 @@ namespace SoyEngine
         // 添加自荐关卡
         public const string AddSelfRecommendProject = "/home/addSelfRecommendProject";
         // 删除自荐关卡
-        public const string RemoveSelfRecommendProject = "/home/RemoveSelfRecommendProject";
+        public const string RemoveSelfRecommendProject = "/home/removeSelfRecommendProject";
         // 获取通知统计
         public const string NotificationPushStatistic = "/notification/getNotificationPushStatistic";
         // 获取推送数据
