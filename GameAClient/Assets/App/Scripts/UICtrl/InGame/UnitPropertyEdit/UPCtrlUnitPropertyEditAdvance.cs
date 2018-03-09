@@ -15,6 +15,7 @@ namespace GameA
             MonsterCave,
             Timer,
             SurpriseBox,
+            PasswordDoor,
         }
 
         private Sequence _openSequence;
@@ -46,6 +47,7 @@ namespace GameA
         private EMenu _curMenu;
         private UnitExtraDynamic _curUnitExtra;
         private UPCtrlUnitPropertyAdvanceTimer _upCtrlTimer;
+        private USCtrlPasswordDoorSetting _usCtrlPasswordDoorSetting;
 
         protected override void OnViewCreated()
         {
@@ -155,6 +157,9 @@ namespace GameA
             _usSurpriseBoxItemSetting = new USCtrlSurpriseBoxItemsSetting();
             _usSurpriseBoxItemSetting.SetResScenary(_mainCtrl.ResScenary);
             _usSurpriseBoxItemSetting.Init(_cachedView.SurpriseBoxItemSetting);
+            _usCtrlPasswordDoorSetting = new USCtrlPasswordDoorSetting();
+            _usCtrlPasswordDoorSetting.Init(_cachedView.PasswordDoorSetting);
+            _usCtrlPasswordDoorSetting.SetMainCtrl(_mainCtrl.UpCtrlPasswordDoor);
         }
 
         public override void Open()
@@ -403,6 +408,15 @@ namespace GameA
             else
             {
                 _upCtrlTimer.Close();
+            }
+
+            if (_curMenu == EMenu.PasswordDoor)
+            {
+                _usCtrlPasswordDoorSetting.Open();
+            }
+            else
+            {
+                _usCtrlPasswordDoorSetting.Close();
             }
         }
 

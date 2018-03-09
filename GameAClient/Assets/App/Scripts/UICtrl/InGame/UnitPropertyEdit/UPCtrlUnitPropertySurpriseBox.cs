@@ -3,7 +3,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class UPCtrlUnitPropertyAdvanceSurpriseBox : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
+    public class UPCtrlUnitPropertySurpriseBox : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
         private USCtrlSliderSetting _usSurpriseBoxIntervalSetting;
         private USCtrlSliderSetting _usSurpriseBoxMaxCountSetting;

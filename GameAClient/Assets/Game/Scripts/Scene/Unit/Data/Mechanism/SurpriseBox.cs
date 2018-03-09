@@ -106,7 +106,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        _timer = 20;
+                        _timer = 19;
                     }
                 }
             }

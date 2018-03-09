@@ -55,5 +55,10 @@ namespace GameA
             _cachedView.Trans.SetParent(parent);
             _cachedView.Trans.anchoredPosition = Vector2.zero;
         }
+
+        public void RefreshIndex(int index)
+        {
+            _index = index;
+        }
     }
 }

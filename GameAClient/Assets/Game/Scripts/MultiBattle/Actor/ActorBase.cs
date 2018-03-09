@@ -201,7 +201,7 @@ namespace GameA.Game
             }
         }
 
-        public void UpdateInput()
+        public virtual void UpdateInput()
         {
             if (!PlayMode.Instance.SceneState.GameRunning)
             {

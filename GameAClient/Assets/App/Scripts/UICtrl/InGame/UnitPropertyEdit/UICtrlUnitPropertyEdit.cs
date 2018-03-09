@@ -53,7 +53,8 @@ namespace GameA
         private Project _project;
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
-        private UPCtrlUnitPropertyAdvanceSurpriseBox _upCtrlSurpriseBox;
+        private UPCtrlUnitPropertySurpriseBox _upCtrlSurpriseBox;
+        private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor;
 
         public bool IsInMap
         {
@@ -84,6 +85,11 @@ namespace GameA
         public int CurId
         {
             get { return _curId; }
+        }
+
+        public UPCtrlUnitPropertyPasswordDoor UpCtrlPasswordDoor
+        {
+            get { return _upCtrlPasswordDoor; }
         }
 
         public UPCtrlUnitPropertyEditNpcDiaType EditNpcDiaType;
@@ -139,6 +145,9 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            //密码门
+            _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
+            _upCtrlPasswordDoor.Init(this, _cachedView);
             _upCtrlUnitPropertyEditAdvance = new UPCtrlUnitPropertyEditAdvance();
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
@@ -180,9 +189,9 @@ namespace GameA
             EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
             EditFinishTaskAward.Init(this, _cachedView);
             //惊喜盒子
-            _upCtrlSurpriseBox = new UPCtrlUnitPropertyAdvanceSurpriseBox();
+            _upCtrlSurpriseBox = new UPCtrlUnitPropertySurpriseBox();
             _upCtrlSurpriseBox.Init(this, _cachedView);
-            
+
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -199,6 +208,7 @@ namespace GameA
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
             _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
+            _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -221,6 +231,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
             _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
+            _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -643,16 +654,27 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
             }
-            
+
             if (_curId == UnitDefine.SurpriseBoxId)
             {
                 _validEditPropertyList.Add(EEditType.SurpriseBox);
                 _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(true);
-                RefreshSurpriseBoxMenu();
+                _upCtrlSurpriseBox.RefreshView();
             }
             else
             {
                 _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(false);
+            }
+
+            if (_curId == UnitDefine.PasswordDoorId)
+            {
+                _validEditPropertyList.Add(EEditType.PasswordDoor);
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(true);
+                _upCtrlPasswordDoor.RefreshView();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(false);
             }
 
             if (_tableUnit.CanEdit(EEditType.Text))
@@ -1067,11 +1089,6 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpineExtra>().AvatarRenderTexture;
         }
 
-        private void RefreshSurpriseBoxMenu()
-        {
-            _upCtrlSurpriseBox.RefreshView();
-        }
-
         private Sprite GetSpawnSprite(int teamId, bool disable = false)
         {
             if (disable)
@@ -1432,40 +1449,34 @@ namespace GameA
 
         private bool CheckOpenAdvanceEdit()
         {
-            if (_curEditType == EEditType.Camp)
+            switch (_curEditType)
             {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
-                return true;
-            }
+                case EEditType.Active:
+                    if (_curId == UnitDefine.TimerId)
+                    {
+                        _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
+                        return true;
+                    }
 
-            if (_curEditType == EEditType.Child)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
-                return true;
-            }
-
-            if (_curEditType == EEditType.MonsterCave)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
-                return true;
-            }
-
-            if (_curEditType == EEditType.Spawn)
-            {
-                OnSpawnMenuClick(_curSelectedPlayerIndex, true);
-                return true;
-            }
-
-            if (_curId == UnitDefine.TimerId && _curEditType == EEditType.Active)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
-                return true;
-            }
-
-            if (_curEditType == EEditType.SurpriseBox)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
-                return true;
+                    break;
+                case EEditType.Child:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+                    return true;
+                case EEditType.Camp:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
+                    return true;
+                case EEditType.MonsterCave:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
+                    return true;
+                case EEditType.Spawn:
+                    OnSpawnMenuClick(_curSelectedPlayerIndex, true);
+                    return true;
+                case EEditType.SurpriseBox:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
+                    return true;
+                case EEditType.PasswordDoor:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.PasswordDoor);
+                    return true;
             }
 
             return false;

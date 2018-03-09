@@ -7,10 +7,22 @@ namespace GameA.Game
     [Unit(Id = 5007, Type = typeof(WeaponDepot))]
     public class WeaponDepot : CollectionBase
     {
-       
         private const string IconFormat = "{0}Icon";
         protected int _timer;
         protected int _weaponId;
+
+        public int WeaponId
+        {
+            get
+            {
+                if (_weaponId == 0 && _tableUnit.ChildState != null)
+                {
+                    return _tableUnit.ChildState[0];
+                }
+
+                return _weaponId;
+            }
+        }
 
         internal override bool InstantiateView()
         {
@@ -22,13 +34,12 @@ namespace GameA.Game
             _tweener = _trans.DOMoveY(_trans.position.y + 0.1f, 0.6f);
             _tweener.Play();
             _tweener.SetLoops(-1, LoopType.Yoyo);
-
             return true;
         }
 
         protected override void InitAssetPath()
         {
-            _assetPath = GetSpriteName(_weaponId);
+            _assetPath = GetSpriteName(WeaponId);
         }
 
         protected override void Clear()
@@ -49,7 +60,7 @@ namespace GameA.Game
             if (_timer == 0)
             {
                 _timer = UnitDefine.EnergyTimer;
-                other.SetWeapon(_weaponId, GetUnitExtra());
+                other.SetWeapon(WeaponId, GetUnitExtra());
                 base.OnTrigger(other);
             }
         }

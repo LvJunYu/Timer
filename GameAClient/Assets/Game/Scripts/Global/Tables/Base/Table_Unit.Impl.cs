@@ -5,6 +5,7 @@
 ** Summary : Table_Unit
 ***********************************************************************/
 
+using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
@@ -121,6 +122,10 @@ namespace GameA.Game
                     return UnitDefine.MonsterCaveId == Id;
                 case EEditType.Spawn:
                     return UnitDefine.SpawnId == Id;
+                case EEditType.SurpriseBox:
+                    return UnitDefine.SurpriseBoxId == Id;
+                case EEditType.PasswordDoor:
+                    return UnitDefine.PasswordDoorId == Id;
                 case EEditType.Style:
                     return Id == 4001;
                 case EEditType.NpcType:
