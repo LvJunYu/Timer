@@ -21,9 +21,9 @@ namespace GameA.Game
 
     public class InputBase
     {
-        [SerializeField]
-        protected bool[] _curAppliedInputKeyAry = new bool[(int)EInputType.Max];
-        protected bool[] _lastAppliedInputKeyAry = new bool[(int)EInputType.Max];
+        [SerializeField] protected bool[] _curAppliedInputKeyAry = new bool[(int) EInputType.Max];
+        protected bool[] _lastAppliedInputKeyAry = new bool[(int) EInputType.Max];
+        protected bool _inputValid = true;
 
         public bool[] CurAppliedInputKeyAry
         {
@@ -50,7 +50,7 @@ namespace GameA.Game
         /// <param name="changeCode"></param>
         public void ApplyKeyChangeCode(int changeCode)
         {
-            _curAppliedInputKeyAry[changeCode>>1] = ((changeCode & 1) == 0);
+            _curAppliedInputKeyAry[changeCode >> 1] = ((changeCode & 1) == 0);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace GameA.Game
         {
             _curAppliedInputKeyAry[(int) eInputType] = true;
         }
-        
+
         /// <summary>
         /// 应用这一帧所有指令
         /// </summary>
@@ -82,6 +82,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             for (int i = 0; i < inputDataList.Count; i++)
             {
                 ApplyKeyChangeCode(inputDataList[i]);
@@ -95,12 +96,12 @@ namespace GameA.Game
 
         public bool GetKeyApplied(EInputType eInputType)
         {
-            return _curAppliedInputKeyAry[(int)eInputType];
+            return _curAppliedInputKeyAry[(int) eInputType];
         }
 
         public bool GetKeyLastApplied(EInputType eInputType)
         {
-            return _lastAppliedInputKeyAry[(int)eInputType];
+            return _lastAppliedInputKeyAry[(int) eInputType];
         }
 
         public bool GetKeyDownApplied(EInputType eInputType)
@@ -108,16 +109,21 @@ namespace GameA.Game
             int inx = (int) eInputType;
             return _curAppliedInputKeyAry[inx] && !_lastAppliedInputKeyAry[inx];
         }
-        
+
         public bool GetKeyUpApplied(EInputType eInputType)
         {
             int inx = (int) eInputType;
             return !_curAppliedInputKeyAry[inx] && _lastAppliedInputKeyAry[inx];
         }
-        
+
         public bool SkillInputDown(int i)
         {
-            return GetKeyDownApplied((EInputType) ((int)EInputType.Skill1 + i));
+            return GetKeyDownApplied((EInputType) ((int) EInputType.Skill1 + i));
+        }
+
+        public void SetInputValid(bool value)
+        {
+            _inputValid = value;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace GameA
         private Camera _uiCamera;
         private bool _openState;
         private bool _isDraging;
+        private int _closeTimer;
         private Vector2 _curPos;
         private EMenu _curMenu;
         private UPCtrlChatInGameQuickChat _upCtrlChatInGameQuickChat;
@@ -143,6 +144,7 @@ namespace GameA
             }
             else
             {
+                _closeTimer = 2;
                 SetMenu(EMenu.None);
                 _cachedView.PannelRtf.anchoredPosition = _curPos;
             }
@@ -200,6 +202,18 @@ namespace GameA
         {
             base.OnUpdate();
             _chat.OnUpdate();
+            if (!_openState)
+            {
+                if(_closeTimer == 0 && Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    OnOpenBtn();
+                }
+            }
+
+            if (_closeTimer > 0)
+            {
+                _closeTimer--;
+            }
         }
 
         public enum EMenu

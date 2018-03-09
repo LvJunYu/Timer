@@ -64,5 +64,17 @@ namespace GameA.Game
             Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
                 .OnPlayHitNpc(new UnitSceneGuid(unit.Guid, Scene2DManager.Instance.CurSceneIndex));
         }
+
+        public void SetInputValid(bool value)
+        {
+            if (_input != null)
+            {
+                if (!value)
+                {
+                    _input.Clear();
+                }
+                _input.SetInputValid(value);
+            }
+        }
     }
 }

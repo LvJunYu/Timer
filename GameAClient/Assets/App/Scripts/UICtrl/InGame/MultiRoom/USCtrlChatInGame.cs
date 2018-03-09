@@ -53,6 +53,7 @@ namespace GameA
             _cachedView.SendBtn.onClick.AddListener(OnSendBtn);
             _cachedView.ChatInput.onEndEdit.AddListener(str =>
             {
+                SetMainPlayerInputValid(true);
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
                     OnSendBtn();
@@ -82,6 +83,13 @@ namespace GameA
             base.Open();
             SelectChatTypeTag(_currentChatTypeTag);
             ClearRawChat();
+            SetInputSelected(true);
+        }
+
+        public override void Close()
+        {
+            SetInputSelected(false);
+            base.Close();
         }
 
         private void SelectChatTypeTag(ChatData.EChatType chatType)
@@ -91,11 +99,12 @@ namespace GameA
             {
                 _mainCtrl.SetMenu(UICtrlChatInGame.EMenu.ChatHistory, true);
             }
+
             if (!_isOpen)
             {
                 return;
             }
-            
+
             _contentList = AppData.Instance.ChatData.GetList(chatType);
             RefreshView();
             SetSendChatType(chatType);
@@ -144,6 +153,7 @@ namespace GameA
             var inputContent = _cachedView.ChatInput.text;
             if (string.IsNullOrEmpty(inputContent))
             {
+                _mainCtrl.OnCloseBtn();
                 return;
             }
 
@@ -154,6 +164,28 @@ namespace GameA
 
             _cachedView.ChatInput.text = String.Empty;
             _cachedView.ChatInput.ActivateInputField();
+        }
+
+        private void SetMainPlayerInputValid(bool value)
+        {
+            var mainPlayer = PlayerManager.Instance.MainPlayer;
+            if (mainPlayer != null)
+            {
+                mainPlayer.SetInputValid(value);
+            }
+        }
+
+        public void SetInputSelected(bool value)
+        {
+            SetMainPlayerInputValid(!value);
+            if (value)
+            {
+                _cachedView.ChatInput.ActivateInputField();
+            }
+            else
+            {
+                _cachedView.ChatInput.DeactivateInputField();
+            }
         }
 
         public bool SendChat(string str)
@@ -178,6 +210,7 @@ namespace GameA
                 LogHelper.Error("OnSendBtn Fail, _currentSendType = {0}", _currentSendType);
                 return false;
             }
+
             _mainCtrl.OnCloseBtn();
             return true;
         }
@@ -291,6 +324,12 @@ namespace GameA
                 {
                     FreeUmItem(_rawChatQueue.Dequeue().UmCtrlChatInGame);
                 }
+            }
+
+            if (_isOpen && !_cachedView.ChatInput.isFocused && Input.GetKeyDown(KeyCode.Return) ||
+                Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                SetInputSelected(true);
             }
         }
 
