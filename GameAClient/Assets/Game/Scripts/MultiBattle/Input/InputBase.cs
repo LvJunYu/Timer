@@ -16,6 +16,7 @@ namespace GameA.Game
         Skill1,
         Skill2,
         Skill3,
+        PasswordDoorOpen,
         Max
     }
 

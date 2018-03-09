@@ -1,12 +1,9 @@
-﻿using NewResourceSolution;
-using SoyEngine;
-using UnityEngine;
+﻿using SoyEngine;
 
 namespace GameA
 {
     public class USCtrlPasswordDoorSetting : USCtrlBase<USViewPasswordDoorSetting>
     {
-        private const string NumSpriteFormat = "img_{0}";
         private USCtrlUnitPropertyEditButton[] _numCtrlArray;
         private UPCtrlUnitPropertyPasswordDoor _mainCtrl;
 
@@ -37,7 +34,7 @@ namespace GameA
             {
                 var inx = j;
                 _numCtrlArray[j].AddClickListener(() => _mainCtrl.SetNum(inx));
-                _numCtrlArray[j].SetFgImage(GetSprite(j));
+                _numCtrlArray[j].SetFgImage(UICtrlPasswordDoorInGame.GetSprite(j));
             }
         }
 
@@ -56,11 +53,6 @@ namespace GameA
         public void SetMainCtrl(UPCtrlUnitPropertyPasswordDoor mainCtrl)
         {
             _mainCtrl = mainCtrl;
-        }
-
-        private Sprite GetSprite(int num)
-        {
-            return JoyResManager.Instance.GetSprite(string.Format(NumSpriteFormat, num));
         }
     }
 }

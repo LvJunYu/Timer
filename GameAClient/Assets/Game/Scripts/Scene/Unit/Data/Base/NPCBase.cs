@@ -364,10 +364,5 @@ namespace GameA.Game
 
             base.OnObjectDestroy();
         }
-
-        protected override void CheckAssist()
-        {
-            base.CheckAssist();
-        }
     }
 }

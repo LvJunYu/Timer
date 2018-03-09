@@ -26,6 +26,7 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Jump);
             }
+
             base.OnJump();
         }
 
@@ -55,7 +56,22 @@ namespace GameA.Game
                 GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(0);
                 GM2DGame.Instance.GameMode.ShadowData.RecordClearAnimTrack(1);
             }
+
             GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
+        }
+
+        protected override void CheckAssist()
+        {
+            base.CheckAssist();
+            if (_passwordDoor != null)
+            {
+                if (_input.GetKeyUpApplied(EInputType.Assist) &&
+                    GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
+                {
+                    _passwordDoor.SetPlayer(this);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
+                }
+            }
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -63,6 +79,19 @@ namespace GameA.Game
             base.Hit(unit, eDirectionType);
             Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
                 .OnPlayHitNpc(new UnitSceneGuid(unit.Guid, Scene2DManager.Instance.CurSceneIndex));
+        }
+
+        protected override void OnHitPasswordDoor()
+        {
+            base.OnHitPasswordDoor();
+            var uiControl = SocialGUIManager.Instance.GetUI<UICtrlGameInput>();
+            if (uiControl != null)
+            {
+                uiControl.SetAssistBtnVisible(true);
+            }
+
+            //弹出UI给提示
+            Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以输入密码");
         }
 
         public void SetInputValid(bool value)
@@ -73,7 +102,17 @@ namespace GameA.Game
                 {
                     _input.Clear();
                 }
+
                 _input.SetInputValid(value);
+            }
+        }
+
+        public void OnPasswordDoorOpen()
+        {
+            var localInput = _input as LocalPlayerInput;
+            if (localInput != null)
+            {
+                localInput.SetKeyDown(EInputType.PasswordDoorOpen);
             }
         }
     }

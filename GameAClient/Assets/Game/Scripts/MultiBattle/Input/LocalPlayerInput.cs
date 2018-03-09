@@ -9,6 +9,7 @@ namespace GameA.Game
     {
         #region 检查输入
 
+        [SerializeField] protected List<int> _cacheSettedInputKeys = new List<int>();
         [SerializeField] protected bool[] _curCheckInputKeyAry = new bool[(int) EInputType.Max];
         [SerializeField] protected bool[] _lastCheckInputKeyAry = new bool[(int) EInputType.Max];
 
@@ -75,6 +76,7 @@ namespace GameA.Game
             _lastCheckVertical = 0;
             _curCheckVertical = 0;
             _curCheckInputChangeList.Clear();
+            _cacheSettedInputKeys.Clear();
             for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
             {
                 _curCheckInputKeyAry[i] = false;
@@ -89,7 +91,7 @@ namespace GameA.Game
 #if IPHONE || ANDROID
 #else
 #endif
-
+            
             if (GetKeyDownCheck(EInputType.Left))
             {
                 _curCheckInputKeyAry[(int) EInputType.Left] = true;
@@ -179,6 +181,16 @@ namespace GameA.Game
             {
                 _curCheckInputKeyAry[(int) EInputType.Skill3] = false;
             }
+
+            for (int i = 0; i < _cacheSettedInputKeys.Count; i++)
+            {
+                var value = _cacheSettedInputKeys[i];
+                if (value < _curCheckInputKeyAry.Length)
+                {
+                    _curCheckInputKeyAry[value] = true;
+                }
+            }
+            _cacheSettedInputKeys.Clear();
         }
 
         protected bool GetKeyDownCheck(EInputType eInputType)
@@ -243,6 +255,11 @@ namespace GameA.Game
             }
 
             return false;
+        }
+
+        public void SetKeyDown(EInputType eInputType)
+        {
+            _cacheSettedInputKeys.Add((int) eInputType);
         }
     }
 }

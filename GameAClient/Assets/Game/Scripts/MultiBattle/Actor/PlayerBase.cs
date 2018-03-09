@@ -26,6 +26,7 @@ namespace GameA.Game
         protected int _reviveScene;
 
         protected Box _box;
+        protected PasswordDoor _passwordDoor;
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
@@ -159,6 +160,7 @@ namespace GameA.Game
             _siTouLe = false;
             _dieTime = 0;
             _box = null;
+            _passwordDoor = null;
             ClearView();
 //            _maxSpeedX = BattleDefine.MaxSpeedX;
             _lastSlot = -1;
@@ -346,6 +348,54 @@ namespace GameA.Game
             }
         }
 
+        protected virtual void OnHitPasswordDoor()
+        {
+        }
+
+        protected void CheckPasswordDoor()
+        {
+            if (_passwordDoor != null)
+            {
+                if (!_passwordDoor.UiOpen)
+                {
+                    if (_colliderGrid.YMin != _passwordDoor.ColliderGrid.YMin)
+                    {
+                        _passwordDoor = null;
+                    }
+                    else if (_deltaPos.y != 0 ||
+                             _deltaPos.x < 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Right ||
+                             _deltaPos.x > 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Left)
+                    {
+                        _passwordDoor = null;
+                    }
+                }
+            }
+
+            if (_passwordDoor != null)
+            {
+                return;
+            }
+
+            if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Right]))
+            {
+                _passwordDoor = _hitUnits[(int) EDirectionType.Right] as PasswordDoor;
+                if (_passwordDoor != null)
+                {
+                    _passwordDoor.DirectionRelativeMain = EDirectionType.Right;
+                    OnHitPasswordDoor();
+                }
+            }
+            else if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Left]))
+            {
+                _passwordDoor = _hitUnits[(int) EDirectionType.Left] as PasswordDoor;
+                if (_passwordDoor != null)
+                {
+                    _passwordDoor.DirectionRelativeMain = EDirectionType.Left;
+                    OnHitPasswordDoor();
+                }
+            }
+        }
+
         #region box
 
         protected virtual void CheckBox()
@@ -451,6 +501,11 @@ namespace GameA.Game
                    !((Box) unit).IsHoldingByPlayer;
         }
 
+        private bool IsValidPasswordDoor(UnitBase unit)
+        {
+            return unit != null && UnitDefine.PasswordDoorId == unit.Id && unit.Enabled && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+        }
+
         public override bool IsHoldingBox()
         {
             return _box != null && _box.IsHoldingByPlayer;
@@ -505,6 +560,12 @@ namespace GameA.Game
             {
                 _box.IsHoldingByPlayer = false;
                 _box = null;
+            }
+
+            if (_passwordDoor != null)
+            {
+                _passwordDoor.OnPlayerDead(this);
+                _passwordDoor = null;
             }
 
             _input.Clear();
@@ -820,6 +881,7 @@ namespace GameA.Game
             }
 
             CheckBox();
+            CheckPasswordDoor();
             if (_isAlive)
             {
                 if (!_grounded && ClimbState == EClimbState.None)
@@ -868,7 +930,8 @@ namespace GameA.Game
                             speed = 50;
                         }
 
-                        if (speed == 0 && (_eClimbState == EClimbState.ClimbLikeLadder || _eClimbState == EClimbState.Rope))
+                        if (speed == 0 && (_eClimbState == EClimbState.ClimbLikeLadder ||
+                                           _eClimbState == EClimbState.Rope))
                         {
                             _animation.PlayLoop(IdleAnimName());
                             if (IsMain)
@@ -1441,6 +1504,28 @@ namespace GameA.Game
             }
 
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public override void UpdateInput()
+        {
+            base.UpdateInput();
+            CheckPasswordDoorOpen();
+        }
+
+        private void CheckPasswordDoorOpen()
+        {
+            if (_input.GetKeyDownApplied(EInputType.PasswordDoorOpen))
+            {
+                if (_passwordDoor == null)
+                {
+                    LogHelper.Error("PasswordDoor open, but _passwordDoor == null");
+                }
+                else
+                {
+                    _passwordDoor.ShowOpen();
+                    _passwordDoor = null;
+                }
+            }
         }
 
         public bool PickUpMagicBean()

@@ -21,7 +21,6 @@ namespace GameA.Game
         protected IntVec2 _pointACheck;
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
-        protected bool _enabled = true;
 
         protected override void Clear()
         {
