@@ -4,7 +4,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5023, Type = typeof(MagicBean))]
-    public class MagicBean : CollectionBase
+    public class MagicBean : CollectionBase, ICanBulletHit
     {
         public const int MaxCarryCount = 5;
 

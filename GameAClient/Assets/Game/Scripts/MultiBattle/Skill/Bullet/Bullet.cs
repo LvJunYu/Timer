@@ -165,37 +165,9 @@ namespace GameA.Game
                                 }
 
                                 _destroy = 1;
-                                if (unit.Id == UnitDefine.MagicSwitchId)
+                                if (unit is ICanBulletHit)
                                 {
-                                    var switchMagic = unit as SwitchMagic;
-                                    if (switchMagic != null)
-                                    {
-                                        switchMagic.OnTrigger();
-                                    }
-                                }
-                                else if (UnitDefine.MagicBeanId == unit.Id)
-                                {
-                                    var magicBean = unit as MagicBean;
-                                    if (magicBean != null)
-                                    {
-                                        magicBean.OnBulletHit(this);
-                                    }
-                                }
-                                else if (UnitDefine.BrickId == unit.Id)
-                                {
-                                    var brick = unit as Brick;
-                                    if (brick != null)
-                                    {
-                                        brick.DestroyBrick();
-                                    }
-                                }
-                                else if (UnitDefine.WoodCaseId == unit.Id)
-                                {
-                                    var woodCase = unit as WoodCase;
-                                    if (woodCase != null)
-                                    {
-                                        woodCase.DestroyWoodCase();
-                                    }
+                                    ((ICanBulletHit) unit).OnBulletHit(this);
                                 }
 
                                 break;
@@ -262,5 +234,10 @@ namespace GameA.Game
 
             _skill.OnBulletHit(this);
         }
+    }
+
+    public interface ICanBulletHit
+    {
+        void OnBulletHit(Bullet bullet);
     }
 }

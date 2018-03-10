@@ -142,13 +142,13 @@ namespace GameA.Game
 
             if (extra.EffectRange > 0)
             {
-                _effectRange = extra.EffectRange;
+                _effectRange = TableConvert.GetRange(extra.EffectRange);
             }
             else
             {
                 if (_tableSkill.EffectValues != null && _tableSkill.EffectValues.Length > 0)
                 {
-                    _effectRange = _tableSkill.EffectValues[0];
+                    _effectRange = TableConvert.GetRange(_tableSkill.EffectValues[0]);
                 }
             }
 
@@ -500,11 +500,27 @@ namespace GameA.Game
                 return;
             }
 
+            int dis = 0;
+            if (UnitDefine.BombId == _owner.Id)
+            {
+                dis = (int) Mathf.Pow((actor.CenterPos - _owner.CenterPos).SqrMagnitude(), 0.5f) -
+                      _owner.TableUnit.Width / 2;
+            }
+
             var canHarm = _owner.CanHarm(actor);
             //击退
             if (canHarm && !actor.IsInvincible)
             {
-                if (_knockbackForces.Length == 2)
+                if (_owner.Id == UnitDefine.BombId)
+                {
+                    if (actor.ClimbState > EClimbState.None)
+                    {
+                        actor.SetClimbState(EClimbState.None);
+                    }
+                    actor.Speed = IntVec2.zero;
+                    actor.ExtraSpeed = Bomb.CalculateForce(dis, actor.CenterPos - _owner.CenterPos, _knockbackForces[0], _effectRange);
+                }
+                else if (_knockbackForces.Length == 2)
                 {
                     actor.Speed = IntVec2.zero;
                     actor.CurBanInputTime = 10;
@@ -537,7 +553,14 @@ namespace GameA.Game
             if (canHarm)
             {
                 actor.AddStates(_owner, _addStates);
-                actor.OnHpChanged(-_damage, _owner);
+                if (_owner.Id == UnitDefine.BombId)
+                {
+                    actor.OnHpChanged(-Bomb.CalculateDamage(dis, _damage, _effectRange), _owner);
+                }
+                else
+                {
+                    actor.OnHpChanged(-_damage, _owner);
+                }
             }
 
             actor.RemoveStates(_tableSkill.RemoveStates);
@@ -558,12 +581,12 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1,
                         centerPos.y + _radius - 1);
                     return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
@@ -571,7 +594,7 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
@@ -590,7 +613,7 @@ namespace GameA.Game
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }

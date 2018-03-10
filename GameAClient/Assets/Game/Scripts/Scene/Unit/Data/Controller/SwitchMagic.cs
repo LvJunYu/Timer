@@ -5,16 +5,13 @@
 ** Summary : Switch
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 8102, Type = typeof(SwitchMagic))]
-    public class SwitchMagic : BlockBase
+    public class SwitchMagic : BlockBase, ICanBulletHit
     {
         protected List<UnitBase> _units;
         protected UnityNativeParticleItem _effectStart;
@@ -25,6 +22,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchStart", _trans);
             return true;
         }
@@ -56,8 +54,10 @@ namespace GameA.Game
                 {
                     OnTrigger();
                 }
+
                 return base.OnUpHit(other, ref y, checkOnly);
             }
+
             return false;
         }
 
@@ -69,8 +69,10 @@ namespace GameA.Game
                 {
                     OnTrigger();
                 }
+
                 return base.OnDownHit(other, ref y, checkOnly);
             }
+
             return false;
         }
 
@@ -82,8 +84,10 @@ namespace GameA.Game
                 {
                     OnTrigger();
                 }
+
                 return base.OnLeftHit(other, ref x, checkOnly);
             }
+
             return false;
         }
 
@@ -95,17 +99,25 @@ namespace GameA.Game
                 {
                     OnTrigger();
                 }
+
                 return base.OnRightHit(other, ref x, checkOnly);
             }
+
             return false;
         }
 
-        public void OnTrigger()
+        public void OnBulletHit(Bullet bullet)
+        {
+            OnTrigger();
+        }
+
+        private void OnTrigger()
         {
             if (_effectStart != null && !_effectStart.IsPlaying)
             {
                 _effectStart.Play(0.5f);
             }
+
             if (_units != null)
             {
                 for (int i = 0; i < _units.Count; i++)
@@ -117,7 +129,8 @@ namespace GameA.Game
                     }
                 }
             }
-            Messenger.Broadcast (EMessengerType.OnSwitchTriggered);
+
+            Messenger.Broadcast(EMessengerType.OnSwitchTriggered);
         }
     }
 }

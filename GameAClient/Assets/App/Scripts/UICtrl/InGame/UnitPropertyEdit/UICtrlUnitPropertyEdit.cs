@@ -44,6 +44,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _npcTypeMenuList;
         private USCtrlUnitPropertyEditButton[] _monsterCaveMenuList;
         private USCtrlUnitPropertyEditButton[] _spawnMenuList;
+        private USCtrlSliderSetting _bombPowerSetting;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
@@ -209,6 +210,7 @@ namespace GameA
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
             _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
             _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
+            _rootArray[(int) EEditType.Bomb] = _cachedView.BombDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -232,6 +234,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
             _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
             _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
+            _menuButtonArray[(int) EEditType.Bomb].Init(_cachedView.BombMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -488,6 +491,13 @@ namespace GameA
                 _spawnMenuList[i].SetText(string.Format("0{0}", i + 1));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
             }
+            
+            //炸弹
+            var view = _cachedView.BombDock.GetComponentInChildren<USViewSliderSetting>();
+            _bombPowerSetting = new USCtrlSliderSetting();
+            _bombPowerSetting.Init(view);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_bombPowerSetting, EAdvanceAttribute.Damage,
+                value => EditData.UnitExtra.Damage = (ushort) value);
         }
 
         protected override void OnOpen(object parameter)
@@ -708,6 +718,17 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
+            }
+            
+            if (_tableUnit.CanEdit(EEditType.Bomb))
+            {
+                _validEditPropertyList.Add(EEditType.Bomb);
+                _menuButtonArray[(int) EEditType.Bomb].SetEnable(true);
+                _bombPowerSetting.SetCur(EditData.UnitExtra.Damage);
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Bomb].SetEnable(false);
             }
 
             //能编辑Npc/

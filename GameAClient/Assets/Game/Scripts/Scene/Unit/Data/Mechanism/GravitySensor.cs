@@ -12,6 +12,12 @@ namespace GameA.Game
         private int _lastSpeedX;
         private int _activeSpeedX;
         private bool _isUpDown;
+        private bool _canControllledBySwitch;
+
+        public override bool CanControlledBySwitch
+        {
+            get { return _canControllledBySwitch; }
+        }
 
         public override bool UseMagic()
         {
@@ -57,6 +63,7 @@ namespace GameA.Game
         {
             var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _lastDirection = _moveDirection;
+            _canControllledBySwitch = _moveDirection != EMoveDirection.None;
             return unitExtra;
         }
 

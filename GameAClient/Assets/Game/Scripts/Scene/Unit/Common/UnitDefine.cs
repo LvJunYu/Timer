@@ -59,6 +59,7 @@ namespace GameA.Game
         public const int LocationMissileId = 5026;
         public const int PasswordDoorId = 5028;
         public const int WoodCaseId = 5030;
+        public const int BombId = 5031;
         public const int BillboardId = 7001;
         public const int EnergyPoolId = 8001;
         public const int TextId = 9001;
@@ -246,7 +247,7 @@ namespace GameA.Game
 
         public static bool IsBox(int id)
         {
-            return id == BoxId || id == SurpriseBoxId || id == WoodCaseId;
+            return id == BoxId || id == SurpriseBoxId || id == WoodCaseId || id == BombId;
         }
 
         public static bool CanGrowCirrus(UnitBase unit)

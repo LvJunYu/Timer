@@ -724,6 +724,7 @@ namespace GameA.Game
         Spawn,
         SurpriseBox,
         PasswordDoor,
+        Bomb,
         Style,
         NpcType,
         NpcTask,

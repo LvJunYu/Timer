@@ -10,7 +10,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4006, Type = typeof(Brick))]
-    public class Brick : BlockBase
+    public class Brick : BlockBase, ICanBulletHit
     {
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
@@ -63,7 +63,7 @@ namespace GameA.Game
             }
         }
 
-        public void DestroyBrick()
+        private void DestroyBrick()
         {
             if (!_isAlive)
             {
@@ -72,6 +72,11 @@ namespace GameA.Game
             PlayMode.Instance.DestroyUnit(this);
             OnDead();
             Messenger.Broadcast(EMessengerType.OnBreakBrick);
+        }
+
+        public void OnBulletHit(Bullet bullet)
+        {
+            DestroyBrick();
         }
     }
 }

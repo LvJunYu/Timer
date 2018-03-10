@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class Bomb : ProjectileBase
+    public class ProjectileBomb : ProjectileBase
     {
         protected int _lifeTime;
         protected int _spring;

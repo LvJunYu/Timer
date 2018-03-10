@@ -126,6 +126,8 @@ namespace GameA.Game
                     return UnitDefine.SurpriseBoxId == Id;
                 case EEditType.PasswordDoor:
                     return UnitDefine.PasswordDoorId == Id;
+                case EEditType.Bomb:
+                    return UnitDefine.BombId == Id;
                 case EEditType.Style:
                     return Id == 4001;
                 case EEditType.NpcType:

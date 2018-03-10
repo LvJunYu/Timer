@@ -4,7 +4,7 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 5030, Type = typeof(WoodCase))]
-    public class WoodCase : Box
+    public class WoodCase : Box, ICanBulletHit
     {
         private const int MaxFallDestroyDis = 2 * ConstDefineGM2D.ServerTileScale;
         private int _itemId;
@@ -56,6 +56,11 @@ namespace GameA.Game
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
+        public void OnBulletHit(Bullet bullet)
+        {
+            DestroyWoodCase();
+        }
+
         protected void Check(UnitBase other, bool checkOnly)
         {
             if (!checkOnly)
@@ -75,7 +80,7 @@ namespace GameA.Game
             }
         }
 
-        public void DestroyWoodCase()
+        private void DestroyWoodCase()
         {
             if (!_isAlive)
             {
