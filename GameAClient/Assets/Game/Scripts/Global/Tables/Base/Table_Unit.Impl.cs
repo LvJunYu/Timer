@@ -124,6 +124,8 @@ namespace GameA.Game
                     return UnitDefine.SpawnId == Id;
                 case EEditType.SurpriseBox:
                     return UnitDefine.SurpriseBoxId == Id;
+                case EEditType.WoodCase:
+                    return UnitDefine.WoodCaseId == Id;
                 case EEditType.PasswordDoor:
                     return UnitDefine.PasswordDoorId == Id;
                 case EEditType.Bomb:

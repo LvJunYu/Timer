@@ -422,29 +422,14 @@ namespace GameA.Game
             SpeedY += _fanForce.y;
             if (!_grounded)
             {
-                if (_jumpLevel == 2)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
-                }
-                else if (ClimbState > EClimbState.None)
+                if (ClimbState > EClimbState.None)
                 {
                     switch (ClimbState)
                     {
                         case EClimbState.Rope:
                             SpeedY = 0;
-//                            if (_input.GetKeyApplied(EInputType.Up))
-//                            {
-//                                if (CheckRopeVerticalFloor(_curMaxSpeedX))
-//                                {
-//                                    SpeedY = _curMaxSpeedX;
-//                                }
-//                            }
                             if (_input.GetKeyApplied(EInputType.Down))
                             {
-//                                if (CheckRopeVerticalFloor(-_curMaxSpeedX))
-//                                {
-//                                    SpeedY = -_curMaxSpeedX;
-//                                }
                                 if (_grounded)
                                 {
                                     _eClimbState = EClimbState.None;
@@ -550,6 +535,10 @@ namespace GameA.Game
 
                             break;
                     }
+                }
+                else if (_jumpLevel == 2)
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
                 }
                 else
                 {

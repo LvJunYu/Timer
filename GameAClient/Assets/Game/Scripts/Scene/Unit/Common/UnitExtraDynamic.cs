@@ -723,6 +723,7 @@ namespace GameA.Game
         MonsterCave,
         Spawn,
         SurpriseBox,
+        WoodCase,
         PasswordDoor,
         Bomb,
         Style,

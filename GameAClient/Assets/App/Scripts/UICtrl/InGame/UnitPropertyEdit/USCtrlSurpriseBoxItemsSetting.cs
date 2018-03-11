@@ -30,7 +30,7 @@ namespace GameA
             base.Open();
             _cachedView.SetActiveEx(true);
             _cachedView.AddedItemRtf.anchoredPosition = Vector2.zero;
-            _cachedView.AddedItemRtf.anchoredPosition = Vector2.zero;
+            _cachedView.AllItemRtf.anchoredPosition = Vector2.zero;
             RefreshView();
         }
 

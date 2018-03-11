@@ -44,6 +44,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _npcTypeMenuList;
         private USCtrlUnitPropertyEditButton[] _monsterCaveMenuList;
         private USCtrlUnitPropertyEditButton[] _spawnMenuList;
+        private USCtrlUnitPropertyEditButton _usCtrlWoodCase = new USCtrlUnitPropertyEditButton();
         private USCtrlSliderSetting _bombPowerSetting;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
@@ -55,7 +56,7 @@ namespace GameA
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
         private UPCtrlUnitPropertySurpriseBox _upCtrlSurpriseBox;
-        private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor;
+        private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
 
         public bool IsInMap
         {
@@ -91,6 +92,11 @@ namespace GameA
         public UPCtrlUnitPropertyPasswordDoor UpCtrlPasswordDoor
         {
             get { return _upCtrlPasswordDoor; }
+        }
+
+        public USCtrlUnitPropertyEditButton UsCtrlWoodCase
+        {
+            get { return _usCtrlWoodCase; }
         }
 
         public UPCtrlUnitPropertyEditNpcDiaType EditNpcDiaType;
@@ -146,9 +152,6 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
-            //密码门
-            _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
-            _upCtrlPasswordDoor.Init(this, _cachedView);
             _upCtrlUnitPropertyEditAdvance = new UPCtrlUnitPropertyEditAdvance();
             _upCtrlUnitPropertyEditAdvance.Init(this, _cachedView);
             _upCtrlUnitPropertyEditPreinstall = new UPCtrlUnitPropertyEditPreinstall();
@@ -192,7 +195,9 @@ namespace GameA
             //惊喜盒子
             _upCtrlSurpriseBox = new UPCtrlUnitPropertySurpriseBox();
             _upCtrlSurpriseBox.Init(this, _cachedView);
-
+            //密码门
+            _upCtrlPasswordDoor.Init(this, _cachedView);
+            
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -209,6 +214,7 @@ namespace GameA
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
             _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
+            _rootArray[(int) EEditType.WoodCase] = _cachedView.WoodCaseDock;
             _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
             _rootArray[(int) EEditType.Bomb] = _cachedView.BombDock;
 
@@ -227,12 +233,12 @@ namespace GameA
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
             _menuButtonArray[(int) EEditType.Camp].Init(_cachedView.CampMenu);
-
             _menuButtonArray[(int) EEditType.NpcType].Init(_cachedView.NpcTypeMenu);
             _menuButtonArray[(int) EEditType.NpcTask].Init(_cachedView.NpcTaskSettingMenu);
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
             _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
+            _menuButtonArray[(int) EEditType.WoodCase].Init(_cachedView.WoodCaseMenu);
             _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
             _menuButtonArray[(int) EEditType.Bomb].Init(_cachedView.BombMenu);
 
@@ -491,13 +497,16 @@ namespace GameA
                 _spawnMenuList[i].SetText(string.Format("0{0}", i + 1));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
             }
-            
+
             //炸弹
             var view = _cachedView.BombDock.GetComponentInChildren<USViewSliderSetting>();
             _bombPowerSetting = new USCtrlSliderSetting();
             _bombPowerSetting.Init(view);
             UnitExtraHelper.SetUSCtrlSliderSetting(_bombPowerSetting, EAdvanceAttribute.Damage,
                 value => EditData.UnitExtra.Damage = (ushort) value);
+
+            var woodCaseView = _cachedView.WoodCaseDock.GetComponentInChildren<USViewUnitPropertyEditButton>();
+            _usCtrlWoodCase.Init(woodCaseView);
         }
 
         protected override void OnOpen(object parameter)
@@ -665,7 +674,7 @@ namespace GameA
                 _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
             }
 
-            if (_curId == UnitDefine.SurpriseBoxId)
+            if (_tableUnit.CanEdit(EEditType.SurpriseBox))
             {
                 _validEditPropertyList.Add(EEditType.SurpriseBox);
                 _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(true);
@@ -674,6 +683,18 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.WoodCase))
+            {
+                _validEditPropertyList.Add(EEditType.WoodCase);
+                _menuButtonArray[(int) EEditType.WoodCase].SetEnable(true);
+                int id = GetCurUnitExtra().CommonValue;
+                _usCtrlWoodCase.SetFgImage(UMCtrlWoodCaseItem.GetSprite(id), id==0, 54, 54);
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.WoodCase].SetEnable(false);
             }
 
             if (_curId == UnitDefine.PasswordDoorId)
@@ -719,7 +740,7 @@ namespace GameA
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
-            
+
             if (_tableUnit.CanEdit(EEditType.Bomb))
             {
                 _validEditPropertyList.Add(EEditType.Bomb);
@@ -1494,6 +1515,9 @@ namespace GameA
                     return true;
                 case EEditType.SurpriseBox:
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
+                    return true;
+                case EEditType.WoodCase:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WoodCase);
                     return true;
                 case EEditType.PasswordDoor:
                     _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.PasswordDoor);

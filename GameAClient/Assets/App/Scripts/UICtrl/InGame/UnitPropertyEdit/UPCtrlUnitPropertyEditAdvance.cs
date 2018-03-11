@@ -15,6 +15,7 @@ namespace GameA
             MonsterCave,
             Timer,
             SurpriseBox,
+            WoodCase,
             PasswordDoor,
         }
 
@@ -43,6 +44,7 @@ namespace GameA
         private USCtrlAddItem _usAddStatesSetting;
         private USCtrlDropdownSetting _usSpawnSetting;
         private USCtrlSurpriseBoxItemsSetting _usSurpriseBoxItemSetting;
+        private USCtrlWoodCaseItemsSetting _usCtrlWoodCaseItemsSetting;
         private USCtrSetItem _usPlayerWeaponSetting;
         private EMenu _curMenu;
         private UnitExtraDynamic _curUnitExtra;
@@ -157,6 +159,9 @@ namespace GameA
             _usSurpriseBoxItemSetting = new USCtrlSurpriseBoxItemsSetting();
             _usSurpriseBoxItemSetting.SetResScenary(_mainCtrl.ResScenary);
             _usSurpriseBoxItemSetting.Init(_cachedView.SurpriseBoxItemSetting);
+            _usCtrlWoodCaseItemsSetting = new USCtrlWoodCaseItemsSetting();
+            _usCtrlWoodCaseItemsSetting.Set(_mainCtrl.ResScenary, _mainCtrl.UsCtrlWoodCase);
+            _usCtrlWoodCaseItemsSetting.Init(_cachedView.WoodCaseItemsSetting);
             _usCtrlPasswordDoorSetting = new USCtrlPasswordDoorSetting();
             _usCtrlPasswordDoorSetting.Init(_cachedView.PasswordDoorSetting);
             _usCtrlPasswordDoorSetting.SetMainCtrl(_mainCtrl.UpCtrlPasswordDoor);
@@ -399,6 +404,16 @@ namespace GameA
             else
             {
                 _usSurpriseBoxItemSetting.Close();
+            }
+
+            if (_curMenu == EMenu.WoodCase)
+            {
+                _usCtrlWoodCaseItemsSetting.SetUnitExtra(_mainCtrl.GetCurUnitExtra());
+                _usCtrlWoodCaseItemsSetting.Open();
+            }
+            else
+            {
+                _usCtrlWoodCaseItemsSetting.Close();
             }
 
             if (_curMenu == EMenu.Timer)

@@ -36,6 +36,20 @@ namespace GameA
         {
             _cachedView.FgImage.sprite = sprite;
         }
+        
+        public void SetFgImage(Sprite sprite, bool native, int width, int height)
+        {
+            _cachedView.FgImage.sprite = sprite;
+            if (native)
+            {
+                _cachedView.FgImage.SetNativeSize();
+            }
+            else
+            {
+                _cachedView.FgImage.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                _cachedView.FgImage.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+        }
 
         public void SetFgImage(bool isRotation)
         {
