@@ -17,8 +17,9 @@ namespace GameA.Game
         private const string Ligt2Sprite = "M1SurpriseBox_Light2";
         private const string OpenSprite = "M1SurpriseBox_Open";
         private const string CloseSprite = "M1SurpriseBox";
-        private const string OpeneEffectStr = "M1EffectSurpriseBoxOpen";
-        private static WaitForSeconds OpenTime = new WaitForSeconds(0.5f);
+        private const string OpeneEffectStr = "M1EffectSurpriseBox";
+        private const float OpenSecond = 0.5f;
+        private static WaitForSeconds OpenTime = new WaitForSeconds(OpenSecond);
 
         private List<ushort> _itemList = new List<ushort>();
         private SpriteRenderer _itemRenderer;
@@ -176,12 +177,13 @@ namespace GameA.Game
                 if (_openEffect != null)
                 {
                     SetRelativeEffectPos(_openEffect.Trans, EDirectionType.Up);
+                    _openEffect.Trans.localPosition += Vector3.up * 0.5f;
                 }
             }
 
             if (_openEffect != null)
             {
-                _openEffect.Play(1);
+                _openEffect.Play(OpenSecond);
             }
         }
 

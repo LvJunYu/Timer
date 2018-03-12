@@ -43,7 +43,7 @@ namespace GameA.Game
         {
             if (!_justPutDown && ((PlayerBase) other).PickUpMagicBean())
             {
-                base.OnTrigger(other);
+                PlayMode.Instance.DestroyUnit(this);
             }
         }
 
@@ -97,6 +97,7 @@ namespace GameA.Game
             if (_downUnit != null && UnitDefine.CanGrowCirrus(_downUnit))
             {
                 CirrusManager.Instance.CreateCirrus(_curPos);
+                OnDead();
                 PlayMode.Instance.DestroyUnit(this);
             }
         }
