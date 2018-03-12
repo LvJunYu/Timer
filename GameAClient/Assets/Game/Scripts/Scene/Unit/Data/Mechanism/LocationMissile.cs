@@ -188,7 +188,14 @@ namespace GameA.Game
                 return;
             }
 
-            _curAngle = Mathf.MoveTowards(_curAngle, _targetAngle, AimSpeed);
+            if (_allCircle)
+            {
+                _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, AimSpeed);
+            }
+            else
+            {
+                _curAngle = Mathf.MoveTowards(_curAngle, _targetAngle, AimSpeed);
+            }
             RefreshGunDir();
         }
 

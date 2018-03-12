@@ -227,6 +227,16 @@ namespace GameA.Game
             if (JoyResManager.Instance.TryGetSprite(spriteName, out sprite))
             {
                 _itemRenderer.sprite = sprite;
+                if (_itemList.Count == 1)
+                {
+                    _itemRenderer.transform.localScale = Vector3.one * 0.5f;
+                    _itemRenderer.transform.localPosition = new Vector3(-0.145f, -0.125f, -0.01f);
+                }
+                else
+                {
+                    _itemRenderer.transform.localScale = Vector3.one;
+                    _itemRenderer.transform.localPosition = new Vector3(0, 0, -0.01f);
+                }
             }
         }
 

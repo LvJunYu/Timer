@@ -7,7 +7,6 @@ namespace GameA
 {
     public class USCtrlSurpriseBoxItemsSetting : USCtrlBase<USViewSurpriseBoxItemsSetting>
     {
-        private static int[] Items = {6001, 6002, 6003, 6004, 8002, 8005, 8006, 8007, 8008, 8009, 8010};
         private const int MaxItemCount = 30;
         private EResScenary _resScenary;
         private UnitExtraDynamic _unitExtra;
@@ -17,11 +16,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            for (int i = 0; i < Items.Length; i++)
+            var items = UnitDefine.ItemsInSurpriseBox;
+            for (int i = 0; i < items.Length; i++)
             {
                 var um = GetUmItem();
                 um.SetParent(_cachedView.AllItemRtf);
-                um.Set(Items[i], true, this);
+                um.Set(items[i], true, this);
             }
         }
 
