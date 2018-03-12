@@ -63,7 +63,7 @@ namespace GameA.Game
             }
         }
 
-        private void DestroyBrick()
+        public void DestroyBrick()
         {
             if (!_isAlive)
             {

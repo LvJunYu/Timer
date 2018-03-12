@@ -82,13 +82,15 @@ namespace GameA.Game
             IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
             IntVec2 centerUpFloorPos = new IntVec2(unitDesc.Guid.x + dataSize.x / 2, unitDesc.Guid.y + dataSize.y + 1);
             Grid2D checkGrid = new Grid2D(centerUpFloorPos, centerUpFloorPos);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
-                if (units[i].CanRope)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    return units[i];
-                }
+                    if (units[i].CanRope)
+                    {
+                        return units[i];
+                    }
+                } 
             }
 
             return null;
@@ -99,13 +101,15 @@ namespace GameA.Game
             IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
             IntVec2 centerDownFloorPos = new IntVec2(unitDesc.Guid.x + dataSize.x / 2, unitDesc.Guid.y - 1);
             Grid2D checkGrid = new Grid2D(centerDownFloorPos, centerDownFloorPos);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
-                if (units[i].Id == UnitDefine.RollerId)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    return units[i] as Rope;
-                }
+                    if (units[i].Id == UnitDefine.RollerId)
+                    {
+                        return units[i] as Rope;
+                    }
+                } 
             }
 
             return null;
@@ -117,16 +121,18 @@ namespace GameA.Game
             IntVec2 dataSize = tableUnit.GetDataSize(ref unitDesc);
             IntVec2 centerDownFloorPos = new IntVec2(unitDesc.Guid.x + dataSize.x / 2, unitDesc.Guid.y - 1);
             Grid2D checkGrid = new Grid2D(centerDownFloorPos, centerDownFloorPos);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
-                if (units[i].Id == UnitDefine.RopeId)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    rope = units[i] as Rope;
-                    return true;
+                    if (units[i].Id == UnitDefine.RopeId)
+                    {
+                        rope = units[i] as Rope;
+                        return true;
+                    }
                 }
             }
-
+            
             rope = null;
             return false;
         }

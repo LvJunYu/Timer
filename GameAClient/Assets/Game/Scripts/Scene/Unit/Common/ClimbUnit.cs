@@ -53,15 +53,17 @@ namespace GameA.Game
             if (!unit.CanClimb) return false;
             var centerPos = unit.CenterPos;
             var grid = new Grid2D(centerPos.x, centerPos.y + deltaPosY, centerPos.x, centerPos.y + deltaPosY);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(unit.DynamicCollider.Layer), float.MinValue, float.MaxValue,
-                unit.DynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                unit.DynamicCollider))
             {
-                if (units[i].IsAlive && UnitDefine.CanClimbLikeLadder(units[i].Id))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    curClimbUnit = units[i];
-                    return true;
+                    if (units[i].IsAlive && UnitDefine.CanClimbLikeLadder(units[i].Id))
+                    {
+                        curClimbUnit = units[i];
+                        return true;
+                    }
                 }
             }
 
@@ -73,15 +75,17 @@ namespace GameA.Game
             if (!unit.CanClimb) return false;
             var centerPos = unit.CenterPos;
             var grid = new Grid2D(centerPos.x + deltaPosX, centerPos.y, centerPos.x + deltaPosX, centerPos.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(unit.DynamicCollider.Layer), float.MinValue, float.MaxValue,
-                unit.DynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                unit.DynamicCollider))
             {
-                if (units[i].IsAlive && UnitDefine.CanClimbLikeLadder(units[i].Id))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    curClimbUnit = units[i];
-                    return true;
+                    if (units[i].IsAlive && UnitDefine.CanClimbLikeLadder(units[i].Id))
+                    {
+                        curClimbUnit = units[i];
+                        return true;
+                    }
                 }
             }
 

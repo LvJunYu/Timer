@@ -503,7 +503,8 @@ namespace GameA.Game
 
         private bool IsValidPasswordDoor(UnitBase unit)
         {
-            return unit != null && UnitDefine.PasswordDoorId == unit.Id && unit.Enabled && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+            return unit != null && UnitDefine.PasswordDoorId == unit.Id && unit.Enabled &&
+                   unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
         public override bool IsHoldingBox()
@@ -1575,13 +1576,15 @@ namespace GameA.Game
 
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.MagicBeanId);
             var checkGrid = tableUnit.GetDataGrid(pos.x, pos.y, 0, Vector2.one);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid))
             {
-                if (units[i].IsAlive && units[i] != this)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
-                    return false;
+                    if (units[i].IsAlive && units[i] != this)
+                    {
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
+                        return false;
+                    }
                 }
             }
 

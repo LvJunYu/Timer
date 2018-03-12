@@ -5,8 +5,6 @@
 ** Summary : StoneUnit
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 
 namespace GameA.Game
@@ -48,18 +46,20 @@ namespace GameA.Game
         
         private void CheckGrid(Grid2D grid)
         {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
-            if (units.Count > 0)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        var stone = unit as Stone;
-                        if (stone != null)
+                        var unit = units[i];
+                        if (unit != null && unit.IsAlive && unit != this)
                         {
-                            stone.OnChanged();
+                            var stone = unit as Stone;
+                            if (stone != null)
+                            {
+                                stone.OnChanged();
+                            }
                         }
                     }
                 }

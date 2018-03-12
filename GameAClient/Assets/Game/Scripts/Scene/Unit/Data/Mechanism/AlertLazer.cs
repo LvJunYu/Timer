@@ -166,14 +166,16 @@ namespace GameA.Game
                                 }
                             }
                             bool flag = false;
-                            var units = ColliderScene2D.GetUnits(hit);
-                            for (int j = 0; j < units.Count; j++)
+                            using (var units = ColliderScene2D.GetUnits(hit))
                             {
-                                if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
+                                for (int j = 0; j < units.Count; j++)
                                 {
-                                    _distance = hit.distance;
-                                    flag = true;
-                                    break;
+                                    if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
+                                    {
+                                        _distance = hit.distance;
+                                        flag = true;
+                                        break;
+                                    }
                                 }
                             }
                             if (flag)

@@ -741,7 +741,7 @@ namespace GameA.Game
 
         #region Physics
 
-        private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
+        private static Stack<DisposableList<UnitBase>> _freeList = new Stack<DisposableList<UnitBase>>();
 
         internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue)
@@ -766,11 +766,28 @@ namespace GameA.Game
                 float.MinValue, float.MaxValue, excludeNode);
         }
 
-        public static List<UnitBase> RaycastAllReturnUnits(IntVec2 origin, Vector2 direction,
+        private static void OnFree(DisposableList<UnitBase> list)
+        {
+            _freeList.Push(list);
+        }
+        
+        public static DisposableList<UnitBase> GetCacheList()
+        {
+            if (_freeList.Count > 0)
+            {
+                return _freeList.Pop();
+            }
+
+            var list = new DisposableList<UnitBase>();
+            list.OnDispose += OnFree;
+            return list;
+        }
+
+        public static DisposableList<UnitBase> RaycastAllReturnUnits(IntVec2 origin, Vector2 direction,
             float distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            _cachedUnits.Clear();
+            var cachedUnits = GetCacheList();
             var hits = RaycastAll(origin, direction, distance, layerMask, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < hits.Count; i++)
             {
@@ -779,10 +796,10 @@ namespace GameA.Game
                                hit.normal.x < 0 ? -1 : 0,
                                hit.normal.y > 0 ? 1 :
                                hit.normal.y < 0 ? -1 : 0);
-                GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
+                GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), cachedUnits);
             }
 
-            return _cachedUnits;
+            return cachedUnits;
         }
 
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
@@ -826,35 +843,35 @@ namespace GameA.Game
             return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
-        public static List<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
+        public static DisposableList<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            _cachedUnits.Clear();
+            var cachedUnits = GetCacheList();
             var nodes = SceneQuery2D.GridCastAll(ref one, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
-                GetUnits(nodes[i], one, _cachedUnits);
+                GetUnits(nodes[i], one, cachedUnits);
             }
 
-            return _cachedUnits;
+            return cachedUnits;
         }
 
-        public static List<UnitBase> GetUnits(RayHit2D hit)
+        public static DisposableList<UnitBase> GetUnits(RayHit2D hit)
         {
-            _cachedUnits.Clear();
+            var cachedUnits = GetCacheList();
             var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 :
                            hit.normal.x < 0 ? -1 : 0,
                            hit.normal.y > 0 ? 1 :
                            hit.normal.y < 0 ? -1 : 0);
-            GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), _cachedUnits);
-            return _cachedUnits;
+            GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y), cachedUnits);
+            return cachedUnits;
         }
 
-        public static List<UnitBase> GetUnits(GridHit2D hit, Grid2D one)
+        public static DisposableList<UnitBase> GetUnits(GridHit2D hit, Grid2D one)
         {
-            _cachedUnits.Clear();
-            GetUnits(hit.node, one, _cachedUnits);
-            return _cachedUnits;
+            var cachedUnits = GetCacheList();
+            GetUnits(hit.node, one, cachedUnits);
+            return cachedUnits;
         }
 
         private static bool GetUnits(SceneNode node, Grid2D one, List<UnitBase> units)
@@ -911,27 +928,27 @@ namespace GameA.Game
                 excludeNode);
         }
 
-        public static List<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius,
+        public static DisposableList<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius,
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            _cachedUnits.Clear();
+            var cachedUnits = GetCacheList();
             var grid = new Grid2D(center.x - radius, center.y - radius, center.x + radius - 1, center.y + radius - 1);
             grid = grid.IntersectWith(DataScene2D.CurScene.RootGrid);
             List<SceneNode> nodes =
                 SceneQuery2D.CircleCastAll(center, radius, layerMask, CurScene, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (!SplitNode(center, radius, grid, nodes[i]))
+                if (!SplitNode(center, radius, grid, nodes[i], cachedUnits))
                 {
                     LogHelper.Error("SplitNode failed.{0}, {1}", nodes[i], grid);
                 }
             }
 
-            return _cachedUnits;
+            return cachedUnits;
         }
 
-        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node)
+        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node, List<UnitBase> cachedUnits)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
@@ -950,7 +967,7 @@ namespace GameA.Game
                     return false;
                 }
 
-                _cachedUnits.Add(unit);
+                cachedUnits.Add(unit);
                 return true;
             }
 
@@ -973,7 +990,7 @@ namespace GameA.Game
                             continue;
                         }
 
-                        _cachedUnits.Add(unit);
+                        cachedUnits.Add(unit);
                     }
                 }
             }

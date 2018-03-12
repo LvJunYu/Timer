@@ -111,76 +111,78 @@ namespace GameA.Game
             GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
             var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte) (_moveDirection - 1),
                 _velocity);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
-                float.MinValue, float.MaxValue, _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
+                float.MinValue, float.MaxValue, _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    unit.OnIntersect(this);
-                    if (CheckMagicPassBeforeHit(unit))
+                    var unit = units[i];
+                    if (unit.IsAlive)
                     {
-                        continue;
-                    }
-
-                    switch (_moveDirection)
-                    {
-                        case EMoveDirection.Up:
-                            if (unit.OnDownHit(this, ref z, true))
-                            {
-                                Hit(unit, EDirectionType.Up);
-                            }
-
-                            break;
-                        case EMoveDirection.Down:
-                            if (unit.OnUpHit(this, ref z, true))
-                            {
-                                Hit(unit, EDirectionType.Down);
-                            }
-
-                            break;
-                        case EMoveDirection.Left:
-                            if (unit.OnRightHit(this, ref z, true))
-                            {
-                                Hit(unit, EDirectionType.Left);
-                            }
-
-                            break;
-                        case EMoveDirection.Right:
-                            if (unit.OnLeftHit(this, ref z, true))
-                            {
-                                Hit(unit, EDirectionType.Right);
-                            }
-
-                            break;
-                    }
-
-                    if (CheckMagicPassAfterHit(unit))
-                    {
-                        continue;
-                    }
-
-                    if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
-                    {
-                        if (unit.Id == UnitDefine.ScorchedEarthId)
+                        unit.OnIntersect(this);
+                        if (CheckMagicPassBeforeHit(unit))
                         {
-                            var se = unit as ScorchedEarth;
-                            if (se != null)
-                            {
-                                se.OnExplode();
-                            }
+                            continue;
                         }
 
-                        ChangeMoveDirection();
-                        break;
-                    }
-
-                    if (unit.Id == UnitDefine.BlueStoneRotateId)
-                    {
-                        if (_magicRotate == null)
+                        switch (_moveDirection)
                         {
-                            _magicRotate = unit;
+                            case EMoveDirection.Up:
+                                if (unit.OnDownHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Up);
+                                }
+
+                                break;
+                            case EMoveDirection.Down:
+                                if (unit.OnUpHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Down);
+                                }
+
+                                break;
+                            case EMoveDirection.Left:
+                                if (unit.OnRightHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Left);
+                                }
+
+                                break;
+                            case EMoveDirection.Right:
+                                if (unit.OnLeftHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Right);
+                                }
+
+                                break;
+                        }
+
+                        if (CheckMagicPassAfterHit(unit))
+                        {
+                            continue;
+                        }
+
+                        if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
+                        {
+                            if (unit.Id == UnitDefine.ScorchedEarthId)
+                            {
+                                var se = unit as ScorchedEarth;
+                                if (se != null)
+                                {
+                                    se.OnExplode();
+                                }
+                            }
+
+                            ChangeMoveDirection();
+                            break;
+                        }
+
+                        if (unit.Id == UnitDefine.BlueStoneRotateId)
+                        {
+                            if (_magicRotate == null)
+                            {
+                                _magicRotate = unit;
+                            }
                         }
                     }
                 }

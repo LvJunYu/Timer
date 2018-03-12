@@ -45,15 +45,17 @@ namespace GameA.Game
             var colliderGrid = tableUnit.GetColliderGrid(ref unitDesc);
             //检测周围是否有空间可以传送
             var checkGrid = GM2DTools.CalculateFireColliderGrid(sender.Id, colliderGrid, unitDesc.Rotation);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid,
-                JoyPhysics2D.GetColliderLayerMask(sender.DynamicCollider.Layer));
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid,
+                JoyPhysics2D.GetColliderLayerMask(sender.DynamicCollider.Layer)))
             {
-                if (units[i].IsAlive)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection) (unitDesc.Rotation + 1)))
+                    if (units[i].IsAlive)
                     {
-                        return;
+                        if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection) (unitDesc.Rotation + 1)))
+                        {
+                            return;
+                        }
                     }
                 }
             }

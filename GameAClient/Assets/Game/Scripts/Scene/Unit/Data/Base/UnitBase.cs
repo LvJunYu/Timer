@@ -1316,17 +1316,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
-                    CheckRightFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
+                        CheckRightFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 
@@ -1338,17 +1340,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
-                    CheckLeftFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
+                        CheckLeftFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 
@@ -1360,17 +1364,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
-                    CheckUpFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
+                        CheckUpFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 

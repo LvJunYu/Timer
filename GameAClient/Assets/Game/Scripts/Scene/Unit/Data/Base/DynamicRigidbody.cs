@@ -125,22 +125,24 @@ namespace GameA.Game
                 _onIce = false;
                 bool downExist = false;
                 int deltaX = int.MaxValue;
-                List<UnitBase> units = EnvManager.RetriveDownUnits(this);
-                for (int i = 0; i < units.Count; i++)
+                using (var units = EnvManager.RetriveDownUnits(this))
                 {
-                    UnitBase unit = units[i];
-                    int ymin = 0;
-                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
-                        unit.OnUpHit(this, ref ymin, true))
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        downExist = true;
-                        _grounded = true;
-                        _downUnits.Add(unit);
-                        var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
-                        if (deltaX > delta)
+                        UnitBase unit = units[i];
+                        int ymin = 0;
+                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
+                            unit.OnUpHit(this, ref ymin, true))
                         {
-                            deltaX = delta;
-                            _downUnit = unit;
+                            downExist = true;
+                            _grounded = true;
+                            _downUnits.Add(unit);
+                            var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
+                            if (deltaX > delta)
+                            {
+                                deltaX = delta;
+                                _downUnit = unit;
+                            }
                         }
                     }
                 }

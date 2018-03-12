@@ -19,10 +19,11 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _intelligenc = 3;
             return true;
         }
-        
+
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (unit.IsPlayer && CanHarm(unit))
@@ -30,10 +31,12 @@ namespace GameA.Game
                 OnDead();
                 return;
             }
+
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
             {
                 _timerDetectStay = 0;
             }
+
             base.Hit(unit, eDirectionType);
         }
 
@@ -64,32 +67,37 @@ namespace GameA.Game
         {
             if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CanMove)
             {
-                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
+                using (var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
-                    EnvManager.MonsterViewLayer);
-                bool target = false;
-                for (int i = 0; i < units.Count; i++)
+                    EnvManager.MonsterViewLayer))
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
+                    bool target = false;
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        if (unit.IsPlayer && CanHarm(unit))
+                        var unit = units[i];
+                        if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                         {
-                            target = true;
-                            if (_eMonsterState != EMonsterState.Chase)
+                            if (unit.IsPlayer && CanHarm(unit))
                             {
-                                ChangeState(EMonsterState.Bang);
-                                _timerDetectStay = 100 + _timerBang;
+                                target = true;
+                                if (_eMonsterState != EMonsterState.Chase)
+                                {
+                                    ChangeState(EMonsterState.Bang);
+                                    _timerDetectStay = 100 + _timerBang;
+                                }
                             }
+
+                            break;
                         }
-                        break;
+                    }
+
+                    if ((units.Count == 0 || !target) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
+                    {
+                        ChangeState(EMonsterState.Run);
                     }
                 }
-                if ((units.Count == 0 || !target) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
-                {
-                    ChangeState(EMonsterState.Run);
-                }
             }
+
             base.UpdateMonsterAI();
         }
 

@@ -80,7 +80,7 @@ namespace GameA.Game
             }
         }
 
-        private void DestroyWoodCase()
+        public void DestroyWoodCase()
         {
             if (!_isAlive)
             {

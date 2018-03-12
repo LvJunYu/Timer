@@ -32,7 +32,7 @@ namespace GameA.Game
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
-            if (GameRun.Instance.IsPlaying)
+            if (GameRun.Instance.IsPlaying && _eActiveState == EActiveState.Deactive)
             {
                 DestroyBomb();
             }

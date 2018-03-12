@@ -47,7 +47,7 @@ namespace GameA.Game
             DefineField<byte>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<ushort>(FieldTag.CommonValue, "CommonValue");
-            DefineField<ushort>(FieldTag.CycleInterval, "CycleInterval");
+            DefineField<byte>(FieldTag.CycleInterval, "CycleInterval");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
             DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");

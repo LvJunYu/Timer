@@ -112,14 +112,16 @@ namespace GameA.Game
                     if (tableUnit != null && tableUnit.IsFanBlock == 1)
                     {
                         bool flag = false;
-                        var units = ColliderScene2D.GetUnits(hit,
-                            SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
-                        for (int j = 0; j < units.Count; j++)
+                        using (var units = ColliderScene2D.GetUnits(hit,
+                            SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1)))
                         {
-                            if (units[j].IsAlive && !units[j].CanCross)
+                            for (int j = 0; j < units.Count; j++)
                             {
-                                flag = true;
-                                break;
+                                if (units[j].IsAlive && !units[j].CanCross)
+                                {
+                                    flag = true;
+                                    break;
+                                }
                             }
                         }
 

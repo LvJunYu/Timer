@@ -12,6 +12,9 @@ namespace GameA.Game
     public class CollectionBase : Magic
     {
         protected Tweener _tweener;
+        protected int _timer;
+        protected bool _isCycle;
+        protected int _cycleSecond;
 
         protected override bool OnInit()
         {
@@ -19,6 +22,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             SetSortingOrderBackground();
             return true;
         }
@@ -30,22 +34,58 @@ namespace GameA.Game
                 DOTween.Kill(_trans);
                 _tweener = null;
             }
+
             base.OnObjectDestroy();
+        }
+
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
+        {
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
+            _isCycle = unitExtra.TimerCirculation;
+            _cycleSecond = unitExtra.CycleInterval;
+            return unitExtra;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _timer = 0;
         }
 
         public override void OnIntersect(UnitBase other)
         {
             if (_isAlive && other.IsPlayer)
             {
-                OnTrigger(other);
+                if (_isCycle)
+                {
+                    if (_timer != 0)
+                    {
+                        return;
+                    }
+                    OnTrigger(other);
+                    _timer = _cycleSecond * ConstDefineGM2D.FixedFrameCount;
+                }
+                else
+                {
+                    OnDead();
+                    PlayMode.Instance.DestroyUnit(this);
+                    OnTrigger(other);
+                }
             }
         }
 
         protected virtual void OnTrigger(UnitBase other)
         {
-            OnDead();
-            PlayMode.Instance.DestroyUnit(this);
             Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AddColltion(Id);
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+            }
         }
 
         public void StopTwenner()

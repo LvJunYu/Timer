@@ -190,12 +190,14 @@ namespace GameA.Game
         private bool CheckSpaceValid(int id)
         {
             var checkGrid = GM2DTools.CalculateFireColliderGrid(id, _colliderGrid, _unitDesc.Rotation);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
-                if (units[i].IsAlive)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    return false;
+                    if (units[i].IsAlive)
+                    {
+                        return false;
+                    }
                 }
             }
 
