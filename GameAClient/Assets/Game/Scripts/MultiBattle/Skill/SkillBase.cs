@@ -439,13 +439,9 @@ namespace GameA.Game
                             }
                             else if (_owner.Id == UnitDefine.BombId)
                             {
-                                if (UnitDefine.BrickId == unit.Id)
+                                if (unit is ICanBombHit)
                                 {
-                                    ((Brick) unit).DestroyBrick();
-                                }
-                                else if (UnitDefine.WoodCaseId == unit.Id)
-                                {
-                                    ((WoodCase) unit).DestroyWoodCase();
+                                    ((ICanBombHit)unit).OnBombHit();
                                 }
                             }
                         }

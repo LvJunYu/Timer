@@ -107,16 +107,16 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_attackTimer > 0)
-            {
-                _attackTimer--;
-            }
-
             base.UpdateLogic();
 
             if (_eActiveState != EActiveState.Active)
             {
                 return;
+            }
+
+            if (_attackTimer > 0)
+            {
+                _attackTimer--;
             }
 
             if (_skillCtrl != null)
@@ -196,6 +196,7 @@ namespace GameA.Game
             {
                 _curAngle = Mathf.MoveTowards(_curAngle, _targetAngle, AimSpeed);
             }
+
             RefreshGunDir();
         }
 
