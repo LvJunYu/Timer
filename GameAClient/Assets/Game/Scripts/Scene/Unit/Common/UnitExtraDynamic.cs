@@ -47,6 +47,7 @@ namespace GameA.Game
             DefineField<byte>(FieldTag.SurpriseBoxMaxCount, "SurpriseBoxMaxCount");
             DefineField<ushort>(FieldTag.MonsterId, "MonsterId");
             DefineField<ushort>(FieldTag.CommonValue, "CommonValue");
+            DefineField<ushort>(FieldTag.CycleInterval, "CycleInterval");
             DefineField<byte>(FieldTag.NpcType, "NpcType");
             DefineField<string>(FieldTag.NpcName, "NpcName");
             DefineField<ushort>(FieldTag.NpcSerialNumber, "NpcSerialNumber");
@@ -99,6 +100,7 @@ namespace GameA.Game
             public static readonly int SurpriseBoxItems = _nextId++;
             public static readonly int MonsterId = _nextId++;
             public static readonly int CommonValue = _nextId++;
+            public static readonly int CycleInterval = _nextId++;
             public static readonly int NpcType = _nextId++;
             public static readonly int NpcName = _nextId++;
             public static readonly int NpcSerialNumber = _nextId++;
@@ -349,6 +351,12 @@ namespace GameA.Game
             set { Set(value, FieldTag.CommonValue); }
         }
 
+        public byte CycleInterval
+        {
+            get { return Get<byte>(FieldTag.CycleInterval); }
+            set { Set(value, FieldTag.CycleInterval); }
+        }
+
         public byte NpcType
         {
             get { return Get<byte>(FieldTag.NpcType); }
@@ -592,6 +600,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.TimerMaxSecond:
                 case EAdvanceAttribute.SurpriseBoxInterval:
                 case EAdvanceAttribute.SurpriseBoxMaxCount:
+                case EAdvanceAttribute.CycleInterval:
                     return 1;
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 1;
@@ -635,6 +644,8 @@ namespace GameA.Game
                 case EAdvanceAttribute.TimerMaxSecond:
                 case EAdvanceAttribute.MaxTaskKillOrColltionNum:
                     return 99;
+                case EAdvanceAttribute.CycleInterval:
+                    return 60;
                 case EAdvanceAttribute.EffectRange:
                     return 50;
                 case EAdvanceAttribute.BulletSpeed:
@@ -675,6 +686,7 @@ namespace GameA.Game
                 case EAdvanceAttribute.NpcIntervalTiem:
                 case EAdvanceAttribute.MaxTaskTimeLimit:
                 case EAdvanceAttribute.SurpriseBoxInterval:
+                case EAdvanceAttribute.CycleInterval:
                     return "{0}秒";
             }
 
@@ -726,6 +738,7 @@ namespace GameA.Game
         WoodCase,
         PasswordDoor,
         Bomb,
+        Cycle,
         Style,
         NpcType,
         NpcTask,
@@ -760,6 +773,7 @@ namespace GameA.Game
         SurpriseBoxMaxCount,
         MaxTaskKillOrColltionNum,
         MaxTaskTimeLimit,
+        CycleInterval,
         Spawn,
         Max
     }
