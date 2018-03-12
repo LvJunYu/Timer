@@ -27,6 +27,7 @@ namespace GameA
         private float _beginPos;
 
         private float _height;
+        private bool _beforeInvoke;
 
         //拖动的时候的储存的临时变量
         private int newindex;
@@ -41,9 +42,9 @@ namespace GameA
         public void Set(NpcDia dia, List<NpcDia> diaList, int index, Action callback)
         {
             _cachedView.SelectImage.gameObject.SetActiveEx(false);
-            _cachedView.DragHelper.OnBeginDragAction = DragBegin;
-            _cachedView.DragHelper.OnEndDragAction = DragEnd;
-            _cachedView.DragHelper.OnDragAction = OnDrag;
+            _cachedView.CtrlDrag.SetCanDrag();
+            _cachedView.CtrlDrag.OnBeforeDragEndAction = BeforeDragEnd;
+            _cachedView.CtrlDrag.OnAfterDragEndAction = AfterDragEnd;
             _cachedView.DragHelper.ScrollRect =
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaScorllRect;
             Clear();
@@ -51,6 +52,7 @@ namespace GameA
             _cachedView.UpBtn.onClick.AddListener(OnUpBtn);
             _cachedView.DownBtn.onClick.AddListener(OnDownBtn);
             _diaList = diaList;
+            _index = index;
             SetIndex(_index);
             _dia = dia;
             _callback = callback;
@@ -96,6 +98,17 @@ namespace GameA
 
                 _cachedView.DiaText.text = strtemp;
             }
+            _cachedView.EditDiaBtn.SetActiveEx(false);
+            _cachedView.EditDiaBtnMask.PointHoverAction = () => { _cachedView.EditDiaBtn.SetActiveEx(true); };
+            _cachedView.EditDiaBtn.onClick.RemoveAllListeners();
+            _cachedView.EditDiaBtn.onClick.AddListener(
+                () =>
+                {
+                    _cachedView.EditDiaBtn.SetActiveEx(false);
+                    SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().SetCurDiaItem(_dia);
+                    _callback.Invoke();
+                    _cachedView.SelectImage.gameObject.SetActiveEx(true);
+                });
         }
 
         private void SetIndex(int index)
@@ -164,6 +177,8 @@ namespace GameA
                     _cachedView.IndexText.text = "对话二十";
                     break;
             }
+
+            _cachedView.Trans.SetSiblingIndex(_index);
         }
 
         private void OnDownBtn()
@@ -205,11 +220,13 @@ namespace GameA
             _cachedView.DisableObj.SetActive(true);
             _cachedView.EnableObj.SetActive(false);
             SetIndex(index);
-            _cachedView.DragHelper.OnBeginDragAction = null;
-            _cachedView.DragHelper.OnEndDragAction = null;
-            _cachedView.DragHelper.OnDragAction = null;
+            _cachedView.CtrlDrag.SetDisable();
+//            _cachedView.DragHelper.OnBeginDragAction = null;
+//            _cachedView.DragHelper.OnEndDragAction = null;
+//            _cachedView.DragHelper.OnDragAction = null;
             _cachedView.DragHelper.ScrollRect =
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaScorllRect;
+            _cachedView.EditDiaBtn.onClick.RemoveAllListeners();
         }
 
         public void setEenable()
@@ -218,21 +235,22 @@ namespace GameA
             _cachedView.EnableObj.SetActive(true);
         }
 
-        private void DragBegin()
-        {
-            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().transform;
-            _cachedView.transform.SetAsLastSibling();
-            _beginPos = _cachedView.transform.position.y;
-            newindex = 0;
-            _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
-        }
+//        private void DragBegin()
+//        {
+//            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().transform;
+//            _cachedView.transform.SetAsLastSibling();
+//            _beginPos = _cachedView.transform.position.y;
+//            newindex = 0;
+//            _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+//        }
 
-        private void DragEnd()
+        private void BeforeDragEnd()
         {
-            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent;
-            _cachedView.transform.SetSiblingIndex(_index);
-            SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent
-                .GetComponent<VerticalLayoutGroup>().SetLayoutVertical();
+            _beforeInvoke = false;
+//            _cachedView.transform.parent = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent;
+//            _cachedView.transform.SetSiblingIndex(_index);
+//            SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetVeiw().DiaItemContent
+//                .GetComponent<VerticalLayoutGroup>().SetLayoutVertical();
             Rect rect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetInputRect();
             if (Mathf.Abs(_cachedView.transform.position.x - rect.x) < rect.width / 2 &&
                 Mathf.Abs(_cachedView.transform.position.y - rect.y) < rect.height / 2)
@@ -240,101 +258,70 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().SetCurDiaItem(_dia);
                 _callback.Invoke();
                 _cachedView.SelectImage.gameObject.SetActiveEx(true);
-            }
-            else
-            {
-                Rect diaContentRect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetDiaContentRect();
-                if (Mathf.Abs(_cachedView.transform.position.x - diaContentRect.x) < diaContentRect.width / 2 &&
-                    Mathf.Abs(_cachedView.transform.position.y - diaContentRect.y) < diaContentRect.height / 2)
-                {
-                    _height = _cachedView.rectTransform().GetHeight();
-                    float posY = _cachedView.transform.position.y;
-                    int move = ((int) posY - (int) _beginPos) % (int) (_height);
-                    int moveindex = ((int) posY - (int) _beginPos) / (int) (_height);
-                    if ((move > 0 && move < _height / 2))
-                    {
-                        for (int i = 0; i < Mathf.Abs(moveindex); i++)
-                        {
-                            int newindex = _index - 1;
-                            if (newindex >= 0)
-                            {
-                                NpcDia temp = _diaList[_index];
-                                _diaList[_index] = _diaList[newindex];
-                                _diaList[newindex] = temp;
-                            }
-
-                            _index = newindex;
-                        }
-
-                        _callback.Invoke();
-                    }
-
-                    if (move < 0 && move < -_height / 2)
-                    {
-                        for (int i = 0; i < Mathf.Abs(moveindex) + 1; i++)
-                        {
-                            int newindex = _index + 1;
-                            if (newindex < _diaList.Count)
-                            {
-                                NpcDia temp = _diaList[_index];
-                                _diaList[_index] = _diaList[newindex];
-                                _diaList[newindex] = temp;
-                            }
-
-                            _index = newindex;
-                        }
-
-                        _callback.Invoke();
-                    }
-                }
+                _beforeInvoke = true;
             }
         }
 
-
-        private void OnDrag()
+        private void AfterDragEnd()
         {
-            Rect diaContentRect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetDiaContentRect();
-            if (Mathf.Abs(_cachedView.transform.position.x - diaContentRect.x) < diaContentRect.width / 2 &&
-                Mathf.Abs(_cachedView.transform.position.y - diaContentRect.y) < diaContentRect.height / 2)
+            if (_beforeInvoke)
             {
-                _height = _cachedView.rectTransform().GetHeight();
-                float posY = _cachedView.transform.position.y;
-                int move = ((int) posY - (int) _beginPos) % (int) (_height);
-                int moveindex = ((int) posY - (int) _beginPos) / (int) (_height);
-                if ((move > 0 && move < _height / 2))
+                _cachedView.Trans.SetSiblingIndex(_index);
+                return;
+            }
+
+            int newindex = _cachedView.Trans.GetSiblingIndex();
+            if (newindex != _index && newindex >= 0)
+            {
+                _diaList.RemoveAt(_index);
+                if (newindex >= _diaList.Count)
                 {
-                    newindex = _index - Mathf.Abs(moveindex);
-                    SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
+                    _diaList.Add(_dia);
                 }
                 else
                 {
-                    if (move < 0 && move < -_height / 2)
-                    {
-                        newindex = Mathf.Abs(moveindex) + _index + 1;
-                        SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
-                    }
-                    else
-                    {
-                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
-                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
-                    }
+                    _diaList.Insert(newindex, _dia);
                 }
-            }
-            else
-            {
-                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
-                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+
+                _callback.Invoke();
             }
         }
 
-        public void MoveByIndex(int index, int dragingIndex)
-        {
-            if (_index != dragingIndex)
-            {
-                float newpos = _cachedView.transform.position.y +
-                               (index - _index) * _cachedView.rectTransform().GetHeight();
-                _cachedView.transform.DOLocalMoveY(newpos, 0.2f);
-            }
-        }
+
+//        private void OnDrag()
+//        {
+//            Rect diaContentRect = SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().GetDiaContentRect();
+//            if (Mathf.Abs(_cachedView.transform.position.x - diaContentRect.x) < diaContentRect.width / 2 &&
+//                Mathf.Abs(_cachedView.transform.position.y - diaContentRect.y) < diaContentRect.height / 2)
+//            {
+//                _height = _cachedView.rectTransform().GetHeight();
+//                float posY = _cachedView.transform.position.y;
+//                int move = ((int) posY - (int) _beginPos) % (int) (_height);
+//                int moveindex = ((int) posY - (int) _beginPos) / (int) (_height);
+//                if ((move > 0 && move < _height / 2))
+//                {
+//                    newindex = _index - Mathf.Abs(moveindex);
+//                    SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
+//                }
+//                else
+//                {
+//                    if (move < 0 && move < -_height / 2)
+//                    {
+//                        newindex = Mathf.Abs(moveindex) + _index + 1;
+//                        SocialGUIManager.Instance.GetUI<UICtrlEditNpcDia>().MoveDiaItem(newindex, _index);
+//                    }
+//                    else
+//                    {
+//                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
+//                        _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(true);
+//                _cachedView.transform.parent.GetComponent<VerticalLayoutGroup>().SetEnableEx(false);
+//            }
+//        }
     }
 }
