@@ -265,6 +265,11 @@ namespace GameA.Game
             get { return _colliderGrid; }
         }
 
+        public virtual Grid2D LastColliderGrid
+        {
+            get { return _lastColliderGrid; }
+        }
+
         public bool IsAlive
         {
             get { return _isAlive; }
@@ -1978,6 +1983,57 @@ namespace GameA.Game
 
         public virtual void OnSceneExit()
         {
+        }
+
+        public bool CheckUpValid(ref int speedY, ref UnitBase unit, bool checkOnly = false)
+        {
+            IntVec2 pointACheck = IntVec2.zero, pointBCheck = IntVec2.zero;
+            GM2DTools.GetBorderPoint(_colliderGrid, EDirectionType.Up, ref pointACheck, ref pointBCheck);
+            var checkGrid = SceneQuery2D.GetGrid(pointACheck, pointBCheck, 0, speedY);
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
+                float.MinValue, float.MaxValue, _dynamicCollider))
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unitHit = units[i];
+                    if (unitHit.IsAlive)
+                    {
+                        if (unitHit.IsActor || unitHit is Box)
+                        {
+                            if (unitHit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                            {
+                                if (!checkOnly)
+                                {
+                                    speedY = 0;
+                                }
+                            }
+                            else if (unitHit.ColliderGrid.YMin == _colliderGrid.YMax + 1)
+                            {
+                                if (!unitHit.CheckUpValid(ref speedY, ref unitHit))
+                                {
+                                    return false;
+                                }
+                            }
+
+                            continue;
+                        }
+
+                        int y = 0;
+                        if (unitHit.OnDownHit(this, ref y, true) && unitHit.TableUnit.IsMagicBlock == 1 &&
+                            !unitHit.CanCross)
+                        {
+                            if (!checkOnly)
+                            {
+                                unit = unitHit;
+                            }
+
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

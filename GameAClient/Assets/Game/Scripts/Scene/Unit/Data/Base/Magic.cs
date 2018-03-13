@@ -216,13 +216,27 @@ namespace GameA.Game
             //朝上运动时，如果是角色或者箱子。
             if (_moveDirection == EMoveDirection.Up)
             {
-                if (unit.IsActor || UnitDefine.IsBox(unit.Id))
+                if (unit.IsActor || unit is Box)
                 {
                     //如果远离
                     if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
                     {
                         Speed = IntVec2.zero;
                         _timerMagic = 24;
+                    }
+                    else if (unit.ColliderGrid.YMin == _colliderGrid.YMax + 1)
+                    {
+                        int y = SpeedY;
+                        if (!unit.CheckUpValid(ref y, ref unit))
+                        {
+                            return false;
+                        }
+
+                        if (y == 0)
+                        {
+                            Speed = IntVec2.zero;
+                            _timerMagic = 24;
+                        }
                     }
 
                     return true;
@@ -283,6 +297,7 @@ namespace GameA.Game
 
         protected virtual void UpdateCollider(IntVec2 min)
         {
+            _lastColliderGrid = _colliderGrid;
             if (_colliderPos.Equals(min))
             {
                 return;
@@ -294,7 +309,6 @@ namespace GameA.Game
             {
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicNode(_dynamicCollider);
-                _lastColliderGrid = _colliderGrid;
             }
         }
 

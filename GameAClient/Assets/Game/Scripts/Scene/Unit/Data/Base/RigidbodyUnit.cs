@@ -78,6 +78,7 @@ namespace GameA.Game
 
         protected override void UpdateCollider(IntVec2 min)
         {
+            _lastColliderGrid = _colliderGrid;
             for (int i = 0; i < 4; i++)
             {
                 _hitUnits[i] = null;
@@ -115,11 +116,10 @@ namespace GameA.Game
             {
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
-                _lastColliderGrid = _colliderGrid;
             }
             else if (!_isFreezed) //静止的时候检测是否交叉
             {
-                using ( var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid,
+                using (var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid,
                     JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                     _dynamicCollider))
                 {
@@ -142,7 +142,7 @@ namespace GameA.Game
 //            {
 //                return false;
 //            }
-            return _colliderGrid.Intersects(unit.ColliderGrid);
+            return _colliderGrid.Intersects(unit.LastColliderGrid);
         }
 
         protected virtual void CheckClimbUnitChangeDir(EClimbState eClimbState)
@@ -177,11 +177,20 @@ namespace GameA.Game
 
                             if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
                             {
-                                flag = true;
-                                if (ymin < y)
+                                int speedY = ymin - _colliderPos.y;
+                                if ((unit.IsActor || unit is Box) && _extraDeltaPos.y > 0 &&
+                                    unit.ColliderGrid.YMin == _colliderGrid.YMax + 1 &&
+                                    unit.CheckUpValid(ref speedY, ref unit, true))
                                 {
-                                    y = ymin;
-                                    hit = unit;
+                                }
+                                else
+                                {
+                                    flag = true;
+                                    if (ymin < y)
+                                    {
+                                        y = ymin;
+                                        hit = unit;
+                                    }
                                 }
                             }
                         }
@@ -460,7 +469,7 @@ namespace GameA.Game
                     deltaImpactPos = new IntVec2(deltaX, deltaY);
                 }
 
-                _isCalculated = true;
+//                _isCalculated = true;
             }
 
             return deltaImpactPos;
