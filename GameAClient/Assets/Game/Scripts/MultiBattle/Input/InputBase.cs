@@ -24,7 +24,6 @@ namespace GameA.Game
     {
         [SerializeField] protected bool[] _curAppliedInputKeyAry = new bool[(int) EInputType.Max];
         protected bool[] _lastAppliedInputKeyAry = new bool[(int) EInputType.Max];
-        protected bool _inputValid = true;
 
         public bool[] CurAppliedInputKeyAry
         {
@@ -122,9 +121,8 @@ namespace GameA.Game
             return GetKeyDownApplied((EInputType) ((int) EInputType.Skill1 + i));
         }
 
-        public void SetInputValid(bool value)
+        public virtual void SetInputValid(bool value)
         {
-            _inputValid = value;
         }
     }
 }

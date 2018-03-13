@@ -155,7 +155,7 @@
             _mainPlayer = null;
         }
 
-        public void OnUiOpen(bool value, UICtrlPasswordDoorInGame uiCtrlPasswordDoorInGame)
+        public void OnUiOpen(bool value)
         {
             _uiOpen = value;
             if (_mainPlayer != null)

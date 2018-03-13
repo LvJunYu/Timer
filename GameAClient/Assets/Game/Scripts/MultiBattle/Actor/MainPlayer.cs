@@ -98,11 +98,6 @@ namespace GameA.Game
         {
             if (_input != null)
             {
-                if (!value)
-                {
-                    _input.Clear();
-                }
-
                 _input.SetInputValid(value);
             }
         }

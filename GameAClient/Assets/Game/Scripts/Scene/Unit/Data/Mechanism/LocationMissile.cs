@@ -76,7 +76,7 @@ namespace GameA.Game
                 return false;
             }
 
-            SetGunView();
+            SetGunView(GameRun.Instance.IsPlaying);
             return true;
         }
 
@@ -84,7 +84,7 @@ namespace GameA.Game
         {
             base.Clear();
             _curAngle = _startAngle;
-            SetGunView();
+            SetGunView(false);
             _skillCtrl = null;
             _curState = EState.Rotate;
         }
@@ -308,11 +308,19 @@ namespace GameA.Game
             }
         }
 
-        private void SetGunView()
+        private void SetGunView(bool isPlayering)
         {
             if (_view == null) return;
             if (_gun == null)
             {
+                if (isPlayering)
+                {
+                    CreateGun();
+                    _bulletOffsetPos = GM2DTools.WorldToTile(new Vector2(-0.444f, -0.37f));
+                    _gun.ChangeView(_teamId);
+                    RefreshGunDir();
+                    return;
+                }
                 CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
                 {
                     CreateGun();

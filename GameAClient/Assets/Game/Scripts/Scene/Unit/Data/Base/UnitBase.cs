@@ -1693,9 +1693,9 @@ namespace GameA.Game
             return _tableUnit.GetColliderSize(ref _unitDesc);
         }
 
-        protected void SetSortingOrderBackground()
+        protected void SetSortingOrderBackground(float offset = 0)
         {
-            _viewZOffset = UnitDefine.ZOffsetBackground;
+            _viewZOffset = UnitDefine.ZOffsetBackground + offset;
         }
 
         protected void SetSortingOrderFrontest()

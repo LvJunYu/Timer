@@ -97,7 +97,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWorkShopProjectListChanged, OnEditingProjectsChanged);
             RegisterEvent(EMessengerType.OnWorkShopDownloadListChanged, OnWorkShopDownloadListChanged);
-            RegisterEvent(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
+            RegisterEvent<long>(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnEditingProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
             RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
@@ -216,9 +216,9 @@ namespace GameA
             }
         }
 
-        private void OnPublishedProjectsChanged()
+        private void OnPublishedProjectsChanged(long userId)
         {
-            if (!_isOpen)
+            if (!_isOpen || userId != LocalUser.Instance.UserGuid)
             {
                 return;
             }

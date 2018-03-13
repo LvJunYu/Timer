@@ -86,13 +86,13 @@ namespace GameA
                 return;
             }
 
-            _passwordDoor.OnUiOpen(true, this);
+            _passwordDoor.OnUiOpen(true);
             SetState(EState.Normal);
         }
 
         protected override void OnClose()
         {
-            _passwordDoor.OnUiOpen(false, this);
+            _passwordDoor.OnUiOpen(false);
             base.OnClose();
         }
 

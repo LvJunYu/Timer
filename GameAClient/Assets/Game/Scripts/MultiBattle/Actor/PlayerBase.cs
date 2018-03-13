@@ -352,46 +352,58 @@ namespace GameA.Game
         {
         }
 
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            if (unit.Id == UnitDefine.PasswordDoorId)
+            {
+                _passwordDoor = unit as PasswordDoor;
+                if (_passwordDoor != null)
+                {
+                    _passwordDoor.DirectionRelativeMain = eDirectionType;
+                    OnHitPasswordDoor();
+                }
+            }
+        }
+
         protected void CheckPasswordDoor()
         {
             if (_passwordDoor != null)
             {
+                if (_passwordDoor.HasOpened)
+                {
+                    _passwordDoor = null;
+                    return;
+                }
                 if (!_passwordDoor.UiOpen)
                 {
-                    if (_colliderGrid.YMin != _passwordDoor.ColliderGrid.YMin)
+                    switch (_passwordDoor.DirectionRelativeMain)
                     {
-                        _passwordDoor = null;
+                        case EDirectionType.Up:
+                            if (!CheckUpFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+                            break;
+                        case EDirectionType.Right:
+                            if (!CheckRightFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+                            break;
+                        case EDirectionType.Down:
+                            if (!CheckOnFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+                            break;
+                        case EDirectionType.Left:
+                            if (!CheckLeftFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+                            break;
                     }
-                    else if (_deltaPos.y != 0 ||
-                             _deltaPos.x < 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Right ||
-                             _deltaPos.x > 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Left)
-                    {
-                        _passwordDoor = null;
-                    }
-                }
-            }
-
-            if (_passwordDoor != null)
-            {
-                return;
-            }
-
-            if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Right]))
-            {
-                _passwordDoor = _hitUnits[(int) EDirectionType.Right] as PasswordDoor;
-                if (_passwordDoor != null)
-                {
-                    _passwordDoor.DirectionRelativeMain = EDirectionType.Right;
-                    OnHitPasswordDoor();
-                }
-            }
-            else if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Left]))
-            {
-                _passwordDoor = _hitUnits[(int) EDirectionType.Left] as PasswordDoor;
-                if (_passwordDoor != null)
-                {
-                    _passwordDoor.DirectionRelativeMain = EDirectionType.Left;
-                    OnHitPasswordDoor();
                 }
             }
         }
@@ -499,12 +511,6 @@ namespace GameA.Game
         {
             return unit != null && UnitDefine.IsBox(unit.Id) && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
                    !((Box) unit).IsHoldingByPlayer;
-        }
-
-        private bool IsValidPasswordDoor(UnitBase unit)
-        {
-            return unit != null && UnitDefine.PasswordDoorId == unit.Id && unit.Enabled &&
-                   unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
         public override bool IsHoldingBox()

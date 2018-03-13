@@ -30,6 +30,8 @@ namespace GameA.Game
         private int _maxCount;
         private int _curCount;
         private int _timer;
+        private int _aliveTimer;
+        private UnitBase _curItem;
         private UnityNativeParticleItem _openEffect;
 
         public override bool CanControlledBySwitch
@@ -92,6 +94,17 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            if (_aliveTimer > 0)
+            {
+                _aliveTimer--;
+                if (_aliveTimer == 0)
+                {
+                    if (_curItem != null)
+                    {
+                        _curItem.IsAlive = true;
+                    }
+                }
+            }
             if (_curCount < _maxCount)
             {
                 if (_timer > 0)
@@ -118,6 +131,8 @@ namespace GameA.Game
             base.Clear();
             _timer = 0;
             _curCount = 0;
+            _aliveTimer = 0;
+            _curItem = null;
         }
 
         private bool DoSurprise()
@@ -143,12 +158,14 @@ namespace GameA.Game
                 var id = _itemList[index];
                 if (CheckSpaceValid(id))
                 {
-                    var item = PlayMode.Instance.CreateRuntimeUnit(id, new IntVec2(_curPos.x, CenterUpFloorPos.y));
-                    if (item != null)
+                    _curItem = PlayMode.Instance.CreateRuntimeUnit(id, new IntVec2(_curPos.x, CenterUpFloorPos.y));
+                    if (_curItem != null)
                     {
                         ShowOpenEffect();
-                        CoroutineProxy.Instance.StartCoroutine(ShowOpenView(item));
-                        item.OnPlay();
+                        _aliveTimer = (int) (OpenSecond * ConstDefineGM2D.FixedFrameCount);
+                        _curItem.IsAlive = false;
+                        CoroutineProxy.Instance.StartCoroutine(ShowOpenView());
+                        _curItem.OnPlay();
                         return true;
                     }
                 }
@@ -157,14 +174,12 @@ namespace GameA.Game
             return false;
         }
 
-        private IEnumerator ShowOpenView(UnitBase unit)
+        private IEnumerator ShowOpenView()
         {
             if (_view != null)
             {
-                unit.IsAlive = false;
                 _view.ChangeView(OpenSprite);
                 yield return OpenTime;
-                unit.IsAlive = true;
                 _view.ChangeView(CloseSprite);
             }
         }
