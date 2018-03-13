@@ -20,6 +20,7 @@
         public bool UiOpen
         {
             get { return _uiOpen; }
+            set { _uiOpen = value; }
         }
 
         public bool HasOpened

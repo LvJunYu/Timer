@@ -357,9 +357,11 @@ namespace GameA.Game
             base.Hit(unit, eDirectionType);
             if (unit.Id == UnitDefine.PasswordDoorId)
             {
-                _passwordDoor = unit as PasswordDoor;
-                if (_passwordDoor != null)
+                var passwordDoor = unit as PasswordDoor;
+                if (passwordDoor != null && !passwordDoor.HasOpened)
                 {
+                    _passwordDoor = passwordDoor;
+                    _passwordDoor.UiOpen = false;
                     _passwordDoor.DirectionRelativeMain = eDirectionType;
                     OnHitPasswordDoor();
                 }
@@ -370,11 +372,6 @@ namespace GameA.Game
         {
             if (_passwordDoor != null)
             {
-                if (_passwordDoor.HasOpened)
-                {
-                    _passwordDoor = null;
-                    return;
-                }
                 if (!_passwordDoor.UiOpen)
                 {
                     switch (_passwordDoor.DirectionRelativeMain)
@@ -384,24 +381,28 @@ namespace GameA.Game
                             {
                                 _passwordDoor = null;
                             }
+
                             break;
                         case EDirectionType.Right:
                             if (!CheckRightFloor(_passwordDoor))
                             {
                                 _passwordDoor = null;
                             }
+
                             break;
                         case EDirectionType.Down:
                             if (!CheckOnFloor(_passwordDoor))
                             {
                                 _passwordDoor = null;
                             }
+
                             break;
                         case EDirectionType.Left:
                             if (!CheckLeftFloor(_passwordDoor))
                             {
                                 _passwordDoor = null;
                             }
+
                             break;
                     }
                 }
