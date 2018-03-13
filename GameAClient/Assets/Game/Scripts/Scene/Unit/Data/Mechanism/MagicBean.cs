@@ -80,6 +80,10 @@ namespace GameA.Game
             _putDownPlayer = null;
         }
 
+        protected override void OnLastTrigger()
+        {
+        }
+
         public void PutDownByPlayer(PlayerBase playerBase)
         {
             _putDownPlayer = playerBase;

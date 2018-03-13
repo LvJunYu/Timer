@@ -67,11 +67,16 @@ namespace GameA.Game
                 }
                 else
                 {
-                    OnDead();
-                    PlayMode.Instance.DestroyUnit(this);
+                    OnLastTrigger();
                     OnTrigger(other);
                 }
             }
+        }
+
+        protected virtual void OnLastTrigger()
+        {
+            OnDead();
+            PlayMode.Instance.DestroyUnit(this);
         }
 
         protected virtual void OnTrigger(UnitBase other)

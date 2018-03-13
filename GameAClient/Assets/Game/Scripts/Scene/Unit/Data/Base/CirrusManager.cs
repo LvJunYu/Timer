@@ -70,7 +70,6 @@ namespace GameA.Game
 
     public class WholeCirrus
     {
-        private const string SpriteFormat = "M1Cirrus_{0}";
         private const int GrowSpeed = Cirrus.GrowSpeed;
         private const int CirrusId = UnitDefine.CirrusId;
         private readonly List<Cirrus> _cirrusJoints = new List<Cirrus>(Cirrus.MaxCirrusCount);
@@ -147,7 +146,7 @@ namespace GameA.Game
             {
                 for (int i = 0; i < units.Count; i++)
                 {
-                    if (units[i].IsAlive && UnitDefine.CanHitCirrus(units[i]))
+                    if (units[i].IsAlive && UnitDefine.CanHitCirrus(units[i]) && !units[i].CanCross)
                     {
                         return false;
                     }
