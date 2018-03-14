@@ -715,7 +715,7 @@ namespace GameA
                     {
                         _publishTime = UpdateTime;
                         Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _projectId);
-                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopPublishedProjectChanged, _projectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnPublishedProjectChanged, _projectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
                         if (onSuccess != null)
@@ -751,7 +751,7 @@ namespace GameA
                 {
                     if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
-                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopPublishedProjectChanged, _projectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnPublishedProjectChanged, _projectId);
                         if (onSuccess != null)
                         {
                             onSuccess.Invoke();
