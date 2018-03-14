@@ -121,15 +121,17 @@ namespace GameA.Game
                 }
                 else if (_timer >= 200)
                 {
-                    var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
-                    if (units.Count > 0)
+                    using (var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid))
                     {
-                        for (int i = 0; i < units.Count; i++)
+                        if (units.Count > 0)
                         {
-                            UnitBase unit = units[i];
-                            if (IsBlockedBy(unit))
+                            for (int i = 0; i < units.Count; i++)
                             {
-                                return;
+                                UnitBase unit = units[i];
+                                if (IsBlockedBy(unit))
+                                {
+                                    return;
+                                }
                             }
                         }
                     }
@@ -156,18 +158,20 @@ namespace GameA.Game
 
         private void CheckGrid(Grid2D grid)
         {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
-            if (units.Count > 0)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this && unit.Id == UnitDefine.ScorchedEarthId)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        var scorchedEarth = unit as ScorchedEarth;
-                        if (scorchedEarth != null)
+                        var unit = units[i];
+                        if (unit != null && unit.IsAlive && unit != this && unit.Id == UnitDefine.ScorchedEarthId)
                         {
-                            scorchedEarth.OnExplode();
+                            var scorchedEarth = unit as ScorchedEarth;
+                            if (scorchedEarth != null)
+                            {
+                                scorchedEarth.OnExplode();
+                            }
                         }
                     }
                 }

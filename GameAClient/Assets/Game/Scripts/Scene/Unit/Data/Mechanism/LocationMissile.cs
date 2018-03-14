@@ -76,7 +76,7 @@ namespace GameA.Game
                 return false;
             }
 
-            SetGunView();
+            SetGunView(GameRun.Instance.IsPlaying);
             return true;
         }
 
@@ -84,7 +84,7 @@ namespace GameA.Game
         {
             base.Clear();
             _curAngle = _startAngle;
-            SetGunView();
+            SetGunView(false);
             _skillCtrl = null;
             _curState = EState.Rotate;
         }
@@ -107,16 +107,16 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_attackTimer > 0)
-            {
-                _attackTimer--;
-            }
-
             base.UpdateLogic();
 
             if (_eActiveState != EActiveState.Active)
             {
                 return;
+            }
+
+            if (_attackTimer > 0)
+            {
+                _attackTimer--;
             }
 
             if (_skillCtrl != null)
@@ -188,7 +188,15 @@ namespace GameA.Game
                 return;
             }
 
-            _curAngle = Mathf.MoveTowards(_curAngle, _targetAngle, AimSpeed);
+            if (_allCircle)
+            {
+                _curAngle = Mathf.MoveTowardsAngle(_curAngle, _targetAngle, AimSpeed);
+            }
+            else
+            {
+                _curAngle = Mathf.MoveTowards(_curAngle, _targetAngle, AimSpeed);
+            }
+
             RefreshGunDir();
         }
 
@@ -300,11 +308,19 @@ namespace GameA.Game
             }
         }
 
-        private void SetGunView()
+        private void SetGunView(bool isPlayering)
         {
             if (_view == null) return;
             if (_gun == null)
             {
+                if (isPlayering)
+                {
+                    CreateGun();
+                    _bulletOffsetPos = GM2DTools.WorldToTile(new Vector2(-0.444f, -0.37f));
+                    _gun.ChangeView(_teamId);
+                    RefreshGunDir();
+                    return;
+                }
                 CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
                 {
                     CreateGun();

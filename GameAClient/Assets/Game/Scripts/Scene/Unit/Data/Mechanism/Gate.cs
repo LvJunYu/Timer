@@ -28,12 +28,24 @@ namespace GameA.Game
                     entry.time = entry.endTime;
                 }
 
-                SetCross(true);
-                SetSortingOrderBackground();
-                UpdateTransPos();
+                SetOpen();
             }
 
             return true;
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    _opened = true;
+                    SetOpen();
+                }
+            }
         }
 
         protected override void Clear()
@@ -104,6 +116,7 @@ namespace GameA.Game
                         {
                             _animation.PlayOnce("Open");
                         }
+
                         Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
                             .OnControlFinish(new UnitSceneGuid(_guid, Scene2DManager.Instance.CurSceneIndex));
 //                        RpgTaskManger.Instance.OnControlFinish(_guid);
@@ -122,20 +135,11 @@ namespace GameA.Game
             }
         }
 
-        public override void UpdateLogic()
+        private void SetOpen()
         {
-            base.UpdateLogic();
-            if (_timer > 0)
-            {
-                _timer--;
-                if (_timer == 0)
-                {
-                    _opened = true;
-                    SetCross(true);
-                    SetSortingOrderBackground();
-                    UpdateTransPos();
-                }
-            }
+            SetCross(true);
+            SetSortingOrderBackground(2);
+            UpdateTransPos();
         }
     }
 }

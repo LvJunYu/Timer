@@ -130,6 +130,8 @@ namespace GameA.Game
                     return UnitDefine.PasswordDoorId == Id;
                 case EEditType.Bomb:
                     return UnitDefine.BombId == Id;
+                case EEditType.Cycle:
+                    return Cycle != 0;
                 case EEditType.Style:
                     return Id == 4001;
                 case EEditType.NpcType:

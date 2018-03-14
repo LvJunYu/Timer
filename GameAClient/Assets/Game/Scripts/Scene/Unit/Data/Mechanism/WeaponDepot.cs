@@ -8,7 +8,6 @@ namespace GameA.Game
     public class WeaponDepot : CollectionBase
     {
         private const string IconFormat = "{0}Icon";
-        protected int _timer;
         protected int _weaponId;
 
         public int WeaponId
@@ -42,12 +41,6 @@ namespace GameA.Game
             _assetPath = GetSpriteName(WeaponId);
         }
 
-        protected override void Clear()
-        {
-            _timer = 0;
-            base.Clear();
-        }
-
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
             var unitExtra = base.UpdateExtraData(unitExtraDynamic);
@@ -57,21 +50,8 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            if (_timer == 0)
-            {
-                _timer = UnitDefine.EnergyTimer;
-                other.SetWeapon(WeaponId, GetUnitExtra());
-                base.OnTrigger(other);
-            }
-        }
-
-        public override void UpdateLogic()
-        {
-            base.UpdateLogic();
-            if (_timer > 0)
-            {
-                _timer--;
-            }
+            other.SetWeapon(WeaponId, GetUnitExtra());
+            base.OnTrigger(other);
         }
 
         private static string GetSpriteName(int weaponId)

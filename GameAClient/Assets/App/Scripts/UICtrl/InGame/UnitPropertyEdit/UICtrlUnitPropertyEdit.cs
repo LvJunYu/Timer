@@ -57,6 +57,7 @@ namespace GameA
         private int _curId;
         private UPCtrlUnitPropertySurpriseBox _upCtrlSurpriseBox;
         private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
+        private UPCtrlUnitPropertyCycle _upCtrlCycleSetting;
 
         public bool IsInMap
         {
@@ -197,7 +198,10 @@ namespace GameA
             _upCtrlSurpriseBox.Init(this, _cachedView);
             //密码门
             _upCtrlPasswordDoor.Init(this, _cachedView);
-            
+            //循环拾取
+            _upCtrlCycleSetting = new UPCtrlUnitPropertyCycle();
+            _upCtrlCycleSetting.Init(this, _cachedView);
+
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -217,6 +221,7 @@ namespace GameA
             _rootArray[(int) EEditType.WoodCase] = _cachedView.WoodCaseDock;
             _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
             _rootArray[(int) EEditType.Bomb] = _cachedView.BombDock;
+            _rootArray[(int) EEditType.Cycle] = _cachedView.CycleDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -241,6 +246,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.WoodCase].Init(_cachedView.WoodCaseMenu);
             _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
             _menuButtonArray[(int) EEditType.Bomb].Init(_cachedView.BombMenu);
+            _menuButtonArray[(int) EEditType.Cycle].Init(_cachedView.CycleMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -690,7 +696,7 @@ namespace GameA
                 _validEditPropertyList.Add(EEditType.WoodCase);
                 _menuButtonArray[(int) EEditType.WoodCase].SetEnable(true);
                 int id = GetCurUnitExtra().CommonValue;
-                _usCtrlWoodCase.SetFgImage(UMCtrlWoodCaseItem.GetSprite(id), id==0, 54, 54);
+                _usCtrlWoodCase.SetFgImage(UMCtrlWoodCaseItem.GetSprite(id), id == 0, 54, 54);
             }
             else
             {
@@ -750,6 +756,17 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.Bomb].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Cycle))
+            {
+                _validEditPropertyList.Add(EEditType.Cycle);
+                _menuButtonArray[(int) EEditType.Cycle].SetEnable(true);
+                _upCtrlCycleSetting.RefreshView();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Cycle].SetEnable(false);
             }
 
             //能编辑Npc/

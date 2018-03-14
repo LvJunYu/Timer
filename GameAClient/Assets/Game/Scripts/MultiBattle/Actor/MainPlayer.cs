@@ -65,11 +65,14 @@ namespace GameA.Game
             base.CheckAssist();
             if (_passwordDoor != null)
             {
-                if (_input.GetKeyUpApplied(EInputType.Assist) &&
-                    GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
+                if (_input.GetKeyUpApplied(EInputType.Assist))
                 {
                     _passwordDoor.SetPlayer(this);
-                    SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
+                    _passwordDoor.UiOpen = true;
+                    if (GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
+                    }
                 }
             }
         }
@@ -98,11 +101,6 @@ namespace GameA.Game
         {
             if (_input != null)
             {
-                if (!value)
-                {
-                    _input.Clear();
-                }
-
                 _input.SetInputValid(value);
             }
         }

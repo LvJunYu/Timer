@@ -89,13 +89,15 @@ namespace GameA.Game
             }
             if (_curActiveState != EActiveState.Active && _eActiveState == EActiveState.Active)
             {
-                var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
-                for (int i = 0; i < units.Count; i++)
+                using (var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid))
                 {
-                    var unit = units[i];
-                    if (IsBlockedBy(unit))
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        return;
+                        var unit = units[i];
+                        if (IsBlockedBy(unit))
+                        {
+                            return;
+                        }
                     }
                 }
                 CurActiveState = value;

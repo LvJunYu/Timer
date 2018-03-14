@@ -4,7 +4,7 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 5030, Type = typeof(WoodCase))]
-    public class WoodCase : Box, ICanBulletHit
+    public class WoodCase : Box, ICanBulletHit, ICanBombHit
     {
         private const int MaxFallDestroyDis = 2 * ConstDefineGM2D.ServerTileScale;
         private int _itemId;
@@ -69,10 +69,9 @@ namespace GameA.Game
                 {
                     DestroyWoodCase();
                 }
-                else if (UnitDefine.BoxId == other.Id)
+                else if (other is Box)
                 {
-                    var box = other as Box;
-                    if (box != null && box.FallDistance > MaxFallDestroyDis)
+                    if (((Box)other).FallDistance > MaxFallDestroyDis)
                     {
                         DestroyWoodCase();
                     }
@@ -103,6 +102,11 @@ namespace GameA.Game
             {
                 item.OnPlay();
             }
+        }
+
+        public void OnBombHit()
+        {
+            DestroyWoodCase();
         }
     }
 }

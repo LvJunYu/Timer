@@ -31,7 +31,7 @@ namespace GameA
                 if (!_inited)
                 {
                     IsEnd = true;
-                    Messenger.Broadcast(EMessengerType.OnUserPublishedProjectChanged);
+                    Messenger<long>.Broadcast(EMessengerType.OnUserPublishedProjectChanged, _cs_userId);
                 }
                 return;
             }
@@ -41,7 +41,7 @@ namespace GameA
             }
             _allList.AddRange(_projectSyncList);
             IsEnd = _projectSyncList.Count < _cs_maxCount;
-            Messenger.Broadcast(EMessengerType.OnUserPublishedProjectChanged);
+            Messenger<long>.Broadcast(EMessengerType.OnUserPublishedProjectChanged, _cs_userId);
         }
 
         public void Requset(int startInx, int maxCount, Action successCallback, Action<ENetResultCode> failedCallback)

@@ -80,6 +80,10 @@ namespace GameA.Game
             _putDownPlayer = null;
         }
 
+        protected override void OnLastTrigger()
+        {
+        }
+
         public void PutDownByPlayer(PlayerBase playerBase)
         {
             _putDownPlayer = playerBase;
@@ -106,10 +110,12 @@ namespace GameA.Game
         {
             var grid = new Grid2D(_colliderGrid.XMin + 1, _colliderGrid.YMin - 1, _colliderGrid.XMax - 1,
                 _colliderGrid.YMin - 1);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, EnvManager.ItemLayer);
-            if (units.Count == 1)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid, EnvManager.ItemLayer))
             {
-                _downUnit = units[0];
+                if (units.Count == 1)
+                {
+                    _downUnit = units[0];
+                }
             }
         }
     }

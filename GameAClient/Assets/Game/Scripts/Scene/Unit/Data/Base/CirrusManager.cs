@@ -70,7 +70,6 @@ namespace GameA.Game
 
     public class WholeCirrus
     {
-        private const string SpriteFormat = "M1Cirrus_{0}";
         private const int GrowSpeed = Cirrus.GrowSpeed;
         private const int CirrusId = UnitDefine.CirrusId;
         private readonly List<Cirrus> _cirrusJoints = new List<Cirrus>(Cirrus.MaxCirrusCount);
@@ -143,15 +142,17 @@ namespace GameA.Game
             var topCirrusPos = _cirrusJoints[0].CurPos;
             Grid2D checkGrid = new Grid2D(topCirrusPos.x, topCirrusPos.y + _cirrusSize.y,
                 topCirrusPos.x + _cirrusSize.x - 1, topCirrusPos.y + _cirrusSize.y + GrowSpeed - 1);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
-                if (units[i].IsAlive && UnitDefine.CanHitCirrus(units[i]))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    return false;
+                    if (units[i].IsAlive && UnitDefine.CanHitCirrus(units[i]) && !units[i].CanCross)
+                    {
+                        return false;
+                    }
                 }
             }
-
+            
             _curGrowValue += GrowSpeed;
             return true;
         }

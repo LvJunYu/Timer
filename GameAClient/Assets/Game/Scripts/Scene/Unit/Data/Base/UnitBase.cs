@@ -205,7 +205,7 @@ namespace GameA.Game
 
         public bool CanCross
         {
-            get { return _canCross; }
+            get { return _canCross && _isInterest; }
         }
 
         /// <summary>
@@ -263,6 +263,11 @@ namespace GameA.Game
         public virtual Grid2D ColliderGrid
         {
             get { return _colliderGrid; }
+        }
+
+        public virtual Grid2D LastColliderGrid
+        {
+            get { return _lastColliderGrid; }
         }
 
         public bool IsAlive
@@ -1316,17 +1321,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
-                    CheckRightFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) &&
+                        CheckRightFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 
@@ -1338,17 +1345,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
-                    CheckLeftFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) &&
+                        CheckLeftFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 
@@ -1360,17 +1369,19 @@ namespace GameA.Game
             if (!CanClimb) return false;
             var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
             var grid = new Grid2D(min.x, min.y, min.x, min.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid,
                 JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+                _dynamicCollider))
             {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
-                    CheckUpFloor(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _curClimbUnit = unit;
-                    return true;
+                    var unit = units[i];
+                    if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) &&
+                        CheckUpFloor(unit))
+                    {
+                        _curClimbUnit = unit;
+                        return true;
+                    }
                 }
             }
 
@@ -1682,9 +1693,9 @@ namespace GameA.Game
             return _tableUnit.GetColliderSize(ref _unitDesc);
         }
 
-        protected void SetSortingOrderBackground()
+        protected void SetSortingOrderBackground(float offset = 0)
         {
-            _viewZOffset = UnitDefine.ZOffsetBackground;
+            _viewZOffset = UnitDefine.ZOffsetBackground + offset;
         }
 
         protected void SetSortingOrderFrontest()
@@ -1972,6 +1983,62 @@ namespace GameA.Game
 
         public virtual void OnSceneExit()
         {
+        }
+
+        public bool CheckUpValid(ref int speedY, ref UnitBase unit, bool checkOnly = false)
+        {
+            if (!unit.IsInterest)
+            {
+                return false;
+            }
+
+            IntVec2 pointACheck = IntVec2.zero, pointBCheck = IntVec2.zero;
+            GM2DTools.GetBorderPoint(_colliderGrid, EDirectionType.Up, ref pointACheck, ref pointBCheck);
+            var checkGrid = SceneQuery2D.GetGrid(pointACheck, pointBCheck, 0, speedY);
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
+                float.MinValue, float.MaxValue, _dynamicCollider))
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unitHit = units[i];
+                    if (unitHit.IsAlive)
+                    {
+                        if (unitHit.IsActor || unitHit is Box)
+                        {
+                            if (unitHit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                            {
+                                if (!checkOnly)
+                                {
+                                    speedY = 0;
+                                }
+                            }
+                            else if (unitHit.ColliderGrid.YMin == _colliderGrid.YMax + 1)
+                            {
+                                if (!unitHit.CheckUpValid(ref speedY, ref unitHit))
+                                {
+                                    return false;
+                                }
+                            }
+
+                            continue;
+                        }
+
+                        int y = 0;
+                        if (unitHit.OnDownHit(this, ref y, true) && unitHit.TableUnit.IsMagicBlock == 1 &&
+                            !unitHit.CanCross)
+                        {
+                            if (!checkOnly)
+                            {
+                                unit = unitHit;
+                            }
+
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

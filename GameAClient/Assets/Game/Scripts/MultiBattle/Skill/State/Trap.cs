@@ -45,6 +45,7 @@ namespace GameA.Game
                 LogHelper.Error("GetTrap Failed : {0}", id);
                 return false;
             }
+
             _centerPos = centerPos;
             _duration = TableConvert.GetTime(_tableTrap.Duration);
             _triggerRange = TableConvert.GetRange(_tableTrap.TriggerRange);
@@ -56,32 +57,39 @@ namespace GameA.Game
                 _effect.Trans.position = GM2DTools.TileToWorld(_centerPos, UnitDefine.ZOffsetEffectBackground);
                 _effect.Play();
             }
+
             return true;
         }
 
         public void UpdateLogic()
         {
-            var units = ColliderScene2D.CircleCastAllReturnUnits(_centerPos, _triggerRange, EnvManager.ActorLayer);
-            for (int i = 0; i < units.Count; i++)
+            using (var units =
+                ColliderScene2D.CircleCastAllReturnUnits(_centerPos, _triggerRange, EnvManager.ActorLayer))
             {
-                var unit = units[i];
-                if (_trapingUnits.Contains(unit))
+                for (int i = 0; i < units.Count; i++)
                 {
-                    continue;
+                    var unit = units[i];
+                    if (_trapingUnits.Contains(unit))
+                    {
+                        continue;
+                    }
+
+                    OnUnitEnter(unit);
+                    if (unit.IsAlive)
+                    {
+                        unit.AddStates(null, _tableTrap.TriggerStates);
+                    }
                 }
-                OnUnitEnter(unit);
-                if (unit.IsAlive)
+
+                for (int i = _trapingUnits.Count - 1; i >= 0; i--)
                 {
-                    unit.AddStates(null, _tableTrap.TriggerStates);
+                    if (!units.Contains(_trapingUnits[i]))
+                    {
+                        OnUnitExit(_trapingUnits[i]);
+                    }
                 }
             }
-            for (int i = _trapingUnits.Count - 1; i >= 0; i--)
-            {
-                if (!units.Contains(_trapingUnits[i]))
-                {
-                    OnUnitExit(_trapingUnits[i]);
-                }
-            }
+
             _timer++;
             if (_timer == _duration)
             {
@@ -90,6 +98,7 @@ namespace GameA.Game
                 {
                     OnUnitExit(_trapingUnits[i]);
                 }
+
                 PlayMode.Instance.DeleteTrap(_guid);
             }
         }

@@ -60,6 +60,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             PlayMode.Instance.DestroyUnit(this);
             base.OnDead();
         }
@@ -75,28 +76,33 @@ namespace GameA.Game
                     _onClay = false;
                     _onIce = false;
                     bool downExist = false;
-                    var units = EnvManager.RetriveDownUnits(this);
-                    for (int i = 0; i < units.Count; i++)
+                    using (var units = EnvManager.RetriveDownUnits(this))
                     {
-                        var unit = units[i];
-                        int ymin = 0;
-                        if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                        for (int i = 0; i < units.Count; i++)
                         {
-                            downExist = true;
-                            _grounded = true;
-                            _downUnits.Add(unit);
+                            var unit = units[i];
+                            int ymin = 0;
+                            if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                            {
+                                downExist = true;
+                                _grounded = true;
+                                _downUnits.Add(unit);
+                            }
                         }
                     }
+
                     if (!downExist)
                     {
                         air = true;
                     }
                 }
+
                 if (air && _grounded)
                 {
                     Speed += _lastExtraDeltaPos;
                     _grounded = false;
                 }
+
                 if (_grounded)
                 {
                     var friction = MaxFriction;
@@ -104,6 +110,7 @@ namespace GameA.Game
                     {
                         friction = 1;
                     }
+
                     SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                 }
                 else
@@ -144,6 +151,7 @@ namespace GameA.Game
                 {
                     _fallDistance += lasPos.y - _curPos.y;
                 }
+
                 UpdateTransPos();
             }
         }

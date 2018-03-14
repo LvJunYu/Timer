@@ -352,46 +352,59 @@ namespace GameA.Game
         {
         }
 
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            if (unit.Id == UnitDefine.PasswordDoorId)
+            {
+                var passwordDoor = unit as PasswordDoor;
+                if (passwordDoor != null && !passwordDoor.HasOpened)
+                {
+                    _passwordDoor = passwordDoor;
+                    _passwordDoor.UiOpen = false;
+                    _passwordDoor.DirectionRelativeMain = eDirectionType;
+                    OnHitPasswordDoor();
+                }
+            }
+        }
+
         protected void CheckPasswordDoor()
         {
             if (_passwordDoor != null)
             {
                 if (!_passwordDoor.UiOpen)
                 {
-                    if (_colliderGrid.YMin != _passwordDoor.ColliderGrid.YMin)
+                    switch (_passwordDoor.DirectionRelativeMain)
                     {
-                        _passwordDoor = null;
-                    }
-                    else if (_deltaPos.y != 0 ||
-                             _deltaPos.x < 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Right ||
-                             _deltaPos.x > 0 && _passwordDoor.DirectionRelativeMain == EDirectionType.Left)
-                    {
-                        _passwordDoor = null;
-                    }
-                }
-            }
+                        case EDirectionType.Up:
+                            if (!CheckUpFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
 
-            if (_passwordDoor != null)
-            {
-                return;
-            }
+                            break;
+                        case EDirectionType.Right:
+                            if (!CheckRightFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
 
-            if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Right]))
-            {
-                _passwordDoor = _hitUnits[(int) EDirectionType.Right] as PasswordDoor;
-                if (_passwordDoor != null)
-                {
-                    _passwordDoor.DirectionRelativeMain = EDirectionType.Right;
-                    OnHitPasswordDoor();
-                }
-            }
-            else if (IsValidPasswordDoor(_hitUnits[(int) EDirectionType.Left]))
-            {
-                _passwordDoor = _hitUnits[(int) EDirectionType.Left] as PasswordDoor;
-                if (_passwordDoor != null)
-                {
-                    _passwordDoor.DirectionRelativeMain = EDirectionType.Left;
-                    OnHitPasswordDoor();
+                            break;
+                        case EDirectionType.Down:
+                            if (!CheckOnFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                        case EDirectionType.Left:
+                            if (!CheckLeftFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                    }
                 }
             }
         }
@@ -499,11 +512,6 @@ namespace GameA.Game
         {
             return unit != null && UnitDefine.IsBox(unit.Id) && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
                    !((Box) unit).IsHoldingByPlayer;
-        }
-
-        private bool IsValidPasswordDoor(UnitBase unit)
-        {
-            return unit != null && UnitDefine.PasswordDoorId == unit.Id && unit.Enabled && unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
         public override bool IsHoldingBox()
@@ -1575,13 +1583,15 @@ namespace GameA.Game
 
             var tableUnit = TableManager.Instance.GetUnit(UnitDefine.MagicBeanId);
             var checkGrid = tableUnit.GetDataGrid(pos.x, pos.y, 0, Vector2.one);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid))
             {
-                if (units[i].IsAlive && units[i] != this)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
-                    return false;
+                    if (units[i].IsAlive && units[i] != this)
+                    {
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
+                        return false;
+                    }
                 }
             }
 

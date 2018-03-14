@@ -20,6 +20,7 @@
         public bool UiOpen
         {
             get { return _uiOpen; }
+            set { _uiOpen = value; }
         }
 
         public bool HasOpened
@@ -155,7 +156,7 @@
             _mainPlayer = null;
         }
 
-        public void OnUiOpen(bool value, UICtrlPasswordDoorInGame uiCtrlPasswordDoorInGame)
+        public void OnUiOpen(bool value)
         {
             _uiOpen = value;
             if (_mainPlayer != null)

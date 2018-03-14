@@ -6,10 +6,11 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 5031, Type = typeof(Bomb))]
-    public class Bomb : Box, ICanBulletHit
+    public class Bomb : Box, ICanBulletHit, ICanBombHit
     {
         private const int MaxFallDestroyDis = 1 * ConstDefineGM2D.ServerTileScale;
         private SkillCtrl _skillCtrl;
+        private int _destroyTimer;
 
         public override bool CanControlledBySwitch
         {
@@ -23,16 +24,30 @@ namespace GameA.Game
             _skillCtrl.SetSkill(_tableUnit.SkillId);
         }
 
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_destroyTimer > 0)
+            {
+                _destroyTimer--;
+                if (_destroyTimer == 0)
+                {
+                    DestroyBomb();
+                }
+            }
+        }
+
         protected override void Clear()
         {
             base.Clear();
             _skillCtrl = null;
+            _destroyTimer = 0;
         }
 
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
-            if (GameRun.Instance.IsPlaying)
+            if (GameRun.Instance.IsPlaying && _eActiveState == EActiveState.Deactive)
             {
                 DestroyBomb();
             }
@@ -79,14 +94,21 @@ namespace GameA.Game
                 {
                     DestroyBomb();
                 }
-                else if (UnitDefine.BoxId == other.Id)
+                else if (other is Box)
                 {
-                    var box = other as Box;
-                    if (box != null && box.FallDistance > MaxFallDestroyDis)
+                    if (((Box)other).FallDistance > MaxFallDestroyDis)
                     {
                         DestroyBomb();
                     }
                 }
+            }
+        }
+
+        public void OnBombHit()
+        {
+            if (_destroyTimer == 0)
+            {
+                _destroyTimer = 5;
             }
         }
 
@@ -124,5 +146,10 @@ namespace GameA.Game
             LogHelper.Debug("Bomb Force = {0}", power);
             return force;
         }
+    }
+    
+    public interface ICanBombHit
+    {
+        void OnBombHit();
     }
 }

@@ -97,7 +97,7 @@ namespace GameA.Game
             _instance = null;
         }
 
-        public static List<UnitBase> RetriveDownUnits(UnitBase self)
+        public static DisposableList<UnitBase> RetriveDownUnits(UnitBase self)
         {
             var grid = new Grid2D(self.ColliderGrid.XMin, self.ColliderGrid.YMin - 1, self.ColliderGrid.XMax, self.ColliderGrid.YMax);
             return ColliderScene2D.GridCastAllReturnUnits(grid,

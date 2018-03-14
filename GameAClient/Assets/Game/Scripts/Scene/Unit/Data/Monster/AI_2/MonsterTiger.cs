@@ -118,24 +118,26 @@ namespace GameA.Game
             //每5帧检测一次
             else if (GameRun.Instance.LogicFrameCnt % 5 == 0 && CanMove)
             {
-                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
+                using (var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
-                    EnvManager.MonsterViewLayer);
-                for (int i = 0; i < units.Count; i++)
+                    EnvManager.MonsterViewLayer))
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        if (unit.IsPlayer && CanHarm(unit))
+                        var unit = units[i];
+                        if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1 && !unit.CanCross)
                         {
-                            _attactTarget = unit;
-                            if (_eMonsterState != EMonsterState.Chase)
+                            if (unit.IsPlayer && CanHarm(unit))
                             {
-                                ChangeState(EMonsterState.Bang);
-                                _timerDetectStay = 30 + _timerBang;
+                                _attactTarget = unit;
+                                if (_eMonsterState != EMonsterState.Chase)
+                                {
+                                    ChangeState(EMonsterState.Bang);
+                                    _timerDetectStay = 30 + _timerBang;
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
                 //检测刹车

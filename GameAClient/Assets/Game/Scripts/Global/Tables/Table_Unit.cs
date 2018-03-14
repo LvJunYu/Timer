@@ -216,6 +216,11 @@ namespace GameA.Game
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
 		/// <summary>
+        /// 循环
+        /// </summary>
+		[ColumnMapping("Cycle")]
+		public int Cycle;
+		/// <summary>
         /// 伴随特效
         /// </summary>
 		[ColumnMapping("WithEffctName")]

@@ -21,12 +21,12 @@ namespace GameA
             _usTimerMinSecondSetting.Init(_cachedView.TimerMinSecondSetting);
             _usTimerMaxSecondSetting.Init(_cachedView.TimerMaxSecondSetting);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerSecondSetting, EAdvanceAttribute.TimerSecond,
-                value => _mainCtrl.EditData.UnitExtra.TimerSecond = (byte) value);
+                value => _mainCtrl.GetCurUnitExtra().TimerSecond = (byte) value);
             UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerMinSecondSetting, EAdvanceAttribute.TimerMinSecond,
                 value =>
                 {
-                    _mainCtrl.EditData.UnitExtra.TimerMinSecond = (byte) value;
-                    if (value > _mainCtrl.EditData.UnitExtra.TimerMaxSecond)
+                    _mainCtrl.GetCurUnitExtra().TimerMinSecond = (byte) value;
+                    if (value > _mainCtrl.GetCurUnitExtra().TimerMaxSecond)
                     {
                         _usTimerMaxSecondSetting.SetCur(value, false);
                     }
@@ -34,8 +34,8 @@ namespace GameA
             UnitExtraHelper.SetUSCtrlSliderSetting(_usTimerMaxSecondSetting, EAdvanceAttribute.TimerMaxSecond,
                 value =>
                 {
-                    _mainCtrl.EditData.UnitExtra.TimerMaxSecond = (byte) value;
-                    if (value < _mainCtrl.EditData.UnitExtra.TimerMinSecond)
+                    _mainCtrl.GetCurUnitExtra().TimerMaxSecond = (byte) value;
+                    if (value < _mainCtrl.GetCurUnitExtra().TimerMinSecond)
                     {
                         _usTimerMinSecondSetting.SetCur(value, false);
                     }

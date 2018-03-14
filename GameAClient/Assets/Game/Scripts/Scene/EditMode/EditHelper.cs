@@ -344,6 +344,11 @@ namespace GameA.Game
                 unitEditData.UnitExtra.SurpriseBoxInterval = 10;
             }
 
+            if (table.CanEdit(EEditType.Cycle))
+            {
+                unitEditData.UnitExtra.CycleInterval = 10;
+            }
+
             return unitEditData;
         }
 

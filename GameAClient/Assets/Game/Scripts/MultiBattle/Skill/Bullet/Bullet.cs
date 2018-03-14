@@ -59,7 +59,7 @@ namespace GameA.Game
 
         public void OnGet()
         {
-            _maskRandom = UnityEngine.Random.Range(0, 2);
+            _maskRandom = Random.Range(0, 2);
         }
 
         public void OnFree()
@@ -83,7 +83,7 @@ namespace GameA.Game
         {
             if (_trans != null)
             {
-                UnityEngine.Object.Destroy(_trans.gameObject);
+                Object.Destroy(_trans.gameObject);
             }
         }
 
@@ -150,27 +150,29 @@ namespace GameA.Game
                     var hit = hits[i];
                     if (CheckHit(hit.node.Id))
                     {
-                        var units = ColliderScene2D.GetUnits(hit);
-                        for (var j = 0; j < units.Count; j++)
+                        using (var units = ColliderScene2D.GetUnits(hit))
                         {
-                            var unit = units[j];
-                            if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross && CheckBulletHit(unit))
+                            for (var j = 0; j < units.Count; j++)
                             {
-                                _targetUnit = unit;
-                                _curPos = hit.point;
-                                //如果打到左边或者下面 则层级放在前面，显示出来
-                                if (!_zFront && (hit.normal.x > 0 || hit.normal.y > 0))
+                                var unit = units[j];
+                                if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross && CheckBulletHit(unit))
                                 {
-                                    _zFront = true;
-                                }
+                                    _targetUnit = unit;
+                                    _curPos = hit.point;
+                                    //如果打到左边或者下面 则层级放在前面，显示出来
+                                    if (!_zFront && (hit.normal.x > 0 || hit.normal.y > 0))
+                                    {
+                                        _zFront = true;
+                                    }
 
-                                _destroy = 1;
-                                if (unit is ICanBulletHit)
-                                {
-                                    ((ICanBulletHit) unit).OnBulletHit(this);
-                                }
+                                    _destroy = 1;
+                                    if (unit is ICanBulletHit)
+                                    {
+                                        ((ICanBulletHit) unit).OnBulletHit(this);
+                                    }
 
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }

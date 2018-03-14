@@ -60,6 +60,9 @@ namespace GameA
                 case EEditType.TimeInterval:
                     _cachedView.IntervalDock.SetActiveEx(enable);
                     break;
+                case EEditType.WoodCase:
+                    _cachedView.ItemDock.SetActive(enable);
+                    break;
                 case EEditType.Text:
                     _cachedView.TextDock.SetActiveEx(enable);
                     break;
@@ -141,6 +144,9 @@ namespace GameA
                     break;
                 case EEditType.TimeInterval:
                     DictionaryTools.SetContentText(_cachedView.IntervalText, (unitExtra.TimeInterval * 0.001f).ToString("F1"));
+                    break;
+                case EEditType.WoodCase:
+                    _cachedView.ItemSpriteFg.sprite = UMCtrlWoodCaseItem.GetSprite(unitExtra.CommonValue);
                     break;
                 case EEditType.Text:
                     break;

@@ -25,7 +25,7 @@ namespace GameA
         private static string _fullScore = "10";
         private long _guid;
         private int _downloadPrice;
-
+        private List<long> _projectList = new List<long>(1);
         private bool _extendReady;
         private byte[] _deadPos;
         private long _commitToken;
@@ -314,6 +314,16 @@ namespace GameA
                 {
                     return 0;
                 }
+            }
+        }
+
+        public List<long> ProjectList
+        {
+            get
+            {
+                _projectList.Clear();
+                _projectList.Add(_projectId);
+                return _projectList;
             }
         }
 
@@ -705,6 +715,7 @@ namespace GameA
                     {
                         _publishTime = UpdateTime;
                         Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectPublished, _projectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopPublishedProjectChanged, _projectId);
                         user.GetPublishedPrjectRequestTimer().Zero();
                         user.GetSavedPrjectRequestTimer().Zero();
                         if (onSuccess != null)
@@ -736,12 +747,11 @@ namespace GameA
 
         public void UnPublish(Action onSuccess = null, Action onFail = null)
         {
-            var projectList = new List<long> {_projectId};
-            RemoteCommands.UnpublishWorldProject(projectList, msg =>
+            RemoteCommands.UnpublishWorldProject(ProjectList, msg =>
                 {
                     if (msg.ResultCode == (int) EProjectOperateResult.POR_Success)
                     {
-                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopProjectUnPublished, _projectId);
+                        Messenger<long>.Broadcast(EMessengerType.OnWorkShopPublishedProjectChanged, _projectId);
                         if (onSuccess != null)
                         {
                             onSuccess.Invoke();
@@ -781,7 +791,6 @@ namespace GameA
                 },
                 code => { SoyHttpClient.ShowErrorTip(code); });
         }
-
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {

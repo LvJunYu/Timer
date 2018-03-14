@@ -9,7 +9,8 @@ namespace GameA.Game
     {
         #region 检查输入
 
-        [SerializeField] protected List<int> _cacheSettedInputKeys = new List<int>();
+        [SerializeField] protected List<int> _cacheDownInputKeys = new List<int>();
+        [SerializeField] protected List<int> _cacheUpInputKeys = new List<int>();
         [SerializeField] protected bool[] _curCheckInputKeyAry = new bool[(int) EInputType.Max];
         [SerializeField] protected bool[] _lastCheckInputKeyAry = new bool[(int) EInputType.Max];
 
@@ -22,6 +23,8 @@ namespace GameA.Game
 
         //检查输入最终的结果
         protected List<int> _curCheckInputChangeList = new List<int>((int) EInputType.Max);
+        protected bool _inputValid = true;
+        protected bool _justUnValid;
 
         public List<int> CurCheckInputChangeList
         {
@@ -30,13 +33,24 @@ namespace GameA.Game
 
         public void ProcessCheckInput()
         {
-            PrepareForCheckInput();
             if (_inputValid)
             {
+                PrepareForCheckInput();
                 CheckInput();
+                GenerateCheckInputChangeList();
+            }
+            else
+            {
+                if (_justUnValid)
+                {
+                    GenerateCheckInputChangeList();
+                }
+                else
+                {
+                    _curCheckInputChangeList.Clear();
+                }
             }
 
-            GenerateCheckInputChangeList();
         }
 
         protected void GenerateCheckInputChangeList()
@@ -76,7 +90,8 @@ namespace GameA.Game
             _lastCheckVertical = 0;
             _curCheckVertical = 0;
             _curCheckInputChangeList.Clear();
-            _cacheSettedInputKeys.Clear();
+            _cacheDownInputKeys.Clear();
+            _cacheUpInputKeys.Clear();
             for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
             {
                 _curCheckInputKeyAry[i] = false;
@@ -181,16 +196,27 @@ namespace GameA.Game
             {
                 _curCheckInputKeyAry[(int) EInputType.Skill3] = false;
             }
-
-            for (int i = 0; i < _cacheSettedInputKeys.Count; i++)
+            
+            for (int i = 0; i < _cacheUpInputKeys.Count; i++)
             {
-                var value = _cacheSettedInputKeys[i];
+                var value = _cacheUpInputKeys[i];
+                if (value < _curCheckInputKeyAry.Length)
+                {
+                    _curCheckInputKeyAry[value] = false;
+                }
+            }
+            _cacheUpInputKeys.Clear();
+            
+            for (int i = 0; i < _cacheDownInputKeys.Count; i++)
+            {
+                var value = _cacheDownInputKeys[i];
                 if (value < _curCheckInputKeyAry.Length)
                 {
                     _curCheckInputKeyAry[value] = true;
+                    _cacheUpInputKeys.Add(value);
                 }
             }
-            _cacheSettedInputKeys.Clear();
+            _cacheDownInputKeys.Clear();
         }
 
         protected bool GetKeyDownCheck(EInputType eInputType)
@@ -259,7 +285,27 @@ namespace GameA.Game
 
         public void SetKeyDown(EInputType eInputType)
         {
-            _cacheSettedInputKeys.Add((int) eInputType);
+            _cacheDownInputKeys.Add((int) eInputType);
+        }
+
+        public override void SetInputValid(bool value)
+        {
+            base.SetInputValid(value);
+            _inputValid = value;
+            if (value)
+            {
+            }
+            else
+            {
+                _justUnValid = true;
+                PrepareForCheckInput();
+                _curCheckHorizontal = 0;
+                _curCheckVertical = 0;
+                for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
+                {
+                    _curCheckInputKeyAry[i] = false;
+                }
+            }
         }
     }
 }

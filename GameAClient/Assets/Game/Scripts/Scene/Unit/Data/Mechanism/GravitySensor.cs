@@ -136,7 +136,7 @@ namespace GameA.Game
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            if (!_enabled)
+            if (!_enabled || !_isInterest)
             {
                 return IntVec2.zero;
             }

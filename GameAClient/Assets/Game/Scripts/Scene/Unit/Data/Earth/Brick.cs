@@ -10,7 +10,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4006, Type = typeof(Brick))]
-    public class Brick : BlockBase, ICanBulletHit
+    public class Brick : BlockBase, ICanBulletHit, ICanBombHit
     {
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
@@ -75,6 +75,11 @@ namespace GameA.Game
         }
 
         public void OnBulletHit(Bullet bullet)
+        {
+            DestroyBrick();
+        }
+
+        public void OnBombHit()
         {
             DestroyBrick();
         }
