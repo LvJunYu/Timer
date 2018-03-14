@@ -175,7 +175,7 @@ namespace GameA.Game
         private const string ProjectCommentReplyRawStr = "<color=#E37B17>{0}</color> 回复了你的关卡评论";
         private const string ProjectFavoriteRawStr = "<color=#E37B17>{0}</color> 收藏了你的关卡";
         private const string ProjectDownloadRawStr = "<color=#E37B17>{0}</color> 下载了你的关卡";
-        private const string ProjectLikeRawStr = "<color=#E37B17>{0}</color> 赞了你的关卡";
+        private const string ProjectLikeRawStr = "<color=#E37B17>{0}</color> 推荐了你的关卡";
         private const string ProjectPlayedRawStr = "<color=#E37B17>{0}</color> 玩了你的关卡";
         private const string NewMailRawStr = "新邮件";
 
@@ -270,14 +270,19 @@ namespace GameA.Game
                    dataType == ENotificationDataType.NDT_Mail;
         }
 
+        public static bool IsNoContent(ENotificationDataType dataType)
+        {
+            return dataType == ENotificationDataType.NDT_ProjectPlayed;
+        }
+
         private const string FollowFormat = "{0}个人关注了你";
-        private const string UserMessageBoardFormat = "你有{0}条新留言";
+        private const string UserMessageBoardFormat = "您有{0}条新留言";
         private const string UserMessageBoardReplyFormat = "<color=#F4A251>{0}</color>的回复：";
-        private const string ProjectCommentFormat = "你的<color=#5E96B7>{1}</color>关卡收到{0}条新的评论";
+        private const string ProjectCommentFormat = "您的<color=#5E96B7>{1}</color>关卡收到{0}条新的评论";
         private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复你：";
         private const string ProjectFavoriteFormat = "{0}个人收藏了你的<color=#5E96B7>{1}</color>关卡";
-        private const string ProjectDownloadFormat = "你的<color=#5E96B7>{1}</color>关卡被下载了{0}次";
-        private const string ProjectLikeFormat = "你制作的关卡新收到{0}个赞";
+        private const string ProjectDownloadFormat = "您的<color=#5E96B7>{1}</color>关卡被下载了{0}次";
+        private const string ProjectLikeFormat = "您制作的关卡新收到{0}个赞";
         private const string ProjectPlayedFormat = "<color=#F4A251>{0}</color>玩了你的<color=#5E96B7>{1}</color>关卡：";
         private const string NewMailFormat = "{0}封未读邮件";
 
@@ -378,8 +383,11 @@ namespace GameA.Game
                     break;
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
-                case ENotificationDataType.NDT_ProjectPlayed:
                     SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData);
+                    break;
+                case ENotificationDataType.NDT_ProjectPlayed:
+                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData)
+                        .OpenMenu(UICtrlProjectDetail.EMenu.Recent);
                     break;
                 case ENotificationDataType.NDT_ProjectLike:
                     SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>().OpenMenu(UICtrlWorkShop.EMenu.PublishedProjects);
@@ -421,9 +429,16 @@ namespace GameA.Game
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
                 case ENotificationDataType.NDT_ProjectLike:
-                case ENotificationDataType.NDT_ProjectPlayed:
                     ProjectManager.Instance.GetDataOnAsync(data.ContentId,
                         p => { SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(p); });
+                    break;
+                case ENotificationDataType.NDT_ProjectPlayed:
+                    ProjectManager.Instance.GetDataOnAsync(data.ContentId,
+                        p =>
+                        {
+                            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(p)
+                                .OpenMenu(UICtrlProjectDetail.EMenu.Recent);
+                        });
                     break;
                 case ENotificationDataType.NDT_Mail:
                     SocialGUIManager.Instance.OpenUI<UICtrlMail>().OpenMenu(UICtrlMail.EMenu.FriendMail);

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>
+    public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>, ICheckOverlay
     {
         private string _updateStr = "更 新";
         private string _publishStr = "发 布";

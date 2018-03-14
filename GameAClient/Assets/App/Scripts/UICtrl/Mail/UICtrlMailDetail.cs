@@ -5,7 +5,7 @@ using SoyEngine.Proto;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlMailDetail : UICtrlGenericBase<UIViewMailDetail>
+    public class UICtrlMailDetail : UICtrlGenericBase<UIViewMailDetail>, ICheckOverlay
     {
         private const string _friendMail = "好友邮件";
         private const string _systemMail = "系统邮件";

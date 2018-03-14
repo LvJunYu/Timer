@@ -1,7 +1,7 @@
 ﻿namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome)]
-    public class UICtrlMail : UICtrlAnimationBase<UIViewMail>
+    public class UICtrlMail : UICtrlAnimationBase<UIViewMail>, ICheckOverlay
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlMailBase _curMenuCtrl;
