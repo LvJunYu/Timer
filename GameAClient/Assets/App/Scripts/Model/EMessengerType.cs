@@ -201,5 +201,8 @@ namespace GameA
 
         //绳子
         public static readonly int OnPlayerClimbRope = SoyEngine.EMessengerType.NextId++;
+
+        //工坊自荐面板
+        public static readonly int OnWorkShopSelfRecommendEditBtn = SoyEngine.EMessengerType.NextId++;
     }
 }

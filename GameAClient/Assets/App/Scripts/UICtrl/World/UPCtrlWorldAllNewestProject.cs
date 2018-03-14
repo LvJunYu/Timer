@@ -8,6 +8,7 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            base.RequestData(append);
             _data = AppData.Instance.WorldData.NewestProjectList;
             int startInx = 0;
             if (append)
@@ -15,14 +16,22 @@ namespace GameA
                 startInx = _contentList.Count;
             }
 
+            _isRequesting = true;
             _data.Request(startInx, _pageSize, Mask, () =>
-            {
-                _projectList = _data.AllList;
-                if (_isOpen)
                 {
-                    RefreshView();
+                    _projectList = _data.AllList;
+                    if (_isOpen)
+                    {
+                        RefreshView();
+                    }
+
+                    _isRequesting = false;
+                }, code =>
+                {
+                    _isRequesting = false;
+                    LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code);
                 }
-            }, code => LogHelper.Error("WorldNewestProjectList Request fail, code = {0}", code));
+            );
         }
 
         protected override void OnItemRefresh(IDataItemRenderer item, int inx)
