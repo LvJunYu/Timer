@@ -929,7 +929,10 @@ namespace GameA.Game
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
 
-            if (_statusBar != null) _statusBar.SetOwner(this);
+            if (_statusBar != null)
+            {
+                _statusBar.SetOwner(this);
+            }
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
