@@ -175,6 +175,9 @@ namespace GameA.Game
         private const string ProjectCommentReplyRawStr = "<color=#E37B17>{0}</color> 回复了你的关卡评论";
         private const string ProjectFavoriteRawStr = "<color=#E37B17>{0}</color> 收藏了你的关卡";
         private const string ProjectDownloadRawStr = "<color=#E37B17>{0}</color> 下载了你的关卡";
+        private const string ProjectLikeRawStr = "<color=#E37B17>{0}</color> 赞了你的关卡";
+        private const string ProjectPlayedRawStr = "<color=#E37B17>{0}</color> 玩了你的关卡";
+        private const string NewMailRawStr = "新邮件";
 
         public static string GetPushInfoFormat(ENotificationDataType pushDataType)
         {
@@ -194,6 +197,12 @@ namespace GameA.Game
                     return ProjectFavoriteRawStr;
                 case ENotificationDataType.NDT_ProjectDownload:
                     return ProjectDownloadRawStr;
+                case ENotificationDataType.NDT_ProjectLike:
+                    return ProjectLikeRawStr;
+                case ENotificationDataType.NDT_ProjectPlayed:
+                    return ProjectPlayedRawStr;
+                case ENotificationDataType.NDT_Mail:
+                    return NewMailRawStr;
                 default:
                     LogHelper.Error("GetPushInfoFormat fail, dataType = {0}", pushDataType);
                     return string.Empty;
@@ -207,14 +216,17 @@ namespace GameA.Game
                 return 1 << (int) ENotificationDataType.NDT_Follower |
                        1 << (int) ENotificationDataType.NDT_UserMessageBoard |
                        1 << (int) ENotificationDataType.NDT_UserMessageBoardReply |
-                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply;
+                       1 << (int) ENotificationDataType.NDT_ProjectCommentReply |
+                       1 << (int) ENotificationDataType.NDT_Mail;
             }
 
             if (menu == UICtrlInfoNotification.EMenu.MyProject)
             {
                 return 1 << (int) ENotificationDataType.NDT_ProjectDownload |
                        1 << (int) ENotificationDataType.NDT_ProjectFavorite |
-                       1 << (int) ENotificationDataType.NDT_ProjectComment;
+                       1 << (int) ENotificationDataType.NDT_ProjectComment |
+                       1 << (int) ENotificationDataType.NDT_ProjectLike |
+                       1 << (int) ENotificationDataType.NDT_ProjectPlayed;
             }
 
             LogHelper.Error("GetMask fail, menu = {0}", menu);
@@ -227,16 +239,20 @@ namespace GameA.Game
             {
                 return UICtrlInfoNotification.EMenu.None;
             }
+
             switch (data.Type)
             {
                 case ENotificationDataType.NDT_Follower:
                 case ENotificationDataType.NDT_UserMessageBoard:
                 case ENotificationDataType.NDT_UserMessageBoardReply:
                 case ENotificationDataType.NDT_ProjectCommentReply:
+                case ENotificationDataType.NDT_Mail:
                     return UICtrlInfoNotification.EMenu.Basic;
                 case ENotificationDataType.NDT_ProjectComment:
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
+                case ENotificationDataType.NDT_ProjectLike:
+                case ENotificationDataType.NDT_ProjectPlayed:
                     return UICtrlInfoNotification.EMenu.MyProject;
             }
 
