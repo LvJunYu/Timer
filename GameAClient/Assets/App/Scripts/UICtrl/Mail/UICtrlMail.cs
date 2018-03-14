@@ -48,12 +48,10 @@
             base.OnOpen(parameter);
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.FriendMail, true);
+                _curMenu = EMenu.FriendMail;
             }
-            else
-            {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
-            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
         protected override void OnClose()
@@ -62,6 +60,7 @@
             {
                 _curMenuCtrl.Close();
             }
+
             base.OnClose();
         }
 
@@ -74,6 +73,7 @@
                     _menuCtrlArray[i].OnDestroy();
                 }
             }
+
             _curMenuCtrl = null;
             base.OnDestroy();
         }
@@ -124,12 +124,14 @@
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -142,6 +144,16 @@
             {
                 ChangeMenu((EMenu) selectInx);
             }
+        }
+
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
         public enum EMenu

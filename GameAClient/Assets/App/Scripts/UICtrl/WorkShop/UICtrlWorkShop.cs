@@ -72,12 +72,10 @@ namespace GameA
 //            Clear();
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.EditingProjects, true);
+                _curMenu = EMenu.EditingProjects;
             }
-            else
-            {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
-            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
 
             if (!_pushGoldEnergyStyle)
             {
@@ -306,6 +304,16 @@ namespace GameA
         {
             var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
             up.OnUmProjectDragEnd(oldIndex, newIndex);
+        }
+
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
     }
 }
