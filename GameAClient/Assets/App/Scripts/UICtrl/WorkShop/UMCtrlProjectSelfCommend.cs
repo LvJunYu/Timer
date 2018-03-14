@@ -1,10 +1,6 @@
-using System.Collections.Generic;
 using DG.Tweening;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.VR.WSA.WebCam;
 
 namespace GameA
 {
