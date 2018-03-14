@@ -293,7 +293,6 @@ namespace GameA
             base.OnDestroy();
         }
 
-
         //选中关卡后的响应
         public bool OnSelectProject(UserSelfRecommendProject project)
         {
@@ -323,13 +322,58 @@ namespace GameA
 
         public void OnUmProjectDragEnd(int oldIndex, int newIndex)
         {
+            if (oldIndex < newIndex)
+            {
+                for (int i = oldIndex; i < newIndex; i++)
+                {
+                    AddMsgOprate(i, i + 1);
+                    _dataList[i] = _dataList[i + 1];
+                }
+
+                _dataList[newIndex] = _dataList[oldIndex];
+                AddMsgOprate(newIndex, oldIndex);
+            }
+
+            if (oldIndex > newIndex)
+            {
+                for (int i = oldIndex; i > newIndex; i--)
+                {
+                    AddMsgOprate(i, i - 1);
+                    _dataList[i] = _dataList[i - 1];
+                }
+
+                _dataList[newIndex] = _dataList[oldIndex];
+                AddMsgOprate(newIndex, oldIndex);
+            }
+
+//            RefreshView();
         }
 
-        private void SortList(int smallIndex, int bigIndex)
+        private void AddMsgOprate(int oldindex, int newindex)
         {
-            for (int i = smallIndex; i <= bigIndex; i++)
+            Msg_SortSelfRecommendProjectItem msgItem = new Msg_SortSelfRecommendProjectItem();
+            msgItem.SlotInx = oldindex;
+            if (_dataList[oldindex].ProjectData == null)
             {
-//                _dataList[a]
+                msgItem.OldProjectMainId = 0;
+            }
+            else
+            {
+                msgItem.OldProjectMainId = _dataList[oldindex].ProjectData.MainId;
+            }
+
+            if (_dataList[newindex].ProjectData == null)
+            {
+                msgItem.NewProjectMainId = 0;
+            }
+            else
+            {
+                msgItem.NewProjectMainId = _dataList[newindex].ProjectData.MainId;
+            }
+
+            if (msgItem.NewProjectMainId != msgItem.OldProjectMainId)
+            {
+                _mainCtrl.SortItemList.Add(msgItem);
             }
         }
     }

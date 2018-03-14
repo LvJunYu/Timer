@@ -217,6 +217,8 @@ namespace GameA
             if (newindex != -1 && _benginIndex != newindex)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(_benginIndex, newindex);
+                Vector2 targerpos = _gridDataScroller.GetPosByIndex(newindex);
+                _cachedView.Trans.anchoredPosition = targerpos;
             }
         }
 
