@@ -3,13 +3,14 @@
     [Unit(Id = 5028, Type = typeof(PasswordDoor))]
     public class PasswordDoor : BlockBase
     {
-        private bool _opened;
+        private bool _opened; //门已经打开
         private int _timer;
         private int _uiTimer;
         private int _password;
-        private MainPlayer _mainPlayer;
+        private PlayerBase _player;
         private bool _uiOpen;
         private EDirectionType _directionRelativeMain;
+        private bool _hasCorrected; //已经输入正确密码
 
         public int UiTimer
         {
@@ -23,9 +24,9 @@
             set { _uiOpen = value; }
         }
 
-        public bool HasOpened
+        public bool HasCorrected
         {
-            get { return _timer > 0 || _opened; }
+            get { return _hasCorrected; }
         }
 
         public EDirectionType DirectionRelativeMain
@@ -48,7 +49,7 @@
                 return false;
             }
 
-            if (HasOpened)
+            if (_opened || _timer > 0)
             {
                 if (_animation != null)
                 {
@@ -87,7 +88,8 @@
             _timer = 0;
             _uiTimer = 0;
             _opened = false;
-            _mainPlayer = null;
+            _hasCorrected = false;
+            _player = null;
             SetOpen(false);
         }
 
@@ -138,10 +140,12 @@
 
         public void OnPasswordDoorOpen()
         {
-            if (_mainPlayer != null)
+            if (_player != null && _player.IsMain)
             {
-                _mainPlayer.OnPasswordDoorOpen();
+                ((MainPlayer) _player).SetKeyDown(EInputType.PasswordDoorOpen);
             }
+
+            _hasCorrected = true;
         }
 
         public void ShowOpen()
@@ -153,28 +157,35 @@
                 _animation.PlayOnce("Open3");
             }
 
-            _mainPlayer = null;
+            _player = null;
         }
 
         public void OnUiOpen(bool value)
         {
-            _uiOpen = value;
-            if (_mainPlayer != null)
+            if (_player != null && _player.IsMain)
             {
-                _mainPlayer.SetInputValid(!value);
+                ((MainPlayer) _player).SetInputValid(!value);
+            }
+
+            if (!value && _uiOpen && !_hasCorrected)
+            {
+                if (_player != null && _player.IsMain)
+                {
+                    ((MainPlayer) _player).SetKeyDown(EInputType.PasswordDoorUIClose);
+                }
             }
         }
 
         public void OnPlayerDead(PlayerBase player)
         {
-            if (_mainPlayer == player)
+            if (_player == player)
             {
                 if (_uiOpen)
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlPasswordDoorInGame>();
                 }
 
-                _mainPlayer = null;
+                _player = null;
             }
         }
 
@@ -193,9 +204,9 @@
             UpdateTransPos();
         }
 
-        public void SetPlayer(MainPlayer mainPlayer)
+        public void SetPlayer(PlayerBase player)
         {
-            _mainPlayer = mainPlayer;
+            _player = player;
         }
     }
 }

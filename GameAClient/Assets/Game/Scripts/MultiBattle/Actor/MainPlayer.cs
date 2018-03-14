@@ -60,23 +60,6 @@ namespace GameA.Game
             GM2DGame.Instance.GameMode.RecordAnimation(VictoryAnimName(), true, 1, 1);
         }
 
-        protected override void CheckAssist()
-        {
-            base.CheckAssist();
-            if (_passwordDoor != null)
-            {
-                if (_input.GetKeyUpApplied(EInputType.Assist))
-                {
-                    _passwordDoor.SetPlayer(this);
-                    _passwordDoor.UiOpen = true;
-                    if (GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
-                    {
-                        SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
-                    }
-                }
-            }
-        }
-
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             base.Hit(unit, eDirectionType);
@@ -105,12 +88,12 @@ namespace GameA.Game
             }
         }
 
-        public void OnPasswordDoorOpen()
+        public void SetKeyDown(EInputType type)
         {
             var localInput = _input as LocalPlayerInput;
             if (localInput != null)
             {
-                localInput.SetKeyDown(EInputType.PasswordDoorOpen);
+                localInput.SetKeyDown(type);
             }
         }
     }
