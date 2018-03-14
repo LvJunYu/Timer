@@ -177,7 +177,7 @@ namespace GameA.Game
 
                             if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
                             {
-                                int speedY = ymin - _colliderPos.y;
+                                int speedY = _extraDeltaPos.y;
                                 if ((unit.IsActor || unit is Box) && _extraDeltaPos.y > 0 &&
                                     unit.ColliderGrid.YMin == _colliderGrid.YMax + 1 &&
                                     unit.CheckUpValid(ref speedY, ref unit, true))
@@ -438,6 +438,11 @@ namespace GameA.Game
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
+            if (!_isInterest)
+            {
+                return IntVec2.zero;
+            }
+
             IntVec2 deltaImpactPos = IntVec2.zero;
             if (!_isCalculated)
             {

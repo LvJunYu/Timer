@@ -205,7 +205,7 @@ namespace GameA.Game
 
         public bool CanCross
         {
-            get { return _canCross; }
+            get { return _canCross && _isInterest; }
         }
 
         /// <summary>
@@ -1987,6 +1987,11 @@ namespace GameA.Game
 
         public bool CheckUpValid(ref int speedY, ref UnitBase unit, bool checkOnly = false)
         {
+            if (!unit.IsInterest)
+            {
+                return false;
+            }
+
             IntVec2 pointACheck = IntVec2.zero, pointBCheck = IntVec2.zero;
             GM2DTools.GetBorderPoint(_colliderGrid, EDirectionType.Up, ref pointACheck, ref pointBCheck);
             var checkGrid = SceneQuery2D.GetGrid(pointACheck, pointBCheck, 0, speedY);

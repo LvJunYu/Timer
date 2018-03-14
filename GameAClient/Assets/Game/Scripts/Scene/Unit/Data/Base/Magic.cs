@@ -314,7 +314,7 @@ namespace GameA.Game
 
         protected bool CheckUseful()
         {
-            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic() || !_isInterest)
             {
                 return false;
             }
