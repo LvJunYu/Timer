@@ -1,4 +1,6 @@
-﻿using SoyEngine;
+﻿using System.Collections.Generic;
+using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -9,6 +11,13 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
         private UPCtrlWorkShopProjectBase[] _menuCtrlArray;
+        private UPCtrlWorkShopAddSelfRecommend uPCtrlWorkShopAddSelfRecommend;
+
+        public readonly List<Msg_SortSelfRecommendProjectItem> SortItemList =
+            new List<Msg_SortSelfRecommendProjectItem>();
+
+        public bool SelfRecommendDirty = false;
+
         private bool _pushGoldEnergyStyle;
 
         protected override void OnViewCreated()
@@ -41,6 +50,10 @@ namespace GameA
             upCtrlWorkShopSelfRecommen.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.SelfRecommen] = upCtrlWorkShopSelfRecommen;
 
+            uPCtrlWorkShopAddSelfRecommend = new UPCtrlWorkShopAddSelfRecommend();
+            uPCtrlWorkShopAddSelfRecommend.Set(ResScenary);
+            uPCtrlWorkShopAddSelfRecommend.Init(this, _cachedView);
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -71,6 +84,8 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
             }
+
+            uPCtrlWorkShopAddSelfRecommend.Close();
         }
 
         protected override void OnDestroy()
@@ -85,6 +100,12 @@ namespace GameA
 
             _curMenuCtrl = null;
             base.OnDestroy();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            uPCtrlWorkShopAddSelfRecommend.UpdateUmLastTime();
         }
 
         protected override void InitGroupId()
@@ -229,6 +250,18 @@ namespace GameA
             }
         }
 
+        public bool OnSelectBtn(UserSelfRecommendProject project)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            return up.OnSelectProject(project);
+        }
+
+        public bool OnUnSelectBtn(UserSelfRecommendProject project)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            return up.OnUnSelectProject(project);
+        }
+
         public enum EMenu
         {
             None = -1,
@@ -237,6 +270,33 @@ namespace GameA
             Downoad,
             SelfRecommen,
             Max
+        }
+
+        public void OpenAddSelfRecommendPanel()
+        {
+            uPCtrlWorkShopAddSelfRecommend.Open();
+        }
+
+        public bool AddSelfRecommendProject(Project project)
+        {
+            return uPCtrlWorkShopAddSelfRecommend.AddProject(project);
+        }
+
+        public bool ReomveSelfRecommendProject(Project project)
+        {
+            return uPCtrlWorkShopAddSelfRecommend.RemoveProject(project);
+        }
+
+        public void RefreshSelfRecommend()
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            up.RequestData();
+        }
+
+        public void OnUmProjectDragEnd(int oldIndex, int newIndex)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            up.OnUmProjectDragEnd(oldIndex, newIndex);
         }
     }
 }

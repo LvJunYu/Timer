@@ -22,7 +22,7 @@ namespace GameA
                 startInx = _contentList.Count;
             }
 
-            _data.Request(startInx, _pageSize, () =>
+            _data.Request(startInx, Mask, _pageSize, () =>
             {
                 _isRequesting = false;
                 _projectList = _data.ProjectList;

@@ -16,8 +16,9 @@ namespace GameA
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
-        
-        public int Mask {
+
+        public int Mask
+        {
             get
             {
                 int mask = 0;
@@ -33,10 +34,11 @@ namespace GameA
                 {
                     mask = Project.ProjectTypeAllMask;
                 }
+
                 return mask;
             }
         }
-        
+
         public override void Open()
         {
             base.Open();
@@ -136,13 +138,17 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            if (_isRequesting)
+            {
+                return;
+            }
         }
 
         public virtual void OnProjectTypesChanged()
         {
             RequestData();
         }
-        
+
         public override void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;

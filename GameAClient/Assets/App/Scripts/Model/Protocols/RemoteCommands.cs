@@ -2783,12 +2783,10 @@ namespace GameA
 		/// 添加自荐关卡
 		/// </summary>
 		/// <param name="sortItemList">关卡</param>
-		/// <param name="projectMainId">关卡</param>
-		/// <param name="slotInx"></param>
+		/// <param name="addItemList">添加关卡</param>
         public static void AddSelfRecommendProject (
             List<Msg_SortSelfRecommendProjectItem> sortItemList,
-            long projectMainId,
-            int slotInx,
+            List<Msg_SelfRecommendProjectOperateItem> addItemList,
             Action<Msg_SC_CMD_AddSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2799,8 +2797,7 @@ namespace GameA
             Msg_CS_CMD_AddSelfRecommendProject msg = new Msg_CS_CMD_AddSelfRecommendProject();
             // 添加自荐关卡
             msg.SortItemList.AddRange(sortItemList);
-            msg.ProjectMainId = projectMainId;
-            msg.SlotInx = slotInx;
+            msg.AddItemList.AddRange(addItemList);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_AddSelfRecommendProject>(
                 SoyHttpApiPath.AddSelfRecommendProject, msg, ret => {
                     if (successCallback != null) {
@@ -2826,12 +2823,10 @@ namespace GameA
 		/// 删除自荐关卡
 		/// </summary>
 		/// <param name="sortItemList">关卡</param>
-		/// <param name="projectMainId">关卡</param>
-		/// <param name="slotInx"></param>
+		/// <param name="removeItemList">添加关卡</param>
         public static void RemoveSelfRecommendProject (
             List<Msg_SortSelfRecommendProjectItem> sortItemList,
-            long projectMainId,
-            int slotInx,
+            List<Msg_SelfRecommendProjectOperateItem> removeItemList,
             Action<Msg_SC_CMD_RemoveSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -2842,8 +2837,7 @@ namespace GameA
             Msg_CS_CMD_RemoveSelfRecommendProject msg = new Msg_CS_CMD_RemoveSelfRecommendProject();
             // 删除自荐关卡
             msg.SortItemList.AddRange(sortItemList);
-            msg.ProjectMainId = projectMainId;
-            msg.SlotInx = slotInx;
+            msg.RemoveItemList.AddRange(removeItemList);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_RemoveSelfRecommendProject>(
                 SoyHttpApiPath.RemoveSelfRecommendProject, msg, ret => {
                     if (successCallback != null) {

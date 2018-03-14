@@ -39,6 +39,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             base.OnDestroy();
         }
 
@@ -53,6 +54,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             _wrapper = obj as CardDataRendererWrapper<Project>;
             if (_wrapper != null)
             {
@@ -68,11 +70,14 @@ namespace GameA
                 Unload();
                 return;
             }
+
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
             _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.MainId != 0);
             _cachedView.SingleObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Single && !emptyProject);
-            _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation && !emptyProject);
-            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Compete && !emptyProject);
+            _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation &&
+                                                   !emptyProject);
+            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Compete &&
+                                               !emptyProject);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
 //            _cachedView.DownloadObj.SetActiveEx(false);
 //            _cachedView.OriginalObj.SetActiveEx(false);
@@ -96,6 +101,7 @@ namespace GameA
                 {
                     DictionaryTools.SetContentText(_cachedView.Title, p.Name);
                 }
+
                 DictionaryTools.SetContentText(_cachedView.PraiseScoreTxt, p.ScoreFormat);
                 _cachedView.TotalTxt.SetActiveEx(p.TotalCount > 0);
                 DictionaryTools.SetContentText(_cachedView.TotalTxt, string.Format(CountFormat, p.TotalCount));
@@ -115,7 +121,8 @@ namespace GameA
         public void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage, _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage,
+                _cachedView.DefaultCoverTexture);
         }
 
         private void OnHeadBtn()

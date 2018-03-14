@@ -129,8 +129,8 @@ namespace GameA
 
 //        public bool RequestPlayShadowBattle(Project project, Record record)
 //        {
-//            _projectList.Clear();
-//            _projectList.Add(project);
+//            _userselfRecommedprojectList.Clear();
+//            _userselfRecommedprojectList.Add(project);
 //            _curProjectInx = 0;
 //            return RequestStartGame(project, EStartType.WorldPlay, record);
 //        }

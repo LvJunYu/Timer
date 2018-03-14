@@ -9,20 +9,20 @@ namespace GameA
 {
     public class UPCtrlWorkShopSelfRecommen : UPCtrlWorkShopProjectBase
     {
+        private List<UserSelfRecommendProject> _removeList = new List<UserSelfRecommendProject>();
         private List<Table_WorkShopNumberOfSlot> _allSoltList = new List<Table_WorkShopNumberOfSlot>();
         private int _maxSoltNum;
         private bool _isRequesting;
         private UserSelfRecommendProjectList _data = LocalUser.Instance.UserSelfRecommendProjectData;
         private List<UserSelfRecommendProject> _dataList = LocalUser.Instance.UserSelfRecommendProjectList;
 
-        protected List<CardDataRendererWrapper<UserSelfRecommendProject>> _contentList =
+        protected new List<CardDataRendererWrapper<UserSelfRecommendProject>> _contentList =
             new List<CardDataRendererWrapper<UserSelfRecommendProject>>();
 
-        protected Dictionary<long, CardDataRendererWrapper<UserSelfRecommendProject>> _dict =
+        protected new Dictionary<long, CardDataRendererWrapper<UserSelfRecommendProject>> _dict =
             new Dictionary<long, CardDataRendererWrapper<UserSelfRecommendProject>>();
 
-        private readonly List<Msg_SortSelfRecommendProjectItem> sortItemList =
-            new List<Msg_SortSelfRecommendProjectItem>();
+        private int _startInx;
 
         protected override void OnViewCreated()
         {
@@ -31,9 +31,12 @@ namespace GameA
                 _allSoltList.Add(soltData.Value);
             }
 
-            _allSoltList.Sort((a, b) => { return a.Num - b.Num; });
+            _allSoltList.Sort((a, b) => { return b.Num - a.Num; });
             _maxSoltNum = _allSoltList[0].Num;
             base.OnViewCreated();
+            _cachedView.SelfRecommendEditBtn.onClick.AddListener(ShowRemoveBtn);
+            _cachedView.CancelBtn.onClick.AddListener(ShowEditBtn);
+            _cachedView.RemoveBtn.onClick.AddListener(OnRemoveBtn);
         }
 
         public override void Open()
@@ -41,34 +44,47 @@ namespace GameA
             base.Open();
             RequestData();
             RefreshView();
+            ShowEditBtn();
         }
 
         public override void RequestData(bool append = false)
         {
-            if (_hasRequested && !append || _isRequesting) return;
+            if (!_mainCtrl.SelfRecommendDirty && _hasRequested && !append || _isRequesting) return;
             _isRequesting = true;
-            int startInx = 0;
             if (append)
             {
-                startInx = _dataList.Count;
+                _startInx = _dataList.Count;
             }
 
-            _data.Request(LocalUser.Instance.UserGuid, startInx, _pageSize, () =>
+            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(() =>
+            {
+                AppendProjectList(_dataList, _data);
+                if (_isOpen)
                 {
-                    AppendProjectList(_dataList, _data);
-                    if (_isOpen)
-                    {
-                        RefreshView();
-                    }
-
-                    _hasRequested = true;
-                    _isRequesting = false;
-                }, code =>
-                {
-                    SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！");
-                    _isRequesting = false;
+                    RefreshView();
                 }
-            );
+
+                _mainCtrl.SelfRecommendDirty = false;
+                _hasRequested = true;
+                _isRequesting = false;
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！");
+                _isRequesting = false;
+            });
+            helper.AddTask(LoadDataList);
+            helper.AddTask(LoadUserData);
+        }
+
+        private void LoadDataList(Action successcallback, Action<ENetResultCode> failcallback)
+        {
+            _data.Request(LocalUser.Instance.UserGuid, _startInx, _pageSize, successcallback, failcallback);
+        }
+
+        private void LoadUserData(Action successcallback, Action<ENetResultCode> failcallback)
+        {
+            LocalUser.Instance.UserSelfRecommendProjectStatistic.Request(LocalUser.Instance.UserGuid, successcallback,
+                failcallback);
         }
 
         public override void RefreshView()
@@ -83,9 +99,11 @@ namespace GameA
             }
 
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, _dataList.Count);
-            for (int i = 0; i < _dataList.Count; i++)
+            for (int i = 0;
+                i < _dataList.Count;
+                i++)
             {
-                if (!_dict.ContainsKey(_projectList[i].ProjectId))
+                if (!_dict.ContainsKey(_dataList[i].SlotInx))
                 {
                     CardDataRendererWrapper<UserSelfRecommendProject> w =
                         new CardDataRendererWrapper<UserSelfRecommendProject>(_dataList[i], OnItemClick);
@@ -118,8 +136,10 @@ namespace GameA
                 }
 
                 item.Set(_contentList[inx]);
+                item.Index = inx;
             }
         }
+
 
 //点击
         private void OnItemClick(CardDataRendererWrapper<UserSelfRecommendProject> obj)
@@ -129,9 +149,9 @@ namespace GameA
 //获取item
         protected override IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
-            var item = new UMCtrlSoltProject();
+            var item = new UMCtrlProjectSelfCommend();
             item.Init(parent, _resScenary);
-            item.SetCurUI(UMCtrlProject.ECurUI.Editing);
+            item.SetScrollRect(_cachedView.GridDataScrollers[(int) _menu]);
             return item;
         }
 
@@ -143,30 +163,33 @@ namespace GameA
 
         private void AppendProjectList(List<UserSelfRecommendProject> projectList, UserSelfRecommendProjectList data)
         {
-            List<UserSelfRecommendProject> removeList = new List<UserSelfRecommendProject>();
+            List<UserSelfRecommendProject> removeErroList = new List<UserSelfRecommendProject>();
             for (int i = 0; i < data.ProjectList.Count; i++)
             {
                 if (data.ProjectList[i].SlotInx >= LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount)
                 {
                     data.ProjectList.RemoveAt(i);
-                    removeList.Add(data.ProjectList[i]);
+                    removeErroList.Add(data.ProjectList[i]);
                 }
             }
 
+            projectList.Clear();
             for (int i = 0; i < data.ProjectList.Count; i++)
             {
                 if (projectList.Count > data.ProjectList[i].SlotInx)
                 {
+                    data.ProjectList[i].Type = EUserSelfRecommendType.HaveProject;
                     projectList[data.ProjectList[i].SlotInx] = data.ProjectList[i];
                 }
                 else
                 {
                     int addnum = data.ProjectList[i].SlotInx - projectList.Count;
+                    int oldnum = projectList.Count;
                     for (int j = 0; j < addnum; j++)
                     {
                         UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
-                        userSelfRecommendProject.SlotInx = projectList.Count + j;
-                        userSelfRecommendProject.ProjectData = new Project();
+                        userSelfRecommendProject.SlotInx = oldnum + j;
+                        userSelfRecommendProject.Type = EUserSelfRecommendType.NoProject;
                         projectList.Add(new UserSelfRecommendProject());
                     }
 
@@ -177,11 +200,12 @@ namespace GameA
             if (projectList.Count < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount)
             {
                 int addnum = LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount - projectList.Count;
+                int oldnum = projectList.Count;
                 for (int j = 0; j < addnum; j++)
                 {
                     UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
-                    userSelfRecommendProject.SlotInx = projectList.Count + j;
-                    userSelfRecommendProject.ProjectData = new Project();
+                    userSelfRecommendProject.SlotInx = oldnum + j;
+                    userSelfRecommendProject.Type = EUserSelfRecommendType.NoProject;
                     projectList.Add(userSelfRecommendProject);
                 }
             }
@@ -189,22 +213,123 @@ namespace GameA
             if (projectList.Count < _maxSoltNum)
             {
                 int addnum = _maxSoltNum - projectList.Count;
+                int oldnum = projectList.Count;
                 for (int j = 0; j < addnum; j++)
                 {
                     UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
-                    userSelfRecommendProject.SlotInx = projectList.Count + j;
-                    userSelfRecommendProject.ProjectData = null;
+                    userSelfRecommendProject.SlotInx = oldnum + j;
+                    userSelfRecommendProject.Type = EUserSelfRecommendType.UnLock;
                     projectList.Add(userSelfRecommendProject);
                 }
             }
 
-            for (int i = 0; i < removeList.Count; i++)
+            List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
+            for (int i = 0; i < removeErroList.Count; i++)
             {
-                RemoteCommands.RemoveSelfRecommendProject(sortItemList,
-                    removeList[i].ProjectData.ProjectId,
-                    removeList[i].SlotInx,
-                    ret => { removeList.RemoveAt(i); },
+                Msg_SelfRecommendProjectOperateItem selfRecommendProject = new Msg_SelfRecommendProjectOperateItem();
+                selfRecommendProject.ProjectMainId = removeErroList[i].ProjectData.MainId;
+                selfRecommendProject.SlotInx = removeErroList[i].SlotInx;
+                _list.Add(selfRecommendProject);
+            }
+
+            if (removeErroList.Count > 0)
+            {
+                RemoteCommands.RemoveSelfRecommendProject(_mainCtrl.SortItemList, _list,
+                    ret =>
+                    {
+                        _removeList.Clear();
+                        _mainCtrl.SelfRecommendDirty = true;
+                        RequestData();
+                    },
                     code => { SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！"); });
+            }
+        }
+
+        private void ShowEditBtn()
+        {
+            _cachedView.CancelBtn.SetActiveEx(false);
+            _cachedView.RemoveBtn.SetActiveEx(false);
+            _cachedView.SelfRecommendEditBtn.SetActiveEx(true);
+            _cachedView.TipObj.SetActive(true);
+        }
+
+        private void ShowRemoveBtn()
+        {
+            _cachedView.CancelBtn.SetActiveEx(true);
+            _cachedView.RemoveBtn.SetActiveEx(true);
+            _cachedView.SelfRecommendEditBtn.SetActiveEx(false);
+            _cachedView.TipObj.SetActive(false);
+            _removeList.Clear();
+            Messenger.Broadcast(EMessengerType.OnWorkShopSelfRecommendEditBtn);
+        }
+
+        private void OnRemoveBtn()
+        {
+            ShowEditBtn();
+            List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
+            for (int i = 0; i < _removeList.Count; i++)
+            {
+                Msg_SelfRecommendProjectOperateItem selfRecommendProject = new Msg_SelfRecommendProjectOperateItem();
+                selfRecommendProject.ProjectMainId = _removeList[i].ProjectData.MainId;
+                selfRecommendProject.SlotInx = _removeList[i].SlotInx;
+                _list.Add(selfRecommendProject);
+            }
+
+            if (_removeList.Count > 0)
+            {
+                RemoteCommands.RemoveSelfRecommendProject(_mainCtrl.SortItemList, _list,
+                    ret =>
+                    {
+                        _removeList.Clear();
+                        _mainCtrl.SelfRecommendDirty = true;
+                        RequestData();
+                    },
+                    code => { SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！"); });
+            }
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+
+        //选中关卡后的响应
+        public bool OnSelectProject(UserSelfRecommendProject project)
+        {
+            bool canadd = false;
+            if (_isOpen)
+            {
+                _removeList.Add(project);
+                canadd = true;
+            }
+
+            return canadd;
+        }
+
+        public bool OnUnSelectProject(UserSelfRecommendProject project)
+        {
+            bool canremove = false;
+            if (_isOpen)
+            {
+                if (_removeList.Remove(project))
+                {
+                    canremove = true;
+                }
+            }
+
+            return canremove;
+        }
+
+        public void OnUmProjectDragEnd(int oldIndex, int newIndex)
+        {
+        }
+
+        private void SortList(int smallIndex, int bigIndex)
+        {
+            for (int i = smallIndex; i <= bigIndex; i++)
+            {
+//                _dataList[a]
             }
         }
     }
