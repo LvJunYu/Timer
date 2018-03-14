@@ -42,9 +42,9 @@ namespace GameA
             _lastSoltList.Clear();
             _lastSoltNum = 0;
             _addUserSelfRecommendProjects.Clear();
-            for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectList.Count; i++)
+            for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount; i++)
             {
-                if (LocalUser.Instance.UserSelfRecommendProjectList[i].Type == EUserSelfRecommendType.NoProject)
+                if (LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData != Project.EmptyProject)
                 {
                     _lastSoltList.Add(LocalUser.Instance.UserSelfRecommendProjectList[i].SlotInx);
                     _lastSoltNum++;

@@ -43,7 +43,7 @@ namespace GameA
         {
             base.Open();
             RequestData();
-            RefreshView();
+//            RefreshView();
             ShowEditBtn();
         }
 
@@ -178,7 +178,6 @@ namespace GameA
             {
                 if (projectList.Count > data.ProjectList[i].SlotInx)
                 {
-                    data.ProjectList[i].Type = EUserSelfRecommendType.HaveProject;
                     projectList[data.ProjectList[i].SlotInx] = data.ProjectList[i];
                 }
                 else
@@ -189,8 +188,8 @@ namespace GameA
                     {
                         UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
                         userSelfRecommendProject.SlotInx = oldnum + j;
-                        userSelfRecommendProject.Type = EUserSelfRecommendType.NoProject;
-                        projectList.Add(new UserSelfRecommendProject());
+                        userSelfRecommendProject.ProjectData = null;
+                        projectList.Add(userSelfRecommendProject);
                     }
 
                     projectList.Add(data.ProjectList[i]);
@@ -205,7 +204,7 @@ namespace GameA
                 {
                     UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
                     userSelfRecommendProject.SlotInx = oldnum + j;
-                    userSelfRecommendProject.Type = EUserSelfRecommendType.NoProject;
+                    userSelfRecommendProject.ProjectData = null;
                     projectList.Add(userSelfRecommendProject);
                 }
             }
@@ -218,7 +217,7 @@ namespace GameA
                 {
                     UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
                     userSelfRecommendProject.SlotInx = oldnum + j;
-                    userSelfRecommendProject.Type = EUserSelfRecommendType.UnLock;
+                    userSelfRecommendProject.ProjectData = null;
                     projectList.Add(userSelfRecommendProject);
                 }
             }
@@ -324,29 +323,35 @@ namespace GameA
         {
             if (oldIndex < newIndex)
             {
+                UserSelfRecommendProject project = new UserSelfRecommendProject();
+                project.SlotInx = _dataList[oldIndex].SlotInx;
+                project.ProjectData = _dataList[oldIndex].ProjectData;
                 for (int i = oldIndex; i < newIndex; i++)
                 {
                     AddMsgOprate(i, i + 1);
-                    _dataList[i] = _dataList[i + 1];
+                    _dataList[i].ProjectData = _dataList[i + 1].ProjectData;
                 }
 
-                _dataList[newIndex] = _dataList[oldIndex];
+                _dataList[newIndex].ProjectData = project.ProjectData;
                 AddMsgOprate(newIndex, oldIndex);
             }
 
             if (oldIndex > newIndex)
             {
+                UserSelfRecommendProject project = new UserSelfRecommendProject();
+                project.SlotInx = _dataList[oldIndex].SlotInx;
+                project.ProjectData = _dataList[oldIndex].ProjectData;
                 for (int i = oldIndex; i > newIndex; i--)
                 {
                     AddMsgOprate(i, i - 1);
-                    _dataList[i] = _dataList[i - 1];
+                    _dataList[i].ProjectData = _dataList[i - 1].ProjectData;
                 }
 
-                _dataList[newIndex] = _dataList[oldIndex];
+                _dataList[newIndex].ProjectData = project.ProjectData;
                 AddMsgOprate(newIndex, oldIndex);
             }
-
-//            RefreshView();
+//            _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+            RefreshView();
         }
 
         private void AddMsgOprate(int oldindex, int newindex)

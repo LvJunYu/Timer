@@ -13,7 +13,6 @@ namespace GameA
         private const string NoName = "未命名";
         private const string NoProject = "可添加";
         private const string UnLockText = "未解锁";
-        private EUserSelfRecommendType _type;
         private GridDataScroller _gridDataScroller;
         private int _allowIndex;
 
@@ -87,26 +86,19 @@ namespace GameA
             }
 
             _allowIndex = LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount;
-            _type = _wrapper.Content.Type;
-            switch (_wrapper.Content.Type)
+            if (_wrapper.Content.SlotInx >= _allowIndex)
             {
-                case EUserSelfRecommendType.HaveProject:
-
-                    RefreshProjectView();
-                    break;
-                case EUserSelfRecommendType.NoProject:
-                    RefreshNoProject();
-                    break;
-                case EUserSelfRecommendType.UnLock:
-                    RefreshUnLock();
-                    break;
+                RefreshUnLock();
+            }
+            else
+            {
+                RefreshProjectView();
             }
         }
 
         private void RefreshProjectView()
         {
-            bool emptyProject = _wrapper.Content.ProjectData == Project.EmptyProject;
-
+            bool emptyProject = _wrapper.Content.ProjectData == null;
             if (!emptyProject)
             {
                 _cachedView.ProjectObj.SetActiveEx(true);
@@ -127,6 +119,10 @@ namespace GameA
 
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectBgImage, p.IconPath,
                     _cachedView.DefualtTexture);
+            }
+            else
+            {
+                RefreshNoProject();
             }
         }
 
@@ -155,7 +151,7 @@ namespace GameA
 
         private void ResponseRemoveBtn()
         {
-            if (_type == EUserSelfRecommendType.HaveProject)
+            if (_wrapper.Content.ProjectData != Project.EmptyProject)
             {
                 _cachedView.SelectBtn.SetActiveEx(true);
             }

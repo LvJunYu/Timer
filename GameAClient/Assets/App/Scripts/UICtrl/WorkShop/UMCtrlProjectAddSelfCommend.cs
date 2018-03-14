@@ -11,7 +11,6 @@ namespace GameA
         private int _index;
         public int Index { get; set; }
         private const string NoName = "未命名";
-        private EUserSelfRecommendType _type;
 
         public RectTransform Transform
         {
