@@ -15,7 +15,6 @@ using SoyEngine.Proto;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using FileTools = SoyEngine.FileTools;
-using UnityEditor;
 #if UNITY_EDITOR
 using UnityEditor;
 
