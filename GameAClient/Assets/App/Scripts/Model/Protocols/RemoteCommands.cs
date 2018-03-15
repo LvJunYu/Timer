@@ -1385,6 +1385,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingWorldBattleEndUserLike {
+            get { return _isRequstingWorldBattleEndUserLike; }
+        }
+        private static bool _isRequstingWorldBattleEndUserLike = false;
+        /// <summary>
+		/// 联机关卡结算玩家点赞
+		/// </summary>
+		/// <param name="targetUserId">点赞的用户</param>
+        public static void WorldBattleEndUserLike (
+            List<long> targetUserId,
+            Action<Msg_SC_CMD_WorldBattleEndUserLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingWorldBattleEndUserLike) {
+                return;
+            }
+            _isRequstingWorldBattleEndUserLike = true;
+            Msg_CS_CMD_WorldBattleEndUserLike msg = new Msg_CS_CMD_WorldBattleEndUserLike();
+            // 联机关卡结算玩家点赞
+            msg.TargetUserId.AddRange(targetUserId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_WorldBattleEndUserLike>(
+                SoyHttpApiPath.WorldBattleEndUserLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingWorldBattleEndUserLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "WorldBattleEndUserLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingWorldBattleEndUserLike = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingGetProjectByMainId {
             get { return _isRequstingGetProjectByMainId; }
         }

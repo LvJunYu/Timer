@@ -18,6 +18,7 @@ namespace GameA
         {
             _cachedView.MyNum.SetActiveEx(value);
             _cachedView.Num.SetActiveEx(!value);
+            _cachedView.SelfImage.SetActiveEx(value);
         }
 
         public void SetIndex(int index)

@@ -14,6 +14,7 @@ namespace GameA
     {
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
         private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
+        private List<long> _likePlaysGuid = new List<long>();
 
         protected override void InitGroupId()
         {
@@ -24,12 +25,14 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ReplayBtn.onClick.AddListener(OnRetryBtn);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             _allPlayerDatas = (List<SettlePlayerData>) parameter;
+            _likePlaysGuid.Clear();
             RefreshPanels();
         }
 
@@ -60,6 +63,11 @@ namespace GameA
 
         protected override void OnClose()
         {
+            if (_likePlaysGuid.Count > 0)
+            {
+                RemoteCommands.WorldBattleEndUserLike(_likePlaysGuid, ret => { }, code => { });
+            }
+
             for (int i = 0; i < _allPlayDataItems.Count; i++)
             {
                 UMPoolManager.Instance.Free(_allPlayDataItems[i]);
@@ -78,6 +86,37 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
+        }
+
+        private void OnRetryBtn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
+            GM2DGame.Instance.GameMode.Restart(value =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    if (value)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    }
+                }, () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    CommonTools.ShowPopupDialog("启动失败", null,
+                        new KeyValuePair<string, Action>("重试",
+                            () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnRetryBtn)); }),
+                        new KeyValuePair<string, Action>("取消", () => { }));
+                }
+            );
+        }
+
+        public void AddLikePlayer(long userguid)
+        {
+            _likePlaysGuid.Add(userguid);
+        }
+
+        public void RemoveLikePlayer(long userguid)
+        {
+            _likePlaysGuid.Remove(userguid);
         }
     }
 }

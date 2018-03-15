@@ -188,6 +188,7 @@ namespace GameA
         public bool AddProject(Project project)
         {
             bool canadd = false;
+
             if (_addUserSelfRecommendProjects.Count <= _lastSoltNum)
             {
                 _addUserSelfRecommendProjects.Add(project);
@@ -205,6 +206,7 @@ namespace GameA
 
         private void OnConfirmBtn()
         {
+            _mainCtrl.GetuUpCtrlWorkShopSelfRecommen().AddMsgOprate();
             List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
             _addUserSelfRecommendProjects.Sort((a, b) => { return (int) (a.LastDirtyTime - b.LastDirtyTime); });
 

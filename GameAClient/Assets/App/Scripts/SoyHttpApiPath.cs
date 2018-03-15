@@ -134,6 +134,8 @@ namespace SoyEngine
         public const string OfficialProjectList = "/world/getOfficialProjectList";
         // 获取世界自荐关卡
         public const string WorldSelfRecommendProjectList = "/world/getSelfRecommendProjectList";
+        // 联机关卡结算玩家点赞
+        public const string WorldBattleEndUserLike = "/world/battleEndUserLike";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -304,6 +305,11 @@ namespace GameA
         {
             var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
             up.OnUmProjectDragEnd(oldIndex, newIndex);
+        }
+
+        public UPCtrlWorkShopSelfRecommen GetuUpCtrlWorkShopSelfRecommen()
+        {
+            return _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
         }
 
         public void OpenMenu(EMenu menu)

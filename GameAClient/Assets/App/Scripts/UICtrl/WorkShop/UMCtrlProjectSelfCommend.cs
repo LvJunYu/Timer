@@ -32,6 +32,8 @@ namespace GameA
             get { return _wrapper.Content.ProjectData; }
         }
 
+        private Vector2 _orgPos = Vector2.zero;
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -40,6 +42,7 @@ namespace GameA
             Messenger.AddListener(EMessengerType.OnWorkShopSelfRecommendEditBtn, ResponseRemoveBtn);
             _cachedView.SelectBtn.onClick.AddListener(OnSelectBtn);
             _cachedView.UnSelectBtn.onClick.AddListener(OnUnSelectBtn);
+            _orgPos = _cachedView.ProjectRect.anchoredPosition;
         }
 
         protected override void OnDestroy()
@@ -59,6 +62,7 @@ namespace GameA
 
         public void Set(object obj)
         {
+            _cachedView.ProjectRect.anchoredPosition = _orgPos;
             if (_wrapper != null)
             {
                 _wrapper.OnDataChanged -= RefreshView;
@@ -151,9 +155,12 @@ namespace GameA
 
         private void ResponseRemoveBtn()
         {
-            if (_wrapper.Content.ProjectData != Project.EmptyProject)
+            if (_wrapper != null)
             {
-                _cachedView.SelectBtn.SetActiveEx(true);
+                if (_wrapper.Content.ProjectData != null)
+                {
+                    _cachedView.SelectBtn.SetActiveEx(true);
+                }
             }
         }
 
@@ -193,7 +200,7 @@ namespace GameA
 
         private void OnDrag()
         {
-            int temptindex = _gridDataScroller.GetItemIndexByPos(_cachedView.rectTransform().anchoredPosition);
+            int temptindex = _gridDataScroller.GetItemIndexByPos(GetProjectToScrollPos());
             if (newindex != temptindex)
             {
                 newindex = temptindex;
@@ -208,8 +215,14 @@ namespace GameA
         {
             if (newindex != -1 && _benginIndex != newindex)
             {
+                Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(newindex));
+                _cachedView.ProjectRect.anchoredPosition = targerpos;
+                _gridDataScroller.EndTween();
                 SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(_benginIndex, newindex);
-                Vector2 targerpos = _gridDataScroller.GetPosByIndex(newindex);
+            }
+            else
+            {
+                Vector2 targerpos = _gridDataScroller.GetPosByIndex(_benginIndex);
                 _cachedView.Trans.anchoredPosition = targerpos;
             }
         }
@@ -239,16 +252,40 @@ namespace GameA
 
             if (dragIndex < judgeindex)
             {
-                Vector2 targerpos = _gridDataScroller.GetPosByIndex(dragIndex);
-                _tween = _cachedView.Trans.DOAnchorPos(targerpos, 1.0f);
+                Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex));
+                _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
                 _tween.Play();
             }
             else
             {
-                Vector2 targerpos = _gridDataScroller.GetPosByIndex(dragIndex + 1);
-                _tween = _cachedView.Trans.DOAnchorPos(targerpos, 1.0f);
+                Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex + 1));
+                _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
                 _tween.Play();
             }
+        }
+
+        public void EndTween()
+        {
+            if (_tween != null && _tween.IsPlaying())
+            {
+                _tween.Complete();
+            }
+        }
+
+        private Vector2 GetProjectToScrollPos()
+        {
+            Vector2 pos = Vector2.down;
+            pos = _gridDataScroller.ScrollRect.content.InverseTransformPoint(_cachedView.ProjectRect.position);
+            return pos;
+        }
+
+        private Vector2 GetLocalPos(Vector2 postoScroll)
+        {
+            Vector2 localpos = Vector2.zero;
+            Vector2 worldpos = _gridDataScroller.ScrollRect.content.TransformPoint(postoScroll);
+            localpos = _cachedView.Trans.InverseTransformPoint(worldpos);
+            localpos += _orgPos;
+            return localpos;
         }
     }
 }

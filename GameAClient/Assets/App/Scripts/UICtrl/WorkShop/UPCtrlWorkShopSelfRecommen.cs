@@ -43,7 +43,6 @@ namespace GameA
         {
             base.Open();
             RequestData();
-//            RefreshView();
             ShowEditBtn();
         }
 
@@ -56,6 +55,20 @@ namespace GameA
                 _startInx = _dataList.Count;
             }
 
+            AddMsgOprate();
+            if (_mainCtrl.SortItemList.Count > 0)
+            {
+                RemoteCommands.SortSelfRecommendProject(_mainCtrl.SortItemList, ret => { RequestNewData(); },
+                    code => { });
+            }
+            else
+            {
+                RequestNewData();
+            }
+        }
+
+        private void RequestNewData()
+        {
             ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(() =>
             {
                 AppendProjectList(_dataList, _data);
@@ -168,7 +181,6 @@ namespace GameA
             {
                 if (data.ProjectList[i].SlotInx >= LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount)
                 {
-                    data.ProjectList.RemoveAt(i);
                     removeErroList.Add(data.ProjectList[i]);
                 }
             }
@@ -178,7 +190,12 @@ namespace GameA
             {
                 if (projectList.Count > data.ProjectList[i].SlotInx)
                 {
-                    projectList[data.ProjectList[i].SlotInx] = data.ProjectList[i];
+                    UserSelfRecommendProject userSelfRecommendProject = new UserSelfRecommendProject();
+                    userSelfRecommendProject.SlotInx = data.ProjectList[i].SlotInx;
+                    Project p = new Project();
+                    p.DeepCopy(data.ProjectList[i].ProjectData);
+                    userSelfRecommendProject.ProjectData = p;
+                    projectList[data.ProjectList[i].SlotInx] = userSelfRecommendProject;
                 }
                 else
                 {
@@ -192,7 +209,12 @@ namespace GameA
                         projectList.Add(userSelfRecommendProject);
                     }
 
-                    projectList.Add(data.ProjectList[i]);
+                    UserSelfRecommendProject userSelfRecommendProjectdeep = new UserSelfRecommendProject();
+                    userSelfRecommendProjectdeep.SlotInx = data.ProjectList[i].SlotInx;
+                    Project p = new Project();
+                    p.DeepCopy(data.ProjectList[i].ProjectData);
+                    userSelfRecommendProjectdeep.ProjectData = p;
+                    projectList.Add(userSelfRecommendProjectdeep);
                 }
             }
 
@@ -264,6 +286,7 @@ namespace GameA
 
         private void OnRemoveBtn()
         {
+            AddMsgOprate();
             ShowEditBtn();
             List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
             for (int i = 0; i < _removeList.Count; i++)
@@ -321,6 +344,8 @@ namespace GameA
 
         public void OnUmProjectDragEnd(int oldIndex, int newIndex)
         {
+            AddMsgOprate();
+            _mainCtrl.SelfRecommendDirty = true;
             if (oldIndex < newIndex)
             {
                 UserSelfRecommendProject project = new UserSelfRecommendProject();
@@ -328,12 +353,10 @@ namespace GameA
                 project.ProjectData = _dataList[oldIndex].ProjectData;
                 for (int i = oldIndex; i < newIndex; i++)
                 {
-                    AddMsgOprate(i, i + 1);
                     _dataList[i].ProjectData = _dataList[i + 1].ProjectData;
                 }
 
                 _dataList[newIndex].ProjectData = project.ProjectData;
-                AddMsgOprate(newIndex, oldIndex);
             }
 
             if (oldIndex > newIndex)
@@ -343,43 +366,67 @@ namespace GameA
                 project.ProjectData = _dataList[oldIndex].ProjectData;
                 for (int i = oldIndex; i > newIndex; i--)
                 {
-                    AddMsgOprate(i, i - 1);
                     _dataList[i].ProjectData = _dataList[i - 1].ProjectData;
                 }
 
                 _dataList[newIndex].ProjectData = project.ProjectData;
-                AddMsgOprate(newIndex, oldIndex);
             }
-//            _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
+
+            _cachedView.GridDataScrollers[(int) _menu].SetEmpty();
             RefreshView();
+            AddMsgOprate();
         }
 
-        private void AddMsgOprate(int oldindex, int newindex)
+        public void AddMsgOprate()
+        {
+            _mainCtrl.SortItemList.Clear();
+            List<UserSelfRecommendProject> tempList = new List<UserSelfRecommendProject>();
+            AppendProjectList(tempList, _data);
+
+            for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount; i++)
+            {
+                Msg_SortSelfRecommendProjectItem msgItem = compareSelfProject(_dataList[i], tempList[i]);
+                if (msgItem.SlotInx == 0)
+                {
+                    _mainCtrl.SortItemList.Add(msgItem);
+                }
+            }
+        }
+
+        private Msg_SortSelfRecommendProjectItem compareSelfProject(UserSelfRecommendProject newp,
+            UserSelfRecommendProject oldp)
         {
             Msg_SortSelfRecommendProjectItem msgItem = new Msg_SortSelfRecommendProjectItem();
-            msgItem.SlotInx = oldindex;
-            if (_dataList[oldindex].ProjectData == null)
+            msgItem.SlotInx = -1;
+            if (oldp.ProjectData == null)
             {
-                msgItem.OldProjectMainId = 0;
+                if (newp.ProjectData != null)
+                {
+                    msgItem.NewProjectMainId = newp.ProjectData.MainId;
+                    msgItem.OldProjectMainId = 0;
+                    msgItem.SlotInx = 0;
+                }
             }
             else
             {
-                msgItem.OldProjectMainId = _dataList[oldindex].ProjectData.MainId;
+                if (newp.ProjectData == null)
+                {
+                    msgItem.NewProjectMainId = 0;
+                    msgItem.OldProjectMainId = oldp.ProjectData.MainId;
+                    msgItem.SlotInx = 0;
+                }
+                else
+                {
+                    if (newp.ProjectData.MainId != oldp.ProjectData.MainId)
+                    {
+                        msgItem.NewProjectMainId = newp.ProjectData.MainId;
+                        msgItem.OldProjectMainId = oldp.ProjectData.MainId;
+                        msgItem.SlotInx = 0;
+                    }
+                }
             }
 
-            if (_dataList[newindex].ProjectData == null)
-            {
-                msgItem.NewProjectMainId = 0;
-            }
-            else
-            {
-                msgItem.NewProjectMainId = _dataList[newindex].ProjectData.MainId;
-            }
-
-            if (msgItem.NewProjectMainId != msgItem.OldProjectMainId)
-            {
-                _mainCtrl.SortItemList.Add(msgItem);
-            }
+            return msgItem;
         }
     }
 }

@@ -90,7 +90,6 @@ namespace GameA
             _particleList.Clear();
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.FriendHeadImg, _cachedView.DefaultHeadImg);
 
-            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
             base.OnClose();
         }
 
@@ -326,15 +325,24 @@ namespace GameA
             _cachedView.ScoreTextGroup.SetActiveEx(false);
             _cachedView.WorkShopScoreTextGroup.SetActiveEx(false);
             _cachedView.BtnsGroup.anchoredPosition = new Vector2(2, -276);
+            ResetWinAndFailStar();
             switch (_showState)
             {
                 case EShowState.MultiWin:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiWin");
+                    SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
                     break;
                 case EShowState.MultiLose:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
+                    SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
                     break;
                 case EShowState.Win:
+                    for (int i = 0; i < _cachedView.WinImageGroup.Length; i++)
+                    {
+                        _cachedView.WinImageGroup[i].SetActiveEx(false);
+                    }
+
+                    _cachedView.WinHelmetImage.SetActiveEx(true);
                     _cachedView.BtnsGroup.anchoredPosition = new Vector2(2, -220);
                     _cachedView.Win.SetActive(true);
                     _cachedView.Lose.SetActive(false);
@@ -361,6 +369,12 @@ namespace GameA
                     PlayWinEffect();
                     break;
                 case EShowState.Lose:
+                    for (int i = 0; i < _cachedView.FailImageGroup.Length; i++)
+                    {
+                        _cachedView.FailImageGroup[i].SetActiveEx(false);
+                    }
+
+                    _cachedView.FailHelmetImage.SetActiveEx(true);
                     _cachedView.Win.SetActive(false);
                     _cachedView.Lose.SetActive(true);
                     _cachedView.ReturnBtn.gameObject.SetActive(true);
@@ -698,6 +712,8 @@ namespace GameA
         public List<SettlePlayerData> GetSettlePlayerDatas()
         {
             List<SettlePlayerData> _datas = new List<SettlePlayerData>();
+            int WinTeamHighScore = -1;
+            int mvpIndex = -1;
             for (int i = 0; i < TeamManager.Instance.Players.Count; i++)
             {
                 SettlePlayerData onedata = new SettlePlayerData();
@@ -708,10 +724,40 @@ namespace GameA
                 onedata.TeamId = TeamManager.Instance.Players[i].TeamId;
                 onedata.TeamScore = TeamManager.Instance.GetTeamScore(onedata.TeamId);
                 onedata.IsWin = TeamManager.Instance.CheckTeamWin(onedata.TeamId);
-                _datas.Add(onedata);
+                onedata.MainPlayID = TeamManager.Instance.MainPlayer.RoomUser.Guid;
+                onedata.PlayerId = TeamManager.Instance.Players[i].RoomUser.Guid;
+                onedata.IsMvp = false;
+                if (onedata.IsWin && onedata.Score > WinTeamHighScore)
+                {
+                    mvpIndex = i;
+                    WinTeamHighScore = onedata.Score;
+                }
+
+                if (mvpIndex >= 0 && mvpIndex < _datas.Count)
+                {
+                    _datas.Add(onedata);
+                }
             }
 
+            _datas[mvpIndex].IsMvp = true;
+
             return _datas;
+        }
+
+        public void ResetWinAndFailStar()
+        {
+            for (int i = 0; i < _cachedView.WinImageGroup.Length; i++)
+            {
+                _cachedView.WinImageGroup[i].SetActiveEx(true);
+            }
+
+            _cachedView.WinHelmetImage.SetActiveEx(false);
+            for (int i = 0; i < _cachedView.FailImageGroup.Length; i++)
+            {
+                _cachedView.FailImageGroup[i].SetActiveEx(true);
+            }
+
+            _cachedView.FailHelmetImage.SetActiveEx(false);
         }
     }
 }
