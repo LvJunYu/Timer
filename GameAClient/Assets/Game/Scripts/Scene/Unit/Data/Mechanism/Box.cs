@@ -99,7 +99,7 @@ namespace GameA.Game
 
                 if (air && _grounded)
                 {
-//                    Speed += _lastExtraDeltaPos;
+                    SpeedX += _lastExtraDeltaPos.x;
                     _grounded = false;
                 }
 
