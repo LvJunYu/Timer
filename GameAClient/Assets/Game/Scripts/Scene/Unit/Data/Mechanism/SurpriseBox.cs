@@ -110,7 +110,10 @@ namespace GameA.Game
             {
                 if (_timer > 0)
                 {
-                    _timer--;
+                    if (_curItem == null || _curItem.IsDisposed)
+                    {
+                        _timer--;
+                    }
                 }
                 else
                 {
