@@ -20,6 +20,11 @@ namespace GameA.Game
         protected bool _isCycle;
         protected int _cycleTimerMax;
 
+        protected virtual string _cycleTimerSpriteName
+        {
+            get { return _tableUnit.Model; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -142,9 +147,10 @@ namespace GameA.Game
             {
                 _cycleTimer = cycleTimerObj.GetComponent<CycleTimer>();
                 CommonTools.SetParent(cycleTimerObj.transform, _trans);
+                cycleTimerObj.SetActive(false);
                 if (_cycleTimer != null)
                 {
-                    _cycleTimer.SetSprite(JoyResManager.Instance.GetSprite(_tableUnit.Model));
+                    _cycleTimer.SetSprite(JoyResManager.Instance.GetSprite(_cycleTimerSpriteName));
                 }
             }
         }
@@ -159,10 +165,18 @@ namespace GameA.Game
             _cycleTimer.SetActiveEx(value);
             if (value)
             {
+                if (_tweener != null)
+                {
+                    _tweener.Rewind();
+                }
                 _view.SetRendererColor(Color.clear);
             }
             else
             {
+                if (_tweener != null)
+                {
+                    _tweener.PlayForward();
+                }
                 _view.SetRendererColor(Color.white);
             }
         }
