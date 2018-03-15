@@ -388,6 +388,7 @@ namespace GameA
                 Msg_SortSelfRecommendProjectItem msgItem = compareSelfProject(_dataList[i], tempList[i]);
                 if (msgItem.SlotInx == 0)
                 {
+                    msgItem.SlotInx = i;
                     _mainCtrl.SortItemList.Add(msgItem);
                 }
             }

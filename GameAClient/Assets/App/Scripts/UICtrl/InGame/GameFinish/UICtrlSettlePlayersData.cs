@@ -15,6 +15,7 @@ namespace GameA
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
         private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
         private List<long> _likePlaysGuid = new List<long>();
+        private Project _project;
 
         protected override void InitGroupId()
         {
@@ -38,8 +39,14 @@ namespace GameA
 
         private void RefreshPanels()
         {
+            bool mainPlayWin = false;
             for (int i = 0; i < _allPlayerDatas.Count; i++)
             {
+                if (_allPlayerDatas[i].MainPlayID == _allPlayerDatas[i].PlayerId)
+                {
+                    mainPlayWin = _allPlayerDatas[i].IsWin;
+                }
+
                 if (_allPlayerDatas[i].IsWin)
                 {
                     UMCtlSettlePalyerDataItem palyerDataItem = UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
@@ -59,6 +66,9 @@ namespace GameA
                     _allPlayDataItems.Add(palyerDataItem);
                 }
             }
+
+            _cachedView.WinTileImage.SetActiveEx(mainPlayWin);
+            _cachedView.FailTileImage.SetActiveEx(!mainPlayWin);
         }
 
         protected override void OnClose()
@@ -90,23 +100,12 @@ namespace GameA
 
         private void OnRetryBtn()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
-            GM2DGame.Instance.GameMode.Restart(value =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    if (value)
-                    {
-                        SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-                    }
-                }, () =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    CommonTools.ShowPopupDialog("启动失败", null,
-                        new KeyValuePair<string, Action>("重试",
-                            () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnRetryBtn)); }),
-                        new KeyValuePair<string, Action>("取消", () => { }));
-                }
-            );
+            if (_project != null)
+            {
+                RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Specific, _project.ProjectId);
+            }
+
+            SocialGUIManager.Instance.CloseUI<UICtrlSettlePlayersData>();
         }
 
         public void AddLikePlayer(long userguid)
@@ -117,6 +116,11 @@ namespace GameA
         public void RemoveLikePlayer(long userguid)
         {
             _likePlaysGuid.Remove(userguid);
+        }
+
+        public void setProject(Project project)
+        {
+            _project = project;
         }
     }
 }

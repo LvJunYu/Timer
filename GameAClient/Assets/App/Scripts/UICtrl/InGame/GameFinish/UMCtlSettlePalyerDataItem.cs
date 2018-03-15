@@ -61,6 +61,12 @@ namespace GameA
 
         public void SetItemData(SettlePlayerData data)
         {
+            _cachedView.AddFriendBtn.onClick.RemoveAllListeners();
+            _cachedView.LikeBtn.onClick.RemoveAllListeners();
+            _cachedView.UnLikeBtn.onClick.RemoveAllListeners();
+            _cachedView.AddFriendBtn.onClick.AddListener(OnAddFriendBtn);
+            _cachedView.LikeBtn.onClick.AddListener(OnLikeBtn);
+            _cachedView.UnLikeBtn.onClick.AddListener(OnUnLikeBtn);
             _playDetail = null;
             _playerData = data;
             _cachedView.PlayerNameText.text = _playerData.Name;
@@ -78,6 +84,7 @@ namespace GameA
             _cachedView.FailLine.SetActiveEx(!_playerData.IsWin);
             _cachedView.HadFollowText.text = String.Format("已关注{0}", _playerData.Name);
             _cachedView.AddFriendBtn.SetActiveEx(_playerData.PlayerId == _playerData.MainPlayID);
+            _cachedView.UnLikeBtn.SetActiveEx(false);
             UserManager.Instance.GetDataOnAsync(_playerData.PlayerId, detail =>
             {
                 _playDetail = detail;
@@ -94,9 +101,6 @@ namespace GameA
 
         public bool Init(RectTransform rectTransform, EResScenary resScenary, Vector3 localpos = new Vector3())
         {
-            _cachedView.AddFriendBtn.onClick.AddListener(OnAddFriendBtn);
-            _cachedView.LikeBtn.onClick.AddListener(OnLikeBtn);
-            _cachedView.UnLikeBtn.onClick.AddListener(OnUnLikeBtn);
             return base.Init(rectTransform, resScenary);
         }
 

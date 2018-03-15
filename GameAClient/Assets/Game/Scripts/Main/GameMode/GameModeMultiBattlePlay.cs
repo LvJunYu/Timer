@@ -12,6 +12,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             _gameSituation = EGameSituation.Battle;
             _successType = UICtrlGameFinish.EShowState.MultiWin;
             _failType = UICtrlGameFinish.EShowState.MultiLose;
@@ -23,6 +24,7 @@ namespace GameA.Game
             base.OnGameFailed();
             if (!PlayMode.Instance.SceneState.GameFailed) return;
             SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
         }
 
         public override void OnGameSuccess()
@@ -30,6 +32,7 @@ namespace GameA.Game
             base.OnGameSuccess();
             if (!PlayMode.Instance.SceneState.GameSucceed) return;
             SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
         }
 
         public override bool Restart(Action<bool> successCb, Action failedCb)

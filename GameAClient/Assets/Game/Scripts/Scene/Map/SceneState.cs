@@ -584,6 +584,14 @@ namespace GameA.Game
             {
                 return;
             }
+            if (scoreWin)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
+            }
+            else
+            {
+                TeamManager.Instance.GameOver((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition);
+            }
 
             if (win)
             {
@@ -594,15 +602,6 @@ namespace GameA.Game
             {
                 _runState = ESceneState.Fail;
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
-            }
-
-            if (scoreWin)
-            {
-                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
-            }
-            else
-            {
-                TeamManager.Instance.GameOver((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition);
             }
         }
 

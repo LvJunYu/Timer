@@ -330,10 +330,12 @@ namespace GameA
             {
                 case EShowState.MultiWin:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiWin");
+                    OnReturnBtn();
                     SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
                     break;
                 case EShowState.MultiLose:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
+                    OnReturnBtn();
                     SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
                     break;
                 case EShowState.Win:
@@ -733,10 +735,7 @@ namespace GameA
                     WinTeamHighScore = onedata.Score;
                 }
 
-                if (mvpIndex >= 0 && mvpIndex < _datas.Count)
-                {
-                    _datas.Add(onedata);
-                }
+                _datas.Add(onedata);
             }
 
             _datas[mvpIndex].IsMvp = true;

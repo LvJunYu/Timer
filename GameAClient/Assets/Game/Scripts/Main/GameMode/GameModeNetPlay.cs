@@ -287,6 +287,7 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
             }
+
             SocialGUIManager.Instance.OpenUI<UICtrlChatInGame>();
         }
 
@@ -313,7 +314,6 @@ namespace GameA.Game
             }
 
             _curGamePhase = gamePhase;
-
             switch (_curGamePhase)
             {
                 case EGamePhase.None:
@@ -602,6 +602,7 @@ namespace GameA.Game
                 {
                     base.OnGameStart();
                 }
+
                 _loadingHasClosed = true;
             }
         }
