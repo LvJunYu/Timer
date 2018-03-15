@@ -346,6 +346,7 @@ namespace GameA
             Room,
             Team,
             Camp,
+            Friends,
         }
     }
 }
