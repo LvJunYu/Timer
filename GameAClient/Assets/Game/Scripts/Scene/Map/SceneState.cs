@@ -30,6 +30,7 @@ namespace GameA.Game
         [SerializeField] private int _gemGain;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
+        [SerializeField] private int _gemInWoodCase = -1;
         private Dictionary<long, int> _keyDic = new Dictionary<long, int>(PlayerManager.MaxTeamCount);
 
         private MapStatistics _mapStatistics = new MapStatistics();
@@ -93,7 +94,20 @@ namespace GameA.Game
 
         public int TotalGem
         {
-            get { return MapStatistics.GemCount; }
+            get { return MapStatistics.GemCount + GemCountInWoodCase; }
+        }
+
+        public int GemCountInWoodCase
+        {
+            get
+            {
+                if (_gemInWoodCase == -1)
+                {
+                    _gemInWoodCase = Scene2DManager.Instance.GetGemCountInWoodCase();
+                }
+
+                return _gemInWoodCase;
+            }
         }
 
         public int MonsterCount
@@ -274,6 +288,7 @@ namespace GameA.Game
             _gemGain = 0;
             _monsterKilled = 0;
             _keyGain = 0;
+            _gemInWoodCase = -1;
             _keyDic.Clear();
         }
 
@@ -284,7 +299,7 @@ namespace GameA.Game
                 RemoveCondition(EWinCondition.WC_Arrive);
             }
 
-            if (MapStatistics.GemCount == 0)
+            if (TotalGem == 0)
             {
                 RemoveCondition(EWinCondition.WC_Collect);
             }
@@ -520,7 +535,7 @@ namespace GameA.Game
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < MapStatistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < TotalGem;
         }
 
         private bool CheckWinKillMonster()

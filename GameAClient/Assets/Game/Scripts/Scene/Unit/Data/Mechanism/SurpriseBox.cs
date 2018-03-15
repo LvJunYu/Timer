@@ -105,6 +105,7 @@ namespace GameA.Game
                     }
                 }
             }
+
             if (_curCount < _maxCount)
             {
                 if (_timer > 0)
@@ -117,6 +118,10 @@ namespace GameA.Game
                     {
                         _timer = (int) (_interval * ConstDefineGM2D.FixedFrameCount);
                         _curCount++;
+                        if (_curCount == _maxCount)
+                        {
+                            SetLightView();
+                        }
                     }
                     else
                     {
@@ -133,6 +138,7 @@ namespace GameA.Game
             _curCount = 0;
             _aliveTimer = 0;
             _curItem = null;
+            SetLightView();
         }
 
         private bool DoSurprise()
@@ -146,7 +152,7 @@ namespace GameA.Game
             int index;
             if (_random)
             {
-                index = GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt, count - 1);
+                index = GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt + _curPos.x + _curPos.y, count - 1);
             }
             else
             {
@@ -269,7 +275,7 @@ namespace GameA.Game
             }
 
             string spriteName;
-            if (_eActiveState == EActiveState.Active && _itemList.Count > 0)
+            if (_eActiveState == EActiveState.Active && _itemList.Count > 0 && _curCount < _maxCount)
             {
                 spriteName = Ligt1Sprite;
             }

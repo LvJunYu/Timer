@@ -431,6 +431,17 @@ namespace GameA.Game
             return count;
         }
 
+        public int GetGemCountInWoodCase()
+        {
+            int count = 0;
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                count += _sceneList[i].GetGemCountInWoodCase();
+            }
+
+            return count;
+        }
+
         public void DeleteUnitsOutofMap()
         {
             int sqawnIndex = SqawnSceneIndex;
@@ -665,6 +676,21 @@ namespace GameA.Game
             for (int i = 0; i < caves.Count; i++)
             {
                 count += _dataScene.GetUnitExtra(caves[i].Guid).MaxCreatedMonster;
+            }
+
+            return count;
+        }
+
+        public int GetGemCountInWoodCase()
+        {
+            int count = 0;
+            var woodCases = _colliderScene.AllWoodCases;
+            for (int i = 0; i < woodCases.Count; i++)
+            {
+                if (_dataScene.GetUnitExtra(woodCases[i].Guid).CommonValue == UnitDefine.TeethId)
+                {
+                    count++;
+                }
             }
 
             return count;
