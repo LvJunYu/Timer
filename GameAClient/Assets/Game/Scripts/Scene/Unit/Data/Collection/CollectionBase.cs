@@ -6,15 +6,24 @@
 ***********************************************************************/
 
 using DG.Tweening;
+using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class CollectionBase : Magic
     {
+        protected CycleTimer _cycleTimer;
         protected Tweener _tweener;
         protected int _timer;
         protected bool _isCycle;
-        protected int _cycleSecond;
+        protected int _cycleTimerMax;
+
+        protected virtual string _cycleTimerSpriteName
+        {
+            get { return _tableUnit.Model; }
+        }
 
         protected override bool OnInit()
         {
@@ -35,14 +44,31 @@ namespace GameA.Game
                 _tweener = null;
             }
 
+            if (_cycleTimer != null)
+            {
+                Object.Destroy(_cycleTimer.gameObject);
+                _cycleTimer = null;
+            }
+
             base.OnObjectDestroy();
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+
+            CreateCycleTimer();
+            return true;
         }
 
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
             var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _isCycle = unitExtra.TimerCirculation;
-            _cycleSecond = unitExtra.CycleInterval;
+            _cycleTimerMax = unitExtra.CycleInterval * ConstDefineGM2D.FixedFrameCount;
             return unitExtra;
         }
 
@@ -50,6 +76,7 @@ namespace GameA.Game
         {
             base.Clear();
             _timer = 0;
+            SetCycleTimerActive(false);
         }
 
         public override void OnIntersect(UnitBase other)
@@ -62,8 +89,10 @@ namespace GameA.Game
                     {
                         return;
                     }
+
                     OnTrigger(other);
-                    _timer = _cycleSecond * ConstDefineGM2D.FixedFrameCount;
+                    _timer = _cycleTimerMax;
+                    SetCycleTimerActive(true);
                 }
                 else
                 {
@@ -90,6 +119,65 @@ namespace GameA.Game
             if (_timer > 0)
             {
                 _timer--;
+                if (_cycleTimer != null)
+                {
+                    if (_timer > 0)
+                    {
+                        _cycleTimer.SetValue(_timer / (float) _cycleTimerMax);
+                    }
+                    else
+                    {
+                        SetCycleTimerActive(false);
+                    }
+                }
+            }
+        }
+
+        protected virtual void CreateCycleTimer()
+        {
+            if (null != _cycleTimer)
+            {
+                return;
+            }
+
+            GameObject cycleTimerObj =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "CycleTimer")) as
+                    GameObject;
+            if (null != cycleTimerObj)
+            {
+                _cycleTimer = cycleTimerObj.GetComponent<CycleTimer>();
+                CommonTools.SetParent(cycleTimerObj.transform, _trans);
+                cycleTimerObj.SetActive(false);
+                if (_cycleTimer != null)
+                {
+                    _cycleTimer.SetSprite(JoyResManager.Instance.GetSprite(_cycleTimerSpriteName));
+                }
+            }
+        }
+
+        private void SetCycleTimerActive(bool value)
+        {
+            if (_view == null || _cycleTimer == null)
+            {
+                return;
+            }
+
+            _cycleTimer.SetActiveEx(value);
+            if (value)
+            {
+                if (_tweener != null)
+                {
+                    _tweener.Rewind();
+                }
+                _view.SetRendererColor(Color.clear);
+            }
+            else
+            {
+                if (_tweener != null)
+                {
+                    _tweener.PlayForward();
+                }
+                _view.SetRendererColor(Color.white);
             }
         }
 

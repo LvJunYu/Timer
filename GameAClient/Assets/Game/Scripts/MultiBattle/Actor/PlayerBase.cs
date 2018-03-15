@@ -355,10 +355,10 @@ namespace GameA.Game
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             base.Hit(unit, eDirectionType);
-            if (unit.Id == UnitDefine.PasswordDoorId)
+            if (unit.Id == UnitDefine.PasswordDoorId && !(_passwordDoor != null && _passwordDoor.UiOpen))
             {
                 var passwordDoor = unit as PasswordDoor;
-                if (passwordDoor != null && !passwordDoor.HasOpened)
+                if (passwordDoor != null && !passwordDoor.HasCorrected)
                 {
                     _passwordDoor = passwordDoor;
                     _passwordDoor.UiOpen = false;
@@ -477,12 +477,24 @@ namespace GameA.Game
 
         protected override void CheckAssist()
         {
-            if (_box != null && _box.IsHoldingByPlayer && _box.Holder != this)
+            if (_input.GetKeyUpApplied(EInputType.Assist))
             {
-                return;
-            }
+                if (_box != null && !(_box.IsHoldingByPlayer && _box.Holder != this))
+                {
+                    OnBoxHoldingChanged();
+                }
 
-            base.CheckAssist();
+                Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AssitConShowDiaEvent();
+                if (_passwordDoor != null)
+                {
+                    _passwordDoor.SetPlayer(this);
+                    _passwordDoor.UiOpen = true;
+                    if (IsMain && GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
+                    }
+                }
+            }
         }
 
         public override void OnBoxHoldingChanged()
@@ -1516,11 +1528,27 @@ namespace GameA.Game
 
         public override void UpdateInput()
         {
-            base.UpdateInput();
             CheckPasswordDoorOpen();
+            CheckPasswordDoorUIClose();
+            base.UpdateInput();
         }
 
-        private void CheckPasswordDoorOpen()
+        protected void CheckPasswordDoorUIClose()
+        {
+            if (_input.GetKeyDownApplied(EInputType.PasswordDoorUIClose))
+            {
+                if (_passwordDoor == null)
+                {
+                    LogHelper.Error("PasswordDoor ui close, but _passwordDoor == null");
+                }
+                else
+                {
+                    _passwordDoor.UiOpen = false;
+                }
+            }
+        }
+
+        protected void CheckPasswordDoorOpen()
         {
             if (_input.GetKeyDownApplied(EInputType.PasswordDoorOpen))
             {

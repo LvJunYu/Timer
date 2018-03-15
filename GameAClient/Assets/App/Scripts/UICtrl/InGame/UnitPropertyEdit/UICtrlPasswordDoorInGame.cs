@@ -188,7 +188,7 @@ namespace GameA
 
         private void TryOpen()
         {
-            if (_passwordDoor.HasOpened)
+            if (_passwordDoor.HasCorrected)
             {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "密码门已经被开启");
                 SocialGUIManager.Instance.CloseUI<UICtrlPasswordDoorInGame>();

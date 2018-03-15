@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
+    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>, ICheckOverlay
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
@@ -120,11 +120,11 @@ namespace GameA
             RegisterEvent<long>(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnEditingProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
-            RegisterEvent<long>(EMessengerType.OnWorkShopPublishedProjectChanged, OnWorkShopPublishedProjectChanged);
+            RegisterEvent<long>(EMessengerType.OnPublishedProjectChanged, OnPublishedProjectChanged);
             RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
         }
 
-        private void OnWorkShopPublishedProjectChanged(long projectId)
+        private void OnPublishedProjectChanged(long projectId)
         {
             if (_isOpen && _curMenu == EMenu.PublishedProjects)
             {

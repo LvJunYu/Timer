@@ -239,14 +239,15 @@ namespace GameA.Game
         private bool StartEdit()
         {
             LogHelper.Debug("StartEdit");
+            _isPlaying = false;
             if (!PlayMode.Instance.StartEdit())
             {
+                _isPlaying = true;
                 LogHelper.Debug("StartEdit failed");
                 return false;
             }
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
-            _isPlaying = false;
             Messenger.Broadcast(EMessengerType.OnEdit);
             return true;
         }

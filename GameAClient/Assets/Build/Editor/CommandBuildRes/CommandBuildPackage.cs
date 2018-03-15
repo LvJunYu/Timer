@@ -12,7 +12,12 @@ using FileTools = NewResourceSolution.FileTools;
 
 public class CommandBuildPackage
 {
-    [MenuItem("QuanTools/BuildPackage")]
+//    [MenuItem("QuanTools/TestBuildPackage")]
+//    public static void TestBuildPackage()
+//    {
+//        BuildPackage(BuildTarget.StandaloneWindows, EEnvironment.Development, "1", "/Users/quan/Downloads/Temp/JoyGame");
+//    }
+    
     public static void BuildPackage()
     {
         var args = Environment.GetCommandLineArgs();
@@ -121,7 +126,17 @@ public class CommandBuildPackage
         LogHelper.Info("BuildPackage, BuildTarget: {0}, Environment: {1}, AppVersion: {2}, OutputPath: {3}",
             buildTarget, eEnvironment, appVersion, outputPath);
         SetScene(eEnvironment, appVersion);
-        BuildPipeline.BuildPlayer(GetBuildScenes(), outputPath + "/JoyGame.exe", buildTarget, BuildOptions.None);
+        var result = BuildPipeline.BuildPlayer(GetBuildScenes(), outputPath + "/JoyGame.exe", buildTarget, BuildOptions.None);
+        if (string.IsNullOrEmpty(result))
+        {
+            Console.WriteLine("Build Success");
+        }
+        else
+        {
+            Console.WriteLine(result);
+            Console.WriteLine("Build Failed");
+            EditorApplication.Exit(1);
+        }
     }
 
     static void SetScene(EEnvironment eEnvironment, string appVersion)

@@ -148,7 +148,7 @@ namespace GameA.Game
 
         private int GetRandomSecond()
         {
-            return GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt, _maxSecond, _minSecond);
+            return GameATools.GetRandomByValue(GameRun.Instance.LogicFrameCnt + _curPos.x + _curPos.y, _maxSecond, _minSecond);
         }
 
         private void DoControl()

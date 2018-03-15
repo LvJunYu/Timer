@@ -32,6 +32,7 @@ namespace GameA
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
             _cachedView.LeftBtn.onClick.AddListener(OnLeftBtn);
             _cachedView.RightBtn.onClick.AddListener(OnRightBtn);
+            _cachedView.SingleBtn.onClick.AddListener(OnRightBtn);
             _cachedView.RawBtn.onClick.AddListener(OnRawBtn);
         }
 
@@ -63,9 +64,16 @@ namespace GameA
             }
             else
             {
+                bool noContent = InfoNotificationManager.IsNoContent(_data.Type);
                 _cachedView.TopTex.text = InfoNotificationManager.GetContentTxt(_data);
                 _cachedView.DateTxt.text = GameATools.DateCount(_data.CreateTime);
-                _cachedView.CenterTxt.text = InfoNotificationManager.GetDetailTxt(_data);
+                if (!noContent)
+                {
+                    _cachedView.CenterTxt.text = InfoNotificationManager.GetDetailTxt(_data);
+                }
+                _cachedView.ContentPannel.SetActive(!noContent);
+                _cachedView.DoubleBtnPannel.SetActive(!noContent);
+                _cachedView.SingleBtnPannel.SetActive(noContent);
                 _cachedView.RightBtnTxt.text = InfoNotificationManager.GetBtnTxt(_data);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
                     _data.Sender.HeadImgUrl, _cachedView.HeadDefaltTexture);

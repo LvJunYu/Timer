@@ -119,6 +119,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             RegisterEvent(EMessengerType.OnJoinRoomFail, OnJoinRoomFail);
             RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
+            RegisterEvent<long>(EMessengerType.OnPublishedProjectChanged, OnPublishedProjectChanged);
             RegisterEvent<Project, bool>(EMessengerType.OnProjectMyFavoriteChanged, OnProjectMyFavoriteChanged);
         }
 
@@ -352,6 +353,14 @@ namespace GameA
             if (_isOpen && _curMenu == EMenu.UserFavorite && _curMenuCtrl != null)
             {
                 ((UPCtrlWorldUserFavorite) _curMenuCtrl).OnProjectMyFavoriteChanged(project, favorite);
+            }
+        }
+
+        private void OnPublishedProjectChanged(long projectId)
+        {
+            if (_isOpen && _curMenu == EMenu.NewestProject)
+            {
+                _curMenuCtrl.RequestData();
             }
         }
 
