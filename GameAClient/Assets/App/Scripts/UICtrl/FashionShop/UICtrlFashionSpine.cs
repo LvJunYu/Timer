@@ -72,7 +72,6 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.DownBtn.onClick.AddListener(OnDownBtn);
             _cachedView.HeadBtn.onClick.AddListener(OnHeadBtn);
-
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
                 JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
                     (int) EResScenary.Default);

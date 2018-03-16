@@ -229,7 +229,7 @@ namespace GameA
 
         private Tween _tween;
 
-        public void MoveByIndex(int beginIndex, int judgeindex)
+        public override void MoveByIndex(int beginIndex, int judgeindex)
         {
             if (beginIndex == Index)
             {
@@ -264,7 +264,7 @@ namespace GameA
             }
         }
 
-        public void EndTween()
+        public override void EndTween()
         {
             if (_tween != null && _tween.IsPlaying())
             {

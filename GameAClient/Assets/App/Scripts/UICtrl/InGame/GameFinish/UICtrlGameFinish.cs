@@ -330,13 +330,13 @@ namespace GameA
             {
                 case EShowState.MultiWin:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiWin");
-                    OnReturnBtn();
-                    SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
+//                    OnReturnBtn();
+
                     break;
                 case EShowState.MultiLose:
                     _cachedView.Animation.Play("UICtrlGameFinishMultiLose");
-                    OnReturnBtn();
-                    SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
+//                    OnReturnBtn();
+//                    SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(GetSettlePlayerDatas());
                     break;
                 case EShowState.Win:
                     for (int i = 0; i < _cachedView.WinImageGroup.Length; i++)
@@ -709,38 +709,6 @@ namespace GameA
             _cachedView.Lose.SetActive(value);
             _cachedView.Win.SetActive(value);
             _cachedView.SiglePanel.SetActive(value);
-        }
-
-        public List<SettlePlayerData> GetSettlePlayerDatas()
-        {
-            List<SettlePlayerData> _datas = new List<SettlePlayerData>();
-            int WinTeamHighScore = -1;
-            int mvpIndex = -1;
-            for (int i = 0; i < TeamManager.Instance.Players.Count; i++)
-            {
-                SettlePlayerData onedata = new SettlePlayerData();
-                onedata.killNum = TeamManager.Instance.GetPlayerKillCount(TeamManager.Instance.Players[i].Guid);
-                onedata.KilledNum = TeamManager.Instance.GetPlayerKilledCount(TeamManager.Instance.Players[i].Guid);
-                onedata.Score = TeamManager.Instance.GetPlayerScore(TeamManager.Instance.Players[i].Guid);
-                onedata.Name = TeamManager.Instance.Players[i].RoomUser.Name;
-                onedata.TeamId = TeamManager.Instance.Players[i].TeamId;
-                onedata.TeamScore = TeamManager.Instance.GetTeamScore(onedata.TeamId);
-                onedata.IsWin = TeamManager.Instance.CheckTeamWin(onedata.TeamId);
-                onedata.MainPlayID = TeamManager.Instance.MainPlayer.RoomUser.Guid;
-                onedata.PlayerId = TeamManager.Instance.Players[i].RoomUser.Guid;
-                onedata.IsMvp = false;
-                if (onedata.IsWin && onedata.Score > WinTeamHighScore)
-                {
-                    mvpIndex = i;
-                    WinTeamHighScore = onedata.Score;
-                }
-
-                _datas.Add(onedata);
-            }
-
-            _datas[mvpIndex].IsMvp = true;
-
-            return _datas;
         }
 
         public void ResetWinAndFailStar()

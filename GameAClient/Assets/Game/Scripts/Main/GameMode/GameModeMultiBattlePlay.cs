@@ -23,7 +23,8 @@ namespace GameA.Game
         {
             base.OnGameFailed();
             if (!PlayMode.Instance.SceneState.GameFailed) return;
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
+//            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
+            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
             SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
         }
 
@@ -31,7 +32,8 @@ namespace GameA.Game
         {
             base.OnGameSuccess();
             if (!PlayMode.Instance.SceneState.GameSucceed) return;
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
+//            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
+            SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
             SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
         }
 

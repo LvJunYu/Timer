@@ -39,11 +39,11 @@ namespace GameA
 
         #region 相对于实现的接口的方法方法
 
-        public void MoveByIndex(int beginindex, int newindex)
+        public virtual void MoveByIndex(int beginindex, int newindex)
         {
         }
 
-        public void EndTween()
+        public virtual void EndTween()
         {
         }
 

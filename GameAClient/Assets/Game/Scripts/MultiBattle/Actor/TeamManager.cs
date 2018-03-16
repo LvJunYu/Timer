@@ -451,7 +451,7 @@ namespace GameA.Game
 
         public bool CheckTeamWin(int teamId)
         {
-            switch (_eNetBattleTimeResult)
+             switch (_eNetBattleTimeResult)
             {
                 case ENetBattleTimeResult.Score:
                     return CheckTeamScoreBest(teamId);
@@ -600,6 +600,38 @@ namespace GameA.Game
         {
             if (!GM2DGame.Instance.GameMode.IsMulti) return;
             AddScore(unit, PlayMode.Instance.SceneState.GemScore);
+        }
+
+        public List<SettlePlayerData> GetSettlePlayerDatas()
+        {
+            List<SettlePlayerData> _datas = new List<SettlePlayerData>();
+            int WinTeamHighScore = -1;
+            int mvpIndex = -1;
+            for (int i = 0; i < Instance.Players.Count; i++)
+            {
+                SettlePlayerData onedata = new SettlePlayerData();
+                onedata.killNum = Instance.GetPlayerKillCount(Instance.Players[i].Guid);
+                onedata.KilledNum = Instance.GetPlayerKilledCount(Instance.Players[i].Guid);
+                onedata.Score = Instance.GetPlayerScore(Instance.Players[i].Guid);
+                onedata.Name = Instance.Players[i].RoomUser.Name;
+                onedata.TeamId = Instance.Players[i].TeamId;
+                onedata.TeamScore = Instance.GetTeamScore(onedata.TeamId);
+                onedata.IsWin = Instance.CheckTeamWin(onedata.TeamId);
+                onedata.MainPlayID = Instance.MainPlayer.RoomUser.Guid;
+                onedata.PlayerId = Instance.Players[i].RoomUser.Guid;
+                onedata.IsMvp = false;
+                if (onedata.IsWin && onedata.Score > WinTeamHighScore)
+                {
+                    mvpIndex = i;
+                    WinTeamHighScore = onedata.Score;
+                }
+
+                _datas.Add(onedata);
+            }
+
+            _datas[mvpIndex].IsMvp = true;
+
+            return _datas;
         }
 
         #endregion

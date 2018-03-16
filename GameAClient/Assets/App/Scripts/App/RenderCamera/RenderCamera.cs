@@ -27,7 +27,7 @@ namespace GameA
             _camera.orthographic = true;
             _camera.farClipPlane = 100;
             _camera.nearClipPlane = -100;
-            _camera.cullingMask = 1 << (int)ELayer.RenderUI;
+            _camera.cullingMask = 1 << (int) ELayer.RenderUI;
             _camera.clearFlags = CameraClearFlags.SolidColor;
             _camera.backgroundColor = Color.clear;
             CommonTools.SetAllLayerIncludeHideObj(_root, (int) ELayer.RenderUI);
@@ -41,7 +41,9 @@ namespace GameA
             {
                 ReleaseRenderTexture();
             }
-            _renderTexture = RenderTexture.GetTemporary(targetTextureWidth, targetTextureHeight, 0, RenderTextureFormat.ARGB32);
+
+            _renderTexture =
+                RenderTexture.GetTemporary(targetTextureWidth, targetTextureHeight, 0, RenderTextureFormat.ARGB32);
             _camera.targetTexture = _renderTexture;
             _root.SetParent(targetTran.parent);
             CommonTools.ResetTransform(_root);
@@ -64,9 +66,14 @@ namespace GameA
             {
                 _camera.targetTexture = null;
             }
+
             RenderTexture.ReleaseTemporary(_renderTexture);
             _renderTexture = null;
         }
 
+        public void SetOffsetPos(Vector3 offesetpos)
+        {
+            _root.localPosition += offesetpos;
+        }
     }
 }
