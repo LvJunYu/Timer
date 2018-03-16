@@ -15,6 +15,13 @@ namespace GameA
         private const int HomeLongWidth = 234;
         private const int HomeShorWidth = 164;
         private const int HomeMinHeight = 46;
+        private const int RoomLongWidth = 226;
+        private const int RoomShorWidth = 152;
+        private const int RoomMinHeight = 45;
+        private int _inputShortWidth;
+        private int _inputLongWidth;
+        private int _minHeight;
+
         private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.All;
         private ChatData.EChatType _currentSendType = ChatData.EChatType.World;
         private Stack<UMCtrlChat> _umPool = new Stack<UMCtrlChat>(70);
@@ -35,7 +42,22 @@ namespace GameA
         public EScene Scene
         {
             get { return _scene; }
-            set { _scene = value; }
+            set
+            {
+                if (value == EScene.Room)
+                {
+                    _inputLongWidth = RoomLongWidth;
+                    _inputShortWidth = RoomShorWidth;
+                    _minHeight = RoomMinHeight;
+                }
+                else
+                {
+                    _inputLongWidth = HomeLongWidth;
+                    _inputShortWidth = HomeShorWidth;
+                    _minHeight = HomeMinHeight;
+                }
+                _scene = value;
+            }
         }
 
         public override void Init(USViewChat view)
@@ -145,7 +167,7 @@ namespace GameA
             bool isFriendChat = _currentSendType == ChatData.EChatType.Friends;
             _cachedView.ChatFriendBtn.SetActiveEx(isFriendChat);
             _cachedView.ChatInput.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
-                isFriendChat ? HomeShorWidth : HomeLongWidth);
+                isFriendChat ? _inputShortWidth : _inputLongWidth);
             if (isFriendChat)
             {
                 RefreshFriendsChatView();
@@ -357,7 +379,7 @@ namespace GameA
                 }
 
                 Canvas.ForceUpdateCanvases();
-                var height = Mathf.Max(_cachedView.ChatFriendsGridRtf.rect.height, HomeMinHeight);
+                var height = Mathf.Max(_cachedView.ChatFriendsGridRtf.rect.height, _minHeight);
                 _cachedView.ChatFriendsBgRtf.rectTransform()
                     .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }

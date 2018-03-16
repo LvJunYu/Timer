@@ -410,9 +410,9 @@ namespace GameA
             World,
             System,
             WorldInvite,
-            Friends,
             Room,
             Team,
+            Friends,
             Camp,
         }
     }
