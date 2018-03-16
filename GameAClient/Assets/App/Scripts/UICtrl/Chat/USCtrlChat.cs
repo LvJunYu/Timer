@@ -10,6 +10,8 @@ namespace GameA
 {
     public class USCtrlChat : USCtrlBase<USViewChat>
     {
+        private const int HomeLongWidth = 234;
+        private const int HomeShorWidth = 164;
         private ChatData.EChatType _currentChatTypeTag = ChatData.EChatType.All;
         private ChatData.EChatType _currentSendType = ChatData.EChatType.World;
         private Stack<UMCtrlChat> _umPool = new Stack<UMCtrlChat>(70);
