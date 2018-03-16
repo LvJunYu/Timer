@@ -18,7 +18,6 @@ namespace GameA
         public event Action<EChatType, Item> OnChatListAppend;
         public event Action<EChatType> OnChatListCutHead;
 
-
         private List<Item> _allChatList = new List<Item>();
         private List<Item> _worldChatList = new List<Item>();
         private List<Item> _worldInviteChatList = new List<Item>();
@@ -26,10 +25,13 @@ namespace GameA
         private List<Item> _roomChatList = new List<Item>();
         private List<Item> _teamChatList = new List<Item>();
         private List<Item> _inGameCampChatList = new List<Item>();
+        private List<Item> _privateChatList = new List<Item>();
 
         private GameTimer _roomCDTimer = new GameTimer();
         private GameTimer _teamCDTimer = new GameTimer();
         private GameTimer _worldCDTimer = new GameTimer();
+        private UserInfoDetail _curChatUser;
+        private Queue<UserInfoDetail> _chatUsers = new Queue<UserInfoDetail>(5);
 
         public List<Item> AllChatList
         {
@@ -56,6 +58,16 @@ namespace GameA
             get { return _roomChatList; }
         }
 
+        public UserInfoDetail CurChatUser
+        {
+            get { return _curChatUser; }
+        }
+
+        public Queue<UserInfoDetail> ChatUsers
+        {
+            get { return _chatUsers; }
+        }
+
         public ChatData()
         {
             _roomCDTimer.Zero();
@@ -77,6 +89,7 @@ namespace GameA
             {
                 msg.TargetInxList.AddRange(targetInxList);
             }
+
             RoomManager.Instance.SendToRSServer(msg);
             return true;
         }
@@ -108,6 +121,54 @@ namespace GameA
             msg.Data = data;
             RoomManager.Instance.SendToMSServer(msg);
             return true;
+        }
+
+        public bool SendPrivateChat(string data, UserInfoDetail user)
+        {
+            if (_curChatUser == null && user == null)
+            {
+                return true;
+            }
+
+            Msg_CM_Chat msg = new Msg_CM_Chat();
+            msg.ChatType = ECMChatType.CMCT_PrivateChat;
+            msg.Data = data;
+            if (null != user)
+            {
+                RefreshChatUsers(user);
+                _curChatUser = user;
+            }
+
+            msg.Param = _curChatUser.UserInfoSimple.UserId;
+            RoomManager.Instance.SendToMSServer(msg);
+            return true;
+        }
+
+        private void RefreshChatUsers(UserInfoDetail user)
+        {
+            if (_chatUsers.Contains(user))
+            {
+                var array = _chatUsers.ToArray();
+                _chatUsers.Clear();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (array[i] != user)
+                    {
+                        _chatUsers.Enqueue(array[i]);
+                    }
+                }
+
+                _chatUsers.Enqueue(user);
+            }
+            else
+            {
+                while (_chatUsers.Count >= 5)
+                {
+                    _chatUsers.Dequeue();
+                }
+
+                _chatUsers.Enqueue(user);
+            }
         }
 
         private int GetWorldLeftSecond()
@@ -198,6 +259,8 @@ namespace GameA
                     return _teamChatList;
                 case EChatType.Camp:
                     return _inGameCampChatList;
+                case EChatType.Friends:
+                    return _privateChatList;
                 default:
                     throw new ArgumentOutOfRangeException("chatType", chatType, null);
             }
@@ -278,6 +341,7 @@ namespace GameA
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 _content = msg.Data;
                 _time = DateTime.Now;
             }
@@ -300,6 +364,9 @@ namespace GameA
                         break;
                     case ECMChatType.CMCT_TeamChat:
                         _chatType = EChatType.Team;
+                        break;
+                    case ECMChatType.CMCT_PrivateChat:
+                        _chatType = EChatType.Friends;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -343,10 +410,10 @@ namespace GameA
             World,
             System,
             WorldInvite,
+            Friends,
             Room,
             Team,
             Camp,
-            Friends,
         }
     }
 }

@@ -82,7 +82,7 @@ namespace GameA
 
         private void OnClickLink(string href)
         {
-            MainCtrl.OnChatItemClick(_item, href);
+            MainCtrl.OnChatItemClick(_item, href, _cachedView.Trans.position);
         }
     }
 }
