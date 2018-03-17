@@ -32,6 +32,7 @@ namespace GameA
         private GameTimer _worldCDTimer = new GameTimer();
         private UserInfoDetail _curChatUser;
         private Queue<UserInfoDetail> _chatUsers = new Queue<UserInfoDetail>(5);
+        private bool _privateChatHasNew;
 
         public List<Item> AllChatList
         {
@@ -66,6 +67,12 @@ namespace GameA
         public Queue<UserInfoDetail> ChatUsers
         {
             get { return _chatUsers; }
+        }
+
+        public bool PrivateChatHasNew
+        {
+            get { return _privateChatHasNew; }
+            set { _privateChatHasNew = value; }
         }
 
         public ChatData()
@@ -123,6 +130,15 @@ namespace GameA
             return true;
         }
 
+        public void SetCurPrivateChatUser(UserInfoDetail user)
+        {
+            if (_curChatUser != user)
+            {
+                RefreshChatUsers(user);
+                _curChatUser = user;
+            }
+        }
+
         public bool SendPrivateChat(string data, UserInfoDetail user)
         {
             if (_curChatUser == null && user == null)
@@ -135,8 +151,7 @@ namespace GameA
             msg.Data = data;
             if (null != user)
             {
-                RefreshChatUsers(user);
-                _curChatUser = user;
+                SetCurPrivateChatUser(user);
             }
 
             msg.Param = _curChatUser.UserInfoSimple.UserId;
@@ -221,6 +236,10 @@ namespace GameA
 
         private void AddChatItem(Item item)
         {
+            if (item.ChatType == EChatType.Friends && item.ChatUser.UserGuid != LocalUser.Instance.UserGuid)
+            {
+                _privateChatHasNew = true;
+            }
             AddChatItem(EChatType.All, item);
             AddChatItem(item.ChatType, item);
             if (item.ChatType == EChatType.Camp)
