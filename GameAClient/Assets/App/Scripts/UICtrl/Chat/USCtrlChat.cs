@@ -209,11 +209,12 @@ namespace GameA
                 : GameATools.GetRawStr(_curChatUser.UserInfoSimple.NickName, 6);
         }
 
-        private void RefreshBtnsDock(Vector2 pos)
+        private void RefreshBtnsDock(Vector2 pos, bool isMyself)
         {
             _cachedView.CheckInfoBtn.SetActiveEx(_scene == EScene.Home);
-            _cachedView.FollowBtn.SetActiveEx(_curSelectedUser.UserInfoSimple.UserId != LocalUser.Instance.UserGuid &&
+            _cachedView.FollowBtn.SetActiveEx(!isMyself &&
                                               !_curSelectedUser.UserInfoSimple.RelationWithMe.FollowedByMe);
+            _cachedView.PrivateChatBtn.SetActiveEx(!isMyself);
             _cachedView.BtnsGridRtf.position = pos;
             Canvas.ForceUpdateCanvases();
             var curPos = _cachedView.BtnsGridRtf.anchoredPosition;
@@ -473,12 +474,17 @@ namespace GameA
         {
             if (href == UserStr)
             {
+                bool isMyself = item.ChatUser.UserGuid == LocalUser.Instance.UserGuid;
+                if (isMyself && _scene != EScene.Home)
+                {
+                    return;
+                }
                 UserManager.Instance.GetDataOnAsync(item.ChatUser.UserGuid,
                     detail =>
                     {
                         _curSelectedUser = detail;
                         SetBtnsDockOpen(true);
-                        RefreshBtnsDock(pos);
+                        RefreshBtnsDock(pos, isMyself);
                     }, () => { SocialGUIManager.ShowPopupDialog("用户数据获取失败"); });
             }
             else if (href == RoomStr)

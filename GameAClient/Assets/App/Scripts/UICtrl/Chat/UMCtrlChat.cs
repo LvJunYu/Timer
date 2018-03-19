@@ -12,12 +12,14 @@ namespace GameA
         private const string TemplateRoomWorld = "<color=#0da180><a href=user>{0}</a>：{1}</color>";
         private const string TemplateHomeRoom = "<color=#7e9cff><a href=user>{0}</a>：{1}</color>";
         private const string TemplateRoomRoom = "<color=#3c3fcc><a href=user>{0}</a>：{1}</color>";
+        private const string TemplateHomeCamp = "<color=#00ABFF><a href=user>{0}</a>：{1}</color>";
+        private const string TemplateRoomCamp = "<color=#008BFF><a href=user>{0}</a>：{1}</color>";
         private const string TemplateTeam = "<color=#00FF00><a href=user>{0}</a>：{1}</color>";
         private const string TemplateHomePrivate = "<color=#fe6da3>你对<a href=user>【{0}】</a>说：{1}</color>";
         private const string TemplateHomePrivate2 = "<color=#fe6da3><a href=user>【{0}】</a>对你说：{1}</color>";
         private const string TemplateRoomPrivate = "<color=#f53b6b>你对<a href=user>【{0}】</a>说：{1}</color>";
         private const string TemplateRoomPrivate2 = "<color=#f53b6b><a href=user>【{0}】</a>对你说：{1}</color>";
-
+        
         private const string TemplateHomeInvite =
             "<color=#ff61ee>招募：<a href=user>【{0}】</a>邀请您一起加入关卡{1}！<a href=room>【点击进入】</a></color>";
 
@@ -71,9 +73,14 @@ namespace GameA
                             _item.ChatUser.UserNickName, _item.Param);
                     break;
                 case ChatData.EChatType.Room:
-                case ChatData.EChatType.Camp:
                     _cachedView.Text.text = string.Format(
                         MainCtrl.Scene == USCtrlChat.EScene.Room ? TemplateRoomRoom : TemplateHomeRoom,
+                        _item.ChatUser.UserNickName,
+                        _item.Content.Replace(' ', '\u3000'));
+                    break;
+                case ChatData.EChatType.Camp:
+                    _cachedView.Text.text = string.Format(
+                        MainCtrl.Scene == USCtrlChat.EScene.Room ? TemplateRoomCamp : TemplateHomeCamp,
                         _item.ChatUser.UserNickName,
                         _item.Content.Replace(' ', '\u3000'));
                     break;
