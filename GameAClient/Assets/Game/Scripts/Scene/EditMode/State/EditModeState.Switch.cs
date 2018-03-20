@@ -151,66 +151,71 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
+                    if (coverUnits[0].Guid != boardData.CurrentTouchUnitDesc.Guid)
                     {
-                        UnitBase unit;
-                        if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
-                        {
-                            if (!unit.CanControlledBySwitch)
-                            {
-                                if (UnitDefine.IsCanControlByNpc(unit.Id) &&
-                                    NpcTaskDataTemp.Intance.IsEditNpcData)
-                                {
-                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
-                                    {
-                                        if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
-                                        {
-                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                                coverUnits[0].Guid);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                            coverUnits[0].Guid);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (!UnitDefine.IsNpc(coverUnits[0].Id))
-                                {
-                                    if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid))
-                                    {
-                                        if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
-                                        {
-                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                                coverUnits[0].Guid);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
-                                            coverUnits[0].Guid);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!UnitDefine.IsSwitch(coverUnits[0].Id))
-                        {
-                        }
-                        else
+                        if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                         {
                             UnitBase unit;
                             if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
                             {
-                                if (!UnitDefine.IsNpc(unit.Id))
+                                if (!unit.CanControlledBySwitch)
                                 {
-                                    AddSwitchConnection(coverUnits[0].Guid,
-                                        boardData.CurrentTouchUnitDesc.Guid);
+                                    if (UnitDefine.IsCanControlByNpc(unit.Id) &&
+                                        NpcTaskDataTemp.Intance.IsEditNpcData)
+                                    {
+                                        if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid)
+                                        )
+                                        {
+                                            if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
+                                            {
+                                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                    coverUnits[0].Guid);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                coverUnits[0].Guid);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (!UnitDefine.IsNpc(coverUnits[0].Id))
+                                    {
+                                        if (NpcTaskDataTemp.Intance.IsEditNpcTarget(boardData.CurrentTouchUnitDesc.Guid)
+                                        )
+                                        {
+                                            if (NpcTaskDataTemp.Intance.FinishAddTarget(coverUnits[0].Guid))
+                                            {
+                                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                    coverUnits[0].Guid);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
+                                                coverUnits[0].Guid);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!UnitDefine.IsSwitch(coverUnits[0].Id))
+                            {
+                            }
+                            else
+                            {
+                                UnitBase unit;
+                                if (ColliderScene2D.CurScene.TryGetUnit(coverUnits[0].Guid, out unit))
+                                {
+                                    if (!UnitDefine.IsNpc(unit.Id))
+                                    {
+                                        AddSwitchConnection(coverUnits[0].Guid,
+                                            boardData.CurrentTouchUnitDesc.Guid);
+                                    }
                                 }
                             }
                         }
@@ -358,7 +363,8 @@ namespace GameA.Game
                             }
                         }
                     }
-                    if(!isFromSwitch || UnitDefine.IsSwitchAndCanControlledBySwitch(boardData.CurrentTouchUnitDesc.Id))
+
+                    if (!isFromSwitch || UnitDefine.IsSwitchAndCanControlledBySwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
                         List<IntVec3> switchUnits =
                             DataScene2D.CurScene.GetSwitchUnitsConnected(boardData.CurrentTouchUnitDesc.Guid);
