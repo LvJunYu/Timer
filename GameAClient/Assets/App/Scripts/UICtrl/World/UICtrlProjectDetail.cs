@@ -711,8 +711,12 @@ namespace GameA
             }
 
             _cachedView.DownDock.SetActive(_curMenu != EMenu.MultiDetail);
-            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
-            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
+            if (_isRpg)
+            {
+                _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+                _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+            }
+
             if (_isRpg)
             {
                 _cachedView.CommentRect.anchoredPosition = new Vector2(244, -84);

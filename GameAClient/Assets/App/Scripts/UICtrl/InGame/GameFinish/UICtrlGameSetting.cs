@@ -16,6 +16,9 @@ namespace GameA
         private USCtrlGameSettingItem _showRoute;
         private USCtrlGameSettingItem _playBGMusic;
         private USCtrlGameSettingItem _playSoundsEffects;
+        
+        private USCtrlSliderSetting _playBGMusicSlider;
+        private USCtrlSliderSetting _playSoundsEffectsSlider;
         private bool _openGamePlaying;
 
         protected override void InitGroupId()
@@ -116,6 +119,9 @@ namespace GameA
             _showRoute = new USCtrlGameSettingItem();
             _playBGMusic = new USCtrlGameSettingItem();
             _playSoundsEffects = new USCtrlGameSettingItem();
+
+            _playBGMusicSlider = new USCtrlSliderSetting();
+            _playSoundsEffectsSlider = new USCtrlSliderSetting();
             if (ePlatform == EPlatform.PC)
             {
                 _upCtrlGameSettingInputKeys = new UPCtrlGameSettingInputKeys();
@@ -124,6 +130,11 @@ namespace GameA
                 _showRoute.Init(_cachedView.ShowRoute_2);
                 _playBGMusic.Init(_cachedView.PlayBackGroundMusic_2);
                 _playSoundsEffects.Init(_cachedView.PlaySoundsEffects_2);
+
+                _playBGMusicSlider.Init(_cachedView.UsBGMusicSetting);
+                _playBGMusicSlider.Set(0, 10, OnBGMusicSlider);
+                _playSoundsEffectsSlider.Init(_cachedView.UsMusicEffectSetting);
+                _playSoundsEffectsSlider.Set(0, 10, OnMusicEffectSlider);
             }
             else
             {
@@ -189,20 +200,31 @@ namespace GameA
 
         private void UpdateSettingItem()
         {
-            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, OnClickMusicButton);
-            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects, OnClickSoundsEffectsButton);
+//            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, OnClickMusicButton);
+//            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects, OnClickSoundsEffectsButton);
+            _playBGMusicSlider.SetCur(GameSettingData.Instance.PlayMusic);
+            _playSoundsEffectsSlider.SetCur(GameSettingData.Instance.PlaySoundsEffects);
             _showShadow.SetData(GameSettingData.Instance.ShowPlayModeShadow, OnClickShowRuntimeShadow);
             _showRoute.SetData(GameSettingData.Instance.ShowEditModeShadow, OnClickShowEditShadow);
         }
 
-        private void OnClickMusicButton(bool isOn)
+//        private void OnClickMusicButton(bool isOn)
+//        {
+//            GameSettingData.Instance.PlayMusic = isOn;
+//        }
+//
+//        private void OnClickSoundsEffectsButton(bool isOn)
+//        {
+//            GameSettingData.Instance.PlaySoundsEffects = isOn;
+//        }
+        private void OnBGMusicSlider(int bgmusic)
         {
-            GameSettingData.Instance.PlayMusic = isOn;
+            GameSettingData.Instance.PlayMusic = bgmusic;
         }
 
-        private void OnClickSoundsEffectsButton(bool isOn)
+        private void OnMusicEffectSlider(int musiceffect)
         {
-            GameSettingData.Instance.PlaySoundsEffects = isOn;
+            GameSettingData.Instance.PlaySoundsEffects = musiceffect;
         }
 
         private void OnClickShowRuntimeShadow(bool isOn)

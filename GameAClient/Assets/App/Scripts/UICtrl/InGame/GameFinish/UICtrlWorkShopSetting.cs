@@ -123,6 +123,7 @@ namespace GameA
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
                 return;
             }
+
             if (IsMulti)
             {
                 _cachedView.SureBtn_2Txt.text = "发 布";
@@ -133,6 +134,7 @@ namespace GameA
                 _cachedView.SureBtn_2Txt.text = "确 定";
                 _cachedView.SureBtn_3Txt.text = "确 定";
             }
+
             RefreshWinCondition();
             RefreshView();
             //游戏暂停
@@ -153,17 +155,20 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             GameSettingData.Instance.Save();
             base.OnClose();
             if (PlayMode.Instance == null)
             {
                 return;
             }
+
             if (GM2DGame.Instance != null && _openGamePlaying)
             {
                 GM2DGame.Instance.Continue();
                 _openGamePlaying = false;
             }
+
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
         }
 
@@ -175,6 +180,7 @@ namespace GameA
             {
                 _menuCtrlArray[i].OnDestroy();
             }
+
             CurProject = null;
             base.OnDestroy();
         }
@@ -205,6 +211,7 @@ namespace GameA
             {
                 CurCondition.SettingValue[(int) i] = EditMode.Instance.MapStatistics.HasWinCondition(i);
             }
+
             CurCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
             CurCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
         }
@@ -248,6 +255,7 @@ namespace GameA
                     gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
                 }
             }
+
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             GM2DGame.Instance.QuitGame(
@@ -272,7 +280,8 @@ namespace GameA
             {
                 _curMenu = EMenu.StandaloneLevelSetting;
             }
-            _cachedView.Togs[(int)_curMenu].isOn = true;
+
+            _cachedView.Togs[(int) _curMenu].isOn = true;
             ChangeMenu(_curMenu);
         }
 
@@ -288,12 +297,14 @@ namespace GameA
             {
                 _curMenuCtrl.Close();
             }
+
             _curMenu = menu;
             var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
@@ -308,14 +319,14 @@ namespace GameA
             }
         }
 
-        public void OnClickMusicButton(bool isOn)
+        public void OnMusicSliderChange(int music)
         {
-            GameSettingData.Instance.PlayMusic = isOn;
+            GameSettingData.Instance.PlayMusic = music;
         }
 
-        public void OnClickSoundsEffectsButton(bool isOn)
+        public void OnSoundsEffectsSlider(int effect)
         {
-            GameSettingData.Instance.PlaySoundsEffects = isOn;
+            GameSettingData.Instance.PlaySoundsEffects = effect;
         }
 
         public void OnDescEndEdit(string content)
@@ -331,6 +342,7 @@ namespace GameA
                     {
                         gameModeEdit.NeedSave = true;
                     }
+
 //                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
@@ -353,6 +365,7 @@ namespace GameA
                     {
                         gameModeEdit.NeedSave = true;
                     }
+
 //                    Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, CurProject);
                 }
                 else
@@ -370,6 +383,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("下载的关卡不能发布喔~");
                 return;
             }
+
             var gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null == gameModeWorkshopEdit) return;
             if (gameModeWorkshopEdit.NeedSave)
@@ -400,7 +414,7 @@ namespace GameA
                 gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
             }
         }
-        
+
         public void OnSure()
         {
             //多人是发布
@@ -409,11 +423,13 @@ namespace GameA
                 OnPublishBtn();
                 return;
             }
+
             //单人保存胜利条件
             for (EWinCondition i = 0; i < EWinCondition.WC_Max; i++)
             {
                 EditMode.Instance.MapStatistics.SetWinCondition(i, CurCondition.SettingValue[(int) i]);
             }
+
             EditMode.Instance.MapStatistics.TimeLimit = CurCondition.TimeLimit;
             EditMode.Instance.MapStatistics.LifeCount = CurCondition.LifeCount;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);

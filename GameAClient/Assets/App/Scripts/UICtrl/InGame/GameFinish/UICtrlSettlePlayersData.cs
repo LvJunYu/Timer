@@ -192,6 +192,7 @@ namespace GameA
                 else
                 {
                     PlayerBase player = TeamManager.Instance.Players[i];
+                    player.View.Trans.localPosition += Vector3.up * 100.0f * i;
                     _cachedView.PlayGroup[i].SetActiveEx(true);
                     if (_allPlayerDatas[i].IsWin)
                     {
