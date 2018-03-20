@@ -106,7 +106,7 @@ namespace GameA.Game
                 }
             }
 
-            if (_curCount < _maxCount)
+            if (_eActiveState == EActiveState.Active && _curCount < _maxCount)
             {
                 if (_timer > 0)
                 {
