@@ -451,7 +451,7 @@ namespace GameA.Game
 
         public bool CheckTeamWin(int teamId)
         {
-             switch (_eNetBattleTimeResult)
+            switch (_eNetBattleTimeResult)
             {
                 case ENetBattleTimeResult.Score:
                     return CheckTeamScoreBest(teamId);
@@ -620,6 +620,7 @@ namespace GameA.Game
                 onedata.MainPlayID = Instance.MainPlayer.RoomUser.Guid;
                 onedata.PlayerId = Instance.Players[i].RoomUser.Guid;
                 onedata.IsMvp = false;
+                onedata.KillMonsterNum = Instance.GetPlayerKillMonsterCount(Instance._players[i].Guid);
                 if (onedata.IsWin && onedata.Score > WinTeamHighScore)
                 {
                     mvpIndex = i;

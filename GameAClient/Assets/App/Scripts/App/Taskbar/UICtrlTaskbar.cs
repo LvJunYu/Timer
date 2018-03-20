@@ -139,24 +139,7 @@ namespace GameA
 
         private void OnStoryGameButton()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入关卡");
-            AppData.Instance.OfficialProjectList.RequestRpg(p =>
-            {
-                p.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlay(p);
-                    SocialApp.Instance.ChangeToGame();
-                }, error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                }); 
-            }, () =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                SocialGUIManager.ShowPopupDialog("进入关卡失败");
-            });
+            SocialGUIManager.Instance.OpenUI<UICtrlStoryMode>();
         }
 
         protected override void OnDestroy()
@@ -174,6 +157,7 @@ namespace GameA
                     .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
                 _pushGoldEnergyStyle = true;
             }
+
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
             RefreshQQReward();
@@ -187,6 +171,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
                 _pushGoldEnergyStyle = false;
             }
+
             base.OnClose();
             _chat.Close();
         }
@@ -516,6 +501,7 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
+
             //蓝钻更新信息
             LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
@@ -530,6 +516,7 @@ namespace GameA
                     Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSave>(
                         PlayerPrefs.GetString(RewardSave.Instance.RewardKey));
             }
+
             if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day) &&
                 RewardSave.Instance.IsQQHallNewPlayerColltion)
             {
@@ -544,6 +531,7 @@ namespace GameA
                 JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
                 _cachedView.QqHallImage.sprite = openHall;
             }
+
             if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip)
             {
                 if (

@@ -24,14 +24,14 @@ namespace GameA.Game
         public override void OnGameFailed()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
-            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().SetProject(_project);
         }
 
         public override void OnGameSuccess()
         {
 //            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
             SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
-            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().SetProject(_project);
         }
 
         public override bool Restart(Action<bool> successCb, Action failedCb)

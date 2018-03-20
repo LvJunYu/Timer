@@ -25,7 +25,7 @@ namespace GameA.Game
             if (!PlayMode.Instance.SceneState.GameFailed) return;
 //            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_failType);
             SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
-            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().SetProject(_project);
         }
 
         public override void OnGameSuccess()
@@ -34,7 +34,7 @@ namespace GameA.Game
             if (!PlayMode.Instance.SceneState.GameSucceed) return;
 //            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(_successType);
             SocialGUIManager.Instance.OpenUI<UICtrlSettlePlayersData>(TeamManager.Instance.GetSettlePlayerDatas());
-            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().setProject(_project);
+            SocialGUIManager.Instance.GetUI<UICtrlSettlePlayersData>().SetProject(_project);
         }
 
         public override bool Restart(Action<bool> successCb, Action failedCb)

@@ -44,7 +44,7 @@ namespace GameA
             _addUserSelfRecommendProjects.Clear();
             for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount; i++)
             {
-                if (LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData != Project.EmptyProject)
+                if (LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData == null)
                 {
                     _lastSoltList.Add(LocalUser.Instance.UserSelfRecommendProjectList[i].SlotInx);
                     _lastSoltNum++;
@@ -54,7 +54,6 @@ namespace GameA
 
         public override void Close()
         {
-            _cachedView.AddSelfRecommendProjectScroller.RefreshCurrent();
             _cachedView.AddSelfRecommendProjectPanel.SetActiveEx(false);
             base.Close();
         }
@@ -222,6 +221,7 @@ namespace GameA
                 _list,
                 ret =>
                 {
+                    _mainCtrl.SortItemList.Clear();
                     _mainCtrl.SelfRecommendDirty = true;
                     _mainCtrl.RefreshSelfRecommend();
                     SocialGUIManager.ShowPopupDialog("添加成功！");

@@ -16,7 +16,7 @@ namespace GameA
         private Project _project;
         private bool _isMyself;
         private bool _isMulti;
-
+        private bool _isRpg;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
         private bool _onlyChangeView;
@@ -119,6 +119,15 @@ namespace GameA
 
             _isMyself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _isMulti = _project.IsMulti;
+            _isRpg = false;
+            if (AppData.Instance.OfficialProjectList != null)
+            {
+                if (AppData.Instance.OfficialProjectList.RpgProjectList != null)
+                {
+                    _isRpg = AppData.Instance.OfficialProjectList.RpgProjectList.Contains(_project);
+                }
+            }
+
             _project.Request(_project.ProjectId, null, null);
             RefreshView();
             if (_project.ProjectId != _lastProjectId)
@@ -133,6 +142,11 @@ namespace GameA
                 }
 
                 _lastProjectId = _project.ProjectId;
+            }
+
+            if (_isRpg)
+            {
+                _curMenu = EMenu.Rank;
             }
 
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
@@ -278,6 +292,7 @@ namespace GameA
                 return;
             }
 
+
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!_isMulti);
@@ -308,6 +323,7 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshBtns();
             RefreshCommentCount(_project.TotalCommentCount);
+            SetRPGProject();
         }
 
         private void RefreshBtns()
@@ -695,6 +711,32 @@ namespace GameA
             }
 
             _cachedView.DownDock.SetActive(_curMenu != EMenu.MultiDetail);
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
+            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
+            if (_isRpg)
+            {
+                _cachedView.CommentRect.anchoredPosition = new Vector2(244, -84);
+            }
+            else
+            {
+                _cachedView.CommentRect.anchoredPosition = new Vector2(244, -38);
+            }
+        }
+
+        public void SetRPGProject()
+        {
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
+            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
+            _cachedView.DownloadBtn.SetActiveEx(!_isRpg);
+            _cachedView.FavoriteBtn.SetActiveEx(!_isRpg);
+            _cachedView.ShareBtn.SetActiveEx(!_isRpg);
+            _cachedView.RpgDescText.SetActiveEx(_isRpg);
+            _cachedView.RpgTileText.SetActiveEx(_isRpg);
+            _cachedView.UserObj.SetActiveEx(!_isRpg);
+            _cachedView.TileObj.SetActiveEx(!_isRpg);
+            _cachedView.RpgDescText.text = _project.ShowSummary;
+            _cachedView.RpgTileText.text = _project.Name;
+            _cachedView.Desc.SetActiveEx(!_isRpg);
         }
 
         public enum EMenu

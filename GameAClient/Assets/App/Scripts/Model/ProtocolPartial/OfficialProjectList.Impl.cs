@@ -8,12 +8,12 @@ namespace GameA
     public partial class OfficialProjectList
     {
         private List<Project> _projectSyncList;
-        private Project _rpgProject;
+        private List<Project> _rpgProjectList;
         private List<Project> _multiProjects;
 
-        public Project RpgProject
+        public List<Project> RpgProjectList
         {
-            get { return _rpgProject; }
+            get { return _rpgProjectList; }
         }
 
         public List<Project> MultiProjects
@@ -59,6 +59,7 @@ namespace GameA
                         _multiProjects[i].NetData.MinPlayer = 2;
                     }
                 }
+
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -66,16 +67,16 @@ namespace GameA
             }, failedCallback);
         }
 
-        public void RequestRpg(Action<Project> successCallback , Action failedCallback = null)
+        public void RequestRpg(Action successCallback, Action failedCallback = null)
         {
             Request(1 << 3, () =>
             {
                 if (_projectSyncList.Count > 0)
                 {
-                    _rpgProject = _projectSyncList[0];
+                    _rpgProjectList = _projectSyncList;
                     if (successCallback != null)
                     {
-                        successCallback.Invoke(_rpgProject);
+                        successCallback.Invoke();
                     }
                 }
                 else

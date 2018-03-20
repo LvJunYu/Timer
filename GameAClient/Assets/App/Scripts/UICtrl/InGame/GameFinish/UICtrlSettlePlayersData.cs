@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
@@ -20,6 +17,9 @@ namespace GameA
         private Transform _moveLightParent;
         private Transform _palyergroupParent;
         private List<Vector3> _targetPosList = new List<Vector3>();
+        private const string LightEffect = "M1EffectFinishGameFireWork";
+        private UIParticleItem _ligtEffect;
+        private bool _isCooperation = false;
 
         protected override void InitGroupId()
         {
@@ -40,14 +40,23 @@ namespace GameA
             base.OnOpen(parameter);
             _allPlayerDatas = (List<SettlePlayerData>) parameter;
             _likePlaysGuid.Clear();
-            SetPlayerAniImage();
             _cachedView.DataPanel.SetActiveEx(false);
-            RefreshDataPanels();
         }
 
         private void RefreshDataPanels()
         {
             bool mainPlayWin = false;
+            for (int i = 0; i < _cachedView.CoorepationObj.Length; i++)
+            {
+                _cachedView.CoorepationObj[i].SetActiveEx(_isCooperation);
+            }
+
+            for (int i = 0; i < _cachedView.BattleObj.Length; i++)
+            {
+                _cachedView.BattleObj[i].SetActiveEx(!_isCooperation);
+            }
+
+
             for (int i = 0; i < _allPlayerDatas.Count; i++)
             {
                 if (_allPlayerDatas[i].MainPlayID == _allPlayerDatas[i].PlayerId)
@@ -60,8 +69,9 @@ namespace GameA
                     UMCtlSettlePalyerDataItem palyerDataItem = UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
                         _cachedView.WinContentTrans,
                         EResScenary.UIHome);
-                    palyerDataItem.SetItemData(_allPlayerDatas[i]);
+                    palyerDataItem.SetItemData(_allPlayerDatas[i], _isCooperation);
                     palyerDataItem.Show();
+                    palyerDataItem.MoveContent(i);
                     _allPlayDataItems.Add(palyerDataItem);
                 }
                 else
@@ -69,8 +79,9 @@ namespace GameA
                     UMCtlSettlePalyerDataItem palyerDataItem = UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
                         _cachedView.LoseContentTrans,
                         EResScenary.UIHome);
-                    palyerDataItem.SetItemData(_allPlayerDatas[i]);
+                    palyerDataItem.SetItemData(_allPlayerDatas[i], _isCooperation);
                     palyerDataItem.Show();
+                    palyerDataItem.MoveContent(i);
                     _allPlayDataItems.Add(palyerDataItem);
                 }
             }
@@ -82,7 +93,6 @@ namespace GameA
                 _cachedView.TileText.text = _project.Name;
             }
         }
-
 
         protected override void OnClose()
         {
@@ -140,19 +150,38 @@ namespace GameA
             _likePlaysGuid.Remove(userguid);
         }
 
-        public void setProject(Project project)
+        public void SetProject(Project project)
         {
             _project = project;
+            _isCooperation = false;
+            if (_project.ProjectType == EProjectType.PT_Cooperation)
+            {
+                _isCooperation = true;
+            }
+
+            SetPlayerAniImage();
         }
 
         private void SetPlayerAniImage()
         {
+            _cachedView.AniPanel.SetActiveEx(true);
+            _ligtEffect =
+                GameParticleManager.Instance.GetUIParticleItem(LightEffect, _cachedView.LightsImage[0].transform,
+                    _groupId);
+            _ligtEffect.Particle.Play();
+            RenderCamera renderCamera =
+                RenderCameraManager.Instance.GetCamera(1f, _ligtEffect.Particle.Trans, 300, 300);
+            for (int i = 0; i < _cachedView.LightsImage.Length; i++)
+            {
+                _cachedView.LightsImage[i].texture = renderCamera.Texture;
+            }
+
             _cachedView.PlayersContentSizeFitter.SetEnableEx(true);
             _cachedView.PlayersLayoutGroup.SetEnableEx(true);
             _cachedView.MoveLight.SetActiveEx(true);
             _cachedView.LeftLight.SetActiveEx(false);
             _cachedView.RightLight.SetActiveEx(false);
-
+            _cachedView.AllLightImage.SetActiveEx(false);
             int mvpindex = 0;
             for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
             {
@@ -200,15 +229,28 @@ namespace GameA
 
             moveLight.OnComplete(() =>
             {
-                _cachedView.LeftLight.SetActiveEx(true);
-                _cachedView.RightLight.SetActiveEx(true);
-                _cachedView.MoveLight.SetActiveEx(false);
-                _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
-                _cachedView.PlayersLayoutGroup.enabled = false;
-                _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
-                    _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage.transform
-                        .position) + Vector3.up * 120.0f, 1.0f);
-                _cachedView.DataPanel.SetActiveEx(true);
+                if (_isCooperation)
+                {
+                    _cachedView.AllLightImage.SetActiveEx(true);
+                    _cachedView.DataPanel.SetActiveEx(true);
+                    RefreshDataPanels();
+                }
+                else
+                {
+                    _cachedView.LeftLight.SetActiveEx(true);
+                    _cachedView.RightLight.SetActiveEx(true);
+                    _cachedView.MoveLight.SetActiveEx(false);
+                    _cachedView.AllLightImage.SetActiveEx(false);
+                    _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
+                    _cachedView.PlayersLayoutGroup.enabled = false;
+                    _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
+                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage.transform
+                            .position) + Vector3.up * 120.0f, 1.0f).OnComplete(() =>
+                    {
+                        _cachedView.DataPanel.SetActiveEx(true);
+                        RefreshDataPanels();
+                    });
+                }
             });
             moveLight.PlayForward();
         }

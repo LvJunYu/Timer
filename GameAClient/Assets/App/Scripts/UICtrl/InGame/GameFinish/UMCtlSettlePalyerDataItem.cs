@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using DG.Tweening;
 using NewResourceSolution;
 using UnityEngine.UI;
 using SoyEngine;
@@ -13,6 +14,7 @@ namespace GameA
     public class SettlePlayerData
     {
         public string Name;
+        public int KillMonsterNum;
         public int killNum;
         public int KilledNum;
         public int Score;
@@ -30,6 +32,9 @@ namespace GameA
 
         private SettlePlayerData _playerData;
         private UserInfoDetail _playDetail;
+        private Vector2 _moveOutPos = new Vector2(1000, 0);
+        private Tween _moveTween;
+        private bool _isCoorepation;
 
         #endregion
 
@@ -53,14 +58,36 @@ namespace GameA
             IsShow = true;
         }
 
+        public void MoveContent(int index)
+        {
+            _cachedView.ContentTrans.anchoredPosition = _moveOutPos;
+            _moveTween = _cachedView.ContentTrans.DOAnchorPos(Vector2.zero, 2.0f);
+            _moveTween.SetDelay(2.0f * index);
+            _moveTween.Play();
+        }
+
         public void Hide()
         {
             _cachedView.Trans.SetActiveEx(false);
             IsShow = false;
         }
 
-        public void SetItemData(SettlePlayerData data)
+        public void SetItemData(SettlePlayerData data, bool isCoorepation)
         {
+            _isCoorepation = isCoorepation;
+            if (isCoorepation)
+            {
+                _cachedView.KilledNumText.SetActiveEx(false);
+                _cachedView.KillNumText.SetActiveEx(false);
+                _cachedView.KillMonsterNum.SetActiveEx(true);
+            }
+            else
+            {
+                _cachedView.KilledNumText.SetActiveEx(true);
+                _cachedView.KillNumText.SetActiveEx(true);
+                _cachedView.KillMonsterNum.SetActiveEx(false);
+            }
+
             _cachedView.AddFriendBtn.onClick.RemoveAllListeners();
             _cachedView.LikeBtn.onClick.RemoveAllListeners();
             _cachedView.UnLikeBtn.onClick.RemoveAllListeners();
@@ -85,6 +112,7 @@ namespace GameA
             _cachedView.HadFollowText.text = String.Format("已关注{0}", _playerData.Name);
             _cachedView.AddFriendBtn.SetActiveEx(_playerData.PlayerId == _playerData.MainPlayID);
             _cachedView.UnLikeBtn.SetActiveEx(false);
+            _cachedView.KillMonsterNum.text = _playerData.KillMonsterNum.ToString();
             UserManager.Instance.GetDataOnAsync(_playerData.PlayerId, detail =>
             {
                 _playDetail = detail;

@@ -41,7 +41,9 @@ namespace GameA
 
         public override void Open()
         {
-            base.Open();
+            _isOpen = true;
+            _cachedView.Pannels[(int) _menu].SetActiveEx(true);
+            _cachedView.EmptyObj.SetActiveEx(false);
             RequestData();
             ShowEditBtn();
         }
@@ -55,16 +57,7 @@ namespace GameA
                 _startInx = _dataList.Count;
             }
 
-            AddMsgOprate();
-            if (_mainCtrl.SortItemList.Count > 0)
-            {
-                RemoteCommands.SortSelfRecommendProject(_mainCtrl.SortItemList, ret => { RequestNewData(); },
-                    code => { });
-            }
-            else
-            {
-                RequestNewData();
-            }
+            RequestNewData();
         }
 
         private void RequestNewData()
@@ -170,6 +163,13 @@ namespace GameA
 
         public override void Close()
         {
+            AddMsgOprate();
+            if (_mainCtrl.SortItemList.Count > 0)
+            {
+                RemoteCommands.SortSelfRecommendProject(_mainCtrl.SortItemList, ret => { RequestNewData(); },
+                    code => { });
+            }
+
             _isOpen = false;
             _cachedView.Pannels[(int) _menu].SetActiveEx(false);
         }
