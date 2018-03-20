@@ -56,6 +56,7 @@ namespace GameA
                     _inputShortWidth = HomeShorWidth;
                     _minHeight = HomeMinHeight;
                 }
+
                 _scene = value;
             }
         }
@@ -136,6 +137,8 @@ namespace GameA
         {
             base.Open();
             SelectChatTypeTag(_currentChatTypeTag);
+            _cachedView.PrivateChatRedPoint.SetActive(_currentChatTypeTag != ChatData.EChatType.Friends &&
+                                                      AppData.Instance.ChatData.PrivateChatHasNew);
             SetFriendsDockOpen(false);
             SetBtnsDockOpen(false);
         }
@@ -152,10 +155,14 @@ namespace GameA
             RefreshView();
             switch (chatType)
             {
+                case ChatData.EChatType.Friends:
+                    AppData.Instance.ChatData.PrivateChatHasNew = false;
+                    _cachedView.PrivateChatRedPoint.SetActive(false);
+                    SetSendChatType(chatType);
+                    break;
                 case ChatData.EChatType.World:
                 case ChatData.EChatType.Room:
                 case ChatData.EChatType.Team:
-                case ChatData.EChatType.Friends:
                     SetSendChatType(chatType);
                     break;
             }
@@ -202,10 +209,12 @@ namespace GameA
                 : GameATools.GetRawStr(_curChatUser.UserInfoSimple.NickName, 6);
         }
 
-        private void RefreshBtnsDock(Vector2 pos)
+        private void RefreshBtnsDock(Vector2 pos, bool isMyself)
         {
             _cachedView.CheckInfoBtn.SetActiveEx(_scene == EScene.Home);
-            _cachedView.FollowBtn.SetActiveEx(!_curSelectedUser.UserInfoSimple.RelationWithMe.FollowedByMe);
+            _cachedView.FollowBtn.SetActiveEx(!isMyself &&
+                                              !_curSelectedUser.UserInfoSimple.RelationWithMe.FollowedByMe);
+            _cachedView.PrivateChatBtn.SetActiveEx(!isMyself);
             _cachedView.BtnsGridRtf.position = pos;
             Canvas.ForceUpdateCanvases();
             var curPos = _cachedView.BtnsGridRtf.anchoredPosition;
@@ -349,6 +358,7 @@ namespace GameA
 
         private void OnPrivateChatBtn()
         {
+            AppData.Instance.ChatData.SetCurPrivateChatUser(_curSelectedUser);
             _curChatUser = _curSelectedUser;
             _cachedView.ChatTypeTagArray[(int) ChatData.EChatType.Friends].isOn = true;
             SetBtnsDockOpen(false);
@@ -403,6 +413,11 @@ namespace GameA
 
             if (chatType != _currentChatTypeTag)
             {
+                if (chatType == ChatData.EChatType.Friends && item.ChatUser.UserGuid != LocalUser.Instance.UserGuid)
+                {
+                    _cachedView.PrivateChatRedPoint.SetActive(true);
+                }
+
                 return;
             }
 
@@ -459,12 +474,17 @@ namespace GameA
         {
             if (href == UserStr)
             {
+                bool isMyself = item.ChatUser.UserGuid == LocalUser.Instance.UserGuid;
+                if (isMyself && _scene != EScene.Home)
+                {
+                    return;
+                }
                 UserManager.Instance.GetDataOnAsync(item.ChatUser.UserGuid,
                     detail =>
                     {
                         _curSelectedUser = detail;
                         SetBtnsDockOpen(true);
-                        RefreshBtnsDock(pos);
+                        RefreshBtnsDock(pos, isMyself);
                     }, () => { SocialGUIManager.ShowPopupDialog("用户数据获取失败"); });
             }
             else if (href == RoomStr)

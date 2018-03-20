@@ -117,6 +117,7 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomListRet);
             RegisterHandler<Msg_MC_QueryRoom>(Msg_MC_QueryRoomRet);
             RegisterHandler<Msg_MC_Chat>(Msg_MC_Chat);
+            RegisterHandler<Msg_MC_ChatWarning>(Msg_MC_ChatWarning);
             RegisterHandler<Msg_MC_SelectProject>(Msg_MC_SelectProject);
             RegisterHandler<Msg_MC_UnselectProject>(Msg_MC_UnselectProject);
             RegisterHandler<Msg_MC_CreateTeam>(Msg_MC_CreateTeam);
@@ -129,6 +130,18 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_TeamQuickStartWarn>(Msg_MC_TeamQuickStartWarn);
             RegisterHandler<Msg_MC_QueryUserList>(Msg_MC_QueryUserList);
             RegisterHandler<Msg_MC_InviteToTeam>(Msg_MC_InviteToTeam);
+        }
+
+        private void Msg_MC_ChatWarning(Msg_MC_ChatWarning msg, object netlink)
+        {
+            if (msg.ChatType == ECMChatType.CMCT_PrivateChat && msg.WarningType == ECMChatWarningType.CMCWT_Offline)
+            {
+                UserManager.Instance.GetDataOnAsync(msg.Param,
+                    user =>
+                    {
+                        SocialGUIManager.ShowPopupDialog(string.Format("玩家【{0}】已离线", user.UserInfoSimple.NickName));
+                    });
+            }
         }
 
         private void Msg_MC_InviteToTeam(Msg_MC_InviteToTeam msg, object netlink)
