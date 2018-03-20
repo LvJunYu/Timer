@@ -5,12 +5,8 @@
 ** Summary : NpcTask
 ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SoyEngine;
 using SoyEngine.Proto;
-using Win32;
 
 namespace GameA.Game
 {
