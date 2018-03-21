@@ -33,6 +33,7 @@ namespace GameA
         private SettlePlayerData _playerData;
         private UserInfoDetail _playDetail;
         private Vector2 _moveOutPos = new Vector2(1000, 0);
+        private Vector2 _moveInPos = new Vector2(-44.0f, 0f);
         private Tween _moveTween;
         private bool _isCoorepation;
 
@@ -61,8 +62,8 @@ namespace GameA
         public void MoveContent(int index)
         {
             _cachedView.ContentTrans.anchoredPosition = _moveOutPos;
-            _moveTween = _cachedView.ContentTrans.DOAnchorPos(Vector2.zero, 2.0f);
-            _moveTween.SetDelay(2.0f * index);
+            _moveTween = _cachedView.ContentTrans.DOAnchorPos(_moveInPos, 0.5f);
+            _moveTween.SetDelay(0.5f * index);
             _moveTween.Play();
         }
 
@@ -110,7 +111,7 @@ namespace GameA
             _cachedView.WinLine.SetActiveEx(_playerData.IsWin);
             _cachedView.FailLine.SetActiveEx(!_playerData.IsWin);
             _cachedView.HadFollowText.text = String.Format("已关注{0}", _playerData.Name);
-            _cachedView.AddFriendBtn.SetActiveEx(_playerData.PlayerId == _playerData.MainPlayID);
+            _cachedView.AddFriendBtn.SetActiveEx(_playerData.PlayerId != _playerData.MainPlayID);
             _cachedView.UnLikeBtn.SetActiveEx(false);
             _cachedView.KillMonsterNum.text = _playerData.KillMonsterNum.ToString();
             UserManager.Instance.GetDataOnAsync(_playerData.PlayerId, detail =>

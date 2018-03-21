@@ -24,6 +24,7 @@ namespace GameA
         private List<Project> _addUserSelfRecommendProjects = new List<Project>();
         private int _lastSoltNum;
         private List<int> _lastSoltList = new List<int>();
+        private List<long> _haveAddProject = new List<long>();
 
         protected override void OnViewCreated()
         {
@@ -49,6 +50,10 @@ namespace GameA
                     _lastSoltList.Add(LocalUser.Instance.UserSelfRecommendProjectList[i].SlotInx);
                     _lastSoltNum++;
                 }
+                else
+                {
+                    _haveAddProject.Add(LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData.MainId);
+                }
             }
         }
 
@@ -68,7 +73,7 @@ namespace GameA
 
             _data.Requset(startInx, _pageSize, () =>
             {
-                _projectList = _data.AllList;
+                _projectList = _data.AllList.FindAll(p => { return !_haveAddProject.Contains(p.MainId); });
                 if (_isOpen)
                 {
                     RefreshView();

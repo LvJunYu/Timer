@@ -211,6 +211,7 @@ namespace GameA
                 if (newindex < _allowIndex)
                 {
                     _gridDataScroller.OnItemDragMovePos(_benginIndex, newindex);
+                    _cachedView.ProjectRect.SetAsLastSibling();
                 }
             }
         }

@@ -12,6 +12,7 @@ namespace GameA
 {
     public class USCtrlNpcDiaItem : USCtrlBase<USViewNpcDiaItem>
     {
+        private RectTransform _enableRectTrans;
         private Sprite _sprite;
         private NpcDia _dia;
 
@@ -41,6 +42,7 @@ namespace GameA
 
         public void Set(NpcDia dia, List<NpcDia> diaList, int index, Action callback)
         {
+            _enableRectTrans = _cachedView.EnableObj.GetComponent<RectTransform>();
             _cachedView.SelectImage.gameObject.SetActiveEx(false);
             _cachedView.CtrlDrag.SetCanDrag();
             _cachedView.CtrlDrag.OnBeforeDragEndAction = BeforeDragEnd;
@@ -98,6 +100,7 @@ namespace GameA
 
                 _cachedView.DiaText.text = strtemp;
             }
+
             _cachedView.EditDiaBtn.SetActiveEx(false);
             _cachedView.EditDiaBtnMask.PointHoverAction = () => { _cachedView.EditDiaBtn.SetActiveEx(true); };
             _cachedView.EditDiaBtn.onClick.RemoveAllListeners();
