@@ -119,7 +119,7 @@ namespace GameA.Game
                 return;
             }
 
-            if (_mode == EMode.EditTest)
+            if (Mode == EMode.EditTest)
             {
                 ChangeMode(EMode.Edit);
             }
@@ -218,7 +218,7 @@ namespace GameA.Game
             base.UpdateLogic();
             if (Application.isEditor)
             {
-                if (_mode == EMode.EditTest)
+                if (Mode == EMode.EditTest)
                 {
                     if (_guideBase != null)
                     {
@@ -234,7 +234,7 @@ namespace GameA.Game
 
             if (Application.isEditor)
             {
-                if (_mode == EMode.EditTest)
+                if (Mode == EMode.EditTest)
                 {
                     if (_guideBase != null)
                     {

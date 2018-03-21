@@ -88,7 +88,7 @@ namespace GameA.Game
                 }
                 return;
             }
-            if (_mode == EMode.EditTest)
+            if (Mode == EMode.EditTest)
             {
                 ChangeMode(EMode.Edit);
             }
