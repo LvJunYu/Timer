@@ -154,6 +154,11 @@ namespace GameA
 
         protected override void OnClose()
         {
+            if (_isRpg)
+            {
+                SetRPGProject(false);
+            }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();
@@ -292,7 +297,6 @@ namespace GameA
                 return;
             }
 
-
             _cachedView.MenuButtonAry[(int) EMenu.Room].SetActiveEx(_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isMulti);
             _cachedView.MenuButtonAry[(int) EMenu.Rank].SetActiveEx(!_isMulti);
@@ -323,7 +327,15 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshBtns();
             RefreshCommentCount(_project.TotalCommentCount);
-            SetRPGProject();
+            if (_isRpg)
+            {
+                SetRPGProject(true);
+            }
+            else
+            {
+                _cachedView.RpgDescText.SetActiveEx(false);
+                _cachedView.RpgTileText.SetActiveEx(false);
+            }
         }
 
         private void RefreshBtns()
@@ -727,20 +739,20 @@ namespace GameA
             }
         }
 
-        public void SetRPGProject()
+        public void SetRPGProject(bool isrpg)
         {
-            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
-            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!_isRpg);
-            _cachedView.DownloadBtn.SetActiveEx(!_isRpg);
-            _cachedView.FavoriteBtn.SetActiveEx(!_isRpg);
-            _cachedView.ShareBtn.SetActiveEx(!_isRpg);
-            _cachedView.RpgDescText.SetActiveEx(_isRpg);
-            _cachedView.RpgTileText.SetActiveEx(_isRpg);
-            _cachedView.UserObj.SetActiveEx(!_isRpg);
-            _cachedView.TileObj.SetActiveEx(!_isRpg);
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!isrpg);
+            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!isrpg);
+            _cachedView.DownloadBtn.SetActiveEx(!isrpg);
+            _cachedView.FavoriteBtn.SetActiveEx(!isrpg);
+            _cachedView.ShareBtn.SetActiveEx(!isrpg);
+            _cachedView.RpgDescText.SetActiveEx(isrpg);
+            _cachedView.RpgTileText.SetActiveEx(isrpg);
+            _cachedView.UserObj.SetActiveEx(!isrpg);
+            _cachedView.TileObj.SetActiveEx(!isrpg);
             _cachedView.RpgDescText.text = _project.ShowSummary;
             _cachedView.RpgTileText.text = _project.Name;
-            _cachedView.Desc.SetActiveEx(!_isRpg);
+            _cachedView.Desc.SetActiveEx(!isrpg);
         }
 
         public enum EMenu
