@@ -88,6 +88,11 @@ namespace GameA.Game
             set { _iconBytes = value; }
         }
 
+        public EMode Mode
+        {
+            get { return _mode; }
+        }
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
