@@ -630,7 +630,10 @@ namespace GameA.Game
                 _datas.Add(onedata);
             }
 
-            _datas[mvpIndex].IsMvp = true;
+            if (mvpIndex > 0 && mvpIndex < _datas.Count)
+            {
+                _datas[mvpIndex].IsMvp = true;
+            }
 
             return _datas;
         }
