@@ -256,7 +256,7 @@ namespace GameA.Game
             return dir;
         }
 
-        protected void Reset()
+        public void Reset()
         {
             if (_bone != null)
             {
@@ -267,11 +267,6 @@ namespace GameA.Game
             {
                 _headBone.ClearControlRotate();
             }
-        }
-
-        public void Stop()
-        {
-            Reset();
         }
 
         public void OnObjectDestroy()

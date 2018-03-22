@@ -651,7 +651,7 @@ namespace GameA.Game
                     if (_gun != null)
                     {
                         _gun.Play();
-                        _gun.Revive();
+                        _gun.GunInHandRevive();
                     }
 
                     if (IsMain)
@@ -1319,7 +1319,7 @@ namespace GameA.Game
         {
             if (_gun != null)
             {
-                _gun.Revive();
+                _gun.GunInHandRevive();
             }
         }
 

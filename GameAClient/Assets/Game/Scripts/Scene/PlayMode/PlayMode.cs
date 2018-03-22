@@ -349,6 +349,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return true;
         }
 
@@ -382,14 +383,7 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            var playerList = PlayerManager.Instance.PlayerList;
-            for (int i = 0; i < playerList.Count; i++)
-            {
-                if (playerList[i] != null && TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
-                {
-                    playerList[i].OnSucceed();
-                }
-            }
+            CheckAllPlayerWin();
 
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
@@ -398,10 +392,32 @@ namespace GameA.Game
             }
         }
 
+        private void CheckAllPlayerWin()
+        {
+            var playerList = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null)
+                {
+                    if (playerList[i].Animation != null)
+                    {
+                        playerList[i].Animation.Reset();
+                        playerList[i].ResetGun();
+                    }
+
+                    if (TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
+                    {
+                        playerList[i].OnSucceed();
+                    }
+                }
+            }
+        }
+
         public void GameFinishFailed()
         {
             _run = false;
             _gameFailedTime = GameRun.Instance.LogicFrameCnt;
+            CheckAllPlayerWin();
             if (null != _statistic)
             {
                 _statistic.OnGameFinishFailed();
@@ -504,6 +520,7 @@ namespace GameA.Game
                             {
                                 continue;
                             }
+
                             bool isMain = userArray[i].Guid == LocalUser.Instance.UserGuid;
                             int inx = userArray[i].Inx;
                             if (inx < sortSpawnDatas.Count)
@@ -556,6 +573,7 @@ namespace GameA.Game
             {
                 id = UnitDefine.OtherPlayerId;
             }
+
             var player = CreateRuntimeUnit(id, unitEditData.UnitDesc.GetUpPos()) as PlayerBase;
             if (player != null)
             {
