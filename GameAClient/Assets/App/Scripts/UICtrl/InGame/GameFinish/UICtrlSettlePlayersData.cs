@@ -88,7 +88,7 @@ namespace GameA
                         UMCtlSettlePalyerDataItem palyerDataItem =
                             UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
                                 _cachedView.WinContentTrans,
-                                EResScenary.UIHome);
+                                _cachedView.ResScenary);
                         palyerDataItem.SetItemData(_allPlayerDatas[i], _isCooperation);
                         palyerDataItem.Show();
                         palyerDataItem.MoveContent(i);
@@ -99,7 +99,7 @@ namespace GameA
                         UMCtlSettlePalyerDataItem palyerDataItem =
                             UMPoolManager.Instance.Get<UMCtlSettlePalyerDataItem>(
                                 _cachedView.LoseContentTrans,
-                                EResScenary.UIHome);
+                                _cachedView.ResScenary);
                         palyerDataItem.SetItemData(_allPlayerDatas[i], _isCooperation);
                         palyerDataItem.Show();
                         palyerDataItem.MoveContent(i);
