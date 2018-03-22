@@ -53,6 +53,9 @@ namespace NewResourceSolution
 	    private Dictionary<string, string>[] _assetName2BundleNameDictAry = new Dictionary<string, string>[(int) EResType.Max];
 	    private Dictionary<string, CHResBundle> _bundleName2BundleDict = new Dictionary<string, CHResBundle>();
 	    
+	    private HashSet<CHResBundle> _atlasHashSet = new HashSet<CHResBundle>();
+	    private bool _atlasReferenceDirty;
+	    
 		#endregion
 
 		#region properties
@@ -339,14 +342,29 @@ namespace NewResourceSolution
 					{
 						continue;
 					}
+
+					long oldMask = bundle.ScenaryMask;
 					if (0 != scenaryMask2Unload)
 					{
 						bundle.UncacheMask (scenaryMask2Unload);
+					}
+
+					if (bundle.ScenaryMask != oldMask)
+					{
+						if (bundle.ResType == EResType.Sprite)
+						{
+							_atlasReferenceDirty = true;
+						}
 					}
 					if (0 == bundle.ScenaryMask)
 					{
 						_assetToUnload.Add (itor.Current.Key);
 						_cachedAssetsTotalSize -= bundle.Size;
+						if (bundle.ResType == EResType.Sprite)
+						{
+							_atlasHashSet.Remove(bundle);
+							_atlasReferenceDirty = true;
+						}
 					}
 				}
 			}
@@ -422,6 +440,10 @@ namespace NewResourceSolution
 				{
 					if ((dependenceBundle.ScenaryMask & (1 << scenary)) == 0)
 					{
+						if (dependenceBundle.ResType == EResType.Sprite)
+						{
+							_atlasReferenceDirty = true;
+						}
 						if (!dependenceBundle.Cache (scenary, logWhenError))
 						{
 							anyError = true;
@@ -460,6 +482,11 @@ namespace NewResourceSolution
 				}
 				_cachedAssetsTotalSize += dependenceBundle.Size;
 				_cachedBundleDic.Add(dependenceBundle.AssetBundleName, dependenceBundle);
+				if (dependenceBundle.ResType == EResType.Sprite)
+				{
+					_atlasHashSet.Add(dependenceBundle);
+					_atlasReferenceDirty = true;
+				}
 			}
 			
 //			for (int i = 0; i < _bundleToCache.Count; i++)
@@ -578,6 +605,27 @@ namespace NewResourceSolution
 			_bundleName2BundleDict.TryGetValue(bundleName, out bundle);
 			return bundle;
 		}
+
+	    public void TryDebugAtlasReference()
+	    {
+		    if (!_atlasReferenceDirty)
+		    {
+			    return;
+		    }
+
+		    using (var sb = PoolFactory<PooledStringBuilderHolder>.Get())
+		    {
+			    sb.S.AppendLine("Atlas Reference:");
+			    foreach (var atlasBundle in _atlasHashSet)
+			    {
+				    sb.S.Append(atlasBundle.AssetBundleName)
+					    .Append("\t")
+					    .AppendLine(Convert.ToString(atlasBundle.ScenaryMask, 2));
+			    }
+			    LogHelper.Warning(sb.ToString());
+		    }
+		    _atlasReferenceDirty = false;
+	    }
 		#endregion
     }
 }
