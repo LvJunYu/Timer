@@ -191,6 +191,11 @@ namespace GameA.Game
 		[ColumnMapping("ChildState")]
 		public int[] ChildState;
 		/// <summary>
+        /// AI
+        /// </summary>
+		[ColumnMapping("BehaviorName")]
+		public string BehaviorName;
+		/// <summary>
         /// 旋转
         /// </summary>
 		[ColumnMapping("RotateState")]
@@ -216,7 +221,7 @@ namespace GameA.Game
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
 		/// <summary>
-        /// 循环
+        /// 重复拾取
         /// </summary>
 		[ColumnMapping("Cycle")]
 		public int Cycle;

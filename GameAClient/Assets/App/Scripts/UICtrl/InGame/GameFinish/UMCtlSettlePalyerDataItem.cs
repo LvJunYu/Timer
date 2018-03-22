@@ -35,7 +35,6 @@ namespace GameA
         private Vector2 _moveOutPos = new Vector2(1000, 0);
         private Vector2 _moveInPos = new Vector2(-44.0f, 0f);
         private Tween _moveTween;
-        private bool _isCoorepation;
 
         #endregion
 
@@ -75,7 +74,6 @@ namespace GameA
 
         public void SetItemData(SettlePlayerData data, bool isCoorepation)
         {
-            _isCoorepation = isCoorepation;
             if (isCoorepation)
             {
                 _cachedView.KilledNumText.SetActiveEx(false);
@@ -128,7 +126,7 @@ namespace GameA
             }, () => { });
         }
 
-        public bool Init(RectTransform rectTransform, EResScenary resScenary, Vector3 localpos = new Vector3())
+        public new bool Init(RectTransform rectTransform, EResScenary resScenary, Vector3 localpos = new Vector3())
         {
             return base.Init(rectTransform, resScenary);
         }

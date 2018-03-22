@@ -20,7 +20,6 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
-		public readonly Dictionary<int,Table_AIConfig> Table_AIConfigDic = new Dictionary<int, Table_AIConfig>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
@@ -49,6 +48,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		public readonly Dictionary<int,Table_NpcTaskTargetColltion> Table_NpcTaskTargetColltionDic = new Dictionary<int, Table_NpcTaskTargetColltion>();
+		public readonly Dictionary<int,Table_NpcTaskAward> Table_NpcTaskAwardDic = new Dictionary<int, Table_NpcTaskAward>();
 		public readonly Dictionary<int,Table_NpcTaskTargetKill> Table_NpcTaskTargetKillDic = new Dictionary<int, Table_NpcTaskTargetKill>();
 		public readonly Dictionary<int,Table_NpcDefaultDia> Table_NpcDefaultDiaDic = new Dictionary<int, Table_NpcDefaultDia>();
 		public readonly Dictionary<int,Table_WorkShopNumberOfSlot> Table_WorkShopNumberOfSlotDic = new Dictionary<int, Table_WorkShopNumberOfSlot>();
@@ -60,7 +60,6 @@ namespace GameA.Game
 		[SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[SerializeField] private Table_Trap[] _tableTraps;
 		[SerializeField] private Table_Unit[] _tableUnits;
-		[SerializeField] private Table_AIConfig[] _tableAIConfigs;
 		[SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
@@ -89,6 +88,7 @@ namespace GameA.Game
 		[SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
 		[SerializeField] private Table_BoostItem[] _tableBoostItems;
 		[SerializeField] private Table_NpcTaskTargetColltion[] _tableNpcTaskTargetColltions;
+		[SerializeField] private Table_NpcTaskAward[] _tableNpcTaskAwards;
 		[SerializeField] private Table_NpcTaskTargetKill[] _tableNpcTaskTargetKills;
 		[SerializeField] private Table_NpcDefaultDia[] _tableNpcDefaultDias;
 		[SerializeField] private Table_WorkShopNumberOfSlot[] _tableWorkShopNumberOfSlots;
@@ -123,8 +123,6 @@ namespace GameA.Game
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = JoyResManager.Instance.GetJson ("Unit", (int) EResScenary.TableAsset);
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
-			string AIConfigJsonStr = JoyResManager.Instance.GetJson ("AIConfig", (int) EResScenary.TableAsset);
-            _tableAIConfigs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AIConfig[]>(AIConfigJsonStr);
 			string CharacterUpgradeJsonStr = JoyResManager.Instance.GetJson ("CharacterUpgrade", (int) EResScenary.TableAsset);
             _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = JoyResManager.Instance.GetJson ("StarRequire", (int) EResScenary.TableAsset);
@@ -181,6 +179,8 @@ namespace GameA.Game
             _tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemJsonStr);
 			string NpcTaskTargetColltionJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetColltion", (int) EResScenary.TableAsset);
             _tableNpcTaskTargetColltions = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetColltion[]>(NpcTaskTargetColltionJsonStr);
+			string NpcTaskAwardJsonStr = JoyResManager.Instance.GetJson ("NpcTaskAward", (int) EResScenary.TableAsset);
+            _tableNpcTaskAwards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskAward[]>(NpcTaskAwardJsonStr);
 			string NpcTaskTargetKillJsonStr = JoyResManager.Instance.GetJson ("NpcTaskTargetKill", (int) EResScenary.TableAsset);
             _tableNpcTaskTargetKills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_NpcTaskTargetKill[]>(NpcTaskTargetKillJsonStr);
 			string NpcDefaultDiaJsonStr = JoyResManager.Instance.GetJson ("NpcDefaultDia", (int) EResScenary.TableAsset);
@@ -274,17 +274,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUnits table.Id {0} is duplicated!", _tableUnits[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableAIConfigs.Length; i++)
-			{
-				if (!Table_AIConfigDic.ContainsKey(_tableAIConfigs[i].Id))
-				{
-					Table_AIConfigDic.Add(_tableAIConfigs[i].Id,_tableAIConfigs[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableAIConfigs table.Id {0} is duplicated!", _tableAIConfigs[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableCharacterUpgrades.Length; i++)
@@ -595,6 +584,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableNpcTaskTargetColltions table.Id {0} is duplicated!", _tableNpcTaskTargetColltions[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableNpcTaskAwards.Length; i++)
+			{
+				if (!Table_NpcTaskAwardDic.ContainsKey(_tableNpcTaskAwards[i].Id))
+				{
+					Table_NpcTaskAwardDic.Add(_tableNpcTaskAwards[i].Id,_tableNpcTaskAwards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableNpcTaskAwards table.Id {0} is duplicated!", _tableNpcTaskAwards[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableNpcTaskTargetKills.Length; i++)
 			{
 				if (!Table_NpcTaskTargetKillDic.ContainsKey(_tableNpcTaskTargetKills[i].Id))
@@ -699,15 +699,6 @@ namespace GameA.Game
 		{
 			Table_Unit tmp;
 			if (Table_UnitDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_AIConfig GetAIConfig(int key)
-		{
-			Table_AIConfig tmp;
-			if (Table_AIConfigDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -960,6 +951,15 @@ namespace GameA.Game
 		{
 			Table_NpcTaskTargetColltion tmp;
 			if (Table_NpcTaskTargetColltionDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_NpcTaskAward GetNpcTaskAward(int key)
+		{
+			Table_NpcTaskAward tmp;
+			if (Table_NpcTaskAwardDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

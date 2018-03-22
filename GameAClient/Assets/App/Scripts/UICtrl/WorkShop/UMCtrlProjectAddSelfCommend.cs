@@ -126,7 +126,7 @@ namespace GameA
                 return;
             }
 
-            if (_cachedView.LastTimeText.gameObject.active)
+            if (_cachedView.LastTimeText.gameObject.activeSelf)
             {
                 TimeSpan lasTime =
                     DateTimeUtil.UnixTimestampMillisToLocalDateTime(_wrapper.Content.ExtendData.LastSelfRecommendTime)
