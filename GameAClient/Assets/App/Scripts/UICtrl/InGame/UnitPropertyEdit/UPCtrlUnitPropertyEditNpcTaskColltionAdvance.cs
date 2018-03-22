@@ -47,6 +47,15 @@ namespace GameA
             {
                 _umList[i].SetSelected(_umList[i].UnitId == _target.TargetUnitID);
             }
+
+            if (UnitDefine.IsMagicBean(_target.TargetUnitID))
+            {
+                _colltionNumSetting.Set(1, 5, value => _target.ColOrKillNum = (ushort) value);
+            }
+            else
+            {
+                _colltionNumSetting.Set(1, 100, value => _target.ColOrKillNum = (ushort) value);
+            }
         }
 
         public void OpenMenu(NpcTaskTargetDynamic target)
