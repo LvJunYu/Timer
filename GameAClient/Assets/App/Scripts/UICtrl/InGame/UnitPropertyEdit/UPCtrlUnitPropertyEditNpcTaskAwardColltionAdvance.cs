@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
+﻿using System.Collections.Generic;
 using GameA.Game;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA
 {
     public class
-        //npc怪兽的设置
-        UPCtrlUnitPropertyEditNpcTaskMonsterAdvance : UpCtrlNpcAdvanceBase
+        //npc奖励的设置
+        UPCtrlUnitPropertyEditNpcTaskAwardColltionAdvance : UpCtrlNpcAdvanceBase
     {
         private NpcTaskTargetDynamic _target;
         private List<UMCtrlHandNpcSelectTargetItem> _umList = new List<UMCtrlHandNpcSelectTargetItem>();
         private List<int> _idList = new List<int>();
-        private USCtrlSliderSetting _killNumSetting;
+        private USCtrlSliderSetting _colltionNumSetting;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _panel = _cachedView.NpcTaskMonsterPanel;
-            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
+            _panel = _cachedView.NpcTaskAwardColltionPanel;
+            foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskAwardDic)
             {
                 _idList.Add(VARIABLE.Key);
             }
@@ -33,18 +27,24 @@ namespace GameA
             {
                 int index = i;
                 UMCtrlHandNpcSelectTargetItem item = new UMCtrlHandNpcSelectTargetItem();
-                item.Init(_cachedView.ItemContent, EResScenary.Game);
+                item.Init(_cachedView.TaskAwardColltionItemContent, EResScenary.Game);
                 item.IintItem(_idList[index], _target, RefreshBtnGroup);
                 _umList.Add(item);
             }
 
-            _killNumSetting = new USCtrlSliderSetting();
-            _killNumSetting.Init(_cachedView.KillNumSetting);
-            UnitExtraHelper.SetUSCtrlSliderSetting(_killNumSetting, EAdvanceAttribute.MaxTaskKillOrColltionNum,
+            _colltionNumSetting = new USCtrlSliderSetting();
+            _colltionNumSetting.Init(_cachedView.TaskAwardColltionNumSetting);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_colltionNumSetting, EAdvanceAttribute.MaxTaskKillOrColltionNum,
                 value => _target.ColOrKillNum = (ushort) value);
-            _cachedView.MonsterDownBtn.onClick.AddListener(() => { _cachedView.MonsterBar.value -= 0.1f; });
-            _cachedView.MonsterUpBtn.onClick.AddListener(() => { _cachedView.MonsterBar.value += 0.1f; });
-            _cachedView.NpcTaskMonsterPanelExitBtn.onClick.AddListener(Close);
+            _cachedView.TaskAwardColltionUpBtn.onClick.AddListener(() =>
+            {
+                _cachedView.TaskAwardColltionMBar.value -= 0.1f;
+            });
+            _cachedView.TaskAwardColltionDownBtn.onClick.AddListener(() =>
+            {
+                _cachedView.TaskAwardColltionMBar.value += 0.1f;
+            });
+            _cachedView.TaskAwardNpcTaskColltionPanelExitBtn.onClick.AddListener(Close);
         }
 
         private void RefreshBtnGroup()
@@ -67,8 +67,6 @@ namespace GameA
                 _umList[i].IintItem(_idList[index], _target, RefreshBtnGroup);
             }
 
-            _killNumSetting.SetCur(_target.ColOrKillNum);
-
             RefreshBtnGroup();
         }
 
@@ -76,26 +74,7 @@ namespace GameA
         {
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            OpenAnimation();
-        }
-
-        public override void RefreshView()
-        {
-            if (!_isOpen) return;
-        }
-
-        public override void Close()
-        {
-            if (_openAnim)
-            {
-                CloseAnimation();
-            }
-            else if (_closeSequence == null || !_closeSequence.IsPlaying())
-            {
-                _panel.SetActiveEx(false);
-            }
-
-            base.Close();
+            _colltionNumSetting.SetCur(_target.ColOrKillNum);
         }
     }
 }

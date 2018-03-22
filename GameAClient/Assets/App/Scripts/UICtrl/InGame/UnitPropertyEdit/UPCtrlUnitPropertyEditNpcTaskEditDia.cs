@@ -7,13 +7,8 @@ using UnityEngine;
 namespace GameA
 { // npc 编辑对话
     public class
-        UPCtrlUnitPropertyEditNpcTaskEditDia : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
+        UPCtrlUnitPropertyEditNpcTaskEditDia : UpCtrlNpcAdvanceBase
     {
-        private GameObject _panel;
-        private Sequence _openSequence;
-        private Sequence _closeSequence;
-        private bool _openAnim;
-        private bool _completeAnim;
         private NpcTaskDynamic _task;
         private USCtrlUnitNpcTaskTargetBtn[] _beforeTaskAwardBtnGroup;
         private USCtrlUnitNpcTaskTargetBtn[] _finishTaskAwardBtnGroup;
@@ -185,10 +180,10 @@ namespace GameA
             switch ((ENpcTargetType) target.TaskType)
             {
                 case ENpcTargetType.Colltion:
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(target);
+                    _mainCtrl.EditNpcTaskAwardColltionAdvance.OpenMenu(target);
                     break;
                 case ENpcTargetType.Moster:
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(target);
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(target);
                     break;
                 case ENpcTargetType.Contorl:
                     break;
@@ -198,7 +193,7 @@ namespace GameA
             }
         }
 
-        public void RefreshView()
+        public override void RefreshView()
         {
             if (!_isOpen) return;
             RefreshTask();
@@ -216,94 +211,6 @@ namespace GameA
             }
 
             base.Close();
-        }
-
-        private void OpenAnimation()
-        {
-            if (null == _openSequence)
-            {
-                CreateSequences();
-            }
-
-            _closeSequence.Complete(true);
-            _openSequence.Restart();
-            _openAnim = true;
-        }
-
-        private void CloseAnimation()
-        {
-            if (null == _closeSequence)
-            {
-                CreateSequences();
-            }
-
-            if (_completeAnim)
-            {
-                _closeSequence.Complete(true);
-                _completeAnim = false;
-            }
-            else
-            {
-                _closeSequence.PlayForward();
-            }
-
-            _openAnim = false;
-        }
-
-        private void CreateSequences()
-        {
-            _openSequence = DOTween.Sequence();
-            _closeSequence = DOTween.Sequence();
-            _openSequence.Append(
-                _panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f).From()
-                    .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
-            {
-                if (_closeSequence.IsPlaying())
-                {
-                    _closeSequence.Complete(true);
-                }
-
-//                if (_openSequence.IsPlaying())
-//                {
-//                    _openSequence.Complete(true);
-//                }
-
-                _panel.SetActiveEx(true);
-            });
-            _openSequence.OnComplete(() =>
-            {
-                _panel.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
-                _panel.GetComponent<RectTransform>().offsetMax = new Vector2(-32, 0);
-            });
-            _closeSequence.Append(_panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f)
-                    .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() =>
-                {
-                    if (_openSequence.IsPlaying())
-                    {
-                        _openSequence.Complete(true);
-                    }
-
-//                    if (_closeSequence.IsPlaying())
-//                    {
-//                        _closeSequence.Complete(true);
-//                    }
-                });
-        }
-
-        public void CheckClose()
-        {
-            if (_isOpen)
-            {
-                _completeAnim = true;
-                Close();
-            }
-        }
-
-        private void OnCloseAnimationComplete()
-        {
-            _panel.SetActiveEx(false);
-            _closeSequence.Rewind();
         }
     }
 }

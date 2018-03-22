@@ -464,12 +464,44 @@ namespace GameA.Game
                         }
                     }
 
+                    if (UnitDefine.IsMagicBean(award.TargetUnitID))
+                    {
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.MainPlayer.PickUpMagicBean();
+                            AddColltion(UnitDefine.MagicBeanId);
+                        }
+                    }
+
+                    if (UnitDefine.IsLife(award.TargetUnitID))
+                    {
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.MainPlayer.Life++;
+                        }
+                    }
+
+                    if (UnitDefine.IsVincible(award.TargetUnitID))
+                    {
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.MainPlayer.AddStates(null, 62);
+                        }
+                    }
+
+                    if (UnitDefine.IsMeat(award.TargetUnitID))
+                    {
+                        for (int i = 0; i < award.ColOrKillNum; i++)
+                        {
+                            PlayMode.Instance.MainPlayer.OnHpChanged(200);
+                        }
+                    }
+
+
                     break;
                 case (byte) ENpcTargetType.Moster:
-
                     break;
                 case (byte) ENpcTargetType.Dialog:
-
                     break;
             }
         }

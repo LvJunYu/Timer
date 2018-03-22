@@ -112,6 +112,7 @@ namespace GameA
         public UPCtrlUnitPropertyEditNpcTaskEditDia EditNpcDia;
         public UPCtrlUnitPropertyEditNpcBeforeTaskAwardType EditBeforeTaskAward;
         public UPCtrlUnitPropertyEditNpcFinishTaskAwardType EditFinishTaskAward;
+        public UPCtrlUnitPropertyEditNpcTaskAwardColltionAdvance EditNpcTaskAwardColltionAdvance;
 
         protected override void InitGroupId()
         {
@@ -193,6 +194,9 @@ namespace GameA
             //任务完成后的奖励
             EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
             EditFinishTaskAward.Init(this, _cachedView);
+            //任务后奖励的物品
+            EditNpcTaskAwardColltionAdvance = new UPCtrlUnitPropertyEditNpcTaskAwardColltionAdvance();
+            EditNpcTaskAwardColltionAdvance.Init(this, _cachedView);
             //惊喜盒子
             _upCtrlSurpriseBox = new UPCtrlUnitPropertySurpriseBox();
             _upCtrlSurpriseBox.Init(this, _cachedView);
@@ -1444,6 +1448,7 @@ namespace GameA
             EditNpcDia.RefreshView();
             EditBeforeTaskAward.RefreshView();
             EditFinishTaskAward.RefreshView();
+            EditNpcTaskAwardColltionAdvance.RefreshView();
             _upCtrlUnitPropertyEditAdvance.RefreshView();
         }
 
@@ -1556,6 +1561,7 @@ namespace GameA
             EditNpcDia.Close();
             EditBeforeTaskAward.Close();
             EditFinishTaskAward.Close();
+            EditNpcTaskAwardColltionAdvance.Close();
             if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
@@ -1574,6 +1580,7 @@ namespace GameA
             EditNpcDia.CheckClose();
             EditBeforeTaskAward.CheckClose();
             EditFinishTaskAward.CheckClose();
+            EditNpcTaskAwardColltionAdvance.CheckClose();
             if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.CheckClose();
