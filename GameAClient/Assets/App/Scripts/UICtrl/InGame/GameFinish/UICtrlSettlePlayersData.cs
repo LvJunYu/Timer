@@ -76,7 +76,6 @@ namespace GameA
                     _cachedView.BattleObj[i].SetActiveEx(!_isCooperation);
                 }
 
-
                 for (int i = 0; i < _allPlayerDatas.Count; i++)
                 {
                     if (_allPlayerDatas[i].MainPlayID == _allPlayerDatas[i].PlayerId)
@@ -110,6 +109,18 @@ namespace GameA
 
                 _cachedView.WinTileImage.SetActiveEx(mainPlayWin);
                 _cachedView.FailTileImage.SetActiveEx(!mainPlayWin);
+                if (_isCooperation)
+                {
+                    if (mainPlayWin)
+                    {
+                        _cachedView.CoorepationFailObj.SetActiveEx(false);
+                    }
+                    else
+                    {
+                        _cachedView.CoorepationWinObj.SetActiveEx(false);
+                    }
+                }
+
                 if (_project != null)
                 {
                     _cachedView.TileText.text = _project.Name;
@@ -151,6 +162,21 @@ namespace GameA
             if (Input.GetKeyDown(KeyCode.T))
             {
                 SetPlayerAniImage();
+            }
+
+            if (_isOpen)
+            {
+                for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+                {
+                    if (i >= _allPlayerDatas.Count)
+                    {
+                    }
+                    else
+                    {
+                        PlayerBase player = TeamManager.Instance.Players[i];
+                        player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                    }
+                }
             }
         }
 
@@ -219,8 +245,8 @@ namespace GameA
                     }
 
                     RenderCamera camera =
-                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 100,
-                            180);
+                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
+                            540);
                     camera.SetOffsetPos(player.View.Trans.localPosition);
                     _cachedView.PlayGroup[i].texture = camera.Texture;
                     _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
@@ -262,7 +288,8 @@ namespace GameA
                     _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
                     _cachedView.PlayersLayoutGroup.enabled = false;
                     _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
-                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage.transform
+                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
+                            .transform
                             .position) + Vector3.up * 120.0f, 1.0f).OnComplete(RefreshDataPanels);
                 }
             });

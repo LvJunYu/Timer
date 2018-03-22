@@ -223,7 +223,7 @@ namespace GameA
                 }
             }, res => { SocialGUIManager.ShowPopupDialog("删除预设失败"); });
         }
- 
+
         private void ReadPreinstall(int index)
         {
             var unitExtraKeyValuePair =
@@ -236,9 +236,12 @@ namespace GameA
                     return;
                 }
             }
+
+            NpcTaskDataTemp.Intance.RecycleExtra(_mainCtrl.EditData.UnitExtra);
             _curIndex = index;
             _mainCtrl.EditData.UnitExtra.Set(unitExtraKeyValuePair);
             _mainCtrl.EditData.UnitDesc.Rotation = (byte) _dataList[_curIndex].PreinstallData.Rotation;
+            NpcTaskDataTemp.Intance.CheckExtra(_mainCtrl.EditData.UnitExtra);
             HasChanged = false;
             RefreshView();
             _mainCtrl.ReadPreinstall();
