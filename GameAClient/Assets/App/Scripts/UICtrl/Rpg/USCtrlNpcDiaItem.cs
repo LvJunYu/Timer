@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -11,6 +12,7 @@ namespace GameA
 //        private RectTransform _enableRectTrans;
         private Sprite _sprite;
         private NpcDia _dia;
+
 
         public NpcDia Dia
         {
@@ -25,6 +27,16 @@ namespace GameA
 
         private float _height;
         private bool _beforeInvoke;
+
+        public override void Init(USViewNpcDiaItem view)
+        {
+            base.Init(view);
+            _cachedView.EditBtnPointHover.PointHoverExitAction = () =>
+            {
+                _cachedView.EditDiaBtn.SetActiveEx(false);
+//                _cachedView.EditDiaBtnMask.GetComponent<Image>().raycastTarget = true;
+            };
+        }
 
         //拖动的时候的储存的临时变量
         private int newindex;
@@ -98,7 +110,11 @@ namespace GameA
             }
 
             _cachedView.EditDiaBtn.SetActiveEx(false);
-            _cachedView.EditDiaBtnMask.PointHoverAction = () => { _cachedView.EditDiaBtn.SetActiveEx(true); };
+            _cachedView.EditDiaBtnMask.PointHoverAction = () =>
+            {
+                _cachedView.EditDiaBtn.SetActiveEx(true);
+//                _cachedView.EditDiaBtnMask.GetComponent<Image>().raycastTarget = false;
+            };
             _cachedView.EditDiaBtn.onClick.RemoveAllListeners();
             _cachedView.EditDiaBtn.onClick.AddListener(
                 () =>
