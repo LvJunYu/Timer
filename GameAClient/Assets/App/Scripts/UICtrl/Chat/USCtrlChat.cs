@@ -474,18 +474,26 @@ namespace GameA
         {
             if (href == UserStr)
             {
-                bool isMyself = item.ChatUser.UserGuid == LocalUser.Instance.UserGuid;
+                bool isPrivateChat = item.ChatType == ChatData.EChatType.Friends;
+                bool senderIsMyself = item.ChatUser.UserGuid == LocalUser.Instance.UserGuid;
+                bool isMyself = !isPrivateChat && senderIsMyself;
                 if (isMyself && _scene != EScene.Home)
                 {
                     return;
                 }
-                UserManager.Instance.GetDataOnAsync(item.ChatUser.UserGuid,
-                    detail =>
-                    {
-                        _curSelectedUser = detail;
-                        SetBtnsDockOpen(true);
-                        RefreshBtnsDock(pos, isMyself);
-                    }, () => { SocialGUIManager.ShowPopupDialog("用户数据获取失败"); });
+
+                long id = item.ChatUser.UserGuid;
+                if (isPrivateChat && senderIsMyself)
+                {
+                    id = item.Param;
+                }
+
+                UserManager.Instance.GetDataOnAsync(id, detail =>
+                {
+                    _curSelectedUser = detail;
+                    SetBtnsDockOpen(true);
+                    RefreshBtnsDock(pos, isMyself);
+                }, () => { SocialGUIManager.ShowPopupDialog("用户数据获取失败"); });
             }
             else if (href == RoomStr)
             {
