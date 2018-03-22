@@ -108,7 +108,7 @@ namespace GameA.Game
         {
             if (_destroyTimer == 0)
             {
-                _destroyTimer = 5;
+                _destroyTimer = 10;
             }
         }
 
