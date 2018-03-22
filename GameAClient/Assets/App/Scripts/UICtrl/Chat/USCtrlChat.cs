@@ -362,6 +362,7 @@ namespace GameA
             _curChatUser = _curSelectedUser;
             _cachedView.ChatTypeTagArray[(int) ChatData.EChatType.Friends].isOn = true;
             SetBtnsDockOpen(false);
+            RefreshFriendsChatView();
             _cachedView.ChatInput.ActivateInputField();
         }
 
@@ -490,9 +491,12 @@ namespace GameA
 
                 UserManager.Instance.GetDataOnAsync(id, detail =>
                 {
-                    _curSelectedUser = detail;
-                    SetBtnsDockOpen(true);
-                    RefreshBtnsDock(pos, isMyself);
+                    detail.Request(() =>
+                    {
+                        _curSelectedUser = detail;
+                        SetBtnsDockOpen(true);
+                        RefreshBtnsDock(pos, isMyself);
+                    });
                 }, () => { SocialGUIManager.ShowPopupDialog("用户数据获取失败"); });
             }
             else if (href == RoomStr)
