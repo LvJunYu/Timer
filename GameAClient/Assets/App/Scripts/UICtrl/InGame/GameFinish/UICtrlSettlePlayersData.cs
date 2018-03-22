@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlSettlePlayersData : UICtrlAnimationBase<UIViewSettlePlayersData>
+    public class UICtrlSettlePlayersData : UICtrlInGameAnimationBase<UIViewSettlePlayersData>
     {
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
         private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
@@ -19,12 +19,12 @@ namespace GameA
         private List<Vector3> _targetPosList = new List<Vector3>();
         private const string LightEffect = "M1EffectFinishGameFireWork";
         private UIParticleItem _ligtEffect;
-        private bool _isCooperation = false;
+        private bool _isCooperation;
         private UIParticleItem _uiParticleItem;
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.LittleLoading;
+            _groupId = (int) EUIGroupType.InGamePopup;
         }
 
         protected override void OnViewCreated()
@@ -128,11 +128,6 @@ namespace GameA
             );
 
             base.OnClose();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
         }
 
         public override void OnUpdate()
