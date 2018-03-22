@@ -20,7 +20,7 @@ namespace GameA
         private const string LightEffect = "M1EffectFinishGameFireWork";
         private UIParticleItem _ligtEffect;
         private bool _isCooperation = false;
-        private UIParticleItem _uiParticleItem;
+        private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
 
         protected override void InitGroupId()
         {
@@ -36,9 +36,10 @@ namespace GameA
             _palyergroupParent = _cachedView.PlayGroup[0].transform.parent;
             for (int i = 0; i < _cachedView.LightsImage.Length; i++)
             {
-                _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(LightEffect,
+                UIParticleItem item = GameParticleManager.Instance.GetUIParticleItem(LightEffect,
                     _cachedView.LightsImage[i].rectTransform, _groupId);
-                _uiParticleItem.Particle.Play();
+                item.Particle.Play();
+                _uiParticleItemlist.Add(item);
             }
         }
 
@@ -48,12 +49,21 @@ namespace GameA
             _allPlayerDatas = (List<SettlePlayerData>) parameter;
             _likePlaysGuid.Clear();
             _cachedView.DataPanel.SetActiveEx(false);
+            for (int i = 0; i < _uiParticleItemlist.Count; i++)
+            {
+                _uiParticleItemlist[i].Particle.Play();
+            }
         }
 
         private void RefreshDataPanels()
         {
             _cachedView.AllLightImage.DOFade(1.0f, 1.0f).OnComplete(() =>
             {
+                for (int i = 0; i < _uiParticleItemlist.Count; i++)
+                {
+                    _uiParticleItemlist[i].Particle.Stop();
+                }
+
                 _cachedView.DataPanel.SetActiveEx(true);
                 bool mainPlayWin = false;
                 for (int i = 0; i < _cachedView.CoorepationObj.Length; i++)
