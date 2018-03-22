@@ -133,7 +133,7 @@ namespace GameA
 
         public void SetParent(RectTransform rectTransform)
         {
-            _cachedView.Trans.parent = rectTransform;
+            _cachedView.Trans.SetParent(rectTransform);
         }
 
         public void OnAddFriendBtn()

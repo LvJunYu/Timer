@@ -195,7 +195,7 @@ namespace GameA
                 else
                 {
                     PlayerBase player = TeamManager.Instance.Players[i];
-                    player.View.Trans.localPosition += Vector3.up * 100.0f * i;
+                    player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
                     _cachedView.PlayGroup[i].SetActiveEx(true);
                     if (_allPlayerDatas[i].IsWin)
                     {
@@ -238,6 +238,7 @@ namespace GameA
             {
                 if (_isCooperation)
                 {
+                    _cachedView.MoveLight.SetActiveEx(false);
                     _cachedView.AllLightImage.SetActiveEx(true);
                     RefreshDataPanels();
                 }
