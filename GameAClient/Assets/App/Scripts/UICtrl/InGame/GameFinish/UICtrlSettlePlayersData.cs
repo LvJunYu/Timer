@@ -30,7 +30,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.ReplayBtn.onClick.AddListener(OnRetryBtn);
             _moveLightParent = _cachedView.MoveLight.transform.parent;
             _palyergroupParent = _cachedView.PlayGroup[0].transform.parent;
@@ -130,13 +130,6 @@ namespace GameA
             }
 
             _allPlayDataItems.Clear();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            GM2DGame.Instance.QuitGame(
-                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                true
-            );
-
             base.OnClose();
         }
 
@@ -147,6 +140,17 @@ namespace GameA
             {
                 SetPlayerAniImage();
             }
+        }
+
+        private void OnExitBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlSettlePlayersData>();
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            GM2DGame.Instance.QuitGame(
+                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                true
+            );
         }
 
         private void OnRetryBtn()
