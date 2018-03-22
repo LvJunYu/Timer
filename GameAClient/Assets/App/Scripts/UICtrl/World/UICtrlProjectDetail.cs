@@ -157,6 +157,8 @@ namespace GameA
             if (_isRpg)
             {
                 SetRPGProject(false);
+                _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+                _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(false);
             }
 
             if (_curMenuCtrl != null)

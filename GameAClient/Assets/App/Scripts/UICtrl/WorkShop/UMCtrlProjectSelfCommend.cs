@@ -218,6 +218,11 @@ namespace GameA
 
         private void OnDragEnd()
         {
+            if (newindex >= _allowIndex)
+            {
+                newindex = _allowIndex - 1;
+            }
+
             if (newindex != -1 && _benginIndex != newindex)
             {
                 Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(newindex));
@@ -230,6 +235,7 @@ namespace GameA
                 _gridDataScroller.EndTween();
                 Vector2 targerpos = _gridDataScroller.GetPosByIndex(_benginIndex);
                 _cachedView.Trans.anchoredPosition = targerpos;
+                SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(0, 0);
             }
 
             _cachedView.ProjectRect.parent = _cachedView.Trans;
