@@ -15,8 +15,12 @@ namespace GameA.Game
         public static Vector2 HidePos = Vector3.one * -5;
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
         public static int[] MonstersInCave = {2001, 2002, 2003, 2005, 2007};
-        public static int[] ItemsInSurpriseBox = {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023};
-        public static int[] ItemsInWoodCase = {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023, 0};
+
+        public static int[] ItemsInSurpriseBox =
+            {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023};
+
+        public static int[] ItemsInWoodCase =
+            {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023, 0};
 
         public const float UnitSorttingLayerRatio = 0.0015625f;
 
@@ -240,6 +244,26 @@ namespace GameA.Game
         public static bool IsGate(int id)
         {
             return id == 5013;
+        }
+
+        public static bool IsLife(int id)
+        {
+            return id == 6002;
+        }
+
+        public static bool IsVincible(int id)
+        {
+            return id == 6003;
+        }
+
+        public static bool IsMeat(int id)
+        {
+            return id == 6004;
+        }
+
+        public static bool IsMagicBean(int id)
+        {
+            return id == 5023;
         }
 
         public static bool CanHitCirrus(UnitBase unit)
