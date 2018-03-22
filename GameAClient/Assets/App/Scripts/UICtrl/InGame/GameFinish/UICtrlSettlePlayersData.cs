@@ -47,6 +47,12 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _allPlayerDatas = (List<SettlePlayerData>) parameter;
+            _allPlayerDatas.Sort((a, b) =>
+            {
+                int anum = a.IsWin ? 1 : 0;
+                int bnum = b.IsWin ? 1 : 0;
+                return bnum - anum;
+            });
             _likePlaysGuid.Clear();
             _cachedView.DataPanel.SetActiveEx(false);
             for (int i = 0; i < _uiParticleItemlist.Count; i++)
@@ -220,7 +226,7 @@ namespace GameA
             _cachedView.RightLight.SetActiveEx(false);
             _cachedView.AllLightImage.SetActiveEx(false);
             _cachedView.MvpImage.SetActiveEx(false);
-            int mvpindex = 0;
+            int mvpindex = -1;
             for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
             {
                 if (i >= _allPlayerDatas.Count)
@@ -258,7 +264,7 @@ namespace GameA
 
             _cachedView.PlayersLayoutGroup.SetLayoutHorizontal();
             _cachedView.PlayersLayoutGroup.CalculateLayoutInputHorizontal();
-            SetMoveLightTweenPos();
+            SetMoveLightTweenPos(mvpindex);
             Sequence moveLight = DOTween.Sequence();
             for (int i = 0; i < 4; i++)
             {
@@ -286,16 +292,22 @@ namespace GameA
                     _cachedView.MvpImage.SetActiveEx(true);
                     _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
                     _cachedView.PlayersLayoutGroup.enabled = false;
+
+                    if (mvpindex == -1)
+                    {
+                        mvpindex = 0;
+                    }
+
                     _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
                         _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
                             .transform
-                            .position) + Vector3.up * 120.0f, 1.0f).OnComplete(RefreshDataPanels);
+                            .position) + Vector3.up * 120.0f, 1.0f).OnComplete(RefreshDataPanels).PlayForward();
                 }
             });
             moveLight.PlayForward();
         }
 
-        private void SetMoveLightTweenPos()
+        private void SetMoveLightTweenPos(int mvpindex)
         {
             Canvas.ForceUpdateCanvases();
             _targetPosList.Clear();
@@ -311,6 +323,17 @@ namespace GameA
                                     .localPosition)).x;
                     _targetPosList.Add(targetPos);
                 }
+            }
+
+            if (_isCooperation && mvpindex >= 0 && mvpindex < _cachedView.PlayGroup.Length)
+            {
+                Vector2 targetPos = _cachedView.MoveLight.rectTransform.localPosition;
+                targetPos.x =
+                    _moveLightParent
+                        .InverseTransformPoint(
+                            _palyergroupParent.transform.TransformPoint(_cachedView.PlayGroup[mvpindex].transform
+                                .localPosition)).x;
+                _targetPosList.Add(targetPos);
             }
         }
     }
