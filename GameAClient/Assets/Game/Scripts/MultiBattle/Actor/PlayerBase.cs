@@ -180,7 +180,7 @@ namespace GameA.Game
             }
 
             _hp = _maxHp;
-            if (_unitExtra.MaxSpeedX > 0)
+            if (_unitExtra.MaxSpeedX > 0 && _unitExtra.MaxSpeedX < ushort.MaxValue)
             {
                 _maxSpeedX = _unitExtra.MaxSpeedX;
             }
