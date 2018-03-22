@@ -383,7 +383,16 @@ namespace GameA.Game
 //            var user = new RoomUser();
 //            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
 //            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
-            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+            {
+                GM2DGame.Instance.QuitGame(
+                    () => CoroutineProxy.Instance.StartCoroutine(
+                        CoroutineProxy.RunWaitFrames(2, () => ConnectRS(msg.RSAddress, (ushort) msg.RSPort))), null);
+            }
+            else
+            {
+                ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            }
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
