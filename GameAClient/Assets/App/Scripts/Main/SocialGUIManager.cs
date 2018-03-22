@@ -146,11 +146,11 @@ namespace GameA
                 }
             }
 
-            LoadAtlas(EResScenary.Game);
-            LoadAtlas(EResScenary.UIInGame);
             UnloadAtlas(EResScenary.UIHome);
             UnloadAtlas(EResScenary.UISingleMode);
             UnloadAtlas(EResScenary.Home);
+            LoadAtlas(EResScenary.Game);
+            LoadAtlas(EResScenary.UIInGame);
             //UIRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
         }
@@ -186,11 +186,11 @@ namespace GameA
                 }
             }
 
+            UnloadAtlas(EResScenary.UIInGame);
+            UnloadAtlas(EResScenary.Game);
             LoadAtlas(EResScenary.Home);
             LoadAtlas(EResScenary.UIHome);
             LoadAtlas(EResScenary.UISingleMode);
-            UnloadAtlas(EResScenary.UIInGame);
-            UnloadAtlas(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
             GM2DGame.OnExit();
         }

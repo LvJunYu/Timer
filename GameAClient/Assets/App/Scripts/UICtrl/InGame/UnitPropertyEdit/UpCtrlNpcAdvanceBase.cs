@@ -84,7 +84,7 @@ namespace GameA
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
             _openSequence.Append(
-                _panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f).From()
+                _panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f).From()
                     .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
             {
                 if (_closeSequence.IsPlaying())
@@ -94,7 +94,7 @@ namespace GameA
 
                 _panel.SetActiveEx(true);
             });
-            _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
+            _closeSequence.Append(_panel.transform.DOBlendableLocalMoveBy(Vector3.left * 600, 0.3f)
                     .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() =>
                 {

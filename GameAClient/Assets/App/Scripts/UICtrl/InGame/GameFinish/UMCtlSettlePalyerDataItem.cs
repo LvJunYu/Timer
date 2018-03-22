@@ -105,25 +105,26 @@ namespace GameA
             _cachedView.TeamImage.sprite =
                 JoyResManager.Instance.GetSprite(spriteName);
             _cachedView.MainPlayImage.SetActiveEx(_playerData.PlayerId == _playerData.MainPlayID);
-            _cachedView.MvpImage.SetActiveEx(_playerData.IsMvp);
+            _cachedView.MvpImage.SetActiveEx(_playerData.IsMvp && !isCoorepation);
             _cachedView.WinLine.SetActiveEx(_playerData.IsWin);
             _cachedView.FailLine.SetActiveEx(!_playerData.IsWin);
             _cachedView.HadFollowText.text = String.Format("已关注{0}", _playerData.Name);
             _cachedView.AddFriendBtn.SetActiveEx(_playerData.PlayerId != _playerData.MainPlayID);
             _cachedView.UnLikeBtn.SetActiveEx(false);
+            _cachedView.HadFollowText.SetActiveEx(true);
             _cachedView.KillMonsterNum.text = _playerData.KillMonsterNum.ToString();
             UserManager.Instance.GetDataOnAsync(_playerData.PlayerId, detail =>
             {
                 _playDetail = detail;
                 if (_playDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
                 {
-                    _cachedView.HadFollowText.SetActiveEx(true);
+                    _cachedView.AddFriendBtn.SetActiveEx(false);
                 }
                 else
                 {
                     _cachedView.HadFollowText.SetActiveEx(false);
                 }
-            }, () => { });
+            }, () => { _cachedView.AddFriendBtn.SetActiveEx(false); });
         }
 
         public new bool Init(RectTransform rectTransform, EResScenary resScenary, Vector3 localpos = new Vector3())
@@ -142,13 +143,12 @@ namespace GameA
             {
                 if (_playDetail.UserInfoSimple.RelationWithMe.FollowedByMe)
                 {
-                    LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(_playDetail,
-                        () => { _cachedView.HadFollowText.SetActiveEx(false); });
+                    _cachedView.AddFriendBtn.SetActiveEx(false);
                 }
                 else
                 {
                     LocalUser.Instance.RelationUserList.RequestFollowUser(_playDetail,
-                        () => { _cachedView.HadFollowText.SetActiveEx(true); });
+                        () => { _cachedView.AddFriendBtn.SetActiveEx(false); });
                 }
             }
         }

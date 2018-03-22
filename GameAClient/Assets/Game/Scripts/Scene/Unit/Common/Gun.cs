@@ -61,9 +61,10 @@ namespace GameA.Game
             }
         }
 
-        public void Revive()
+        public void GunInHandRevive()
         {
             _gunInHand.Revive();
+            _gunInHand.Reset();
         }
 
         public void Stop()
@@ -72,7 +73,7 @@ namespace GameA.Game
             {
                 _shooterEffect.Stop();
             }
-            _gunInHand.Stop();
+            _gunInHand.Reset();
         }
 
         internal void OnObjectDestroy()

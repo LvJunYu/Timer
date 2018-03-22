@@ -84,7 +84,7 @@ namespace GameA
             for (int i = 0; i < _dataList.Count; i++)
             {
                 UMCtrlProjectStory um = new UMCtrlProjectStory();
-                um.Init(_cachedView.ContentRect, EResScenary.Home);
+                um.Init(_cachedView.ContentRect, EResScenary.UIHome);
                 um.Set(_dataList[i]);
             }
         }

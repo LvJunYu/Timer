@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlSettlePlayersData : UICtrlAnimationBase<UIViewSettlePlayersData>
+    public class UICtrlSettlePlayersData : UICtrlInGameAnimationBase<UIViewSettlePlayersData>
     {
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
         private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
@@ -19,26 +19,27 @@ namespace GameA
         private List<Vector3> _targetPosList = new List<Vector3>();
         private const string LightEffect = "M1EffectFinishGameFireWork";
         private UIParticleItem _ligtEffect;
-        private bool _isCooperation = false;
-        private UIParticleItem _uiParticleItem;
+        private bool _isCooperation;
+        private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.LittleLoading;
+            _groupId = (int) EUIGroupType.InGamePopup;
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.ReplayBtn.onClick.AddListener(OnRetryBtn);
             _moveLightParent = _cachedView.MoveLight.transform.parent;
             _palyergroupParent = _cachedView.PlayGroup[0].transform.parent;
             for (int i = 0; i < _cachedView.LightsImage.Length; i++)
             {
-                _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(LightEffect,
+                UIParticleItem item = GameParticleManager.Instance.GetUIParticleItem(LightEffect,
                     _cachedView.LightsImage[i].rectTransform, _groupId);
-                _uiParticleItem.Particle.Play();
+                item.Particle.Play();
+                _uiParticleItemlist.Add(item);
             }
         }
 
@@ -48,12 +49,21 @@ namespace GameA
             _allPlayerDatas = (List<SettlePlayerData>) parameter;
             _likePlaysGuid.Clear();
             _cachedView.DataPanel.SetActiveEx(false);
+            for (int i = 0; i < _uiParticleItemlist.Count; i++)
+            {
+                _uiParticleItemlist[i].Particle.Play();
+            }
         }
 
         private void RefreshDataPanels()
         {
             _cachedView.AllLightImage.DOFade(1.0f, 1.0f).OnComplete(() =>
             {
+                for (int i = 0; i < _uiParticleItemlist.Count; i++)
+                {
+                    _uiParticleItemlist[i].Particle.Stop();
+                }
+
                 _cachedView.DataPanel.SetActiveEx(true);
                 bool mainPlayWin = false;
                 for (int i = 0; i < _cachedView.CoorepationObj.Length; i++)
@@ -65,7 +75,6 @@ namespace GameA
                 {
                     _cachedView.BattleObj[i].SetActiveEx(!_isCooperation);
                 }
-
 
                 for (int i = 0; i < _allPlayerDatas.Count; i++)
                 {
@@ -100,6 +109,18 @@ namespace GameA
 
                 _cachedView.WinTileImage.SetActiveEx(mainPlayWin);
                 _cachedView.FailTileImage.SetActiveEx(!mainPlayWin);
+                if (_isCooperation)
+                {
+                    if (mainPlayWin)
+                    {
+                        _cachedView.CoorepationFailObj.SetActiveEx(false);
+                    }
+                    else
+                    {
+                        _cachedView.CoorepationWinObj.SetActiveEx(false);
+                    }
+                }
+
                 if (_project != null)
                 {
                     _cachedView.TileText.text = _project.Name;
@@ -120,19 +141,7 @@ namespace GameA
             }
 
             _allPlayDataItems.Clear();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            GM2DGame.Instance.QuitGame(
-                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                true
-            );
-
             base.OnClose();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
         }
 
         public override void OnUpdate()
@@ -142,6 +151,32 @@ namespace GameA
             {
                 SetPlayerAniImage();
             }
+
+            if (_isOpen)
+            {
+                for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+                {
+                    if (i >= _allPlayerDatas.Count)
+                    {
+                    }
+                    else
+                    {
+                        PlayerBase player = TeamManager.Instance.Players[i];
+                        player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                    }
+                }
+            }
+        }
+
+        private void OnExitBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlSettlePlayersData>();
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            GM2DGame.Instance.QuitGame(
+                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                true
+            );
         }
 
         private void OnRetryBtn()
@@ -209,8 +244,8 @@ namespace GameA
                     }
 
                     RenderCamera camera =
-                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 100,
-                            180);
+                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
+                            540);
                     camera.SetOffsetPos(player.View.Trans.localPosition);
                     _cachedView.PlayGroup[i].texture = camera.Texture;
                     _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
@@ -252,7 +287,8 @@ namespace GameA
                     _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
                     _cachedView.PlayersLayoutGroup.enabled = false;
                     _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
-                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage.transform
+                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
+                            .transform
                             .position) + Vector3.up * 120.0f, 1.0f).OnComplete(RefreshDataPanels);
                 }
             });

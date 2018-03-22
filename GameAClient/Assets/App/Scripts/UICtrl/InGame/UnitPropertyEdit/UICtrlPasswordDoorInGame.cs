@@ -88,10 +88,12 @@ namespace GameA
 
             _passwordDoor.OnUiOpen(true);
             SetState(EState.Normal);
+            SocialApp.Instance.BanEsc = true;
         }
 
         protected override void OnClose()
         {
+            SocialApp.Instance.BanEsc = false;
             _passwordDoor.OnUiOpen(false);
             base.OnClose();
         }

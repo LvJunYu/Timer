@@ -121,9 +121,7 @@ namespace GameA
 
         public override void Open()
         {
-            _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            OpenAnimation();
             RefreshView();
         }
 
@@ -197,20 +195,6 @@ namespace GameA
         {
             if (!_isOpen) return;
             RefreshTask();
-        }
-
-        public override void Close()
-        {
-            if (_openAnim)
-            {
-                CloseAnimation();
-            }
-            else if (_closeSequence == null || !_closeSequence.IsPlaying())
-            {
-                _panel.SetActiveEx(false);
-            }
-
-            base.Close();
         }
     }
 }

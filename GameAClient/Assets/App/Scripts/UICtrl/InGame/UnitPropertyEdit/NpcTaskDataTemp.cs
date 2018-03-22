@@ -557,6 +557,49 @@ namespace GameA
                 }
             }
         }
+
+        public void RecycleExtra(UnitExtraDynamic extra)
+        {
+            if (extra.NpcSerialNumber != 0)
+            {
+                RecycleNpcSerialNum(extra.NpcSerialNumber);
+            }
+
+            if (extra.NpcType == (int) ENpcType.Task)
+            {
+                for (int i = 0; i < extra.NpcTask.Count; i++)
+                {
+                    if (extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber != 0)
+                    {
+                        RecycleNpcTaskSerialNum(extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber);
+                    }
+                }
+            }
+        }
+
+        public void CheckExtra(UnitExtraDynamic extra)
+        {
+            int num = GetNpcSerialNum();
+            SetNpcSerialNum(num);
+            extra.NpcSerialNumber = (ushort) num;
+            if (extra.NpcType == (int) ENpcType.Task)
+            {
+                for (int i = 0; i < extra.NpcTask.Count; i++)
+                {
+                    int taskNum = GetNpcTaskSerialNum();
+                    if (SetNpcTaskSerialNum(taskNum))
+                    {
+                        extra.NpcTask.Get<NpcTaskDynamic>(i).NpcTaskSerialNumber = (ushort) taskNum;
+                    }
+                    else
+                    {
+                        extra.NpcTask.RemoveAt(i);
+                    }
+
+                    extra.NpcTask.Get<NpcTaskDynamic>(i).TargetNpcSerialNumber = extra.NpcSerialNumber;
+                }
+            }
+        }
     }
 
 

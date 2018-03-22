@@ -97,7 +97,7 @@ namespace GameA
                 }
             }
 
-            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
+                _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
         protected void OnItemClick(CardDataRendererWrapper<Project> item)

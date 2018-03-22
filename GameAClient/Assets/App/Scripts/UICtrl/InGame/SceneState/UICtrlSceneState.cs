@@ -18,8 +18,7 @@ using PlayMode = GameA.Game.PlayMode;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame)]
-    public class
-        UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
+    public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
             new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
