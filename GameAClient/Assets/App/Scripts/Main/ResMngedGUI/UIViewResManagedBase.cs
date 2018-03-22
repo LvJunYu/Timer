@@ -43,10 +43,7 @@ namespace GameA
             for (int i = 0; i < _allImageSpriteInfoList.Count; i++)
             {
                 var pair = _allImageSpriteInfoList[i];
-                if (!pair.Image.sprite)
-                {
-                    pair.Image.sprite = JoyResManager.Instance.GetSprite(pair.SpriteName, (int) _resScenary);
-                }
+                pair.Image.sprite = JoyResManager.Instance.GetSprite(pair.SpriteName, (int) _resScenary);
             }
         }
 
