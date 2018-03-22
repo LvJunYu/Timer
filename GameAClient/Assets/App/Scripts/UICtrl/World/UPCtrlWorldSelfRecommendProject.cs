@@ -9,27 +9,24 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            base.RequestData(append);
             _data = AppData.Instance.WorldData.WorldSelfRecommendProjectList;
-            if (_isRequesting)
-            {
-                return;
-            }
-
-            _isRequesting = true;
             int startInx = 0;
             if (append)
             {
                 startInx = _contentList.Count;
             }
 
+            _isRequesting = true;
             _data.Request(startInx, Mask, _pageSize, () =>
             {
-                _isRequesting = false;
-                _projectList = _data.ProjectList;
+                _projectList = _data.AllList;
                 if (_isOpen)
                 {
                     RefreshView();
                 }
+
+                _isRequesting = false;
             }, code =>
             {
                 _isRequesting = false;
