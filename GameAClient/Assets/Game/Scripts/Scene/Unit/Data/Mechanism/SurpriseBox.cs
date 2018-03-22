@@ -31,8 +31,10 @@ namespace GameA.Game
         private int _curCount;
         private int _timer;
         private int _aliveTimer;
+        private int _blockTimer;
         private UnitBase _curItem;
         private UnityNativeParticleItem _openEffect;
+        private bool _blockBySelfItem;
 
         public override bool CanControlledBySwitch
         {
@@ -94,6 +96,11 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            if (_blockTimer > 0)
+            {
+                _blockTimer--;
+            }
+
             if (_aliveTimer > 0)
             {
                 _aliveTimer--;
@@ -110,7 +117,16 @@ namespace GameA.Game
             {
                 if (_timer > 0)
                 {
-                    if (_curItem == null || _curItem.IsDisposed)
+                    //如果被自己产生的奖励挡住，则不走CD
+                    if (_blockBySelfItem)
+                    {
+                        if (_blockTimer == 0)
+                        {
+                            RefreshBlockState();
+                            _blockTimer = 10;
+                        }
+                    }
+                    else
                     {
                         _timer--;
                     }
@@ -140,8 +156,14 @@ namespace GameA.Game
             _timer = 0;
             _curCount = 0;
             _aliveTimer = 0;
+            _blockTimer = 0;
             _curItem = null;
             SetLightView();
+        }
+
+        private void RefreshBlockState()
+        {
+            _blockBySelfItem = _itemList.Count > 0 && !CheckSpaceValid(_itemList[0], true);
         }
 
         private bool DoSurprise()
@@ -175,6 +197,8 @@ namespace GameA.Game
                         _curItem.IsAlive = false;
                         CoroutineProxy.Instance.StartCoroutine(ShowOpenView());
                         _curItem.OnPlay();
+                        _blockBySelfItem = true;
+                        _blockTimer = 20;
                         return true;
                     }
                 }
@@ -211,13 +235,26 @@ namespace GameA.Game
             }
         }
 
-        private bool CheckSpaceValid(int id)
+        private bool CheckSpaceValid(int id, bool onlyCurItem = false)
         {
             var checkGrid = GM2DTools.CalculateFireColliderGrid(id, _colliderGrid, _unitDesc.Rotation);
             using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer))
             {
                 for (int i = 0; i < units.Count; i++)
                 {
+                    //只检测挡住的物体是否是自己产生的奖励
+                    if (onlyCurItem)
+                    {
+                        if (units[i] == _curItem)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
                     if (units[i].IsAlive)
                     {
                         return false;

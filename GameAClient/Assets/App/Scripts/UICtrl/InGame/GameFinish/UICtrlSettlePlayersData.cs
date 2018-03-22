@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlSettlePlayersData : UICtrlAnimationBase<UIViewSettlePlayersData>
+    public class UICtrlSettlePlayersData : UICtrlInGameAnimationBase<UIViewSettlePlayersData>
     {
         private List<SettlePlayerData> _allPlayerDatas = new List<SettlePlayerData>();
         private List<UMCtlSettlePalyerDataItem> _allPlayDataItems = new List<UMCtlSettlePalyerDataItem>();
@@ -19,18 +19,18 @@ namespace GameA
         private List<Vector3> _targetPosList = new List<Vector3>();
         private const string LightEffect = "M1EffectFinishGameFireWork";
         private UIParticleItem _ligtEffect;
-        private bool _isCooperation = false;
+        private bool _isCooperation;
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.LittleLoading;
+            _groupId = (int) EUIGroupType.InGamePopup;
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.ReplayBtn.onClick.AddListener(OnRetryBtn);
             _moveLightParent = _cachedView.MoveLight.transform.parent;
             _palyergroupParent = _cachedView.PlayGroup[0].transform.parent;
@@ -141,19 +141,7 @@ namespace GameA
             }
 
             _allPlayDataItems.Clear();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            GM2DGame.Instance.QuitGame(
-                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
-                true
-            );
-
             base.OnClose();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
         }
 
         public override void OnUpdate()
@@ -178,6 +166,17 @@ namespace GameA
                     }
                 }
             }
+        }
+
+        private void OnExitBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlSettlePlayersData>();
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            GM2DGame.Instance.QuitGame(
+                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                true
+            );
         }
 
         private void OnRetryBtn()

@@ -651,7 +651,7 @@ namespace GameA.Game
                     if (_gun != null)
                     {
                         _gun.Play();
-                        _gun.Revive();
+                        _gun.GunInHandRevive();
                     }
 
                     if (IsMain)
@@ -724,10 +724,7 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
 
-                    if (_gun != null)
-                    {
-                        _gun.Revive();
-                    }
+                    ResetGun();
 
                     if (_statusBar != null)
                     {
@@ -1322,7 +1319,7 @@ namespace GameA.Game
         {
             if (_gun != null)
             {
-                _gun.Revive();
+                _gun.GunInHandRevive();
             }
         }
 

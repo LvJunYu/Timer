@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using NewResourceSolution;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -61,6 +59,7 @@ namespace GameA
             {
                 _onDestroyCallback.Invoke(this);
             }
+
             base.OnDestroy();
         }
     }
