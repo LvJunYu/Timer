@@ -74,7 +74,7 @@ namespace GameA.Game
                         if (_circulation)
                         {
                             SetActiveState(EActiveState.Active);
-                            _run = true;
+                            _run = _switchTrigger.Trigger == EActiveState.Active;
                         }
                     }
                 }
@@ -94,11 +94,6 @@ namespace GameA.Game
 
         public override void OnTriggerChanged(EActiveState value)
         {
-//            if (value == EActiveState.Deactive && _eActiveState == EActiveState.Deactive)
-//            {
-//                SetActiveState(EActiveState.Active);
-//            }
-
             if (_endTimer > 0 || _eActiveState == EActiveState.Deactive)
             {
                 return;
@@ -114,7 +109,7 @@ namespace GameA.Game
                 _timer = (_random ? GetRandomSecond() : _second) * ConstDefineGM2D.FixedFrameCount;
                 _endTimer = 0;
                 ShowTime(true);
-                _run = true;
+                _run = _switchTrigger.Trigger == EActiveState.Active;
             }
             else if (_eActiveState == EActiveState.Deactive)
             {
