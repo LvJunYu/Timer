@@ -16,7 +16,7 @@ namespace GameA
         private USCtrlGameSettingItem _showRoute;
         private USCtrlGameSettingItem _playBGMusic;
         private USCtrlGameSettingItem _playSoundsEffects;
-        
+
         private USCtrlSliderSetting _playBGMusicSlider;
         private USCtrlSliderSetting _playSoundsEffectsSlider;
         private bool _openGamePlaying;
@@ -78,14 +78,7 @@ namespace GameA
             _cachedView.ChangePwdBtn.SetActiveEx(!isGuest);
             _cachedView.RestartBtn.SetActiveEx(GM2DGame.Instance != null && !GM2DGame.Instance.GameMode.IsMulti);
             _cachedView.RestartBtn_2.SetActiveEx(GM2DGame.Instance != null && !GM2DGame.Instance.GameMode.IsMulti);
-            if (SocialApp.Instance.Env == EEnvironment.Production)
-            {
-                _cachedView.PCLogoutBtn.SetActiveEx(false);
-            }
-            else
-            {
-                _cachedView.PCLogoutBtn.SetActiveEx(true);
-            }
+            _cachedView.PCLogoutBtn.SetActiveEx(SocialApp.Instance.Env != EEnvironment.Production);
         }
 
         protected override void OnClose()
