@@ -724,10 +724,7 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
 
-                    if (_gun != null)
-                    {
-                        _gun.Revive();
-                    }
+                    ResetGun();
 
                     if (_statusBar != null)
                     {
