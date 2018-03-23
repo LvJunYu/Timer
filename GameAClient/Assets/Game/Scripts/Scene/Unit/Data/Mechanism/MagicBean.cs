@@ -43,6 +43,7 @@ namespace GameA.Game
         {
             if (!_justPutDown && ((PlayerBase) other).PickUpMagicBean())
             {
+                base.OnTrigger(other);
                 PlayMode.Instance.DestroyUnit(this);
             }
         }

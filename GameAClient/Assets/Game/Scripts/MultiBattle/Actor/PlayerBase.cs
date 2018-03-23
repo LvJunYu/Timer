@@ -190,7 +190,7 @@ namespace GameA.Game
             }
             else
             {
-                _maxSpeedX = BattleDefine.MaxSpeedX;
+                _maxSpeedX = _tableUnit.MaxSpeed;
             }
 
             if (_unitExtra.JumpAbility > 0)
