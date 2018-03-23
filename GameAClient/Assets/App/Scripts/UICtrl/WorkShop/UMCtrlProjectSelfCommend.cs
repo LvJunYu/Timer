@@ -33,16 +33,19 @@ namespace GameA
         }
 
         private Vector2 _orgPos = Vector2.zero;
+        private int _orgProjectIndex;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.AddProjectBtn.onClick.AddListener(SocialGUIManager.Instance.GetUI<UICtrlWorkShop>()
                 .OpenAddSelfRecommendPanel);
-            Messenger.AddListener(EMessengerType.OnWorkShopSelfRecommendEditBtn, ResponseRemoveBtn);
+            Messenger.AddListener(EMessengerType.OnWorkShopSelfRecommendEditBtn, ResponseEditBtn);
+            Messenger.AddListener(EMessengerType.OnWorkShopSelfRecommendCancelBtn, ResponseCancelBtn);
             _cachedView.SelectBtn.onClick.AddListener(OnSelectBtn);
             _cachedView.UnSelectBtn.onClick.AddListener(OnUnSelectBtn);
             _orgPos = _cachedView.ProjectRect.anchoredPosition;
+            _orgProjectIndex = _cachedView.ProjectRect.GetSiblingIndex();
         }
 
         protected override void OnDestroy()
@@ -154,13 +157,25 @@ namespace GameA
             _cachedView.BgImage.color = LockColor;
         }
 
-        private void ResponseRemoveBtn()
+        private void ResponseEditBtn()
         {
             if (_wrapper != null)
             {
                 if (_wrapper.Content.ProjectData != null)
                 {
                     _cachedView.SelectBtn.SetActiveEx(true);
+                }
+            }
+        }
+
+        private void ResponseCancelBtn()
+        {
+            if (_wrapper != null)
+            {
+                if (_wrapper.Content.ProjectData != null)
+                {
+                    _cachedView.UnSelectBtn.SetActiveEx(false);
+                    _cachedView.SelectBtn.SetActiveEx(false);
                 }
             }
         }
@@ -239,6 +254,7 @@ namespace GameA
             }
 
             _cachedView.ProjectRect.parent = _cachedView.Trans;
+            _cachedView.ProjectRect.SetSiblingIndex(_orgProjectIndex);
             _cachedView.ProjectRect.anchoredPosition = _orgPos;
         }
 

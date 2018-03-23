@@ -204,5 +204,6 @@ namespace GameA
 
         //工坊自荐面板
         public static readonly int OnWorkShopSelfRecommendEditBtn = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopSelfRecommendCancelBtn = SoyEngine.EMessengerType.NextId++;
     }
 }

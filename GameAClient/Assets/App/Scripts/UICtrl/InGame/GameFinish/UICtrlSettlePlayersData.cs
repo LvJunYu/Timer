@@ -21,6 +21,7 @@ namespace GameA
         private UIParticleItem _ligtEffect;
         private bool _isCooperation;
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
+        private List<RenderCamera> _camerasList = new List<RenderCamera>();
 
         protected override void InitGroupId()
         {
@@ -147,17 +148,21 @@ namespace GameA
             }
 
             _allPlayDataItems.Clear();
+            for (int i = 0; i < _camerasList.Count; i++)
+            {
+                RenderCameraManager.Instance.FreeCamera(_camerasList[i]);
+            }
+
             base.OnClose();
         }
 
         public override void OnUpdate()
         {
             base.OnUpdate();
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                SetPlayerAniImage();
-            }
-
+//            if (Input.GetKeyDown(KeyCode.T))
+//            {
+//                SetPlayerAniImage();
+//            }
             if (_isOpen)
             {
                 for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
@@ -252,6 +257,7 @@ namespace GameA
                     RenderCamera camera =
                         RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
                             540);
+                    _camerasList.Add(camera);
                     camera.SetOffsetPos(player.View.Trans.localPosition);
                     _cachedView.PlayGroup[i].texture = camera.Texture;
                     _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;

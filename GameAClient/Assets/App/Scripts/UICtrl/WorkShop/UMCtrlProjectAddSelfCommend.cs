@@ -11,6 +11,8 @@ namespace GameA
         private int _index;
         public int Index { get; set; }
         private const string NoName = "未命名";
+        private TimeSpan _lastTime = new TimeSpan(0, 0, 0);
+        private TimeSpan _tempTime = new TimeSpan(0, 0, 0);
 
         public RectTransform Transform
         {
@@ -85,6 +87,7 @@ namespace GameA
                 _cachedView.LastTimeText.SetActiveEx(true);
                 _cachedView.SelectBtn.SetActiveEx(true);
                 _cachedView.UnSelectBtn.SetActiveEx(false);
+                _cachedView.LockImage.SetActiveEx(false);
                 _cachedView.AddProjectBtn.SetActiveEx(false);
                 Project p = _wrapper.Content;
                 if (string.IsNullOrEmpty(p.Name))
@@ -98,11 +101,11 @@ namespace GameA
 
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectBgImage, p.IconPath,
                     _cachedView.DefualtTexture);
-                TimeSpan lasTime =
+                _lastTime =
                     DateTimeUtil.UnixTimestampMillisToLocalDateTime(_wrapper.Content.ExtendData.LastSelfRecommendTime)
                         .AddDays(1) -
                     DateTimeUtil.GetServerTimeNow();
-                if (lasTime < TimeSpan.Zero)
+                if (_lastTime < TimeSpan.Zero)
                 {
                     _cachedView.LastTimeText.SetActiveEx(false);
                     _cachedView.SelectBtn.SetActiveEx(true);
@@ -114,7 +117,7 @@ namespace GameA
                     _cachedView.UnSelectBtn.SetActiveEx(false);
                     _cachedView.LastTimeText.SetActiveEx(true);
                     _cachedView.LastTimeText.text =
-                        lasTime.ToString();
+                        string.Format("{0}:{1}:{2}", _lastTime.Hours, _lastTime.Minutes, _lastTime.Seconds);
                 }
             }
         }
@@ -128,12 +131,16 @@ namespace GameA
 
             if (_cachedView.LastTimeText.gameObject.activeSelf)
             {
-                TimeSpan lasTime =
-                    DateTimeUtil.UnixTimestampMillisToLocalDateTime(_wrapper.Content.ExtendData.LastSelfRecommendTime)
-                        .AddDays(1) -
-                    DateTimeUtil.GetServerTimeNow();
-                _cachedView.LastTimeText.text =
-                    lasTime.ToString();
+                _tempTime = DateTimeUtil
+                                .UnixTimestampMillisToLocalDateTime(_wrapper.Content.ExtendData.LastSelfRecommendTime)
+                                .AddDays(1) -
+                            DateTimeUtil.GetServerTimeNow();
+                if ((_lastTime - _tempTime).Seconds > 1.0f)
+                {
+                    _lastTime = _tempTime;
+                    _cachedView.LastTimeText.text =
+                        string.Format("{0}:{1}:{2}", _lastTime.Hours, _lastTime.Minutes, _lastTime.Seconds);
+                }
             }
         }
 

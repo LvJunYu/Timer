@@ -272,6 +272,7 @@ namespace GameA
             _cachedView.RemoveBtn.SetActiveEx(false);
             _cachedView.SelfRecommendEditBtn.SetActiveEx(true);
             _cachedView.TipObj.SetActive(true);
+            Messenger.Broadcast(EMessengerType.OnWorkShopSelfRecommendCancelBtn);
         }
 
         private void ShowRemoveBtn()
