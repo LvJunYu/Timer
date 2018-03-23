@@ -353,7 +353,6 @@ namespace GameA.Game
                 _teamSiTouLe.Add(teamId);
             }
 
-            Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, 0);
             return true;
         }
 

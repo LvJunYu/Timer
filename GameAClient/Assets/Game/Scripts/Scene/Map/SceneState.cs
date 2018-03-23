@@ -627,18 +627,6 @@ namespace GameA.Game
             }
         }
 
-        public void AllPlayerSiTouLe()
-        {
-            if (MapStatistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
-            {
-                NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
-            }
-            else
-            {
-                NetBattleWin(false, false, true);
-            }
-        }
-
         public void AllTeamerSiTouLe()
         {
             if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Cooperation)
@@ -658,7 +646,7 @@ namespace GameA.Game
                 {
                     if (TeamManager.Instance.CheckLeftTeamCount(0))
                     {
-                        NetBattleWin(false);
+                        NetBattleWin(false, false, true);
                     }
                 }
             }
