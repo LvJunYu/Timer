@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
+using Spine.Unity;
 using UnityEngine;
 
 namespace GameA
@@ -43,6 +45,20 @@ namespace GameA
                 item.Particle.Play();
                 _uiParticleItemlist.Add(item);
             }
+
+            for (int i = 0; i < _cachedView.PlayerAvatarAnimation.Length; i++)
+            {
+                _cachedView.PlayerAvatarAnimation[i].skeletonDataAsset =
+                    JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData",
+                        (int) EResScenary.UIInGame);
+                _cachedView.PlayerAvatarAnimation[i].Initialize(false);
+                ChangePartsSpineView _avatarView = new ChangePartsSpineView();
+                _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation[i]);
+                RenderCamera _renderCamera =
+                    RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation[i].transform, 200,
+                        360);
+                _cachedView.PlayGroup[i].texture = _renderCamera.Texture;
+            }
         }
 
         protected override void OnOpen(object parameter)
@@ -63,7 +79,7 @@ namespace GameA
             }
 
             _camerasList.Clear();
-            _coutnum = 0;
+            _coutnum = 10;
         }
 
         private void RefreshDataPanels()
@@ -163,28 +179,40 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-            if (_isOpen)
-            {
-                _coutnum++;
-//                if (_coutnum < 10)
-//                {
-                for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
-                {
-                    if (i >= _allPlayerDatas.Count)
-                    {
-                    }
-                    else
-                    {
-                        PlayerBase player = TeamManager.Instance.Players[i];
-                        if (i < _camerasList.Count)
-                        {
-                            _camerasList[i].SetOffsetPos(player.View.Trans.localPosition);
-                        }
-                    }
-                }
-
-//                }
-            }
+//            if (_isOpen)
+//            {
+//                _coutnum++;
+////                if (_coutnum >= 10)
+////                {
+////                    for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+////                    {
+////                        if (i >= _allPlayerDatas.Count)
+////                        {
+////                        }
+////                        else
+////                        {
+////                            PlayerBase player = TeamManager.Instance.Players[i];
+////                            if (_allPlayerDatas[i].IsWin)
+////                            {
+////                                player.View.Animation
+////                                    .PlayLoop("Victory", 1, 1);
+////                            }
+////                            else
+////                            {
+////                                player.View.Animation
+////                                    .PlayLoop("Idle1", 1, 1);
+////                            }
+////
+////                            if (i < _camerasList.Count)
+////                            {
+////                                _camerasList[i].SetOffsetPos(player.View.Trans.localPosition);
+////                            }
+////                        }
+////                    }
+////
+////                    _coutnum = 0;
+////                }
+//            }
         }
 
         private void OnExitBtn()
@@ -253,22 +281,25 @@ namespace GameA
                     _cachedView.PlayGroup[i].SetActiveEx(true);
                     if (_allPlayerDatas[i].IsWin)
                     {
-                        player.View.Animation
-                            .PlayLoop("Victory", 1, 1);
+//                        player.View.Animation
+//                            .PlayLoop("Victory", 1, 1);
+                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Victory", true);
                     }
                     else
                     {
-                        player.View.Animation
-                            .PlayLoop("Idle1", 1, 1);
+                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Idle1", true);
+//                        player.View.Animation
+//                            .PlayLoop("Idle1", 1, 1);
                     }
 
-                    RenderCamera camera =
-                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
-                            540);
-                    _camerasList.Add(camera);
-                    camera.SetOffsetPos(player.View.Trans.localPosition);
-                    _cachedView.PlayGroup[i].texture = camera.Texture;
+//                    RenderCamera camera =
+//                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
+//                            540);
+//                    _camerasList.Add(camera);
+//                    camera.SetOffsetPos(player.View.Trans.localPosition);
+//                    _cachedView.PlayGroup[i].texture = camera.Texture;
                     _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
+
                     if (_allPlayerDatas[i].IsMvp)
                     {
                         mvpindex = i;
