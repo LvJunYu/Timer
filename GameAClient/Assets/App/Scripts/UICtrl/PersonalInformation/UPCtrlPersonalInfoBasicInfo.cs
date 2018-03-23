@@ -40,18 +40,19 @@ namespace GameA
                 .GetStatisticCount((long) EStatisticItemType.SIT_PlayProjectCount).ToString();
             _cachedView.TotalSuccessCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_CompleteProjectCount).ToString();
-            _cachedView.TotalCommentCount.text =
-                _achievement.GetStatisticCount((long) EStatisticItemType.SIT_CommentCount).ToString();
+            _cachedView.AdvPraisedCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_BattleUserLikeCount).ToString();
             _cachedView.TotalScoreCount.text =
                 _achievement.GetStatisticCount((long) EStatisticItemType.SIT_TotalScore).ToString();
+            
             _cachedView.TotalPublishCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_PublishedProjectCount).ToString();
             _cachedView.TotalPlayedCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_ProjectPlayedCount).ToString();
-            _cachedView.TotalPraisedCount.text = _achievement
+            _cachedView.CreatePraisedCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_ProjectLikedCount).ToString();
-            _cachedView.LikedNumText.text = _achievement
-                .GetStatisticCount((long) EStatisticItemType.SIT_BattleUserLikeCount).ToString();
+            _cachedView.TotalCommentCount.text =
+                _achievement.GetStatisticCount((long) EStatisticItemType.SIT_CommentCount).ToString();
         }
 
         public override void RefreshView()

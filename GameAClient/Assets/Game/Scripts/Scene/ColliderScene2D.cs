@@ -30,6 +30,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMonsterCaves = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allWoodCases = new List<UnitBase>();
+        [SerializeField] private readonly List<SurpriseBox> _allSurpriseBoxes = new List<SurpriseBox>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
@@ -103,6 +104,11 @@ namespace GameA.Game
             get { return _allWoodCases; }
         }
 
+        public List<SurpriseBox> AllSurpriseBoxes
+        {
+            get { return _allSurpriseBoxes; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -128,6 +134,7 @@ namespace GameA.Game
             _allOtherUnits.Clear();
             _allMonsterCaves.Clear();
             _allWoodCases.Clear();
+            _allSurpriseBoxes.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -309,6 +316,10 @@ namespace GameA.Game
             {
                 _allWoodCases.Add(unit);
             }
+            else if (UnitDefine.SurpriseBoxId == unit.Id)
+            {
+                _allSurpriseBoxes.Add(unit as SurpriseBox);
+            }
 
             return true;
         }
@@ -389,7 +400,11 @@ namespace GameA.Game
             {
                 _allWoodCases.Remove(unit);
             }
-            
+            else if (UnitDefine.SurpriseBoxId == unit.Id)
+            {
+                _allSurpriseBoxes.Remove(unit as SurpriseBox);
+            }
+
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -785,7 +800,7 @@ namespace GameA.Game
         {
             _freeList.Push(list);
         }
-        
+
         public static DisposableList<UnitBase> GetCacheList()
         {
             if (_freeList.Count > 0)
@@ -858,7 +873,8 @@ namespace GameA.Game
             return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, CurScene, minDepth, maxDepth, excludeNode);
         }
 
-        public static DisposableList<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
+        public static DisposableList<UnitBase> GridCastAllReturnUnits(Grid2D one,
+            int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             var cachedUnits = GetCacheList();
@@ -963,7 +979,8 @@ namespace GameA.Game
             return cachedUnits;
         }
 
-        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node, List<UnitBase> cachedUnits)
+        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node,
+            List<UnitBase> cachedUnits)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
