@@ -24,7 +24,7 @@ namespace GameA
         private bool _isCooperation;
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
         private List<RenderCamera> _camerasList = new List<RenderCamera>();
-        private int _coutnum = 0;
+//        private int _coutnum = 0;
 
         protected override void InitGroupId()
         {
@@ -79,7 +79,7 @@ namespace GameA
             }
 
             _camerasList.Clear();
-            _coutnum = 10;
+//            _coutnum = 10;
         }
 
         private void RefreshDataPanels()
@@ -349,7 +349,7 @@ namespace GameA
                     _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
                         _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
                             .transform
-                            .position) + Vector3.up * 120.0f, 1.0f).OnComplete(RefreshDataPanels).PlayForward();
+                            .position) + Vector3.up * 240.0f, 1.0f).OnComplete(RefreshDataPanels).PlayForward();
                 }
             });
             moveLight.PlayForward();
