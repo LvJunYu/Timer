@@ -19,7 +19,7 @@ namespace GameA.Game
         public const int MaxTeamCount = PlayerManager.MaxTeamCount;
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
-        private List<byte> _teamSiTouLe = new List<byte>(MaxTeamCount);
+        private HashSet<byte> _teamSiTouLe = new HashSet<byte>();
         private Dictionary<IntVec3, int> _playerScoreDic = new Dictionary<IntVec3, int>(MaxTeamCount);
         private Dictionary<IntVec3, int> _playerKillDic = new Dictionary<IntVec3, int>(MaxTeamCount);
         private Dictionary<IntVec3, int> _playerKilledDic = new Dictionary<IntVec3, int>(MaxTeamCount);
@@ -352,21 +352,14 @@ namespace GameA.Game
             {
                 _teamSiTouLe.Add(teamId);
             }
-            _scoreDic[teamId] = 0;
+
             Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, 0);
             return true;
         }
 
-        public bool CheckOneTeamLeft(out bool isMyTeam)
+        public bool CheckLeftTeamCount(int count)
         {
-            if (_teams.Count - _teamSiTouLe.Count <= 1)
-            {
-                isMyTeam = !_teamSiTouLe.Contains(MyTeamId);
-                return true;
-            }
-
-            isMyTeam = false;
-            return false;
+            return _teams.Count - _teamSiTouLe.Count <= count;
         }
 
         #region MultiBattleStatistics 多人统计数据
