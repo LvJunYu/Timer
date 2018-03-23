@@ -13,24 +13,6 @@
             get { return true; }
         }
         
-        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
-        {
-            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
-            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
-            {
-                _maxSpeedX = unitExtra.MaxSpeedX;
-            }
-            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
-            {
-                _maxSpeedX = 0;
-            }
-            else
-            {
-                _maxSpeedX = 20;
-            }
-            return unitExtra;
-        }
-        
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (unit.IsPlayer)

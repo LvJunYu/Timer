@@ -104,6 +104,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             // 游戏时怪物死亡后，在Destroy前切换场景，切换回来会重新生成View，此时判断不显示View
             if (!_isAlive && GameRun.Instance.IsPlaying)
             {
@@ -117,6 +118,7 @@ namespace GameA.Game
                     _statusBar.SetHPActive(true);
                 }
             }
+
             return true;
         }
 
@@ -217,6 +219,19 @@ namespace GameA.Game
             else
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(10);
+            }
+
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = _tableUnit.MaxSpeed;
             }
 
             return unitExtra;
@@ -369,6 +384,7 @@ namespace GameA.Game
                     PlayMode.Instance.CreateRuntimeUnit(drops.Get<ushort>(0), _curPos);
                 }
             }
+
             if (_monsterCave != null)
             {
                 _monsterCave.OnMonsterDestroy(this);
@@ -423,6 +439,7 @@ namespace GameA.Game
             {
                 return _monsterCave.GetUnitExtra();
             }
+
             return base.GetUnitExtra();
         }
 

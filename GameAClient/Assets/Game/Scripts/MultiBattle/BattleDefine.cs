@@ -9,8 +9,6 @@ namespace GameA.Game
 {
     public class BattleDefine
     {
-        public const int MaxSpeedX = 60;
-        
         public const int IceLifeTime = 3000;
         
         public const int WallJumpBanInputTime = 10;
