@@ -436,7 +436,7 @@ namespace GameA.Game
                         if (UnitDefine.IsGate(unit.UnitDesc.Id))
                         {
                             Gate gate = unit as Gate;
-                            gate.DirectOpen();
+                            if (gate != null) gate.DirectOpen();
                         }
                         else
                         {
@@ -709,11 +709,11 @@ namespace GameA.Game
 
                         if (isready)
                         {
-                            npc.SetReady();
+                            if (npc != null) npc.SetReady();
                         }
                         else
                         {
-                            npc.SetNoShow();
+                            if (npc != null) npc.SetNoShow();
                         }
                     }
                 }
@@ -762,9 +762,29 @@ namespace GameA.Game
                 _finishNpcTask.Remove(_npcTaskDynamics[guid].NpcTaskSerialNumber);
             }
 
+            if (!isovertime && _finishNpcTask.ContainsKey(_npcTaskDynamics[guid].NpcTaskSerialNumber))
+            {
+                NpcTaskDynamic task = _finishNpcTask[_npcTaskDynamics[guid].NpcTaskSerialNumber];
+                for (int i = 0;
+                    i < task.Targets.Count;
+                    i++)
+                {
+                    NpcTaskTargetDynamic target = task.Targets.Get<NpcTaskTargetDynamic>(i);
+                    switch ((ENpcTargetType) target.TaskType)
+                    {
+                        case ENpcTargetType.Colltion:
+                            if (ColltionNum.ContainsKey(target.TargetUnitID))
+                            {
+                                RemoveColltion(target.TargetUnitID, target.ColOrKillNum);
+                            }
+
+                            break;
+                    }
+                }
+            }
+
             _npcTaskDynamics.Remove(guid);
             NpcTaskDynamicsTimeLimit.Remove(guid);
-
 //修改标志
             UnitExtraDynamic oriExtra;
             if (_allNpcExtraData.TryGetValue(guid, out oriExtra))
@@ -1088,6 +1108,30 @@ namespace GameA.Game
             }
 
             return num;
+        }
+
+        private void RemoveColltion(int colltionId, int num)
+        {
+            if (UnitDefine.IsKey(colltionId))
+            {
+                for (int i = 0; i < num; i++)
+                {
+                    PlayMode.Instance.SceneState.RpgUseKey();
+                }
+            }
+
+            if (UnitDefine.IsTeeth(colltionId))
+            {
+                if (PlayMode.Instance.SceneState.GemGain >= num)
+                {
+                    PlayMode.Instance.SceneState.GemGain -= num;
+                }
+            }
+
+            if (UnitDefine.IsMagicBean(colltionId))
+            {
+                PlayMode.Instance.MainPlayer.CutDownMagicBean(num);
+            }
         }
     }
 }

@@ -450,6 +450,18 @@ namespace GameA.Game
             return false;
         }
 
+        public bool RpgUseKey()
+        {
+            if (_keyGain > 0)
+            {
+                _keyGain--;
+                Messenger.Broadcast(EMessengerType.OnKeyChanged);
+                return true;
+            }
+
+            return false;
+        }
+
         public void MainUnitSiTouLe()
         {
             _runState = ESceneState.Fail;
@@ -584,6 +596,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (scoreWin)
             {
                 TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);

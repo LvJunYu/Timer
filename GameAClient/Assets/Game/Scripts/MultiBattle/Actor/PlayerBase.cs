@@ -1631,5 +1631,18 @@ namespace GameA.Game
 
             return false;
         }
+
+        public bool CutDownMagicBean(int cutdownnum)
+        {
+            if (_curMagicBeanCount >= cutdownnum)
+            {
+                _curMagicBeanCount = _curMagicBeanCount - cutdownnum;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
