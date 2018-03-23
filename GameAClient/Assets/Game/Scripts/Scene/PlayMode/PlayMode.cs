@@ -527,6 +527,7 @@ namespace GameA.Game
                             {
                                 var player = AddPlayer(sortSpawnDatas[inx], inx, isMain);
                                 userArray[i].Player = player;
+                                TeamManager.Instance.AddTeam(sortSpawnDatas[inx].UnitExtra.TeamId);
                             }
                             else
                             {
@@ -536,12 +537,6 @@ namespace GameA.Game
 
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                         _hasCreatedPlayer = true;
-                    }
-
-                    for (int i = 0; i < spawnDatas.Count; i++)
-                    {
-                        byte team = spawnDatas[i].UnitExtra.TeamId;
-                        TeamManager.Instance.AddTeam(team);
                     }
                 }
             }

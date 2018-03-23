@@ -359,21 +359,7 @@ namespace GameA.Game
             {
                 if (NetBattleTimeOver())
                 {
-                    switch ((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition)
-                    {
-                        case ENetBattleTimeResult.Score:
-                            NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
-                            break;
-                        case ENetBattleTimeResult.AllWin:
-                            NetBattleWin(true);
-                            break;
-                        case ENetBattleTimeResult.AllFail:
-                            NetBattleWin(false);
-                            break;
-                        default:
-                            LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
-                            break;
-                    }
+                    NetBattleOver();
                 }
             }
             else
@@ -398,6 +384,25 @@ namespace GameA.Game
                 }
 
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
+            }
+        }
+
+        private void NetBattleOver()
+        {
+            switch ((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition)
+            {
+                case ENetBattleTimeResult.Score:
+                    NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+                    break;
+                case ENetBattleTimeResult.AllWin:
+                    NetBattleWin(true);
+                    break;
+                case ENetBattleTimeResult.AllFail:
+                    NetBattleWin(false);
+                    break;
+                default:
+                    LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
+                    break;
             }
         }
 
@@ -589,7 +594,7 @@ namespace GameA.Game
             return _gameTimer >= RunTimeTimeLimit;
         }
 
-        private void NetBattleWin(bool win, bool scoreWin = false)
+        private void NetBattleWin(bool win, bool scoreWin = false, bool allFail = false)
         {
             var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
             if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
@@ -600,6 +605,10 @@ namespace GameA.Game
             if (scoreWin)
             {
                 TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
+            }
+            else if (allFail)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.AllFail);
             }
             else
             {
@@ -618,33 +627,27 @@ namespace GameA.Game
             }
         }
 
-        public void AllPlayerSiTouLe()
-        {
-            if (MapStatistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
-            {
-                NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
-            }
-            else
-            {
-                NetBattleWin(false);
-            }
-        }
-
         public void AllTeamerSiTouLe()
         {
-            //合作模式算输
             if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Cooperation)
             {
                 NetBattleWin(false);
             }
-
-            //竞技模式判断是否剩余一个队
             else if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
             {
-                bool isMyTeam;
-                if (TeamManager.Instance.CheckOneTeamLeft(out isMyTeam))
+                if (MapStatistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
                 {
-                    NetBattleWin(isMyTeam);
+                    if (TeamManager.Instance.CheckLeftTeamCount(1))
+                    {
+                        NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+                    }
+                }
+                else
+                {
+                    if (TeamManager.Instance.CheckLeftTeamCount(0))
+                    {
+                        NetBattleWin(false, false, true);
+                    }
                 }
             }
         }
