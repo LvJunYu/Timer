@@ -268,7 +268,7 @@ namespace GameA.Game
 
         public static bool CanHitCirrus(UnitBase unit)
         {
-            return !unit.IsActor && !IsBox(unit.Id);
+            return !unit.IsActor && !IsBox(unit.Id) && !(unit is CollectionBase);
         }
 
         public static bool IsBox(int id)

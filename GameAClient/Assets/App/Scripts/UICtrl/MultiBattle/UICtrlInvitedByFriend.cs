@@ -86,11 +86,13 @@ namespace GameA
                 {
                     _tagBtns[i].SetActiveEx(i < _teamInviteList.Count);
                 }
+
                 for (int i = 0; i < _tagTxts.Length; i++)
                 {
                     if (i < _teamInviteList.Count)
                     {
-                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_teamInviteList[i].Msg.Inviter.NickName, 6);
+                        _tagSelectedTxts[i].text = _tagTxts[i].text =
+                            GameATools.GetRawStr(_teamInviteList[i].Msg.Inviter.NickName, 6);
                     }
                     else
                     {
@@ -110,7 +112,8 @@ namespace GameA
                 {
                     if (i < _roomInviteList.Count)
                     {
-                        _tagSelectedTxts[i].text = _tagTxts[i].text = GameATools.GetRawStr(_roomInviteList[i].Msg.Inviter.NickName, 6);
+                        _tagSelectedTxts[i].text = _tagTxts[i].text =
+                            GameATools.GetRawStr(_roomInviteList[i].Msg.Inviter.NickName, 6);
                     }
                     else
                     {
@@ -118,11 +121,12 @@ namespace GameA
                     }
                 }
             }
-            
+
             for (int i = 0; i < _tagSelectedBtns.Length; i++)
             {
                 _tagSelectedBtns[i].SetActiveEx(i == 0);
             }
+
             ClickInvite(0, true);
         }
 
@@ -204,6 +208,13 @@ namespace GameA
             }
             else if (_inviteType == EInviteType.Room)
             {
+                if (GM2DGame.Instance != null && GM2DGame.Instance.GameMode.IsMulti)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
+                    SocialGUIManager.ShowPopupDialog("您已加入一个多人关卡");
+                    return;
+                }
+
                 RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].Msg.RoomId);
             }
         }

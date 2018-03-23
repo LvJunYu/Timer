@@ -138,7 +138,7 @@ namespace GameA.Game
         private void SetOpen()
         {
             SetCross(true);
-            SetSortingOrderBackground(2);
+            SetSortingOrderBackground(3);
             UpdateTransPos();
         }
     }
