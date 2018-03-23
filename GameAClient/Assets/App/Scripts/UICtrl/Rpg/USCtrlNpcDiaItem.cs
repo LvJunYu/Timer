@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -31,12 +30,7 @@ namespace GameA
         public override void Init(USViewNpcDiaItem view)
         {
             base.Init(view);
-            _cachedView.EditBtnPointHover.PointHoverExitAction = () =>
-            {
-                _cachedView.EditDiaBtn.SetActiveEx(false);
-                _cachedView.EditBtnPointHover.IsUp = true;
-//                _cachedView.EditDiaBtnMask.GetComponent<Image>().raycastTarget = true;
-            };
+            _cachedView.EditDiaBtn.SetActiveEx(false);
         }
 
         //拖动的时候的储存的临时变量
@@ -111,11 +105,6 @@ namespace GameA
             }
 
             _cachedView.EditDiaBtn.SetActiveEx(false);
-            _cachedView.EditDiaBtnMask.PointHoverAction = () =>
-            {
-                _cachedView.EditDiaBtn.SetActiveEx(true);
-//                _cachedView.EditDiaBtnMask.GetComponent<Image>().raycastTarget = false;
-            };
             _cachedView.EditDiaBtn.onClick.RemoveAllListeners();
             _cachedView.EditDiaBtn.onClick.AddListener(
                 () =>
