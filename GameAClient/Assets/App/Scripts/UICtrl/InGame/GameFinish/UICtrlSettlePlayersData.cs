@@ -271,10 +271,13 @@ namespace GameA
                 for (int j = 0; j < _targetPosList.Count; j++)
                 {
                     moveLight.Append(
-                        _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[j].x, 0.2f).SetDelay(0.2f));
+                        _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[j].x, 0.1f).SetDelay(0.2f));
                 }
             }
 
+            moveLight.Append(
+                _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[_targetPosList.Count - 1].x, 0.2f)
+                    .SetDelay(1.5f));
             moveLight.OnComplete(() =>
             {
                 if (_isCooperation)
@@ -325,7 +328,7 @@ namespace GameA
                 }
             }
 
-            if (_isCooperation && mvpindex >= 0 && mvpindex < _cachedView.PlayGroup.Length)
+            if (!_isCooperation && mvpindex >= 0 && mvpindex < _cachedView.PlayGroup.Length)
             {
                 Vector2 targetPos = _cachedView.MoveLight.rectTransform.localPosition;
                 targetPos.x =
