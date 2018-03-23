@@ -22,6 +22,7 @@ namespace GameA
         private bool _isCooperation;
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
         private List<RenderCamera> _camerasList = new List<RenderCamera>();
+        private int _coutnum = 0;
 
         protected override void InitGroupId()
         {
@@ -60,6 +61,8 @@ namespace GameA
             {
                 _uiParticleItemlist[i].Particle.Play();
             }
+
+            _coutnum = 0;
         }
 
         private void RefreshDataPanels()
@@ -159,21 +162,21 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-//            if (Input.GetKeyDown(KeyCode.T))
-//            {
-//                SetPlayerAniImage();
-//            }
             if (_isOpen)
             {
-                for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+                _coutnum++;
+                if (_coutnum < 10)
                 {
-                    if (i >= _allPlayerDatas.Count)
+                    for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
                     {
-                    }
-                    else
-                    {
-                        PlayerBase player = TeamManager.Instance.Players[i];
-                        player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                        if (i >= _allPlayerDatas.Count)
+                        {
+                        }
+                        else
+                        {
+                            PlayerBase player = TeamManager.Instance.Players[i];
+                            player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                        }
                     }
                 }
             }
