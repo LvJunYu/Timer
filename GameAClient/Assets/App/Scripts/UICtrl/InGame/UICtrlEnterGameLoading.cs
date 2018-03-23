@@ -23,7 +23,7 @@ namespace GameA
         #region 继承方法
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.InGameEnd;
+            _groupId = (int)EUIGroupType.Purchase;
         }
 
         protected override void InitEventListener()

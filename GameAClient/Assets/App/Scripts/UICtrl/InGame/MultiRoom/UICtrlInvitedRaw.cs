@@ -22,7 +22,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpDialog;
+            _groupId = (int) EUIGroupType.AppGameUI;
         }
 
         protected override void InitEventListener()
