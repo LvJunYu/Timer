@@ -285,7 +285,7 @@ namespace GameA
             {
                 Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex));
                 _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
-                _cachedView.ProjectRect.parent = _gridDataScroller.ScrollRect.content;
+                _cachedView.ProjectRect.parent.SetParent(_gridDataScroller.ScrollRect.content);
                 if (!_cachedView.LockImage.IsActive())
                 {
                     _cachedView.TileText.text = NoProject;
@@ -298,7 +298,7 @@ namespace GameA
             {
                 Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex + 1));
                 _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
-                _cachedView.ProjectRect.parent = _gridDataScroller.ScrollRect.content;
+                _cachedView.ProjectRect.SetParent(_gridDataScroller.ScrollRect.content);
                 if (!_cachedView.LockImage.IsActive())
                 {
                     _cachedView.TileText.text = NoProject;
