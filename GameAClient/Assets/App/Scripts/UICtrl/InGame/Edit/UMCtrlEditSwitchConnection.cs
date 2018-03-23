@@ -42,7 +42,6 @@ namespace GameA
 
         public void Set(int inx, Vector3 switchPos, Vector3 unitPos)
         {
-            SetImage(NpcTaskDataTemp.Intance.TaskType);
             _index = inx;
             _targetSwitchWorldPos = switchPos;
             _targetUnitWorldPos = unitPos;

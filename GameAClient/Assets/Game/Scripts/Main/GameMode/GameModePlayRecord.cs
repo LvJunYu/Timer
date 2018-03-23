@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -46,7 +45,7 @@ namespace GameA.Game
                 return;
             }
             GameRun.Instance.Update();
-            while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+            while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted && _run)
             {
                 if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
                 {

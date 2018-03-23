@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
@@ -14,7 +15,8 @@ namespace GameA
         public List<GameObject> TargeObjGroup = new List<GameObject>();
         public List<Text> TargetTypeTextGroup = new List<Text>();
         public List<Text> TargetNumTextGroup = new List<Text>();
-        public List<Text> TimeTextGroup = new List<Text>();
+        private UnitSceneGuid _guid;
+        private bool _isFinish;
 
         public override void Init(UsViewNpcTask view)
         {
@@ -28,19 +30,17 @@ namespace GameA
             TargetNumTextGroup.Add(_cachedView.TargetNumText1);
             TargetNumTextGroup.Add(_cachedView.TargetNumText2);
             TargetNumTextGroup.Add(_cachedView.TargetNumText3);
-            TimeTextGroup.Add(_cachedView.TimeText1);
-            TimeTextGroup.Add(_cachedView.TimeText2);
-            TimeTextGroup.Add(_cachedView.TimeText3);
         }
 
-        public void SetNpcTask(UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool IsFinish)
-
+        public void SetNpcTask(UnitSceneGuid guid, UnitExtraDynamic extraData, NpcTaskDynamic taskData, bool isFinish)
         {
+            _isFinish = isFinish;
+            _guid = guid;
             _cachedView.SetActiveEx(true);
             _extarDynamicData = extraData;
             _taskData = taskData;
             _cachedView.NpcName.text = _extarDynamicData.NpcName;
-            if (IsFinish)
+            if (isFinish)
             {
                 _cachedView.FinishBtn.SetActiveEx(true);
             }
@@ -48,6 +48,7 @@ namespace GameA
             {
                 _cachedView.FinishBtn.SetActiveEx(false);
             }
+
             for (int i = 0; i < TargeObjGroup.Count; i++)
             {
                 if (i < _taskData.Targets.Count)
@@ -71,30 +72,99 @@ namespace GameA
                     {
                         TargetNumTextGroup[i].SetActiveEx(true);
                     }
-                    TargetNumTextGroup[i].text = _taskData.Targets.Get<NpcTaskTargetDynamic>(i).ColOrKillNum.ToString();
-                    TimeTextGroup[i].text = String.Format("{0}秒", _taskData.TaskimeLimit.ToString());
-                    if (_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
+
+
+                    if (_taskData.TaskimeLimit <= 0)
                     {
-                        TargetNumTextGroup[i].SetActiveEx(false);
-                        TargetTypeTextGroup[i].text = "传话";
+                        _cachedView.TimeText1.SetActiveEx(false);
                     }
                     else
                     {
-                        TargetNumTextGroup[i].SetActiveEx(true);
+                        _cachedView.TimeText1.SetActiveEx(true);
+                        _cachedView.TimeText1.text = String.Format("{0}秒", _taskData.TaskimeLimit);
                     }
+
+                    if (_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TaskType == (int) ENpcTargetType.Dialog)
+                    {
+                        TargetTypeTextGroup[i].text = "传话";
+//                        TargetNumTextGroup[i].SetActiveEx(false);
+                        TargetNumTextGroup[i].text =
+                            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.GetNpcNameByNum(_taskData.Targets
+                                .Get<NpcTaskTargetDynamic>(i)
+                                .TargetNpcNum);
+//                        RpgTaskManger.Instance.GetNpcNameByNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i)
+//                            .TargetNpcNum);
+                    }
+                    else
+                    {
+                        if (_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TaskType != (int) ENpcTargetType.Contorl)
+                        {
+                            TargetNumTextGroup[i].SetActiveEx(true);
+                            int targetNum = _taskData.Targets.Get<NpcTaskTargetDynamic>(i).ColOrKillNum;
+                            int nowNum = Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                                .GetKillOrColltionNum(_taskData.Targets.Get<NpcTaskTargetDynamic>(i).TargetUnitID);
+                            if (isFinish)
+                            {
+                                TargetNumTextGroup[i].text = String.Format("{0}/{1}", targetNum, targetNum);
+                            }
+                            else
+                            {
+                                TargetNumTextGroup[i].text = String.Format("{0}/{1}", nowNum, targetNum);
+                            }
+                        }
+                    }
+
                     if (TableManager.Instance.Table_UnitDic.ContainsKey(_taskData.Targets.Get<NpcTaskTargetDynamic>(i)
                         .TargetUnitID))
                     {
                         TargetTypeTextGroup[i].text = TableManager.Instance.Table_UnitDic[_taskData.Targets
                             .Get<NpcTaskTargetDynamic>(i)
                             .TargetUnitID].Name;
-                        TargetNumTextGroup[i].text = _taskData.Targets
-                            .Get<NpcTaskTargetDynamic>(i).ColOrKillNum.ToString();
+//                        TargetNumTextGroup[i].text = _taskData.Targets
+//                            .Get<NpcTaskTargetDynamic>(i).ColOrKillNum.ToString();
                     }
                 }
                 else
                 {
                     TargeObjGroup[i].SetActiveEx(false);
+                }
+            }
+        }
+
+        public void UpdataTimeLimit()
+        {
+            if (!HasInited)
+            {
+                return;
+            }
+
+            if (_taskData == null)
+            {
+                return;
+            }
+
+            if (_taskData.TaskimeLimit <= 0)
+            {
+                return;
+            }
+
+            if (_isFinish)
+            {
+                return;
+            }
+
+            if (Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.NpcTaskDynamicsTimeLimit.ContainsKey(_guid))
+            {
+                float lastTime = GameRun.Instance.GameTimeSinceGameStarted -
+                                 Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                                     .NpcTaskDynamicsTimeLimit[_guid];
+                if (lastTime < _taskData.TaskimeLimit)
+                {
+                    _cachedView.TimeText1.text = String.Format("{0}秒", (int) (_taskData.TaskimeLimit - lastTime));
+                }
+                else
+                {
+                    Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.RemoveTask(_guid, true);
                 }
             }
         }

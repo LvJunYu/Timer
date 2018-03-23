@@ -5,8 +5,6 @@
 ** Summary : StoneUnit
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 
 namespace GameA.Game
@@ -14,6 +12,28 @@ namespace GameA.Game
     [Unit(Id = 4007, Type = typeof(Stone))]
     public class Stone : PaintBlock
     {
+        private int _timer;
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    SendMsgToAround();
+                    PlayMode.Instance.DestroyUnit(this);
+                }
+            }
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _timer = 0;
+        }
+
         public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom, bool draw = true)
         {
             if (!_isAlive)
@@ -29,9 +49,14 @@ namespace GameA.Game
 
         public void OnChanged()
         {
+            if (!_isAlive)
+            {
+                return;
+            }
             PlayMode.Instance.CreateRuntimeUnit(4013, _curPos);
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(20, SendMsgToAround));
-            PlayMode.Instance.DestroyUnit(this);
+            OnDead();
+            _timer = 20;
+            ColliderScene2D.CurScene.DestroyView(this);
         }
 
         private void SendMsgToAround()
@@ -48,18 +73,20 @@ namespace GameA.Game
         
         private void CheckGrid(Grid2D grid)
         {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
-            if (units.Count > 0)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(grid))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        var stone = unit as Stone;
-                        if (stone != null)
+                        var unit = units[i];
+                        if (unit != null && unit.IsAlive && unit != this)
                         {
-                            stone.OnChanged();
+                            var stone = unit as Stone;
+                            if (stone != null)
+                            {
+                                stone.OnChanged();
+                            }
                         }
                     }
                 }

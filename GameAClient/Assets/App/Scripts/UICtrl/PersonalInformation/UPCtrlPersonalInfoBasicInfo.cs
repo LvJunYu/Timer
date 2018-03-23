@@ -40,16 +40,19 @@ namespace GameA
                 .GetStatisticCount((long) EStatisticItemType.SIT_PlayProjectCount).ToString();
             _cachedView.TotalSuccessCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_CompleteProjectCount).ToString();
-            _cachedView.TotalCommentCount.text =_achievement.
-                GetStatisticCount((long) EStatisticItemType.SIT_CommentCount).ToString();
-            _cachedView.TotalScoreCount.text = _achievement.
-                GetStatisticCount((long) EStatisticItemType.SIT_TotalScore).ToString();
+            _cachedView.AdvPraisedCount.text = _achievement
+                .GetStatisticCount((long) EStatisticItemType.SIT_BattleUserLikeCount).ToString();
+            _cachedView.TotalScoreCount.text =
+                _achievement.GetStatisticCount((long) EStatisticItemType.SIT_TotalScore).ToString();
+            
             _cachedView.TotalPublishCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_PublishedProjectCount).ToString();
             _cachedView.TotalPlayedCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_ProjectPlayedCount).ToString();
-            _cachedView.TotalPraisedCount.text = _achievement
+            _cachedView.CreatePraisedCount.text = _achievement
                 .GetStatisticCount((long) EStatisticItemType.SIT_ProjectLikedCount).ToString();
+            _cachedView.TotalCommentCount.text =
+                _achievement.GetStatisticCount((long) EStatisticItemType.SIT_CommentCount).ToString();
         }
 
         public override void RefreshView()
@@ -125,15 +128,18 @@ namespace GameA
             {
                 sex = ESex.S_Male;
             }
+
             if (_cachedView.FamaleToggle.isOn)
             {
                 sex = ESex.S_Female;
             }
+
             if (sex != _userInfoDetail.UserInfoSimple.Sex)
             {
                 userDataChanged.UserInfoSimple.Sex = sex;
                 needUpdateInfo = true;
             }
+
             if (_cachedView.NameInputField.text != _userInfoDetail.UserInfoSimple.NickName)
             {
                 var res = CheckTools.CheckNickName(_cachedView.NameInputField.text);
@@ -161,6 +167,7 @@ namespace GameA
                     return;
                 }
             }
+
             if (_cachedView.DescInputField.text != _userInfoDetail.Profile)
             {
                 var res = CheckTools.CheckProfile(_cachedView.DescInputField.text);
@@ -174,6 +181,7 @@ namespace GameA
                     {
                         userDataChanged.Profile = _cachedView.DescInputField.text;
                     }
+
                     needUpdateInfo = true;
                 }
                 else if (res == CheckTools.ECheckProfileResult.TooLong)
@@ -189,6 +197,7 @@ namespace GameA
                     return;
                 }
             }
+
             _isEditing = false;
             if (needUpdateInfo)
             {

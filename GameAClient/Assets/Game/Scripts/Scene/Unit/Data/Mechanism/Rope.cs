@@ -6,7 +6,14 @@ namespace GameA.Game
     [Unit(Id = 5020, Type = typeof(Rope))]
     public class Rope : UnitBase
     {
-        private bool _isPlaying;
+        public const int JointCount = 10;
+        private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
+        private bool _tied;
+        private int _ropeIndex;
+        private int _segmentIndex;
+        private UnitBase _tieUnit;
+        private Rope _preRope;
+        private Rope _nextRope;
 
         public override bool CanRope
         {
@@ -23,20 +30,6 @@ namespace GameA.Game
             get { return _segmentIndex; }
         }
 
-        public bool Tied
-        {
-            get { return _tied; }
-        }
-
-        public const int JointCount = 10;
-        private RopeJoint[] _ropeJoints = new RopeJoint[JointCount];
-        private bool _tied;
-        private int _ropeIndex;
-        private int _segmentIndex;
-        private UnitBase _tieUnit;
-        private Rope _preRope;
-        private Rope _nextRope;
-
         protected override bool OnInit()
         {
             //初始化时计算所在绳子的段数，用于限制绳子长度
@@ -51,6 +44,7 @@ namespace GameA.Game
                 {
                     _segmentIndex = 0;
                 }
+
                 CheckNextRopeSegmentIndex(_segmentIndex);
             }
 
@@ -140,7 +134,7 @@ namespace GameA.Game
                     PlayMode.Instance.CreateRuntimeUnit(UnitDefine.RopeJointId, jointPos, Rotation) as RopeJoint;
                 if (_ropeJoints[i] != null)
                 {
-                    _ropeJoints[i].Set(this, _segmentIndex * JointCount + i, jointPos);
+                    _ropeJoints[i].Set(this, _segmentIndex * JointCount + i);
                     if (i == 0 && _segmentIndex == 0)
                     {
                         _ropeJoints[i].SetPreJoint(_tieUnit);
@@ -155,38 +149,40 @@ namespace GameA.Game
         {
             _tied = false;
             Grid2D checkGrid = new Grid2D(CenterUpFloorPos, CenterUpFloorPos);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer, float.MinValue,
-                float.MaxValue, _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.ItemLayer, float.MinValue,
+                float.MaxValue, _dynamicCollider))
             {
-                if (units[i].CanRope)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    _tied = true;
-                    _tieUnit = units[i];
-                    if (units[i].Id == UnitDefine.RopeId)
+                    if (units[i].CanRope)
                     {
-                        Rope neighborRope = units[i] as Rope;
-                        if (neighborRope != null)
+                        _tied = true;
+                        _tieUnit = units[i];
+                        if (units[i].Id == UnitDefine.RopeId)
                         {
-                            //保证前面的绳子先注册
-                            if (!neighborRope._tied && !neighborRope.CheckRopeTie())
+                            Rope neighborRope = units[i] as Rope;
+                            if (neighborRope != null)
                             {
-                                LogHelper.Error("rope can not tie");
-                                return false;
+                                //保证前面的绳子先注册
+                                if (!neighborRope._tied && !neighborRope.CheckRopeTie())
+                                {
+                                    LogHelper.Error("rope can not tie");
+                                    return false;
+                                }
+
+                                SetPreRope(neighborRope);
+                                RopeManager.Instance.RegistRope(ref _ropeIndex);
+                                neighborRope.SetNextRope(this);
                             }
-
-                            SetPreRope(neighborRope);
-                            RopeManager.Instance.RegistRope(ref _ropeIndex);
-                            neighborRope.SetNextRope(this);
                         }
-                    }
-                    else
-                    {
-                        _segmentIndex = 0;
-                        RopeManager.Instance.RegistRope(ref _ropeIndex, true);
-                    }
+                        else
+                        {
+                            _segmentIndex = 0;
+                            RopeManager.Instance.RegistRope(ref _ropeIndex, true);
+                        }
 
-                    break;
+                        break;
+                    }
                 }
             }
 

@@ -13,7 +13,6 @@ namespace GameA
         
         private Stack<UMCtrlUnitProperty> _itemPoolStack = new Stack<UMCtrlUnitProperty>(128);
         
-        
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameStart;

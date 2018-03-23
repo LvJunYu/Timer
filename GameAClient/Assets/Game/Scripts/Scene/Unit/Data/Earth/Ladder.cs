@@ -1,49 +1,35 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
+﻿using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4016, Type = typeof(Ladder))]
     public class Ladder : Magic
     {
-        private List<PlayerBase> _players = new List<PlayerBase>(PlayerManager.MaxTeamCount);
+        private ClimbUnit _climbUnit;
 
         protected override bool OnInit()
         {
+            _climbUnit = new ClimbUnit(this);
             if (!base.OnInit())
             {
                 return false;
             }
-            SetSortingOrderBackground();
+
+            SetSortingOrderBackground(1);
             return true;
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            for (int i = 0; i < _players.Count; i++)
-            {
-                var grid = new Grid2D(_players[i].CenterPos, _players[i].CenterPos);
-                _players[i].OnIntersectLadder(this, _colliderGrid.Intersects(grid));
-            }
-            for (int i = _players.Count - 1; i >= 0; i--)
-            {
-                if (!_colliderGrid.Intersects(_players[i].ColliderGrid))
-                {
-                    _players.RemoveAt(i);
-                }
-            }
+            _climbUnit.UpdateLogic();
         }
 
         public override void OnIntersect(UnitBase other)
         {
             if (other.IsPlayer)
             {
-                var player = other as PlayerBase;
-                if (!_players.Contains(player))
-                {
-                    _players.Add(player);
-                }
+                _climbUnit.OnIntersect(other as PlayerBase);
             }
         }
 
@@ -53,13 +39,14 @@ namespace GameA.Game
             {
                 return true;
             }
+
             return unit.IsActor;
         }
 
         protected override void Clear()
         {
             base.Clear();
-            _players.Clear();
+            _climbUnit.Clear();
         }
 
         internal override void DoProcessMorph(bool add)
@@ -78,12 +65,14 @@ namespace GameA.Game
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Up);
                 upUnit.View.OnNeighborDirChanged(ENeighborDir.Down, add);
             }
+
             if (units.TryGetValue(keys[1], out downUnit) &&
                 (downUnit.Id == id || UnitDefine.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Down);
                 downUnit.View.OnNeighborDirChanged(ENeighborDir.Up, add);
             }
+
             if (add && _view != null)
             {
                 _view.InitMorphId(neighborDir);

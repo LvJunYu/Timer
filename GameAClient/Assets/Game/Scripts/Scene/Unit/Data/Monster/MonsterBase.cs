@@ -19,6 +19,7 @@ namespace GameA.Game
         protected bool _isClayOnWall;
         protected UnitBase _attactTarget;
         protected MonsterCave _monsterCave;
+        private int _lastGetTargetFrame;
 
         public override bool IsMonster
         {
@@ -103,6 +104,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             // 游戏时怪物死亡后，在Destroy前切换场景，切换回来会重新生成View，此时判断不显示View
             if (!_isAlive && GameRun.Instance.IsPlaying)
             {
@@ -116,6 +118,7 @@ namespace GameA.Game
                     _statusBar.SetHPActive(true);
                 }
             }
+
             return true;
         }
 
@@ -135,6 +138,7 @@ namespace GameA.Game
             _input = _input ?? new InputBase();
             _input.Clear();
             _fireTimer = 0;
+            _lastGetTargetFrame = -1000;
             if (_statusBar != null)
             {
                 _statusBar.Reset();
@@ -205,9 +209,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             if (unitExtra.CastRange > 0)
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(unitExtra.CastRange);
@@ -215,6 +219,19 @@ namespace GameA.Game
             else
             {
                 _attackRange = IntVec2.one * TableConvert.GetRange(10);
+            }
+
+            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
+            {
+                _maxSpeedX = unitExtra.MaxSpeedX;
+            }
+            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
+            {
+                _maxSpeedX = 0;
+            }
+            else
+            {
+                _maxSpeedX = _tableUnit.MaxSpeed;
             }
 
             return unitExtra;
@@ -352,7 +369,8 @@ namespace GameA.Game
         protected override void OnDead()
         {
             base.OnDead();
-            RpgTaskManger.Instance.AddKill(Id);
+            Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AddKill(Id);
+//            RpgTaskManger.Instance.AddKill(Id);
             Messenger<EDieType>.Broadcast(EMessengerType.OnMonsterDead, _eDieType);
         }
 
@@ -366,6 +384,7 @@ namespace GameA.Game
                     PlayMode.Instance.CreateRuntimeUnit(drops.Get<ushort>(0), _curPos);
                 }
             }
+
             if (_monsterCave != null)
             {
                 _monsterCave.OnMonsterDestroy(this);
@@ -391,7 +410,16 @@ namespace GameA.Game
             }
             else
             {
-                _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+                int curFrame = GameRun.Instance.LogicFrameCnt;
+                if (curFrame - _lastGetTargetFrame > 10)
+                {
+                    _attactTarget = TeamManager.Instance.GetMonsterTarget(this);
+                    _lastGetTargetFrame = curFrame;
+                }
+                else
+                {
+                    _attactTarget = TeamManager.Instance.GetMonsterTarget(this, false);
+                }
             }
         }
 
@@ -411,6 +439,7 @@ namespace GameA.Game
             {
                 return _monsterCave.GetUnitExtra();
             }
+
             return base.GetUnitExtra();
         }
 

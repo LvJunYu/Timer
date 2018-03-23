@@ -21,6 +21,11 @@ namespace GameA.Game
         private IntVec2 _jumpDir;
         private IntVec2 _jumpAwayDir;
 
+        public override bool IsIndividual
+        {
+            get { return false; }
+        }
+
         public UnitBase PreJoint
         {
             get { return _preJoint; }
@@ -89,19 +94,54 @@ namespace GameA.Game
             SpeedY = Mathf.Clamp(SpeedY, -MaxSpeed, MaxSpeed);
         }
 
+        public void FixSpeedFromPre(bool afterMove = false)
+        {
+            var target = PreJoint.CurPos;
+            if (!afterMove)
+            {
+                target += PreJoint.Speed;
+            }
+
+            var from = CurPos + Speed;
+            if (!CheckDis(ref from, ref target, false))
+            {
+                Speed = from - CurPos;
+                if (NextJoint != null)
+                {
+                    NextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
+        public void CalculateSpeed()
+        {
+            if (_preJoint.Id == UnitDefine.RopeJointId)
+            {
+                var target = _preJoint.CurPos + _preJoint.Speed;
+                var from = _curPos + _speed;
+                if (!CheckDis(ref from, ref target))
+                {
+                    _preJoint.Speed = target - _preJoint.CurPos;
+                }
+            }
+            //第一个物体固定在原物体下
+            else
+            {
+                _speed = _preJoint.CenterDownPos - CenterUpFloorPos;
+                if (_nextJoint != null)
+                {
+                    _nextJoint.FixSpeedFromPre();
+                }
+            }
+        }
+
         public override void UpdateView(float deltaTime)
         {
             _deltaPos = _speed;
             _curPos += _deltaPos;
-//            _expectPos = _curPos;
             UpdateCollider(GetColliderPos(_curPos));
             _curPos = GetPos(_colliderPos);
             UpdateTransPos();
-            //如果发生碰撞导致预期位置变化，则调整后面关节的速度
-//            if (_expectPos != _curPos && _nextJoint != null)
-//            {
-//                _nextJoint.FixSpeedFromPre(true);
-//            }
 
             var relativePrePos = GetNeighborRelativePos(true);
             var angel = Mathf.Rad2Deg * Mathf.Atan2(relativePrePos.y, relativePrePos.x) - 90;
@@ -121,11 +161,10 @@ namespace GameA.Game
             return base.GetZ();
         }
 
-        public void Set(Rope rope, int jointIndex, IntVec2 oriPos)
+        public void Set(Rope rope, int jointIndex)
         {
             _rope = rope;
             _jointIndex = jointIndex;
-//            _oriPos = oriPos;
         }
 
         public void Set(WholeRope wholeRope)
@@ -187,47 +226,7 @@ namespace GameA.Game
         {
             base.Clear();
             _preJoint = _nextJoint = null;
-        }
-
-        public void FixSpeedFromPre(bool afterMove = false)
-        {
-            var target = PreJoint.CurPos;
-            if (!afterMove)
-            {
-                target += PreJoint.Speed;
-            }
-
-            var from = CurPos + Speed;
-            if (!CheckDis(ref from, ref target, false))
-            {
-                Speed = from - CurPos;
-                if (NextJoint != null)
-                {
-                    NextJoint.FixSpeedFromPre();
-                }
-            }
-        }
-
-        public void CheckPreJointPos()
-        {
-            if (PreJoint.Id == UnitDefine.RopeJointId)
-            {
-                var target = PreJoint.CurPos + PreJoint.Speed;
-                var from = CurPos + Speed;
-                if (!CheckDis(ref from, ref target))
-                {
-                    PreJoint.Speed = target - PreJoint.CurPos;
-                }
-            }
-            //第一个物体固定在原物体下
-            else
-            {
-                Speed = PreJoint.CenterDownPos - CenterUpFloorPos;
-                if (NextJoint != null)
-                {
-                    NextJoint.FixSpeedFromPre();
-                }
-            }
+            _jumpOnTimer = _jumpAwayTimer = 0;
         }
 
         public bool CheckDis(ref IntVec2 from, ref IntVec2 target, bool changeTarget = true)
@@ -261,16 +260,12 @@ namespace GameA.Game
 
         public void AddForce(IntVec2 force)
         {
-            _wholeRope.AddForce(force, _jointIndex);
+            _speed += force;
         }
 
-        public void CarryPlayer()
+        public void JumpOnRope(PlayerBase player)
         {
-//            SpeedY -= 20;
-        }
-
-        public void JumpOnRope(EMoveDirection moveDirection)
-        {
+            var moveDirection = player.MoveDirection;
             _jumpOnTimer = 20;
             if (moveDirection == EMoveDirection.Left)
             {
@@ -282,8 +277,9 @@ namespace GameA.Game
             }
         }
 
-        public void JumpAwayRope(EMoveDirection moveDirection)
+        public void JumpAwayRope(PlayerBase player)
         {
+            var moveDirection = player.MoveDirection;
             _jumpAwayTimer = 10;
             if (moveDirection == EMoveDirection.Left)
             {
@@ -295,9 +291,26 @@ namespace GameA.Game
             }
         }
 
+        public void CarryPlayer(PlayerBase player)
+        {
+        }
+
+        public void PlayerLeave(PlayerBase player)
+        {
+        }
+
         public int GetTimer(PlayerBase player)
         {
             return _wholeRope.GetTimer(player.RoomUser.Guid);
+        }
+
+        public void OnPlayerHit()
+        {
+            _wholeRope.OnPlayerHit(_jointIndex);
+            if (_nextJoint != null)
+            {
+                _nextJoint.FixSpeedFromPre();
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace GameA.Game
     {
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (UnitDefine.BoxId == other.Id)
+            if (UnitDefine.IsBox(other.Id))
             {
                 return false;
             }

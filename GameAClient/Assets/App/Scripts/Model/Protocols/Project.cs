@@ -149,10 +149,6 @@ namespace GameA
         /// 关卡版本号
         /// </summary>
         private int _projectVersion;
-        /// <summary>
-        /// 最新关卡版本号
-        /// </summary>
-        private int _newestProjectVersion;
 
         // cs fields----------------------------------
         /// <summary>
@@ -513,16 +509,6 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 最新关卡版本号
-        /// </summary>
-        public int NewestProjectVersion { 
-            get { return _newestProjectVersion; }
-            set { if (_newestProjectVersion != value) {
-                _newestProjectVersion = value;
-                SetDirty();
-            }}
-        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -638,7 +624,6 @@ namespace GameA
             }
             _mainId = msg.MainId;           
             _projectVersion = msg.ProjectVersion;           
-            _newestProjectVersion = msg.NewestProjectVersion;           
             OnSyncPartial(msg);
             return true;
         }
@@ -701,7 +686,6 @@ namespace GameA
             }
             _mainId = msg.MainId;           
             _projectVersion = msg.ProjectVersion;           
-            _newestProjectVersion = msg.NewestProjectVersion;           
             return true;
         } 
 
@@ -763,7 +747,6 @@ namespace GameA
             }
             _mainId = obj.MainId;           
             _projectVersion = obj.ProjectVersion;           
-            _newestProjectVersion = obj.NewestProjectVersion;           
             return true;
         }
 

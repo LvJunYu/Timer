@@ -65,7 +65,7 @@ namespace GameA.Game
 
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
+                if (allOtherUnits[i].IsPlayer || !allOtherUnits[i].IsIndividual)
                 {
                     continue;
                 }
@@ -76,6 +76,7 @@ namespace GameA.Game
                 }
             }
 
+            CirrusManager.Instance.UpdateLogic();
             RopeManager.Instance.UpdateLogic();
 
             for (int i = 0; i < allBulletUnits.Count; i++)
@@ -94,12 +95,15 @@ namespace GameA.Game
                 }
             }
 
+            CirrusManager.Instance.UpdateView(deltaTime);
+
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
                 if (allOtherUnits[i].IsPlayer)
                 {
                     continue;
                 }
+
                 if (allOtherUnits[i].IsInterest)
                 {
                     allOtherUnits[i].CalculateExtraDeltaPos();
@@ -125,7 +129,7 @@ namespace GameA.Game
 
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
-                if (allOtherUnits[i].IsPlayer || allOtherUnits[i].Id == UnitDefine.RopeJointId)
+                if (allOtherUnits[i].IsPlayer || !allOtherUnits[i].IsIndividual)
                 {
                     continue;
                 }
@@ -136,8 +140,8 @@ namespace GameA.Game
                 }
             }
 
-            //绳子单独控制
-            RopeManager.Instance.UpdateView(deltaTime);
+            //计算绳子速度，人再移动，绳子再移动
+            RopeManager.Instance.CalculateSpeed();
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (playerList[i] != null && playerList[i].GetBoxOperateType() != EBoxOperateType.Pull)
@@ -145,6 +149,8 @@ namespace GameA.Game
                     playerList[i].UpdateView(deltaTime);
                 }
             }
+
+            RopeManager.Instance.UpdateView(deltaTime);
 
             for (int i = 0; i < allBulletUnits.Count; i++)
             {

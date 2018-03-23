@@ -6,6 +6,8 @@ namespace GameA.Game
     [Unit(Id = 8100, Type = typeof(SwitchTrigger))]
     public class SwitchTrigger : Magic
     {
+        private const string OnSpriteFormat = "M1SwitchTriggerPressOn_{0}";
+        private const string OffSpriteFormat = "M1SwitchTriggerPressOff_{0}";
         protected SwitchUnit _switchUnit;
         protected List<UnitBase> _units = new List<UnitBase>();
         protected EActiveState _trigger;
@@ -13,11 +15,7 @@ namespace GameA.Game
         public SwitchUnit SwitchUnit
         {
             get { return _switchUnit; }
-            set
-            {
-                _switchUnit = value;
-                SetTrigger(_switchUnit.EActiveState);
-            }
+            set { _switchUnit = value; }
         }
 
         public EActiveState Trigger
@@ -31,6 +29,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             SetSortingOrderBack();
             return true;
         }
@@ -53,10 +52,11 @@ namespace GameA.Game
 
         protected virtual void OnTrigger(UnitBase other)
         {
-            if (!UnitDefine.CanTrigger(other) || _units.Contains(other))
+            if (other == _switchUnit || !UnitDefine.CanTrigger(other) || _units.Contains(other))
             {
                 return;
             }
+
             _units.Add(other);
             SetTrigger(_trigger == EActiveState.Active ? EActiveState.Deactive : EActiveState.Active);
         }
@@ -67,7 +67,7 @@ namespace GameA.Game
             {
                 for (int i = _units.Count - 1; i >= 0; i--)
                 {
-                    if (_units[i] == null || !_colliderGrid.Intersects(_units[i].ColliderGrid))
+                    if (_units[i] == null || !_colliderGrid.Intersects(_units[i].ColliderGrid) || !_units[i].IsAlive)
                     {
                         _units.RemoveAt(i);
                     }
@@ -87,7 +87,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void SetTrigger(EActiveState value)
+        public virtual void SetTrigger(EActiveState value)
         {
             if (_trigger != value)
             {
@@ -102,8 +102,27 @@ namespace GameA.Game
             {
                 _switchUnit.OnTriggerChanged(_trigger);
             }
+
             ChangView();
-//            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
+        }
+
+        protected override void InitAssetRotation(bool loop = false)
+        {
+            if (_animation == null)
+            {
+                if (_trigger == EActiveState.Active)
+                {
+                    _assetPath = string.Format(OnSpriteFormat, _unitDesc.Rotation);
+                }
+                else
+                {
+                    _assetPath = string.Format(OffSpriteFormat, _unitDesc.Rotation);
+                }
+            }
+            else
+            {
+                _animation.Init(((EDirectionType) Rotation).ToString(), loop);
+            }
         }
 
         protected virtual void ChangView()
@@ -112,11 +131,11 @@ namespace GameA.Game
             {
                 if (_trigger == EActiveState.Active)
                 {
-                    _view.ChangeView("M1SwitchTriggerPressOn_" + _unitDesc.Rotation);
+                    _view.ChangeView(string.Format(OnSpriteFormat, _unitDesc.Rotation));
                 }
                 else
                 {
-                    _view.ChangeView("M1SwitchTriggerPressOff_" + _unitDesc.Rotation);
+                    _view.ChangeView(string.Format(OffSpriteFormat, _unitDesc.Rotation));
                 }
             }
         }

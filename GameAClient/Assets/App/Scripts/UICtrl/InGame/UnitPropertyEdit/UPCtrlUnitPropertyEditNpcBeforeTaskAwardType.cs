@@ -12,13 +12,8 @@ namespace GameA
 {
     public class
         //任务目标的选择
-        UPCtrlUnitPropertyEditNpcBeforeTaskAwardType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
+        UPCtrlUnitPropertyEditNpcBeforeTaskAwardType : UpCtrlNpcAdvanceBase
     {
-        private GameObject _panel;
-        private Sequence _openSequence;
-        private Sequence _closeSequence;
-        private bool _openAnim;
-        private bool _completeAnim;
         private NpcTaskDynamic _taskDynamic;
         private NpcTaskTargetDynamic _target;
         private List<int> _colltionList = new List<int>();
@@ -32,6 +27,7 @@ namespace GameA
             {
                 _colltionList.Add(VARIABLE.Key);
             }
+
             foreach (var VARIABLE in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 _killtionList.Add(VARIABLE.Key);
@@ -49,8 +45,11 @@ namespace GameA
                         index = (int) ENpcTargetType.Contorl;
                         break;
                 }
+
                 _cachedView.BeforeAwardTypeTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+
+            _cachedView.NpcTaskBeforeAwardTypePanelExitBtn.onClick.AddListener(Close);
         }
 
         public void ChooseTargetType(int index)
@@ -63,24 +62,27 @@ namespace GameA
                     _target.TaskType = (byte) ENpcTargetType.Colltion;
                     _target.TargetUnitID =
                         (ushort) TableManager.Instance.Table_NpcTaskTargetColltionDic[_colltionList[0]].Id;
-                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_target);
+                    _target.ColOrKillNum = 1;
                     _taskDynamic.BeforeTaskAward.Add(_target);
                     _mainCtrl.EditNpcTaskDock.RefreshView();
+                    _mainCtrl.EditNpcTaskAwardColltionAdvance.OpenMenu(_target);
                     Close();
                     break;
-
                 case (int) ENpcTargetType.Contorl:
                     //选择控制
                     if (_mainCtrl.IsInMap)
                     {
                         //打开连线界面
                         NpcTaskDataTemp.Intance.StartEditTargetControl(_taskDynamic,
-                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.AfterTask, _mainCtrl.EditData.UnitExtra);
+                            _mainCtrl.EditData.UnitDesc.Guid, ETaskContype.BeforeTask, _mainCtrl.EditData.UnitExtra,
+                            _mainCtrl.EditData);
+                        _mainCtrl.OnCloseBtnClick();
                     }
                     else
                     {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "地块不在地图中！");
                     }
+
                     break;
             }
         }
@@ -98,7 +100,7 @@ namespace GameA
             Open();
         }
 
-        public void RefreshView()
+        public override void RefreshView()
         {
             if (!_isOpen) return;
         }
@@ -113,78 +115,8 @@ namespace GameA
             {
                 _panel.SetActiveEx(false);
             }
+
             base.Close();
-        }
-
-        private void OpenAnimation()
-        {
-            if (null == _openSequence)
-            {
-                CreateSequences();
-            }
-            _closeSequence.Complete(true);
-            _openSequence.Restart();
-            _openAnim = true;
-        }
-
-        private void CloseAnimation()
-        {
-            if (null == _closeSequence)
-            {
-                CreateSequences();
-            }
-
-            if (_completeAnim)
-            {
-                _closeSequence.Complete(true);
-                _completeAnim = false;
-            }
-            else
-            {
-                _closeSequence.PlayForward();
-            }
-
-            _openAnim = false;
-        }
-
-        private void CreateSequences()
-        {
-            _openSequence = DOTween.Sequence();
-            _closeSequence = DOTween.Sequence();
-            _openSequence.Append(
-                _panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f).From()
-                    .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
-            {
-                if (_closeSequence.IsPlaying())
-                {
-                    _closeSequence.Complete(true);
-                }
-                _panel.SetActiveEx(true);
-            });
-            _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
-                    .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() =>
-                {
-                    if (_openSequence.IsPlaying())
-                    {
-                        _openSequence.Complete(true);
-                    }
-                });
-        }
-
-        public void CheckClose()
-        {
-            if (_isOpen)
-            {
-                _completeAnim = true;
-                Close();
-            }
-        }
-
-        private void OnCloseAnimationComplete()
-        {
-            _panel.SetActiveEx(false);
-            _closeSequence.Rewind();
         }
     }
 }

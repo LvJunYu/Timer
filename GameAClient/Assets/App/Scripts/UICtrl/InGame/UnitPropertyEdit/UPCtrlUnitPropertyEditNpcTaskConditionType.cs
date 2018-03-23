@@ -8,13 +8,8 @@ namespace GameA
 {
     public class
         //任务目标的选择
-        UPCtrlUnitPropertyEditNpcTaskConditionType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
+        UPCtrlUnitPropertyEditNpcTaskConditionType : UpCtrlNpcAdvanceBase
     {
-        private GameObject _panel;
-        private Sequence _openSequence;
-        private Sequence _closeSequence;
-        private bool _openAnim;
-        private bool _completeAnim;
         private NpcTaskDynamic _taskDynamic;
         private NpcTaskTargetDynamic _target;
         private List<int> _colltionList = new List<int>();
@@ -28,6 +23,7 @@ namespace GameA
             {
                 _colltionList.Add(variable.Key);
             }
+
             foreach (var variable in TableManager.Instance.Table_NpcTaskTargetKillDic)
             {
                 _killtionList.Add(variable.Key);
@@ -38,6 +34,8 @@ namespace GameA
                 int index = i + 1;
                 _cachedView.CondtionTypeBtnGroup[i].onClick.AddListener(() => { ChooseTargetType(index); });
             }
+
+            _cachedView.NpcTaskConditionTypePanelExitBtn.onClick.AddListener(Close);
         }
 
         public void ChooseTargetType(int index)
@@ -51,9 +49,8 @@ namespace GameA
                     targetData.TaskType = (byte) ENpcTargetType.Moster;
                     targetData.TargetUnitID = (ushort) _killtionList[0];
                     _taskDynamic.TriggerTask = targetData;
-                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
-                    Close();
+                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     break;
                 case (int) TrrigerTaskType.Colltion:
                     //选择收集
@@ -62,9 +59,8 @@ namespace GameA
                     targetCol.TaskType = (byte) ENpcTargetType.Colltion;
                     targetCol.TargetUnitID = (ushort) _colltionList[0];
                     _taskDynamic.TriggerTask = targetCol;
-                    _mainCtrl.EditNpcTaskMonsterType.OpenMenu(_taskDynamic.TriggerTask);
                     _mainCtrl.EditNpcTaskDock.RefreshTask();
-                    Close();
+                    _mainCtrl.EditNpcTaskColltionType.OpenMenu(_taskDynamic.TriggerTask);
                     break;
                 case (int) TrrigerTaskType.FinishOtherTask:
                     //选择其他的任务作为触发任务
@@ -78,8 +74,6 @@ namespace GameA
         {
             _mainCtrl.CloseUpCtrlPanel();
             base.Open();
-            _mainCtrl.EditNpcTaskColltionType.Close();
-            _mainCtrl.EditNpcTaskMonsterType.Close();
             OpenAnimation();
         }
 
@@ -99,78 +93,8 @@ namespace GameA
             {
                 _panel.SetActiveEx(false);
             }
+
             base.Close();
-        }
-
-        private void OpenAnimation()
-        {
-            if (null == _openSequence)
-            {
-                CreateSequences();
-            }
-            _closeSequence.Complete(true);
-            _openSequence.Restart();
-            _openAnim = true;
-        }
-
-        private void CloseAnimation()
-        {
-            if (null == _closeSequence)
-            {
-                CreateSequences();
-            }
-
-            if (_completeAnim)
-            {
-                _closeSequence.Complete(true);
-                _completeAnim = false;
-            }
-            else
-            {
-                _closeSequence.PlayForward();
-            }
-
-            _openAnim = false;
-        }
-
-        private void CreateSequences()
-        {
-            _openSequence = DOTween.Sequence();
-            _closeSequence = DOTween.Sequence();
-            _openSequence.Append(
-                _panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f).From()
-                    .SetEase(Ease.OutQuad)).SetAutoKill(false).Pause().PrependCallback(() =>
-            {
-                if (_closeSequence.IsPlaying())
-                {
-                    _closeSequence.Complete(true);
-                }
-                _panel.SetActiveEx(true);
-            });
-            _closeSequence.Append(_panel.transform.DOBlendableMoveBy(Vector3.left * 600, 0.3f)
-                    .SetEase(Ease.InOutQuad)).OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() =>
-                {
-                    if (_openSequence.IsPlaying())
-                    {
-                        _openSequence.Complete(true);
-                    }
-                });
-        }
-
-        public void CheckClose()
-        {
-            if (_isOpen)
-            {
-                _completeAnim = true;
-                Close();
-            }
-        }
-
-        private void OnCloseAnimationComplete()
-        {
-            _panel.SetActiveEx(false);
-            _closeSequence.Rewind();
         }
     }
 }

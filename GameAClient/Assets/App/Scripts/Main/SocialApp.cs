@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using FileTools = SoyEngine.FileTools;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -32,8 +34,10 @@ namespace GameA
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _masterServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
+        [SerializeField] private GameObject _logoObj;
         private float _startTime;
         private const float MinLoadingTime = 2f;
+        private bool _banEsc;
 
         internal static SocialApp Instance;
 
@@ -43,9 +47,24 @@ namespace GameA
             set { _env = value; }
         }
 
+        public PublishChannel.EType Channel
+        {
+            set { _publishChannel = value; }
+        }
+
+        public LogHelper.ELogLevel LogLevel
+        {
+            set { _logLevel = value; }
+        }
+
         public string MasterServerAddress
         {
             get { return _masterServerAddress; }
+        }
+
+        public bool BanEsc
+        {
+            set { _banEsc = value; }
         }
 
         public static AddressConfig GetAppServerAddress()
@@ -59,6 +78,7 @@ namespace GameA
                     GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
+
             if (GlobalVar.Instance.Env == EEnvironment.Staging)
             {
                 return new AddressConfig
@@ -68,6 +88,7 @@ namespace GameA
                     GameResoureRoot = "http://joygameres-1255339982.file.myqcloud.com/gamea"
                 };
             }
+
             if (GlobalVar.Instance.Env == EEnvironment.Test)
             {
                 return new AddressConfig
@@ -77,6 +98,7 @@ namespace GameA
                     GameResoureRoot = "http://devtest.joy-you.com/res/gamea"
                 };
             }
+
             if (GlobalVar.Instance.Env == EEnvironment.Development)
             {
                 return new AddressConfig
@@ -88,6 +110,7 @@ namespace GameA
                     GameResoureRoot = "http://139.129.229.229/res/gamea"
                 };
             }
+
             for (int i = 0; i < Instance._appServerAddress.Length; i++)
             {
                 if (Instance._appServerAddress[i].Enable)
@@ -95,6 +118,7 @@ namespace GameA
                     return Instance._appServerAddress[i];
                 }
             }
+
             Debug.LogError("AddressConfig not found");
             return new AddressConfig
             {
@@ -114,11 +138,13 @@ namespace GameA
             {
                 ClearCache();
             }
+
             var channel = PublishChannel.EType.None;
             if (Application.platform == RuntimePlatform.WindowsPlayer)
             {
                 channel = _publishChannel;
             }
+
             PublishChannel.Init(channel);
             RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
@@ -154,6 +180,8 @@ namespace GameA
             {
                 JoyResManager.Instance.CheckApplicationAndResourcesVersion();
             }
+
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => Destroy(_logoObj)));
         }
 
         public void LoginAfterUpdateResComplete()
@@ -162,8 +190,6 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-            ReYunManager.Instance.Login();
-//            CompassManager.Instance.Login();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             PublishChannel.Instance.Login();
@@ -190,6 +216,7 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
             }
+
             ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(() =>
             {
                 GameProcessManager.Instance.Init();
@@ -202,12 +229,17 @@ namespace GameA
                     SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 }
+
                 SocialGUIManager.Instance.ShowAppView();
+                ReYunManager.Instance.Init();
                 if (LocalUser.Instance.User.LoginCount == 1)
                 {
                     ReYunManager.Instance.Register();
                 }
+
+                ReYunManager.Instance.Login();
                 RoomManager.Instance.Init();
+                InfoNotificationManager.Instance.Init();
             }, code =>
             {
                 if (GlobalVar.Instance.Env != EEnvironment.Production)
@@ -222,6 +254,7 @@ namespace GameA
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     }
                 }
+
                 SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码：" + code.ToString(), null,
                     new KeyValuePair<string, Action>("重试",
                         () => { CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData)); }));
@@ -298,22 +331,29 @@ namespace GameA
             {
                 PublishChannel.Instance.OnDestroy();
             }
+
             base.OnDestroy();
             CompassManager.Instance.Quit(((int) Time.realtimeSinceStartup).ToString());
             ReYunManager.Instance.Quit((int) Time.realtimeSinceStartup);
+            if (!Application.isEditor)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
         }
 
         protected override void Update()
         {
             base.Update();
+            InputManager.Instance.Update();
             GameManager.Instance.Update();
-//            CompassManager.Instance.Update();
             ReYunManager.Instance.Update();
             RoomManager.Instance.Update();
-            if (Input.GetKeyDown(KeyCode.Escape))
+            InfoNotificationManager.Instance.Update();
+            if (Input.GetKeyDown(KeyCode.Escape) && !_banEsc)
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
             }
+
             if (PublishChannel.Instance != null)
             {
                 PublishChannel.Instance.Update();

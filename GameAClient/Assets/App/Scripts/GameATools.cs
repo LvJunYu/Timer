@@ -39,6 +39,7 @@ namespace GameA
 //                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                     SocialGUIManager.ShowPopupDialog("金币花完啦，快去挣钱吧~");
                 }
+
                 return false;
             }
         }
@@ -62,6 +63,7 @@ namespace GameA
 //                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                     SocialGUIManager.ShowPopupDialog("钻石花完啦，快去氪金吧~");
                 }
+
                 return false;
             }
         }
@@ -82,6 +84,7 @@ namespace GameA
                     SocialGUIManager.Instance.OpenUI<UICtrlBuyEnergy>(
                         num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
                 }
+
                 return false;
             }
             else
@@ -116,6 +119,7 @@ namespace GameA
                         }
                     );
                 }
+
                 //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
                 AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
                 return true;
@@ -144,6 +148,7 @@ namespace GameA
                         }
                     );
                 }
+
                 Messenger.Broadcast(EMessengerType.OnGoldChanged);
                 return true;
             }
@@ -171,6 +176,7 @@ namespace GameA
                         }
                     );
                 }
+
                 Messenger.Broadcast(EMessengerType.OnDiamondChanged);
                 return true;
             }
@@ -196,6 +202,7 @@ namespace GameA
                     }
                 );
             }
+
             //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
             AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
         }
@@ -216,6 +223,7 @@ namespace GameA
                     }
                 );
             }
+
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
         }
 
@@ -235,6 +243,7 @@ namespace GameA
                     }
                 );
             }
+
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
 
@@ -247,8 +256,8 @@ namespace GameA
                     LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel + 1].AdvExp)
             {
                 ++LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-                Debug.Log("LevelData2:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
             }
+
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
                 _updateLocalDirtyValueInterval)
@@ -267,6 +276,7 @@ namespace GameA
                     }
                 );
             }
+
             //Messenger.Broadcast(EMessengerType.on);
         }
 
@@ -286,6 +296,7 @@ namespace GameA
                     }
                 );
             }
+
             //Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
 
@@ -309,6 +320,7 @@ namespace GameA
                     }
                 );
             }
+
             //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
             AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
         }
@@ -329,6 +341,7 @@ namespace GameA
                     }
                 );
             }
+
             Messenger.Broadcast(EMessengerType.OnGoldChanged);
         }
 
@@ -348,6 +361,7 @@ namespace GameA
                     }
                 );
             }
+
             Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
 
@@ -393,6 +407,7 @@ namespace GameA
                     year++;
                 }
             }
+
             int[] monthDays;
             if (diffDays >= 59 && leapYear)
             {
@@ -402,6 +417,7 @@ namespace GameA
             {
                 monthDays = new int[] {-1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
             }
+
             for (int i = monthDays.Length - 1; i >= 1; i--)
             {
                 if (diffDays >= monthDays[i])
@@ -411,6 +427,7 @@ namespace GameA
                     break;
                 }
             }
+
             switch (DateType)
             {
                 case 1:
@@ -472,18 +489,20 @@ namespace GameA
                     sbh.S.Append(hourStr);
                     start = true;
                 }
+
                 if (start || minute > 0)
                 {
                     sbh.S.Append(minute);
                     sbh.S.Append(minuteStr);
                     start = true;
                 }
+
                 sbh.S.Append(second);
                 sbh.S.Append(secondStr);
                 return sbh.ToString();
             }
         }
-        
+
         public static string GetLevelString(int level)
         {
             return string.Format("Lv.{0}", level);
@@ -500,6 +519,7 @@ namespace GameA
             {
                 format = "yyyy-M-d HH:mm";
             }
+
             DateTime localDateTime = DateTimeUtil.UnixTimestampMillisToLocalDateTime(timestamp);
             return localDateTime.ToString(format);
         }
@@ -510,10 +530,12 @@ namespace GameA
             {
                 return num.ToString();
             }
+
             if (num <= 99999999)
             {
                 return string.Format("{0}万", num / 10000);
             }
+
             return string.Format("{0}亿", num / 100000000);
         }
 
@@ -550,6 +572,7 @@ namespace GameA
                 {
                     tintDigitPosIndex = 1;
                 }
+
                 //end if
                 if (tintRemainder > 0)
                 {
@@ -561,11 +584,13 @@ namespace GameA
                     tstrRet
                         = tastrNumCNChar[tintRemainder] + tstrRet;
                 }
+
                 //end if
                 tintDigitPosIndex += 1;
                 tintLoopX += 1;
                 tintInput /= 10;
             } //end while
+
             tstrRet = System.Text.RegularExpressions.Regex.Replace(tstrRet, "零零*零*", "零");
             return tstrRet;
         } //end
@@ -584,6 +609,86 @@ namespace GameA
             int minute = seconds / 60 - hour * 60;
             int second = seconds - hour * 60 * 60 - minute * 60;
             return string.Format("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+        }
+
+        /// <summary>
+        ////判断string的长度 中文站两个字符
+        /// </summary>
+        /// <param name="ni_intInput"></param>
+        /// <returns></returns>
+        public static int GetStrLength(string str)
+        {
+            int length = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c >= 0x4E00 && c <= 0x9FA5)
+                {
+                    length += 2;
+                }
+                else
+                {
+                    length += 1;
+                }
+            }
+
+            return length;
+        }
+
+        /// <summary>
+        ////截取规定长度的字符串
+        /// </summary>
+        /// <param name="ni_intInput"></param>
+        /// <returns></returns>
+        public static string GetMaxLengthStr(string str, int maxlength)
+        {
+            string newstr = "";
+            int length = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c >= 0x4E00 && c <= 0x9FA5)
+                {
+                    length += 2;
+                }
+                else
+                {
+                    length += 1;
+                }
+
+                if (length <= maxlength)
+                {
+                    newstr += c;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return newstr;
+        }
+
+        public static string GetRawStr(string str, int maxLengh)
+        {
+            if (GetStrLength(str) <= maxLengh)
+            {
+                return str;
+            }
+
+            return GetMaxLengthStr(str, maxLengh - 2) + "...";
+        }
+
+        public static int GetRandomByValue(int value, int maxSecond, int minSecond = 0)
+        {
+            var delta = maxSecond + 1 - minSecond;
+            if (delta > 0)
+            {
+                return value % delta + minSecond;
+            }
+
+            LogHelper.Error("max is less than min");
+            return maxSecond;
         }
     }
 }

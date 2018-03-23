@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine.EventSystems;
 
 namespace GameA
 {
@@ -56,6 +57,10 @@ namespace GameA
                     }
                 }
             }
+        }
+
+        protected override void OnEndDragEvent(PointerEventData arg0)
+        {
         }
     }
 }

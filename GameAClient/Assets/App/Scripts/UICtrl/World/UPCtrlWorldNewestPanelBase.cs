@@ -16,7 +16,7 @@
 //            new Dictionary<long, CardDataRendererWrapper<Project>>();
 //
 //        protected UMCtrlProject.ECurUI _eCurUi;
-//        protected List<Project> _projectList;
+//        protected List<Project> _userselfRecommedprojectList;
 //
 //        protected override void OnViewCreated()
 //        {
@@ -48,24 +48,24 @@
 //
 //        protected virtual void RefreshView()
 //        {
-//            _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
+//            _cachedView.EmptyObj.SetActiveEx(_userselfRecommedprojectList == null || _userselfRecommedprojectList.Count == 0);
 //            _contentList.Clear();
 //            _dict.Clear();
-//            if (_projectList == null)
+//            if (_userselfRecommedprojectList == null)
 //            {
 //                _cachedView.NewestGridDataScrollers[(int) _menu].SetEmpty();
 //                return;
 //            }
 //
-//            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _projectList.Count);
-//            for (int i = 0; i < _projectList.Count; i++)
+//            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _userselfRecommedprojectList.Count);
+//            for (int i = 0; i < _userselfRecommedprojectList.Count; i++)
 //            {
-//                if (!_dict.ContainsKey(_projectList[i].ProjectId))
+//                if (!_dict.ContainsKey(_userselfRecommedprojectList[i].ProjectId))
 //                {
 //                    CardDataRendererWrapper<Project> w =
-//                        new CardDataRendererWrapper<Project>(_projectList[i], OnItemClick);
+//                        new CardDataRendererWrapper<Project>(_userselfRecommedprojectList[i], OnItemClick);
 //                    _contentList.Add(w);
-//                    _dict.Add(_projectList[i].ProjectId, w);
+//                    _dict.Add(_userselfRecommedprojectList[i].ProjectId, w);
 //                }
 //            }
 //
@@ -132,7 +132,7 @@
 //            _unload = true;
 //            _contentList.Clear();
 //            _dict.Clear();
-//            _projectList = null;
+//            _userselfRecommedprojectList = null;
 //            _cachedView.NewestGridDataScrollers[(int) _menu].ContentPosition = Vector2.zero;
 //        }
 //

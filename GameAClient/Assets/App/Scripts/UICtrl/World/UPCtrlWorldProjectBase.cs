@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GameA
 {
@@ -15,8 +16,9 @@ namespace GameA
         protected UMCtrlProject.ECurUI _eCurUi;
         protected List<Project> _projectList;
         protected bool _isRequesting;
-        
-        public int Mask {
+
+        public int Mask
+        {
             get
             {
                 int mask = 0;
@@ -32,10 +34,11 @@ namespace GameA
                 {
                     mask = Project.ProjectTypeAllMask;
                 }
+
                 return mask;
             }
         }
-        
+
         public override void Open()
         {
             base.Open();
@@ -54,6 +57,15 @@ namespace GameA
             base.OnViewCreated();
             _eCurUi = GetUMCurUI(_menu);
             _cachedView.GridDataScrollers[(int) _menu].Set(OnItemRefresh, GetItemRenderer);
+            _cachedView.ScrollRectEx1s[(int) _menu].OnEndDragEvent.AddListener(OnEndDragEvent);
+        }
+
+        protected virtual void OnEndDragEvent(PointerEventData arg0)
+        {
+            if (_cachedView.ScrollRectEx1s[(int) _menu].content.anchoredPosition.y < -90)
+            {
+                RequestData();
+            }
         }
 
         public override void RefreshView()
@@ -85,7 +97,7 @@ namespace GameA
                 }
             }
 
-            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
+                _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
         protected void OnItemClick(CardDataRendererWrapper<Project> item)
@@ -126,13 +138,17 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
+            if (_isRequesting)
+            {
+                return;
+            }
         }
 
         public virtual void OnProjectTypesChanged()
         {
             RequestData();
         }
-        
+
         public override void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;

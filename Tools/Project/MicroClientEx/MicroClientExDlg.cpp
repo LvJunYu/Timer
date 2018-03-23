@@ -156,7 +156,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		/*
 		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
 		*/
-		//::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
+		::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
 		Quit();
 	}
 	m_strCmdline = lpCmdLine;
@@ -214,7 +214,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		/*
 		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
 		*/
-		//::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
+		::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
 		Quit();
 	}
 	//--不符合要求，缺少数据，则直接退出主程序
@@ -1363,8 +1363,8 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	//更新下载地址为服务器的地址
 	root = GetConfigValue(m_strTempPath + CONFIG, cfRoot);
 	CString m_localversion = GetConfigValue(CString(CONFIG), cfVersion);
-	int serversion[VERSIONNUM];
-	int localversion[VERSIONNUM];
+	int serversion[VERSIONNUM] = {0};
+	int localversion[VERSIONNUM] = {0};
 	
 	if (m_serversion == "")
 	{
@@ -1384,9 +1384,7 @@ bool CMicroClientExDlg::CheckNeedUpdate()
 	}
 	else
 	{
-		memset(localversion,0,VERSIONNUM);
 		AnalyVersion(m_localversion,localversion);
-		memset(serversion,0,VERSIONNUM);
 		AnalyVersion(m_serversion,serversion);
 		for (int i=0; i<VERSIONNUM; i++)
 		{
@@ -1585,7 +1583,7 @@ void CMicroClientExDlg::ConncetPipe()
 		连接失败，请直接退出游戏，未连接上时，大厅会认为游戏未启动，所以请直接退出
 		MessageBox只是为了Demo演示，别真弹出来，悄悄退出就好啦，退出功能请开发商根据自己的情况实现
 		*/
-		//::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
+		::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
 		Quit();
 	}
 }
@@ -1643,7 +1641,21 @@ void CMicroClientExDlg::OnReceiveMsg(IClientProcMsgObject* pClientProcMsgObj, lo
 	{
 	case SC_WND_BRINGTOP:
 	{
-							ShowMsg("Receive msg SC_WND_BRINGTOP\n");
+		ShowMsg("Receive msg SC_WND_BRINGTOP\n");
+		if (HMODULE hUser32 = ::GetModuleHandle("user32"))
+		{
+			typedef void (WINAPI * PROCSWITCHTOTHISWINDOW)(HWND, BOOL);
+			if (PROCSWITCHTOTHISWINDOW procSwitchToThisWindow =
+					reinterpret_cast<PROCSWITCHTOTHISWINDOW>(::GetProcAddress(hUser32,
+					"SwitchToThisWindow")) )
+			{
+				procSwitchToThisWindow(AfxGetApp()->m_pMainWnd->m_hWnd, TRUE);
+			}
+			else
+			{
+				::SetForegroundWindow(AfxGetApp()->m_pMainWnd->m_hWnd);
+			}
+		}
 	}
 		break;
 	case SC_HALL_CMDPARA:
@@ -1715,6 +1727,9 @@ void CMicroClientExDlg::SendMsgToGame(IClientProcMsgObject* pProcMsgObj, PROCMSG
 
 	int nBufLen = pProcMsgData->nDataLen + sizeof(pProcMsgData->nCommandID) + sizeof(pProcMsgData->nDataLen);
 	DWORD dwRet = pProcMsgObj->SendMessage(nBufLen, (BYTE*)pProcMsgData);
+
+	sprintf(szLogBuf,"SendMessage, len: %d, realLen: %d, ret: %d", nBufLen, sizeof(*pProcMsgData), dwRet);
+	WriteLog(szLogBuf);
 
 	if (dwRet)
 	{

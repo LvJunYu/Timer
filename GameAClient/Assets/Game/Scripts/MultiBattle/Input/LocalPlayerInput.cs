@@ -8,24 +8,23 @@ namespace GameA.Game
     public class LocalPlayerInput : InputBase
     {
         #region 检查输入
-        
-        [SerializeField]
-        protected bool[] _curCheckInputKeyAry = new bool[(int)EInputType.Max];
-        [SerializeField]
-        protected bool[] _lastCheckInputKeyAry = new bool[(int)EInputType.Max];
-        
-        [SerializeField]
-        protected float _lastCheckHorizontal;
-        [SerializeField]
-        protected float _curCheckHorizontal;
-        [SerializeField]
-        protected float _lastCheckVertical;
-        [SerializeField]
-        protected float _curCheckVertical;
+
+        [SerializeField] protected List<int> _cacheDownInputKeys = new List<int>();
+        [SerializeField] protected List<int> _cacheUpInputKeys = new List<int>();
+        [SerializeField] protected bool[] _curCheckInputKeyAry = new bool[(int) EInputType.Max];
+        [SerializeField] protected bool[] _lastCheckInputKeyAry = new bool[(int) EInputType.Max];
+
+        [SerializeField] protected float _lastCheckHorizontal;
+        [SerializeField] protected float _curCheckHorizontal;
+        [SerializeField] protected float _lastCheckVertical;
+        [SerializeField] protected float _curCheckVertical;
+
         #endregion
-        
+
         //检查输入最终的结果
-        protected List<int> _curCheckInputChangeList = new List<int>((int)EInputType.Max);
+        protected List<int> _curCheckInputChangeList = new List<int>((int) EInputType.Max);
+        protected bool _inputValid = true;
+        protected bool _justUnValid;
 
         public List<int> CurCheckInputChangeList
         {
@@ -34,28 +33,43 @@ namespace GameA.Game
 
         public void ProcessCheckInput()
         {
-            PrepareForCheckInput();
-            CheckInput();
-            GenerateCheckInputChangeList();
+            if (_inputValid)
+            {
+                PrepareForCheckInput();
+                CheckInput();
+                GenerateCheckInputChangeList();
+            }
+            else
+            {
+                if (_justUnValid)
+                {
+                    GenerateCheckInputChangeList();
+                }
+                else
+                {
+                    _curCheckInputChangeList.Clear();
+                }
+            }
+
         }
 
         protected void GenerateCheckInputChangeList()
         {
             _curCheckInputChangeList.Clear();
-            for (int i = 0, len = (int)EInputType.Max; i < len; i++)
+            for (int i = 0, len = (int) EInputType.Max; i < len; i++)
             {
-                if (_curCheckInputKeyAry[i]) 
+                if (_curCheckInputKeyAry[i])
                 {
                     if (!_lastCheckInputKeyAry[i])
                     {
-                        _curCheckInputChangeList.Add(i<<1); //i*2
+                        _curCheckInputChangeList.Add(i << 1); //i*2
                     }
                 }
                 else
                 {
                     if (_lastCheckInputKeyAry[i])
                     {
-                        _curCheckInputChangeList.Add(i<<1 | 1); //i*2+1
+                        _curCheckInputChangeList.Add(i << 1 | 1); //i*2+1
                     }
                 }
             }
@@ -67,7 +81,7 @@ namespace GameA.Game
             _lastCheckVertical = _curCheckVertical;
             Array.Copy(_curCheckInputKeyAry, _lastCheckInputKeyAry, _curCheckInputKeyAry.Length);
         }
-        
+
         public override void ClearInput()
         {
             base.ClearInput();
@@ -76,13 +90,15 @@ namespace GameA.Game
             _lastCheckVertical = 0;
             _curCheckVertical = 0;
             _curCheckInputChangeList.Clear();
+            _cacheDownInputKeys.Clear();
+            _cacheUpInputKeys.Clear();
             for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
             {
                 _curCheckInputKeyAry[i] = false;
                 _lastCheckInputKeyAry[i] = false;
             }
         }
-        
+
         public void CheckInput()
         {
             _curCheckHorizontal = CrossPlatformInputManager.GetAxis(InputManager.TagHorizontal);
@@ -90,79 +106,117 @@ namespace GameA.Game
 #if IPHONE || ANDROID
 #else
 #endif
-
+            
             if (GetKeyDownCheck(EInputType.Left))
             {
-                _curCheckInputKeyAry[(int)EInputType.Left] = true;
+                _curCheckInputKeyAry[(int) EInputType.Left] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Left))
             {
-                _curCheckInputKeyAry[(int)EInputType.Left] = false;
+                _curCheckInputKeyAry[(int) EInputType.Left] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Right))
             {
-                _curCheckInputKeyAry[(int)EInputType.Right] = true;
+                _curCheckInputKeyAry[(int) EInputType.Right] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Right))
             {
-                _curCheckInputKeyAry[(int)EInputType.Right] = false;
+                _curCheckInputKeyAry[(int) EInputType.Right] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Up))
             {
-                _curCheckInputKeyAry[(int)EInputType.Up] = true;
+                _curCheckInputKeyAry[(int) EInputType.Up] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Up))
             {
-                _curCheckInputKeyAry[(int)EInputType.Up] = false;
+                _curCheckInputKeyAry[(int) EInputType.Up] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Down))
             {
-                _curCheckInputKeyAry[(int)EInputType.Down] = true;
+                _curCheckInputKeyAry[(int) EInputType.Down] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Down))
             {
-                _curCheckInputKeyAry[(int)EInputType.Down] = false;
+                _curCheckInputKeyAry[(int) EInputType.Down] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Jump))
             {
-                _curCheckInputKeyAry[(int)EInputType.Jump] = true;
+                _curCheckInputKeyAry[(int) EInputType.Jump] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Jump))
             {
-                _curCheckInputKeyAry[(int)EInputType.Jump] = false;
+                _curCheckInputKeyAry[(int) EInputType.Jump] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Assist))
             {
-                _curCheckInputKeyAry[(int)EInputType.Assist] = true;
+                _curCheckInputKeyAry[(int) EInputType.Assist] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Assist))
             {
-                _curCheckInputKeyAry[(int)EInputType.Assist] = false;
+                _curCheckInputKeyAry[(int) EInputType.Assist] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Skill1))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill1] = true;
+                _curCheckInputKeyAry[(int) EInputType.Skill1] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Skill1))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill1] = false;
+                _curCheckInputKeyAry[(int) EInputType.Skill1] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Skill2))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill2] = true;
+                _curCheckInputKeyAry[(int) EInputType.Skill2] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Skill2))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill2] = false;
+                _curCheckInputKeyAry[(int) EInputType.Skill2] = false;
             }
+
             if (GetKeyDownCheck(EInputType.Skill3))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill3] = true;
+                _curCheckInputKeyAry[(int) EInputType.Skill3] = true;
             }
+
             if (GetKeyUpCheck(EInputType.Skill3))
             {
-                _curCheckInputKeyAry[(int)EInputType.Skill3] = false;
+                _curCheckInputKeyAry[(int) EInputType.Skill3] = false;
             }
+            
+            for (int i = 0; i < _cacheUpInputKeys.Count; i++)
+            {
+                var value = _cacheUpInputKeys[i];
+                if (value < _curCheckInputKeyAry.Length)
+                {
+                    _curCheckInputKeyAry[value] = false;
+                }
+            }
+            _cacheUpInputKeys.Clear();
+            
+            for (int i = 0; i < _cacheDownInputKeys.Count; i++)
+            {
+                var value = _cacheDownInputKeys[i];
+                if (value < _curCheckInputKeyAry.Length)
+                {
+                    _curCheckInputKeyAry[value] = true;
+                    _cacheUpInputKeys.Add(value);
+                }
+            }
+            _cacheDownInputKeys.Clear();
         }
 
         protected bool GetKeyDownCheck(EInputType eInputType)
@@ -188,6 +242,7 @@ namespace GameA.Game
                 case EInputType.Skill3:
                     return CrossPlatformInputManager.GetButton(InputManager.TagSkill3);
             }
+
             return false;
         }
 
@@ -208,10 +263,12 @@ namespace GameA.Game
                     {
                         return false;
                     }
+
                     if (GuideManager.Instance.IsUnlockedJumpButton)
                     {
                         return true;
                     }
+
                     return !CrossPlatformInputManager.GetButton(InputManager.TagJump);
                 case EInputType.Assist:
                     return !CrossPlatformInputManager.GetButton(InputManager.TagAssist);
@@ -222,7 +279,33 @@ namespace GameA.Game
                 case EInputType.Skill3:
                     return !CrossPlatformInputManager.GetButton(InputManager.TagSkill3);
             }
+
             return false;
+        }
+
+        public void SetKeyDown(EInputType eInputType)
+        {
+            _cacheDownInputKeys.Add((int) eInputType);
+        }
+
+        public override void SetInputValid(bool value)
+        {
+            base.SetInputValid(value);
+            _inputValid = value;
+            if (value)
+            {
+            }
+            else
+            {
+                _justUnValid = true;
+                PrepareForCheckInput();
+                _curCheckHorizontal = 0;
+                _curCheckVertical = 0;
+                for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
+                {
+                    _curCheckInputKeyAry[i] = false;
+                }
+            }
         }
     }
 }

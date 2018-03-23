@@ -63,33 +63,35 @@ namespace GameA.Game
             else
             {
                 bool blocked = false;
-                var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer);
-                for (int i = 0; i < units.Count; i++)
+                using (var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer))
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit.TableUnit.IsBridgeBlock == 1 && !unit.CanCross)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        blocked = true;
-                        break;
-                    }
-                }
-                if (!blocked && CheckValidRange())
-                {
-                    var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
-                    if (unit != null)
-                    {
-                        if (_curCreatingQueue == null)
+                        var unit = units[i];
+                        if (unit.IsAlive && unit.TableUnit.IsBridgeBlock == 1 && !unit.CanCross)
                         {
-                            _curCreatingQueue = AllocQueue();
+                            blocked = true;
+                            break;
                         }
-                        _curCreatingQueue.Enqueue(unit);
-                        _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
-
-                        for (int i = 0; i < units.Count; i++)
+                    }
+                    if (!blocked && CheckValidRange())
+                    {
+                        var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
+                        if (unit != null)
                         {
-                            if (UnitDefine.IsSwitchTrigger(units[i].Id) && units[i].IsAlive)
+                            if (_curCreatingQueue == null)
                             {
-                                units[i].OnIntersect(unit);
+                                _curCreatingQueue = AllocQueue();
+                            }
+                            _curCreatingQueue.Enqueue(unit);
+                            _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
+
+                            for (int i = 0; i < units.Count; i++)
+                            {
+                                if (UnitDefine.IsSwitchTrigger(units[i].Id) && units[i].IsAlive)
+                                {
+                                    units[i].OnIntersect(unit);
+                                }
                             }
                         }
                     }

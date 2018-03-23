@@ -16,8 +16,11 @@ namespace GameA
         private readonly WorldUserRecentRecordList _worldUserRecentRecordList = new WorldUserRecentRecordList();
         private readonly WorldBestProjectList _worldBestProjectList = new WorldBestProjectList();
 
-        private readonly WorldFollowedUserProjectList _worldFollowedUserProjectList = new WorldFollowedUserProjectList()
-            ;
+        private readonly WorldSelfRecommendProjectList _worldSelfRecommendProjectList =
+            new WorldSelfRecommendProjectList();
+
+        private readonly WorldFollowedUserProjectList
+            _worldFollowedUserProjectList = new WorldFollowedUserProjectList();
 
         private readonly WorldRankList _rankList = new WorldRankList();
 
@@ -59,6 +62,11 @@ namespace GameA
         public WorldRankList RankList
         {
             get { return _rankList; }
+        }
+
+        public WorldSelfRecommendProjectList WorldSelfRecommendProjectList
+        {
+            get { return _worldSelfRecommendProjectList; }
         }
     }
 }

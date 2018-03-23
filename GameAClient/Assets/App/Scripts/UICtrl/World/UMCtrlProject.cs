@@ -10,8 +10,9 @@ namespace GameA
         private CardDataRendererWrapper<Project> _wrapper;
         private int _index;
         public int Index { get; set; }
-        private static string _newProject = "创建新关卡";
-        private static string _countFormat = "({0})";
+        private const string NewProject = "创建新关卡";
+        private const string NoName = "未命名";
+        private const string CountFormat = "({0})";
 
         public RectTransform Transform
         {
@@ -38,6 +39,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             base.OnDestroy();
         }
 
@@ -52,6 +54,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
+
             _wrapper = obj as CardDataRendererWrapper<Project>;
             if (_wrapper != null)
             {
@@ -67,11 +70,14 @@ namespace GameA
                 Unload();
                 return;
             }
+
             bool emptyProject = _wrapper.Content == Project.EmptyProject;
             _cachedView.PublishedObj.SetActiveEx(_eCurUI == ECurUI.Editing && _wrapper.Content.MainId != 0);
             _cachedView.SingleObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Single && !emptyProject);
-            _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation && !emptyProject);
-            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PS_Compete && !emptyProject);
+            _cachedView.CooperationObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Cooperation &&
+                                                   !emptyProject);
+            _cachedView.CompeteObj.SetActiveEx(_wrapper.Content.ProjectType == EProjectType.PT_Compete &&
+                                               !emptyProject);
             _cachedView.AuthorObj.SetActiveEx(_eCurUI != ECurUI.Editing);
 //            _cachedView.DownloadObj.SetActiveEx(false);
 //            _cachedView.OriginalObj.SetActiveEx(false);
@@ -80,17 +86,25 @@ namespace GameA
             _cachedView.NewEditObj.SetActiveEx(_eCurUI == ECurUI.Editing && emptyProject);
             if (emptyProject)
             {
-                DictionaryTools.SetContentText(_cachedView.Title, _newProject);
+                DictionaryTools.SetContentText(_cachedView.Title, NewProject);
             }
             else
             {
                 Project p = _wrapper.Content;
                 DictionaryTools.SetContentText(_cachedView.PlayCountTxt, p.PlayCount.ToString());
                 DictionaryTools.SetContentText(_cachedView.CommentCountTxt, p.TotalCommentCount.ToString());
-                DictionaryTools.SetContentText(_cachedView.Title, p.Name);
+                if (string.IsNullOrEmpty(p.Name))
+                {
+                    DictionaryTools.SetContentText(_cachedView.Title, NoName);
+                }
+                else
+                {
+                    DictionaryTools.SetContentText(_cachedView.Title, p.Name);
+                }
+
                 DictionaryTools.SetContentText(_cachedView.PraiseScoreTxt, p.ScoreFormat);
                 _cachedView.TotalTxt.SetActiveEx(p.TotalCount > 0);
-                DictionaryTools.SetContentText(_cachedView.TotalTxt, string.Format(_countFormat, p.TotalCount));
+                DictionaryTools.SetContentText(_cachedView.TotalTxt, string.Format(CountFormat, p.TotalCount));
                 DictionaryTools.SetContentText(_cachedView.AuthorTxt, p.UserInfo.NickName);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath,
                     _cachedView.DefaultCoverTexture);
@@ -107,7 +121,8 @@ namespace GameA
         public void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage, _cachedView.DefaultCoverTexture);
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadRawImage,
+                _cachedView.DefaultCoverTexture);
         }
 
         private void OnHeadBtn()

@@ -63,12 +63,12 @@ namespace GameA.Game
         public void InitCreate(IntVec2 pos)
         {
             _pos = pos;
-            var validMapRect = DataScene2D.CurScene.ValidMapRect;
-            var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
+//            var validMapRect = DataScene2D.CurScene.ValidMapRect;
+//            var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
 
             var innerGrid = new Grid2D(_pos - _viewInner, _pos + _viewInner);
             innerGrid = _scene2D.GetRegionAlignedGrid(innerGrid);
-            innerGrid = innerGrid.IntersectWith(validMapGrid);
+//            innerGrid = innerGrid.IntersectWith(validMapGrid);
             if (innerGrid.IsValid())
             {
                 Subscribe(innerGrid.Cut(Grid2D.zero), innerGrid);
@@ -78,7 +78,7 @@ namespace GameA.Game
             //这里的innerGrid = outerGrid,确保初始运行时候生成区域保持一致
             var outerGrid = new Grid2D(_pos - _viewInner, _pos + _viewInner);
             outerGrid = _scene2D.GetRegionAlignedGrid(outerGrid);
-            outerGrid = outerGrid.IntersectWith(validMapGrid);
+//            outerGrid = outerGrid.IntersectWith(validMapGrid);
             Unsubscribe(_lastOuterGrid.Cut(Grid2D.zero), outerGrid);
             _lastOuterGrid = outerGrid;
         }
@@ -90,13 +90,13 @@ namespace GameA.Game
                 return;
             }
             _pos = pos;
-            var validMapRect = DataScene2D.CurScene.ValidMapRect;
-            var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
+//            var validMapRect = DataScene2D.CurScene.ValidMapRect;
+//            var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
 
             var innerGrid = new Grid2D(_pos - _viewInner, _pos + _viewInner);
             innerGrid = _scene2D.GetRegionAlignedGrid(innerGrid);
 
-            innerGrid = innerGrid.IntersectWith(validMapGrid);
+//            innerGrid = innerGrid.IntersectWith(validMapGrid);
             if (!innerGrid.Equals(_lastInnerGrid))
             {
                 if (innerGrid.IsValid())
@@ -107,7 +107,7 @@ namespace GameA.Game
             }
             var outerGrid = new Grid2D(_pos - _viewOuter, _pos + _viewOuter);
             outerGrid = _scene2D.GetRegionAlignedGrid(outerGrid);
-            outerGrid = outerGrid.IntersectWith(validMapGrid);
+//            outerGrid = outerGrid.IntersectWith(validMapGrid);
             if (!outerGrid.Equals(_lastOuterGrid))
             {
                 Unsubscribe(_lastOuterGrid.Cut(outerGrid), outerGrid);

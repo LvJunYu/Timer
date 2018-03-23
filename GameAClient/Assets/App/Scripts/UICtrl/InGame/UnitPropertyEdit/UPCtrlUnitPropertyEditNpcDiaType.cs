@@ -8,8 +8,8 @@ namespace GameA
 {
     public class UPCtrlUnitPropertyEditNpcDiaType : UPCtrlBase<UICtrlUnitPropertyEdit, UIViewUnitPropertyEdit>
     {
-        public const int NamMaxLength = 7;
-        public const int DiaMaxLength = 60;
+        public const int NamMaxLength = 14;
+        public const int DiaMaxLength = 100;
 
         public enum EMenu
         {
@@ -76,12 +76,14 @@ namespace GameA
         public void RefreshView()
         {
             if (!_isOpen) return;
+            if (_mainCtrl.EditData.UnitExtra.NpcShowInterval == 0)
+            {
+                _mainCtrl.EditData.UnitExtra.NpcShowInterval = 1;
+            }
             _dialogShowIntervalTimeSetting.SetCur(_mainCtrl.EditData.UnitExtra.NpcShowInterval, false);
             string name = _mainCtrl.EditData.UnitExtra.NpcName;
-            _cachedView.NpcName.onValueChanged.Invoke(name);
             _cachedView.NpcName.text = name;
             string dia = _mainCtrl.EditData.UnitExtra.NpcDialog;
-            _cachedView.NpcDialog.onValueChanged.Invoke(dia);
             _cachedView.NpcDialog.text = dia;
             RefreshShowTypeMenu();
         }
@@ -117,6 +119,14 @@ namespace GameA
             {
                 _showTypeBtnGroup[i].SetSelected(i == val);
             }
+            if (_mainCtrl.EditData.UnitExtra.NpcShowType == (int) ENpcTriggerType.Close)
+            {
+                _dialogShowIntervalTimeSetting.SetEnable(false);
+            }
+            else
+            {
+                _dialogShowIntervalTimeSetting.SetEnable(true);
+            }
         }
 
         private void SetNameLength(string str)
@@ -125,10 +135,10 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.NameTextNum.text = String.Format("{0}/{1}", str.Length, NamMaxLength);
-            if (str.Length > NamMaxLength)
+            _cachedView.NameTextNum.text = String.Format("{0}/{1}", GameATools.GetStrLength(str), NamMaxLength);
+            if (GameATools.GetStrLength(str) > NamMaxLength)
             {
-                _cachedView.NpcName.text = str.Substring(0, NamMaxLength);
+                _cachedView.NpcName.text = GameATools.GetMaxLengthStr(str, NamMaxLength);
             }
         }
 
@@ -138,10 +148,10 @@ namespace GameA
             {
                 return;
             }
-            _cachedView.DiaTextNum.text = String.Format("{0}/{1}", str.Length, DiaMaxLength);
-            if (str.Length > DiaMaxLength)
+            _cachedView.DiaTextNum.text = String.Format("{0}/{1}", GameATools.GetStrLength(str), DiaMaxLength);
+            if (GameATools.GetStrLength(str) > DiaMaxLength)
             {
-                _cachedView.DiaTextNum.text = str.Substring(0, DiaMaxLength);
+                _cachedView.NpcDialog.text = GameATools.GetMaxLengthStr(str, DiaMaxLength);
             }
         }
     }

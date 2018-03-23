@@ -30,23 +30,24 @@ namespace GameA.Game
         [SerializeField] private int _gemGain;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
+        [SerializeField] private int _gemInWoodCase = -1;
         private Dictionary<long, int> _keyDic = new Dictionary<long, int>(PlayerManager.MaxTeamCount);
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
         public bool IsMulti
         {
-            get { return Statistics.IsMulti; }
+            get { return MapStatistics.IsMulti; }
         }
 
         public bool IsMainPlayerCreated
         {
-            get { return Statistics.SpawnCount > 0; }
+            get { return MapStatistics.SpawnCount > 0; }
         }
 
         public bool HasKey
         {
-            get { return Statistics.KeyCount > 0; }
+            get { return MapStatistics.KeyCount > 0 || Scene2DManager.Instance.CheckKeyInBox(); }
         }
 
         public int SecondLeft
@@ -54,10 +55,10 @@ namespace GameA.Game
             //get { return _secondLeft; }
             get
             {
-                if (_runState == ESceneState.Fail || _runState == ESceneState.Fail)
-                {
-                    return 0;
-                }
+//                if (_runState == ESceneState.Fail)
+//                {
+//                    return 0;
+//                }
 
                 return (int) (RunTimeTimeLimit - _gameTimer);
             }
@@ -78,37 +79,50 @@ namespace GameA.Game
                 {
                     if (IsMulti)
                     {
-                        return Statistics.NetBattleTimeLimit;
+                        return MapStatistics.NetBattleTimeLimit;
                     }
 
-                    return Statistics.TimeLimit * 10;
+                    return MapStatistics.TimeLimit * 10;
                 }
             }
         }
 
         public int FinalCount
         {
-            get { return Statistics.FinalCount; }
+            get { return MapStatistics.FinalCount; }
         }
 
         public int TotalGem
         {
-            get { return Statistics.GemCount; }
+            get { return MapStatistics.GemCount + GemCountInWoodCase; }
+        }
+
+        public int GemCountInWoodCase
+        {
+            get
+            {
+                if (_gemInWoodCase == -1)
+                {
+                    _gemInWoodCase = Scene2DManager.Instance.GetGemCountInWoodCase();
+                }
+
+                return _gemInWoodCase;
+            }
         }
 
         public int MonsterCount
         {
-            get { return Statistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves(); }
+            get { return MapStatistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves(); }
         }
 
         public int HeroCageCount
         {
-            get { return Statistics.HeroCageCount; }
+            get { return MapStatistics.HeroCageCount; }
         }
 
         public int WinCondition
         {
-            get { return Statistics.WinCondition; }
+            get { return MapStatistics.WinCondition; }
         }
 
         public int GemGain
@@ -169,15 +183,15 @@ namespace GameA.Game
             {
                 if (IsMulti)
                 {
-                    if (Statistics.InfiniteLife)
+                    if (_mapStatistics.InfiniteLife)
                     {
                         return 99;
                     }
 
-                    return Statistics.NetBattleLifeCount;
+                    return _mapStatistics.NetBattleLifeCount;
                 }
 
-                return Statistics.LifeCount;
+                return _mapStatistics.LifeCount;
             }
         }
 
@@ -212,25 +226,25 @@ namespace GameA.Game
 
         public int GemScore
         {
-            get { return Statistics.NetBattleCollectGemScore; }
+            get { return _mapStatistics.NetBattleCollectGemScore; }
         }
 
         public int KillMonsterScore
         {
-            get { return Statistics.NetBattleKillMonsterScore; }
+            get { return _mapStatistics.NetBattleKillMonsterScore; }
         }
 
         public int KillPlayerScore
         {
-            get { return Statistics.NetBattleKillPlayerScore; }
+            get { return _mapStatistics.NetBattleKillPlayerScore; }
         }
 
         public int ArriveScore
         {
-            get { return Statistics.NetBattleArriveScore; }
+            get { return _mapStatistics.NetBattleArriveScore; }
         }
 
-        public MapStatistics Statistics
+        public MapStatistics MapStatistics
         {
             get { return _mapStatistics; }
         }
@@ -254,11 +268,6 @@ namespace GameA.Game
             return total;
         }
 
-        public void InitMultiBattleData(NetBattleData netBattleData)
-        {
-            Statistics.InitMultiBattleData(netBattleData);
-        }
-
         public void Init(MapStatistics mapStatistics)
         {
             _mapStatistics = mapStatistics;
@@ -266,9 +275,9 @@ namespace GameA.Game
 
         internal void Init(GM2DMapData levelData)
         {
-            Statistics.WinCondition = (byte) levelData.WinCondition;
-            Statistics.TimeLimit = levelData.TimeLimit;
-            Statistics.LifeCount = levelData.LifeCount;
+            MapStatistics.WinCondition = (byte) levelData.WinCondition;
+            MapStatistics.TimeLimit = levelData.TimeLimit;
+            MapStatistics.LifeCount = levelData.LifeCount;
         }
 
         public void Reset()
@@ -279,17 +288,18 @@ namespace GameA.Game
             _gemGain = 0;
             _monsterKilled = 0;
             _keyGain = 0;
+            _gemInWoodCase = -1;
             _keyDic.Clear();
         }
 
         public void StartPlay()
         {
-            if (Statistics.FinalCount == 0)
+            if (MapStatistics.FinalCount == 0)
             {
                 RemoveCondition(EWinCondition.WC_Arrive);
             }
 
-            if (Statistics.GemCount == 0)
+            if (TotalGem == 0)
             {
                 RemoveCondition(EWinCondition.WC_Collect);
             }
@@ -306,7 +316,7 @@ namespace GameA.Game
 
         public void Check(Table_Unit tableUnit)
         {
-            Statistics.AddOrDeleteUnit(tableUnit, true);
+            MapStatistics.AddOrDeleteUnit(tableUnit, true);
         }
 
         /// <summary>
@@ -314,17 +324,17 @@ namespace GameA.Game
         /// </summary>
         public void ForceSetTimeFinish()
         {
-            _gameTimer = Statistics.TimeLimit * 10;
+            _gameTimer = MapStatistics.TimeLimit * 10;
         }
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
-            return Statistics.HasWinCondition(eWinCondition);
+            return MapStatistics.HasWinCondition(eWinCondition);
         }
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            Statistics.SetWinCondition(eWinCondition, false);
+            MapStatistics.SetWinCondition(eWinCondition, false);
         }
 
         public void UpdateLogic(float deltaTime)
@@ -349,21 +359,7 @@ namespace GameA.Game
             {
                 if (NetBattleTimeOver())
                 {
-                    switch ((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition)
-                    {
-                        case ENetBattleTimeResult.Score:
-                            NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
-                            break;
-                        case ENetBattleTimeResult.AllWin:
-                            NetBattleWin(true);
-                            break;
-                        case ENetBattleTimeResult.AllFail:
-                            NetBattleWin(false);
-                            break;
-                        default:
-                            LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
-                            break;
-                    }
+                    NetBattleOver();
                 }
             }
             else
@@ -388,6 +384,25 @@ namespace GameA.Game
                 }
 
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
+            }
+        }
+
+        private void NetBattleOver()
+        {
+            switch ((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition)
+            {
+                case ENetBattleTimeResult.Score:
+                    NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+                    break;
+                case ENetBattleTimeResult.AllWin:
+                    NetBattleWin(true);
+                    break;
+                case ENetBattleTimeResult.AllFail:
+                    NetBattleWin(false);
+                    break;
+                default:
+                    LogHelper.Error("NetBattleTimeWinCondition has beyonded limit");
+                    break;
             }
         }
 
@@ -440,6 +455,18 @@ namespace GameA.Game
             return false;
         }
 
+        public bool RpgUseKey()
+        {
+            if (_keyGain > 0)
+            {
+                _keyGain--;
+                Messenger.Broadcast(EMessengerType.OnKeyChanged);
+                return true;
+            }
+
+            return false;
+        }
+
         public void MainUnitSiTouLe()
         {
             _runState = ESceneState.Fail;
@@ -453,12 +480,12 @@ namespace GameA.Game
                 return false;
             }
 
-            if (Statistics.WinCondition == 0)
+            if (MapStatistics.WinCondition == 0)
             {
                 return false;
             }
 
-            if (Statistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
+            if (MapStatistics.WinCondition == 1 << (int) EWinCondition.WC_TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
@@ -525,7 +552,7 @@ namespace GameA.Game
 
         private bool CheckWinCollectTreasure()
         {
-            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < Statistics.GemCount;
+            return HasWinCondition(EWinCondition.WC_Collect) && _gemGain < TotalGem;
         }
 
         private bool CheckWinKillMonster()
@@ -550,13 +577,13 @@ namespace GameA.Game
 
         public bool CanHarmType(EHarmType eHarmType)
         {
-            return Statistics.CanHarmType(eHarmType);
+            return MapStatistics.CanHarmType(eHarmType);
         }
 
         public void CheckNetBattleWin(int score, bool myTeam)
         {
             if (!IsMulti) return;
-            if (Statistics.NetBattleScoreWinCondition && score >= Statistics.NetBattleWinScore)
+            if (MapStatistics.NetBattleScoreWinCondition && score >= MapStatistics.NetBattleWinScore)
             {
                 NetBattleWin(myTeam, true);
             }
@@ -567,12 +594,25 @@ namespace GameA.Game
             return _gameTimer >= RunTimeTimeLimit;
         }
 
-        private void NetBattleWin(bool win, bool scoreWin = false)
+        private void NetBattleWin(bool win, bool scoreWin = false, bool allFail = false)
         {
             var gameMode = GM2DGame.Instance.GameMode as GameModeNetPlay;
             if (gameMode != null && gameMode.CurGamePhase == GameModeNetPlay.EGamePhase.Wait)
             {
                 return;
+            }
+
+            if (scoreWin)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
+            }
+            else if (allFail)
+            {
+                TeamManager.Instance.GameOver(ENetBattleTimeResult.AllFail);
+            }
+            else
+            {
+                TeamManager.Instance.GameOver((ENetBattleTimeResult) MapStatistics.NetBattleTimeWinCondition);
             }
 
             if (win)
@@ -585,27 +625,46 @@ namespace GameA.Game
                 _runState = ESceneState.Fail;
                 Messenger.Broadcast(EMessengerType.GameFinishFailed);
             }
-
-            if (scoreWin)
-            {
-                TeamManager.Instance.GameOver(ENetBattleTimeResult.Score);
-            }
-            else
-            {
-                TeamManager.Instance.GameOver((ENetBattleTimeResult) Statistics.NetBattleTimeWinCondition);
-            }
         }
 
-        public void AllPlayerSiTouLe()
+        public void AllTeamerSiTouLe()
         {
-            if (Statistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
-            {
-                NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
-            }
-            else
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Cooperation)
             {
                 NetBattleWin(false);
             }
+            else if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
+            {
+                if (MapStatistics.NetBattleTimeWinCondition == (int) ENetBattleTimeResult.Score)
+                {
+                    if (TeamManager.Instance.CheckLeftTeamCount(1))
+                    {
+                        NetBattleWin(TeamManager.Instance.MyTeamScoreBest());
+                    }
+                }
+                else
+                {
+                    if (TeamManager.Instance.CheckLeftTeamCount(0))
+                    {
+                        NetBattleWin(false, false, true);
+                    }
+                }
+            }
+        }
+
+        public int GetGemGainScore()
+        {
+            return _gemGain * 100;
+        }
+
+        public int GetLastTimeScore()
+        {
+            return (int) (RunTimeTimeLimit - _gameTimer) * 10;
+        }
+
+        public int GetKillMonsterScore()
+        {
+            return _monsterKilled * 200;
         }
     }
 }

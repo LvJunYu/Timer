@@ -6,7 +6,6 @@ namespace GameA.Game
     public class SpacetimeDoor : Magic
     {
         private UnitBase _outUnit;
-        private int _outTimer;
 
         protected override bool OnInit()
         {
@@ -41,17 +40,11 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_outTimer > 0)
+            if (_outUnit != null && !_colliderGrid.Intersects(_outUnit.ColliderGrid))
             {
-                _outTimer--;
+                _outUnit = null;
             }
-            else
-            {
-                if (_outUnit != null && !_colliderGrid.Intersects(_outUnit.ColliderGrid))
-                {
-                    _outUnit = null;
-                }
-            }
+
             base.UpdateLogic();
         }
 
@@ -66,13 +59,17 @@ namespace GameA.Game
                 LogHelper.Error("The Spacetime Door is in the same scene");
                 return;
             }
-                    
+
             if (!sender.EnterSpacetimeDoor())
             {
                 return;
             }
+
             UnitBase unit;
             SpacetimeDoor spacetimeDoor = null;
+            //广播改变场景的时的函数
+            Messenger.Broadcast(EMessengerType.OnSceneChanged);
+            SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
             CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
             {
                 Scene2DManager.Instance.ChangeScene(sceneIndex, EChangeSceneType.ChangeScene);
@@ -81,20 +78,24 @@ namespace GameA.Game
                     LogHelper.Error("can not get unit");
                     return;
                 }
+
                 spacetimeDoor = unit as SpacetimeDoor;
                 if (spacetimeDoor == null)
                 {
                     LogHelper.Error("the out spacetimeDoor is null");
                     return;
                 }
-                sender.SetPos(spacetimeDoor.CurPos); 
+
+                sender.SetPos(spacetimeDoor.CurPos);
             }, () =>
             {
+                SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
                 sender.OutSpacetimeDoor();
                 if (spacetimeDoor != null)
                 {
                     spacetimeDoor.OnUnitOut(sender);
                 }
+
                 pairUnit.Sender = null;
             });
         }
@@ -102,7 +103,6 @@ namespace GameA.Game
         private void OnUnitOut(UnitBase unit)
         {
             _outUnit = unit;
-            _outTimer = 10;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -164,9 +164,8 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            base.Clear();
             _outUnit = null;
-            _outTimer = 0;
+            base.Clear();
         }
     }
 }

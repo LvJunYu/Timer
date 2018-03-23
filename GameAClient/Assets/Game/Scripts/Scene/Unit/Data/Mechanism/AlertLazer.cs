@@ -100,9 +100,9 @@ namespace GameA.Game
             }
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            var unitExtra = base.UpdateExtraData();
+            var unitExtra = base.UpdateExtraData(unitExtraDynamic);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
             return unitExtra;
@@ -166,14 +166,16 @@ namespace GameA.Game
                                 }
                             }
                             bool flag = false;
-                            var units = ColliderScene2D.GetUnits(hit);
-                            for (int j = 0; j < units.Count; j++)
+                            using (var units = ColliderScene2D.GetUnits(hit))
                             {
-                                if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
+                                for (int j = 0; j < units.Count; j++)
                                 {
-                                    _distance = hit.distance;
-                                    flag = true;
-                                    break;
+                                    if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
+                                    {
+                                        _distance = hit.distance;
+                                        flag = true;
+                                        break;
+                                    }
                                 }
                             }
                             if (flag)

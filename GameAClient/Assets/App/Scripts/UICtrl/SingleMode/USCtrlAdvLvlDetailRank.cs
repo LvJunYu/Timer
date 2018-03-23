@@ -24,6 +24,7 @@ namespace GameA
         public override void Open()
         {
             _cachedView.gameObject.SetActive(true);
+            _cachedView.GridDataScroller.ContentPosition = Vector2.zero;
             RefreshView();
         }
 

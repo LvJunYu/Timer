@@ -32,11 +32,13 @@ namespace GameA
                 _cacheDic.Add(typeof(T).Name, new List<IUMPoolable>(16));
                 umCache = _cacheDic[typeof(T).Name];
             }
+
             var item = umCache.Find(p => !p.IsShow);
             if (item == null)
             {
                 item = new T();
                 item.Init(rectTransform, resScenary);
+               
                 umCache.Add(item);
             }
             else
@@ -44,6 +46,7 @@ namespace GameA
                 item.Show();
                 item.SetParent(rectTransform);
             }
+
             return item as T;
         }
 
@@ -59,6 +62,7 @@ namespace GameA
             {
                 value.ForEach(p => p.Destroy());
             }
+
             _cacheDic.Clear();
             _instance = null;
         }

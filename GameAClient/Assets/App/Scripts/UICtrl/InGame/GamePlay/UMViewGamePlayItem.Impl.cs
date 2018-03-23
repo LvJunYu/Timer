@@ -95,15 +95,15 @@ namespace GameA
             {
                 case EWinCondition.WC_Arrive:
                     {
-                        return Game.EditMode.Instance.MapStatistics.FinalCount;
+                        return EditMode.Instance.MapStatistics.FinalCount;
                     }
                 case EWinCondition.WC_Collect:
                     {
-                        return Game.EditMode.Instance.MapStatistics.GemCount;
+                        return EditMode.Instance.MapStatistics.GemCount + Scene2DManager.Instance.GetGemCountInWoodCase();
                     }
                 case EWinCondition.WC_Monster:
                     {
-                        return Game.EditMode.Instance.MapStatistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves();
+                        return EditMode.Instance.MapStatistics.MonsterCount + Scene2DManager.Instance.GetMonsterCountInCaves();
                     }
                 //case Game.EWinCondition.RescueHero:
                     //{

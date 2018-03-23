@@ -10,8 +10,16 @@ namespace JoyGameBuildVersionTool
         private static List<DatFileInfo> _fileInfoList;
         public static void Main(string[] args)
         {
-            Process("/Users/quan/Downloads/JoyGameRes/Game/",
-                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.1.2");
+            if (args.Length != 3)
+            {
+                Console.WriteLine("sourcePath/ destinationPath/ version");
+                throw new ArgumentException();
+            }
+            
+            Process(args[0], args[1], args[2]);
+            
+//            Process("/Users/quan/Downloads/JoyGameRes/Game/",
+//                "/Users/quan/Downloads/JoyGameRes/OutputResRoot/", "0.2.3.1");
         }
 
         private static void Process(string inputPath, string outputPath, string version)
@@ -20,6 +28,12 @@ namespace JoyGameBuildVersionTool
             var list = di.GetFiles("*", SearchOption.AllDirectories);
             _fileInfoList = new List<DatFileInfo>(list.Length);
             byte[] writeBuffer = new byte[1024];
+            var outputRoot = outputPath + "/version/" + version + "/";
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.Delete(outputRoot, true);
+            }
+            
             foreach (var fileInfo in list)
             {
                 var datFileInfo = new DatFileInfo();
@@ -28,7 +42,7 @@ namespace JoyGameBuildVersionTool
                 datFileInfo.Name = fileInfo.FullName.Substring(inputPath.Length);
                 string targetFileName = outputPath + "/version/" + version + "/" + datFileInfo.Name+".dat";
                 var targetDir = Path.GetDirectoryName(targetFileName);
-                if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
+                if (!Directory.Exists(targetDir))
                 {
                     Directory.CreateDirectory(targetDir);
                 }
@@ -84,6 +98,7 @@ namespace JoyGameBuildVersionTool
                 }
             }
             File.Delete(outputPath+"version/" +version+"/manifest.xml.raw");
+            Console.Out.WriteLine("Done");
         }
         private class DatFileInfo
         {

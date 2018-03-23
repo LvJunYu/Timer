@@ -194,23 +194,16 @@ namespace GameA.Game
             return (int) ESortingOrder.Item;
         }
 
-        public UnitBase GetUnit(Table_Unit tableUnit, EDirectionType dir)
+        public UnitBase GetUnit(Table_Unit tableUnit, EDirectionType dir, UnitExtraDynamic unitExtra)
         {
-            UnitBase unit = GetUnit(tableUnit.Id);
-            if (unit == null)
-            {
-                LogHelper.Error("GetUnit Failed,{0}", tableUnit.Id);
-                return null;
-            }
             var unitDesc = new UnitDesc();
             unitDesc.Id = tableUnit.Id;
             unitDesc.Rotation = (byte) dir;
             unitDesc.Scale = Vector2.one;
-            unit.Init(unitDesc, tableUnit);
-            return unit;
+            return GetUnit(unitDesc, tableUnit, unitExtra);
         }
 
-        public UnitBase GetUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public UnitBase GetUnit(UnitDesc unitDesc, Table_Unit tableUnit, UnitExtraDynamic unitExtra)
         {
             UnitBase unit = GetUnit(unitDesc.Id);
             if (unit == null)
@@ -218,7 +211,7 @@ namespace GameA.Game
                 LogHelper.Error("GetUnit Failed,{0}", unitDesc.Id);
                 return null;
             }
-            unit.Init(unitDesc, tableUnit);
+            unit.Init(unitDesc, tableUnit, unitExtra);
             return unit;
         }
 
@@ -235,6 +228,8 @@ namespace GameA.Game
                     return PoolFactory<ProjectileFire>.Get();
                 case 10003:
                     return PoolFactory<ProjectileIce>.Get();
+                case 11001:
+                    return PoolFactory<ProjectileMissile>.Get();
             }
             return (UnitBase) Activator.CreateInstance(type);
         }
@@ -249,6 +244,9 @@ namespace GameA.Game
                 case 10003:
                     PoolFactory<ProjectileIce>.Free((ProjectileIce) unit);
                     break;
+                case 11001:
+                    PoolFactory<ProjectileMissile>.Free((ProjectileMissile) unit);
+                    break; 
             }
             if (unit.View == null)
             {

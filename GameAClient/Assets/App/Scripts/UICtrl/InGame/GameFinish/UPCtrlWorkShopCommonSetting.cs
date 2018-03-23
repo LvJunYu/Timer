@@ -8,6 +8,10 @@ namespace GameA
         private USCtrlGameSettingItem _playBGMusic_2;
         private USCtrlGameSettingItem _playSoundsEffects_2;
 
+        private USCtrlSliderSetting _playBGMusicSlider_2;
+        private USCtrlSliderSetting _playSoundsEffectsSlider_2;
+
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -16,6 +20,7 @@ namespace GameA
                 LogHelper.Error("EInputKey.Max != _cachedView.UMInputKeyViews.Length");
                 return;
             }
+
             _usCtrls = new USCtrlInputKeySetting[(int) EInputKey.Max];
             for (int i = 0; i < _usCtrls.Length; i++)
             {
@@ -24,6 +29,7 @@ namespace GameA
                 _usCtrls[i].InitInputKey((EInputKey) i); //注意：枚举中的排序必须和数组中排序相同
                 _usCtrls[i].AddBtnCallBack(StartSettingInputKey);
             }
+
             _cachedView.SureBtn_2.onClick.AddListener(OnOKBtn);
             _cachedView.SureBtn_3.onClick.AddListener(OnOKBtn);
             _cachedView.RestoreDefaultBtn.onClick.AddListener(OnRestoreDefaultBtn);
@@ -33,8 +39,14 @@ namespace GameA
             _playSoundsEffects_2.Init(_cachedView.PlaySoundsEffects_2);
             _cachedView.FullScreenToggle.onValueChanged.AddListener(OnFullScreenToggleValueChanged);
             _cachedView.ResolutionDropdown.onValueChanged.AddListener(OnResolutionDropdownValueChanged);
+            //slider设置
+            _playBGMusicSlider_2 = new USCtrlSliderSetting();
+            _playBGMusicSlider_2.Init(_cachedView.UsBGMusicSetting_2);
+            _playBGMusicSlider_2.Set(0, 10, _mainCtrl.OnMusicSliderChange);
+            _playSoundsEffectsSlider_2 = new USCtrlSliderSetting();
+            _playSoundsEffectsSlider_2.Init(_cachedView.UsMusicEffectSetting_2);
+            _playSoundsEffectsSlider_2.Set(0, 10, _mainCtrl.OnSoundsEffectsSlider);
         }
-
         public override void Open()
         {
             base.Open();
@@ -60,9 +72,12 @@ namespace GameA
 
         private void UpdateSettingItem()
         {
-            _playBGMusic_2.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
-            _playSoundsEffects_2.SetData(GameSettingData.Instance.PlaySoundsEffects,
-                _mainCtrl.OnClickSoundsEffectsButton);
+            _playBGMusicSlider_2.SetCur(GameSettingData.Instance.PlayMusic);
+            _playSoundsEffectsSlider_2.SetCur(GameSettingData.Instance.PlaySoundsEffects);
+
+//            _playBGMusic_2.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
+//            _playSoundsEffects_2.SetData(GameSettingData.Instance.PlaySoundsEffects,
+//                _mainCtrl.OnClickSoundsEffectsButton);
         }
 
         private void UpdateScreenSettingView()

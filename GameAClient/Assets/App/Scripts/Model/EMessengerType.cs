@@ -15,6 +15,7 @@ namespace GameA
         public static readonly int OnUserFavoriteProjectListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserWorldProjectPlayHistoryListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorldBestProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorldSelfRecommendProjectListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorldFollowedUserProjectListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnProjectDataChanged = SoyEngine.EMessengerType.NextId++;
@@ -36,7 +37,7 @@ namespace GameA
         public static readonly int OnWorkShopProjectListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopDownloadListChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnWorkShopProjectPublished = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnWorkShopProjectUnPublished = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnPublishedProjectChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectNotValid = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnRequestStartGame = SoyEngine.EMessengerType.NextId++;
@@ -62,6 +63,7 @@ namespace GameA
 
         public static readonly int OnSendRecordCommentSuccess = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRecordCommentChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnSwitchEnd = SoyEngine.EMessengerType.NextId++;
 
         /// <summary>
         /// 弹窗
@@ -126,7 +128,13 @@ namespace GameA
         public static readonly int OnRoomProjectInfoFinish = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnRoomPlayerInfoChanged = SoyEngine.EMessengerType.NextId++;
-        
+        public static readonly int OnSelectedOfficalProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnInTeam = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnLeaveTeam = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnTeamUserChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnTeamInviteChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnRoomInviteChanged = SoyEngine.EMessengerType.NextId++;
+
         //拼图
         public static readonly int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
 
@@ -193,5 +201,9 @@ namespace GameA
 
         //绳子
         public static readonly int OnPlayerClimbRope = SoyEngine.EMessengerType.NextId++;
+
+        //工坊自荐面板
+        public static readonly int OnWorkShopSelfRecommendEditBtn = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopSelfRecommendCancelBtn = SoyEngine.EMessengerType.NextId++;
     }
 }

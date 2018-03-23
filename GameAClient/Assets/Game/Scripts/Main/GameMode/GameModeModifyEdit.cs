@@ -96,7 +96,7 @@ namespace GameA.Game
 
         public override void ChangeMode(EMode mode)
 		{
-			if (mode == _mode)
+			if (mode == Mode)
 			{
 				return;
 			}

@@ -16,7 +16,7 @@ namespace GameA
         private Project _project;
         private bool _isMyself;
         private bool _isMulti;
-
+        private bool _isRpg;
         private bool _isRequestDownload;
         private bool _isRequestFavorite;
         private bool _onlyChangeView;
@@ -87,7 +87,7 @@ namespace GameA
             upCtrlProjectMultiDetail.SetMenu(EMenu.MultiDetail);
             upCtrlProjectMultiDetail.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.MultiDetail] = upCtrlProjectMultiDetail;
-            
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var index = i;
@@ -117,13 +117,17 @@ namespace GameA
                 return;
             }
 
-            if (!CheckProjectValid())
-            {
-                return;
-            }
-
             _isMyself = _project.UserInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid;
             _isMulti = _project.IsMulti;
+            _isRpg = false;
+            if (AppData.Instance.OfficialProjectList != null)
+            {
+                if (AppData.Instance.OfficialProjectList.RpgProjectList != null)
+                {
+                    _isRpg = AppData.Instance.OfficialProjectList.RpgProjectList.Contains(_project);
+                }
+            }
+
             _project.Request(_project.ProjectId, null, null);
             RefreshView();
             if (_project.ProjectId != _lastProjectId)
@@ -140,11 +144,23 @@ namespace GameA
                 _lastProjectId = _project.ProjectId;
             }
 
+            if (_isRpg)
+            {
+                _curMenu = EMenu.Rank;
+            }
+
             _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
 
         protected override void OnClose()
         {
+            if (_isRpg)
+            {
+                SetRPGProject(false);
+                _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+                _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+            }
+
             if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Close();
@@ -233,6 +249,16 @@ namespace GameA
 //                _cachedView.RecentGridDataScroller.MouseIn && _upCtrlProjectRecentRecord.HasComment;
 //        }
 
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+        }
+
         public bool CheckPlayed(string content)
         {
             if (_isMulti)
@@ -303,6 +329,15 @@ namespace GameA
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
             RefreshBtns();
             RefreshCommentCount(_project.TotalCommentCount);
+            if (_isRpg)
+            {
+                SetRPGProject(true);
+            }
+            else
+            {
+                _cachedView.RpgDescText.SetActiveEx(false);
+                _cachedView.RpgTileText.SetActiveEx(false);
+            }
         }
 
         private void RefreshBtns()
@@ -313,7 +348,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.FollowBtnTxt,
                 hasFollowed ? RelationCommonString.FollowedStr : RelationCommonString.FollowStr);
             _collected = _project.ProjectUserData != null && _project.ProjectUserData.Favorite;
-            _cachedView.FavoriteTxt.text = _collected ? RelationCommonString.CollectedStr : RelationCommonString.CollectStr;
+            _cachedView.FavoriteTxt.text =
+                _collected ? RelationCommonString.CollectedStr : RelationCommonString.CollectStr;
             _onlyChangeView = true;
             _cachedView.GoodTog.isOn = _project.ProjectUserData != null &&
                                        _project.ProjectUserData.LikeState == EProjectLikeState.PLS_Like;
@@ -549,6 +585,7 @@ namespace GameA
             {
                 return;
             }
+
             if (_isMulti)
             {
                 RoomManager.Instance.SendRequestQuickPlay(EQuickPlayType.EQPT_Specific, _project.ProjectId);
@@ -565,7 +602,7 @@ namespace GameA
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                }); 
+                });
             }
         }
 
@@ -624,6 +661,7 @@ namespace GameA
         {
             if (_isOpen && _curMenu == EMenu.Comment)
             {
+                _project.Request(_project.ProjectId, null, null);
                 ((UPCtrlProjectComment) _curMenuCtrl).OnDeleteUserMessage(comment);
             }
         }
@@ -685,7 +723,38 @@ namespace GameA
             {
                 _curMenuCtrl.Open();
             }
+
             _cachedView.DownDock.SetActive(_curMenu != EMenu.MultiDetail);
+            if (_isRpg)
+            {
+                _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+                _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(false);
+            }
+
+            if (_isRpg)
+            {
+                _cachedView.CommentRect.anchoredPosition = new Vector2(244, -84);
+            }
+            else
+            {
+                _cachedView.CommentRect.anchoredPosition = new Vector2(244, -38);
+            }
+        }
+
+        public void SetRPGProject(bool isrpg)
+        {
+            _cachedView.MenuButtonAry[(int) EMenu.Recent].SetActiveEx(!isrpg);
+            _cachedView.MenuSelectedButtonAry[(int) EMenu.Recent].SetActiveEx(!isrpg);
+            _cachedView.DownloadBtn.SetActiveEx(!isrpg);
+            _cachedView.FavoriteBtn.SetActiveEx(!isrpg);
+            _cachedView.ShareBtn.SetActiveEx(!isrpg);
+            _cachedView.RpgDescText.SetActiveEx(isrpg);
+            _cachedView.RpgTileText.SetActiveEx(isrpg);
+            _cachedView.UserObj.SetActiveEx(!isrpg);
+            _cachedView.TileObj.SetActiveEx(!isrpg);
+            _cachedView.RpgDescText.text = _project.ShowSummary;
+            _cachedView.RpgTileText.text = _project.Name;
+            _cachedView.Desc.SetActiveEx(!isrpg);
         }
 
         public enum EMenu

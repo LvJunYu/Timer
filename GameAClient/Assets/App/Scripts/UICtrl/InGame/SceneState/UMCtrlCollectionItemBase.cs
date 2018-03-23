@@ -35,7 +35,9 @@ namespace GameA
         public virtual void CollectAnimation(Vector3 initialPos, RectTransform targetTRF)
         {
             if (null == _uiCamera)
+            {
                 _uiCamera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
+            }
             Vector3 pos = CameraManager.Instance.RendererCamera.WorldToScreenPoint(initialPos);
             pos = _uiCamera.ScreenToWorldPoint(pos);
             if (null == _doMove)

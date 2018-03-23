@@ -36,12 +36,16 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _moveDirectionMenuList;
         private USCtrlUnitPropertyEditButton[] _rotateMenuList;
         private USCtrlUnitPropertyEditButton[] _rotateEndMenuList;
+        private USCtrlUnitPropertyEditButton[] _angelMenuList;
+        private USCtrlUnitPropertyEditButton _angelSetting;
         private USCtrlUnitPropertyEditButton[] _triggerDelayMenuList;
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private USCtrlUnitPropertyEditButton[] _campMenuList;
         private USCtrlUnitPropertyEditButton[] _npcTypeMenuList;
         private USCtrlUnitPropertyEditButton[] _monsterCaveMenuList;
         private USCtrlUnitPropertyEditButton[] _spawnMenuList;
+        private USCtrlUnitPropertyEditButton _usCtrlWoodCase = new USCtrlUnitPropertyEditButton();
+        private USCtrlSliderSetting _bombPowerSetting;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
         private float _posTweenFactor;
@@ -51,6 +55,9 @@ namespace GameA
         private Project _project;
         private UnitExtraDynamic _curUnitExtra;
         private int _curId;
+        private UPCtrlUnitPropertySurpriseBox _upCtrlSurpriseBox;
+        private UPCtrlUnitPropertyPasswordDoor _upCtrlPasswordDoor = new UPCtrlUnitPropertyPasswordDoor();
+        private UPCtrlUnitPropertyCycle _upCtrlCycleSetting;
 
         public bool IsInMap
         {
@@ -83,6 +90,16 @@ namespace GameA
             get { return _curId; }
         }
 
+        public UPCtrlUnitPropertyPasswordDoor UpCtrlPasswordDoor
+        {
+            get { return _upCtrlPasswordDoor; }
+        }
+
+        public USCtrlUnitPropertyEditButton UsCtrlWoodCase
+        {
+            get { return _usCtrlWoodCase; }
+        }
+
         public UPCtrlUnitPropertyEditNpcDiaType EditNpcDiaType;
         public UPCtrlUnitPropertyEditNpcTaskDock EditNpcTaskDock;
         public UPCtrlUnitPropertyEditNpcTaskMonsterAdvance EditNpcTaskMonsterType;
@@ -95,6 +112,7 @@ namespace GameA
         public UPCtrlUnitPropertyEditNpcTaskEditDia EditNpcDia;
         public UPCtrlUnitPropertyEditNpcBeforeTaskAwardType EditBeforeTaskAward;
         public UPCtrlUnitPropertyEditNpcFinishTaskAwardType EditFinishTaskAward;
+        public UPCtrlUnitPropertyEditNpcTaskAwardColltionAdvance EditNpcTaskAwardColltionAdvance;
 
         protected override void InitGroupId()
         {
@@ -176,12 +194,24 @@ namespace GameA
             //任务完成后的奖励
             EditFinishTaskAward = new UPCtrlUnitPropertyEditNpcFinishTaskAwardType();
             EditFinishTaskAward.Init(this, _cachedView);
+            //任务后奖励的物品
+            EditNpcTaskAwardColltionAdvance = new UPCtrlUnitPropertyEditNpcTaskAwardColltionAdvance();
+            EditNpcTaskAwardColltionAdvance.Init(this, _cachedView);
+            //惊喜盒子
+            _upCtrlSurpriseBox = new UPCtrlUnitPropertySurpriseBox();
+            _upCtrlSurpriseBox.Init(this, _cachedView);
+            //密码门
+            _upCtrlPasswordDoor.Init(this, _cachedView);
+            //循环拾取
+            _upCtrlCycleSetting = new UPCtrlUnitPropertyCycle();
+            _upCtrlCycleSetting.Init(this, _cachedView);
 
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
             _rootArray[(int) EEditType.MoveDirection] = _cachedView.MoveDirectionDock;
             _rootArray[(int) EEditType.Rotate] = _cachedView.RotateDock;
+            _rootArray[(int) EEditType.Angel] = _cachedView.AngelDock;
             _rootArray[(int) EEditType.TimeDelay] = _cachedView.TriggerDelayDock;
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
             _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
@@ -191,6 +221,11 @@ namespace GameA
             _rootArray[(int) EEditType.NpcTask] = _cachedView.NpcDiaLogDock;
             _rootArray[(int) EEditType.MonsterCave] = _cachedView.MonsterCaveDock;
             _rootArray[(int) EEditType.Spawn] = _cachedView.SpawnDock;
+            _rootArray[(int) EEditType.SurpriseBox] = _cachedView.SurpriseBoxDock;
+            _rootArray[(int) EEditType.WoodCase] = _cachedView.WoodCaseDock;
+            _rootArray[(int) EEditType.PasswordDoor] = _cachedView.PasswordDoorDock;
+            _rootArray[(int) EEditType.Bomb] = _cachedView.BombDock;
+            _rootArray[(int) EEditType.Cycle] = _cachedView.CycleDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -202,15 +237,20 @@ namespace GameA
             _menuButtonArray[(int) EEditType.Child].Init(_cachedView.PayloadMenu);
             _menuButtonArray[(int) EEditType.MoveDirection].Init(_cachedView.MoveDirectionMenu);
             _menuButtonArray[(int) EEditType.Rotate].Init(_cachedView.RotateStateMenu);
+            _menuButtonArray[(int) EEditType.Angel].Init(_cachedView.AngelMenu);
             _menuButtonArray[(int) EEditType.TimeDelay].Init(_cachedView.TimeDelayMenu);
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
             _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
             _menuButtonArray[(int) EEditType.Camp].Init(_cachedView.CampMenu);
-
             _menuButtonArray[(int) EEditType.NpcType].Init(_cachedView.NpcTypeMenu);
             _menuButtonArray[(int) EEditType.NpcTask].Init(_cachedView.NpcTaskSettingMenu);
             _menuButtonArray[(int) EEditType.MonsterCave].Init(_cachedView.MonsterCaveMenu);
             _menuButtonArray[(int) EEditType.Spawn].Init(_cachedView.SpawnMenu);
+            _menuButtonArray[(int) EEditType.SurpriseBox].Init(_cachedView.SurpriseBoxMenu);
+            _menuButtonArray[(int) EEditType.WoodCase].Init(_cachedView.WoodCaseMenu);
+            _menuButtonArray[(int) EEditType.PasswordDoor].Init(_cachedView.PasswordDoorMenu);
+            _menuButtonArray[(int) EEditType.Bomb].Init(_cachedView.BombMenu);
+            _menuButtonArray[(int) EEditType.Cycle].Init(_cachedView.CycleMenu);
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -337,6 +377,39 @@ namespace GameA
                 }
             }
 
+            // 角度方向
+            list = _cachedView.AngelDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
+            _angelMenuList = new USCtrlUnitPropertyEditButton[list.Length - 1];
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (i == list.Length - 1)
+                {
+                    _angelSetting = new USCtrlUnitPropertyEditButton();
+                    _angelSetting.Init(list[i]);
+                    _angelSetting.AddClickListener(() =>
+                    {
+                        EditData.UnitExtra.RotateMode = 0;
+                        RefreshAngelMenu();
+                    });
+                }
+                else
+                {
+                    var inx = i;
+                    var button = new USCtrlUnitPropertyEditButton();
+                    button.Init(list[i]);
+                    _angelMenuList[inx] = button;
+                    _angelMenuList[inx].AddClickListener(() => OnAngelMenuClick(inx));
+                    if (inx < 4)
+                    {
+                        button.SetPosAngle(90 * inx, RotateEndOptionsPosRadius);
+                    }
+                    else
+                    {
+                        button.SetPosAngle(45 + 90 * (inx - 4), RotateEndOptionsPosRadius);
+                    }
+                }
+            }
+
             //出发延迟
             list = _cachedView.TriggerDelayDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _triggerDelayMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -434,6 +507,16 @@ namespace GameA
                 _spawnMenuList[i].SetText(string.Format("0{0}", i + 1));
                 button.SetPosAngle(da * i, MenuOptionsPosRadius);
             }
+
+            //炸弹
+            var view = _cachedView.BombDock.GetComponentInChildren<USViewSliderSetting>();
+            _bombPowerSetting = new USCtrlSliderSetting();
+            _bombPowerSetting.Init(view);
+            UnitExtraHelper.SetUSCtrlSliderSetting(_bombPowerSetting, EAdvanceAttribute.Damage,
+                value => EditData.UnitExtra.Damage = (ushort) value);
+
+            var woodCaseView = _cachedView.WoodCaseDock.GetComponentInChildren<USViewUnitPropertyEditButton>();
+            _usCtrlWoodCase.Init(woodCaseView);
         }
 
         protected override void OnOpen(object parameter)
@@ -445,7 +528,6 @@ namespace GameA
             EditData = _originData;
             EditData.UnitExtra = _originData.UnitExtra.Clone();
             _project = GM2DGame.Instance.GameMode.Project;
-//            _project.ProjectType = EProjectType.PS_Compete; //todo 临时
             if (_project == null)
             {
                 LogHelper.Error("RefreshSpawmMenu, but project is null");
@@ -558,6 +640,10 @@ namespace GameA
                 _validEditPropertyList.Add(EEditType.Direction);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(true);
                 RefreshForwardMenu();
+//                if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+//                {
+//                    _menuButtonArray[(int) EEditType.Direction].SetEnable(false);
+//                }
             }
             else
             {
@@ -585,6 +671,51 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.Rotate].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Angel))
+            {
+                _validEditPropertyList.Add(EEditType.Angel);
+                _menuButtonArray[(int) EEditType.Angel].SetEnable(true);
+                RefreshAngelMenu();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Angel].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.SurpriseBox))
+            {
+                _validEditPropertyList.Add(EEditType.SurpriseBox);
+                _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(true);
+                _upCtrlSurpriseBox.RefreshView();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.SurpriseBox].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.WoodCase))
+            {
+                _validEditPropertyList.Add(EEditType.WoodCase);
+                _menuButtonArray[(int) EEditType.WoodCase].SetEnable(true);
+                int id = GetCurUnitExtra().CommonValue;
+                _usCtrlWoodCase.SetFgImage(UMCtrlWoodCaseItem.GetSprite(id), id == 0, 54, 54);
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.WoodCase].SetEnable(false);
+            }
+
+            if (_curId == UnitDefine.PasswordDoorId)
+            {
+                _validEditPropertyList.Add(EEditType.PasswordDoor);
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(true);
+                _upCtrlPasswordDoor.RefreshView();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.PasswordDoor].SetEnable(false);
             }
 
             if (_tableUnit.CanEdit(EEditType.Text))
@@ -618,6 +749,28 @@ namespace GameA
             else
             {
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Bomb))
+            {
+                _validEditPropertyList.Add(EEditType.Bomb);
+                _menuButtonArray[(int) EEditType.Bomb].SetEnable(true);
+                _bombPowerSetting.SetCur(EditData.UnitExtra.Damage);
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Bomb].SetEnable(false);
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Cycle))
+            {
+                _validEditPropertyList.Add(EEditType.Cycle);
+                _menuButtonArray[(int) EEditType.Cycle].SetEnable(true);
+                _upCtrlCycleSetting.RefreshView();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Cycle].SetEnable(false);
             }
 
             //能编辑Npc/
@@ -658,7 +811,17 @@ namespace GameA
 
         private void RefreshForwardMenu()
         {
-            var val = Mathf.Clamp(EditData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
+            int rotation;
+            if (_curId == UnitDefine.LocationMissileId)
+            {
+                rotation = EditData.UnitExtra.ChildRotation;
+            }
+            else
+            {
+                rotation = EditData.UnitDesc.Rotation;
+            }
+
+            var val = Mathf.Clamp(rotation, 0, _forwardMenuList.Length - 1);
             for (byte i = 0; i < _forwardMenuList.Length; i++)
             {
                 if (EditHelper.CheckMask(i, _tableUnit.DirectionMask))
@@ -678,6 +841,11 @@ namespace GameA
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
                 RefreshRotateEndMenu();
+            }
+
+            if (_tableUnit.CanEdit(EEditType.Angel))
+            {
+                RefreshAngelMenu();
             }
         }
 
@@ -818,6 +986,32 @@ namespace GameA
             menuRotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * start / 8);
         }
 
+        private void RefreshAngelMenu()
+        {
+            byte rotation = EditData.UnitExtra.ChildRotation;
+            bool noAngel = EditData.UnitExtra.RotateMode == 0;
+            _angelSetting.SetSelected(noAngel);
+            _menuButtonArray[(int) EEditType.Angel].RotateMenuView.FgImage.SetActiveEx(noAngel);
+            _menuButtonArray[(int) EEditType.Angel].RotateMenuView.RotateDock.SetActiveEx(!noAngel);
+            var startSprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgForward);
+            var normalSprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgNormal);
+            int startIndex = EditHelper.CalcDirectionVal(rotation);
+            int endIndex = EditHelper.CalcDirectionVal(EditData.UnitExtra.RotateValue);
+            int count = noAngel ? 0 : (startIndex + 7 - endIndex) % 8 + 1;
+            for (int i = 0; i < _rotateEndMenuList.Length; i++)
+            {
+                var btn = _angelMenuList[i];
+                btn.SetBgImage(i == rotation ? startSprite : normalSprite);
+                btn.SetSelected(i == EditData.UnitExtra.RotateValue && !noAngel);
+            }
+
+            _cachedView.AngelViewImage.fillAmount = 1f * count / 8;
+            _cachedView.AngelViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * endIndex / 8);
+            var menuRotateViewImage = _menuButtonArray[(int) EEditType.Angel].RotateMenuView.RotateView;
+            menuRotateViewImage.fillAmount = 1f * count / 8;
+            menuRotateViewImage.rectTransform.localEulerAngles = new Vector3(0, 0, -360f * endIndex / 8);
+        }
+
         private void RefreshTriggerDelayMenu()
         {
             for (int i = 0; i < _triggerDelayMenuList.Length; i++)
@@ -843,9 +1037,12 @@ namespace GameA
         private void RefreshCampMenu()
         {
             var teamId = Mathf.Clamp(EditData.UnitExtra.TeamId, 0, TeamManager.MaxTeamCount);
-            _menuButtonArray[(int) EEditType.Camp].SetFgImage(TeamManager.GetSpawnSprite(teamId));
+            bool isLocationMissile = UnitDefine.LocationMissileId == EditData.UnitDesc.Id;
             bool isMulti = GM2DGame.Instance.GameMode.IsMulti;
             bool isSpawn = UnitDefine.IsSpawn(EditData.UnitDesc.Id);
+            _menuButtonArray[(int) EEditType.Camp].SetFgImage(isLocationMissile
+                ? LocationMissile.GetLocationMissileIconSprite(teamId)
+                : TeamManager.GetSpawnSprite(teamId));
             for (int i = 0; i < _campMenuList.Length; i++)
             {
                 _campMenuList[i].SetSelected(i == teamId);
@@ -853,7 +1050,14 @@ namespace GameA
                 {
                     _campMenuList[i].SetEnable(!isSpawn); //玩家没有Team0
                 }
-                else if (i > 1)
+                else
+                {
+                    _campMenuList[i].SetFgImage(isLocationMissile
+                        ? LocationMissile.GetLocationMissileIconSprite(i)
+                        : TeamManager.GetSpawnSprite(i));
+                }
+
+                if (i > 1)
                 {
                     _campMenuList[i].SetEnable(isMulti || !isSpawn); //玩家多人只有Team1
                 }
@@ -986,7 +1190,15 @@ namespace GameA
 
         private void OnForwardMenuClick(int inx)
         {
-            EditData.UnitDesc.Rotation = (byte) inx;
+            if (_curId == UnitDefine.LocationMissileId)
+            {
+                EditData.UnitExtra.ChildRotation = (byte) inx;
+            }
+            else
+            {
+                EditData.UnitDesc.Rotation = (byte) inx;
+            }
+
             RefreshForwardMenu();
         }
 
@@ -1019,6 +1231,13 @@ namespace GameA
         {
             EditData.UnitExtra.RotateValue = (byte) inx;
             RefreshRotateEndMenu();
+        }
+
+        private void OnAngelMenuClick(int inx)
+        {
+            EditData.UnitExtra.RotateValue = (byte) inx;
+            EditData.UnitExtra.RotateMode = (byte) ERotateMode.Anticlockwise;
+            RefreshAngelMenu();
         }
 
         private void OnTriggerDelayMenuClick(int inx)
@@ -1087,7 +1306,7 @@ namespace GameA
 
             _curSelectedPlayerIndex = inx;
             _curUnitExtra = playerUnitExtra;
-            _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
+            _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
             RefreshSpawmMenu();
         }
 
@@ -1103,7 +1322,7 @@ namespace GameA
             RefreshSpawmMenu();
         }
 
-        private void OnCloseBtnClick()
+        public void OnCloseBtnClick()
         {
             CheckCloseUpCtrlPanel();
             if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
@@ -1128,17 +1347,18 @@ namespace GameA
 
             if (_originData != EditData)
             {
-                if (UnitDefine.IsMonster(_tableUnit.Id) || UnitDefine.IsNpc(_tableUnit.Id))
+//                || UnitDefine.IsNpc(_tableUnit.Id)
+                if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
                     EditData.UnitExtra.MoveDirection = (EMoveDirection) (EditData.UnitDesc.Rotation + 1);
                     EditData.UnitDesc.Rotation = 0;
                 }
 
+                CheckNpcTaskNum();
                 EditHelper.CompleteEditUnitData(_originData, EditData);
             }
 
             _upCtrlUnitPropertyEditAdvance.CheckClose();
-//            UpCtrlUnitPropertyEditNpcTaskAdvance.CheckClose();
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
 
@@ -1148,7 +1368,7 @@ namespace GameA
             RefreshNpcTypeMenu();
         }
 
-        private void OnEditTypeMenuClick(EEditType editType)
+        public void OnEditTypeMenuClick(EEditType editType)
         {
             CloseUpCtrlPanel(false);
             _curEditType = editType;
@@ -1225,11 +1445,10 @@ namespace GameA
             EditNpcTaskMonsterType.RefreshView();
             EditNpcTaskColltionType.RefreshView();
             EditNpcTaregtDialog.RefreshView();
-            EditNpcAddCondition.RefreshView();
-            EditBeforeTask.RefreshView();
             EditNpcDia.RefreshView();
             EditBeforeTaskAward.RefreshView();
             EditFinishTaskAward.RefreshView();
+            EditNpcTaskAwardColltionAdvance.RefreshView();
             _upCtrlUnitPropertyEditAdvance.RefreshView();
         }
 
@@ -1257,7 +1476,7 @@ namespace GameA
             }
 
             _curUnitExtra = curWeaponExtra;
-            Enter(EEnterType.WeaponSettingFromSpawn, UnitDefine.EnergyPoolId);
+            Enter(EEnterType.WeaponSettingFromSpawn, UnitDefine.WeaponDepotId);
         }
 
         private void Enter(EEnterType eEnterType, int unitId)
@@ -1294,28 +1513,37 @@ namespace GameA
 
         private bool CheckOpenAdvanceEdit()
         {
-            if (_curEditType == EEditType.Camp)
+            switch (_curEditType)
             {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.ActorSetting);
-                return true;
-            }
+                case EEditType.Active:
+                    if (_curId == UnitDefine.TimerId)
+                    {
+                        _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Timer);
+                        return true;
+                    }
 
-            if (_curEditType == EEditType.Child)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
-                return true;
-            }
-
-            if (_curEditType == EEditType.MonsterCave)
-            {
-                _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
-                return true;
-            }
-
-            if (_curEditType == EEditType.Spawn)
-            {
-                OnSpawnMenuClick(_curSelectedPlayerIndex, true);
-                return true;
+                    break;
+                case EEditType.Child:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WeaponSetting);
+                    return true;
+                case EEditType.Camp:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.Camp);
+                    return true;
+                case EEditType.MonsterCave:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.MonsterCave);
+                    return true;
+                case EEditType.Spawn:
+                    OnSpawnMenuClick(_curSelectedPlayerIndex, true);
+                    return true;
+                case EEditType.SurpriseBox:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.SurpriseBox);
+                    return true;
+                case EEditType.WoodCase:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.WoodCase);
+                    return true;
+                case EEditType.PasswordDoor:
+                    _upCtrlUnitPropertyEditAdvance.OpenMenu(UPCtrlUnitPropertyEditAdvance.EMenu.PasswordDoor);
+                    return true;
             }
 
             return false;
@@ -1333,6 +1561,7 @@ namespace GameA
             EditNpcDia.Close();
             EditBeforeTaskAward.Close();
             EditFinishTaskAward.Close();
+            EditNpcTaskAwardColltionAdvance.Close();
             if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.Close();
@@ -1351,6 +1580,7 @@ namespace GameA
             EditNpcDia.CheckClose();
             EditBeforeTaskAward.CheckClose();
             EditFinishTaskAward.CheckClose();
+            EditNpcTaskAwardColltionAdvance.CheckClose();
             if (closeAdvane)
             {
                 _upCtrlUnitPropertyEditAdvance.CheckClose();
@@ -1362,6 +1592,61 @@ namespace GameA
             Normal,
             MonsterSettingFromMonsterCave,
             WeaponSettingFromSpawn
+        }
+
+        public void CheckNpcTaskNum()
+        {
+            if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+            {
+                EditData.UnitDesc.Rotation = (byte) EDirectionType.Up;
+            }
+
+            if (EditData.UnitExtra.NpcType == (byte) ENpcType.Dialog)
+            {
+                EditData.UnitExtra.NpcTask.Clear();
+            }
+
+            int num = EditData.UnitExtra.NpcTask.Count;
+            for (int i = 0; i < num; i++)
+            {
+                NpcTaskDynamic task = EditData.UnitExtra.NpcTask.Get<NpcTaskDynamic>(i);
+                if (task == null)
+                {
+                    continue;
+                }
+
+                EditNpcTaregtDialog.CheckTargetType(task);
+                if (task.Targets == null)
+                {
+                    continue;
+                }
+
+                if (task.Targets.Count == 0)
+                {
+                    NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(task.NpcTaskSerialNumber);
+                    EditData.UnitExtra.NpcTask.RemoveAt(i);
+                }
+                else
+                {
+                    if (task.Targets.Get<NpcTaskTargetDynamic>(0).TaskType == (int) ENpcTargetType.Dialog)
+                    {
+                        task.TargetNpcSerialNumber = task.Targets.Get<NpcTaskTargetDynamic>(0).TargetNpcNum;
+                    }
+
+                    if (task.TargetNpcSerialNumber == 0)
+                    {
+                        task.TargetNpcSerialNumber = EditData.UnitExtra.NpcSerialNumber;
+                    }
+                }
+            }
+
+            UnitBase unit;
+            ColliderScene2D.CurScene.TryGetUnit(EditData.UnitDesc.Guid, out unit);
+            if (UnitDefine.IsNpc(EditData.UnitDesc.Id))
+            {
+                NPCBase npc = unit as NPCBase;
+                if (npc != null) npc.SetNpcName();
+            }
         }
     }
 }

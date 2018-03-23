@@ -154,6 +154,7 @@ namespace GameA.Game
                 recordBatch.RecordChangeMapRect(add, horizontal);
                 Scene2DManager.Instance.CommitRecordBatch(recordBatch);
             }
+
             ChangeMapRect(changedTileSize);
             Scene2DManager.Instance.OnMapChanged(horizontal ? EChangeMapRectType.Right : EChangeMapRectType.Top);
             var gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
@@ -238,6 +239,7 @@ namespace GameA.Game
                 return false;
             }
 
+            NpcTaskDataTemp.Intance.RemoveNpc(unitDesc);
             DeleteUnitExtra(unitDesc.Guid);
             AfterDeleteData(unitDesc, tableUnit);
             return true;
@@ -267,6 +269,7 @@ namespace GameA.Game
             return _unitExtras.TryGetValue(guid, out unitExtra);
         }
 
+
         public UnitExtraDynamic GetUnitExtra(IntVec3 guid)
         {
             UnitExtraDynamic unitExtra;
@@ -279,6 +282,7 @@ namespace GameA.Game
             {
                 throw new Exception();
             }
+
             return unitExtra;
         }
 
@@ -328,6 +332,8 @@ namespace GameA.Game
                         LogHelper.Error("ProcessUnitExtra UnitBase missing");
                     }
                 }
+
+                NpcTaskDataTemp.Intance.AddNpc(unitDesc);
             }
             else
             {
@@ -360,7 +366,7 @@ namespace GameA.Game
                 _unitExtras.Remove(guid);
             }
         }
-        
+
         public void AddUnitExtra(IntVec3 guid, UnitExtraDynamic unitExtra)
         {
             _unitExtras.AddOrReplace(guid, unitExtra);
@@ -457,6 +463,7 @@ namespace GameA.Game
 
             Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                 switchGuid, unitGuid, false);
+            NpcTaskDataTemp.Intance.OnDeleteSwitch(switchGuid, unitGuid);
             return true;
         }
 
@@ -538,7 +545,9 @@ namespace GameA.Game
                     }
                 }
             }
-            else
+
+            UnitBase unit;
+            if(ColliderScene2D.CurScene.TryGetUnit(newUnitDesc.Guid, out unit) && unit.CanControlledBySwitch)
             {
                 using (var itor = _switchedUnits.GetEnumerator())
                 {

@@ -138,6 +138,10 @@ namespace GameA
 
         public void OnReplyMessage(long messageId, UserMessageReply reply)
         {
+            if (_dataList == null)
+            {
+                return;
+            }
             var message = _dataList.Find(p => p.Id == messageId);
             if (message != null)
             {

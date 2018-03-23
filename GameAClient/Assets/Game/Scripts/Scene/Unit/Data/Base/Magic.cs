@@ -21,7 +21,6 @@ namespace GameA.Game
         protected IntVec2 _pointACheck;
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
-        protected bool _enabled = true;
 
         protected override void Clear()
         {
@@ -33,7 +32,7 @@ namespace GameA.Game
 
         protected void InitSpeed()
         {
-            if (!IsActor && _moveDirection != EMoveDirection.None)
+            if (UseMagic())
             {
                 Speed = IntVec2.zero;
                 _timerMagic = 0;
@@ -68,111 +67,135 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_isAlive)
             {
                 if (Speed == IntVec2.zero)
                 {
-                    _timerMagic++;
-                    if (_timerMagic == 25)
+                    CheckMagicDir();
+                }
+
+                if (Speed != IntVec2.zero)
+                {
+                    DoMagic();
+                }
+            }
+        }
+
+        protected void CheckMagicDir()
+        {
+            _timerMagic++;
+            if (_timerMagic == 25)
+            {
+                switch (_moveDirection)
+                {
+                    case EMoveDirection.Up:
+                        SpeedY = _velocity;
+                        break;
+                    case EMoveDirection.Down:
+                        SpeedY = -_velocity;
+                        break;
+                    case EMoveDirection.Left:
+                        SpeedX = -_velocity;
+                        break;
+                    case EMoveDirection.Right:
+                        SpeedX = _velocity;
+                        break;
+                }
+            }
+        }
+
+        protected void DoMagic()
+        {
+            int z = 0;
+            GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
+            var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte) (_moveDirection - 1),
+                _velocity);
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
+                float.MinValue, float.MaxValue, _dynamicCollider))
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive)
                     {
+                        unit.OnIntersect(this);
+                        if (CheckMagicPassBeforeHit(unit))
+                        {
+                            continue;
+                        }
+
                         switch (_moveDirection)
                         {
                             case EMoveDirection.Up:
-                                SpeedY = _velocity;
+                                if (unit.OnDownHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Up);
+                                }
+
                                 break;
                             case EMoveDirection.Down:
-                                SpeedY = -_velocity;
+                                if (unit.OnUpHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Down);
+                                }
+
                                 break;
                             case EMoveDirection.Left:
-                                SpeedX = -_velocity;
+                                if (unit.OnRightHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Left);
+                                }
+
                                 break;
                             case EMoveDirection.Right:
-                                SpeedX = _velocity;
+                                if (unit.OnLeftHit(this, ref z, true))
+                                {
+                                    Hit(unit, EDirectionType.Right);
+                                }
+
                                 break;
+                        }
+
+                        if (CheckMagicPassAfterHit(unit))
+                        {
+                            continue;
+                        }
+
+                        if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
+                        {
+                            if (unit.Id == UnitDefine.ScorchedEarthId)
+                            {
+                                var se = unit as ScorchedEarth;
+                                if (se != null)
+                                {
+                                    se.OnExplode();
+                                }
+                            }
+
+                            ChangeMoveDirection();
+                            break;
+                        }
+
+                        if (unit.Id == UnitDefine.BlueStoneRotateId)
+                        {
+                            if (_magicRotate == null)
+                            {
+                                _magicRotate = unit;
+                            }
                         }
                     }
                 }
-                if (Speed != IntVec2.zero)
+            }
+
+            if (_magicRotate != null)
+            {
+                if (_curPos == _magicRotate.CurPos)
                 {
-                    int z = 0;
-                    GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte) (_moveDirection - 1),
-                        _velocity);
-                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer,
-                        float.MinValue, float.MaxValue, _dynamicCollider);
-                    for (int i = 0; i < units.Count; i++)
-                    {
-                        var unit = units[i];
-                        if (unit.IsAlive)
-                        {
-                            unit.OnIntersect(this);
-                            if (CheckMagicPassBeforeHit(unit))
-                            {
-                                continue;
-                            }
-                            switch (_moveDirection)
-                            {
-                                case EMoveDirection.Up:
-                                    if (unit.OnDownHit(this, ref z, true))
-                                    {
-                                        Hit(unit, EDirectionType.Up);
-                                    }
-                                    break;
-                                case EMoveDirection.Down:
-                                    if (unit.OnUpHit(this, ref z, true))
-                                    {
-                                        Hit(unit, EDirectionType.Down);
-                                    }
-                                    break;
-                                case EMoveDirection.Left:
-                                    if (unit.OnRightHit(this, ref z, true))
-                                    {
-                                        Hit(unit, EDirectionType.Left);
-                                    }
-                                    break;
-                                case EMoveDirection.Right:
-                                    if (unit.OnLeftHit(this, ref z, true))
-                                    {
-                                        Hit(unit, EDirectionType.Right);
-                                    }
-                                    break;
-                            }
-                            if (CheckMagicPassAfterHit(unit))
-                            {
-                                continue;
-                            }
-                            if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
-                            {
-                                if (unit.Id == UnitDefine.ScorchedEarthId)
-                                {
-                                    var se = unit as ScorchedEarth;
-                                    if (se != null)
-                                    {
-                                        se.OnExplode();
-                                    }
-                                }
-                                ChangeMoveDirection();
-                                break;
-                            }
-                            if (unit.Id == UnitDefine.BlueStoneRotateId)
-                            {
-                                if (_magicRotate == null)
-                                {
-                                    _magicRotate = unit;
-                                }
-                            }
-                        }
-                    }
-                    if (_magicRotate != null)
-                    {
-                        if (_curPos == _magicRotate.CurPos)
-                        {
-                            _timerMagic = 0;
-                            Speed = IntVec2.zero;
-                            _moveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
-                            _magicRotate = null;
-                        }
-                    }
+                    _timerMagic = 0;
+                    Speed = IntVec2.zero;
+                    _moveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
+                    _magicRotate = null;
                 }
             }
         }
@@ -181,7 +204,7 @@ namespace GameA.Game
         {
             return false;
         }
-        
+
         protected virtual bool CheckMagicPassAfterHit(UnitBase unit)
         {
             //如果碰死了 继续
@@ -189,10 +212,11 @@ namespace GameA.Game
             {
                 return true;
             }
+
             //朝上运动时，如果是角色或者箱子。
             if (_moveDirection == EMoveDirection.Up)
             {
-                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                if (unit.IsActor || unit is Box)
                 {
                     //如果远离
                     if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
@@ -200,9 +224,25 @@ namespace GameA.Game
                         Speed = IntVec2.zero;
                         _timerMagic = 24;
                     }
+                    else if (unit.ColliderGrid.YMin == _colliderGrid.YMax + 1)
+                    {
+                        int y = SpeedY;
+                        if (!unit.CheckUpValid(ref y, ref unit))
+                        {
+                            return false;
+                        }
+
+                        if (y == 0)
+                        {
+                            Speed = IntVec2.zero;
+                            _timerMagic = 24;
+                        }
+                    }
+
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -229,6 +269,7 @@ namespace GameA.Game
                     _moveDirection = EMoveDirection.Left;
                     break;
             }
+
             _magicRotate = null;
         }
 
@@ -238,6 +279,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
@@ -245,9 +287,9 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                if (GameModeNetPlay.DebugEnable())
+                if (GameModeBase.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid == {0} _trans.position = {1} ", Guid,
+                    GameModeBase.WriteDebugData(string.Format("Type = {2}, Guid == {0} _trans.position = {1} ", Guid,
                         _trans.position, GetType().Name));
                 }
             }
@@ -255,26 +297,28 @@ namespace GameA.Game
 
         protected virtual void UpdateCollider(IntVec2 min)
         {
+            _lastColliderGrid = _colliderGrid;
             if (_colliderPos.Equals(min))
             {
                 return;
             }
+
             _colliderPos = min;
             _colliderGrid = GetColliderGrid(_colliderPos);
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicNode(_dynamicCollider);
-                _lastColliderGrid = _colliderGrid;
             }
         }
 
-        private bool CheckUseful()
+        protected bool CheckUseful()
         {
-            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic() || !_isInterest)
             {
                 return false;
             }
+
             return true;
         }
 
@@ -284,6 +328,7 @@ namespace GameA.Game
             {
                 return IntVec2.zero;
             }
+
             _deltaImpactPos = _deltaPos;
             return _deltaImpactPos;
         }

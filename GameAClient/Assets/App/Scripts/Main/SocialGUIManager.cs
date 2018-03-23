@@ -41,6 +41,7 @@ namespace GameA
         FrontUI,
 
         FrontUI2,
+        Notification,
 
         /// <summary>
         /// 游戏内UI
@@ -115,6 +116,7 @@ namespace GameA
                     OpenUI<UICtrlAnnouncement>();
                 }
             }
+
             OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();
             ChangeToAppMode();
@@ -127,8 +129,8 @@ namespace GameA
             {
                 return;
             }
+
 //            JoyNativeTool.Instance.SetStatusBarShow(false);
-            Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
             _currentMode = EMode.Game;
             for (int i = 0; i < (int) EUIGroupType.Max; i++)
@@ -143,6 +145,7 @@ namespace GameA
                     UIRoot.SetGroupActive(i, true);
                 }
             }
+
             LoadAtlas(EResScenary.Game);
             LoadAtlas(EResScenary.UIInGame);
             UnloadAtlas(EResScenary.UIHome);
@@ -159,7 +162,6 @@ namespace GameA
                 return;
             }
 
-            Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
 
             _currentMode = EMode.App;
@@ -200,15 +202,57 @@ namespace GameA
                 return;
             }
 
-            _exitDialogIsOpen = true;
-            CommonTools.ShowPopupDialog("您真的要退出吗？", null,
-                new KeyValuePair<string, Action>("确定", () =>
+            if (_currentMode == EMode.App)
+            {
+                _exitDialogIsOpen = true;
+                CommonTools.ShowPopupDialog("您确定要退出游戏吗？", null,
+                    new KeyValuePair<string, Action>("确定", () =>
+                    {
+                        _exitDialogIsOpen = false;
+                        SocialApp.Instance.Exit();
+                    }),
+                    new KeyValuePair<string, Action>("取消", () => { _exitDialogIsOpen = false; })
+                );
+            }
+            else if (_currentMode == EMode.Game)
+            {
+                var gameMode = GM2DGame.Instance.EGameRunMode;
+                if (gameMode == EGameRunMode.PlayRecord)
                 {
-                    _exitDialogIsOpen = false;
-                    SocialApp.Instance.Exit();
-                }),
-                new KeyValuePair<string, Action>("取消", () => { _exitDialogIsOpen = false; })
-            );
+                    return;
+                }
+
+                _exitDialogIsOpen = true;
+                CommonTools.ShowPopupDialog("您要退出当前游戏吗？", null,
+                    new KeyValuePair<string, Action>("确定", () =>
+                    {
+                        if (gameMode == EGameRunMode.Edit)
+                        {
+                            var editMode = GM2DGame.Instance.GameMode as GameModeEdit;
+                            if (editMode != null && editMode.Mode == GameModeEdit.EMode.EditTest)
+                            {
+                                editMode.ChangeMode(GameModeEdit.EMode.Edit);
+                            }
+                        }
+
+                        GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+                        GM2DGame.Instance.QuitGame(
+                            () =>
+                            {
+                                GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                                _exitDialogIsOpen = false;
+                            },
+                            code =>
+                            {
+                                GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                                _exitDialogIsOpen = false;
+                            },
+                            true
+                        );
+                    }),
+                    new KeyValuePair<string, Action>("取消", () => { _exitDialogIsOpen = false; })
+                );
+            }
         }
 
         public static Vector2 GetUIResolution()
@@ -304,7 +348,7 @@ namespace GameA
                 ShowPopupDialog("格式错误");
             }
         }
-        
+
         public override T OpenUI<T>(object value = null)
         {
             if (UIRoot == null) return null;
@@ -314,6 +358,7 @@ namespace GameA
             {
                 UIRoot.CreateUI(typeof(T));
             }
+
             //检查是否是会互相遮挡的UI
             if (ui is ICheckOverlay)
             {
@@ -323,6 +368,7 @@ namespace GameA
                 {
                     lastUI = _overlayUIs.Peek().UI;
                 }
+
                 if (lastUI != null && lastUI != overlayUI)
                 {
                     // 关闭会互相遮挡的UI
@@ -336,6 +382,7 @@ namespace GameA
                                 {
                                     ((IAnimation) uiRaw.UI).PassAnimation();
                                 }
+
                                 uiRaw.UI.Close();
                             }
                             else
@@ -345,12 +392,14 @@ namespace GameA
                         }
                     }
                 }
+
                 if (lastUI != overlayUI)
                 {
                     _overlayUIs.Push(new UIRaw(overlayUI, value));
                     LogHelper.Debug("_overlayUIs.Push(), _overlayUIs.Count is {0}", _overlayUIs.Count);
                 }
             }
+
             return base.OpenUI<T>(value);
         }
 
@@ -373,6 +422,7 @@ namespace GameA
                             {
                                 ((IAnimation) uiRaw.UI).PassAnimation();
                             }
+
                             uiRaw.UI.Open(uiRaw.Param);
                             curIndex = uiRaw.UI.OrderOfView;
                         }
@@ -383,6 +433,7 @@ namespace GameA
                     }
                 }
             }
+
             return ui;
         }
 
@@ -404,7 +455,6 @@ namespace GameA
                 Param = param;
             }
         }
-
     }
 
     /// <summary>

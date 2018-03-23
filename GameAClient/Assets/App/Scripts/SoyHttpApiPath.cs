@@ -36,6 +36,8 @@ namespace SoyEngine
         public const string LoginByQQGame = "/account/loginByQQGame";
         // 用户简要信息
         public const string UserInfoSimple = "/user/getSimple";
+        // 用户简要信息
+        public const string UserInfoSimpleBatch = "/user/getSimpleBatch";
         // 用户详细信息
         public const string UserInfoDetail = "/user/get";
         // 获取等级数据
@@ -80,6 +82,8 @@ namespace SoyEngine
         public const string GiveUpShadowBattle = "/world/giveUpShadowBattle";
         // 提交过关世界关卡数据
         public const string CommitWorldProjectResult = "/world/commitProjectResult";
+        // 获取关卡评论数据
+        public const string ProjectComment = "/world/getProjectComment";
         // 获取世界关卡评论列表
         public const string WorldProjectCommentList = "/world/getProjectCommentList";
         // 获取关卡评论回复
@@ -126,8 +130,12 @@ namespace SoyEngine
         public const string WorldRankList = "/world/getRankList";
         // 搜索关卡
         public const string SearchWorldProject = "/world/searchProject";
-        // 获取官方多人关卡
+        // 获取官方关卡
         public const string OfficialProjectList = "/world/getOfficialProjectList";
+        // 获取世界自荐关卡
+        public const string WorldSelfRecommendProjectList = "/world/getSelfRecommendProjectList";
+        // 联机关卡结算玩家点赞
+        public const string WorldBattleEndUserLike = "/world/battleEndUserLike";
         // 录像
         public const string Record = "/record/get";
         // 获取关卡数据
@@ -225,6 +233,8 @@ namespace SoyEngine
         // QQ蓝钻大厅特权奖励领取
         public const string ReceiveQQGameReward = "/home/receiveQQGameReward";
         // 获取留言数据
+        public const string UserMessage = "/home/getUserMessage";
+        // 获取留言数据列表
         public const string UserMessageData = "/home/getUserMessageData";
         // 获取留言回复数据
         public const string UserMessageReplyData = "/home/getUserMessageReplyData";
@@ -238,6 +248,36 @@ namespace SoyEngine
         public const string DeleteUserMessage = "/home/deleteUserMessage";
         // 删除留言回复
         public const string DeleteUserMessageReply = "/home/deleteUserMessageReply";
+        // 获取快捷聊天列表
+        public const string RoomChatPreinstallList = "/home/getRoomChatPreinstallList";
+        // 获取快捷聊天
+        public const string RoomChatPreinstall = "/home/getRoomChatPreinstall";
+        // 创建快捷聊天
+        public const string CreateRoomChatPreinstall = "/home/createRoomChatPreinstall";
+        // 更新快捷聊天
+        public const string UpdateRoomChatPreinstall = "/home/updateRoomChatPreinstall";
+        // 删除快捷聊天
+        public const string DeleteRoomChatPreinstall = "/home/deleteRoomChatPreinstall";
+        // 用户自荐槽数据统计
+        public const string UserSelfRecommendProjectStatistic = "/home/getUserSelfRecommendProjectStatistic";
+        // 用户自荐关卡列表
+        public const string UserSelfRecommendProjectList = "/home/getUserSelfRecommendProjectList";
+        // 排序自荐关卡
+        public const string SortSelfRecommendProject = "/home/sortSelfRecommendProject";
+        // 添加自荐关卡
+        public const string AddSelfRecommendProject = "/home/addSelfRecommendProject";
+        // 删除自荐关卡
+        public const string RemoveSelfRecommendProject = "/home/removeSelfRecommendProject";
+        // 获取通知统计
+        public const string NotificationPushStatistic = "/notification/getNotificationPushStatistic";
+        // 获取推送数据
+        public const string NotificationPushData = "/notification/getNotificationPushData";
+        // 获取通知数据
+        public const string NotificationData = "/notification/getNotificationData";
+        // 标记通知已读
+        public const string MarkNotificationHasRead = "/notification/markNotificationHasRead";
+        // 标记通知已读
+        public const string MarkNotificationHasReadBatch = "/notification/markNotificationHasReadBatch";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

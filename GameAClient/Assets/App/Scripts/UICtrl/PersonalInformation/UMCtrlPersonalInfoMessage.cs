@@ -166,9 +166,25 @@ namespace GameA
         {
             if (_message != null && _message.Id == messageId)
             {
-                if (_dataList.Contains(reply))
+                //如果删除的是FirstReply，则重新Requeset获取新的FirstReply
+                if (_message.FirstReply != null && reply.Id == _message.FirstReply.Id)
                 {
-                    _dataList.Remove(reply);
+                    _message.Request(() =>
+                    {
+                        if (_dataList.Contains(reply))
+                        {
+                            _dataList.Remove(reply);
+                        }
+                        RefreshReplyDock(true);
+                    });
+                }
+                else
+                {
+                    _message.ReplyCount--;
+                    if (_dataList.Contains(reply))
+                    {
+                        _dataList.Remove(reply);
+                    }
                     RefreshReplyDock(true);
                 }
             }

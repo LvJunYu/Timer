@@ -39,7 +39,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsActor || other.Id == UnitDefine.BoxId)
+            if (other.IsActor || UnitDefine.IsBox(other.Id))
             {
                 var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
@@ -63,7 +63,7 @@ namespace GameA.Game
                     }
                     break;
                 case EDirectionType.Up:
-                    if (other.IsActor || other.Id == UnitDefine.BoxId)
+                    if (other.IsActor || UnitDefine.IsBox(other.Id))
                     {
                         var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
                         var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);

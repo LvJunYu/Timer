@@ -77,5 +77,10 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             }
         }
+
+        public virtual void Restart()
+        {
+            
+        }
     }
 }

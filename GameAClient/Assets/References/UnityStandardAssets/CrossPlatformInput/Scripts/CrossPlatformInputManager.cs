@@ -383,63 +383,17 @@ namespace UnityStandardAssets.CrossPlatformInput
             {
                 if (pressed)
                 {
-                    // 如果这一逻辑帧发生了按下又发生了抬起
-                    if (releasedFrame == GameRun.Instance.LogicFrameCnt + 1)
-                    {
-                        // 撤销抬起输入
-                        releasedFrame = -1;
-                        //Debug.Log (name + " 1 0 1");
-                    }
-                    //Debug.Log (name + " 1 1");
+                    return;
                 }
-                else
-                {
-                    // 如果这一逻辑帧发生了抬起事件
-                    if (releasedFrame == GameRun.Instance.LogicFrameCnt)
-                    {
-                        // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
-                        lastPressedFrame = GameRun.Instance.LogicFrameCnt + 1;
-                        //Debug.Log (name + " 0 1");
-                    }
-                    else
-                    {
-                        pressed = true;
-                        lastPressedFrame = GameRun.Instance.LogicFrameCnt;
-                        //Debug.Log (name + " 1 " + PlayMode.Instance.LogicFrameCnt);
-                    }
-                }
+                pressed = true;
+                lastPressedFrame = Time.frameCount;
             }
 
             // A controller gameobject should call this function when the button is released
             public void Released()
             {
-                if (!pressed)
-                {
-                    // 如果这一逻辑帧发生了抬起又发生了按下
-                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt + 1)
-                    {
-                        // 撤销按下输入
-                        lastPressedFrame = -1;
-                        //Debug.Log (name + " 0 1 0");
-                    }
-                    //Debug.Log (name + " 0 0");
-                }
-                else
-                {
-                    // 如果这一逻辑帧发生了按下事件
-                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
-                    {
-                        // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
-                        releasedFrame = GameRun.Instance.LogicFrameCnt + 1;
-                        //Debug.Log (name + " 1 0");
-                    }
-                    else
-                    {
-                        pressed = false;
-                        releasedFrame = GameRun.Instance.LogicFrameCnt;
-                        //Debug.Log (name + " 0 " + PlayMode.Instance.LogicFrameCnt);
-                    }
-                }
+                pressed = false;
+                releasedFrame = Time.frameCount;
             }
 
             // the controller gameobject should call Remove when the button is destroyed or disabled
@@ -451,29 +405,17 @@ namespace UnityStandardAssets.CrossPlatformInput
             // these are the states of the button which can be read via the cross platform input system
             public bool GetButton
             {
-                get
-                {
-                    // 先修正延后的事件
-                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
-                    {
-                        pressed = true;
-                    }
-                    if (releasedFrame == GameRun.Instance.LogicFrameCnt)
-                    {
-                        pressed = false;
-                    }
-                    return pressed;
-                }
+                get { return pressed; }
             }
 
             public bool GetButtonDown
             {
-                get { return lastPressedFrame == GameRun.Instance.LogicFrameCnt; }
+                get { return lastPressedFrame - Time.frameCount == 0; }
             }
 
             public bool GetButtonUp
             {
-                get { return releasedFrame == GameRun.Instance.LogicFrameCnt; }
+                get { return (releasedFrame == Time.frameCount - 0); }
             }
         }
     }

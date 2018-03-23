@@ -23,7 +23,7 @@ namespace GameA
         private bool _singleModeAvailable = true;
         private bool _worldAvailable = true;
         private bool _battleAvailable = true;
-        private bool _storyGameAvailable = false;
+        private bool _storyGameAvailable = true;
         private bool _cooperationGameAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
@@ -92,8 +92,8 @@ namespace GameA
             _cachedView.ServiceBtn.onClick.AddListener(ServiceBtn);
             _cachedView.ForumBtn.onClick.AddListener(ForumBtn);
             _cachedView.RechargeBtn.onClick.AddListener(RechargeBtn);
-            _cachedView.BattleButton.onClick.AddListener(OnBattleBtn);
-            _cachedView.CooperationButton.onClick.AddListener(OnCooperationButton);
+            _cachedView.BattleButton.onClick.AddListener(OnMultiBattleBtn);
+            _cachedView.StoryGameButton.onClick.AddListener(OnStoryGameButton);
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
             _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
@@ -137,6 +137,11 @@ namespace GameA
             _chat.Init(_cachedView.HomeChat);
         }
 
+        private void OnStoryGameButton()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlStoryMode>();
+        }
+
         protected override void OnDestroy()
         {
             GameParticleManager.FreeParticleItem(_uiParticleItem.Particle);
@@ -152,6 +157,7 @@ namespace GameA
                     .PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
                 _pushGoldEnergyStyle = true;
             }
+
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
             RefreshQQReward();
@@ -165,6 +171,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
                 _pushGoldEnergyStyle = false;
             }
+
             base.OnClose();
             _chat.Close();
         }
@@ -355,14 +362,9 @@ namespace GameA
             }
         }
 
-        public void OnBattleBtn()
+        public void OnMultiBattleBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlCompete>();
-        }
-
-        private void OnCooperationButton()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlCooperation>();
+            SocialGUIManager.Instance.OpenUI<UICtrlMultiBattle>();
         }
 
         public void OnMailBtn()
@@ -466,7 +468,7 @@ namespace GameA
 
         private void OnChatBtn()
         {
-           // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
+            // SocialGUIManager.Instance.OpenUI<UICtrlChat>();
         }
 
         private void OnAnnoncementBtn()
@@ -499,6 +501,7 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
+
             //蓝钻更新信息
             LocalUser.Instance.User.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
                 _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
@@ -513,6 +516,7 @@ namespace GameA
                     Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSave>(
                         PlayerPrefs.GetString(RewardSave.Instance.RewardKey));
             }
+
             if (RewardSave.Instance.IsQQHallEveryDayColltion.Contains(DateTime.Now.Day) &&
                 RewardSave.Instance.IsQQHallNewPlayerColltion)
             {
@@ -527,6 +531,7 @@ namespace GameA
                 JoyResManager.Instance.TryGetSprite(_hallNoOpen, out openHall);
                 _cachedView.QqHallImage.sprite = openHall;
             }
+
             if (LocalUser.Instance.User.UserInfoSimple.BlueVipData.IsBlueVip)
             {
                 if (
@@ -600,7 +605,7 @@ namespace GameA
 //            else
             {
                 _cachedView.WeaponObject.SetActive(false);
-                _cachedView.HandBookObject.SetActive(false);
+                _cachedView.HandBookObject.SetActive(true);
                 SetLock(UIFunction.UI_Puzzle, false);
                 SetLock(UIFunction.UI_Train, false);
                 SetLock(UIFunction.UI_Achievement, false);

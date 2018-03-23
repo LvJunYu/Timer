@@ -49,9 +49,9 @@ namespace GameA.Game
 
         public virtual bool OnAttached(Table_State tableState, ActorBase target, UnitBase sender)
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1}",
+                GameModeBase.WriteDebugData(string.Format("State {2} OnAttached from {0} to {1}",
                     sender == null ? IntVec3.zero :sender.Guid,
                     target.Guid, tableState.Name));
             }
@@ -71,7 +71,7 @@ namespace GameA.Game
             if (_tableState.Id == 61)
             {
                 //出生无敌
-                _duration = PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime *
+                _duration = PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime *
                             ConstDefineGM2D.FixedFrameCount;
             }
             else
@@ -94,9 +94,9 @@ namespace GameA.Game
 
         private bool Excute(EEffectType eEffectType)
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender == null ?  
+                GameModeBase.WriteDebugData(string.Format("State {2} Excute from {0} to {1} ", _sender == null ?  
                        IntVec3.zero : _sender.Guid,
                     _target.Guid,
                     _tableState.Name));
@@ -144,9 +144,9 @@ namespace GameA.Game
 
         public virtual bool OnRemoved()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ",
+                GameModeBase.WriteDebugData(string.Format("State {2} OnRemoved from {0} to {1} ",
                     _sender == null ? IntVec3.zero : _sender.Guid,
                     _target.Guid, _tableState.Name));
             }
@@ -163,6 +163,17 @@ namespace GameA.Game
                         break;
                     case EEffectId.Ice:
                         _target.RemoveEnvState(EEnvState.Ice);
+                        if (_target.IsPlayer)
+                        {
+                            var player = _target as PlayerBase;
+                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                            {
+                                if (player != null && player.IsAlive)
+                                {
+                                    player.ResetGun();
+                                }
+                            }));
+                        }
                         break;
                     case EEffectId.HpMax:
                         break;

@@ -15,17 +15,18 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         protected Gun _gun;
-
         protected RoomUser _roomUser;
         protected UnitExtraDynamic _unitExtra;
         protected bool _siTouLe;
         protected float _curRopeProgress;
         protected IntVec2 _ropeOffset;
+        protected int _curMagicBeanCount;
 
         [SerializeField] protected IntVec2 _revivePos;
         protected int _reviveScene;
 
         protected Box _box;
+        protected PasswordDoor _passwordDoor;
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
@@ -56,6 +57,11 @@ namespace GameA.Game
         public Box Box
         {
             get { return _box; }
+        }
+
+        public UnitBase[] HitUnit
+        {
+            get { return _hitUnits; }
         }
 
         public override bool CanAttack
@@ -103,6 +109,11 @@ namespace GameA.Game
             }
         }
 
+        public int CurMagicBeanCount
+        {
+            get { return _curMagicBeanCount; }
+        }
+
         public void Set(RoomUser roomUser)
         {
             _roomUser = roomUser;
@@ -144,18 +155,20 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
 
+            _curMagicBeanCount = 0;
             _gun = _gun ?? new Gun(this);
             _siTouLe = false;
             _dieTime = 0;
             _box = null;
+            _passwordDoor = null;
             ClearView();
 //            _maxSpeedX = BattleDefine.MaxSpeedX;
             _lastSlot = -1;
         }
 
-        public override UnitExtraDynamic UpdateExtraData()
+        public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)
         {
-            base.UpdateExtraData();
+            base.UpdateExtraData(unitExtraDynamic);
             //玩家的UnitExtra来自复活点的Extra
             if (_unitExtra.MaxHp > 0)
             {
@@ -167,7 +180,7 @@ namespace GameA.Game
             }
 
             _hp = _maxHp;
-            if (_unitExtra.MaxSpeedX > 0)
+            if (_unitExtra.MaxSpeedX > 0 && _unitExtra.MaxSpeedX < ushort.MaxValue)
             {
                 _maxSpeedX = _unitExtra.MaxSpeedX;
             }
@@ -177,7 +190,7 @@ namespace GameA.Game
             }
             else
             {
-                _maxSpeedX = BattleDefine.MaxSpeedX;
+                _maxSpeedX = _tableUnit.MaxSpeed;
             }
 
             if (_unitExtra.JumpAbility > 0)
@@ -194,41 +207,64 @@ namespace GameA.Game
             return _unitExtra;
         }
 
-        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1)
+        public override bool SetWeapon(int weaponId, UnitExtraDynamic unitExtra = null, int slot = -1,
+            ESkillType skillType = ESkillType.Normal)
         {
-            var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
-            if (tableEquipment == null)
-            {
-                LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
-                return false;
-            }
-
-            if (GameModeNetPlay.DebugEnable())
-            {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
-                    _roomUser == null ? -1 : _roomUser.Guid, weaponId));
-            }
-
-            int skillId = tableEquipment.SkillId;
-            var tableSkill = TableManager.Instance.GetSkill(skillId);
-            if (tableSkill == null)
-            {
-                LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
-                return false;
-            }
-
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
-            _skillCtrl.RemoveSkill(skillId);
-            if (slot == -1 && !_skillCtrl.HasEmptySlot(out slot))
+            Table_Equipment tableEquipment;
+            int skillId = 0;
+            if (skillType == ESkillType.Normal)
             {
-                slot = _lastSlot + 1;
-                _lastSlot = slot;
-                if (_lastSlot == 2)
+                tableEquipment = TableManager.Instance.GetEquipment(weaponId);
+                if (tableEquipment == null)
                 {
-                    _lastSlot = -1;
+                    LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
+                    return false;
                 }
+
+                skillId = tableEquipment.SkillId;
+                var tableSkill = TableManager.Instance.GetSkill(skillId);
+                if (tableSkill == null)
+                {
+                    LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
+                    return false;
+                }
+
+                _skillCtrl.RemoveSkill(skillId);
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra))
+            else if (skillType == ESkillType.MagicBean)
+            {
+                tableEquipment = MagicBean.TableEquipment;
+            }
+            else
+            {
+                LogHelper.Error("SetWeapon Failed, skillType = {0}", skillType);
+                return false;
+            }
+
+            if (slot == -1)
+            {
+                if (skillType == ESkillType.MagicBean)
+                {
+                    slot = _skillCtrl.GetMagicBeanSlot();
+                    if (slot == -1)
+                    {
+                        slot = _skillCtrl.CurrentSkills.Length - 1;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (slot == -1)
+                {
+                    slot = _skillCtrl.GetValidSlot(_lastSlot);
+                }
+
+                _lastSlot = slot;
+            }
+
+            if (!_skillCtrl.SetSkill(skillId, (EWeaponInputType) tableEquipment.InputType, slot, unitExtra, skillType))
             {
                 return false;
             }
@@ -249,9 +285,17 @@ namespace GameA.Game
                 Messenger<Table_Equipment, int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
             }
 
-//            CalculateMaxHp();
-//            OnHpChanged(_maxHp);
-            ChangeGunView(slot, null);
+            if (skillType == ESkillType.Normal)
+            {
+                ChangeGunView(slot, null);
+            }
+
+            if (GameModeBase.DebugEnable())
+            {
+                GameModeBase.WriteDebugData(string.Format("Player {0} SetWeapon {1}",
+                    _roomUser == null ? -1 : _roomUser.Guid, weaponId));
+            }
+
             return true;
         }
 
@@ -265,25 +309,12 @@ namespace GameA.Game
             }
         }
 
-        private void CalculateMaxHp()
-        {
-//            _maxHp = _tableUnit.Hp;
-            for (int i = 0; i < _tableEquipments.Length; i++)
-            {
-                var tableEquip = _tableEquipments[i];
-                if (tableEquip != null)
-                {
-                    _maxHp += tableEquip.HpAdd;
-                }
-            }
-        }
-
         internal override void OnPlay()
         {
             base.OnPlay();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPlay",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnPlay",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -317,13 +348,75 @@ namespace GameA.Game
             }
         }
 
+        protected virtual void OnHitPasswordDoor()
+        {
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            base.Hit(unit, eDirectionType);
+            if (unit.Id == UnitDefine.PasswordDoorId && !(_passwordDoor != null && _passwordDoor.UiOpen))
+            {
+                var passwordDoor = unit as PasswordDoor;
+                if (passwordDoor != null && !passwordDoor.HasCorrected)
+                {
+                    _passwordDoor = passwordDoor;
+                    _passwordDoor.UiOpen = false;
+                    _passwordDoor.DirectionRelativeMain = eDirectionType;
+                    OnHitPasswordDoor();
+                }
+            }
+        }
+
+        protected void CheckPasswordDoor()
+        {
+            if (_passwordDoor != null)
+            {
+                if (!_passwordDoor.UiOpen)
+                {
+                    switch (_passwordDoor.DirectionRelativeMain)
+                    {
+                        case EDirectionType.Up:
+                            if (!CheckUpFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                        case EDirectionType.Right:
+                            if (!CheckRightFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                        case EDirectionType.Down:
+                            if (!CheckOnFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                        case EDirectionType.Left:
+                            if (!CheckLeftFloor(_passwordDoor))
+                            {
+                                _passwordDoor = null;
+                            }
+
+                            break;
+                    }
+                }
+            }
+        }
+
         #region box
 
         protected virtual void CheckBox()
         {
             if (IsHoldingBox())
             {
-                if (_colliderGrid.YMin != _box.ColliderGrid.YMin)
+                if (_colliderGrid.YMin != _box.ColliderGrid.YMin || 
+                    GetBoxOperateType() != EBoxOperateType.Pull && !_box.CheckHolderAdjoin())
                 {
                     OnBoxHoldingChanged();
                 }
@@ -385,12 +478,24 @@ namespace GameA.Game
 
         protected override void CheckAssist()
         {
-            if (_box != null && _box.IsHoldingByPlayer && _box.Holder != this)
+            if (_input.GetKeyUpApplied(EInputType.Assist))
             {
-                return;
-            }
+                if (_box != null && !(_box.IsHoldingByPlayer && _box.Holder != this))
+                {
+                    OnBoxHoldingChanged();
+                }
 
-            base.CheckAssist();
+                Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AssitConShowDiaEvent();
+                if (_passwordDoor != null)
+                {
+                    _passwordDoor.SetPlayer(this);
+                    _passwordDoor.UiOpen = true;
+                    if (IsMain && GM2DGame.Instance.EGameRunMode != EGameRunMode.PlayRecord)
+                    {
+                        SocialGUIManager.Instance.OpenUI<UICtrlPasswordDoorInGame>(_passwordDoor);
+                    }
+                }
+            }
         }
 
         public override void OnBoxHoldingChanged()
@@ -407,9 +512,9 @@ namespace GameA.Game
                 SetFacingDir((EMoveDirection) (_box.DirectionRelativeMain + 1));
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnBoxHoldingChanged {1}",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnBoxHoldingChanged {1}",
                     _roomUser == null ? -1 : _roomUser.Guid, _box.IsHoldingByPlayer));
             }
 
@@ -418,7 +523,8 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+            return unit != null && UnitDefine.IsBox(unit.Id) && unit.ColliderGrid.YMin == _colliderGrid.YMin &&
+                   !((Box) unit).IsHoldingByPlayer;
         }
 
         public override bool IsHoldingBox()
@@ -458,31 +564,43 @@ namespace GameA.Game
             {
                 return;
             }
-            if (GameModeNetPlay.DebugEnable())
+
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnDead",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnDead",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
+
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             if (_gun != null)
             {
                 _gun.Stop();
             }
+
             if (_box != null)
             {
                 _box.IsHoldingByPlayer = false;
                 _box = null;
             }
+
+            if (_passwordDoor != null)
+            {
+                _passwordDoor.OnPlayerDead(this);
+                _passwordDoor = null;
+            }
+
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
             {
                 LogHelper.Debug("GameOver!");
             }
+
             if (GM2DGame.Instance.GameMode.SaveShadowData && IsMain)
             {
                 GM2DGame.Instance.GameMode.ShadowData.RecordDeath();
             }
+
             if (IsMain)
             {
                 Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
@@ -491,16 +609,18 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnRevive {1} In Scene {2}",
                     _roomUser == null ? -1 : _roomUser.Guid, _revivePos, _reviveScene));
             }
+
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             if (_view != null)
             {
                 GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
             }
+
             _eUnitState = EUnitState.Reviving;
             Scene2DManager.Instance.ChangeScene(_reviveScene, EChangeSceneType.ChangeScene);
             _trans.eulerAngles = new Vector3(90, 0, 0);
@@ -526,24 +646,28 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.UpdateWorldRegion(_curPos);
                     }
+
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
                     if (_gun != null)
                     {
                         _gun.Play();
-                        _gun.Revive();
+                        _gun.GunInHandRevive();
                     }
+
                     if (IsMain)
                     {
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                         Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                     }
+
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
                     }
-                    if (PlayMode.Instance.SceneState.Statistics.NetBattleReviveInvincibleTime > 0)
+
+                    if (PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveInvincibleTime > 0)
                     {
                         AddStates(null, 61);
                     }
@@ -557,9 +681,9 @@ namespace GameA.Game
                 return;
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnPortal",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnPortal",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -600,10 +724,9 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowData.RecordOutPortal();
                         GM2DGame.Instance.GameMode.RecordAnimation(IdleAnimName(), true);
                     }
-                    if (_gun != null)
-                    {
-                        _gun.Revive();
-                    }
+
+                    ResetGun();
+
                     if (_statusBar != null)
                     {
                         _statusBar.SetHPActive(true);
@@ -613,9 +736,9 @@ namespace GameA.Game
 
         public virtual void OnSucceed()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnSucceed",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnSucceed",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -671,6 +794,7 @@ namespace GameA.Game
             {
                 _statusBar.SetHPActive(true);
             }
+
             return true;
         }
 
@@ -718,7 +842,7 @@ namespace GameA.Game
                 {
                     if (_dieTime % ConstDefineGM2D.FixedFrameCount == 0)
                     {
-                        var reviveTime = PlayMode.Instance.SceneState.Statistics.NetBattleReviveTime;
+                        var reviveTime = PlayMode.Instance.SceneState.MapStatistics.NetBattleReviveTime;
                         int dieSecond = _dieTime / ConstDefineGM2D.FixedFrameCount;
                         if (dieSecond == Mathf.Max(1, reviveTime))
                         {
@@ -726,6 +850,7 @@ namespace GameA.Game
                             {
                                 CameraManager.Instance.CameraCtrlPlay.ResetCameraPlayer();
                             }
+
                             OnRevive();
                         }
 
@@ -739,33 +864,34 @@ namespace GameA.Game
                 {
                     if (_dieTime == 50)
                     {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                    }
-
-                    if (_dieTime == 100)
-                    {
                         _siTouLe = true;
                         if (GM2DGame.Instance.GameMode.IsMulti)
                         {
-                            if (PlayerManager.Instance.CheckAllPlayerSiTouLe())
+                            if (TeamManager.Instance.CheckAllTeamerSiTouLe(TeamId))
                             {
-                                PlayMode.Instance.SceneState.AllPlayerSiTouLe();
+                                PlayMode.Instance.SceneState.AllTeamerSiTouLe();
                             }
                         }
                         else
                         {
-                            if (IsMain)
-                            {
-                                PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                                Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
-                            }
+                            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                        }
+                    }
 
+                    //单人模式延迟1秒结算，用于播放DeadMark
+                    if (_dieTime == 100)
+                    {
+                        if (!GM2DGame.Instance.GameMode.IsMulti)
+                        {
+                            Messenger.Broadcast(EMessengerType.GameFinishFailed); // 因生命用完而失败
                             return;
                         }
                     }
                 }
 
-                if (_dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
+                //多人模式死后可以看他人视角
+                if (GM2DGame.Instance.GameMode.IsMulti && _dieTime > ConstDefineGM2D.FixedFrameCount && IsMain &&
                     UnityEngine.Input.GetKeyDown(KeyCode.Space) && _eUnitState != EUnitState.Reviving)
                 {
                     CameraManager.Instance.CameraCtrlPlay.SetNextCameraPlayer();
@@ -773,6 +899,7 @@ namespace GameA.Game
             }
 
             CheckBox();
+            CheckPasswordDoor();
             if (_isAlive)
             {
                 if (!_grounded && ClimbState == EClimbState.None)
@@ -821,7 +948,8 @@ namespace GameA.Game
                             speed = 50;
                         }
 
-                        if (speed == 0 && (_eClimbState == EClimbState.Ladder || _eClimbState == EClimbState.Rope))
+                        if (speed == 0 && (_eClimbState == EClimbState.ClimbLikeLadder ||
+                                           _eClimbState == EClimbState.Rope))
                         {
                             _animation.PlayLoop(IdleAnimName());
                             if (IsMain)
@@ -898,22 +1026,22 @@ namespace GameA.Game
         private bool IsClimbingSide()
         {
             return (ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                    ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope) &&
+                    ClimbState == EClimbState.ClimbLikeLadder || ClimbState == EClimbState.Rope) &&
                    (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
         }
 
         private bool IsInputSideValid()
         {
             return (ClimbState == EClimbState.None || ClimbState == EClimbState.Up ||
-                    ClimbState == EClimbState.Ladder) &&
+                    ClimbState == EClimbState.ClimbLikeLadder) &&
                    (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
         }
 
         protected override void OnJump()
         {
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnJump ",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnJump ",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -931,9 +1059,9 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Player {0} OnLand ",
+                GameModeBase.WriteDebugData(string.Format("Player {0} OnLand ",
                     _roomUser == null ? -1 : _roomUser.Guid));
             }
 
@@ -999,7 +1127,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
-                case EClimbState.Ladder:
+                case EClimbState.ClimbLikeLadder:
                 case EClimbState.Rope:
                     return "ClimbRunRight";
                 case EClimbState.Up:
@@ -1050,7 +1178,7 @@ namespace GameA.Game
             {
                 case EClimbState.Left:
                 case EClimbState.Right:
-                case EClimbState.Ladder:
+                case EClimbState.ClimbLikeLadder:
                 case EClimbState.Rope:
                     return "ClimbIdleRight";
                 case EClimbState.Up:
@@ -1117,6 +1245,7 @@ namespace GameA.Game
             {
                 _unitExtra = new UnitExtraDynamic();
             }
+
             return _unitExtra;
         }
 
@@ -1137,27 +1266,27 @@ namespace GameA.Game
             return true;
         }
 
-        public void OnIntersectLadder(Ladder ladder, bool value)
+        public void OnIntersectClimbUnit(ClimbUnit climbUnit, bool value)
         {
             if (value)
             {
-                if (!_inLadders.Contains(ladder))
+                if (!_inClimbUnits.Contains(climbUnit))
                 {
-                    _inLadders.Add(ladder);
+                    _inClimbUnits.Add(climbUnit);
                 }
 
-                _inLadder = true;
+                _inClimbUnit = true;
             }
             else
             {
-                if (_inLadders.Contains(ladder))
+                if (_inClimbUnits.Contains(climbUnit))
                 {
-                    _inLadders.Remove(ladder);
+                    _inClimbUnits.Remove(climbUnit);
                 }
 
-                if (_inLadders.Count == 0)
+                if (_inClimbUnits.Count == 0)
                 {
-                    _inLadder = false;
+                    _inClimbUnit = false;
                 }
             }
         }
@@ -1179,9 +1308,19 @@ namespace GameA.Game
             if (_eClimbState != EClimbState.Rope && CanClimb && ropeJoint.GetTimer(this) == 0 && Speed != IntVec2.zero)
             {
                 SetClimbState(EClimbState.Rope, ropeJoint);
-                ropeJoint.JumpOnRope(_moveDirection);
+                ropeJoint.CarryPlayer(this);
+                ropeJoint.JumpOnRope(this);
                 _curRopeProgress = 0;
-                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true, this);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, true,
+                    this);
+            }
+        }
+
+        public void ResetGun()
+        {
+            if (_gun != null)
+            {
+                _gun.GunInHandRevive();
             }
         }
 
@@ -1198,79 +1337,133 @@ namespace GameA.Game
             var ropeJoint = _curClimbUnit as RopeJoint;
             if (ropeJoint != null)
             {
-                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false, this);
+                Messenger<int, bool, PlayerBase>.Broadcast(EMessengerType.OnPlayerClimbRope, ropeJoint.RopeIndex, false,
+                    this);
+                ropeJoint.PlayerLeave(this);
             }
+
             _ropeOffset = IntVec2.zero;
+        }
+
+        private void CalculateRopeClimb()
+        {
+            RopeJoint joint = _curClimbUnit as RopeJoint;
+            if (joint != null)
+            {
+                if (_input.GetKeyApplied(EInputType.Up))
+                {
+                    _curRopeProgress += 1f;
+                    if (joint.JointIndex == 0 && _curRopeProgress > 0)
+                    {
+                        _curRopeProgress = 0;
+                    }
+                }
+                else if (_input.GetKeyApplied(EInputType.Down))
+                {
+                    _curRopeProgress -= 1f;
+                    if (joint.NextJoint == null && _curRopeProgress < 0)
+                    {
+                        _curRopeProgress = 0;
+                    }
+                }
+
+                IntVec2 delta = IntVec2.zero;
+                if (_curRopeProgress >= 1)
+                {
+                    if (joint.JointIndex != 0)
+                    {
+                        joint.PlayerLeave(this);
+                        _curClimbUnit = joint.PreJoint;
+                    }
+
+                    _curRopeProgress = 0;
+                }
+                else if (_curRopeProgress > 0)
+                {
+                    delta = joint.GetNeighborRelativePos(true);
+                }
+                else if (_curRopeProgress <= -1)
+                {
+                    if (joint.NextJoint != null)
+                    {
+                        joint.PlayerLeave(this);
+                        _curClimbUnit = joint.NextJoint;
+                    }
+
+                    _curRopeProgress = 0;
+                }
+                else if (_curRopeProgress < 0)
+                {
+                    delta = -1 * joint.GetNeighborRelativePos(false);
+                }
+
+                joint = _curClimbUnit as RopeJoint;
+                if (joint != null)
+                {
+                    joint.CarryPlayer(this);
+                }
+
+                if (_moveDirection == EMoveDirection.Left)
+                {
+                    _ropeOffset = IntVec2.right * 150;
+                }
+                else
+                {
+                    _ropeOffset = IntVec2.left * 150;
+                }
+
+                _speed = _curClimbUnit.CenterPos + _curClimbUnit.Speed + _ropeOffset - CenterPos +
+                         delta * _curRopeProgress;
+            }
         }
 
         public override void UpdateView(float deltaTime)
         {
             if (_eClimbState == EClimbState.Rope)
             {
-                RopeJoint joint = _curClimbUnit as RopeJoint;
-                if (joint != null)
+                CalculateRopeClimb();
+                var expextPos = _curPos + _speed;
+                base.UpdateView(deltaTime);
+                _speed = IntVec2.zero;
+                //若在绳子上发生碰撞
+                if (expextPos != _curPos)
                 {
-                    if (_input.GetKeyApplied(EInputType.Up))
+                    RopeJoint joint = _curClimbUnit as RopeJoint;
+                    if (joint == null)
                     {
-                        _curRopeProgress += 1f;
+                        return;
                     }
-                    else if (_input.GetKeyApplied(EInputType.Down))
+
+                    bool hit = true;
+                    for (int i = 0; i < _hitUnits.Length; i++)
                     {
-                        _curRopeProgress -= 1f;
-                        if (joint.NextJoint == null && _curRopeProgress < 0)
+                        if (_hitUnits[i] == null)
                         {
-                            _curRopeProgress = 0;
+                            continue;
+                        }
+
+                        //若碰撞物体是玩家，则不算碰撞
+                        if (_hitUnits[i].IsPlayer)
+                        {
+                            hit = false;
+                        }
+                        else
+                        {
+                            hit = true;
+                            break;
                         }
                     }
 
-                    IntVec2 delta = IntVec2.zero;
-                    if (_curRopeProgress >= 1)
+                    if (hit)
                     {
-                        if (joint.JointIndex != 0)
-                        {
-                            _curClimbUnit = joint.PreJoint;
-                        }
-
-                        _curRopeProgress = 0;
+                        joint.OnPlayerHit();
                     }
-                    else if (_curRopeProgress > 0)
-                    {
-                        delta = joint.GetNeighborRelativePos(true);
-                    }
-                    else if (_curRopeProgress <= -1)
-                    {
-                        if (joint.NextJoint != null)
-                        {
-                            _curClimbUnit = joint.NextJoint;
-                        }
-
-                        _curRopeProgress = 0;
-                    }
-                    else if (_curRopeProgress < 0)
-                    {
-                        delta = -1 * joint.GetNeighborRelativePos(false);
-                    }
-
-                    joint = _curClimbUnit as RopeJoint;
-                    if (joint != null)
-                    {
-                        joint.CarryPlayer();
-                    }
-
-                    if (_moveDirection == EMoveDirection.Left)
-                    {
-                        _ropeOffset = IntVec2.right * 150;
-                    }
-                    else
-                    {
-                        _ropeOffset = IntVec2.left * 150;
-                    }
-
-                    Speed = _curClimbUnit.CenterPos + _ropeOffset - CenterPos + delta * _curRopeProgress;
                 }
             }
-
-            base.UpdateView(deltaTime);
+            else
+            {
+                base.UpdateView(deltaTime);
+            }
         }
 
         protected override void ClearRunTime()
@@ -1280,14 +1473,24 @@ namespace GameA.Game
             {
                 SetClimbState(EClimbState.None);
             }
+
+            _jumpState = EJumpState.Land;
         }
-        
+
+        public override void OutSpacetimeDoor()
+        {
+            base.OutSpacetimeDoor();
+            _inClimbUnits.Clear();
+            _inClimbUnit = false;
+        }
+
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (other.Id == UnitDefine.RopeJointId)
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -1297,6 +1500,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -1306,6 +1510,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -1315,7 +1520,130 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public override void UpdateInput()
+        {
+            CheckPasswordDoorOpen();
+            CheckPasswordDoorUIClose();
+            base.UpdateInput();
+        }
+
+        protected void CheckPasswordDoorUIClose()
+        {
+            if (_input.GetKeyDownApplied(EInputType.PasswordDoorUIClose))
+            {
+                if (_passwordDoor == null)
+                {
+                    LogHelper.Error("PasswordDoor ui close, but _passwordDoor == null");
+                }
+                else
+                {
+                    _passwordDoor.UiOpen = false;
+                }
+            }
+        }
+
+        protected void CheckPasswordDoorOpen()
+        {
+            if (_input.GetKeyDownApplied(EInputType.PasswordDoorOpen))
+            {
+                if (_passwordDoor == null)
+                {
+                    LogHelper.Error("PasswordDoor open, but _passwordDoor == null");
+                }
+                else
+                {
+                    _passwordDoor.ShowOpen();
+                    _passwordDoor = null;
+                }
+            }
+        }
+
+        public bool PickUpMagicBean()
+        {
+            if (_curMagicBeanCount < MagicBean.MaxCarryCount)
+            {
+                if (SetWeapon(0, null, -1, ESkillType.MagicBean))
+                {
+                    _curMagicBeanCount++;
+                    int slot = _skillCtrl.GetMagicBeanSlot();
+                    if (slot != -1 && IsMain)
+                    {
+                        Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged,
+                            slot, _curMagicBeanCount, MagicBean.MaxCarryCount);
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryUseMagicBean()
+        {
+            if (_curMagicBeanCount <= 0)
+            {
+                LogHelper.Error("TryUseMagicBean fail, _curMagicBeanCount <= 0");
+                return false;
+            }
+
+            IntVec2 pos = _curPos;
+            pos.y = CenterPos.y / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            if (_moveDirection == EMoveDirection.Left)
+            {
+                pos.x = _curPos.x / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            }
+            else if (_moveDirection == EMoveDirection.Right)
+            {
+                pos.x = CenterRightPos.x / ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.ServerTileScale;
+            }
+            else
+            {
+                LogHelper.Error("TryUseMagicBean fail, _moveDirection = {0}", _moveDirection);
+                return false;
+            }
+
+            var tableUnit = TableManager.Instance.GetUnit(UnitDefine.MagicBeanId);
+            var checkGrid = tableUnit.GetDataGrid(pos.x, pos.y, 0, Vector2.one);
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid))
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    if (units[i].IsAlive && units[i] != this)
+                    {
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "此处不能放置");
+                        return false;
+                    }
+                }
+            }
+
+            var magicBean = PlayMode.Instance.CreateRuntimeUnit(UnitDefine.MagicBeanId, pos) as MagicBean;
+            if (magicBean != null)
+            {
+                magicBean.OnPlay();
+                magicBean.PutDownByPlayer(this);
+                _curMagicBeanCount--;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool CutDownMagicBean(int cutdownnum)
+        {
+            if (_curMagicBeanCount >= cutdownnum)
+            {
+                _curMagicBeanCount = _curMagicBeanCount - cutdownnum;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

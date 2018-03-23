@@ -102,7 +102,7 @@ namespace GameA
             InitPanel();
             _infoPanel.Open(_project, _table, _userLevelDataDetail);
             _rankPanel.Open();
-            RefreshRankData();
+//            RefreshRankData();
         }
 
         private void RefreshRankData()

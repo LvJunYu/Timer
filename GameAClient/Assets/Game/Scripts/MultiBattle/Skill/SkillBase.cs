@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -15,7 +14,6 @@ namespace GameA.Game
     [Serializable]
     public class SkillBase
     {
-        private static List<UnitBase> _cacheUnits = new List<UnitBase>(1);
         protected int _slot;
         [SerializeField] protected EPaintType _epaintType;
         protected EWeaponInputType _eWeaponInputType;
@@ -142,13 +140,13 @@ namespace GameA.Game
 
             if (extra.EffectRange > 0)
             {
-                _effectRange = extra.EffectRange;
+                _effectRange = TableConvert.GetRange(extra.EffectRange);
             }
             else
             {
                 if (_tableSkill.EffectValues != null && _tableSkill.EffectValues.Length > 0)
                 {
-                    _effectRange = _tableSkill.EffectValues[0];
+                    _effectRange = TableConvert.GetRange(_tableSkill.EffectValues[0]);
                 }
             }
 
@@ -374,6 +372,11 @@ namespace GameA.Game
                 return _owner.CenterPos;
             }
 
+            if (_owner.Id == UnitDefine.LocationMissileId)
+            {
+                return ((LocationMissile) _owner).BulletOffsetPos + _owner.CenterPos;
+            }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
@@ -420,18 +423,27 @@ namespace GameA.Game
             var centerDownPos = _owner.CenterDownPos;
             OnBulletOver(centerDownPos, _owner.Angle, null);
             //临时写 TODO
-            var units = GetHitUnits(_owner.CenterPos, null);
-            if (units != null && units.Count > 0)
+            using (var units = GetHitUnits(_owner.CenterPos, null))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units != null && units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit != _owner)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        if (unit.IsActor)
+                        var unit = units[i];
+                        if (unit.IsAlive && unit != _owner)
                         {
-                            var dir = unit.CenterPos - centerDownPos;
-                            OnActorHit(unit as ActorBase, new Vector2(dir.x, dir.y));
+                            if (unit.IsActor)
+                            {
+                                var dir = unit.CenterPos - centerDownPos;
+                                OnActorHit(unit as ActorBase, new Vector2(dir.x, dir.y));
+                            }
+                            else if (_owner.Id == UnitDefine.BombId)
+                            {
+                                if (unit is ICanBombHit)
+                                {
+                                    ((ICanBombHit)unit).OnBombHit();
+                                }
+                            }
                         }
                     }
                 }
@@ -441,21 +453,23 @@ namespace GameA.Game
         public void OnBulletHit(Bullet bullet)
         {
             OnBulletOver(bullet.CurPos, bullet.Angle, bullet.TargetUnit);
-            var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
-            if (units != null && units.Count > 0)
+            using (var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units != null && units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit != _owner)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        if (unit.IsActor)
+                        var unit = units[i];
+                        if (unit.IsAlive && unit != _owner)
                         {
-                            OnActorHit(unit as ActorBase, bullet.Direction);
-                        }
-                        else if (unit.CanPainted && _epaintType != EPaintType.None)
-                        {
-                            OnPaintHit(unit, bullet.CurPos, bullet.MaskRandom);
+                            if (unit.IsActor)
+                            {
+                                OnActorHit(unit as ActorBase, bullet.Direction);
+                            }
+                            else if (unit.CanPainted && _epaintType != EPaintType.None)
+                            {
+                                OnPaintHit(unit, bullet.CurPos, bullet.MaskRandom);
+                            }
                         }
                     }
                 }
@@ -467,21 +481,23 @@ namespace GameA.Game
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
             OnBulletOver(projectile.CenterPos, projectile.Angle, projectile.TargetUnit);
-            var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit);
-            if (units != null && units.Count > 0)
+            using (var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit))
             {
-                for (int i = 0; i < units.Count; i++)
+                if (units != null && units.Count > 0)
                 {
-                    var unit = units[i];
-                    if (unit.IsAlive)
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        if (unit.IsActor && unit != _owner)
+                        var unit = units[i];
+                        if (unit.IsAlive)
                         {
-                            OnActorHit(unit as ActorBase, projectile.Direction);
-                        }
-                        else if (unit.CanPainted && _epaintType != EPaintType.None)
-                        {
-                            OnPaintHit(unit, projectile.CenterPos, projectile.MaskRandom);
+                            if (unit.IsActor && unit != _owner)
+                            {
+                                OnActorHit(unit as ActorBase, projectile.Direction);
+                            }
+                            else if (unit.CanPainted && _epaintType != EPaintType.None)
+                            {
+                                OnPaintHit(unit, projectile.CenterPos, projectile.MaskRandom);
+                            }
                         }
                     }
                 }
@@ -495,11 +511,30 @@ namespace GameA.Game
                 return;
             }
 
+            int dis = 0;
+            if (UnitDefine.BombId == _owner.Id)
+            {
+                dis = (int) Mathf.Pow((actor.CenterPos - _owner.CenterPos).SqrMagnitude(), 0.5f) -
+                      _owner.TableUnit.Width / 2;
+            }
+
             var canHarm = _owner.CanHarm(actor);
             //击退
             if (canHarm && !actor.IsInvincible)
             {
-                if (_knockbackForces.Length == 2)
+                if (_owner.Id == UnitDefine.BombId)
+                {
+                    if (actor.ClimbState > EClimbState.None)
+                    {
+                        actor.SetClimbState(EClimbState.None);
+                    }
+
+                    actor.Speed = IntVec2.zero;
+                    actor.CurBanInputTime = 10;
+                    actor.ExtraSpeed = Bomb.CalculateForce(dis, actor.CenterPos - _owner.CenterPos, _knockbackForces[0],
+                        _effectRange);
+                }
+                else if (_knockbackForces.Length == 2)
                 {
                     actor.Speed = IntVec2.zero;
                     actor.CurBanInputTime = 10;
@@ -532,33 +567,40 @@ namespace GameA.Game
             if (canHarm)
             {
                 actor.AddStates(_owner, _addStates);
-                actor.OnHpChanged(-_damage, _owner);
+                if (_owner.Id == UnitDefine.BombId)
+                {
+                    actor.OnHpChanged(-Bomb.CalculateDamage(dis, _damage, _effectRange), _owner);
+                }
+                else
+                {
+                    actor.OnHpChanged(-_damage, _owner);
+                }
             }
 
             actor.RemoveStates(_tableSkill.RemoveStates);
         }
 
-        protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)
+        protected DisposableList<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)
         {
             switch ((EEffcetMode) _tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
                     if (hitUnit != null)
                     {
-                        _cacheUnits.Clear();
-                        _cacheUnits.Add(hitUnit);
-                        return _cacheUnits;
+                        var list = ColliderScene2D.GetCacheList();
+                        list.Add(hitUnit);
+                        return list;
                     }
 
                     break;
                 case EEffcetMode.TargetCircle:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1,
                         centerPos.y + _radius - 1);
                     return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
@@ -566,7 +608,7 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
@@ -585,7 +627,7 @@ namespace GameA.Game
                     return units;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_effectRange);
+                    _radius = _effectRange;
                     return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }

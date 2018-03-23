@@ -134,14 +134,14 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            _curScene = null;
-            _curSceneIndex = -1;
             for (int i = 0; i < _sceneList.Count; i++)
             {
                 ChangeScene(i);
                 _sceneList[i].Dispose();
             }
 
+            _curScene = null;
+            _curSceneIndex = -1;
             _sceneList.Clear();
             _instance = null;
         }
@@ -151,7 +151,7 @@ namespace GameA.Game
             if (eGameInitType == GameManager.EStartType.WorkshopStandaloneCreate ||
                 eGameInitType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                CreateScene();
+                AddNewScene();
             }
             else
             {
@@ -183,7 +183,7 @@ namespace GameA.Game
             {
                 if (eChangeSceneType == EChangeSceneType.EditCreated || eChangeSceneType == EChangeSceneType.ParseMap)
                 {
-                    CreateScene();
+                    AddNewScene();
                 }
             }
 
@@ -197,21 +197,8 @@ namespace GameA.Game
             _curSceneIndex = index;
             if (eChangeSceneType == EChangeSceneType.ChangeScene || eChangeSceneType == EChangeSceneType.EditCreated)
             {
-//                if (GameRun.Instance.IsPlaying)
-//                {
-//                    GM2DGame.Instance.Pause();
-//                    CameraManager.Instance.CameraCtrlPlay.PlayEffect(() =>
-//                    {
-//                        GM2DGame.Instance.Continue();
-//                        OnMapChanged();
-//                        _curScene.Enter();
-//                    });
-//                }
-//                else
-                {
-                    OnMapChanged();
-                    _curScene.Enter();
-                }
+                OnMapChanged();
+                _curScene.Enter();
             }
         }
 
@@ -224,14 +211,6 @@ namespace GameA.Game
             {
                 EditMode.Instance.OnMapReady(); //遮罩
             }
-        }
-
-        public void CreateScene()
-        {
-            var scene = new Scene2DEntity();
-            int sceneIndex = _sceneList.Count;
-            scene.Init(_initialMapSize, sceneIndex);
-            _sceneList.Add(scene);
         }
 
         /// <summary>
@@ -250,12 +229,28 @@ namespace GameA.Game
             ChangeScene(0);
         }
 
+        private void AddNewScene()
+        {
+            var scene = new Scene2DEntity();
+            var index = _sceneList.Count;
+            scene.Init(_initialMapSize, index);
+            _sceneList.Add(scene);
+        }
+
         private Scene2DEntity GetScene2DEntity(int index)
         {
+            if (index == -1)
+            {
+                LogHelper.Error("index is out of range");
+                index = 0;
+                _curSceneIndex = 0;
+                AddNewScene();
+            }
+
             while (index >= _sceneList.Count)
             {
                 LogHelper.Error("index is out of range");
-                CreateScene();
+                AddNewScene();
             }
 
             return _sceneList[index];
@@ -269,6 +264,11 @@ namespace GameA.Game
         public ColliderScene2D GetColliderScene2D(int index)
         {
             return GetScene2DEntity(index).ColliderScene;
+        }
+
+        public Scene2DEntity GetCurScene2DEntity()
+        {
+            return GetScene2DEntity(_curSceneIndex);
         }
 
         public void InitWithMapData(GM2DMapData mapData)
@@ -390,6 +390,7 @@ namespace GameA.Game
 
         public void OnPlay()
         {
+            RpgTaskMangerData.Instance.ClearData();
             int sqawnIndex = SqawnSceneIndex;
             for (int i = 0; i < _sceneList.Count; i++)
             {
@@ -428,6 +429,30 @@ namespace GameA.Game
             }
 
             return count;
+        }
+
+        public int GetGemCountInWoodCase()
+        {
+            int count = 0;
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                count += _sceneList[i].GetGemCountInWoodCase();
+            }
+
+            return count;
+        }
+
+        public bool CheckKeyInBox()
+        {
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                if (_sceneList[i].CheckKeyInBox())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void DeleteUnitsOutofMap()
@@ -496,6 +521,16 @@ namespace GameA.Game
                 _curScene.CommitRecord(editRecordBatch);
             }
         }
+
+        public bool TryGetUnitExtra(UnitSceneGuid guid, out UnitExtraDynamic unitExtra)
+        {
+            return GetScene2DEntity(guid.Index).DataScene.TryGetUnitExtra(guid.Guid, out unitExtra);
+        }
+
+        public bool TryGetUnit(UnitSceneGuid guid, out UnitBase unit)
+        {
+            return GetScene2DEntity(guid.Index).ColliderScene.TryGetUnit(guid.Guid, out unit);
+        }
     }
 
     public class Scene2DEntity : IDisposable
@@ -504,6 +539,12 @@ namespace GameA.Game
         private ColliderScene2D _colliderScene = new ColliderScene2D();
         private IntVec2 _mapSize;
         private EditRecordManager _editRecordManager;
+        private RpgTaskManger _rpgManger;
+
+        public RpgTaskManger RpgManger
+        {
+            get { return _rpgManger; }
+        }
 
         public DataScene2D DataScene
         {
@@ -569,6 +610,9 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+
+            _rpgManger = new RpgTaskManger();
+            _rpgManger.GetAllTask();
         }
 
         public void AddUnitsOutofMap()
@@ -582,8 +626,19 @@ namespace GameA.Game
             for (int i = 0; i < units.Length; i++)
             {
                 var unit = units[i];
-                var unitDesc = unit.UnitDesc;
-                if (!_dataScene.IsInTileMap(unit.TableUnit.GetDataGrid(ref unitDesc)))
+                UnitBase checkUnit;
+                //开关可能越界，但控制物体在地图内则不删除
+                if (UnitDefine.IsSwitchTrigger(unit.Id))
+                {
+                    checkUnit = ((SwitchTrigger) unit).SwitchUnit;
+                }
+                else
+                {
+                    checkUnit = unit;
+                }
+
+                var unitDesc = checkUnit.UnitDesc;
+                if (!_dataScene.IsInTileMap(checkUnit.TableUnit.GetDataGrid(ref unitDesc)))
                 {
                     _colliderScene.DeleteUnitsOutofMap(unit);
                 }
@@ -635,7 +690,46 @@ namespace GameA.Game
             {
                 count += _dataScene.GetUnitExtra(caves[i].Guid).MaxCreatedMonster;
             }
+
             return count;
+        }
+
+        public int GetGemCountInWoodCase()
+        {
+            int count = 0;
+            var woodCases = _colliderScene.AllWoodCases;
+            for (int i = 0; i < woodCases.Count; i++)
+            {
+                if (_dataScene.GetUnitExtra(woodCases[i].Guid).CommonValue == UnitDefine.TeethId)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public bool CheckKeyInBox()
+        {
+            var woodCases = _colliderScene.AllWoodCases;
+            for (int i = 0; i < woodCases.Count; i++)
+            {
+                if (_dataScene.GetUnitExtra(woodCases[i].Guid).CommonValue == UnitDefine.KeyId)
+                {
+                    return true;
+                }
+            }
+
+            var surpriseBoxes = _colliderScene.AllSurpriseBoxes;
+            for (int i = 0; i < surpriseBoxes.Count; i++)
+            {
+                if (surpriseBoxes[i].HasKey())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

@@ -178,7 +178,7 @@ namespace GameA
 
         private void OnJoinRoomBtn()
         {
-            if (CurSelectRoom != null)
+            if (CurSelectRoom != null && !CurSelectRoom.Content.HasStarted)
             {
                 RoomManager.Instance.SendRequestJoinRoom(CurSelectRoom.Content.RoomId);
             }

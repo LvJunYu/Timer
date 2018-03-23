@@ -133,7 +133,14 @@ namespace NewResourceSolution
                 return obj;
             }
             #endif
-            return _manifest.GetAsset(resType, name, scenary, withTexDependency, logWhenError, isLocaleRes, locale) as T;
+            var asset = _manifest.GetAsset(resType, name, scenary, withTexDependency, logWhenError, isLocaleRes, locale) as T;
+                
+            if (LogHelper.LogLevel >= LogHelper.ELogLevel.Debug)
+            {
+                _manifest.TryDebugAtlasReference();
+            }
+
+            return asset;
         }
 
 		public void Init ()
@@ -362,6 +369,10 @@ namespace NewResourceSolution
 
 			long maskToUnload = 1L << scenary;
             _manifest.UnloadUnusedAssets (maskToUnload, resTypeMask);
+            if (LogHelper.LogLevel >= LogHelper.ELogLevel.Debug)
+            {
+                _manifest.TryDebugAtlasReference();
+            }
         }
 
 	    public void UnloadTexture(string assetName)

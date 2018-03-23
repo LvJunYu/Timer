@@ -126,9 +126,9 @@ namespace GameA.Game
         protected override void OnLand()
         {
             base.OnLand();
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, Actor {0} OnLand ", Guid, GetType().Name));
             }
 
             if (HasStateType(EStateType.Stun))
@@ -190,9 +190,9 @@ namespace GameA.Game
                 _jumpState = EJumpState.Fall;
             }
 
-            if (_dropLadderTimer > 0)
+            if (_dropClimbTimer > 0)
             {
-                _dropLadderTimer--;
+                _dropClimbTimer--;
             }
 
             for (int i = 0; i < _currentStates.Count; i++)
@@ -201,7 +201,7 @@ namespace GameA.Game
             }
         }
 
-        public void UpdateInput()
+        public virtual void UpdateInput()
         {
             if (!PlayMode.Instance.SceneState.GameRunning)
             {
@@ -213,8 +213,7 @@ namespace GameA.Game
                 switch (ClimbState)
                 {
                     case EClimbState.None:
-                    case EClimbState.Ladder:
-//                    case EClimbState.Rope:
+                    case EClimbState.ClimbLikeLadder:
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Left);
@@ -238,7 +237,7 @@ namespace GameA.Game
                         break;
                 }
             }
-
+            
             CheckJump();
             CheckAssist();
             CheckSkill();
@@ -254,95 +253,98 @@ namespace GameA.Game
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
-                    if (ClimbState == EClimbState.Left)
+                    switch (ClimbState)
                     {
-                        _climbJump = true;
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            SpeedX = 100;
-                            SpeedY = 120;
-                            SetFacingDir(EMoveDirection.Right);
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Right)
-                    {
-                        _climbJump = true;
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            SpeedX = -100;
-                            SpeedY = 120;
-                            SetFacingDir(EMoveDirection.Left);
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Up)
-                    {
-                        _climbJump = true;
-                        SpeedY = -10;
-                    }
-                    else if (ClimbState == EClimbState.Ladder)
-                    {
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                            _dropLadderTimer = 15;
-                        }
-                        else
-                        {
-                            SpeedY = 120;
-                            if (_input.GetKeyApplied(EInputType.Up))
+                        case EClimbState.Left:
+                            _climbJump = true;
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
                             {
-                                _dropLadderTimer = 15;
+                                SpeedX = 0;
+                                SpeedY = 0;
                             }
-                        }
-                    }
-                    else if (ClimbState == EClimbState.Rope)
-                    {
-                        //按着下的时候 直接下来
-                        if (_input.GetKeyApplied(EInputType.Down))
-                        {
-                            SpeedX = 0;
-                            SpeedY = 0;
-                        }
-                        else
-                        {
-                            Speed = _curClimbUnit.Speed * 2;
-                            if (SpeedX > 0)
+                            else
                             {
-                                SpeedX += 10;
-                            }
-                            else if (SpeedX < 0)
-                            {
-                                SpeedX -= 10;
+                                SpeedX = 100;
+                                SpeedY = 120;
+                                SetFacingDir(EMoveDirection.Right);
                             }
 
-                            SpeedX = Mathf.Clamp(SpeedX, -160, 160);
-
-                            SpeedY += 120;
-                            if (SpeedY > 0)
+                            break;
+                        case EClimbState.Right:
+                            _climbJump = true;
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
                             {
-                                SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                                SpeedX = 0;
+                                SpeedY = 0;
+                            }
+                            else
+                            {
+                                SpeedX = -100;
+                                SpeedY = 120;
+                                SetFacingDir(EMoveDirection.Left);
                             }
 
-                            RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
-                            if (ropeJoint != null)
+                            break;
+                        case EClimbState.Up:
+                            _climbJump = true;
+                            SpeedY = -10;
+                            break;
+                        case EClimbState.ClimbLikeLadder:
+                            if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                ropeJoint.JumpAwayRope(_moveDirection);
+                                SpeedX = 0;
+                                SpeedY = 0;
+                                _dropClimbTimer = 15;
                             }
-                        }
+                            else
+                            {
+                                SpeedY = 120;
+                                if (_input.GetKeyApplied(EInputType.Up))
+                                {
+                                    _dropClimbTimer = 15;
+                                }
+                            }
+
+                            break;
+                        case EClimbState.Rope:
+                            //按着下的时候 直接下来
+                            if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                SpeedX = 0;
+                                SpeedY = 0;
+                            }
+                            else
+                            {
+                                Speed = _curClimbUnit.Speed * 2;
+                                if (SpeedX > 0)
+                                {
+                                    SpeedX += 10;
+                                }
+                                else if (SpeedX < 0)
+                                {
+                                    SpeedX -= 10;
+                                }
+
+                                SpeedX = Mathf.Clamp(SpeedX, -160, 160);
+
+                                SpeedY += 120;
+                                if (SpeedY > 0)
+                                {
+                                    SpeedY = Mathf.Clamp(SpeedY, 120, 250);
+                                }
+
+                                RopeJoint ropeJoint = _curClimbUnit as RopeJoint;
+                                if (ropeJoint != null)
+                                {
+                                    ropeJoint.JumpAwayRope(this as PlayerBase);
+                                }
+                            }
+
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     SetClimbState(EClimbState.None);
@@ -383,11 +385,12 @@ namespace GameA.Game
                     }
                 }
             }
+
             //如果掉下梯子时按上下则重新上梯子
-            if (_dropLadderTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
+            if (_dropClimbTimer > 0 && _input.GetKeyUpApplied(EInputType.Down) ||
                 _input.GetKeyUpApplied(EInputType.Up))
             {
-                _dropLadderTimer = 0;
+                _dropClimbTimer = 0;
             }
         }
 
@@ -396,6 +399,8 @@ namespace GameA.Game
             if (_input.GetKeyUpApplied(EInputType.Assist))
             {
                 OnBoxHoldingChanged();
+                Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.AssitConShowDiaEvent();
+//                RpgTaskManger.Instance.AssitConShowDiaEvent();
             }
         }
 
@@ -460,7 +465,7 @@ namespace GameA.Game
                         case EWeaponInputType.GetKey:
                             if (_input.GetKeyApplied(_skillInputs[i]))
                             {
-                                if (_skillCtrl.Fire(i))
+                                if (_skillCtrl.Fire(i) && skill.SkillType == ESkillType.Normal)
                                 {
                                     ChangeGunView(i, eShootDir);
                                 }
@@ -472,7 +477,7 @@ namespace GameA.Game
                         case EWeaponInputType.GetKeyUp:
                             if (_input.GetKeyUpApplied(_skillInputs[i]))
                             {
-                                if (_skillCtrl.Fire(i))
+                                if (_skillCtrl.Fire(i) && skill.SkillType == ESkillType.Normal)
                                 {
                                     ChangeGunView(i, eShootDir);
                                 }
@@ -509,7 +514,7 @@ namespace GameA.Game
                 }
                 else if (IsPlayer)
                 {
-                    Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, _curBreaker);
+                    Messenger<PlayerBase, UnitBase>.Broadcast(EMessengerType.OnPlayerDead, this as PlayerBase, _curBreaker);
                 }
 
                 _curBreaker = null;
@@ -876,7 +881,7 @@ namespace GameA.Game
                     }
                     else if (IsPlayer)
                     {
-                        Messenger<UnitBase>.Broadcast(EMessengerType.OnPlayerDead, killer);
+                        Messenger<PlayerBase, UnitBase>.Broadcast(EMessengerType.OnPlayerDead,this as PlayerBase, killer);
                     }
                 }
             }
@@ -924,7 +929,10 @@ namespace GameA.Game
                 CommonTools.SetParent(statusBarObj.transform, _trans);
             }
 
-            if (_statusBar != null) _statusBar.SetOwner(this);
+            if (_statusBar != null)
+            {
+                _statusBar.SetOwner(this);
+            }
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -933,6 +941,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
@@ -942,6 +951,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
@@ -951,6 +961,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
@@ -960,16 +971,17 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return base.OnRightHit(other, ref x, checkOnly);
         }
-        
+
         //检测子弹穿过
         private bool CheckProjectileHit(UnitBase other)
         {
             if (UnitDefine.UseProjectileBullet(other.Id))
             {
                 var projectile = other as ProjectileBase;
-                if (!projectile.Skill.Owner.CanHarm(this))
+                if (projectile != null && !projectile.Skill.Owner.CanHarm(this))
                 {
                     return false;
                 }

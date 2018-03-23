@@ -190,8 +190,7 @@ namespace GameA.Game
             SendToMSServer(msg);
         }
 
-        public void SendRequestQuickPlay(EQuickPlayType type = EQuickPlayType.EQPT_All, long projectId = 1,
-            EProjectType projectType = EProjectType.PT_Single)
+        public void SendRequestQuickPlay(EQuickPlayType type = EQuickPlayType.EQPT_All, long projectId = 1)
         {
             if (!_msClient.IsConnected())
             {
@@ -205,20 +204,17 @@ namespace GameA.Game
             switch (type)
             {
                 case EQuickPlayType.EQPT_All:
+                case EQuickPlayType.EQPT_Offical:
                     SendToMSServer(msg);
                     break;
                 case EQuickPlayType.EQPT_Specific:
                     msg.ProjectId = projectId;
                     ProjectManager.Instance.GetDataOnAsync(projectId, p =>
                     {
-                        msg.OfficalMultiBattleType = (int) p.ProjectType;
                         msg.MaxUserCount = p.NetData.PlayerCount;
+                        msg.MinUserCount = p.NetData.MinPlayer;
                         SendToMSServer(msg);
                     });
-                    break;
-                case EQuickPlayType.EQPT_Offical:
-                    msg.OfficalMultiBattleType = (int) projectType;
-                    SendToMSServer(msg);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("type", type, null);
@@ -260,7 +256,8 @@ namespace GameA.Game
             {
                 if (_roomList.Count > 0)
                 {
-                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId;
+                    data.MinRoomRunFlag = _roomList[_roomList.Count - 1].HasStarted;
+                    data.MinRoomId = _roomList[_roomList.Count - 1].RoomId + 1;
                 }
             }
             else
@@ -307,6 +304,69 @@ namespace GameA.Game
             SendToRSServer(data);
         }
 
+        public void SendSelectProject(List<long> list)
+        {
+            var data = new Msg_CM_SelectProject();
+            data.ProjectIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
+        public void SendUnSelectProject(List<long> list)
+        {
+            var data = new Msg_CM_UnselectProject();
+            data.ProjectIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
+        public void SendCreateTeam()
+        {
+            var data = new Msg_CM_CreateTeam();
+            data.ProjectId.AddRange(LocalUser.Instance.MultiBattleData.SelectedOfficalProjectList);
+            SendToMSServer(data);
+        }
+
+        public void SendExitTeam()
+        {
+            var data = new Msg_CM_ExitTeam();
+            data.Flag = 1;
+            SendToMSServer(data);
+        }
+
+        public void SendKickTeam(long userId)
+        {
+            var data = new Msg_CM_KickTeamUser();
+            data.UserId = userId;
+            SendToMSServer(data);
+        }
+
+        public void SendInviteFriendsToTeam(List<long> list)
+        {
+            var data = new Msg_CM_InviteToTeam();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
+        public void SendInviteFriendsToRoom(List<long> list)
+        {
+            var data = new Msg_CM_InviteToRoom();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
+        public void SendJoinTeam(long hostId)
+        {
+            var data = new Msg_CM_JoinTeam();
+            data.HostId = hostId;
+            SendToMSServer(data);
+        }
+
+        public void SendQueryUserList(List<long> list)
+        {
+            var data = new Msg_CM_QueryUserList();
+            data.UserIdList.AddRange(list);
+            SendToMSServer(data);
+        }
+
         #endregion
 
         #region Room Receive
@@ -317,14 +377,22 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("房间创建失败");
-//                _room.OnCreateFailed();
                 return;
             }
 
 //            var user = new RoomUser();
 //            user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
 //            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
-            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+            {
+                GM2DGame.Instance.QuitGame(
+                    () => CoroutineProxy.Instance.StartCoroutine(
+                        CoroutineProxy.RunWaitFrames(2, () => ConnectRS(msg.RSAddress, (ushort) msg.RSPort))), null);
+            }
+            else
+            {
+                ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            }
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
@@ -351,8 +419,23 @@ namespace GameA.Game
                 return;
             }
 
-//            _room.OnJoinSuccess();
-            ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
+            if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+            {
+                GM2DGame.Instance.QuitGame(
+                    () => CoroutineProxy.Instance.StartCoroutine(
+                        CoroutineProxy.RunWaitFrames(2, () => ConnectRS(msg.RSAddress, (ushort) msg.RSPort))), null);
+            }
+            else
+            {
+                ConnectRS(msg.RSAddress, (ushort) msg.RSPort);
+            }
+        }
+
+        public void OnTeamQuickStartWarn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
+            SocialGUIManager.ShowPopupDialog("有玩家在游戏中，无法开始");
         }
 
         internal void OnRoomInfo(Msg_MC_RoomInfo msg)
@@ -364,7 +447,7 @@ namespace GameA.Game
         {
             Msg_MC_RoomUserInfo msgUser = msg.UserInfo;
             var user = new RoomUser();
-            user.Init(msgUser.UserGuid, msgUser.NickName, msgUser.Ready == 1);
+            user.Init(msgUser.UserGuid, msgUser.NickName, true);
             _room.AddUser(user);
         }
 

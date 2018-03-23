@@ -1,4 +1,6 @@
-﻿using GameA;
+﻿using System;
+using System.Collections.Generic;
+using GameA;
 using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -10,7 +12,7 @@ namespace SoyEngine.MasterServer
         private float HeartBeatIntervalSecond = 50;
         private GameTimer _heartBeatGameTimer = new GameTimer();
         private int _reconnectAttempts;
-        
+
         public MSClient()
         {
             _handler = new MSHandler();
@@ -45,15 +47,22 @@ namespace SoyEngine.MasterServer
             base.OnDisconnected(code);
             LogHelper.Debug("MSClient OnDisConnected");
             Loom.QueueOnMainThread(Reconnect);
+            //掉线时客户端自动推出队伍
+            Msg_MC_ExitTeam msg = new Msg_MC_ExitTeam();
+            msg.Reason = EMCExitTeamReason.MCETR_Disconnect;
+            msg.UserId = LocalUser.Instance.UserGuid;
+            LocalUser.Instance.MultiBattleData.OnExitTeam(msg);
         }
 
         private void TryReconnect()
         {
-            if (_reconnectAttempts < 5) {
-                _reconnectAttempts++;  
+            if (_reconnectAttempts < 5)
+            {
+                _reconnectAttempts++;
             }
+
             //重连的间隔时间会越来越长  
-            int timeout = 2 << _reconnectAttempts;  
+            int timeout = 2 << _reconnectAttempts;
             LogHelper.Info("链接关闭，{0}秒后重新连接", timeout);
             Loom.QueueOnMainThread(Reconnect, timeout * 1000);
         }
@@ -62,7 +71,7 @@ namespace SoyEngine.MasterServer
         {
             Connect(_ip, _port, null, exception => TryReconnect(), 5000);
         }
-        
+
         private void StartHeartBeatCheck()
         {
             LogHelper.Debug("StartHeartBeatCheck TimerInterval: {0}", _heartBeatGameTimer.GetIntervalSeconds());
@@ -83,6 +92,7 @@ namespace SoyEngine.MasterServer
                     {
                         _heartBeatGameTimer.Reset();
                     }
+
                     StartHeartBeatCheck();
                 }));
         }
@@ -107,6 +117,98 @@ namespace SoyEngine.MasterServer
             RegisterHandler<Msg_MC_QueryRoomList>(Msg_MC_QueryRoomListRet);
             RegisterHandler<Msg_MC_QueryRoom>(Msg_MC_QueryRoomRet);
             RegisterHandler<Msg_MC_Chat>(Msg_MC_Chat);
+            RegisterHandler<Msg_MC_ChatWarning>(Msg_MC_ChatWarning);
+            RegisterHandler<Msg_MC_SelectProject>(Msg_MC_SelectProject);
+            RegisterHandler<Msg_MC_UnselectProject>(Msg_MC_UnselectProject);
+            RegisterHandler<Msg_MC_CreateTeam>(Msg_MC_CreateTeam);
+            RegisterHandler<Msg_MC_ExitTeam>(Msg_MC_ExitTeam);
+            RegisterHandler<Msg_MC_TeamInvite>(Msg_MC_TeamInvite);
+            RegisterHandler<Msg_MC_RoomInvite>(Msg_MC_RoomInvite);
+            RegisterHandler<Msg_MC_JoinTeam>(Msg_MC_JoinTeam);
+            RegisterHandler<Msg_MC_EnterTeam>(Msg_MC_EnterTeam);
+            RegisterHandler<Msg_MC_SyncUserStatusChange>(Msg_MC_SyncUserStatusChange);
+            RegisterHandler<Msg_MC_TeamQuickStartWarn>(Msg_MC_TeamQuickStartWarn);
+            RegisterHandler<Msg_MC_QueryUserList>(Msg_MC_QueryUserList);
+            RegisterHandler<Msg_MC_InviteToTeam>(Msg_MC_InviteToTeam);
+        }
+
+        private void Msg_MC_ChatWarning(Msg_MC_ChatWarning msg, object netlink)
+        {
+            if (msg.ChatType == ECMChatType.CMCT_PrivateChat && msg.WarningType == ECMChatWarningType.CMCWT_Offline)
+            {
+                UserManager.Instance.GetDataOnAsync(msg.Param,
+                    user =>
+                    {
+                        SocialGUIManager.ShowPopupDialog(string.Format("玩家【{0}】已离线", user.UserInfoSimple.NickName));
+                    });
+            }
+        }
+
+        private void Msg_MC_InviteToTeam(Msg_MC_InviteToTeam msg, object netlink)
+        {
+        }
+
+        private void Msg_MC_QueryUserList(Msg_MC_QueryUserList msg, object netlink)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlInviteFriend>().OnQueryUserList(msg.DataList);
+        }
+
+        private void Msg_MC_TeamQuickStartWarn(Msg_MC_TeamQuickStartWarn msg, object netlink)
+        {
+            RoomManager.Instance.OnTeamQuickStartWarn();
+        }
+
+        private void Msg_MC_SyncUserStatusChange(Msg_MC_SyncUserStatusChange msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.SyncUserStatusChange(msg);
+        }
+
+        private void Msg_MC_EnterTeam(Msg_MC_EnterTeam msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnEnterTeam(msg);
+        }
+
+        private void Msg_MC_JoinTeam(Msg_MC_JoinTeam msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnJoinTeam(msg);
+        }
+
+        private void Msg_MC_RoomInvite(Msg_MC_RoomInvite msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnRoomInvite(msg);
+        }
+
+        private void Msg_MC_TeamInvite(Msg_MC_TeamInvite msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnTeamInvite(msg);
+        }
+
+        private void Msg_MC_ExitTeam(Msg_MC_ExitTeam msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnExitTeam(msg);
+        }
+
+        private void Msg_MC_CreateTeam(Msg_MC_CreateTeam msg, object netlink)
+        {
+            if (msg.ResultCode == EMCCreateTeamCode.MCCT_Success)
+            {
+                LocalUser.Instance.MultiBattleData.OnCreateTeam(msg);
+            }
+            else
+            {
+                LogHelper.Error("CreateTeam fail, ResultCode = {0}", msg.ResultCode);
+                SocialGUIManager.ShowPopupDialog("创建队伍失败");
+            }
+        }
+
+        private void Msg_MC_UnselectProject(Msg_MC_UnselectProject msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, false);
+        }
+
+        private void Msg_MC_SelectProject(Msg_MC_SelectProject msg, object netlink)
+        {
+            LocalUser.Instance.MultiBattleData.OnProjectSelectedChanged(msg.ProjectIdList, true);
         }
 
         private void Msg_MC_Chat(Msg_MC_Chat msg, object netlink)
@@ -121,6 +223,18 @@ namespace SoyEngine.MasterServer
 
         private void Msg_MC_LoginRet(Msg_MC_LoginRet msg, object netlink)
         {
+#if UNITY_STANDALONE_WIN
+            if (SocialApp.Instance.Env == EEnvironment.Production && msg.ResultCode == ECMLoginCode.ECMLC_NewVersion)
+            {
+                SocialGUIManager.ShowPopupDialog("检测到新版本，即将退出自动更新", null,
+                    new KeyValuePair<string, Action>("确定", () =>
+                    {
+//                        string lancherUrl = "";
+//                        Application.OpenURL(lancherUrl);
+                        SocialApp.Instance.Exit();
+                    }));
+            }
+#endif
             LogHelper.Info("Msg_MC_LoginRet: {0}", msg.ResultCode);
         }
 
@@ -199,7 +313,7 @@ namespace SoyEngine.MasterServer
         {
             RoomManager.Instance.OnCreateRoomRet(msg);
         }
-        
+
         private void Msg_MC_QueryRoomRet(Msg_MC_QueryRoom msg, object obj)
         {
             RoomManager.Instance.OnQueryRoomRet(msg);

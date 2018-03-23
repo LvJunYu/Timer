@@ -88,6 +88,11 @@ namespace GameA.Game
             set { _iconBytes = value; }
         }
 
+        public EMode Mode
+        {
+            get { return _mode; }
+        }
+
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -249,7 +254,6 @@ namespace GameA.Game
             {
                 return;
             }
-
             GameRun.Instance.Update();
             if (_mode == EMode.Edit)
             {
@@ -270,11 +274,9 @@ namespace GameA.Game
                             _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
                             _inputDatas.Add(inputChangeList[i]);
                         }
-
                         localPlayerInput.ApplyInputData(inputChangeList);
                     }
                 }
-
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
             }
         }
@@ -411,7 +413,8 @@ namespace GameA.Game
             ColliderScene2D.CurScene.InitCreateArea(GM2DTools.WorldToTile(cameraPos));
             EditMode.Instance.CameraMask.Hide();
             BgScene2D.Instance.UpdateLogic(cameraPos);
-            Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
+            Texture2D t2 =
+                ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
             CameraManager.Instance.MainCameraPos = oriCameraPos;
             CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
             BgScene2D.Instance.Reset();

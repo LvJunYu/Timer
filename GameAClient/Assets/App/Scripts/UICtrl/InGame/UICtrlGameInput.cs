@@ -42,6 +42,7 @@ namespace GameA
             {
                 CreateUMSkillBtns();
             }
+
             _cachedView.JumpBtn.OnPress += OnJumpButtonDown;
             _cachedView.JumpBtn.OnPress += PlayClickParticle;
             _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
@@ -65,10 +66,12 @@ namespace GameA
             {
                 _usSkillBtns[i].Dispose();
             }
+
             for (int i = 0; i < _equipments.Length; i++)
             {
                 _equipments[i] = null;
             }
+
             _usSkillBtns = null;
             base.OnDestroy();
         }
@@ -111,6 +114,7 @@ namespace GameA
             {
                 return str.Substring(0, 2);
             }
+
             return str;
         }
 
@@ -127,6 +131,7 @@ namespace GameA
             {
                 CreateUMSkillBtns();
             }
+
             switch (slot)
             {
                 case 0:
@@ -168,19 +173,24 @@ namespace GameA
             {
                 return;
             }
+
             if (!_isOpen)
             {
                 _equipments[slot] = tableSkill;
                 return;
             }
-            if (null == tableSkill) return;
-            if (0 > slot || slot > _equipments.Length - 1) return;
+
+            if (0 > slot || slot > _equipments.Length - 1)
+            {
+                return;
+            }
+            
             _equipments[slot] = tableSkill;
-            if (null == _cachedView) return;
             if (null == _usSkillBtns)
             {
                 CreateUMSkillBtns();
             }
+
             _usSkillBtns[slot].SetData(tableSkill);
             RefreshSkillBtns();
         }

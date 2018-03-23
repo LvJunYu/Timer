@@ -11,9 +11,9 @@ namespace GameA.Game
 
         protected float _speedRatio;
         protected int _motorAcc;
-        protected bool _inLadder;
-        protected int _dropLadderTimer;
-        protected List<UnitBase> _inLadders = new List<UnitBase>(4);
+        protected bool _inClimbUnit;
+        protected int _dropClimbTimer;
+        protected List<ClimbUnit> _inClimbUnits = new List<ClimbUnit>(4);
 
         protected InputBase _input;
 
@@ -56,7 +56,7 @@ namespace GameA.Game
             get
             {
                 return ClimbState == EClimbState.Left || ClimbState == EClimbState.Right ||
-                       ClimbState == EClimbState.Ladder || ClimbState == EClimbState.Rope;
+                       ClimbState == EClimbState.ClimbLikeLadder || ClimbState == EClimbState.Rope;
             }
         }
 
@@ -75,11 +75,6 @@ namespace GameA.Game
             get { return _eClimbState; }
         }
 
-        public bool InLadder
-        {
-            get { return _inLadder; }
-        }
-
         protected override void Clear()
         {
             base.Clear();
@@ -87,9 +82,9 @@ namespace GameA.Game
             _jumpState = EJumpState.Land;
             _jumpLevel = -1;
             _eClimbState = EClimbState.None;
-            _inLadder = false;
-            _inLadders.Clear();
-            _dropLadderTimer = 0;
+            _inClimbUnit = false;
+            _inClimbUnits.Clear();
+            _dropClimbTimer = 0;
             _climbJump = false;
             _stepY = 0;
         }
@@ -130,22 +125,24 @@ namespace GameA.Game
                 _onIce = false;
                 bool downExist = false;
                 int deltaX = int.MaxValue;
-                List<UnitBase> units = EnvManager.RetriveDownUnits(this);
-                for (int i = 0; i < units.Count; i++)
+                using (var units = EnvManager.RetriveDownUnits(this))
                 {
-                    UnitBase unit = units[i];
-                    int ymin = 0;
-                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
-                        unit.OnUpHit(this, ref ymin, true))
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        downExist = true;
-                        _grounded = true;
-                        _downUnits.Add(unit);
-                        var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
-                        if (deltaX > delta)
+                        UnitBase unit = units[i];
+                        int ymin = 0;
+                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
+                            unit.OnUpHit(this, ref ymin, true))
                         {
-                            deltaX = delta;
-                            _downUnit = unit;
+                            downExist = true;
+                            _grounded = true;
+                            _downUnits.Add(unit);
+                            var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
+                            if (deltaX > delta)
+                            {
+                                deltaX = delta;
+                                _downUnit = unit;
+                            }
                         }
                     }
                 }
@@ -217,7 +214,8 @@ namespace GameA.Game
 
                 SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
             }
-            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up || ClimbState == EClimbState.Ladder)
+            else if (_grounded || _fanForce.y != 0 || ClimbState == EClimbState.Up ||
+                     ClimbState == EClimbState.ClimbLikeLadder)
             {
                 var friction = MaxFriction;
                 if (_fanForce.x == 0)
@@ -234,10 +232,10 @@ namespace GameA.Game
 
         protected bool CheckLadder()
         {
-            if (_inLadder && _dropLadderTimer == 0)
+            if (_inClimbUnit && _dropClimbTimer == 0)
             {
                 SpeedX = 0;
-                SetClimbState(EClimbState.Ladder, _inLadders[0]);
+                SetClimbState(EClimbState.ClimbLikeLadder, _inClimbUnits[0].Unit);
                 return true;
             }
 
@@ -286,8 +284,8 @@ namespace GameA.Game
                     }
 
                     break;
-                case EClimbState.Ladder:
-                    if (!CheckLadderVerticalFloor())
+                case EClimbState.ClimbLikeLadder:
+                    if (!ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit))
                     {
                         SetClimbState(EClimbState.None);
                         break;
@@ -299,18 +297,18 @@ namespace GameA.Game
                         break;
                     }
 
-                    if (CheckLadderHorizontalFloor())
+                    if (ClimbUnit.CheckClimbHorizontalFloor(this, ref _curClimbUnit))
                     {
                         if (_input.GetKeyApplied(EInputType.Right))
                         {
-                            if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                            if (!ClimbUnit.CheckClimbHorizontalFloor(this, ref _curClimbUnit, _curMaxSpeedX))
                             {
                                 _motorAcc = 0;
                             }
                         }
                         else if (_input.GetKeyApplied(EInputType.Left))
                         {
-                            if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                            if (!ClimbUnit.CheckClimbHorizontalFloor(this, ref _curClimbUnit, -_curMaxSpeedX))
                             {
                                 _motorAcc = 0;
                             }
@@ -372,7 +370,7 @@ namespace GameA.Game
                             {
                                 if (CheckLadder())
                                 {
-                                    if (!CheckLadderHorizontalFloor(_curMaxSpeedX))
+                                    if (!ClimbUnit.CheckClimbHorizontalFloor(this, ref _curClimbUnit, _curMaxSpeedX))
                                     {
                                         _motorAcc = 0;
                                     }
@@ -389,7 +387,7 @@ namespace GameA.Game
                             {
                                 if (CheckLadder())
                                 {
-                                    if (!CheckLadderHorizontalFloor(-_curMaxSpeedX))
+                                    if (!ClimbUnit.CheckClimbHorizontalFloor(this, ref _curClimbUnit, -_curMaxSpeedX))
                                     {
                                         _motorAcc = 0;
                                     }
@@ -415,46 +413,6 @@ namespace GameA.Game
             }
         }
 
-        protected bool CheckLadderVerticalFloor(int deltaPosY = 0)
-        {
-            if (!CanClimb) return false;
-            var grid = new Grid2D(CenterPos.x, CenterPos.y + deltaPosY, CenterPos.x, CenterPos.y + deltaPosY);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
-                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
-                {
-                    _curClimbUnit = unit;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        protected bool CheckLadderHorizontalFloor(int deltaPosX = 0)
-        {
-            if (!CanClimb) return false;
-            var grid = new Grid2D(CenterPos.x + deltaPosX, CenterPos.y, CenterPos.x + deltaPosX, CenterPos.y);
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid,
-                JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && UnitDefine.IsLadder(unit.Id))
-                {
-                    _curClimbUnit = unit;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         protected virtual bool CheckRopeVerticalFloor(int deltaPosY = 0)
         {
             if (!CanClimb) return false;
@@ -466,29 +424,14 @@ namespace GameA.Game
             SpeedY += _fanForce.y;
             if (!_grounded)
             {
-                if (_jumpLevel == 2)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
-                }
-                else if (ClimbState > EClimbState.None)
+                if (ClimbState > EClimbState.None)
                 {
                     switch (ClimbState)
                     {
                         case EClimbState.Rope:
                             SpeedY = 0;
-//                            if (_input.GetKeyApplied(EInputType.Up))
-//                            {
-//                                if (CheckRopeVerticalFloor(_curMaxSpeedX))
-//                                {
-//                                    SpeedY = _curMaxSpeedX;
-//                                }
-//                            }
                             if (_input.GetKeyApplied(EInputType.Down))
                             {
-//                                if (CheckRopeVerticalFloor(-_curMaxSpeedX))
-//                                {
-//                                    SpeedY = -_curMaxSpeedX;
-//                                }
                                 if (_grounded)
                                 {
                                     _eClimbState = EClimbState.None;
@@ -496,18 +439,18 @@ namespace GameA.Game
                             }
 
                             break;
-                        case EClimbState.Ladder:
+                        case EClimbState.ClimbLikeLadder:
                             SpeedY = 0;
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
-                                if (CheckLadderVerticalFloor(_curMaxSpeedX))
+                                if (ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, _curMaxSpeedX))
                                 {
                                     SpeedY = _curMaxSpeedX;
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                if (CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                if (ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, -_curMaxSpeedX))
                                 {
                                     SpeedY = -_curMaxSpeedX;
                                 }
@@ -529,7 +472,7 @@ namespace GameA.Game
                                 }
                                 else
                                 {
-                                    if (CheckLadder() && CheckLadderVerticalFloor(_curMaxSpeedX))
+                                    if (CheckLadder() && ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, _curMaxSpeedX))
                                     {
                                         SpeedY = _curMaxSpeedX;
                                     }
@@ -543,7 +486,7 @@ namespace GameA.Game
                                 }
                                 else
                                 {
-                                    if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    if (CheckLadder() && ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, -_curMaxSpeedX))
                                     {
                                         SpeedY = -_curMaxSpeedX;
                                     }
@@ -566,7 +509,7 @@ namespace GameA.Game
                                 }
                                 else
                                 {
-                                    if (CheckLadder() && CheckLadderVerticalFloor(_curMaxSpeedX))
+                                    if (CheckLadder() && ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, _curMaxSpeedX))
                                     {
                                         SpeedY = _curMaxSpeedX;
                                     }
@@ -580,7 +523,7 @@ namespace GameA.Game
                                 }
                                 else
                                 {
-                                    if (CheckLadder() && CheckLadderVerticalFloor(-_curMaxSpeedX))
+                                    if (CheckLadder() && ClimbUnit.CheckClimbVerticalFloor(this, ref _curClimbUnit, -_curMaxSpeedX))
                                     {
                                         SpeedY = -_curMaxSpeedX;
                                     }
@@ -594,6 +537,10 @@ namespace GameA.Game
 
                             break;
                     }
+                }
+                else if (_jumpLevel == 2)
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
                 }
                 else
                 {
@@ -643,7 +590,7 @@ namespace GameA.Game
                     case EClimbState.Left:
                     case EClimbState.Right:
                     case EClimbState.Up:
-                    case EClimbState.Ladder:
+                    case EClimbState.ClimbLikeLadder:
                         //改变状态时判断抓着的物体是否停止移动，防止穿透
                         CheckClimbUnitChangeDir(_eClimbState);
                         break;
@@ -659,6 +606,7 @@ namespace GameA.Game
             {
                 _onClay = false;
             }
+
             //进入状态
             switch (_eClimbState)
             {
@@ -672,9 +620,10 @@ namespace GameA.Game
                     break;
             }
 
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(), GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, SetClimbState {0}", _eClimbState.ToString(),
+                    GetType().Name));
             }
         }
 
@@ -775,9 +724,10 @@ namespace GameA.Game
                 }
 
                 UpdateTransPos();
-                if (GameModeNetPlay.DebugEnable())
+                if (GameModeBase.DebugEnable())
                 {
-                    GameModeNetPlay.WriteDebugData(string.Format("Type = {2}, Guid = {0} _trans.position = {1} ", Guid,
+                    GameModeBase.WriteDebugData(string.Format(
+                        "Type = {3}, Guid = X: {0} Y:{1},  _trans.position = {2} ", Guid.x, Guid.y,
                         _trans.position, GetType().Name));
                 }
             }

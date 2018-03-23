@@ -13,8 +13,9 @@ namespace GameA
 
         private int _unitId;
         private float _startTime;
+
         #endregion
-        
+
         #region 属性
 
         #endregion
@@ -43,8 +44,10 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear).From());
-            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear));
+            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear)
+                .From());
+            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f)
+                .SetEase(Ease.Linear));
         }
 
         protected override void OnOpen(object parameter)
@@ -58,10 +61,11 @@ namespace GameA
 
         protected override void OnClose()
         {
-            if (GM2DGame.Instance != null)
+            if (GM2DGame.Instance != null && GM2DGame.Instance.EGameRunMode != EGameRunMode.Edit)
             {
                 GM2DGame.Instance.Continue();
             }
+
             base.OnClose();
         }
 
@@ -80,19 +84,23 @@ namespace GameA
             {
                 return;
             }
+
             var tableUnit = TableManager.Instance.GetUnit(_unitId);
             if (tableUnit == null)
             {
                 LogHelper.Error("TableUnit is null, id: {0}", _unitId);
                 return;
             }
+
             Sprite sprite;
             if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
             {
                 _cachedView.Icon.sprite = sprite;
             }
+
             DictionaryTools.SetContentText(_cachedView.Title, tableUnit.Name);
             DictionaryTools.SetContentText(_cachedView.Desc, tableUnit.Summary);
+            DictionaryTools.SetContentText(_cachedView.EffectDesc, tableUnit.EffectSummary);
         }
 
         private void OnCloseBtnClick()
@@ -101,12 +109,15 @@ namespace GameA
             {
                 return;
             }
+
             if (Time.realtimeSinceStartup - _startTime < 0.5f)
             {
                 return;
             }
+
             SocialGUIManager.Instance.CloseUI<UICtrlInGameUnitHandbook>();
         }
+
         #endregion
     }
 }

@@ -23,7 +23,7 @@ namespace GameA
         private string _unitIconName;
         private Sprite _unitIcon;
         private Table_Unit _uint;
-
+        private IntVec3 _guid;
         private NpcTaskDynamic _taskData;
 
         public USViewUnitNpcTaskTarget View
@@ -37,10 +37,11 @@ namespace GameA
             _cachedView.DelteBtn.onClick.RemoveAllListeners();
         }
 
-        public void SetSelectTarget(NpcTaskTargetDynamic targetData, DictionaryListObject taskData,
+        public void SetSelectTarget(IntVec3 npcguid, NpcTaskTargetDynamic targetData, DictionaryListObject taskData,
             SeletTaskTargetType callback, UnityAction refresh)
         {
             Clear();
+            _guid = npcguid;
             TargetData = targetData;
             TaskTargetListData = taskData;
 
@@ -75,7 +76,13 @@ namespace GameA
                         break;
                     }
                 }
+                if (TargetData.TaskType == (int) ENpcTargetType.Contorl)
+                {
+                    IntVec3 unitGuid = TargetData.TargetGuid;
+                    DataScene2D.CurScene.UnbindSwitch(_guid, unitGuid);
+                }
                 TaskTargetListData.RemoveAt(index);
+
                 refresh.Invoke();
             });
             _cachedView.RightClick.RightMouseCallback = (() =>
@@ -98,7 +105,7 @@ namespace GameA
                     _unitIconName = MonsterSpriteName;
                     break;
                 case TrrigerTaskType.FinishOtherTask:
-                    _unitIconName = DialogSpriteName;
+                    _unitIconName = QianzhiTaskSpriteName;
                     break;
             }
             if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))

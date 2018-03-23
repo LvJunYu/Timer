@@ -9,8 +9,8 @@ namespace GameA
     public class UICtrlMultiRoom : UICtrlInGameBase<UIViewMultiRoom>
     {
         private const string EmptyStr = "无";
-        private const string StartingFormat = "开始游戏({0})";
-        private const string RawStartingFormat = "开始{0}";
+        private const string StartingFormat = "取消开始({0})";
+        private const string RawStartingFormat = "取消{0}";
         private const string StartStr = "开始游戏";
         private const string StartRawStr = "开始";
         private const int StartTime = 5;
@@ -49,7 +49,7 @@ namespace GameA
             _cachedView.OpenBtn.onClick.AddListener(OnOpenBtn);
             _cachedView.CloseButton.onClick.AddListener(OnCloseButton);
             _cachedView.WorldRecruitBtn.onClick.AddListener(OnWorldRecruitBtn);
-            _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
+            _cachedView.InviteFriendBtn.onClick.AddListener(OnInviteFriendBtn);
             _cachedView.PrepareBtn.onClick.AddListener(OnPrepareBtn);
             _cachedView.RawPrepareBtn.onClick.AddListener(OnPrepareBtn);
             _cachedView.StartBtn.onClick.AddListener(OnStartBtn);
@@ -134,8 +134,8 @@ namespace GameA
                 if (_curTimer <= 0)
                 {
                     _curTimer = 0;
-                    OnStartBtn();
                     _starting = false;
+                    OnStartBtn();
                     RefreshBtns();
                 }
             }
@@ -307,17 +307,17 @@ namespace GameA
             _cachedView.RawPrepareBtn.SetActiveEx(!_isHost);
             _cachedView.StartBtn.SetActiveEx(_isHost);
             _cachedView.RawStartBtn.SetActiveEx(_isHost);
-            bool allReady = _roomInfo.CheckAllReady();
-            _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = allReady;
+            bool canStart = _roomInfo.CanStart();
+            _cachedView.StartBtn.interactable = _cachedView.RawStartBtn.interactable = canStart;
         }
 
         private void RefreshStartBtns()
         {
             if (!_isHost)
             {
-                _cachedView.CancelBtn.SetActiveEx(_starting);
                 return;
             }
+
             bool allReady = _roomInfo.CheckAllReady();
             if (allReady)
             {
@@ -334,8 +334,11 @@ namespace GameA
                 _cachedView.StartBtnTxt.text = StartStr;
                 _cachedView.RawStartBtnTxt.text = StartRawStr;
             }
+        }
 
-            _cachedView.CancelBtn.SetActiveEx(_starting);
+        private void OnInviteFriendBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlInviteFriend>().InviteType = EInviteType.Room;
         }
 
         private void OnCloseButton()
@@ -377,23 +380,21 @@ namespace GameA
 
         private void OnStartBtn()
         {
-            RoomManager.Instance.SendRoomOpen();
-        }
-
-        private void OnPrepareBtn()
-        {
-            RoomManager.Instance.SendRoomPrepare(!_myRoomUser.Ready);
-        }
-
-        private void OnCancelBtn()
-        {
             if (_starting)
             {
                 _starting = false;
                 _cachedView.StartBtnTxt.text = StartStr;
                 _cachedView.RawStartBtnTxt.text = StartRawStr;
-                _cachedView.CancelBtn.SetActiveEx(false);
             }
+            else
+            {
+                RoomManager.Instance.SendRoomOpen();
+            }
+        }
+
+        private void OnPrepareBtn()
+        {
+            RoomManager.Instance.SendRoomPrepare(!_myRoomUser.Ready);
         }
 
         private void OnWorldRecruitBtn()

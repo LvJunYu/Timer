@@ -8,32 +8,23 @@ namespace GameA
     public partial class OfficialProjectList
     {
         private List<Project> _projectSyncList;
-        private List<Project> _cooperationProjectList = new List<Project>();
-        private List<Project> _competeProjectList = new List<Project>();
+        private List<Project> _rpgProjectList;
+        private List<Project> _multiProjects;
 
-        public List<Project> CooperationProjectList
+        public List<Project> RpgProjectList
         {
-            get { return _cooperationProjectList; }
+            get { return _rpgProjectList; }
         }
 
-        public List<Project> CompeteProjectList
+        public List<Project> MultiProjects
         {
-            get { return _competeProjectList; }
+            get { return _multiProjects; }
         }
 
-        public void Request(EProjectType projectType, Action successCallback, Action failedCallback = null)
+        private void Request(int mask, Action successCallback, Action failedCallback)
         {
-            Request((int) projectType, () =>
+            Request(mask, () =>
             {
-                switch (projectType)
-                {
-                    case EProjectType.PT_Cooperation:
-                        _cooperationProjectList = _projectSyncList;
-                        break;
-                    case EProjectType.PS_Compete:
-                        _competeProjectList = _projectSyncList;
-                        break;
-                }
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
@@ -54,5 +45,57 @@ namespace GameA
             _projectSyncList = ProjectManager.Instance.UpdateData(msg.ProjectList);
             base.OnSyncPartial(msg);
         }
+
+        public void RequestOfficalMulti(Action successCallback, Action failedCallback = null)
+        {
+            Request(1 << (int) EProjectType.PT_Cooperation | 1 << (int) EProjectType.PT_Compete, () =>
+            {
+                _multiProjects = _projectSyncList;
+                //兼容老版本
+                for (int i = 0; i < _multiProjects.Count; i++)
+                {
+                    if (_multiProjects[i].NetData.MinPlayer == 0)
+                    {
+                        _multiProjects[i].NetData.MinPlayer = 2;
+                    }
+                }
+
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, failedCallback);
+        }
+
+        public void RequestRpg(Action successCallback, Action failedCallback = null)
+        {
+            Request(1 << 3, () =>
+            {
+                if (_projectSyncList.Count > 0)
+                {
+                    _rpgProjectList = _projectSyncList;
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    LogHelper.Error("RequestRpg fail");
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke();
+                    }
+                }
+            }, failedCallback);
+        }
+    }
+
+    public enum EOfficailProjectType
+    {
+        Single,
+        Cooperation,
+        Compete,
+        Rpg
     }
 }

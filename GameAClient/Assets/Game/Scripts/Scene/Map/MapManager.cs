@@ -85,7 +85,7 @@ namespace GameA.Game
                     break;
                 case GameManager.EStartType.WorkshopStandaloneCreate:
                 case GameManager.EStartType.WorkshopMultiCreate:
-                    InitCreate(eGameInitType);
+                    InitCreate(project, eGameInitType);
                     break;
                 default:
                     InitPlay(project, eGameInitType);
@@ -121,7 +121,7 @@ namespace GameA.Game
 
             if (startType == GameManager.EStartType.MultiBattlePlay)
             {
-                PlayMode.Instance.SceneState.InitMultiBattleData(project.NetData);
+                PlayMode.Instance.SceneState.MapStatistics.InitMultiBattleData(project.NetData);
             }
 
             _mapFile.Read(mapData, startType);
@@ -154,7 +154,7 @@ namespace GameA.Game
             if (startType == GameManager.EStartType.WorkshopEditMultiBattle)
             {
                 EditMode.Instance.MapStatistics.InitMultiBattleData(project.NetData);
-                PlayMode.Instance.SceneState.InitMultiBattleData(project.NetData);
+                PlayMode.Instance.SceneState.MapStatistics.InitMultiBattleData(project.NetData);
             }
 
             //if (mapData.UserGUID != LocalUser.Instance.UserGuid)
@@ -209,12 +209,6 @@ namespace GameA.Game
             }
         }
 
-        public void Update()
-        {
-            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
-            ColliderScene2D.CurScene.UpdateLogic(pos);
-        }
-
         /// <summary>
         /// 正在处理地图数据时
         /// </summary>
@@ -230,12 +224,12 @@ namespace GameA.Game
             }
         }
 
-        private void InitCreate(GameManager.EStartType startType)
+        private void InitCreate(Project project, GameManager.EStartType startType)
         {
             Scene2DManager.Instance.SetMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
             if (startType == GameManager.EStartType.WorkshopMultiCreate)
             {
-                EditMode.Instance.MapStatistics.CreateDefaltNetData();
+                EditMode.Instance.MapStatistics.CreateDefaltNetData(project);
             }
 
             //在生成出生点之前，生成玩家通用属性

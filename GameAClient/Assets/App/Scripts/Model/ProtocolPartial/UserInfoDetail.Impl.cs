@@ -58,6 +58,8 @@ namespace GameA
             }
         }
 
+        public bool InGame { get; set; }
+
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
             _userInfoSimple = userInfoSimple;
@@ -92,6 +94,19 @@ namespace GameA
                         }
                     }, (failedCode, failedMsg) => { OnSyncFailed(failedCode, failedMsg); });
             }
+        }
+
+        public void Request(Action successCallback = null, Action failCallback = null)
+        {
+            Request(_userInfoSimple.UserId, successCallback, code =>
+            {
+                LogHelper.Error("UserInfoDetail request fail, code == {0}", code);
+                SocialGUIManager.ShowPopupDialog("用户数据获取失败");
+                if (failCallback != null)
+                {
+                    failCallback.Invoke();
+                }
+            });
         }
 
         private bool OnSyncPartialCompelete(Msg_SC_DAT_UserInfoDetail msg_SC_DAT_UserInfoDetail)

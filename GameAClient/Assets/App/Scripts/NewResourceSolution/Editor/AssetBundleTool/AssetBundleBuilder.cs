@@ -112,7 +112,6 @@ namespace NewResourceSolution.EditorTool
 
         private static void BuildAllAb(BuildTarget buildTarget)
         {
-            _errorCnt = 0;
             // load config
             BuildConfig buildConfig = AssetDatabase.LoadAssetAtPath<BuildConfig>(
                 string.Format(ABConstDefine.BuildABConfigAssetPathFormat,
@@ -122,6 +121,13 @@ namespace NewResourceSolution.EditorTool
                 LogHelper.Error("Load buildABConfig asset failed.");
                 return;
             }
+
+            BuildAllAb(buildTarget, buildConfig);
+        }
+        
+        public static void BuildAllAb(BuildTarget buildTarget, BuildConfig buildConfig)
+        {
+            _errorCnt = 0;
             Version resVersion = new Version(buildConfig.ResVersion);
             CHBuildingResManifest manifest = new CHBuildingResManifest(resVersion);
 

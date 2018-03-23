@@ -64,8 +64,7 @@ namespace GameA
         protected override void RefreshView()
         {
             _cachedView.DeleteBtn.SetActiveEx(_comment.UserInfo.UserId == LocalUser.Instance.UserGuid ||
-                                             SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().IsMyself);
-//            _cachedView.ReplayBtn.SetActiveEx(false);
+                                             SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().IsMyself);
             _cachedView.PublishDock.SetActive(_openPublishDock);
             _cachedView.PraiseCountTxt.SetActiveEx(_comment.LikeCount > 0);
             UserInfoSimple user = _comment.UserInfoDetail.UserInfoSimple;
@@ -165,9 +164,25 @@ namespace GameA
         {
             if (_comment != null && _comment.Id == messageId)
             {
-                if (_dataList.Contains(reply))
+                //如果删除的是FirstReply，则重新Requeset获取新的FirstReply
+                if (_comment.FirstReply != null && reply.Id == _comment.FirstReply.Id)
                 {
-                    _dataList.Remove(reply);
+                    _comment.Request(() =>
+                    {
+                        if (_dataList.Contains(reply))
+                        {
+                            _dataList.Remove(reply);
+                        }
+                        RefreshReplyDock(true);
+                    });
+                }
+                else
+                {
+                    _comment.ReplyCount--;
+                    if (_dataList.Contains(reply))
+                    {
+                        _dataList.Remove(reply);
+                    }
                     RefreshReplyDock(true);
                 }
             }

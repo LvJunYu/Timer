@@ -16,6 +16,7 @@ namespace GameA.Game
     {
         protected bool _isHoldingByPlayer;
         protected PlayerBase _holder;
+        protected int _fallDistance;
 
         protected EDirectionType _directionRelativeMain;
 
@@ -41,9 +42,15 @@ namespace GameA.Game
             set { _directionRelativeMain = value; }
         }
 
+        public int FallDistance
+        {
+            get { return _fallDistance; }
+        }
+
         protected override void Clear()
         {
             _isHoldingByPlayer = false;
+            _fallDistance = 0;
             base.Clear();
         }
 
@@ -53,6 +60,7 @@ namespace GameA.Game
             {
                 return;
             }
+
             PlayMode.Instance.DestroyUnit(this);
             base.OnDead();
         }
@@ -64,31 +72,37 @@ namespace GameA.Game
                 bool air = SpeedY != 0;
                 if (!air)
                 {
+                    _fallDistance = 0;
                     _onClay = false;
                     _onIce = false;
                     bool downExist = false;
-                    var units = EnvManager.RetriveDownUnits(this);
-                    for (int i = 0; i < units.Count; i++)
+                    using (var units = EnvManager.RetriveDownUnits(this))
                     {
-                        var unit = units[i];
-                        int ymin = 0;
-                        if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                        for (int i = 0; i < units.Count; i++)
                         {
-                            downExist = true;
-                            _grounded = true;
-                            _downUnits.Add(unit);
+                            var unit = units[i];
+                            int ymin = 0;
+                            if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                            {
+                                downExist = true;
+                                _grounded = true;
+                                _downUnits.Add(unit);
+                            }
                         }
                     }
+
                     if (!downExist)
                     {
                         air = true;
                     }
                 }
+
                 if (air && _grounded)
                 {
-                    Speed += _lastExtraDeltaPos;
+                    SpeedX += _lastExtraDeltaPos.x;
                     _grounded = false;
                 }
+
                 if (_grounded)
                 {
                     var friction = MaxFriction;
@@ -96,6 +110,7 @@ namespace GameA.Game
                     {
                         friction = 1;
                     }
+
                     SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                 }
                 else
@@ -127,11 +142,38 @@ namespace GameA.Game
                         _deltaPos += IntVec2.right * deltaMainPos.x;
                     }
                 }
+
+                var lasPos = _curPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
+                if (_curPos.y < lasPos.y)
+                {
+                    _fallDistance += lasPos.y - _curPos.y;
+                }
+
                 UpdateTransPos();
+                if (_isHoldingByPlayer && _holder != null && _holder.GetBoxOperateType() == EBoxOperateType.Pull)
+                {
+                    if (!CheckHolderAdjoin())
+                    {
+                        _holder.OnBoxHoldingChanged();
+                    }
+                }
             }
+        }
+
+        public bool CheckHolderAdjoin()
+        {
+            if (_holder == null)
+            {
+                return false;
+            }
+
+            return _directionRelativeMain == EDirectionType.Left &&
+                   _colliderGrid.XMax + 1 == _holder.ColliderGrid.XMin ||
+                   _directionRelativeMain == EDirectionType.Right && 
+                   _colliderGrid.XMin - 1 == _holder.ColliderGrid.XMax;
         }
 
         public void SetHoder(PlayerBase playerBase)

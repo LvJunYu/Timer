@@ -61,6 +61,7 @@ namespace SoyEngine
                 Object.Destroy(_cachedAudioGo);
                 _cachedAudioGo = null;
             }
+
             Messenger.RemoveListener(GameA.EMessengerType.OnGameSettingChanged, OnSettingChanged);
             _instance = null;
         }
@@ -77,6 +78,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             PlayAudio(EAudioType.Music, audioName, true);
         }
 
@@ -86,6 +88,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             PlayAudio(EAudioType.SoundsEffects, audioName, loop);
         }
 
@@ -96,6 +99,7 @@ namespace SoyEngine
             {
                 return false;
             }
+
             return true;
         }
 
@@ -105,6 +109,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             StopPlayAudioItem(audioName);
         }
 
@@ -145,6 +150,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             float volume = GetPlayVolume(type);
             AudioItem audioItem;
             if (!_playingAudioEffect.TryGetValue(audioName, out audioItem))
@@ -155,10 +161,12 @@ namespace SoyEngine
                     LogHelper.Error("Audio {0} load failed!", audioName);
                     return;
                 }
+
                 audioItem = GetAudioItem();
                 audioItem.AudioSource.clip = clip;
                 _playingAudioEffect.Add(audioName, audioItem);
             }
+
             audioItem.AudioSource.volume = volume;
             audioItem.AudioSource.loop = loop;
             audioItem.AudioType = type;
@@ -173,6 +181,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             RecycleAudioItem(audioItem);
         }
 
@@ -191,6 +200,7 @@ namespace SoyEngine
                 audioItem.OnRecycle();
                 audioItem.OnRecycle = null;
             }
+
             _playingAudioEffect.Remove(audioItem.AudioName);
             _audioItemPool.Push(audioItem);
         }
@@ -208,6 +218,7 @@ namespace SoyEngine
                 res = new AudioItem();
                 res.AudioSource = _cachedAudioGo.AddComponent<AudioSource>();
             }
+
             return res;
         }
 
@@ -217,19 +228,22 @@ namespace SoyEngine
             {
                 return true;
             }
+
             return false;
         }
 
         private float GetPlayVolume(EAudioType type)
         {
-            if (type == EAudioType.Music && GameSettingData.Instance.PlayMusic)
+            if (type == EAudioType.Music)
             {
-                return 0.6f;
+                return GameSettingData.Instance.PlayMusic * 0.06f;
             }
-            if (type == EAudioType.SoundsEffects && GameSettingData.Instance.PlaySoundsEffects)
+
+            if (type == EAudioType.SoundsEffects)
             {
-                return 1;
+                return GameSettingData.Instance.PlaySoundsEffects * 0.1f;
             }
+
             return 0;
         }
 
@@ -247,6 +261,7 @@ namespace SoyEngine
             {
                 return;
             }
+
             _lastCheckTime = Time.realtimeSinceStartup;
             int needToRemoveItemCount = 0;
             Dictionary<string, AudioItem>.Enumerator enumerator = _playingAudioEffect.GetEnumerator();
@@ -256,17 +271,20 @@ namespace SoyEngine
                 {
                     break;
                 }
+
                 AudioItem item = enumerator.Current.Value;
                 if (!item.AudioSource.isPlaying)
                 {
                     _audioItemBuffer[needToRemoveItemCount] = item;
-                    needToRemoveItemCount ++;
+                    needToRemoveItemCount++;
                 }
             }
+
             for (int i = 0; i < needToRemoveItemCount; i++)
             {
                 RecycleAudioItem(_audioItemBuffer[i]);
             }
+
             ClearBuffer();
         }
 

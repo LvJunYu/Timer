@@ -16,6 +16,7 @@ namespace GameA
         private List<RoomUser> _users;
         private bool _requestFinish;
         private RoomUser[] _roomUserArray = new RoomUser[TeamManager.MaxTeamCount];
+        private bool _hasStarted;
 
         public long RoomId
         {
@@ -67,9 +68,15 @@ namespace GameA
             get { return _hostUserId; }
         }
 
+        public bool HasStarted
+        {
+            get { return _hasStarted; }
+        }
+
         public RoomInfo(Msg_MC_RoomInfo msg)
         {
             if (null == msg) return;
+            _hasStarted = msg.StartBattleFlag;
             _roomId = msg.RoomGuid;
             _projectId = msg.ProjectGuid;
             _maxUserCount = msg.MaxUserCount;
@@ -197,12 +204,31 @@ namespace GameA
             }
         }
 
+        public bool CanStart()
+        {
+            if (_project == null || _users.Count < _project.NetData.MinPlayer || _project.NetData == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < _users.Count; i++)
+            {
+                if (!_users[i].Ready && _users[i].Guid != _hostUserId)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public bool CheckAllReady()
         {
             if (_project == null || _users.Count < _project.NetData.PlayerCount)
             {
                 return false;
             }
+
             for (int i = 0; i < _users.Count; i++)
             {
                 if (!_users[i].Ready && _users[i].Guid != _hostUserId)
@@ -221,7 +247,7 @@ namespace GameA
             SortRoomUsers();
             if (PlayMode.Instance.HasCreatedPlayer)
             {
-                user.Player = PlayMode.Instance.AddPlayer(msg.inx, false);
+                user.Player = PlayMode.Instance.AddPlayer(msg.Inx, false);
             }
         }
 

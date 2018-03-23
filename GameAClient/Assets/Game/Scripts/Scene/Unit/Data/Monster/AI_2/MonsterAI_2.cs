@@ -111,9 +111,9 @@ namespace GameA.Game
                     OnChangeRun();
                     break;
             }
-            if (GameModeNetPlay.DebugEnable())
+            if (GameModeBase.DebugEnable())
             {
-                GameModeNetPlay.WriteDebugData(string.Format("Type = {1}, MonsterAi_2 ChangeState {0}", _eMonsterState.ToString(), GetType().Name));
+                GameModeBase.WriteDebugData(string.Format("Type = {1}, MonsterAi_2 ChangeState {0}", _eMonsterState.ToString(), GetType().Name));
             }
         }
 
@@ -122,24 +122,6 @@ namespace GameA.Game
             _timerRun = RandomDependFrame(90, 140);
         }
         
-        public override UnitExtraDynamic UpdateExtraData()
-        {
-            var unitExtra = base.UpdateExtraData();
-            if (unitExtra.MaxSpeedX > 0 && unitExtra.MaxSpeedX < ushort.MaxValue)
-            {
-                _maxSpeedX = unitExtra.MaxSpeedX;
-            }
-            else if (unitExtra.MaxSpeedX == ushort.MaxValue)
-            {
-                _maxSpeedX = 0;
-            }
-            else
-            {
-                _maxSpeedX = 40;
-            }
-            return unitExtra;
-        }
-
         protected virtual void OnChangeStupid(Vector3 pos)
         {
             _timerStupid = RandomDependFrame(0, 2) == 0 ? 150 : 225;

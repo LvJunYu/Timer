@@ -73,6 +73,7 @@ namespace GameA
             _cachedView.Trans.sizeDelta = new Vector2(40f, 40f);
             if (btnParam.Length == 0)
             {
+                _cachedView.CloseBtn.SetActiveEx(true);
                 _cachedView.ButtonListDock.SetActive(false);
                 _cachedView.SeperatorDock.SetActive(false);
                 CoroutineProxy.Instance.StartCoroutine(AutoClose());
@@ -81,6 +82,7 @@ namespace GameA
             }
             else
             {
+                _cachedView.CloseBtn.SetActiveEx(false);
                 _cachedView.ButtonListDock.SetActive(true);
                 _cachedView.SeperatorDock.SetActive(true);
                 _cachedView.FullScreenMask.raycastTarget = true;

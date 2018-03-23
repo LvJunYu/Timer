@@ -21,8 +21,8 @@ namespace GameA
         public void RequestMyFriends(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowEachOther, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FriendList = _dataDetailList;
                     if (successCallBack != null)
@@ -36,8 +36,8 @@ namespace GameA
         public void RequestMyFans(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FanList = _dataDetailList;
                     if (successCallBack != null)
@@ -50,8 +50,8 @@ namespace GameA
         public void RequestMyFollows(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_FollowedByMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     FollowList = _dataDetailList;
                     if (successCallBack != null)
@@ -64,8 +64,8 @@ namespace GameA
         public void RequestMyBlocks(Action successCallBack, Action<ENetResultCode> failCallBack)
         {
             Request(LocalUser.Instance.UserGuid, ERelationUserType.RUT_BlockByMe, 0, int.MaxValue,
-                ERelationUserOrderBy.RUOB_Friendliness,
-                EOrderType.OT_Asc, () =>
+                ERelationUserOrderBy.RUOB_RelationTime,
+                EOrderType.OT_Desc, () =>
                 {
                     BlockList = _dataDetailList;
                     if (successCallBack != null)
@@ -93,14 +93,15 @@ namespace GameA
                 if (inx >= 0)
                 {
                     CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-                    {/*
-                        SocialGUIManager.Instance.OpenUI<UICtrlChat>(UICtrlChat.EMenu.Friend);
-                        SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(inx, FriendList);
-                        if (successAction != null)
-                        {
-                            successAction.Invoke();
-                        }
-                        */
+                    {
+                        /*
+                                                SocialGUIManager.Instance.OpenUI<UICtrlChat>(UICtrlChat.EMenu.Friend);
+                                                SocialGUIManager.Instance.GetUI<UICtrlChat>().SetToFriend(inx, FriendList);
+                                                if (successAction != null)
+                                                {
+                                                    successAction.Invoke();
+                                                }
+                                                */
                     }));
                 }
                 else
@@ -110,33 +111,50 @@ namespace GameA
             }, code => { SocialGUIManager.ShowPopupDialog("请求好友数据失败。"); });
         }
 
-        public void RequestFollowUser(UserInfoDetail userInfoDetail)
+        public void RequestFollowUser(UserInfoDetail userInfoDetail, Action succescallback = null,
+            Action failcallback = null)
         {
             if (userInfoDetail.UserInfoSimple.UserId == LocalUser.Instance.UserGuid)
             {
                 SocialGUIManager.ShowPopupDialog("不能关注自己！");
                 return;
             }
+
 //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, true, res =>
             {
                 if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
                 {
                     FollowUser(userInfoDetail);
+                    if (succescallback != null)
+                    {
+                        succescallback.Invoke();
+                    }
                 }
                 else
                 {
                     SocialGUIManager.ShowPopupDialog("关注失败。");
+                    if (failcallback != null)
+                    {
+                        failcallback.Invoke();
+                    }
                 }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("关注失败。");
+                if (failcallback != null)
+                {
+                    failcallback.Invoke();
+                }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
 
-        public void RequestRemoveFollowUser(UserInfoDetail userInfoDetail)
+        public void RequestRemoveFollowUser(UserInfoDetail userInfoDetail, Action successcallback = null,
+            Action failcallback = null)
         {
 //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateFollowState(userInfoDetail.UserInfoSimple.UserId, false, res =>
@@ -144,15 +162,29 @@ namespace GameA
                 if (res.ResultCode == (int) EUpdateFollowStateCode.UFSS_Success)
                 {
                     RemoveFollowUser(userInfoDetail);
+                    if (successcallback != null)
+                    {
+                        successcallback.Invoke();
+                    }
                 }
                 else
                 {
                     SocialGUIManager.ShowPopupDialog("取消关注失败。");
+                    if (failcallback != null)
+                    {
+                        failcallback.Invoke();
+                    }
                 }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
                 SocialGUIManager.ShowPopupDialog("取消关注失败。");
+                if (failcallback != null)
+                {
+                    failcallback.Invoke();
+                }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             });
         }
@@ -164,6 +196,7 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("不能屏蔽自己！");
                 return;
             }
+
 //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Empty);
             RemoteCommands.UpdateBlockState(userInfoDetail.UserInfoSimple.UserId, true, res =>
             {
@@ -175,6 +208,7 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("屏蔽失败。");
                 }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
@@ -196,6 +230,7 @@ namespace GameA
                 {
                     SocialGUIManager.ShowPopupDialog("解除屏蔽失败");
                 }
+
 //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             }, code =>
             {
@@ -211,6 +246,7 @@ namespace GameA
             {
                 FollowList.Add(userInfoDetail);
             }
+
             if (userInfoDetail.UserInfoSimple.RelationWithMe.FollowMe)
             {
                 userInfoDetail.UserInfoSimple.RelationWithMe.IsFriend = true;
@@ -219,6 +255,7 @@ namespace GameA
                     FriendList.Add(userInfoDetail);
                 }
             }
+
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
             SocialGUIManager.ShowPopupDialog("关注成功");
         }
@@ -240,6 +277,7 @@ namespace GameA
 //                    FriendList.Remove(userInfoDetail);
 //                }
             }
+
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
             SocialGUIManager.ShowPopupDialog("已取消关注");
         }
@@ -253,6 +291,7 @@ namespace GameA
             {
                 BlockList.Add(userInfoDetail);
             }
+
 //            if (FollowList != null && FollowList.Contains(userInfoDetail))
 //            {
 //                FollowList.Remove(userInfoDetail);
@@ -276,6 +315,7 @@ namespace GameA
             {
                 BlockList.Remove(userInfoDetail);
             }
+
             Messenger<UserInfoDetail>.Broadcast(EMessengerType.OnRelationShipChanged, userInfoDetail);
             SocialGUIManager.ShowPopupDialog("已取消屏蔽");
         }

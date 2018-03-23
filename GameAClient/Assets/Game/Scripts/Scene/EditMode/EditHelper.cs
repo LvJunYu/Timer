@@ -25,6 +25,11 @@ namespace GameA.Game
 
         private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
+        public static IntVec3 PubDefaultUnitGuid
+        {
+            get { return DefaultUnitGuid; }
+        }
+
         public static Dictionary<int, int> UnitIndexCount
         {
             get { return _unitIndexCount; }
@@ -140,10 +145,14 @@ namespace GameA.Game
             if (origin.UnitDesc.Guid == DefaultUnitGuid)
             {
                 UpdateUnitDefaultData(editData);
-                //复活点阵营改变
-                if (UnitDefine.IsSpawn(origin.UnitDesc.Id) && editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
+                if (editData.UnitExtra.TeamId != origin.UnitExtra.TeamId)
                 {
                     Messenger.Broadcast(EMessengerType.OnTeamChanged);
+                }
+
+                if (UnitDefine.ChangeViewByUnitExtra(origin.UnitDesc.Id))
+                {
+                    Messenger.Broadcast(EMessengerType.OnUnitExtraDefaultValueChanged);
                 }
 
                 Messenger<int>.Broadcast(EMessengerType.OnEditUnitDefaultDataChange, origin.UnitDesc.Id);
@@ -188,6 +197,7 @@ namespace GameA.Game
                 defaultData = InternalGetUnitDefaultData(id);
                 _unitDefaultDataDict.Add(id, defaultData);
             }
+
             UnitEditData data = new UnitEditData();
             data.UnitDesc = defaultData.UnitDesc;
             data.UnitExtra = defaultData.UnitExtra.Clone();
@@ -200,6 +210,7 @@ namespace GameA.Game
                     data.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
                 }
             }
+
             //地块特殊处理
             if (UnitDefine.IsEarth(id))
             {
@@ -236,7 +247,14 @@ namespace GameA.Game
 
             if (table.CanEdit(EEditType.Direction))
             {
-                unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
+                if (id == UnitDefine.LocationMissileId)
+                {
+                    unitEditData.UnitExtra.ChildRotation = (byte) table.DefaultDirection;
+                }
+                else
+                {
+                    unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
+                }
             }
 
             if (table.CanEdit(EEditType.MoveDirection))
@@ -250,13 +268,20 @@ namespace GameA.Game
                 unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
             }
 
+            if (id == UnitDefine.LocationMissileId)
+            {
+                unitEditData.UnitExtra.RotateMode = 0;
+                unitEditData.UnitExtra.RotateValue = (byte) table.DefaultDirection;
+            }
+
             if (table.CanEdit(EEditType.TimeDelay))
             {
                 unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
             }
 
-            if (UnitDefine.IsMonster(table.Id) || UnitDefine.IsNpc(table.Id))
+            if (UnitDefine.IsMonster(table.Id))
+//                || UnitDefine.IsNpc(table.Id))
             {
                 unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
                 unitEditData.UnitDesc.Rotation = 0;
@@ -275,6 +300,7 @@ namespace GameA.Game
                 {
                     unitEditData.UnitExtra.EffectRange = (ushort) skill.EffectValues[0];
                 }
+
                 unitEditData.UnitExtra.CastRange = (ushort) skill.CastRange;
                 unitEditData.UnitExtra.TimeInterval = (ushort) skill.CDTime;
                 unitEditData.UnitExtra.Damage = (ushort) skill.Damage;
@@ -283,20 +309,16 @@ namespace GameA.Game
                     unitEditData.UnitExtra.Set((ushort) skill.KnockbackForces[i],
                         UnitExtraDynamic.FieldTag.KnockbackForces, i);
                 }
+
                 for (int i = 0; i < skill.AddStates.Length; i++)
                 {
                     unitEditData.UnitExtra.Set((ushort) skill.AddStates[i], UnitExtraDynamic.FieldTag.AddStates, i);
                 }
-            }
 
-            if (table.CanEdit(EEditType.Spawn))
-            {
-//                UnitExtraDynamic.GetDefaultPlayerValue(unitEditData.UnitExtra);
-//                if (Scene2DManager.Instance.GetDataScene2D(Scene2DManager.Instance.SqawnSceneIndex).SpawnDatas.Count ==
-//                    0)
-//                {
-//                    unitEditData.UnitExtra.InternalUnitExtras.Add(UnitExtraDynamic.GetDefaultPlayerValue());
-//                }
+                if (skill.ProjectileSpeed > 0)
+                {
+                    unitEditData.UnitExtra.BulletSpeed = (ushort) skill.ProjectileSpeed;
+                }
             }
 
             if (table.CanEdit(EEditType.MonsterCave))
@@ -306,6 +328,25 @@ namespace GameA.Game
                 unitEditData.UnitExtra.MonsterIntervalTime = 1000;
                 unitEditData.UnitExtra.MaxCreatedMonster = 100;
                 unitEditData.UnitExtra.MaxAliveMonster = 5;
+            }
+
+            if (UnitDefine.TimerId == id)
+            {
+                unitEditData.UnitExtra.TimerSecond = 30;
+                unitEditData.UnitExtra.TimerMinSecond = 30;
+                unitEditData.UnitExtra.TimerMaxSecond = 30;
+            }
+
+            if (UnitDefine.SurpriseBoxId == id)
+            {
+                unitEditData.UnitExtra.IsRandom = true;
+                unitEditData.UnitExtra.SurpriseBoxMaxCount = 100;
+                unitEditData.UnitExtra.SurpriseBoxInterval = 10;
+            }
+
+            if (table.CanEdit(EEditType.Cycle))
+            {
+                unitEditData.UnitExtra.CycleInterval = 10;
             }
 
             return unitEditData;
@@ -331,12 +372,14 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+
             //检查在地图内
             var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, 0, unitDesc.Scale);
             if (!DataScene2D.CurScene.IsInTileMap(dataGrid))
             {
                 return false;
             }
+
             //绳子必须绑在石头上
             if (UnitDefine.RopeId == tableUnit.Id)
             {
@@ -357,9 +400,10 @@ namespace GameA.Game
                     }
                 }
             }
+
             //怪物同屏数量不可过多
             {
-                if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)
+                if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.IsBox(tableUnit.Id))
                 {
                     IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
                     IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
@@ -506,7 +550,7 @@ namespace GameA.Game
             NpcTaskDataTemp.Intance.AddNpc(unitDesc);
 
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
-            //如果添加的是出生点则清空默认属性
+            //如果添加的是出生点则清空默认属性，因为出生点之间属性互斥
             if (unitDesc.Id == UnitDefine.SpawnId && _unitDefaultDataDict.ContainsKey(UnitDefine.SpawnId))
             {
                 _unitDefaultDataDict.Remove(UnitDefine.SpawnId);
@@ -530,6 +574,7 @@ namespace GameA.Game
 
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
+
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
@@ -581,11 +626,12 @@ namespace GameA.Game
             return tableUnit.Count;
         }
 
-        public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
+        public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase
+            , UnitExtraDynamic unitExtra = null)
         {
             Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
 
-            unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate);
+            unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate, unitExtra);
             CollectionBase collectUnit = unitBase as CollectionBase;
             if (null != collectUnit)
             {
@@ -599,6 +645,7 @@ namespace GameA.Game
             unitBase.Trans.parent = tran;
             unitBase.Trans.localPosition = GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.localScale = Vector3.one;
+
             return helperParentObj;
         }
 

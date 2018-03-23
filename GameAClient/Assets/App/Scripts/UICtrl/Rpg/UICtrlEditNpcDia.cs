@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
@@ -21,10 +22,13 @@ namespace GameA
         List<Image> _iconSelectImages = new List<Image>();
         List<USCtrlNpcDiaItem> _npcDiaItemList = new List<USCtrlNpcDiaItem>();
         private Enpc _oriENpcType;
+        private List<string> _officialDiaList = new List<string>();
 
         private List<UMCtrlNpcInputDiaItem> _inputItemList = new List<UMCtrlNpcInputDiaItem>();
 
         private List<Action> _callbackActions = new List<Action>();
+
+        private List<Action> _callbackofficialActions = new List<Action>();
         //动画
 
         private Sequence _openWaggleSequence;
@@ -38,24 +42,57 @@ namespace GameA
 
         private Sequence _closeCommonSequence;
         private bool _openCommonAnim;
+
         private bool _completeCommonAnim;
+
+        //是否编辑已经生成的ui
+        private bool _isEditHaveDia;
+        private Rect _rect = new Rect();
+        private Rect _diaContentRect = new Rect();
+
+        public Rect DiaContentRect
+        {
+            get { return _diaContentRect; }
+            set { _diaContentRect = value; }
+        }
+
+        private string _oldStr = "";
+        private string _nowColor = "";
+        private bool _isRefreshDia = false;
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            foreach (var dia in TableManager.Instance.Table_NpcDefaultDiaDic)
+            {
+                _officialDiaList.Add(dia.Value.Dia);
+            }
+
+            //官方设置的常用对话
+            for (int i = 0; i < _officialDiaList.Count; i++)
+            {
+                UMCtrlNpcInputDiaItem item =
+                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
+                        EResScenary.UIInGame);
+                item.InitItem(_cachedView.ConmmonContentTrs);
+                item.SetOffcial(_callbackActions, _callbackofficialActions, _officialDiaList[i], UseCommonDia);
+            }
 
             _cachedView.ExitBtn.onClick.AddListener(Close);
+            _cachedView.ExitMaskBtn.onClick.AddListener(Close);
             for (int i = 0; i < _cachedView.IconButtonAry.Length; i++)
             {
                 _iconImages.Add(_cachedView.IconButtonAry[i].transform.GetChild(0).GetComponent<Image>());
             }
+
             for (int i = 0; i < _cachedView.IconSelectedButtonAry.Length; i++)
             {
                 _iconSelectImages.Add(_cachedView.IconSelectedButtonAry[i].transform.GetChild(0)
                     .GetComponent<Image>());
             }
+
             BadWordManger.Instance.InputFeidAddListen(_cachedView.DiaInputField);
-            _cachedView.DiaInputField.onEndEdit.AddListener((string str) => { _curEditNpcDia.Dia = str; });
+            _cachedView.DiaInputField.onEndEdit.AddListener(str => { _curEditNpcDia.Dia = str; });
             _cachedView.DiaInputField.onValueChanged.AddListener(SetNameLength);
 
             //Icon
@@ -65,6 +102,7 @@ namespace GameA
                 _cachedView.IconGroup.AddButton(_cachedView.IconButtonAry[i], _cachedView.IconSelectedButtonAry[i],
                     b => ClickIcon(inx, b));
             }
+
             //种类
             for (int i = 0; i < _cachedView.TypeButtonAry.Length; i++)
             {
@@ -73,6 +111,7 @@ namespace GameA
                     _cachedView.TypeSelectedButtonAry[i],
                     b => ChilcTab(inx, b));
             }
+
             //晃动
             for (int i = 0; i < _cachedView.WaggleButtonAry.Length; i++)
             {
@@ -81,6 +120,7 @@ namespace GameA
                     _cachedView.WaggleSelectedButtonAry[i],
                     b => ChilcWaggleTab(inx, b));
             }
+
             //颜色
             for (int i = 0; i < _cachedView.ColorButtonAry.Length; i++)
             {
@@ -102,10 +142,20 @@ namespace GameA
             //添加按钮
             _cachedView.ConfirmBtn.onClick.AddListener(() =>
             {
-                if (_npcDiaList.Count <= 5)
+                if (!_isEditHaveDia)
                 {
-                    _npcDiaList.Add(_curEditNpcDia);
+                    if (_npcDiaList.Count < 20)
+                    {
+                        _npcDiaList.Add(_curEditNpcDia);
+                        _curEditNpcDia = new NpcDia();
+                        RefreshCurDia();
+                        RefreshDiaList();
+                    }
+                }
+                else
+                {
                     _curEditNpcDia = new NpcDia();
+                    _isEditHaveDia = false;
                     RefreshCurDia();
                     RefreshDiaList();
                 }
@@ -143,6 +193,17 @@ namespace GameA
             //滑动
             _cachedView.CommonDiaUpBtn.onClick.AddListener(() => { _cachedView.Bar.value += 0.1f; });
             _cachedView.CommonDiaDownBtn.onClick.AddListener(() => { _cachedView.Bar.value -= 0.1f; });
+            _cachedView.UpBtn.onClick.AddListener(() => { _cachedView.DiaItemBar.value += 0.1f; });
+            _cachedView.DownBtn.onClick.AddListener(() => { _cachedView.DiaItemBar.value -= 0.1f; });
+            _rect.x = _cachedView.DiaInputField.transform.position.x;
+            _rect.y = _cachedView.DiaInputField.transform.position.y;
+            _rect.width = _cachedView.DiaInputField.rectTransform().GetWidth();
+            _rect.height = _cachedView.DiaInputField.rectTransform().GetHeight();
+
+            _diaContentRect.x = _cachedView.DiaItemContentView.transform.position.x;
+            _diaContentRect.y = _cachedView.DiaItemContentView.transform.position.y;
+            _diaContentRect.width = _cachedView.DiaItemContentView.rectTransform().GetWidth();
+            _diaContentRect.height = _cachedView.DiaItemContentView.rectTransform().GetHeight();
         }
 
 
@@ -163,14 +224,16 @@ namespace GameA
                     item.AnalysisNpcDia(_npcDiaStrList.ToList<string>()[i]);
                     _npcDiaList.Add(item);
                 }
-                _curEditNpcDia = _npcDiaList[0];
+
+                _curEditNpcDia = new NpcDia();
             }
+
             RefreshDiaList();
 
             RequestData();
         }
 
-        private void RefreshDiaList()
+        public void RefreshDiaList()
         {
             int cout = _npcDiaList.Count;
             for (int i = 0; i < _npcDiaItemList.Count; i++)
@@ -184,6 +247,15 @@ namespace GameA
                 {
                     _npcDiaItemList[i].setDiasble(i);
                 }
+            }
+
+            if (cout >= 20)
+            {
+                _cachedView.ConfirmBtnMask.SetActiveEx(true);
+            }
+            else
+            {
+                _cachedView.ConfirmBtnMask.SetActiveEx(false);
             }
         }
 
@@ -229,6 +301,7 @@ namespace GameA
                         _cachedView.NowWaggleText.text = "上下晃动";
                         break;
                 }
+
                 CloseWaggleAnimation();
             }
         }
@@ -240,21 +313,27 @@ namespace GameA
                 switch (inx)
                 {
                     case 0:
+                        _nowColor = NpcDia.brown;
                         _curEditNpcDia.Color = NpcDia.brown;
                         break;
                     case 1:
+                        _nowColor = NpcDia.green;
                         _curEditNpcDia.Color = NpcDia.green;
-
                         break;
                     case 2:
+                        _nowColor = NpcDia.blue;
                         _curEditNpcDia.Color = NpcDia.blue;
-
                         break;
                     case 3:
+                        _nowColor = NpcDia.red;
                         _curEditNpcDia.Color = NpcDia.red;
-
                         break;
                 }
+
+                SetSelectColor(_nowColor);
+                Color textColor;
+                ColorUtility.TryParseHtmlString(_curEditNpcDia.Color, out textColor);
+                _cachedView.DiaInputField.textComponent.color = textColor;
             }
         }
 
@@ -271,25 +350,25 @@ namespace GameA
             }
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
-        public override void OnUpdate()
-        {
-            base.OnUpdate();
-        }
+//        protected override void OnDestroy()
+//        {
+//            base.OnDestroy();
+//        }
+//
+//        public override void OnUpdate()
+//        {
+//            base.OnUpdate();
+//        }
 
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGamePopup;
         }
 
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-        }
+//        protected override void InitEventListener()
+//        {
+//            base.InitEventListener();
+//        }
 
 
         public void SetNpcType(Enpc _enpc)
@@ -311,6 +390,7 @@ namespace GameA
             {
                 _cachedView.WaggleBtnContenTrans.SetActiveEx(false);
             }
+
             if (_openCommonAnim)
             {
                 CloseCommonAnimation();
@@ -319,18 +399,22 @@ namespace GameA
             {
                 _cachedView.CommonContentParentTrs.SetActiveEx(false);
             }
-            base.Close();
+
             _npcDiaStrList.Clear();
             for (int i = 0; i < _npcDiaList.Count; i++)
             {
                 _npcDiaStrList.Add(_npcDiaList[i].ToString());
             }
+
+            base.Close();
         }
 
         private void RefreshCurDia()
         {
+            _isRefreshDia = true;
+            _oldStr = "";
             _cachedView.NpcTypeTabGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.NpcId - 1, 0, 1), true);
-            _cachedView.IconGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 1), true);
+            _cachedView.IconGroup.SelectIndex(Mathf.Clamp((int) _curEditNpcDia.FaceId - 1, 0, 7), true);
             _cachedView.DiaInputField.text = _curEditNpcDia.Dia;
             int colorBtnIndex = 0;
             switch (_curEditNpcDia.Color)
@@ -348,7 +432,9 @@ namespace GameA
                     colorBtnIndex = 3;
                     break;
             }
+
             _cachedView.ColorGroup.SelectIndex(colorBtnIndex, true);
+            _isRefreshDia = false;
         }
 
         private void OpenWaggleAnimation()
@@ -395,6 +481,7 @@ namespace GameA
                 {
                     _closeWaggleSequence.Complete(true);
                 }
+
                 _cachedView.WaggleBtnContenTrans.SetActiveEx(true);
             });
             _closeWaggleSequence.Append(_cachedView.WaggleBtnContenTrans.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
@@ -446,7 +533,6 @@ namespace GameA
             _openCommonAnim = false;
         }
 
-
         protected void CreateCommonSequences()
         {
             _openCommonSequence = DOTween.Sequence();
@@ -459,6 +545,7 @@ namespace GameA
                 {
                     _closeCommonSequence.Complete(true);
                 }
+
                 _cachedView.CommonContentParentTrs.SetActiveEx(true);
             });
             _closeCommonSequence.Append(_cachedView.CommonContentParentTrs.DOBlendableMoveBy(Vector3.up * 600, 0.3f)
@@ -492,10 +579,15 @@ namespace GameA
         {
             for (int i = 0; i < _inputItemList.Count; i++)
             {
-                UMPoolManager.Instance.Free(_inputItemList[i]);
+                if (!_inputItemList[i].Isofficial)
+                {
+                    UMPoolManager.Instance.Free(_inputItemList[i]);
+                }
             }
+
             _inputItemList.Clear();
             _callbackActions.Clear();
+            _callbackActions.AddRange(_callbackofficialActions);
 
             for (int i = 0; i < _dialogPreinstallList.DataList.Count; i++)
             {
@@ -503,17 +595,21 @@ namespace GameA
                     UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
                         EResScenary.UIInGame);
                 item.InitItem(_cachedView.ConmmonContentTrs);
-                item.Set(i, _inputItemList, _dialogPreinstallList, false, false, _callbackActions,
-                    UseCommonDia, RequestData);
+                item.Set(i, _inputItemList, false, false, _callbackActions,
+                    UseCommonDia, RequestData, _dialogPreinstallList);
                 _inputItemList.Add(item);
             }
-            UMCtrlNpcInputDiaItem additem =
-                UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
-                    EResScenary.UIInGame);
-            additem.Set(0, _inputItemList, _dialogPreinstallList, true, false, _callbackActions,
-                UseCommonDia, RequestData);
-            additem.InitItem(_cachedView.ConmmonContentTrs);
-            _inputItemList.Add(additem);
+
+            if (_dialogPreinstallList.DataList.Count < UMCtrlNpcInputDiaItem.MaxCommonUseDiaNum)
+            {
+                UMCtrlNpcInputDiaItem additem =
+                    UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_cachedView.ConmmonContentTrs,
+                        EResScenary.UIInGame);
+                additem.Set(0, _inputItemList, true, false, _callbackActions,
+                    UseCommonDia, RequestData, _dialogPreinstallList);
+                additem.InitItem(_cachedView.ConmmonContentTrs);
+                _inputItemList.Add(additem);
+            }
         }
 
         private void SetNameLength(string str)
@@ -524,12 +620,142 @@ namespace GameA
             {
                 _cachedView.DiaInputField.text = str.Substring(0, DiaMaxLength);
             }
+
+            OnInputValueChange(str);
         }
 
         private void UseCommonDia(string str)
         {
+            _isRefreshDia = true;
             _cachedView.DiaInputField.onValueChanged.Invoke(str);
             _cachedView.DiaInputField.onEndEdit.Invoke(str);
+            _isRefreshDia = false;
+        }
+
+        public UIViewEditNpcDia GetVeiw()
+        {
+            return _cachedView;
+        }
+
+        public void SetCurDiaItem(NpcDia dia)
+        {
+            _curEditNpcDia = dia;
+            RefreshCurDia();
+            _isEditHaveDia = true;
+        }
+
+        public Rect GetInputRect()
+        {
+            return _rect;
+        }
+
+        public Rect GetDiaContentRect()
+        {
+            if (_diaContentRect.height < 100)
+            {
+                _diaContentRect.height = _cachedView.DiaItemContentView.GetHeight();
+            }
+
+            if (_diaContentRect.width < 100)
+            {
+                _diaContentRect.width = _cachedView.DiaItemContentView.GetWidth();
+            }
+
+            return _diaContentRect;
+        }
+
+        private void OnInputValueChange(string str)
+        {
+            if (!_isRefreshDia)
+            {
+                if (_oldStr.Length > str.Length)
+                {
+                    int num = _oldStr.Length - str.Length;
+                    for (int i = 0; i < num; i++)
+                    {
+                        _curEditNpcDia.ColorList.RemoveAt(_cachedView.DiaInputField.caretPosition);
+                    }
+                }
+                else
+                {
+                    int addNum = str.Length - _oldStr.Length;
+                    if (addNum == 0)
+                    {
+                        if (str != _oldStr)
+                        {
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < addNum; i++)
+                        {
+                            if (_cachedView.DiaInputField.caretPosition > _curEditNpcDia.ColorList.Count)
+                            {
+                                _curEditNpcDia.ColorList.Add(_nowColor);
+                            }
+                            else
+                            {
+                                _curEditNpcDia.ColorList.Insert(_cachedView.DiaInputField.caretPosition - addNum,
+                                    _nowColor);
+                            }
+                        }
+                    }
+                }
+            }
+
+            _oldStr = str;
+            SetShowText(str);
+        }
+
+        private void SetShowText(string str)
+        {
+            string strtemp = "";
+            for (int i = 0; i < str.Length; i++)
+            {
+                string color;
+                if (i > _curEditNpcDia.ColorList.Count - 1)
+                {
+                    color = NpcDia.brown;
+                    _curEditNpcDia.ColorList.Add(color);
+                }
+                else
+                {
+                    color = _curEditNpcDia.ColorList[i];
+                }
+
+//                if (color == NpcDia.brown)
+//                {
+//                    color = string.Format("#{0}", ColorUtility.ToHtmlStringRGBA(Color.white));
+//                }
+
+                strtemp += String.Format("<color={0}>{1}</color>", color,
+                    str[i]);
+            }
+
+            _cachedView.ShowDiaText.text = strtemp;
+        }
+
+        private void SetSelectColor(string color)
+        {
+#if UNITY_STANDALONE_WIN
+            if (_cachedView.DiaInputField.SelectionBeginPosition == _cachedView.DiaInputField.SelectionEndPosition)
+            {
+                return;
+            }
+            for (int i = _cachedView.DiaInputField.SelectionBeginPosition;
+                i < _cachedView.DiaInputField.SelectionEndPosition;
+                i++)
+            {
+                _curEditNpcDia.ColorList[i] = color;
+            }
+#else
+    for (int i = 0; i < _curEditNpcDia.ColorList.Count; i++)
+            {
+                _curEditNpcDia.ColorList[i] = color;
+            }
+#endif
+            SetShowText(_cachedView.DiaInputField.text);
+            _cachedView.DiaInputField.SetDefaultValue();
         }
     }
 }

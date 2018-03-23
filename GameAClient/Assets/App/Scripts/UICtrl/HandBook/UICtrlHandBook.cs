@@ -1,21 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
 using NewResourceSolution;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
-    public enum ExplantionIndex
-    {
-        Role = 1,
-        Earth = 2,
-        Mechanism = 3,
-        Collection = 4,
-        Decoration = 5,
-        Controller = 6
-    }
-
     [UIResAutoSetup(EResScenary.UICommon)]
     public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook>
     {
@@ -26,12 +18,14 @@ namespace GameA
             Mechanism = 3,
             Collection = 4,
             Decoration = 5,
-            Controller = 6
+            Controller = 6,
+            Effect = 7
         }
 
         #region Fields
 
         private float _TweenTime = 0.5f;
+        private float _height = 450;
         private string _unitIconName;
         private bool _isFirst = true;
         private float _startTime;
@@ -39,12 +33,13 @@ namespace GameA
         private Table_Unit _uint;
         private Tweener _contenTween;
         private UMCtrlHandBookItem _curSeleCtrlHandBookItem;
-        private List<int> _RoleList = new List<int>();
-        private List<int> _EarthList = new List<int>();
-        private List<int> _MechanismList = new List<int>();
-        private List<int> _ColletionList = new List<int>();
-        private List<int> _DecorationList = new List<int>();
-        private List<int> _ControllerList = new List<int>();
+        private readonly List<int> _roleList = new List<int>();
+        private readonly List<int> _earthList = new List<int>();
+        private readonly List<int> _mechanismList = new List<int>();
+        private readonly List<int> _colletionList = new List<int>();
+        private readonly List<int> _decorationList = new List<int>();
+        private readonly List<int> _controllerList = new List<int>();
+        private readonly List<int> _effectList = new List<int>();
 
         #endregion
 
@@ -73,6 +68,8 @@ namespace GameA
             _cachedView.CollitionBtn.onClick.AddListener(OnCollitionBtn);
             _cachedView.DecorationBtn.onClick.AddListener(OnDecorationBtn);
             _cachedView.CtrlBtn.onClick.AddListener(OnCtrlBtn);
+            _cachedView.EffectBtn.onClick.AddListener(OnEffectBtn);
+            _cachedView.ScrollRect.onValueChanged.AddListener(OnScrollVaLueChange);
             _isFirst = true;
             _startTime = 0.0f;
         }
@@ -96,6 +93,11 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainUI;
         }
 
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            OnRoleBtn();
+        }
 
         private void OnCloseBtn()
         {
@@ -106,26 +108,32 @@ namespace GameA
         {
             foreach (var item in TableManager.Instance.Table_UnitDic)
             {
-                switch (item.Value.UIType)
+                if (item.Value.Use == 1)
                 {
-                    case (int) ExplantionIndex.Role:
-                        _RoleList.Add(item.Key);
-                        break;
-                    case (int) ExplantionIndex.Earth:
-                        _EarthList.Add(item.Key);
-                        break;
-                    case (int) ExplantionIndex.Mechanism:
-                        _MechanismList.Add(item.Key);
-                        break;
-                    case (int) ExplantionIndex.Collection:
-                        _ColletionList.Add(item.Key);
-                        break;
-                    case (int) ExplantionIndex.Decoration:
-                        _DecorationList.Add(item.Key);
-                        break;
-                    case (int) ExplantionIndex.Controller:
-                        _ControllerList.Add(item.Key);
-                        break;
+                    switch (item.Value.UIType)
+                    {
+                        case (int) ExplantionIndex.Role:
+                            _roleList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Earth:
+                            _earthList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Mechanism:
+                            _mechanismList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Collection:
+                            _colletionList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Decoration:
+                            _decorationList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Controller:
+                            _controllerList.Add(item.Key);
+                            break;
+                        case (int) ExplantionIndex.Effect:
+                            _effectList.Add(item.Key);
+                            break;
+                    }
                 }
             }
         }
@@ -133,46 +141,92 @@ namespace GameA
         public void InitItemGroup()
         {
             var resScenary = ResScenary;
-            for (int i = 0; i < _RoleList.Count; i++)
+            for (int i = 0; i < _roleList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.RoleRectGroup, resScenary);
-                explationItem.IintItem(_RoleList[i], true);
+                explationItem.IintItem(_roleList[i], true);
                 if (_curSeleCtrlHandBookItem == null)
                 {
                     _curSeleCtrlHandBookItem = explationItem;
                     _curSeleCtrlHandBookItem.OnBtn();
                 }
             }
-            for (int i = 0; i < _EarthList.Count; i++)
+            for (int i = 0; i < _earthList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.EarthRectGroup, resScenary);
-                explationItem.IintItem(_EarthList[i], true);
+                explationItem.IintItem(_earthList[i], true);
             }
-            for (int i = 0; i < _MechanismList.Count; i++)
+            for (int i = 0; i < _mechanismList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.TrickRectGroup, resScenary);
-                explationItem.IintItem(_MechanismList[i], true);
+                explationItem.IintItem(_mechanismList[i], true);
             }
-            for (int i = 0; i < _ColletionList.Count; i++)
+            for (int i = 0; i < _colletionList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.CollitionRectGroup, resScenary);
-                explationItem.IintItem(_ColletionList[i], true);
+                explationItem.IintItem(_colletionList[i], true);
             }
-            for (int i = 0; i < _DecorationList.Count; i++)
+            for (int i = 0; i < _decorationList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.DecorationRectGroup, resScenary);
-                explationItem.IintItem(_DecorationList[i], true);
+                explationItem.IintItem(_decorationList[i], true);
             }
-            for (int i = 0; i < _ControllerList.Count; i++)
+            for (int i = 0; i < _controllerList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
                 explationItem.Init(_cachedView.CtrlRectGroup, resScenary);
-                explationItem.IintItem(_ControllerList[i], true);
+                explationItem.IintItem(_controllerList[i], true);
+            }
+            for (int i = 0; i < _effectList.Count; i++)
+            {
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.EffecRectGroup, resScenary);
+                explationItem.IintItem(_effectList[i], true);
+            }
+        }
+
+        private void OnScrollVaLueChange(Vector2 pos)
+        {
+            float y = (1 - pos.y) * _cachedView.ScrollRect.content.GetHeight();
+            if (y >= -_cachedView.RoleRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.RoleBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.EarthRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.EarthBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.TrickRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.TrickBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.CollitionRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.CollitionBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.DecorationRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.DecorationBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.CtrlRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.CtrlBtnSlect.SetActiveEx(true);
+            }
+            if (y >= -_cachedView.EffecRect.anchoredPosition.y)
+            {
+                DisableSelectBtn();
+                _cachedView.EffectBtnSlect.SetActiveEx(true);
             }
         }
 
@@ -189,43 +243,84 @@ namespace GameA
                 _curSeleCtrlHandBookItem.OnSelect();
             }
             _uint = TableManager.Instance.GetUnit(unitID);
+//            var unit = UnitManager.Instance.GetUnit(unitID);
+//            if (unit == null)
+//            {
+//                return;
+//            }
+//            unit.Init(new UnitDesc(unitID, IntVec3.one, 0, Vector2.one), _uint);
+//            _uint = TableManager.Instance.GetUnit(unitID);
             _cachedView.Name.text = _uint.Name;
             _unitIconName = _uint.Icon;
             if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
             {
                 _cachedView.Icon.sprite = _unitIcon;
             }
-            _cachedView.Desc.text = _uint.Summary;
+            if (_uint.Summary != null)
+            {
+                _cachedView.Desc.text = String.Format("<size=22>简介</size>\n{0}", _uint.Summary);
+            }
+            else
+            {
+                _cachedView.Desc.text = "";
+            }
+            if (_uint.EffectSummary != null)
+            {
+                _cachedView.EffectText.text = String.Format("<size=22>效果</size>\n{0}", _uint.EffectSummary);
+            }
+            else
+            {
+                _cachedView.EffectText.text = "";
+            }
         }
 
         public void OnRoleBtn()
         {
+            DisableSelectBtn();
+            _cachedView.RoleBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.RoleRect.anchoredPosition.y);
         }
 
         public void OnEarthBtn()
         {
+            DisableSelectBtn();
+            _cachedView.EarthBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.EarthRect.anchoredPosition.y);
         }
 
         public void OnTrickBtn()
         {
+            DisableSelectBtn();
+            _cachedView.TrickBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.TrickRect.anchoredPosition.y);
         }
 
         public void OnCollitionBtn()
         {
+            DisableSelectBtn();
+            _cachedView.CollitionBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.CollitionRect.anchoredPosition.y);
         }
 
         public void OnDecorationBtn()
         {
+            DisableSelectBtn();
+            _cachedView.DecorationBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.DecorationRect.anchoredPosition.y);
         }
 
         public void OnCtrlBtn()
         {
+            DisableSelectBtn();
+            _cachedView.CtrlBtnSlect.SetActiveEx(true);
             JudgeMove(_cachedView.CtrlRect.anchoredPosition.y);
+        }
+
+        public void OnEffectBtn()
+        {
+            DisableSelectBtn();
+            _cachedView.EffectBtnSlect.SetActiveEx(true);
+            JudgeMove(_cachedView.EffecRect.anchoredPosition.y);
         }
 
         public void JudgeMove(float posY)
@@ -234,7 +329,25 @@ namespace GameA
             {
                 _contenTween.Pause();
             }
+            if (-posY > (_cachedView.ContenTransform.GetHeight() - _height))
+            {
+                posY = -(_cachedView.ContenTransform.GetHeight() - _height);
+            }
+            _cachedView.ScrollRect.onValueChanged.RemoveListener(OnScrollVaLueChange);
             _contenTween = _cachedView.ContenTransform.DOAnchorPosY(-(posY), _TweenTime, true);
+            _contenTween.OnComplete(
+                () => { _cachedView.ScrollRect.onValueChanged.AddListener(OnScrollVaLueChange); });
+        }
+
+        public void DisableSelectBtn()
+        {
+            _cachedView.RoleBtnSlect.SetActiveEx(false);
+            _cachedView.EarthBtnSlect.SetActiveEx(false);
+            _cachedView.TrickBtnSlect.SetActiveEx(false);
+            _cachedView.CollitionBtnSlect.SetActiveEx(false);
+            _cachedView.DecorationBtnSlect.SetActiveEx(false);
+            _cachedView.CtrlBtnSlect.SetActiveEx(false);
+            _cachedView.EffectBtnSlect.SetActiveEx(false);
         }
 
         #endregion

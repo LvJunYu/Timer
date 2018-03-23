@@ -1,4 +1,5 @@
-﻿using GameA.Game;
+﻿using System;
+using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
@@ -25,19 +26,22 @@ namespace GameA
                 _cachedView.gameObject.SetActive(false);
                 return;
             }
+
             _cachedView.gameObject.SetActive(true);
             _curTableEquipment = tableSkill;
-            int bgIndex = tableSkill.InputType - 1;
+            int bgIndex = _curTableEquipment.InputType - 1;
             for (int i = 0; i < _cachedView.BtnColorBgs.Length; i++)
             {
                 _cachedView.BtnColorBgs[i].SetActive(i == bgIndex);
             }
-            _cachedView.BtnIcon.sprite = JoyResManager.Instance.GetSprite(tableSkill.Icon);
+
+            _cachedView.BtnIcon.sprite = JoyResManager.Instance.GetSprite(_curTableEquipment.Icon);
             _cachedView.BtnIcon.gameObject.SetActive(true);
-            PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp);
+            PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp &&
+                             _curTableEquipment.Id != -1);
             _cachedView.BtnCD1.fillAmount = 0;
             _cachedView.BtnCD2.fillAmount = 0;
-            _cachedView.TimeTxt.text = "";
+            _cachedView.TimeTxt.text = String.Empty;
 //            int bulletNum = TableManager.Instance.Table_SkillDic[tableSkill.SkillId].BulletCount;
 //            _curBulletCount = bulletNum;
 //            UpdateBulletNum(bulletNum, bulletNum);
@@ -48,7 +52,9 @@ namespace GameA
             _cachedView.BtnCD1.fillAmount = leftTime / totalTime;
             _cachedView.TimeTxt.text = GetTimeString(leftTime);
             if (_press)
+            {
                 _press = false;
+            }
         }
 
         public void OnSkillChargeTime(float leftTime, float totalTime)
@@ -65,15 +71,21 @@ namespace GameA
                 _cachedView.TimeTxt.text = string.Empty;
                 _cachedView.BtnCD2.fillAmount = 1 - leftTime / totalTime;
             }
+
             if (_press)
+            {
                 _press = false;
+            }
         }
 
         private string GetTimeString(float value)
         {
             value = value * ConstDefineGM2D.FixedDeltaTime;
             if (value < 0.1f)
-                return "";
+            {
+                return String.Empty;
+            }
+
             return string.Format("{0:f1}", value);
         }
 
@@ -88,15 +100,21 @@ namespace GameA
             if (play)
             {
                 if (null == _fullParticleItem)
+                {
                     _fullParticleItem = GameParticleManager.Instance.EmitUIParticleLoop("UIEffectSkillFull",
                         _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl);
+                }
                 else
+                {
                     _fullParticleItem.Particle.Play();
+                }
             }
             else
             {
                 if (_fullParticleItem != null && _fullParticleItem.Particle.IsPlaying)
+                {
                     _fullParticleItem.Particle.Stop();
+                }
             }
         }
 
@@ -109,8 +127,13 @@ namespace GameA
                 PlayClickParticle();
                 _press = true;
             }
-            if (_curTableEquipment != null && _curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
+
+            if (_curTableEquipment != null && _curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp &&
+                _curTableEquipment.Id != -1)
+            {
                 PlayFullParticle(leftCount == totalCount);
+            }
+
             UpdateBulletNum(leftCount, totalCount);
         }
 

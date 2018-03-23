@@ -10,6 +10,7 @@ namespace GameA
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         private Project _project;
+        private const string EmptyStr = "无";
         private const string _publishConfirmTitle = "发布确认";
         private const string _updateConfirmTitle = "更新确认";
         private const string _publishOkStr = "立即发布";
@@ -64,7 +65,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpDialog;
+            _groupId = (int) EUIGroupType.Purchase;
         }
 
         protected override void SetPartAnimations()
@@ -153,13 +154,13 @@ namespace GameA
             var netData = _project.NetData;
             if (netData == null) return;
             _cachedView.NetBattleTimeLimit.text = netData.GetTimeLimit();
+            _cachedView.NetBattleMinPlayerCount.text = netData.MinPlayer.ToString();
             _cachedView.TimeOverCondition.text = netData.GetTimeOverCondition();
-            _cachedView.WinScoreCondition.text = netData.WinScore.ToString();
+            _cachedView.WinScoreCondition.text = netData.ScoreWinCondition ? netData.WinScore.ToString() : EmptyStr;
             _cachedView.ArriveScore.text = netData.ArriveScore.ToString();
             _cachedView.CollectGemScore.text = netData.CollectGemScore.ToString();
             _cachedView.KillMonsterScore.text = netData.KillMonsterScore.ToString();
             _cachedView.KillPlayerScore.text = netData.KillPlayerScore.ToString();
-            _cachedView.WinScoreCondition.SetActiveEx(netData.ScoreWinCondition);
         }
 
         private void OnDescEndEdit(string arg0)
@@ -239,11 +240,27 @@ namespace GameA
                 return;
             }
 
-            if (_project.IsMulti && _project.NetData != null && _project.NetData.PlayerCount == 0)
+            if (string.IsNullOrEmpty(_project.Name))
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
-                SocialGUIManager.ShowPopupDialog("游戏没有设置主角，无法发布");
+                SocialGUIManager.ShowPopupDialog("请输入关卡名称再发布");
                 return;
+            }
+
+            if (_project.IsMulti && _project.NetData != null)
+            {
+                if (_project.NetData.PlayerCount < 2)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                    SocialGUIManager.ShowPopupDialog("多人游戏至少设置两名玩家才能发布");
+                    return;
+                }
+
+                if (_project.ProjectType == EProjectType.PT_Compete && _project.NetData.TeamCount < 2)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+                    SocialGUIManager.ShowPopupDialog("【对抗】游戏至少设置【两个阵营】才能发布");
+                    return;
+                }
             }
 
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();

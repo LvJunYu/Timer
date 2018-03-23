@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -27,7 +26,7 @@ namespace GameA.Game
         protected SceneNode _node;
         protected float _sizeX;
         protected float _halfSizeX;
-
+        
         public Transform Trans
         {
             get { return _trans; }
@@ -41,6 +40,11 @@ namespace GameA.Game
         public SceneNode Node
         {
             get { return _node; }
+        }
+
+        public Table_Background TableBg
+        {
+            get { return _tableBg; }
         }
 
         public virtual bool Init(Table_Background table, SceneNode node, bool beforeScene = false, bool setCenter = false)
@@ -128,13 +132,12 @@ namespace GameA.Game
 
         private bool TryCreateObject()
         {
-            Sprite sprite;
-            if (!JoyResManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
+            Sprite sprite = BgScene2D.Instance.GetModelSprite(_tableBg.Model);
+            if (sprite == null)
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
                 return false;
             }
-
             if (_go == null)
             {
                 _go = new GameObject();

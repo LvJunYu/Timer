@@ -6,7 +6,11 @@ namespace GameA
     public class UPCtrlWorkShopBasicSetting : UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting>
     {
         private USCtrlGameSettingItem _playBGMusic;
+
         private USCtrlGameSettingItem _playSoundsEffects;
+//
+//        private USCtrlSliderSetting _playBGMusicSlider;
+//        private USCtrlSliderSetting _playSoundsEffectsSlider;
 
         protected override void OnViewCreated()
         {
@@ -15,6 +19,12 @@ namespace GameA
             _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
             _playSoundsEffects = new USCtrlGameSettingItem();
             _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
+//            
+//            _playBGMusicSlider.Init(_cachedView.UsBGMusicSetting_2);
+//
+//            _playBGMusicSlider.Set(0, 10, _mainCtrl.OnMusicSliderChange);
+//            _playSoundsEffectsSlider.Init(_cachedView.UsMusicEffectSetting_2);
+//            _playSoundsEffectsSlider.Set(0, 10, _mainCtrl.OnSoundsEffectsSlider);
         }
 
         public override void Open()
@@ -39,9 +49,12 @@ namespace GameA
 
         private void UpdateSettingItem()
         {
-            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
-            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects,
-                _mainCtrl.OnClickSoundsEffectsButton);
+//            _playBGMusicSlider.SetCur(GameSettingData.Instance.PlayMusic);
+//            _playBGMusicSlider.SetCur(GameSettingData.Instance.PlaySoundsEffects);
+
+//            _playBGMusic.SetData(GameSettingData.Instance.PlayMusic, _mainCtrl.OnClickMusicButton);
+//            _playSoundsEffects.SetData(GameSettingData.Instance.PlaySoundsEffects,
+//                _mainCtrl.OnClickSoundsEffectsButton);
         }
 
         private void UpdateBtns()

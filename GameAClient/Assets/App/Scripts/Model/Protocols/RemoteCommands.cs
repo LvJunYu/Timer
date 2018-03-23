@@ -477,6 +477,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUserInfoSimpleBatch {
+            get { return _isRequstingUserInfoSimpleBatch; }
+        }
+        private static bool _isRequstingUserInfoSimpleBatch = false;
+        /// <summary>
+		/// 用户简要信息
+		/// </summary>
+		/// <param name="userIdList">用户id</param>
+        public static void UserInfoSimpleBatch (
+            List<long> userIdList,
+            Action<Msg_SC_CMD_UserInfoSimpleBatch> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUserInfoSimpleBatch) {
+                return;
+            }
+            _isRequstingUserInfoSimpleBatch = true;
+            Msg_CS_CMD_UserInfoSimpleBatch msg = new Msg_CS_CMD_UserInfoSimpleBatch();
+            // 用户简要信息
+            msg.UserIdList.AddRange(userIdList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UserInfoSimpleBatch>(
+                SoyHttpApiPath.UserInfoSimpleBatch, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUserInfoSimpleBatch = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UserInfoSimpleBatch", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUserInfoSimpleBatch = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateUserInfo {
             get { return _isRequstingUpdateUserInfo; }
         }
@@ -1343,6 +1380,43 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingSearchWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingWorldBattleEndUserLike {
+            get { return _isRequstingWorldBattleEndUserLike; }
+        }
+        private static bool _isRequstingWorldBattleEndUserLike = false;
+        /// <summary>
+		/// 联机关卡结算玩家点赞
+		/// </summary>
+		/// <param name="targetUserId">点赞的用户</param>
+        public static void WorldBattleEndUserLike (
+            List<long> targetUserId,
+            Action<Msg_SC_CMD_WorldBattleEndUserLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingWorldBattleEndUserLike) {
+                return;
+            }
+            _isRequstingWorldBattleEndUserLike = true;
+            Msg_CS_CMD_WorldBattleEndUserLike msg = new Msg_CS_CMD_WorldBattleEndUserLike();
+            // 联机关卡结算玩家点赞
+            msg.TargetUserId.AddRange(targetUserId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_WorldBattleEndUserLike>(
+                SoyHttpApiPath.WorldBattleEndUserLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingWorldBattleEndUserLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "WorldBattleEndUserLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingWorldBattleEndUserLike = false;
                 },
                 form
             );
@@ -2582,6 +2656,314 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDeleteUserMessageReply = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCreateRoomChatPreinstall {
+            get { return _isRequstingCreateRoomChatPreinstall; }
+        }
+        private static bool _isRequstingCreateRoomChatPreinstall = false;
+        /// <summary>
+		/// 创建快捷聊天
+		/// </summary>
+		/// <param name="data">预设数据</param>
+        public static void CreateRoomChatPreinstall (
+            string data,
+            Action<Msg_SC_CMD_CreateRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCreateRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingCreateRoomChatPreinstall = true;
+            Msg_CS_CMD_CreateRoomChatPreinstall msg = new Msg_CS_CMD_CreateRoomChatPreinstall();
+            // 创建快捷聊天
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateRoomChatPreinstall>(
+                SoyHttpApiPath.CreateRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCreateRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCreateRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateRoomChatPreinstall {
+            get { return _isRequstingUpdateRoomChatPreinstall; }
+        }
+        private static bool _isRequstingUpdateRoomChatPreinstall = false;
+        /// <summary>
+		/// 更新快捷聊天
+		/// </summary>
+		/// <param name="id">预设Id</param>
+		/// <param name="data">数据</param>
+        public static void UpdateRoomChatPreinstall (
+            long id,
+            string data,
+            Action<Msg_SC_CMD_UpdateRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingUpdateRoomChatPreinstall = true;
+            Msg_CS_CMD_UpdateRoomChatPreinstall msg = new Msg_CS_CMD_UpdateRoomChatPreinstall();
+            // 更新快捷聊天
+            msg.Id = id;
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateRoomChatPreinstall>(
+                SoyHttpApiPath.UpdateRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteRoomChatPreinstall {
+            get { return _isRequstingDeleteRoomChatPreinstall; }
+        }
+        private static bool _isRequstingDeleteRoomChatPreinstall = false;
+        /// <summary>
+		/// 删除快捷聊天
+		/// </summary>
+		/// <param name="idList">预设Id</param>
+        public static void DeleteRoomChatPreinstall (
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteRoomChatPreinstall> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteRoomChatPreinstall) {
+                return;
+            }
+            _isRequstingDeleteRoomChatPreinstall = true;
+            Msg_CS_CMD_DeleteRoomChatPreinstall msg = new Msg_CS_CMD_DeleteRoomChatPreinstall();
+            // 删除快捷聊天
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteRoomChatPreinstall>(
+                SoyHttpApiPath.DeleteRoomChatPreinstall, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteRoomChatPreinstall = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteRoomChatPreinstall", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteRoomChatPreinstall = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingSortSelfRecommendProject {
+            get { return _isRequstingSortSelfRecommendProject; }
+        }
+        private static bool _isRequstingSortSelfRecommendProject = false;
+        /// <summary>
+		/// 排序自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+        public static void SortSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            Action<Msg_SC_CMD_SortSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSortSelfRecommendProject) {
+                return;
+            }
+            _isRequstingSortSelfRecommendProject = true;
+            Msg_CS_CMD_SortSelfRecommendProject msg = new Msg_CS_CMD_SortSelfRecommendProject();
+            // 排序自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SortSelfRecommendProject>(
+                SoyHttpApiPath.SortSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSortSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SortSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSortSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingAddSelfRecommendProject {
+            get { return _isRequstingAddSelfRecommendProject; }
+        }
+        private static bool _isRequstingAddSelfRecommendProject = false;
+        /// <summary>
+		/// 添加自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+		/// <param name="addItemList">添加关卡</param>
+        public static void AddSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            List<Msg_SelfRecommendProjectOperateItem> addItemList,
+            Action<Msg_SC_CMD_AddSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingAddSelfRecommendProject) {
+                return;
+            }
+            _isRequstingAddSelfRecommendProject = true;
+            Msg_CS_CMD_AddSelfRecommendProject msg = new Msg_CS_CMD_AddSelfRecommendProject();
+            // 添加自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            msg.AddItemList.AddRange(addItemList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_AddSelfRecommendProject>(
+                SoyHttpApiPath.AddSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingAddSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "AddSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingAddSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingRemoveSelfRecommendProject {
+            get { return _isRequstingRemoveSelfRecommendProject; }
+        }
+        private static bool _isRequstingRemoveSelfRecommendProject = false;
+        /// <summary>
+		/// 删除自荐关卡
+		/// </summary>
+		/// <param name="sortItemList">关卡</param>
+		/// <param name="removeItemList">添加关卡</param>
+        public static void RemoveSelfRecommendProject (
+            List<Msg_SortSelfRecommendProjectItem> sortItemList,
+            List<Msg_SelfRecommendProjectOperateItem> removeItemList,
+            Action<Msg_SC_CMD_RemoveSelfRecommendProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingRemoveSelfRecommendProject) {
+                return;
+            }
+            _isRequstingRemoveSelfRecommendProject = true;
+            Msg_CS_CMD_RemoveSelfRecommendProject msg = new Msg_CS_CMD_RemoveSelfRecommendProject();
+            // 删除自荐关卡
+            msg.SortItemList.AddRange(sortItemList);
+            msg.RemoveItemList.AddRange(removeItemList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_RemoveSelfRecommendProject>(
+                SoyHttpApiPath.RemoveSelfRecommendProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingRemoveSelfRecommendProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "RemoveSelfRecommendProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingRemoveSelfRecommendProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingMarkNotificationHasRead {
+            get { return _isRequstingMarkNotificationHasRead; }
+        }
+        private static bool _isRequstingMarkNotificationHasRead = false;
+        /// <summary>
+		/// 标记通知已读
+		/// </summary>
+		/// <param name="type">ENotificationDataType</param>
+		/// <param name="id"></param>
+        public static void MarkNotificationHasRead (
+            ENotificationDataType type,
+            long id,
+            Action<Msg_SC_CMD_MarkNotificationHasRead> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkNotificationHasRead) {
+                return;
+            }
+            _isRequstingMarkNotificationHasRead = true;
+            Msg_CS_CMD_MarkNotificationHasRead msg = new Msg_CS_CMD_MarkNotificationHasRead();
+            // 标记通知已读
+            msg.Type = type;
+            msg.Id = id;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkNotificationHasRead>(
+                SoyHttpApiPath.MarkNotificationHasRead, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkNotificationHasRead = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkNotificationHasRead", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkNotificationHasRead = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingMarkNotificationHasReadBatch {
+            get { return _isRequstingMarkNotificationHasReadBatch; }
+        }
+        private static bool _isRequstingMarkNotificationHasReadBatch = false;
+        /// <summary>
+		/// 标记通知已读
+		/// </summary>
+		/// <param name="typeMask">ENotificationDataType Mask</param>
+        public static void MarkNotificationHasReadBatch (
+            long typeMask,
+            Action<Msg_SC_CMD_MarkNotificationHasReadBatch> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkNotificationHasReadBatch) {
+                return;
+            }
+            _isRequstingMarkNotificationHasReadBatch = true;
+            Msg_CS_CMD_MarkNotificationHasReadBatch msg = new Msg_CS_CMD_MarkNotificationHasReadBatch();
+            // 标记通知已读
+            msg.TypeMask = typeMask;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkNotificationHasReadBatch>(
+                SoyHttpApiPath.MarkNotificationHasReadBatch, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkNotificationHasReadBatch = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkNotificationHasReadBatch", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkNotificationHasReadBatch = false;
                 },
                 form
             );

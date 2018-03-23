@@ -5,12 +5,8 @@
 ** Summary : NpcTask
 ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SoyEngine;
 using SoyEngine.Proto;
-using Win32;
 
 namespace GameA.Game
 {
@@ -29,6 +25,7 @@ namespace GameA.Game
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.TaskFinishAward, "TaskFinishAward");
             DefineFieldList<NpcTaskTargetDynamic>(FieldTag.BeforeTaskAward, "BeforeTaskAward");
             DefineField<ushort>(FieldTag.TaskimeLimit, "TaskimeLimit");
+            DefineField<ushort>(FieldTag.TargetNpcSerialNumber, "TargetNpcSerialNumber");
         }
 
         public class FieldTag
@@ -45,6 +42,7 @@ namespace GameA.Game
             public static readonly int TaskFinishAward = _nextId++;
             public static readonly int BeforeTaskAward = _nextId++;
             public static readonly int TaskimeLimit = _nextId++;
+            public static readonly int TargetNpcSerialNumber = _nextId++;
         }
 
         public ushort NpcTaskSerialNumber
@@ -65,7 +63,7 @@ namespace GameA.Game
         {
             get { return Get<ushort>(FieldTag.TriggerTaskNumber); }
 
-            set { Set(value, FieldTag.NpcTaskSerialNumber); }
+            set { Set(value, FieldTag.TriggerTaskNumber); }
         }
 
 
@@ -125,6 +123,13 @@ namespace GameA.Game
             set { Set(value, FieldTag.TaskimeLimit); }
         }
 
+        public ushort TargetNpcSerialNumber
+        {
+            get { return Get<ushort>(FieldTag.TargetNpcSerialNumber); }
+
+            set { Set(value, FieldTag.TargetNpcSerialNumber); }
+        }
+
 
         public UnitExtraNpcTaskData ToUnitExtraNpcTaskData()
         {
@@ -136,6 +141,7 @@ namespace GameA.Game
             msg.TaskBefore.AddRange(TaskBefore.ToList<string>());
             msg.TaskMiddle.AddRange(TaskMiddle.ToList<string>());
             msg.TaskAfter.AddRange(TaskAfter.ToList<string>());
+            msg.TargetNpcSerialNumber = TargetNpcSerialNumber;
             //清一下列表
             msg.TaskTarget.Clear();
             for (int i = 0, count = Targets.Count; i < count; i++)
@@ -146,6 +152,7 @@ namespace GameA.Game
                     msg.TaskTarget.Add(val);
                 }
             }
+
             msg.BeforeTaskAward.Clear();
             for (int i = 0, count = BeforeTaskAward.Count; i < count; i++)
             {
@@ -155,6 +162,7 @@ namespace GameA.Game
                     msg.BeforeTaskAward.Add(val);
                 }
             }
+
             msg.TaskFinishAward.Clear();
             for (int i = 0, count = TaskFinishAward.Count; i < count; i++)
             {
@@ -164,6 +172,7 @@ namespace GameA.Game
                     msg.TaskFinishAward.Add(val);
                 }
             }
+
             msg.TaskimeLimit = TaskimeLimit;
             return msg;
         }
@@ -174,36 +183,43 @@ namespace GameA.Game
             TriggerTaskNumber = (ushort) data.TriggerTaskNumber;
             TriggerTask.Set(data.TriggerTask);
             TriggerType = (byte) data.TriggerType;
+            TargetNpcSerialNumber = (ushort) data.TargetNpcSerialNumber;
             for (int i = 0; i < data.TaskBefore.Count; i++)
             {
                 Set(data.TaskBefore[i], FieldTag.TaskBefore, i);
             }
+
             for (int i = 0; i < data.TaskMiddle.Count; i++)
             {
                 Set(data.TaskMiddle[i], FieldTag.TaskMiddle, i);
             }
+
             for (int i = 0; i < data.TaskAfter.Count; i++)
             {
                 Set(data.TaskAfter[i], FieldTag.TaskAfter, i);
             }
+
             for (int i = 0; i < data.TaskTarget.Count; i++)
             {
                 var taskTarget = new NpcTaskTargetDynamic();
                 taskTarget.Set(data.TaskTarget[i]);
                 Set(taskTarget, FieldTag.Targets, i);
             }
+
             for (int i = 0; i < data.BeforeTaskAward.Count; i++)
             {
                 var taskTarget = new NpcTaskTargetDynamic();
-                taskTarget.Set(data.TaskTarget[i]);
+                taskTarget.Set(data.BeforeTaskAward[i]);
                 Set(taskTarget, FieldTag.BeforeTaskAward, i);
             }
+
             for (int i = 0; i < data.TaskFinishAward.Count; i++)
             {
                 var taskTarget = new NpcTaskTargetDynamic();
-                taskTarget.Set(data.TaskTarget[i]);
+                taskTarget.Set(data.TaskFinishAward[i]);
                 Set(taskTarget, FieldTag.TaskFinishAward, i);
             }
+
             TaskimeLimit = (ushort) data.TaskimeLimit;
         }
 

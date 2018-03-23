@@ -17,8 +17,6 @@ namespace GameA.Game
 {
     public class GameModeNetPlay : GameModePlay
     {
-        private static GameModeNetPlay _instance;
-
         protected List<Msg_RC_FrameData> _serverStartInputFrameList = new List<Msg_RC_FrameData>();
         protected Queue<Msg_RC_FrameData> _serverInputFrameQueue = new Queue<Msg_RC_FrameData>(128);
         protected int _preServerFrameCount;
@@ -29,7 +27,6 @@ namespace GameA.Game
         protected bool _loadingHasClosed;
         protected int _maxUserCount;
         private DebugFile _debugFile = DebugFile.Create("ServerData", "data.txt");
-        private DebugFile _debugClientData = DebugFile.Create("ClientData", "clientData.txt");
         private RoomInfo _roomInfo;
         private EGamePhase _curGamePhase;
         private bool _loadComplete;
@@ -49,30 +46,6 @@ namespace GameA.Game
             get { return _curGamePhase; }
         }
 
-        public static bool DebugEnable()
-        {
-            if (_instance == null) return false;
-            return _instance._debugClientData.Enable;
-        }
-
-        public static void WriteDebugData(string str, bool writeLine = true)
-        {
-            if (_instance == null) return;
-            if (writeLine)
-            {
-                _instance._debugClientData.WriteLine(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
-            }
-            else
-            {
-                _instance._debugClientData.Write(string.Format("Frame:{0}  {1}", _instance._curServerFrame, str));
-            }
-        }
-
-        protected GameModeNetPlay()
-        {
-            _instance = this;
-        }
-
         public override bool Init(Project project, object param, GameManager.EStartType startType,
             MonoBehaviour corountineProxy)
         {
@@ -83,8 +56,7 @@ namespace GameA.Game
         public override bool Stop()
         {
             _debugFile.Close();
-            _debugClientData.Close();
-            TryCloseLoading();
+            TryCloseLoading(true);
             SetPhase(EPhase.Close);
             RoomManager.RoomClient.Disconnect();
             AppData.Instance.ChatData.ClearRoomChat();
@@ -92,7 +64,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _instance = null;
+
             return true;
         }
 
@@ -315,6 +287,8 @@ namespace GameA.Game
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlMultiRoom>(_roomInfo);
             }
+
+            SocialGUIManager.Instance.OpenUI<UICtrlChatInGame>();
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
@@ -338,9 +312,8 @@ namespace GameA.Game
                 default:
                     throw new ArgumentOutOfRangeException("gamePhase", gamePhase, null);
             }
-            
+
             _curGamePhase = gamePhase;
-            
             switch (_curGamePhase)
             {
                 case EGamePhase.None:
@@ -457,10 +430,8 @@ namespace GameA.Game
             if (msg.UserGuid == LocalUser.Instance.UserGuid)
             {
                 _ePhase = EPhase.Close;
-                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null, new KeyValuePair<string, Action>("确定", () =>
-                {
-                    SocialApp.Instance.ReturnToApp();
-                }));
+                SocialGUIManager.ShowPopupDialog("您已被房主踢出游戏", null,
+                    new KeyValuePair<string, Action>("确定", () => { SocialApp.Instance.ReturnToApp(); }));
             }
             else
             {
@@ -535,8 +506,10 @@ namespace GameA.Game
                 {
                     return;
                 }
+
                 SetGamePhase(EGamePhase.Battle);
             }
+
             if (msg.FrameDatas[0].FrameInx >= _preServerFrameCount)
             {
                 for (int i = 0; i < msg.FrameDatas.Count; i++)
@@ -570,6 +543,7 @@ namespace GameA.Game
                     {
                         return;
                     }
+
                     SocialGUIManager.ShowPopupDialog("战斗已结束，正在退出");
                     break;
                 case ERoomCloseCode.ERCC_RoomNotExist:
@@ -585,6 +559,7 @@ namespace GameA.Game
                     SocialGUIManager.ShowPopupDialog("房间超时，正在退出");
                     break;
             }
+
             _ePhase = EPhase.Close;
             SocialApp.Instance.ReturnToApp();
         }
@@ -610,16 +585,24 @@ namespace GameA.Game
             {
                 return;
             }
-            
+
             SocialGUIManager.ShowPopupDialog("联机服务异常，正在退出");
             SocialApp.Instance.ReturnToApp();
         }
 
-        protected void TryCloseLoading()
+        protected void TryCloseLoading(bool isStop = false)
         {
             if (!_loadingHasClosed)
             {
-                base.OnGameStart();
+                if (isStop)
+                {
+                    Messenger.Broadcast(EMessengerType.OnLoadingErrorCloseUI);
+                }
+                else
+                {
+                    base.OnGameStart();
+                }
+
                 _loadingHasClosed = true;
             }
         }
@@ -629,6 +612,7 @@ namespace GameA.Game
         protected enum EPhase
         {
             None,
+
             /// <summary>
             /// 模拟进入房间前的数据指令
             /// </summary>

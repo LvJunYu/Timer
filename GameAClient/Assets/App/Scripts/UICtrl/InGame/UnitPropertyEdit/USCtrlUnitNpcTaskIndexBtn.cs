@@ -19,7 +19,7 @@ namespace GameA
         }
 
         public void InitData(SeletNowTask refreshnowTask, DictionaryListObject taskDataList,
-            NpcTaskDynamic taskdata = null)
+            NpcTaskDynamic taskdata = null, int taskindex = 0)
         {
             _cachedView.AddBtn.onClick.RemoveAllListeners();
             _cachedView.ChoseBtn.onClick.RemoveAllListeners();
@@ -39,6 +39,8 @@ namespace GameA
                 _cachedView.DelteBtn.SetActiveEx(false);
                 _cachedView.AddBtn.SetActiveEx(false);
             }
+
+
             _cachedView.ChoseBtn.onClick.AddListener(() => { _refreshcallback.Invoke(_taskData); });
             _cachedView.AddBtn.onClick.AddListener(() =>
             {
@@ -72,6 +74,7 @@ namespace GameA
                         break;
                     }
                 }
+
                 _taskDataList.RemoveAt(index);
                 NpcTaskDataTemp.Intance.RecycleNpcTaskSerialNum(_taskData.NpcTaskSerialNumber);
                 if (_taskDataList.Count > 0)

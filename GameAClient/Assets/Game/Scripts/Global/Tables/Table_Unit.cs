@@ -191,6 +191,11 @@ namespace GameA.Game
 		[ColumnMapping("ChildState")]
 		public int[] ChildState;
 		/// <summary>
+        /// AI
+        /// </summary>
+		[ColumnMapping("BehaviorName")]
+		public string BehaviorName;
+		/// <summary>
         /// 旋转
         /// </summary>
 		[ColumnMapping("RotateState")]
@@ -216,6 +221,11 @@ namespace GameA.Game
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
 		/// <summary>
+        /// 重复拾取
+        /// </summary>
+		[ColumnMapping("Cycle")]
+		public int Cycle;
+		/// <summary>
         /// 伴随特效
         /// </summary>
 		[ColumnMapping("WithEffctName")]
@@ -235,6 +245,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("Summary")]
 		public string Summary;
+		/// <summary>
+        /// 效果描述
+        /// </summary>
+		[ColumnMapping("EffectSummary")]
+		public string EffectSummary;
 	}
 
     public class TableUnitAsset:BaseTableAsset

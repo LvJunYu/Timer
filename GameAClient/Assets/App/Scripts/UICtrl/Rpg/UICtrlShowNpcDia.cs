@@ -4,12 +4,13 @@ using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
-    public class UICtrlShowNpcDia : UICtrlAnimationBase<UIViewShowNpcDia>
+    public class UICtrlShowNpcDia : UICtrlInGameBase<UIViewShowNpcDia>
     {
         private int _index = 0;
         private DictionaryListObject _diaList;
@@ -17,7 +18,6 @@ namespace GameA
         private Sprite _faceSprite;
         private string _colorName;
         private Color _textColor;
-        private DictionaryListObject _prediaList;
         private float _time;
 
         public Sprite FaceSprite
@@ -41,10 +41,17 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
-
             if (CrossPlatformInputManager.GetButtonDown(InputManager.TagAssist))
             {
                 OnNextDiaBtnClick();
+            }
+
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord)
+            {
+                if (Time.realtimeSinceStartup - _time > 3.0f)
+                {
+                    OnNextDiaBtnClick();
+                }
             }
         }
 
@@ -67,16 +74,14 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
-                GM2DGame.Instance.Continue();
-                return;
-            }
-            else
-            {
-                _prediaList = (DictionaryListObject) parameter;
-            }
+//            if (_prediaList == (DictionaryListObject) parameter && (Time.realtimeSinceStartup - _time) < 100)
+//            {
+//                SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
+//                GM2DGame.Instance.Continue();
+//                return;
+//            }
+//            else
+//            {
             base.OnOpen(parameter);
             GM2DGame.Instance.Pause();
             _diaList = (DictionaryListObject) parameter;
@@ -91,10 +96,13 @@ namespace GameA
             {
                 ShowOneDia(0);
             }
+
+            _time = Time.realtimeSinceStartup;
         }
 
         private void OnNextDiaBtnClick()
         {
+            _time = Time.realtimeSinceStartup;
             if (_index < _diaCout - 1)
             {
                 ++_index;
@@ -111,6 +119,7 @@ namespace GameA
         {
             _cachedView.NpcIcon.GetComponent<Animation>().Stop();
             _cachedView.NpcIconLeft.GetComponent<Animation>().Stop();
+
             diaData.AnalysisNpcDia(_diaList.Get<string>(index));
             if (diaData.NpcId == Enpc.Lead)
             {
@@ -128,8 +137,6 @@ namespace GameA
                 switch (diaData.EnpcWaggle)
                 {
                     case EnpcWaggle.None:
-
-
                         break;
                     case EnpcWaggle.LR:
                         _cachedView.NpcIcon.GetComponent<Animation>().Play("UICtrlShowBoyLeftRight");
@@ -138,6 +145,8 @@ namespace GameA
                         _cachedView.NpcIcon.GetComponent<Animation>().Play("UICtrlShowBoyUpDown");
                         break;
                 }
+
+                SetShowText(diaData, _cachedView.DiaText);
             }
             else
             {
@@ -165,12 +174,49 @@ namespace GameA
                             _cachedView.NpcIconLeft.GetComponent<Animation>().Play("UICtrlShowNpcDiaLeftRight");
                             break;
                     }
+
+                    SetShowText(diaData, _cachedView.DiaTextLeft);
                 }
                 else
                 {
                     SocialGUIManager.Instance.CloseUI<UICtrlShowNpcDia>();
                 }
             }
+        }
+
+        protected override void ExitGame()
+        {
+            _time = Time.realtimeSinceStartup;
+            base.ExitGame();
+        }
+
+        private void SetShowText(NpcDia dia, Text text)
+        {
+            if (dia.ColorList.Count < 0)
+            {
+                return;
+            }
+
+            text.color = Color.white;
+            string str = dia.Dia;
+            string strtemp = "";
+            for (int i = 0; i < str.Length; i++)
+            {
+                string color;
+                if (i > dia.ColorList.Count - 1)
+                {
+                    color = NpcDia.brown;
+                }
+                else
+                {
+                    color = dia.ColorList[i];
+                }
+
+                strtemp += String.Format("<color={0}>{1}</color>", color,
+                    str[i]);
+            }
+
+            text.text = strtemp;
         }
     }
 
@@ -186,6 +232,13 @@ namespace GameA
         private string _npcName;
         private string _npcFaceSpriteName;
         private string _color;
+        private List<string> _colorList;
+
+        public List<string> ColorList
+        {
+            get { return _colorList; }
+            set { _colorList = value; }
+        }
 
         public NpcDia()
         {
@@ -195,6 +248,7 @@ namespace GameA
             _npcName = "";
             _npcFaceSpriteName = GetNpcFaceSpriteName(_npcId, _faceId);
             _color = brown;
+            _colorList = new List<string>();
         }
 
         private EnpcWaggle _enpcWaggle;
@@ -252,18 +306,74 @@ namespace GameA
             _npcName = dataList[3];
             _npcFaceSpriteName = GetNpcFaceSpriteName((Enpc) _npcId, _faceId);
             _color = dataList[4];
+            _colorList.Clear();
+            if (dataList[4].Contains("#"))
+            {
+            }
+            else
+            {
+                for (int i = 0; i < _color.Length; i++)
+                {
+                    switch (_color[i])
+                    {
+                        case '1':
+                            _colorList.Add(brown);
+                            break;
+                        case '2':
+                            _colorList.Add(green);
+                            break;
+                        case '3':
+                            _colorList.Add(blue);
+                            break;
+                        case '4':
+                            _colorList.Add(red);
+                            break;
+                    }
+                }
+            }
+
             _enpcWaggle = (EnpcWaggle) Convert.ToInt32(dataList[5]);
         }
 
         public override string ToString()
         {
+            string color = "";
+            if (_colorList.Count > 0)
+            {
+                string onecolor = "";
+                for (int i = 0; i < _colorList.Count; i++)
+                {
+                    switch (_colorList[i])
+                    {
+                        case brown:
+                            onecolor = "1";
+                            break;
+                        case green:
+                            onecolor = "2";
+                            break;
+                        case blue:
+                            onecolor = "3";
+                            break;
+                        case red:
+                            onecolor = "4";
+                            break;
+                    }
+
+                    color += onecolor;
+                }
+            }
+            else
+            {
+                color = _color;
+            }
+
             string diaData = String.Format("{0}_{1}_{2}_{3}_{4}_{5}", (int) _npcId, (int) _faceId, _dia, _npcName,
-                _color,
+                color,
                 (int) _enpcWaggle);
             return diaData;
         }
 
-        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, string waggle)
+        public static string SetDiaData(int npcid, int faceid, string dia, string npcName, string color, int waggle)
         {
             string diaData = String.Format("{0}_{1}_{2}_{3}_{4}_{5}", npcid, faceid, dia, npcName, color, waggle);
             return diaData;
@@ -290,6 +400,7 @@ namespace GameA
                     type = Enpc.NpcOldMan;
                     break;
             }
+
             return type;
         }
     }

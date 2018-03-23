@@ -113,6 +113,7 @@ namespace GameA.Game
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
             RopeManager.Instance.Reset();
+            CirrusManager.Instance.Reset();
             PlayerManager.Instance.Reset();
             TeamManager.Instance.Reset();
             CameraManager.Instance.Reset();
@@ -329,7 +330,7 @@ namespace GameA.Game
         {
             return unit != null && DeleteUnit(unit.UnitDesc);
         }
-        
+
         private bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
@@ -348,6 +349,7 @@ namespace GameA.Game
             {
                 return false;
             }
+
             return true;
         }
 
@@ -381,14 +383,7 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            var playerList = PlayerManager.Instance.PlayerList;
-            for (int i = 0; i < playerList.Count; i++)
-            {
-                if (playerList[i] != null && TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
-                {
-                    playerList[i].OnSucceed();
-                }
-            }
+            CheckAllPlayerWin();
 
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
@@ -397,10 +392,32 @@ namespace GameA.Game
             }
         }
 
+        private void CheckAllPlayerWin()
+        {
+            var playerList = PlayerManager.Instance.PlayerList;
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (playerList[i] != null)
+                {
+                    if (playerList[i].Animation != null)
+                    {
+                        playerList[i].Animation.Reset();
+                        playerList[i].ResetGun();
+                    }
+
+                    if (TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
+                    {
+                        playerList[i].OnSucceed();
+                    }
+                }
+            }
+        }
+
         public void GameFinishFailed()
         {
             _run = false;
             _gameFailedTime = GameRun.Instance.LogicFrameCnt;
+            CheckAllPlayerWin();
             if (null != _statistic)
             {
                 _statistic.OnGameFinishFailed();
@@ -462,7 +479,8 @@ namespace GameA.Game
                         GM2DGame.Instance.GameMode.ShadowDataPlayed != null)
                     {
                         var gameMode = GM2DGame.Instance.GameMode as GameModeWorldPlay;
-                        var shadowUnit = CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
+                        var shadowUnit =
+                            CreateRuntimeUnit(UnitDefine.ShadowId, spawnDatas[0].UnitDesc.GetUpPos()) as ShadowUnit;
                         if (shadowUnit != null)
                         {
                             shadowUnit.SetShadowData(GM2DGame.Instance.GameMode.ShadowDataPlayed);
@@ -502,12 +520,14 @@ namespace GameA.Game
                             {
                                 continue;
                             }
+
                             bool isMain = userArray[i].Guid == LocalUser.Instance.UserGuid;
                             int inx = userArray[i].Inx;
                             if (inx < sortSpawnDatas.Count)
                             {
                                 var player = AddPlayer(sortSpawnDatas[inx], inx, isMain);
                                 userArray[i].Player = player;
+                                TeamManager.Instance.AddTeam(sortSpawnDatas[inx].UnitExtra.TeamId);
                             }
                             else
                             {
@@ -517,12 +537,6 @@ namespace GameA.Game
 
                         _mainPlayer = PlayerManager.Instance.MainPlayer;
                         _hasCreatedPlayer = true;
-                    }
-
-                    for (int i = 0; i < spawnDatas.Count; i++)
-                    {
-                        byte team = spawnDatas[i].UnitExtra.TeamId;
-                        TeamManager.Instance.AddTeam(team);
                     }
                 }
             }
@@ -554,6 +568,7 @@ namespace GameA.Game
             {
                 id = UnitDefine.OtherPlayerId;
             }
+
             var player = CreateRuntimeUnit(id, unitEditData.UnitDesc.GetUpPos()) as PlayerBase;
             if (player != null)
             {
@@ -762,6 +777,5 @@ namespace GameA.Game
 
             _bullets.Clear();
         }
-
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>
+    public class UICtrlWorkShopEdit : UICtrlAnimationBase<UIViewWorkShopEdit>, ICheckOverlay
     {
         private string _updateStr = "更 新";
         private string _publishStr = "发 布";
@@ -111,7 +111,7 @@ namespace GameA
         private void RefreshDownLoadDock()
         {
             DictionaryTools.SetContentText(_cachedView.DownLoadTitle, _project.Name);
-            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ParentId.ToString());
+            DictionaryTools.SetContentText(_cachedView.ProjectId, _project.ShortId.ToString());
             UserInfoSimple user = _project.UserInfoDetail.UserInfoSimple;
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, user.NickName);
             DictionaryTools.SetContentText(_cachedView.AdvLevelText,

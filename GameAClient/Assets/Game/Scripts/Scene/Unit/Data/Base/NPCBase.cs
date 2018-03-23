@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -11,6 +15,43 @@ namespace GameA.Game
         private int _showIntervalTime;
         private int _timeIntervalDynamic;
         private int _showTime = 150;
+        private int _closeDis = 1;
+        private NpcStateBar _stateBar;
+        private Action _oldState;
+        private bool _isNoShow;
+        private Vector2 _distance;
+
+        public Action OldState
+        {
+            get { return _oldState; }
+        }
+
+        public Action NowState
+        {
+            get { return _nowState; }
+        }
+
+        private Action _nowState;
+
+        public NpcStateBar StateBar
+        {
+            get { return _stateBar; }
+            set { _stateBar = value; }
+        }
+
+        protected override bool OnInit()
+        {
+            return base.OnInit();
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (GetUnitExtra().MoveDirection == EMoveDirection.None)
+            {
+                ChangeState(EMonsterState.Idle);
+            }
+        }
 
         protected override bool IsCheckClimb()
         {
@@ -54,27 +95,43 @@ namespace GameA.Game
                 }
             }
 
+            SetDia();
+        }
+
+        private void SetDia()
+        {
             if (GetUnitExtra().NpcType == (byte) ENpcType.Dialog)
             {
                 if (GetUnitExtra().NpcDialog == null)
                 {
                     return;
                 }
-                if (_diaPop == null)
+
+                if (GetUnitExtra().NpcDialog.Length == 0)
                 {
-                    _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
-                        .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                    return;
                 }
-                SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
+
                 if (GetUnitExtra().NpcShowType == (ushort) ENpcTriggerType.Close)
                 {
                     if (CheckPlayerPos())
                     {
+                        if (_diaPop == null)
+                        {
+                            _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
+                                .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                        }
+
                         _diaPop.Show();
+                        SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
                     else
                     {
-                        _diaPop.Hide();
+                        if (_diaPop != null)
+                        {
+                            _diaPop.Hide();
+                            _diaPop = null;
+                        }
                     }
                 }
 
@@ -83,21 +140,29 @@ namespace GameA.Game
                     _showIntervalTime = GetUnitExtra().NpcShowInterval * 30;
                     if (_timeIntervalDynamic > _showIntervalTime)
                     {
+                        if (_diaPop == null)
+                        {
+                            _diaPop = SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>()
+                                .GetNpcDialog(GetUnitExtra().NpcDialog, _trans.position);
+                        }
+
                         _diaPop.Show();
+                        SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().SetDymicPos(_diaPop, _trans.position);
                     }
 
                     if (_timeIntervalDynamic > _showTime + _showIntervalTime)
                     {
                         _timeIntervalDynamic = 0;
-                        _diaPop.Hide();
+                        if (_diaPop != null)
+                        {
+                            _diaPop.Hide();
+                            _diaPop = null;
+                        }
                     }
                 }
             }
-
-            if (GetUnitExtra().NpcType == (byte) ENpcType.Task)
-            {
-            }
         }
+
 
         protected override void Clear()
         {
@@ -108,18 +173,22 @@ namespace GameA.Game
                 UMPoolManager.Instance.Free(_diaPop);
             }
 
+            if (_stateBar != null)
+            {
+                SetNpcNum();
+            }
+
             _trigger = false;
             _diaPop = null;
             _showIntervalTime = 0;
             _timeIntervalDynamic = 0;
-
             _unit = null;
         }
 
         protected virtual void OnTrigger(UnitBase other)
         {
             if (!_trigger)
-                
+
             {
                 _trigger = true;
                 _unit = other;
@@ -127,10 +196,12 @@ namespace GameA.Game
             }
         }
 
+
         private bool CheckPlayerPos()
         {
-            float x = Mathf.Abs((PlayerManager.Instance.MainPlayer.Trans.position - _trans.position).x);
-            return x <= 50;
+            _distance = PlayerManager.Instance.MainPlayer.Trans.position - _trans.position;
+            float x = _distance.magnitude;
+            return x <= _closeDis;
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -160,8 +231,114 @@ namespace GameA.Game
             }
         }
 
+        public void SetReady()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.SetReady();
+            }
+
+            _oldState = null;
+            _nowState = SetReady;
+        }
+
+        public void SetInTask()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.SetInTask();
+            }
+
+            _oldState = null;
+            _nowState = SetInTask;
+        }
+
+        public void SetFinishTask()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.AllTaskFinish();
+            }
+
+            _oldState = null;
+            _nowState = SetFinishTask;
+        }
+
+        public void SetNpcNum()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.SetNpcNum(GetUnitExtra().NpcSerialNumber);
+            }
+        }
+
+        public void SetShowTip()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.ShowTip();
+                _oldState = _nowState;
+            }
+        }
+
+        public void SetNoShow()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.SetNoShow();
+            }
+
+            _oldState = null;
+            _nowState = SetNoShow;
+        }
+
+        public void SetNpcName()
+        {
+            if (_stateBar != null)
+            {
+                _stateBar.NameTextMesh.text = GetUnitExtra().NpcName;
+            }
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (GameRun.Instance.IsPlaying)
+            {
+                if (base.InstantiateView())
+                {
+                    if (_nowState != null)
+                    {
+                        _nowState.Invoke();
+                    }
+
+                    Scene2DManager.Instance.GetCurScene2DEntity().RpgManger.JudegeBeforeTask();
+//                    RpgTaskManger.Instance.JudegeBeforeTask();
+                    return true;
+                }
+
+                return false;
+            }
+
+            return base.InstantiateView();
+        }
+
         protected override void CreateStatusBar()
         {
+            if (null != _statusBar)
+            {
+                return;
+            }
+
+            GameObject statusBarObj =
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "NpcSerNumber")) as
+                    GameObject;
+            if (null != statusBarObj)
+            {
+                _stateBar = statusBarObj.GetComponent<NpcStateBar>();
+                CommonTools.SetParent(statusBarObj.transform, _trans);
+                SetNpcNum();
+                SetNpcName();
+            }
         }
 
         protected override void UpdateAttackTarget(UnitBase lastTarget = null)
@@ -170,6 +347,22 @@ namespace GameA.Game
             {
                 _attactTarget = PlayMode.Instance.MainPlayer;
             }
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            if (_stateBar != null)
+            {
+                Object.Destroy(_stateBar.gameObject);
+                _stateBar = null;
+            }
+
+            if (_diaPop != null)
+            {
+                _diaPop.Hide();
+            }
+
+            base.OnObjectDestroy();
         }
     }
 }

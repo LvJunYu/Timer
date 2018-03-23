@@ -169,6 +169,11 @@ namespace GameA
 
         private void OnReplyMessage(long messageId, UserMessageReply reply)
         {
+            if (!_isOpen)
+            {
+                return;
+            }
+
             if (_curMenu == EMenu.MessageBoard)
             {
                 ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnReplyMessage(messageId, reply);
@@ -221,6 +226,15 @@ namespace GameA
                     count < 100 ? string.Format(_numFormat, count) : _maxShow;
                 _cachedView.MessageSelectedNum.text =
                     count < 1000 ? string.Format(_numFormat, count) : _maxShowLong;
+            }
+        }
+
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
             }
         }
 
@@ -309,9 +323,13 @@ namespace GameA
 
         private void OnDeleteUserMessage(UserMessage message)
         {
-            if (_isOpen && _curMenu == EMenu.MessageBoard)
+            if (_isOpen)
             {
-                ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnDeleteUserMessage(message);
+                _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, RefreshView, null);
+                if (_curMenu == EMenu.MessageBoard)
+                {
+                    ((UPCtrlPersonalInfoMessageBoard) _curMenuCtrl).OnDeleteUserMessage(message);
+                }
             }
         }
 

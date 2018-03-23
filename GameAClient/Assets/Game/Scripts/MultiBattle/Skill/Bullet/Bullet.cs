@@ -52,9 +52,14 @@ namespace GameA.Game
             get { return _targetUnit; }
         }
 
+        public int Id
+        {
+            get { return _tableUnit.Id; }
+        }
+
         public void OnGet()
         {
-            _maskRandom = UnityEngine.Random.Range(0, 2);
+            _maskRandom = Random.Range(0, 2);
         }
 
         public void OnFree()
@@ -78,7 +83,7 @@ namespace GameA.Game
         {
             if (_trans != null)
             {
-                UnityEngine.Object.Destroy(_trans.gameObject);
+                Object.Destroy(_trans.gameObject);
             }
         }
 
@@ -109,6 +114,7 @@ namespace GameA.Game
             {
                 _effectBullet.Play();
             }
+
             _trans.eulerAngles = new Vector3(0, 0, -angle);
             UpdateTransPos();
             _run = true;
@@ -126,13 +132,14 @@ namespace GameA.Game
         {
             return -(_curPos.x + _curPos.y) * UnitDefine.UnitSorttingLayerRatio + (_zFront ? -1.99f : 1.99f);
         }
-        
+
         public void UpdateLogic()
         {
             if (!_run)
             {
                 return;
             }
+
             //MagicSwith Brick Cloud
             var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer,
                 float.MinValue, float.MaxValue, _skill.Owner.DynamicCollider);
@@ -143,42 +150,35 @@ namespace GameA.Game
                     var hit = hits[i];
                     if (CheckHit(hit.node.Id))
                     {
-                        var units = ColliderScene2D.GetUnits(hit);
-                        for (var j = 0; j < units.Count; j++)
+                        using (var units = ColliderScene2D.GetUnits(hit))
                         {
-                            var unit = units[j];
-                            if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross && CheckBulletHit(unit))
+                            for (var j = 0; j < units.Count; j++)
                             {
-                                _targetUnit = unit;
-                                _curPos = hit.point;
-                                //如果打到左边或者下面 则层级放在前面，显示出来
-                                if (!_zFront && (hit.normal.x > 0 || hit.normal.y > 0))
+                                var unit = units[j];
+                                if (unit != _skill.Owner && unit.IsAlive && !unit.CanCross && CheckBulletHit(unit))
                                 {
-                                    _zFront = true;
-                                }
-                                _destroy = 1;
-                                if (unit.Id == UnitDefine.MagicSwitchId)
-                                {
-                                    var switchMagic = unit as SwitchMagic;
-                                    if (switchMagic != null)
+                                    _targetUnit = unit;
+                                    _curPos = hit.point;
+                                    //如果打到左边或者下面 则层级放在前面，显示出来
+                                    if (!_zFront && (hit.normal.x > 0 || hit.normal.y > 0))
                                     {
-                                        switchMagic.OnTrigger();
+                                        _zFront = true;
                                     }
-                                }
-                                else if (UnitDefine.BrickId == unit.Id)
-                                {
-                                    var brick = unit as Brick;
-                                    if (brick != null)
+
+                                    _destroy = 1;
+                                    if (unit is ICanBulletHit)
                                     {
-                                        brick.DestroyBrick();
+                                        ((ICanBulletHit) unit).OnBulletHit(this);
                                     }
+
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
                 }
             }
+
             UpdateTransPos();
             if (_destroy > 0)
             {
@@ -214,11 +214,13 @@ namespace GameA.Game
             {
                 return false;
             }
+
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             if (tableUnit == null)
             {
                 return false;
             }
+
             return tableUnit.IsBulletBlock == 1;
         }
 
@@ -231,7 +233,13 @@ namespace GameA.Game
                 GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position,
                     new Vector3(0, 0, _angle), Vector3.one);
             }
+
             _skill.OnBulletHit(this);
         }
+    }
+
+    public interface ICanBulletHit
+    {
+        void OnBulletHit(Bullet bullet);
     }
 }

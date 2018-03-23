@@ -1,14 +1,24 @@
-﻿using SoyEngine;
+﻿using System.Collections.Generic;
+using System.Text;
+using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
+    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>, ICheckOverlay
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
         private UPCtrlWorkShopProjectBase[] _menuCtrlArray;
+        private UPCtrlWorkShopAddSelfRecommend uPCtrlWorkShopAddSelfRecommend;
+
+        public readonly List<Msg_SortSelfRecommendProjectItem> SortItemList =
+            new List<Msg_SortSelfRecommendProjectItem>();
+
+        public bool SelfRecommendDirty = false;
+
         private bool _pushGoldEnergyStyle;
 
         protected override void OnViewCreated()
@@ -35,6 +45,16 @@ namespace GameA
             upCtrlWorkShopProjectDownload.Init(this, _cachedView);
             _menuCtrlArray[(int) EMenu.Downoad] = upCtrlWorkShopProjectDownload;
 
+            var upCtrlWorkShopSelfRecommen = new UPCtrlWorkShopSelfRecommen();
+            upCtrlWorkShopSelfRecommen.Set(ResScenary);
+            upCtrlWorkShopSelfRecommen.SetMenu(EMenu.SelfRecommen);
+            upCtrlWorkShopSelfRecommen.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.SelfRecommen] = upCtrlWorkShopSelfRecommen;
+
+            uPCtrlWorkShopAddSelfRecommend = new UPCtrlWorkShopAddSelfRecommend();
+            uPCtrlWorkShopAddSelfRecommend.Set(ResScenary);
+            uPCtrlWorkShopAddSelfRecommend.Init(this, _cachedView);
+
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -53,18 +73,18 @@ namespace GameA
 //            Clear();
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int) EMenu.EditingProjects, true);
+                _curMenu = EMenu.EditingProjects;
             }
-            else
-            {
-                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
-            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
 
             if (!_pushGoldEnergyStyle)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
                 _pushGoldEnergyStyle = true;
             }
+
+            uPCtrlWorkShopAddSelfRecommend.Close();
         }
 
         protected override void OnDestroy()
@@ -81,6 +101,12 @@ namespace GameA
             base.OnDestroy();
         }
 
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            uPCtrlWorkShopAddSelfRecommend.UpdateUmLastTime();
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainUI;
@@ -91,10 +117,19 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWorkShopProjectListChanged, OnEditingProjectsChanged);
             RegisterEvent(EMessengerType.OnWorkShopDownloadListChanged, OnWorkShopDownloadListChanged);
-            RegisterEvent(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
+            RegisterEvent<long>(EMessengerType.OnUserPublishedProjectChanged, OnPublishedProjectsChanged);
             RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnEditingProjectDataChanged);
             RegisterEvent<long>(EMessengerType.OnWorkShopProjectPublished, OnWorkShopProjectPublished);
+            RegisterEvent<long>(EMessengerType.OnPublishedProjectChanged, OnPublishedProjectChanged);
             RegisterEvent(EMessengerType.OnProjectNotValid, OnProjectNotValid);
+        }
+
+        private void OnPublishedProjectChanged(long projectId)
+        {
+            if (_isOpen && _curMenu == EMenu.PublishedProjects)
+            {
+                _curMenuCtrl.RequestData();
+            }
         }
 
         private void OnProjectNotValid()
@@ -210,9 +245,9 @@ namespace GameA
             }
         }
 
-        private void OnPublishedProjectsChanged()
+        private void OnPublishedProjectsChanged(long userId)
         {
-            if (!_isOpen)
+            if (!_isOpen || userId != LocalUser.Instance.UserGuid)
             {
                 return;
             }
@@ -223,13 +258,68 @@ namespace GameA
             }
         }
 
+        public bool OnSelectBtn(UserSelfRecommendProject project)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            return up.OnSelectProject(project);
+        }
+
+        public bool OnUnSelectBtn(UserSelfRecommendProject project)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            return up.OnUnSelectProject(project);
+        }
+
         public enum EMenu
         {
             None = -1,
             EditingProjects,
             PublishedProjects,
             Downoad,
+            SelfRecommen,
             Max
+        }
+
+        public void OpenAddSelfRecommendPanel()
+        {
+            uPCtrlWorkShopAddSelfRecommend.Open();
+        }
+
+        public bool AddSelfRecommendProject(Project project)
+        {
+            return uPCtrlWorkShopAddSelfRecommend.AddProject(project);
+        }
+
+        public bool ReomveSelfRecommendProject(Project project)
+        {
+            return uPCtrlWorkShopAddSelfRecommend.RemoveProject(project);
+        }
+
+        public void RefreshSelfRecommend()
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            up.RequestData();
+        }
+
+        public void OnUmProjectDragEnd(int oldIndex, int newIndex)
+        {
+            var up = _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+            up.OnUmProjectDragEnd(oldIndex, newIndex);
+        }
+
+        public UPCtrlWorkShopSelfRecommen GetuUpCtrlWorkShopSelfRecommen()
+        {
+            return _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
+        }
+
+        public void OpenMenu(EMenu menu)
+        {
+            if (_curMenu != menu)
+            {
+                _curMenu = menu;
+            }
+
+            _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
         }
     }
 }

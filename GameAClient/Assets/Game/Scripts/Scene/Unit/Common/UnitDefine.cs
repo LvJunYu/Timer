@@ -16,6 +16,12 @@ namespace GameA.Game
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
         public static int[] MonstersInCave = {2001, 2002, 2003, 2005, 2007};
 
+        public static int[] ItemsInSurpriseBox =
+            {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023};
+
+        public static int[] ItemsInWoodCase =
+            {6001, 6002, 6003, 6004, 8002, 5012, 8005, 8006, 8007, 8008, 8009, 8010, 5023, 0};
+
         public const float UnitSorttingLayerRatio = 0.0015625f;
 
         public const int ZOffsetEffectBackground = 90;
@@ -35,8 +41,10 @@ namespace GameA.Game
         public const int OtherPlayerId = 1003;
         public const int MonsterJellyId = 2004;
         public const int MonsterDragonId = 2007;
+        public const int EarthId = 4001;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
+        public const int StoneId = 4007;
         public const int ClayId = 4011;
         public const int ScorchedEarthId = 4013;
         public const int CloudId = 4015;
@@ -49,7 +57,16 @@ namespace GameA.Game
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
+        public const int WeaponDepotId = 5007;
+        public const int KeyId = 5012;
         public const int MonsterCaveId = 5022;
+        public const int MagicBeanId = 5023;
+        public const int CirrusId = 5024;
+        public const int SurpriseBoxId = 5025;
+        public const int LocationMissileId = 5026;
+        public const int PasswordDoorId = 5028;
+        public const int WoodCaseId = 5030;
+        public const int BombId = 5031;
         public const int BillboardId = 7001;
         public const int EnergyPoolId = 8001;
         public const int TextId = 9001;
@@ -57,7 +74,12 @@ namespace GameA.Game
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
+        public const int TimerId = 8108;
+        public const int TimerTriggerPressId = 8201;
+        public const int WaterBulletId = 10001;
+        public const int MissileId = 11001;
         public const int ShadowId = 65535;
+        public const int TeethId = 6001;
 
         public static bool IsSpawn(int id)
         {
@@ -84,6 +106,11 @@ namespace GameA.Game
             return id > 2000 && id < 3000;
         }
 
+        public static bool IsWeaponPool(int id)
+        {
+            return id == EnergyPoolId || id == WeaponDepotId;
+        }
+
         public static bool IsJet(int id)
         {
             return id == 5015 || id == 5016;
@@ -92,6 +119,11 @@ namespace GameA.Game
         public static bool IsSwitch(int id)
         {
             return id > 8101 && id <= 8200 || id == 9003 || id == 30001 || id == 30002 || id == 30003;
+        }
+
+        public static bool IsSwitchAndCanControlledBySwitch(int id)
+        {
+            return id == TimerId;
         }
 
         public static bool IsSwitchTrigger(int id)
@@ -121,7 +153,7 @@ namespace GameA.Game
 
         public static bool IsBullet(int id)
         {
-            return id >= 10001 && id <= 10010;
+            return id >= 10001 && id <= 12000;
         }
 
         public static bool IsShadow(int id)
@@ -177,7 +209,7 @@ namespace GameA.Game
 
         public static bool UseProjectileBullet(int id)
         {
-            return id == 10002 || id == 10003;
+            return id == 10002 || id == 10003 || id == 11001;
         }
 
         public static bool CanTrigger(UnitBase unit)
@@ -185,9 +217,9 @@ namespace GameA.Game
             return !IsBullet(unit.Id);
         }
 
-        public static bool IsLadder(int id)
+        public static bool CanClimbLikeLadder(int id)
         {
-            return id == 4016;
+            return id == 4016 || id == CirrusId;
         }
 
         public static bool IsNpc(int id)
@@ -200,14 +232,54 @@ namespace GameA.Game
             return id == 5013;
         }
 
-        public static bool IsKey(int id)
-        {
-            return id == 5012;
-        }
-
         public static bool IsTeeth(int id)
         {
             return id == 6001;
+        }
+
+        public static bool IsGate(int id)
+        {
+            return id == 5013;
+        }
+
+        public static bool IsLife(int id)
+        {
+            return id == 6002;
+        }
+
+        public static bool IsVincible(int id)
+        {
+            return id == 6003;
+        }
+
+        public static bool IsMeat(int id)
+        {
+            return id == 6004;
+        }
+
+        public static bool IsMagicBean(int id)
+        {
+            return id == 5023;
+        }
+
+        public static bool CanHitCirrus(UnitBase unit)
+        {
+            return !unit.IsActor && !IsBox(unit.Id) && !(unit is CollectionBase);
+        }
+
+        public static bool IsBox(int id)
+        {
+            return id == BoxId || id == SurpriseBoxId || id == WoodCaseId || id == BombId;
+        }
+
+        public static bool CanGrowCirrus(UnitBase unit)
+        {
+            return unit.Id == EarthId || unit.Id == TerrainId;
+        }
+
+        public static bool ChangeViewByUnitExtra(int id)
+        {
+            return id == SpawnId || id == LocationMissileId || id == WeaponDepotId;
         }
     }
 }

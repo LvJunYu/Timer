@@ -34,7 +34,19 @@ namespace GameA
         {
             return base.Init(parent, resScenary, localpos, SocialGUIManager.Instance.UIRoot as ResManagedUIRoot);
         }
-        
+
+        #endregion
+
+        #region 相对于实现的接口的方法方法
+
+        public virtual void MoveByIndex(int beginindex, int newindex)
+        {
+        }
+
+        public virtual void EndTween()
+        {
+        }
+
         #endregion
     }
 }

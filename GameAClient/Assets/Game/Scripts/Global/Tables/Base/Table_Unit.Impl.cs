@@ -5,6 +5,7 @@
 ** Summary : Table_Unit
 ***********************************************************************/
 
+using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
@@ -108,17 +109,29 @@ namespace GameA.Game
                     return ChildState != null;
                 case EEditType.Rotate:
                     return RotateState > 0;
+                case EEditType.Angel:
+                    return Id == UnitDefine.LocationMissileId;
                 case EEditType.TimeDelay:
                 case EEditType.TimeInterval:
                     return TimeState != null;
                 case EEditType.Text:
                     return TextState > 0;
                 case EEditType.Camp:
-                    return UnitDefine.IsMonster(Id);
+                    return UnitDefine.IsMonster(Id) || Id == UnitDefine.LocationMissileId;
                 case EEditType.MonsterCave:
                     return UnitDefine.MonsterCaveId == Id;
                 case EEditType.Spawn:
                     return UnitDefine.SpawnId == Id;
+                case EEditType.SurpriseBox:
+                    return UnitDefine.SurpriseBoxId == Id;
+                case EEditType.WoodCase:
+                    return UnitDefine.WoodCaseId == Id;
+                case EEditType.PasswordDoor:
+                    return UnitDefine.PasswordDoorId == Id;
+                case EEditType.Bomb:
+                    return UnitDefine.BombId == Id;
+                case EEditType.Cycle:
+                    return Cycle != 0;
                 case EEditType.Style:
                     return Id == 4001;
                 case EEditType.NpcType:

@@ -19,7 +19,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            
+
             if (_opened)
             {
                 if (_animation != null)
@@ -28,12 +28,24 @@ namespace GameA.Game
                     entry.time = entry.endTime;
                 }
 
-                SetCross(true);
-                SetSortingOrderBackground();
-                UpdateTransPos();
+                SetOpen();
             }
 
             return true;
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    _opened = true;
+                    SetOpen();
+                }
+            }
         }
 
         protected override void Clear()
@@ -104,25 +116,30 @@ namespace GameA.Game
                         {
                             _animation.PlayOnce("Open");
                         }
+
+                        Scene2DManager.Instance.GetCurScene2DEntity().RpgManger
+                            .OnControlFinish(new UnitSceneGuid(_guid, Scene2DManager.Instance.CurSceneIndex));
+//                        RpgTaskManger.Instance.OnControlFinish(_guid);
                     }
                 }
             }
         }
 
-        public override void UpdateLogic()
+        public void DirectOpen()
         {
-            base.UpdateLogic();
-            if (_timer > 0)
+            SetEnabled(false);
+            _timer = 50;
+            if (_animation != null)
             {
-                _timer--;
-                if (_timer == 0)
-                {
-                    _opened = true;
-                    SetCross(true);
-                    SetSortingOrderBackground();
-                    UpdateTransPos();
-                }
+                _animation.PlayOnce("Open");
             }
+        }
+
+        private void SetOpen()
+        {
+            SetCross(true);
+            SetSortingOrderBackground(3);
+            UpdateTransPos();
         }
     }
 }

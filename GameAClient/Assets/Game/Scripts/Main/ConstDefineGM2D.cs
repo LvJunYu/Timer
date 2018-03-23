@@ -58,8 +58,10 @@ namespace GameA.Game
 
         public const int InitialTimeLimit = 10;
 
-        public const int TimeLimitMinValue = 1;
-        public const int TimeLimitMaxValue = 60;
+        //单位：10秒
+        public const int TimeLimitMinValue = 1; 
+        public const int TimeLimitMaxValue = 360;
+        public const int MultiTimeLimitMaxValue = 60;
 
         public const float ScreenOperatorVisibleDiffer = 1f;
 
