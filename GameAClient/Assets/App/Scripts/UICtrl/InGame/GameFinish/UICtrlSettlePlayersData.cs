@@ -23,6 +23,7 @@ namespace GameA
         private UIParticleItem _ligtEffect;
         private bool _isCooperation;
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
+
         private List<RenderCamera> _camerasList = new List<RenderCamera>();
 //        private int _coutnum = 0;
 
@@ -213,6 +214,13 @@ namespace GameA
 ////                    _coutnum = 0;
 ////                }
 //            }
+            for (int i = 0; i < _cachedView.PlayerAvatarAnimation.Length; i++)
+            {
+                if (_cachedView.PlayerAvatarAnimation[i] != null)
+                {
+                    _cachedView.PlayerAvatarAnimation[i].Update(Time.deltaTime);
+                }
+            }
         }
 
         private void OnExitBtn()
