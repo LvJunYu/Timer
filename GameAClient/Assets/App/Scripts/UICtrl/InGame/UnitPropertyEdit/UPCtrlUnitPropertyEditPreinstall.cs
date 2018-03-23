@@ -237,11 +237,19 @@ namespace GameA
                 }
             }
 
-            NpcTaskDataTemp.Intance.RecycleExtra(_mainCtrl.EditData.UnitExtra);
+            if (UnitDefine.IsNpc(_mainCtrl.EditData.UnitDesc.Id))
+            {
+                NpcTaskDataTemp.Intance.RecycleExtra(_mainCtrl.EditData.UnitExtra);
+            }
+
             _curIndex = index;
             _mainCtrl.EditData.UnitExtra.Set(unitExtraKeyValuePair);
             _mainCtrl.EditData.UnitDesc.Rotation = (byte) _dataList[_curIndex].PreinstallData.Rotation;
-            NpcTaskDataTemp.Intance.CheckExtra(_mainCtrl.EditData.UnitExtra);
+            if (UnitDefine.IsNpc(_mainCtrl.EditData.UnitDesc.Id))
+            {
+                NpcTaskDataTemp.Intance.CheckExtra(_mainCtrl.EditData.UnitExtra);
+            }
+
             HasChanged = false;
             RefreshView();
             _mainCtrl.ReadPreinstall();

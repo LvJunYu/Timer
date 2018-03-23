@@ -20,6 +20,7 @@ namespace GameA
         private UIRoot _uiRoot;
         private Vector3 _pos;
         private bool _isofficial;
+     
 
         public bool Isofficial
         {
@@ -45,6 +46,7 @@ namespace GameA
             BadWordManger.Instance.InputFeidAddListen(_cachedView.InputField);
             _cachedView.ApplyBtn.onClick.AddListener(OnApplyBtn);
             Show();
+         
         }
 
         private void Clear()
@@ -143,6 +145,7 @@ namespace GameA
             {
                 return;
             }
+
             _cachedView.AddImage.SetActiveEx(false);
             UMCtrlNpcInputDiaItem item = UMPoolManager.Instance.Get<UMCtrlNpcInputDiaItem>(_parent, EResScenary.Game);
             item.InitItem(_parent);
@@ -156,6 +159,7 @@ namespace GameA
             {
                 _callbackList[i].Invoke();
             }
+
             _addAction.Invoke(_cachedView.InputField.text);
             _cachedView.SelectImage.SetActiveEx(true);
         }
@@ -175,6 +179,7 @@ namespace GameA
             {
                 _cachedView.DeleteBtn.SetActiveEx(true);
             }
+
             if (_isAdd)
             {
                 _cachedView.DeleteBtn.SetActiveEx(false);
@@ -187,6 +192,7 @@ namespace GameA
                 _cachedView.ApplyBtn.SetActiveEx(true);
                 _cachedView.AddImage.SetActiveEx(false);
             }
+
             _cachedView.SelectImage.SetActiveEx(false);
         }
 

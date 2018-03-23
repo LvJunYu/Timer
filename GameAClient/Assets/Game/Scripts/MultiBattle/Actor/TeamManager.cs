@@ -466,20 +466,6 @@ namespace GameA.Game
 
         private void AddScore(UnitBase unit, int score)
         {
-            var teamId = unit.TeamId;
-            //teamId == 0 自己一伙
-            if (teamId == 0)
-            {
-                if (unit.IsMain)
-                {
-                    AddScore(teamId, score);
-                }
-            }
-            else
-            {
-                AddScore(teamId, score);
-            }
-
             if (unit.IsPlayer)
             {
                 var playerId = ((PlayerBase) unit).Guid;
@@ -493,6 +479,20 @@ namespace GameA.Game
                 {
                     Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
                 }
+            }
+
+            var teamId = unit.TeamId;
+            //teamId == 0 自己一伙
+            if (teamId == 0)
+            {
+                if (unit.IsMain)
+                {
+                    AddScore(teamId, score);
+                }
+            }
+            else
+            {
+                AddScore(teamId, score);
             }
         }
 
