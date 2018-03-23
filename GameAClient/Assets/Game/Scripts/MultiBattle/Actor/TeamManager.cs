@@ -468,7 +468,7 @@ namespace GameA.Game
         {
             if (unit.IsPlayer)
             {
-                var playerId = ((PlayerBase) unit).Guid;
+                var playerId = unit.Guid;
                 if (!_playerScoreDic.ContainsKey(playerId))
                 {
                     _playerScoreDic.Add(playerId, 0);
@@ -546,7 +546,8 @@ namespace GameA.Game
             if (!GM2DGame.Instance.GameMode.IsMulti) return;
             if (killer.IsPlayer)
             {
-                var killerId = ((PlayerBase) killer).Guid;
+                //杀人统计
+                var killerId = killer.Guid;
                 if (!_playerKillDic.ContainsKey(killerId))
                 {
                     _playerKillDic.Add(killerId, 0);
@@ -557,19 +558,19 @@ namespace GameA.Game
                 {
                     Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
                 }
-            }
 
-            //被杀
-            var playerId = deadPlayer.Guid;
-            if (!_playerKilledDic.ContainsKey(playerId))
-            {
-                _playerKilledDic.Add(playerId, 0);
-            }
+                //被杀统计
+                var playerId = deadPlayer.Guid;
+                if (!_playerKilledDic.ContainsKey(playerId))
+                {
+                    _playerKilledDic.Add(playerId, 0);
+                }
 
-            _playerKilledDic[playerId]++;
-            if (deadPlayer.IsMain)
-            {
-                Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
+                _playerKilledDic[playerId]++;
+                if (deadPlayer.IsMain)
+                {
+                    Messenger.Broadcast(EMessengerType.OnMainPlayerDataChange);
+                }
             }
 
             AddScore(killer, PlayMode.Instance.SceneState.KillPlayerScore);
@@ -580,7 +581,7 @@ namespace GameA.Game
             if (!GM2DGame.Instance.GameMode.IsMulti) return;
             if (unit.IsPlayer)
             {
-                var killerId = ((PlayerBase) unit).Guid;
+                var killerId = unit.Guid;
                 if (!_playerKillMonsterDic.ContainsKey(killerId))
                 {
                     _playerKillMonsterDic.Add(killerId, 0);
