@@ -869,7 +869,7 @@ namespace GameA.Game
                         {
                             if (TeamManager.Instance.CheckAllTeamerSiTouLe(TeamId))
                             {
-                                PlayMode.Instance.SceneState.AllTeamerSiTouLe(TeamId);
+                                PlayMode.Instance.SceneState.AllTeamerSiTouLe();
                             }
                         }
                         else
