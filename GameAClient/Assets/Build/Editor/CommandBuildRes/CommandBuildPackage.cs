@@ -147,7 +147,7 @@ public class CommandBuildPackage
         socialApp.Env = eEnvironment;
         if (eEnvironment == EEnvironment.Production)
         {
-            socialApp.Channel = PublishChannel.EType.None;
+            socialApp.Channel = PublishChannel.EType.QQGame;
             socialApp.LogLevel = LogHelper.ELogLevel.Info;
         }
         else
