@@ -73,7 +73,7 @@ namespace GameA
 
         public void SetOffsetPos(Vector3 offesetpos)
         {
-            _root.localPosition += offesetpos;
+            _root.localPosition = offesetpos;
         }
     }
 }

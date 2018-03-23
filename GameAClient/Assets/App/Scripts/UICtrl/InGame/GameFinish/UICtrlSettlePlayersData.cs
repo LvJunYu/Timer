@@ -62,6 +62,7 @@ namespace GameA
                 _uiParticleItemlist[i].Particle.Play();
             }
 
+            _camerasList.Clear();
             _coutnum = 0;
         }
 
@@ -165,20 +166,24 @@ namespace GameA
             if (_isOpen)
             {
                 _coutnum++;
-                if (_coutnum < 10)
+//                if (_coutnum < 10)
+//                {
+                for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
                 {
-                    for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+                    if (i >= _allPlayerDatas.Count)
                     {
-                        if (i >= _allPlayerDatas.Count)
+                    }
+                    else
+                    {
+                        PlayerBase player = TeamManager.Instance.Players[i];
+                        if (i < _camerasList.Count)
                         {
-                        }
-                        else
-                        {
-                            PlayerBase player = TeamManager.Instance.Players[i];
-                            player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                            _camerasList[i].SetOffsetPos(player.View.Trans.localPosition);
                         }
                     }
                 }
+
+//                }
             }
         }
 

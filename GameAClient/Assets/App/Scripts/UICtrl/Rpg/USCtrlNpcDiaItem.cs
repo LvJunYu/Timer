@@ -34,6 +34,7 @@ namespace GameA
             _cachedView.EditBtnPointHover.PointHoverExitAction = () =>
             {
                 _cachedView.EditDiaBtn.SetActiveEx(false);
+                _cachedView.EditBtnPointHover.IsUp = true;
 //                _cachedView.EditDiaBtnMask.GetComponent<Image>().raycastTarget = true;
             };
         }
