@@ -153,7 +153,27 @@ namespace GameA.Game
                 }
 
                 UpdateTransPos();
+                if (_isHoldingByPlayer && _holder != null && _holder.GetBoxOperateType() == EBoxOperateType.Pull)
+                {
+                    if (!CheckHolderAdjoin())
+                    {
+                        _holder.OnBoxHoldingChanged();
+                    }
+                }
             }
+        }
+
+        public bool CheckHolderAdjoin()
+        {
+            if (_holder == null)
+            {
+                return false;
+            }
+
+            return _directionRelativeMain == EDirectionType.Left &&
+                   _colliderGrid.XMax + 1 == _holder.ColliderGrid.XMin ||
+                   _directionRelativeMain == EDirectionType.Right && 
+                   _colliderGrid.XMin - 1 == _holder.ColliderGrid.XMax;
         }
 
         public void SetHoder(PlayerBase playerBase)

@@ -415,7 +415,8 @@ namespace GameA.Game
         {
             if (IsHoldingBox())
             {
-                if (_colliderGrid.YMin != _box.ColliderGrid.YMin)
+                if (_colliderGrid.YMin != _box.ColliderGrid.YMin || 
+                    GetBoxOperateType() != EBoxOperateType.Pull && !_box.CheckHolderAdjoin())
                 {
                     OnBoxHoldingChanged();
                 }
@@ -868,7 +869,7 @@ namespace GameA.Game
                         {
                             if (TeamManager.Instance.CheckAllTeamerSiTouLe(TeamId))
                             {
-                                PlayMode.Instance.SceneState.AllTeamerSiTouLe(TeamId);
+                                PlayMode.Instance.SceneState.AllTeamerSiTouLe();
                             }
                         }
                         else

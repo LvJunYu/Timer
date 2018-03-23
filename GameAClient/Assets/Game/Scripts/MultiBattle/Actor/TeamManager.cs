@@ -19,6 +19,7 @@ namespace GameA.Game
         public const int MaxTeamCount = PlayerManager.MaxTeamCount;
         private List<PlayerBase> _players = new List<PlayerBase>(MaxTeamCount);
         private Dictionary<byte, int> _scoreDic = new Dictionary<byte, int>(MaxTeamCount); //多人模式才会计算分数
+        private List<byte> _teamSiTouLe = new List<byte>(MaxTeamCount);
         private Dictionary<IntVec3, int> _playerScoreDic = new Dictionary<IntVec3, int>(MaxTeamCount);
         private Dictionary<IntVec3, int> _playerKillDic = new Dictionary<IntVec3, int>(MaxTeamCount);
         private Dictionary<IntVec3, int> _playerKilledDic = new Dictionary<IntVec3, int>(MaxTeamCount);
@@ -114,6 +115,7 @@ namespace GameA.Game
             _scoreChanged = false;
             Players.Clear();
             _scoreDic.Clear();
+            _teamSiTouLe.Clear();
             _playerScoreDic.Clear();
             _playerKillDic.Clear();
             _playerKilledDic.Clear();
@@ -346,22 +348,25 @@ namespace GameA.Game
                 }
             }
 
+            if (!_teamSiTouLe.Contains(teamId))
+            {
+                _teamSiTouLe.Add(teamId);
+            }
             _scoreDic[teamId] = 0;
             Messenger<int, int>.Broadcast(EMessengerType.OnScoreChanged, teamId, 0);
             return true;
         }
 
-        public bool CheckOnlyMyTeamLeft()
+        public bool CheckOneTeamLeft(out bool isMyTeam)
         {
-            for (int i = 0; i < _players.Count; i++)
+            if (_teams.Count - _teamSiTouLe.Count <= 1)
             {
-                if (_players[i].TeamId != MyTeamId && !_players[i].SiTouLe)
-                {
-                    return false;
-                }
+                isMyTeam = !_teamSiTouLe.Contains(MyTeamId);
+                return true;
             }
 
-            return true;
+            isMyTeam = false;
+            return false;
         }
 
         #region MultiBattleStatistics 多人统计数据

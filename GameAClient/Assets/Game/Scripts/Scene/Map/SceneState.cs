@@ -630,21 +630,21 @@ namespace GameA.Game
             }
         }
 
-        public void AllTeamerSiTouLe(byte teamId)
+        public void AllTeamerSiTouLe()
         {
-            //队友全死判输
-            if (TeamManager.Instance.MyTeamId == teamId)
+            //合作模式算输
+            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Cooperation)
             {
                 NetBattleWin(false);
-                return;
             }
 
-            //竞技模式判断是否剩余自己一个队
-            if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
+            //竞技模式判断是否剩余一个队
+            else if (GM2DGame.Instance.GameMode.Project.ProjectType == EProjectType.PT_Compete)
             {
-                if (TeamManager.Instance.CheckOnlyMyTeamLeft())
+                bool isMyTeam;
+                if (TeamManager.Instance.CheckOneTeamLeft(out isMyTeam))
                 {
-                    NetBattleWin(true);
+                    NetBattleWin(isMyTeam);
                 }
             }
         }
