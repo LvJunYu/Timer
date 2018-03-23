@@ -194,7 +194,7 @@
             SetCross(value);
             if (value)
             {
-                SetSortingOrderBackground();
+                SetSortingOrderBackground(3);
             }
             else
             {

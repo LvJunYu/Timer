@@ -242,10 +242,11 @@ namespace GameA.Game
             {
                 for (int i = 0; i < units.Count; i++)
                 {
+                    var unit = units[i];
                     //只检测挡住的物体是否是自己产生的奖励
                     if (onlyCurItem)
                     {
-                        if (units[i] == _curItem)
+                        if (unit == _curItem)
                         {
                             return false;
                         }
@@ -255,7 +256,7 @@ namespace GameA.Game
                         }
                     }
 
-                    if (units[i].IsAlive)
+                    if (unit.IsAlive && !unit.CanCross && !UnitDefine.CanClimbLikeLadder(unit.Id))
                     {
                         return false;
                     }
