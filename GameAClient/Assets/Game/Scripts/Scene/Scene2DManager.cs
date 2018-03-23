@@ -442,6 +442,19 @@ namespace GameA.Game
             return count;
         }
 
+        public bool CheckKeyInBox()
+        {
+            for (int i = 0; i < _sceneList.Count; i++)
+            {
+                if (_sceneList[i].CheckKeyInBox())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void DeleteUnitsOutofMap()
         {
             int sqawnIndex = SqawnSceneIndex;
@@ -694,6 +707,29 @@ namespace GameA.Game
             }
 
             return count;
+        }
+
+        public bool CheckKeyInBox()
+        {
+            var woodCases = _colliderScene.AllWoodCases;
+            for (int i = 0; i < woodCases.Count; i++)
+            {
+                if (_dataScene.GetUnitExtra(woodCases[i].Guid).CommonValue == UnitDefine.KeyId)
+                {
+                    return true;
+                }
+            }
+
+            var surpriseBoxes = _colliderScene.AllSurpriseBoxes;
+            for (int i = 0; i < surpriseBoxes.Count; i++)
+            {
+                if (surpriseBoxes[i].HasKey())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

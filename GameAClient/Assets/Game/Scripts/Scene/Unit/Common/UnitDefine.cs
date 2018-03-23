@@ -58,6 +58,7 @@ namespace GameA.Game
         public const int BoxId = 5004;
         public const int RollerId = 5005;
         public const int WeaponDepotId = 5007;
+        public const int KeyId = 5012;
         public const int MonsterCaveId = 5022;
         public const int MagicBeanId = 5023;
         public const int CirrusId = 5024;
@@ -229,11 +230,6 @@ namespace GameA.Game
         public static bool IsCanControlByNpc(int id)
         {
             return id == 5013;
-        }
-
-        public static bool IsKey(int id)
-        {
-            return id == 5012;
         }
 
         public static bool IsTeeth(int id)

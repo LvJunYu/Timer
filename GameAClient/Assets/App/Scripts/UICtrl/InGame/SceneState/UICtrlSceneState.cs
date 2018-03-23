@@ -820,7 +820,7 @@ namespace GameA
                 int index = 0;
                 while (enmotor.MoveNext())
                 {
-                    bool finish = false;
+                    bool finish;
 
                     finish = finishTaskDic.ContainsKey(enmotor.Current.Value.NpcTaskSerialNumber);
                     UnitExtraDynamic extra;
@@ -841,7 +841,7 @@ namespace GameA
 
         public void GetAwardKeyCheck(int id)
         {
-            if (UnitDefine.IsKey(id))
+            if (UnitDefine.KeyId == id)
             {
                 if (!_cachedView.KeyRoot.activeSelf)
                 {

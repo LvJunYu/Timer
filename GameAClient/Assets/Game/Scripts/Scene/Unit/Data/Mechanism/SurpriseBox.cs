@@ -331,5 +331,10 @@ namespace GameA.Game
                 _lightRenderer.sprite = sprite;
             }
         }
+
+        public bool HasKey()
+        {
+            return _itemList.Contains(UnitDefine.KeyId);
+        }
     }
 }

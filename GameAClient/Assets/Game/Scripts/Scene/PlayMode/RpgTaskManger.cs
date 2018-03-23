@@ -447,7 +447,7 @@ namespace GameA.Game
                     break;
                 case (byte) ENpcTargetType.Colltion:
                     SocialGUIManager.Instance.GetUI<UICtrlSceneState>().GetAwardKeyCheck(award.TargetUnitID);
-                    if (UnitDefine.IsKey(award.TargetUnitID))
+                    if (UnitDefine.KeyId == award.TargetUnitID)
                     {
                         for (int i = 0; i < award.ColOrKillNum; i++)
                         {
@@ -1112,7 +1112,7 @@ namespace GameA.Game
 
         private void RemoveColltion(int colltionId, int num)
         {
-            if (UnitDefine.IsKey(colltionId))
+            if (UnitDefine.KeyId == colltionId)
             {
                 for (int i = 0; i < num; i++)
                 {

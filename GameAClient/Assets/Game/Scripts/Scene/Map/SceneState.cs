@@ -47,7 +47,7 @@ namespace GameA.Game
 
         public bool HasKey
         {
-            get { return MapStatistics.KeyCount > 0; }
+            get { return MapStatistics.KeyCount > 0 || Scene2DManager.Instance.CheckKeyInBox(); }
         }
 
         public int SecondLeft
