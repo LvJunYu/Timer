@@ -204,7 +204,18 @@ namespace GameA
             }
             else if (_inviteType == EInviteType.Room)
             {
-                RoomManager.Instance.SendRequestJoinRoom(_roomInviteList[_curIndex].Msg.RoomId);
+                var roomId = _roomInviteList[_curIndex].Msg.RoomId;
+                if (GM2DGame.Instance != null)
+                {
+                    var gameMode = GM2DGame.Instance.GameMode;
+                    if (gameMode is GameModeNetPlay && ((GameModeNetPlay)gameMode).RoomInfo.RoomId == roomId)
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlInvitedByFriend>();
+                        SocialGUIManager.ShowPopupDialog("已加入关卡");
+                        return;
+                    }
+                }
+                RoomManager.Instance.SendRequestJoinRoom(roomId);
             }
         }
 
