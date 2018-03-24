@@ -68,11 +68,20 @@ namespace GameA
             {
                 var inx = j;
                 _numCtrlArray[j].AddClickListener(() => SetNum(inx));
-                _numCtrlArray[j].SetFgImage(GetSprite(j));
             }
 
             _oriPos = _cachedView.PannelRtf.anchoredPosition;
             _rockPos = _oriPos + Vector2.right * 10;
+        }
+
+        protected override void EnterGameInit()
+        {
+            base.EnterGameInit();
+            for (int j = 0; j < _numCtrlArray.Length; j++)
+            {
+                _numCtrlArray[j].SetFgImage(GetSprite(j));
+            }
+
         }
 
         protected override void OnOpen(object parameter)
