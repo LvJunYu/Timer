@@ -16,7 +16,7 @@ void logInfo(const char* msg)
 	}
 }
 
-BOOL __stdcall Initialize(LPCSTR path)
+BOOL __stdcall Initialize(LPCWSTR path)
 {
 	m_hModule = LoadLibrary(path);
 	if (m_hModule)
@@ -116,11 +116,11 @@ BOOL __stdcall IClientProcMsgObject_Initialize(IClientProcMsgObject* obj)
 	return TRUE;
 }
 
-BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject* obj, LPCSTR lpszConnectionName)
+BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject* obj, LPCWSTR lpszConnectionName)
 {
 	logInfo("IClientProcMsgObject.Connect");
-	//LPCSTR str = CW2A(lpszConnectionName);
-	LPCSTR str = lpszConnectionName;
+	LPCSTR str = CW2A(lpszConnectionName);
+	//LPCSTR str = lpszConnectionName;
 	BOOL ret = obj->Connect(str);
 	char c[128] = { 0 };
 	int length = sprintf_s(c, "IClientProcMsgObject.Connect, Result: %d", ret);

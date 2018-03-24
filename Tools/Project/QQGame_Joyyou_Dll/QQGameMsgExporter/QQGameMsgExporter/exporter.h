@@ -11,7 +11,7 @@ typedef void(__stdcall *FunOnReceiveMsg)(IClientProcMsgObject* pClientProcMsgObj
 
 extern "C"
 {
-	__declspec(dllexport) BOOL __stdcall Initialize(LPCSTR);
+	__declspec(dllexport) BOOL __stdcall Initialize(LPCWSTR);
 	__declspec(dllexport) IClientProcMsgObject* __stdcall CreateClientProcMsgObject();
 	__declspec(dllexport) void __stdcall ReleaseClientProcMsgObject(IClientProcMsgObject* pObj);
 	__declspec(dllexport) void __stdcall Release();
@@ -23,7 +23,7 @@ extern "C"
 	__declspec(dllexport) void __stdcall SetOnReceiveMsgCallback(FunOnReceiveMsg fun, BYTE* pRecvBuf, long lLen);
 
 	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Initialize(IClientProcMsgObject*);
-	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject*, LPCSTR);
+	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_Connect(IClientProcMsgObject*, LPCWSTR);
 	__declspec(dllexport) void __stdcall IClientProcMsgObject_Disconnect(IClientProcMsgObject*);
 	__declspec(dllexport) BOOL __stdcall IClientProcMsgObject_IsConnected(IClientProcMsgObject*);
 	__declspec(dllexport) DWORD __stdcall IClientProcMsgObject_SendMessage(IClientProcMsgObject*, long lLen, const BYTE* pbySendBuf);
