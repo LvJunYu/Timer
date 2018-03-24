@@ -498,12 +498,12 @@ namespace GameA
             // 拾取所有钻石
             if (starType == 5)
             {
-                return statistic.CollectGem == PlayMode.Instance.SceneState.TotalGem;
+                return statistic.CollectGem >= PlayMode.Instance.SceneState.TotalGem;
             }
             // 消灭所有怪物
             if (starType == 6)
             {
-                return statistic.MonsterDeathCnt == PlayMode.Instance.SceneState.MonsterCount;
+                return statistic.MonsterDeathCnt >= PlayMode.Instance.SceneState.MonsterCount;
             }
             // 行走距离小于米
             if (starType == 7)
