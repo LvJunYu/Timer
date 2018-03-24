@@ -109,7 +109,14 @@ namespace GameA.Game
                 _timer = (_random ? GetRandomSecond() : _second) * ConstDefineGM2D.FixedFrameCount;
                 _endTimer = 0;
                 ShowTime(true);
-                _run = _switchTrigger.Trigger == EActiveState.Active;
+                if (_switchTrigger != null)
+                {
+                    _run = _switchTrigger.Trigger == EActiveState.Active;
+                }
+                else
+                {
+                    _run = true;
+                }
             }
             else if (_eActiveState == EActiveState.Deactive)
             {
