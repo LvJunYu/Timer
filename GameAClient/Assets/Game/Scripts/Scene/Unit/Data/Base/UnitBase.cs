@@ -327,8 +327,10 @@ namespace GameA.Game
                     {
                         _life = 99;
                     }
-
-                    _life = value;
+                    else
+                    {
+                        _life = value;
+                    }
                 }
 
                 if (IsMain)
