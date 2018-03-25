@@ -210,7 +210,7 @@ namespace GameA
         private void OnDragBengin()
         {
             _benginIndex = Index;
-            _cachedView.ProjectRect.parent = _gridDataScroller.ScrollRect.content;
+            _cachedView.ProjectRect.SetParent(_gridDataScroller.ScrollRect.content);
             _cachedView.TileText.text = NoProject;
             _cachedView.AddProjectBtn.SetActiveEx(true);
         }
@@ -253,7 +253,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(0, 0);
             }
 
-            _cachedView.ProjectRect.parent = _cachedView.Trans;
+            _cachedView.ProjectRect.SetParent(_cachedView.Trans);
             _cachedView.ProjectRect.SetSiblingIndex(_orgProjectIndex);
             _cachedView.ProjectRect.anchoredPosition = _orgPos;
         }
@@ -316,7 +316,7 @@ namespace GameA
                 _tween.Complete();
             }
 
-            _cachedView.ProjectRect.parent = _cachedView.Trans;
+            _cachedView.ProjectRect.SetParent(_cachedView.Trans);
             _cachedView.ProjectRect.anchoredPosition = _orgPos;
         }
 
