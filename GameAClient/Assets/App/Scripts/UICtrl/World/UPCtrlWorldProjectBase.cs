@@ -97,7 +97,7 @@ namespace GameA
                 }
             }
 
-                _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
+            _cachedView.GridDataScrollers[(int) _menu].SetItemCount(_contentList.Count);
         }
 
         protected void OnItemClick(CardDataRendererWrapper<Project> item)
@@ -138,10 +138,6 @@ namespace GameA
 
         public override void RequestData(bool append = false)
         {
-            if (_isRequesting)
-            {
-                return;
-            }
         }
 
         public virtual void OnProjectTypesChanged()
