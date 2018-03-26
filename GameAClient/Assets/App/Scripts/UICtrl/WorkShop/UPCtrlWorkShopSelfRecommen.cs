@@ -95,7 +95,7 @@ namespace GameA
 
         public override void RefreshView()
         {
-            _cachedView.EmptyObj.SetActiveEx(_dataList == null || _dataList.Count == 0);
+            _cachedView.EmptyObj.SetActiveEx(false);
             _contentList.Clear();
             _dict.Clear();
             if (_dataList == null)
