@@ -126,6 +126,7 @@ namespace GameA
 
         private void OnPublishedProjectChanged(long projectId)
         {
+            SelfRecommendDirty = true;
             if (_isOpen && _curMenu == EMenu.PublishedProjects)
             {
                 _curMenuCtrl.RequestData();
