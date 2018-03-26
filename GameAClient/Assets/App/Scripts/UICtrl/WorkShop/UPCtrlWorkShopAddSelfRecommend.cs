@@ -193,7 +193,7 @@ namespace GameA
         {
             bool canadd = false;
 
-            if (_addUserSelfRecommendProjects.Count <= _lastSoltNum)
+            if (_addUserSelfRecommendProjects.Count < _lastSoltNum)
             {
                 _addUserSelfRecommendProjects.Add(project);
                 canadd = true;
