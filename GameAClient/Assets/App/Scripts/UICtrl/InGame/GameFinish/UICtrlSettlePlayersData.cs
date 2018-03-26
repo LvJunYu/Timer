@@ -293,9 +293,22 @@ namespace GameA
                 }
             }
 
-            moveLight.Append(
-                _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[_targetPosList.Count - 1].x, 0.2f)
-                    .SetDelay(1.5f));
+            Vector2 mvpPos = GetMVPPos(mvpindex);
+            if (mvpPos != Vector2.zero)
+            {
+                moveLight.Append(
+                    _cachedView.MoveLight.rectTransform
+                        .DOLocalMoveX(mvpPos.x, 0.2f));
+                for (int i = 0; i < 2; i++)
+                {
+                    moveLight.Append(
+                        _cachedView.MoveLight.rectTransform
+                            .DOLocalMoveX(mvpPos.x, 0.2f)
+                            .SetDelay(1.5f));
+                }
+            }
+
+
             moveLight.OnComplete(() =>
             {
                 if (_isCooperation)
@@ -400,17 +413,22 @@ namespace GameA
                     _targetPosList.Add(targetPos);
                 }
             }
+        }
 
+        private Vector2 GetMVPPos(int mvpindex)
+        {
+            Vector2 targetPos = Vector2.zero;
             if (!_isCooperation && mvpindex >= 0 && mvpindex < _cachedView.PlayGroup.Length)
             {
-                Vector2 targetPos = _cachedView.MoveLight.rectTransform.localPosition;
+                targetPos = _cachedView.MoveLight.rectTransform.localPosition;
                 targetPos.x =
                     _moveLightParent
                         .InverseTransformPoint(
                             _palyergroupParent.transform.TransformPoint(_cachedView.PlayGroup[mvpindex].transform
                                 .localPosition)).x;
-                _targetPosList.Add(targetPos);
             }
+
+            return targetPos;
         }
     }
 }
