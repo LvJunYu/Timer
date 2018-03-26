@@ -282,7 +282,7 @@ namespace GameA.Game
         private const string ProjectCommentReplyFormat = "<color=#F4A251>{0}</color>在关卡<color=#5E96B7>{1}</color>的回复你：";
         private const string ProjectFavoriteFormat = "{0}个人收藏了你的<color=#5E96B7>{1}</color>关卡";
         private const string ProjectDownloadFormat = "您的<color=#5E96B7>{1}</color>关卡被下载了{0}次";
-        private const string ProjectLikeFormat = "您制作的关卡新收到{0}个赞";
+        private const string ProjectLikeFormat = "您制作的<color=#5E96B7>{1}</color>关卡收到{0}个赞";
         private const string ProjectPlayedFormat = "<color=#F4A251>{0}</color>玩了你的<color=#5E96B7>{1}</color>关卡：";
         private const string NewMailFormat = "{0}封未读邮件";
 
@@ -305,7 +305,7 @@ namespace GameA.Game
                 case ENotificationDataType.NDT_ProjectDownload:
                     return string.Format(ProjectDownloadFormat, data.Count, data.ProjectData.Name);
                 case ENotificationDataType.NDT_ProjectLike:
-                    return string.Format(ProjectLikeFormat, data.Count);
+                    return string.Format(ProjectLikeFormat, data.Count, data.ProjectData.Name);
                 case ENotificationDataType.NDT_ProjectPlayed:
                     return string.Format(ProjectPlayedFormat, data.Sender.NickName, data.ProjectData.Name);
                 case ENotificationDataType.NDT_Mail:
@@ -318,7 +318,6 @@ namespace GameA.Game
 
         private const string CheckStr = "查看";
         private const string CheckProjectStr = "查看关卡";
-        private const string CheckWorkShopStr = "查看工坊";
         private const string MessageBoardStr = "留言板";
         private const string FansStr = "粉丝列表";
 
@@ -338,9 +337,8 @@ namespace GameA.Game
                 case ENotificationDataType.NDT_ProjectFavorite:
                 case ENotificationDataType.NDT_ProjectDownload:
                 case ENotificationDataType.NDT_ProjectPlayed:
-                    return CheckProjectStr;
                 case ENotificationDataType.NDT_ProjectLike:
-                    return CheckWorkShopStr;
+                    return CheckProjectStr;
             }
 
             LogHelper.Error("GetBtnTxt fail");
@@ -386,11 +384,9 @@ namespace GameA.Game
                     SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData);
                     break;
                 case ENotificationDataType.NDT_ProjectPlayed:
+                case ENotificationDataType.NDT_ProjectLike:
                     SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(data.ProjectData)
                         .OpenMenu(UICtrlProjectDetail.EMenu.Recent);
-                    break;
-                case ENotificationDataType.NDT_ProjectLike:
-                    SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>().OpenMenu(UICtrlWorkShop.EMenu.PublishedProjects);
                     break;
                 case ENotificationDataType.NDT_Mail:
                     SocialGUIManager.Instance.OpenUI<UICtrlMail>().OpenMenu(UICtrlMail.EMenu.FriendMail);
