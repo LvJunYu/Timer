@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>, ICheckOverlay
+    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
