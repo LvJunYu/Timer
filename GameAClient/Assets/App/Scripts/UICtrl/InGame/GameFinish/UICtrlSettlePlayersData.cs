@@ -25,6 +25,8 @@ namespace GameA
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
 
         private List<RenderCamera> _camerasList = new List<RenderCamera>();
+
+        private bool _firstOpen = true;
 //        private int _coutnum = 0;
 
         protected override void InitGroupId()
@@ -59,6 +61,7 @@ namespace GameA
                     RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation[i].transform, 200,
                         360);
                 _cachedView.PlayGroup[i].texture = _renderCamera.Texture;
+//                _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Idle1", true);
             }
         }
 
@@ -174,6 +177,7 @@ namespace GameA
                 RenderCameraManager.Instance.FreeCamera(_camerasList[i]);
             }
 
+            _firstOpen = false;
             base.OnClose();
         }
 
@@ -218,7 +222,14 @@ namespace GameA
             {
                 if (_cachedView.PlayerAvatarAnimation[i] != null)
                 {
-                    _cachedView.PlayerAvatarAnimation[i].Update(Time.deltaTime);
+                    if (_firstOpen)
+                    {
+//                        _cachedView.PlayerAvatarAnimation[i].Update(ConstDefineGM2D.FixedDeltaTime * 0.5f);
+                    }
+                    else
+                    {
+                        _cachedView.PlayerAvatarAnimation[i].Update(ConstDefineGM2D.FixedDeltaTime);
+                    }
                 }
             }
         }
