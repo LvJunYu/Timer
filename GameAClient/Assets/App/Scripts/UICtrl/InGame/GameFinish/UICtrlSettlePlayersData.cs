@@ -298,7 +298,7 @@ namespace GameA
             {
                 moveLight.Append(
                     _cachedView.MoveLight.rectTransform
-                        .DOLocalMoveX(mvpPos.x, 0.2f));
+                        .DOLocalMoveX(mvpPos.x, 0.2f).SetDelay(0.2f));
                 for (int i = 0; i < 2; i++)
                 {
                     moveLight.Append(

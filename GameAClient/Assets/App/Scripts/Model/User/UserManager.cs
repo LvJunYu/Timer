@@ -77,14 +77,35 @@ namespace GameA
             return userInfoDetail;
         }
 
-        public void GetDataOnAsync(long userId, Action<UserInfoDetail> successCallback, Action failedCallback = null)
+        public void GetDataOnAsync(long userId, Action<UserInfoDetail> successCallback, Action failedCallback = null,
+            bool isrequest = false)
         {
             UserInfoDetail userInfoDetail;
+
             if (TryGetData(userId, out userInfoDetail))
             {
                 if (successCallback != null)
                 {
                     successCallback(userInfoDetail);
+                }
+
+                if (isrequest)
+                {
+                    userInfoDetail.Request(userId, () =>
+                    {
+                        _caches.Insert(userId, userInfoDetail);
+                        if (successCallback != null)
+                        {
+                            successCallback(userInfoDetail);
+                        }
+                    }, code =>
+                    {
+                        LogHelper.Error("UserInfoDetail Request fail, code = {0}", code);
+                        if (failedCallback != null)
+                        {
+                            failedCallback();
+                        }
+                    });
                 }
 
                 return;

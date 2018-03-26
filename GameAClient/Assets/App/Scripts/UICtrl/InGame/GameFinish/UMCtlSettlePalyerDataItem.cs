@@ -124,7 +124,7 @@ namespace GameA
                 {
                     _cachedView.HadFollowText.SetActiveEx(false);
                 }
-            }, () => { _cachedView.AddFriendBtn.SetActiveEx(false); });
+            }, () => { _cachedView.AddFriendBtn.SetActiveEx(false); }, true);
         }
 
         public new bool Init(RectTransform rectTransform, EResScenary resScenary, Vector3 localpos = new Vector3())
