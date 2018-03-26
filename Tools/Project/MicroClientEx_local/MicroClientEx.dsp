@@ -268,6 +268,10 @@ SOURCE=.\DrawAppearance.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\gz.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\HttpClient.h
 # End Source File
 # Begin Source File

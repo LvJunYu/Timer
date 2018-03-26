@@ -194,7 +194,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 
 	if (starturl == "")
 	{
-		starturl = GetConfigValue(CString(CONFIG), cfUrl);
+		//starturl = GetConfigValue(CString(CONFIG), cfUrl);
 	}
 	else
 	{
@@ -1016,7 +1016,6 @@ void CMicroClientExDlg::AnalyVersion(CString version,int* versionnum)
 		m_length = versioncopy.Delete(0,m_num+1);
 		versioncopy = versioncopy.Right(m_length);
 		m_i++;
-		
 	}
 }
 
