@@ -278,54 +278,8 @@ namespace GameA
 
         private void SetPlayerAniImage()
         {
-            _cachedView.AniPanel.SetActiveEx(true);
-            _cachedView.PlayersContentSizeFitter.SetEnableEx(true);
-            _cachedView.PlayersLayoutGroup.SetEnableEx(true);
-            _cachedView.MoveLight.SetActiveEx(true);
-            _cachedView.LeftLight.SetActiveEx(false);
-            _cachedView.RightLight.SetActiveEx(false);
-            _cachedView.AllLightImage.SetActiveEx(false);
-            _cachedView.MvpImage.SetActiveEx(false);
-            int mvpindex = -1;
-            for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
-            {
-                if (i >= _allPlayerDatas.Count)
-                {
-                    _cachedView.PlayGroup[i].SetActiveEx(false);
-                }
-                else
-                {
-                    PlayerBase player = TeamManager.Instance.Players[i];
-                    player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
-                    _cachedView.PlayGroup[i].SetActiveEx(true);
-                    if (_allPlayerDatas[i].IsWin)
-                    {
-//                        player.View.Animation
-//                            .PlayLoop("Victory", 1, 1);
-                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Victory", true);
-                    }
-                    else
-                    {
-                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Idle1", true);
-//                        player.View.Animation
-//                            .PlayLoop("Idle1", 1, 1);
-                    }
-
-//                    RenderCamera camera =
-//                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
-//                            540);
-//                    _camerasList.Add(camera);
-//                    camera.SetOffsetPos(player.View.Trans.localPosition);
-//                    _cachedView.PlayGroup[i].texture = camera.Texture;
-                    _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
-
-                    if (_allPlayerDatas[i].IsMvp)
-                    {
-                        mvpindex = i;
-                    }
-                }
-            }
-
+            SetInitializedAni();
+            int mvpindex = SetPalyerImage();
             _cachedView.PlayersLayoutGroup.SetLayoutHorizontal();
             _cachedView.PlayersLayoutGroup.CalculateLayoutInputHorizontal();
             SetMoveLightTweenPos(mvpindex);
@@ -359,7 +313,6 @@ namespace GameA
                     _cachedView.MvpImage.SetActiveEx(true);
                     _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
                     _cachedView.PlayersLayoutGroup.enabled = false;
-
                     if (mvpindex == -1)
                     {
                         mvpindex = 0;
@@ -372,6 +325,62 @@ namespace GameA
                 }
             });
             moveLight.PlayForward();
+        }
+
+        private void SetInitializedAni()
+        {
+            _cachedView.AniPanel.SetActiveEx(true);
+            _cachedView.PlayersContentSizeFitter.SetEnableEx(true);
+            _cachedView.PlayersLayoutGroup.SetEnableEx(true);
+            _cachedView.MoveLight.SetActiveEx(true);
+            _cachedView.LeftLight.SetActiveEx(false);
+            _cachedView.RightLight.SetActiveEx(false);
+            _cachedView.AllLightImage.SetActiveEx(false);
+            _cachedView.MvpImage.SetActiveEx(false);
+        }
+
+        private int SetPalyerImage()
+        {
+            int mvpindex = -1;
+            for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
+            {
+                if (i >= _allPlayerDatas.Count)
+                {
+                    _cachedView.PlayGroup[i].SetActiveEx(false);
+                }
+                else
+                {
+                    PlayerBase player = TeamManager.Instance.Players[i];
+                    player.View.Trans.localPosition = new Vector3(1.0f, 1.0f, 0) * 20.0f * i;
+                    _cachedView.PlayGroup[i].SetActiveEx(true);
+                    if (_allPlayerDatas[i].IsWin)
+                    {
+//                        player.View.Animation
+//                            .PlayLoop("Victory", 1, 1);
+                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Victory", true);
+                    }
+                    else
+                    {
+                        _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Idle1", true);
+//                        player.View.Animation
+//                            .PlayLoop("Idle1", 1, 1);
+                    }
+
+//                    RenderCamera camera =
+//                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
+//                            540);
+//                    camera.SetOffsetPos(player.View.Trans.localPosition);
+//                    _camerasList.Add(camera);
+//                    _cachedView.PlayGroup[i].texture = camera.Texture;
+                    _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
+                    if (_allPlayerDatas[i].IsMvp)
+                    {
+                        mvpindex = i;
+                    }
+                }
+            }
+
+            return mvpindex;
         }
 
         private void SetMoveLightTweenPos(int mvpindex)
