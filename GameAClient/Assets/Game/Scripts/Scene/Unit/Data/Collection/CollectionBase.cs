@@ -22,7 +22,7 @@ namespace GameA.Game
 
         protected virtual string _cycleTimerSpriteName
         {
-            get { return _tableUnit.Model; }
+            get { return _assetPath; }
         }
 
         protected override bool OnInit()
@@ -135,7 +135,7 @@ namespace GameA.Game
 
         protected virtual void CreateCycleTimer()
         {
-            if (null != _cycleTimer)
+            if (!_isCycle || null != _cycleTimer)
             {
                 return;
             }
