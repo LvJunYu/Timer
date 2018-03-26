@@ -277,7 +277,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 
 	if (starturl == "")
 	{
-		starturl = GetConfigValue(CString(CONFIG), cfUrl);
+		//starturl = GetConfigValue(CString(CONFIG), cfUrl);
 	}
 	else
 	{
