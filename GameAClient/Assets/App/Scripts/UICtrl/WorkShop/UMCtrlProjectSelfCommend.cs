@@ -15,6 +15,7 @@ namespace GameA
         private const string UnLockText = "未解锁";
         private GridDataScroller _gridDataScroller;
         private int _allowIndex;
+        private int _newindex = -1;
 
         private static readonly Color LockColor =
             new Color(211.0f / 255.0f, 189.0f / 255.0f, 165.0f / 255.0f, 125.0f / 255.0f);
@@ -213,19 +214,19 @@ namespace GameA
             _cachedView.ProjectRect.SetParent(_gridDataScroller.ScrollRect.content);
             _cachedView.TileText.text = NoProject;
             _cachedView.AddProjectBtn.SetActiveEx(true);
+            _newindex = -1;
         }
 
-        private int newindex = -1;
 
         private void OnDrag()
         {
             int temptindex = _gridDataScroller.GetItemIndexByPos(GetProjectToScrollPos());
-            if (newindex != temptindex)
+            if (_newindex != temptindex)
             {
-                newindex = temptindex;
-                if (newindex < _allowIndex)
+                _newindex = temptindex;
+                if (_newindex < _allowIndex)
                 {
-                    _gridDataScroller.OnItemDragMovePos(_benginIndex, newindex);
+                    _gridDataScroller.OnItemDragMovePos(_benginIndex, _newindex);
                     _cachedView.ProjectRect.SetAsLastSibling();
                 }
             }
@@ -233,17 +234,17 @@ namespace GameA
 
         private void OnDragEnd()
         {
-            if (newindex >= _allowIndex)
+            if (_newindex >= _allowIndex)
             {
-                newindex = _allowIndex - 1;
+                _newindex = _allowIndex - 1;
             }
 
-            if (newindex != -1 && _benginIndex != newindex)
+            if (_newindex != -1 && _benginIndex != _newindex)
             {
-                Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(newindex));
+                Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(_newindex));
                 _cachedView.ProjectRect.anchoredPosition = targerpos;
                 _gridDataScroller.EndTween();
-                SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(_benginIndex, newindex);
+                SocialGUIManager.Instance.GetUI<UICtrlWorkShop>().OnUmProjectDragEnd(_benginIndex, _newindex);
             }
             else
             {
@@ -275,17 +276,18 @@ namespace GameA
 
             if (_tween != null)
             {
-                if (_tween.IsPlaying())
-                {
-                    _tween.Complete();
-                }
+                _tween.Complete(true);
+//                if (_tween.IsPlaying())
+//                {
+//                }
             }
 
             if (dragIndex < judgeindex)
             {
                 Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex));
+                _cachedView.ProjectRect.SetParent(_gridDataScroller.ScrollRect.content);
                 _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
-                _cachedView.ProjectRect.parent.SetParent(_gridDataScroller.ScrollRect.content);
+
                 if (!_cachedView.LockImage.IsActive())
                 {
                     _cachedView.TileText.text = NoProject;
@@ -297,8 +299,8 @@ namespace GameA
             else
             {
                 Vector2 targerpos = GetLocalPos(_gridDataScroller.GetPosByIndex(dragIndex + 1));
-                _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
                 _cachedView.ProjectRect.SetParent(_gridDataScroller.ScrollRect.content);
+                _tween = _cachedView.ProjectRect.DOAnchorPos(targerpos, 1.0f);
                 if (!_cachedView.LockImage.IsActive())
                 {
                     _cachedView.TileText.text = NoProject;
@@ -311,9 +313,9 @@ namespace GameA
 
         public override void EndTween()
         {
-            if (_tween != null && _tween.IsPlaying())
+            if (_tween != null)
             {
-                _tween.Complete();
+                _tween.Complete(true);
             }
 
             _cachedView.ProjectRect.SetParent(_cachedView.Trans);
@@ -322,14 +324,14 @@ namespace GameA
 
         private Vector2 GetProjectToScrollPos()
         {
-            Vector2 pos = Vector2.down;
+            Vector2 pos;
             pos = _gridDataScroller.ScrollRect.content.InverseTransformPoint(_cachedView.ProjectRect.position);
             return pos;
         }
 
         private Vector2 GetLocalPos(Vector2 postoScroll)
         {
-            Vector2 localpos = Vector2.zero;
+            Vector2 localpos;
 //            Vector2 worldpos = _gridDataScroller.ScrollRect.content.TransformPoint(postoScroll);
 //            localpos = _cachedView.Trans.InverseTransformPoint(worldpos);
             localpos = _orgPos + postoScroll;
