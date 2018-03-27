@@ -45,6 +45,8 @@ CMicroClientExApp theApp;
 
 BOOL CMicroClientExApp::InitInstance()
 {
+//_CrtSetBreakAlloc(90358);
+
 	const char* UNIQUE_NAME = "JoyGame";
 	HANDLE hMutex = CreateMutex(NULL,NULL,UNIQUE_NAME);
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
