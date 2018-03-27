@@ -308,7 +308,7 @@ namespace GameA
             up.OnUmProjectDragEnd(oldIndex, newIndex);
         }
 
-        public UPCtrlWorkShopSelfRecommen GetuUpCtrlWorkShopSelfRecommen()
+        public UPCtrlWorkShopSelfRecommen GetUpCtrlWorkShopSelfRecommen()
         {
             return _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
         }
