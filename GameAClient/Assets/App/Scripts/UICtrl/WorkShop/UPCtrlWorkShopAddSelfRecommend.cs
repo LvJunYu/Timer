@@ -41,6 +41,7 @@ namespace GameA
             _lastSoltList.Clear();
             _lastSoltNum = 0;
             _addUserSelfRecommendProjects.Clear();
+            _haveAddProject.Clear();
             for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount; i++)
             {
                 if (LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData == null)
