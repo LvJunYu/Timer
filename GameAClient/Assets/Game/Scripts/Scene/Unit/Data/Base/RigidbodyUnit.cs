@@ -78,7 +78,6 @@ namespace GameA.Game
 
         protected override void UpdateCollider(IntVec2 min)
         {
-            _lastColliderGrid = _colliderGrid;
             for (int i = 0; i < 4; i++)
             {
                 _hitUnits[i] = null;
@@ -116,6 +115,7 @@ namespace GameA.Game
             {
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicUnit(this, _lastColliderGrid);
+                _lastColliderGrid = _colliderGrid;
             }
             else if (!_isFreezed) //静止的时候检测是否交叉
             {
@@ -142,7 +142,7 @@ namespace GameA.Game
 //            {
 //                return false;
 //            }
-            return _colliderGrid.Intersects(unit.LastColliderGrid);
+            return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
         protected virtual void CheckClimbUnitChangeDir(EClimbState eClimbState)
