@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\JunYu\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_Timer.-936992524.00" t="ExcludeRecursive" />
-    <e p="E:\UnityProject\JunYu\Timer" t="IncludeRecursive">
+    <e p="C:\Users\win10\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_Timer.631780296.00" t="ExcludeRecursive" />
+    <e p="E:\Workspace\Joyyou\Timer\Timer" t="IncludeRecursive">
       <e p="Assembly-CSharp-Editor-firstpass.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
@@ -15,6 +15,7 @@
         </e>
         <e p="Scirpts" t="Include">
           <e p="Timer.cs" t="Include" />
+          <e p="WinTools.cs" t="Include" />
         </e>
       </e>
       <e p="Library" t="ExcludeRecursive" />

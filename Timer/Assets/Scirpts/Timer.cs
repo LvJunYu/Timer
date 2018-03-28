@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,10 +7,13 @@ public class Timer : MonoBehaviour
     private const string HourStr = "时";
     private const string MinuteStr = "分";
     private const string SecondStr = "秒";
+    private const string IntervalKey = "interval";
     public Text LeftTimeTxt;
+    public Text StartTxt;
     public Button StartBtn;
-    public Button PauseBtn;
     public Button ResetBtn;
+    public Button LeftBtn;
+    public Button RightBtn;
     public Slider Slider;
     private int _interval;
     private float _timer;
@@ -21,9 +22,31 @@ public class Timer : MonoBehaviour
 
     private void Awake()
     {
-        StartBtn.onClick.AddListener(() => { _run = true; });
-        PauseBtn.onClick.AddListener(() => { _run = false; });
+        StartBtn.onClick.AddListener(() =>
+        {
+            SetRun(!_run);
+            PlayerPrefs.SetInt(IntervalKey, (int) Slider.value);
+        });
         ResetBtn.onClick.AddListener(Reset);
+        LeftBtn.onClick.AddListener(() =>
+        {
+            var curValue = Slider.value;
+            if (curValue % 10 == 0)
+            {
+                curValue -= 10;
+            }
+            else
+            {
+                curValue = (int) (curValue / 10) * 10;
+            }
+
+            Slider.value = Mathf.Clamp(curValue, Slider.minValue, Slider.maxValue);
+        });
+        RightBtn.onClick.AddListener(() =>
+        {
+            var curValue = Slider.value;
+            Slider.value = Mathf.Clamp((int) (curValue / 10 + 1) * 10, Slider.minValue, Slider.maxValue);
+        });
         Slider.onValueChanged.AddListener(value =>
         {
             int seconds = (int) value;
@@ -32,9 +55,22 @@ public class Timer : MonoBehaviour
         });
     }
 
+    private void SetRun(bool value)
+    {
+        _run = value;
+        if (value)
+        {
+            StartTxt.text = "暂 停";
+        }
+        else
+        {
+            StartTxt.text = "开 始";
+        }
+    }
+
     private void Reset()
     {
-        _run = false;
+        SetRun(false);
         _timer = 0;
         RefreshLeftTimeTxt(false);
     }
@@ -42,9 +78,16 @@ public class Timer : MonoBehaviour
     private void Start()
     {
         _timer = 0;
-        _interval = 5;
-        _run = true;
-//        _interval = GetSecond(Slider.value);
+        if (PlayerPrefs.HasKey(IntervalKey))
+        {
+            Slider.value = PlayerPrefs.GetInt(IntervalKey);
+        }
+        else
+        {
+            Slider.value = 30;
+        }
+
+        SetRun(true);
     }
 
     private void Update()
@@ -54,11 +97,15 @@ public class Timer : MonoBehaviour
             _timer += Time.deltaTime;
             if (_timer >= _interval)
             {
-                Messagebox.MessageBox(IntPtr.Zero, "该喝水了！", "亲爱的", 0);
-                _timer -= _interval;
+                SetRun(false);
+                _timer = 0;
+                LeftTimeTxt.text = "亲爱的，该喝水了~";
+                WinTools.ShowForward();
             }
-
-            RefreshLeftTimeTxt(true);
+            else
+            {
+                RefreshLeftTimeTxt(true);
+            }
         }
     }
 
@@ -93,19 +140,13 @@ public class Timer : MonoBehaviour
             _stringBuilder.Append(MinuteStr);
         }
 
-        if (showSecond)
+        if (showSecond || second > 0)
         {
             _stringBuilder.Append(second);
             _stringBuilder.Append(SecondStr);
         }
 
         return _stringBuilder.ToString();
-    }
-
-    private class Messagebox
-    {
-        [DllImport("User32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
-        public static extern int MessageBox(IntPtr handle, String message, String title, int type);
     }
 
     private int GetSecond(float value)

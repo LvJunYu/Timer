@@ -14,167 +14,57 @@
       <file leaf-file-name="Timer.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Assets/Scirpts/Timer.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="55" column="13" lean-forward="false" selection-start-line="55" selection-start-column="13" selection-end-line="55" selection-end-column="13" />
+            <state relative-caret-position="264">
+              <caret line="72" column="14" lean-forward="false" selection-start-line="72" selection-start-column="14" selection-end-line="72" selection-end-column="14" />
               <folding>
-                <marker date="1522075681600" expanded="true" signature="6:111" ph="..." />
-                <marker date="1522075681600" expanded="true" signature="147:2814" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="578:937" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="805:929" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="963:1052" ph="{...}" />
-                <marker date="1522075681600" expanded="true" signature="1078:1201" ph="{...}" />
-                <marker date="1522075681600" expanded="true" signature="1228:1528" ph="{...}" />
-                <marker date="1522075681600" expanded="true" signature="1252:1522" ph="{...}" />
-                <marker date="1522075681600" expanded="true" signature="1337:1473" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="1582:1667" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="1732:2474" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="2017:2148" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="2182:2291" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="2316:2425" ph="{...}" />
-                <marker date="1522075681600" expanded="true" signature="2504:2725" ph="{...}" />
-                <marker date="1522075681600" expanded="false" signature="2765:2812" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="6:59" ph="..." />
+                <marker date="1522203079672" expanded="true" signature="95:3681" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="630:1619" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="679:791" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="880:1222" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="967:1027" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="1044:1127" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="1267:1434" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="1487:1611" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="1656:1832" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="1703:1758" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="1771:1826" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="1858:1948" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="1974:2218" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2045:2125" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2138:2189" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2245:2632" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2269:2626" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2354:2529" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2546:2616" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2686:2771" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="2836:3592" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="3121:3252" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="3286:3395" ph="{...}" />
+                <marker date="1522203079672" expanded="false" signature="3434:3543" ph="{...}" />
+                <marker date="1522203079672" expanded="true" signature="3632:3679" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IntPtr.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C3A864EC-FDF5-4740-925C-2063055CA2C1/bf/21e4f5e1/IntPtr.cs">
+      <file leaf-file-name="WinTools.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/Scirpts/WinTools.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="17" column="19" lean-forward="false" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameATools.cs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../Work/GameAClient/GameAClient/Assets/App/Scripts/GameATools.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="82">
-              <caret line="469" column="0" lean-forward="false" selection-start-line="469" selection-start-column="0" selection-end-line="504" selection-end-column="0" />
+            <state relative-caret-position="202">
+              <caret line="59" column="26" lean-forward="false" selection-start-line="59" selection-start-column="26" selection-end-line="59" selection-end-column="26" />
               <folding>
-                <marker date="1520142327753" expanded="true" signature="6:67" ph="..." />
-                <marker date="1520142327753" expanded="true" signature="84:22823" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="91:142" ph="/// 提供了一些常用的工具 ... " />
-                <marker date="1520142327753" expanded="true" signature="177:22821" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="192:265" ph="/// 刷新本地脏数据（金币、钻石、体力）的最小间隔时间 ... " />
-                <marker date="1520142327753" expanded="false" signature="445:2948" ph="check gde" />
-                <marker date="1520142327753" expanded="true" signature="472:679" ph="/// 检查是否有num金币，没有则弹出购买金币对话框 ... " />
-                <marker date="1520142327753" expanded="true" signature="746:1231" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="838:895" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="912:1221" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="955:1176" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="994:1088" ph="/* todo buy gold ui ... */" />
-                <marker date="1520142327753" expanded="true" signature="1241:1448" ph="/// 检查是否有num钻石，没有则弹出购买钻石对话框 ... " />
-                <marker date="1520142327753" expanded="true" signature="1518:2002" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="1609:1666" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="1683:1992" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="1726:1947" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="1765:1859" ph="/* todo buy gold ui ... */" />
-                <marker date="1520142327753" expanded="true" signature="2012:2308" ph="/// 检查是否有num体力，没有则弹出购买体力对话框 ... " />
-                <marker date="1520142327753" expanded="true" signature="2377:2928" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="2555:2844" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="2598:2799" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="2861:2918" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="2958:6090" ph="use gde" />
-                <marker date="1520142327753" expanded="true" signature="3025:4080" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="3120:3178" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="3195:4070" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="3508:3867" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="3725:3826" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="4130:5073" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="4221:4279" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="4296:5063" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="4599:4952" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="4810:4911" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="5126:6070" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="5216:5274" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="5291:6060" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="5593:5946" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="5804:5905" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="6100:10610" ph="add gde" />
-                <marker date="1520142327753" expanded="true" signature="6167:6941" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="6460:6779" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="6657:6746" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="6991:7661" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="7274:7587" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="7465:7554" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="7714:8386" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="7996:8309" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="8187:8276" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="8441:9857" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="8867:8975" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="9171:9792" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="9334:9539" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="9381:9517" ph="/* todo error handle ... */" />
-                <marker date="1520142327753" expanded="true" signature="9568:9759" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="9615:9737" ph="/* todo error handle ... */" />
-                <marker date="1520142327753" expanded="true" signature="9913:10590" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="10198:10511" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="10389:10478" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="10620:12923" ph="set gde" />
-                <marker date="1520142327753" expanded="true" signature="10687:11460" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="10979:11298" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="11176:11265" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="11510:12179" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="11792:12105" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="11983:12072" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="12232:12903" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="12513:12826" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="12704:12793" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="12933:13119" ph="/// 输出年月日 不显示后面的时分秒 ... " />
-                <marker date="1520142327753" expanded="false" signature="13218:15440" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="13899:14518" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14356:14419" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14440:14504" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14592:14719" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14736:14863" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14924:15147" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="14984:15133" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="15178:15430" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="15495:16056" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="15678:15740" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="15741:15938" ph="/* else if (days &lt; 2.0f) ... */" />
-                <marker date="1520142327753" expanded="true" signature="15955:16046" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="16066:16254" ph="/// 输入秒 输出时分秒 时为0则不显示时 时分为0则不显示时分 ... " />
-                <marker date="1520142327753" expanded="false" signature="16325:17362" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="16787:17352" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="16867:17020" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="17062:17219" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="17418:17489" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="17553:17640" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="17731:18003" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="17773:17844" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="18062:18360" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="18102:18169" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="18203:18290" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="18370:18510" ph="/// 将整数转为小写的中文数字 ... " />
-                <marker date="1520142327753" expanded="false" signature="18575:20152" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19043:20010" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19148:19227" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19272:19351" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19397:19476" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19541:19713" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="19734:19865" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="20225:20449" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="20514:20772" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="20782:20929" ph="///判断string的长度 中文站两个字符 ... " />
-                <marker date="1520142327753" expanded="false" signature="20980:21373" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21067:21335" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21162:21231" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21252:21321" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="21383:21521" ph="///截取规定长度的字符串 ... " />
-                <marker date="1520142327753" expanded="false" signature="21593:22213" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21712:22175" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21807:21876" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="21897:21966" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="22008:22077" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="22098:22161" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="22279:22466" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="22336:22392" ph="{...}" />
-                <marker date="1520142327753" expanded="false" signature="22555:22815" ph="{...}" />
-                <marker date="1520142327753" expanded="true" signature="22643:22721" ph="{...}" />
+                <marker date="1522202244888" expanded="true" signature="6:77" ph="..." />
+                <marker date="1522202244888" expanded="true" signature="100:2082" ph="{...}" />
+                <marker date="1522202244888" expanded="false" signature="250:471" ph="{...}" />
+                <marker date="1522202244888" expanded="false" signature="1141:1354" ph="{...}" />
+                <marker date="1522202244888" expanded="false" signature="1181:1325" ph="{...}" />
+                <marker date="1522202244888" expanded="false" signature="1421:1797" ph="{...}" />
+                <marker date="1522202244888" expanded="false" signature="1495:1769" ph="{...}" />
+                <marker date="1522202244888" expanded="true" signature="1609:1759" ph="{...}" />
+                <marker date="1522202244888" expanded="true" signature="1835:2080" ph="{...}" />
+                <marker date="1522202244888" expanded="true" signature="1877:2074" ph="{...}" />
+                <marker date="1522202244888" expanded="true" signature="1925:2025" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -183,15 +73,15 @@
     </leaf>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C3A864EC-FDF5-4740-925C-2063055CA2C1/bf/21e4f5e1/IntPtr.cs" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/../../Work/GameAClient/GameAClient/Assets/App/Scripts/GameATools.cs" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scirpts/WinTools.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scirpts/Timer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1765B23F-EA18-4E6B-A4DE-19B82EDACE98/9e/5ee14593/EventSystem.cs" root0="SKIP_INSPECTION" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49178A81-D62F-496F-9AB8-97C772281FBF/92/b2fe5796/Component.cs" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Assets/Scirpts/AudioManager.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scirpts/WinTools.cs" />
         <option value="$PROJECT_DIR$/Assets/Scirpts/Timer.cs" />
       </list>
     </option>
@@ -203,13 +93,13 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-9" />
-    <option name="y" value="-9" />
-    <option name="width" value="1938" />
-    <option name="height" value="1098" />
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="SolutionExplorer" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -222,22 +112,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="SolutionExplorer">
-        <subPane>
-          <expand>
-            <path>
-              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
-              <item name="Timer (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-        <option name="show-file-system" value="false" />
-        <option name="show-all-items" value="false" />
-      </pane>
-      <pane id="Scratches" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -255,7 +130,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" pid="6524" />
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" />
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -271,11 +146,14 @@
       <option name="presentableId" value="Default" />
       <updated>1522069721379</updated>
       <workItem from="1522069748718" duration="5635000" />
+      <workItem from="1522116872699" duration="94000" />
+      <workItem from="1522116983817" duration="2048000" />
+      <workItem from="1522202052520" duration="1263000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5635000" />
+    <option name="totallyTimeSpent" value="9040000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -287,27 +165,28 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1098" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25375536" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25373134" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39935413" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39891306" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -319,187 +198,63 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="5" />
+      <option name="time" value="6" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Assets/Scirpts/AudioManager.cs">
+    <entry file="file://$PROJECT_DIR$/Assets/Scirpts/Timer.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="6" column="39" lean-forward="false" selection-start-line="6" selection-start-column="31" selection-end-line="6" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1765B23F-EA18-4E6B-A4DE-19B82EDACE98/9e/5ee14593/EventSystem.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="287" column="6" lean-forward="false" selection-start-line="287" selection-start-column="6" selection-end-line="287" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Work/GameAClient/GameAClient/Assets/App/Scripts/GameATools.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="82">
-          <caret line="469" column="0" lean-forward="false" selection-start-line="469" selection-start-column="0" selection-end-line="504" selection-end-column="0" />
-          <folding>
-            <marker date="1520142327753" expanded="true" signature="6:67" ph="..." />
-            <marker date="1520142327753" expanded="true" signature="84:22823" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="91:142" ph="/// 提供了一些常用的工具 ... " />
-            <marker date="1520142327753" expanded="true" signature="177:22821" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="192:265" ph="/// 刷新本地脏数据（金币、钻石、体力）的最小间隔时间 ... " />
-            <marker date="1520142327753" expanded="false" signature="445:2948" ph="check gde" />
-            <marker date="1520142327753" expanded="true" signature="472:679" ph="/// 检查是否有num金币，没有则弹出购买金币对话框 ... " />
-            <marker date="1520142327753" expanded="true" signature="746:1231" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="838:895" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="912:1221" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="955:1176" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="994:1088" ph="/* todo buy gold ui ... */" />
-            <marker date="1520142327753" expanded="true" signature="1241:1448" ph="/// 检查是否有num钻石，没有则弹出购买钻石对话框 ... " />
-            <marker date="1520142327753" expanded="true" signature="1518:2002" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="1609:1666" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="1683:1992" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="1726:1947" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="1765:1859" ph="/* todo buy gold ui ... */" />
-            <marker date="1520142327753" expanded="true" signature="2012:2308" ph="/// 检查是否有num体力，没有则弹出购买体力对话框 ... " />
-            <marker date="1520142327753" expanded="true" signature="2377:2928" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="2555:2844" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="2598:2799" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="2861:2918" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="2958:6090" ph="use gde" />
-            <marker date="1520142327753" expanded="true" signature="3025:4080" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="3120:3178" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="3195:4070" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="3508:3867" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="3725:3826" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="4130:5073" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="4221:4279" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="4296:5063" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="4599:4952" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="4810:4911" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="5126:6070" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="5216:5274" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="5291:6060" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="5593:5946" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="5804:5905" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="6100:10610" ph="add gde" />
-            <marker date="1520142327753" expanded="true" signature="6167:6941" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="6460:6779" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="6657:6746" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="6991:7661" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="7274:7587" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="7465:7554" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="7714:8386" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="7996:8309" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="8187:8276" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="8441:9857" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="8867:8975" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="9171:9792" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="9334:9539" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="9381:9517" ph="/* todo error handle ... */" />
-            <marker date="1520142327753" expanded="true" signature="9568:9759" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="9615:9737" ph="/* todo error handle ... */" />
-            <marker date="1520142327753" expanded="true" signature="9913:10590" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="10198:10511" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="10389:10478" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="10620:12923" ph="set gde" />
-            <marker date="1520142327753" expanded="true" signature="10687:11460" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="10979:11298" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="11176:11265" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="11510:12179" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="11792:12105" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="11983:12072" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="12232:12903" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="12513:12826" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="12704:12793" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="12933:13119" ph="/// 输出年月日 不显示后面的时分秒 ... " />
-            <marker date="1520142327753" expanded="false" signature="13218:15440" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="13899:14518" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14356:14419" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14440:14504" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14592:14719" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14736:14863" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14924:15147" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="14984:15133" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="15178:15430" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="15495:16056" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="15678:15740" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="15741:15938" ph="/* else if (days &lt; 2.0f) ... */" />
-            <marker date="1520142327753" expanded="true" signature="15955:16046" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="16066:16254" ph="/// 输入秒 输出时分秒 时为0则不显示时 时分为0则不显示时分 ... " />
-            <marker date="1520142327753" expanded="false" signature="16325:17362" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="16787:17352" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="16867:17020" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="17062:17219" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="17418:17489" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="17553:17640" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="17731:18003" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="17773:17844" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="18062:18360" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="18102:18169" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="18203:18290" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="18370:18510" ph="/// 将整数转为小写的中文数字 ... " />
-            <marker date="1520142327753" expanded="false" signature="18575:20152" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19043:20010" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19148:19227" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19272:19351" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19397:19476" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19541:19713" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="19734:19865" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="20225:20449" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="20514:20772" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="20782:20929" ph="///判断string的长度 中文站两个字符 ... " />
-            <marker date="1520142327753" expanded="false" signature="20980:21373" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21067:21335" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21162:21231" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21252:21321" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="21383:21521" ph="///截取规定长度的字符串 ... " />
-            <marker date="1520142327753" expanded="false" signature="21593:22213" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21712:22175" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21807:21876" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="21897:21966" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="22008:22077" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="22098:22161" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="22279:22466" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="22336:22392" ph="{...}" />
-            <marker date="1520142327753" expanded="false" signature="22555:22815" ph="{...}" />
-            <marker date="1520142327753" expanded="true" signature="22643:22721" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C3A864EC-FDF5-4740-925C-2063055CA2C1/bf/21e4f5e1/IntPtr.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="17" column="19" lean-forward="false" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scirpts/Timer.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="55" column="13" lean-forward="false" selection-start-line="55" selection-start-column="13" selection-end-line="55" selection-end-column="13" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scirpts/AudioManager.cs" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1765B23F-EA18-4E6B-A4DE-19B82EDACE98/9e/5ee14593/EventSystem.cs" />
+    <entry file="file://$PROJECT_DIR$/../../Work/GameAClient/GameAClient/Assets/App/Scripts/GameATools.cs" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C3A864EC-FDF5-4740-925C-2063055CA2C1/bf/21e4f5e1/IntPtr.cs" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49178A81-D62F-496F-9AB8-97C772281FBF/92/b2fe5796/Component.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="285" column="23" lean-forward="false" selection-start-line="285" selection-start-column="23" selection-end-line="285" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scirpts/WinTools.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="59" column="26" lean-forward="false" selection-start-line="59" selection-start-column="26" selection-end-line="59" selection-end-column="26" />
           <folding>
-            <marker date="1522075681600" expanded="true" signature="6:111" ph="..." />
-            <marker date="1522075681600" expanded="true" signature="147:2814" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="578:937" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="805:929" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="963:1052" ph="{...}" />
-            <marker date="1522075681600" expanded="true" signature="1078:1201" ph="{...}" />
-            <marker date="1522075681600" expanded="true" signature="1228:1528" ph="{...}" />
-            <marker date="1522075681600" expanded="true" signature="1252:1522" ph="{...}" />
-            <marker date="1522075681600" expanded="true" signature="1337:1473" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="1582:1667" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="1732:2474" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="2017:2148" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="2182:2291" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="2316:2425" ph="{...}" />
-            <marker date="1522075681600" expanded="true" signature="2504:2725" ph="{...}" />
-            <marker date="1522075681600" expanded="false" signature="2765:2812" ph="{...}" />
+            <marker date="1522202244888" expanded="true" signature="6:77" ph="..." />
+            <marker date="1522202244888" expanded="true" signature="100:2082" ph="{...}" />
+            <marker date="1522202244888" expanded="false" signature="250:471" ph="{...}" />
+            <marker date="1522202244888" expanded="false" signature="1141:1354" ph="{...}" />
+            <marker date="1522202244888" expanded="false" signature="1181:1325" ph="{...}" />
+            <marker date="1522202244888" expanded="false" signature="1421:1797" ph="{...}" />
+            <marker date="1522202244888" expanded="false" signature="1495:1769" ph="{...}" />
+            <marker date="1522202244888" expanded="true" signature="1609:1759" ph="{...}" />
+            <marker date="1522202244888" expanded="true" signature="1835:2080" ph="{...}" />
+            <marker date="1522202244888" expanded="true" signature="1877:2074" ph="{...}" />
+            <marker date="1522202244888" expanded="true" signature="1925:2025" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scirpts/Timer.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="72" column="14" lean-forward="false" selection-start-line="72" selection-start-column="14" selection-end-line="72" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
