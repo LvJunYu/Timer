@@ -265,11 +265,6 @@ namespace GameA.Game
             get { return _colliderGrid; }
         }
 
-        public virtual Grid2D LastColliderGrid
-        {
-            get { return _lastColliderGrid; }
-        }
-
         public bool IsAlive
         {
             get { return _isAlive; }

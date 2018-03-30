@@ -54,8 +54,15 @@ int DecompressStreamBuf::execute(bool a_final)
 
             l_ret = inflate(&c_strm, Z_NO_FLUSH);
 
-            if (l_ret < 0 || l_ret == Z_NEED_DICT)
+			switch(l_ret) {
+			case Z_NEED_DICT:
+				l_ret = Z_DATA_ERROR;
+			case Z_DATA_ERROR:
+			case Z_MEM_ERROR:
+			case Z_STREAM_ERROR:
                 throw StreamException("Decompress: " + zerr(l_ret));
+			}
+
 
             size_t l_outsize = c_bufsize - c_strm.avail_out;
 

@@ -25,6 +25,8 @@ namespace GameA
         private List<UIParticleItem> _uiParticleItemlist = new List<UIParticleItem>();
 
         private List<RenderCamera> _camerasList = new List<RenderCamera>();
+
+        private bool _firstOpen = true;
 //        private int _coutnum = 0;
 
         protected override void InitGroupId()
@@ -59,6 +61,7 @@ namespace GameA
                     RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation[i].transform, 200,
                         360);
                 _cachedView.PlayGroup[i].texture = _renderCamera.Texture;
+//                _cachedView.PlayerAvatarAnimation[i].state.SetAnimation(0, "Idle1", true);
             }
         }
 
@@ -174,6 +177,7 @@ namespace GameA
                 RenderCameraManager.Instance.FreeCamera(_camerasList[i]);
             }
 
+            _firstOpen = false;
             base.OnClose();
         }
 
@@ -210,7 +214,7 @@ namespace GameA
 ////                            }
 ////                        }
 ////                    }
-////
+////f
 ////                    _coutnum = 0;
 ////                }
 //            }
@@ -218,7 +222,14 @@ namespace GameA
             {
                 if (_cachedView.PlayerAvatarAnimation[i] != null)
                 {
-                    _cachedView.PlayerAvatarAnimation[i].Update(Time.deltaTime);
+                    if (_firstOpen)
+                    {
+//                        _cachedView.PlayerAvatarAnimation[i].Update(ConstDefineGM2D.FixedDeltaTime * 0.5f);
+                    }
+                    else
+                    {
+                        _cachedView.PlayerAvatarAnimation[i].Update(ConstDefineGM2D.FixedDeltaTime);
+                    }
                 }
             }
         }
@@ -267,6 +278,70 @@ namespace GameA
 
         private void SetPlayerAniImage()
         {
+            SetInitializedAni();
+            int mvpindex = SetPalyerImage();
+            _cachedView.PlayersLayoutGroup.SetLayoutHorizontal();
+            _cachedView.PlayersLayoutGroup.CalculateLayoutInputHorizontal();
+            SetMoveLightTweenPos(mvpindex);
+            Sequence moveLight = DOTween.Sequence();
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < _targetPosList.Count; j++)
+                {
+                    moveLight.Append(
+                        _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[j].x, 0.1f).SetDelay(0.2f));
+                }
+            }
+
+            Vector2 mvpPos = GetMVPPos(mvpindex);
+            if (mvpPos != Vector2.zero)
+            {
+                moveLight.Append(
+                    _cachedView.MoveLight.rectTransform
+                        .DOLocalMoveX(mvpPos.x, 0.2f).SetDelay(0.2f));
+                for (int i = 0; i < 2; i++)
+                {
+                    moveLight.Append(
+                        _cachedView.MoveLight.rectTransform
+                            .DOLocalMoveX(mvpPos.x, 0.2f)
+                            .SetDelay(1.5f));
+                }
+            }
+
+
+            moveLight.OnComplete(() =>
+            {
+                if (_isCooperation)
+                {
+                    _cachedView.MoveLight.SetActiveEx(false);
+                    _cachedView.AllLightImage.SetActiveEx(true);
+                    RefreshDataPanels();
+                }
+                else
+                {
+                    _cachedView.LeftLight.SetActiveEx(true);
+                    _cachedView.RightLight.SetActiveEx(true);
+                    _cachedView.MoveLight.SetActiveEx(false);
+                    _cachedView.AllLightImage.SetActiveEx(false);
+                    _cachedView.MvpImage.SetActiveEx(true);
+                    _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
+                    _cachedView.PlayersLayoutGroup.enabled = false;
+                    if (mvpindex == -1)
+                    {
+                        mvpindex = 0;
+                    }
+
+                    _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
+                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
+                            .transform
+                            .position) + Vector3.up * 240.0f, 1.0f).OnComplete(RefreshDataPanels).PlayForward();
+                }
+            });
+            moveLight.PlayForward();
+        }
+
+        private void SetInitializedAni()
+        {
             _cachedView.AniPanel.SetActiveEx(true);
             _cachedView.PlayersContentSizeFitter.SetEnableEx(true);
             _cachedView.PlayersLayoutGroup.SetEnableEx(true);
@@ -275,6 +350,10 @@ namespace GameA
             _cachedView.RightLight.SetActiveEx(false);
             _cachedView.AllLightImage.SetActiveEx(false);
             _cachedView.MvpImage.SetActiveEx(false);
+        }
+
+        private int SetPalyerImage()
+        {
             int mvpindex = -1;
             for (int i = 0; i < _cachedView.PlayGroup.Length; i++)
             {
@@ -303,11 +382,10 @@ namespace GameA
 //                    RenderCamera camera =
 //                        RenderCameraManager.Instance.GetCamera(2.4f, player.View.Trans, 300,
 //                            540);
-//                    _camerasList.Add(camera);
 //                    camera.SetOffsetPos(player.View.Trans.localPosition);
+//                    _camerasList.Add(camera);
 //                    _cachedView.PlayGroup[i].texture = camera.Texture;
                     _cachedView.PlayNameGroup[i].text = _allPlayerDatas[i].Name;
-
                     if (_allPlayerDatas[i].IsMvp)
                     {
                         mvpindex = i;
@@ -315,52 +393,7 @@ namespace GameA
                 }
             }
 
-            _cachedView.PlayersLayoutGroup.SetLayoutHorizontal();
-            _cachedView.PlayersLayoutGroup.CalculateLayoutInputHorizontal();
-            SetMoveLightTweenPos(mvpindex);
-            Sequence moveLight = DOTween.Sequence();
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < _targetPosList.Count; j++)
-                {
-                    moveLight.Append(
-                        _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[j].x, 0.1f).SetDelay(0.2f));
-                }
-            }
-
-            moveLight.Append(
-                _cachedView.MoveLight.rectTransform.DOLocalMoveX(_targetPosList[_targetPosList.Count - 1].x, 0.2f)
-                    .SetDelay(1.5f));
-            moveLight.OnComplete(() =>
-            {
-                if (_isCooperation)
-                {
-                    _cachedView.MoveLight.SetActiveEx(false);
-                    _cachedView.AllLightImage.SetActiveEx(true);
-                    RefreshDataPanels();
-                }
-                else
-                {
-                    _cachedView.LeftLight.SetActiveEx(true);
-                    _cachedView.RightLight.SetActiveEx(true);
-                    _cachedView.MoveLight.SetActiveEx(false);
-                    _cachedView.AllLightImage.SetActiveEx(false);
-                    _cachedView.MvpImage.SetActiveEx(true);
-                    _cachedView.PlayersContentSizeFitter.SetEnableEx(false);
-                    _cachedView.PlayersLayoutGroup.enabled = false;
-
-                    if (mvpindex == -1)
-                    {
-                        mvpindex = 0;
-                    }
-
-                    _cachedView.PlayGroup[mvpindex].rectTransform.DOLocalMove(
-                        _cachedView.PlayersLayoutGroup.transform.InverseTransformPoint(_cachedView.MvpImage
-                            .transform
-                            .position) + Vector3.up * 240.0f, 1.0f).OnComplete(RefreshDataPanels).PlayForward();
-                }
-            });
-            moveLight.PlayForward();
+            return mvpindex;
         }
 
         private void SetMoveLightTweenPos(int mvpindex)
@@ -380,17 +413,22 @@ namespace GameA
                     _targetPosList.Add(targetPos);
                 }
             }
+        }
 
+        private Vector2 GetMVPPos(int mvpindex)
+        {
+            Vector2 targetPos = Vector2.zero;
             if (!_isCooperation && mvpindex >= 0 && mvpindex < _cachedView.PlayGroup.Length)
             {
-                Vector2 targetPos = _cachedView.MoveLight.rectTransform.localPosition;
+                targetPos = _cachedView.MoveLight.rectTransform.localPosition;
                 targetPos.x =
                     _moveLightParent
                         .InverseTransformPoint(
                             _palyergroupParent.transform.TransformPoint(_cachedView.PlayGroup[mvpindex].transform
                                 .localPosition)).x;
-                _targetPosList.Add(targetPos);
             }
+
+            return targetPos;
         }
     }
 }

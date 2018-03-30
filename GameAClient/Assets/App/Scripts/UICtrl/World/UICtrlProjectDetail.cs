@@ -261,10 +261,10 @@ namespace GameA
 
         public bool CheckPlayed(string content)
         {
-            if (_isMulti)
-            {
-                return true;
-            }
+//            if (_isMulti)
+//            {
+//                return true;
+//            }
 
             if (_project.ProjectUserData.PlayCount == 0)
             {

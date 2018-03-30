@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
-    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>, ICheckOverlay
+    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
     {
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorkShopProjectBase _curMenuCtrl;
@@ -126,6 +126,7 @@ namespace GameA
 
         private void OnPublishedProjectChanged(long projectId)
         {
+            SelfRecommendDirty = true;
             if (_isOpen && _curMenu == EMenu.PublishedProjects)
             {
                 _curMenuCtrl.RequestData();
@@ -307,7 +308,7 @@ namespace GameA
             up.OnUmProjectDragEnd(oldIndex, newIndex);
         }
 
-        public UPCtrlWorkShopSelfRecommen GetuUpCtrlWorkShopSelfRecommen()
+        public UPCtrlWorkShopSelfRecommen GetUpCtrlWorkShopSelfRecommen()
         {
             return _menuCtrlArray[(int) EMenu.SelfRecommen] as UPCtrlWorkShopSelfRecommen;
         }

@@ -221,21 +221,27 @@ namespace GameA.Game
                     //如果远离
                     if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
                     {
-                        Speed = IntVec2.zero;
-                        _timerMagic = 24;
+                        StopOneFrame();
                     }
                     else if (unit.ColliderGrid.YMin == _colliderGrid.YMax + 1)
                     {
-                        int y = SpeedY;
-                        if (!unit.CheckUpValid(ref y, ref unit))
+                        //如果对方正在下降
+                        if (unit.SpeedY < 0)
                         {
-                            return false;
+                            StopOneFrame();
                         }
-
-                        if (y == 0)
+                        else
                         {
-                            Speed = IntVec2.zero;
-                            _timerMagic = 24;
+                            int y = SpeedY;
+                            if (!unit.CheckUpValid(ref y, ref unit))
+                            {
+                                return false;
+                            }
+
+                            if (y == 0)
+                            {
+                                StopOneFrame();
+                            }
                         }
                     }
 
@@ -244,6 +250,12 @@ namespace GameA.Game
             }
 
             return false;
+        }
+
+        private void StopOneFrame()
+        {
+            Speed = IntVec2.zero;
+            _timerMagic = 24;
         }
 
         protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
@@ -297,7 +309,6 @@ namespace GameA.Game
 
         protected virtual void UpdateCollider(IntVec2 min)
         {
-            _lastColliderGrid = _colliderGrid;
             if (_colliderPos.Equals(min))
             {
                 return;
@@ -309,6 +320,7 @@ namespace GameA.Game
             {
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.CurScene.UpdateDynamicNode(_dynamicCollider);
+                _lastColliderGrid = _colliderGrid;
             }
         }
 

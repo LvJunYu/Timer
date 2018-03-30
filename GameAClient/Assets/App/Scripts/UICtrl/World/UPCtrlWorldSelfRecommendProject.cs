@@ -18,7 +18,7 @@ namespace GameA
             }
 
             _isRequesting = true;
-            _data.Request(startInx, Mask, _pageSize, () =>
+            _data.Request(startInx, _pageSize, Mask, () =>
             {
                 _projectList = _data.AllList;
                 if (_isOpen)

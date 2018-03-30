@@ -128,12 +128,17 @@ namespace GameA
             };
         }
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            LogHelper.LogLevel = _logLevel;
+        }
+
         protected override void OnStart()
         {
             Instance = this;
             Loom.Init();
             ScreenResolutionManager.Instance.Init();
-            LogHelper.LogLevel = _logLevel;
             if (_clearCache)
             {
                 ClearCache();

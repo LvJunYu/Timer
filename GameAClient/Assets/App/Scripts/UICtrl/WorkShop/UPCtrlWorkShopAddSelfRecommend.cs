@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -9,7 +8,6 @@ namespace GameA
     public class UPCtrlWorkShopAddSelfRecommend : UPCtrlBase<UICtrlWorkShop, UIViewWorkShop>,
         IOnChangeHandler<long>
     {
-        protected bool _hasRequested;
         protected const int _pageSize = 21;
         protected List<Project> _projectList;
         protected EResScenary _resScenary;
@@ -43,6 +41,7 @@ namespace GameA
             _lastSoltList.Clear();
             _lastSoltNum = 0;
             _addUserSelfRecommendProjects.Clear();
+            _haveAddProject.Clear();
             for (int i = 0; i < LocalUser.Instance.UserSelfRecommendProjectStatistic.TotalCount; i++)
             {
                 if (LocalUser.Instance.UserSelfRecommendProjectList[i].ProjectData == null)
@@ -83,7 +82,7 @@ namespace GameA
 
         public virtual void RefreshView()
         {
-            _cachedView.EmptyObj.SetActiveEx(_projectList == null || _projectList.Count == 0);
+            _cachedView.EmptyObj.SetActiveEx(false);
             _contentList.Clear();
             _dict.Clear();
             if (_projectList == null)
@@ -193,7 +192,7 @@ namespace GameA
         {
             bool canadd = false;
 
-            if (_addUserSelfRecommendProjects.Count <= _lastSoltNum)
+            if (_addUserSelfRecommendProjects.Count < _lastSoltNum)
             {
                 _addUserSelfRecommendProjects.Add(project);
                 canadd = true;
@@ -210,29 +209,32 @@ namespace GameA
 
         private void OnConfirmBtn()
         {
-            _mainCtrl.GetuUpCtrlWorkShopSelfRecommen().AddMsgOprate();
-            List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
-            _addUserSelfRecommendProjects.Sort((a, b) => { return (int) (a.LastDirtyTime - b.LastDirtyTime); });
-
-            for (int i = 0; i < _addUserSelfRecommendProjects.Count; i++)
+            if (_addUserSelfRecommendProjects.Count > 0)
             {
-                Msg_SelfRecommendProjectOperateItem selfRecommendProject = new Msg_SelfRecommendProjectOperateItem();
-                selfRecommendProject.ProjectMainId = _addUserSelfRecommendProjects[i].MainId;
-                selfRecommendProject.SlotInx = _lastSoltList[i];
-                _list.Add(selfRecommendProject);
-            }
+                _mainCtrl.GetUpCtrlWorkShopSelfRecommen().AddMsgOprate();
+                List<Msg_SelfRecommendProjectOperateItem> _list = new List<Msg_SelfRecommendProjectOperateItem>();
+                _addUserSelfRecommendProjects.Sort((a, b) => { return (int) (a.LastDirtyTime - b.LastDirtyTime); });
 
-            RemoteCommands.AddSelfRecommendProject(_mainCtrl.SortItemList,
-                _list,
-                ret =>
+                for (int i = 0; i < _addUserSelfRecommendProjects.Count; i++)
                 {
-                    _mainCtrl.SortItemList.Clear();
-                    _mainCtrl.SelfRecommendDirty = true;
-                    _mainCtrl.RefreshSelfRecommend();
-                    SocialGUIManager.ShowPopupDialog("添加成功！");
-                },
-                code => { SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！"); });
+                    Msg_SelfRecommendProjectOperateItem
+                        selfRecommendProject = new Msg_SelfRecommendProjectOperateItem();
+                    selfRecommendProject.ProjectMainId = _addUserSelfRecommendProjects[i].MainId;
+                    selfRecommendProject.SlotInx = _lastSoltList[i];
+                    _list.Add(selfRecommendProject);
+                }
 
+                RemoteCommands.AddSelfRecommendProject(_mainCtrl.SortItemList,
+                    _list,
+                    ret =>
+                    {
+                        _mainCtrl.SortItemList.Clear();
+                        _mainCtrl.SelfRecommendDirty = true;
+                        _mainCtrl.RefreshSelfRecommend();
+                        SocialGUIManager.ShowPopupDialog("添加成功！");
+                    },
+                    code => { SocialGUIManager.ShowPopupDialog("服务器繁忙，请稍后再试！"); });
+            }
 
             Close();
         }

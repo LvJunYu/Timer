@@ -572,6 +572,10 @@ namespace GameA.Game
             {
                 unitExtra = new UnitExtraDynamic();
             }
+            else
+            {
+                unitExtra.Clear();
+            }
 
             unitExtra.MoveDirection = (EMoveDirection) data.MoveDirection;
             unitExtra.Active = (byte) data.Active;

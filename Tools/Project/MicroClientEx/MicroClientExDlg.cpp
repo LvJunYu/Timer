@@ -156,7 +156,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		/*
 		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
 		*/
-		::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
+		//::MessageBox(NULL, "启动命令行为空时，不符合要求，请将程序终止!！", "【请开发者关注】", MB_OK);
 		Quit();
 	}
 	m_strCmdline = lpCmdLine;
@@ -214,7 +214,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 		/*
 		命令行格式，确认不是符合格式要求的，请直接退出游戏，MessageBox只为Demo演示要注意，别真的一直弹哈
 		*/
-		::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
+		//::MessageBox(NULL, "命令行格式和数据不符合要求（参见文档说明），请将程序终止!！", "【请开发者关注】", MB_OK);
 		Quit();
 	}
 	//--不符合要求，缺少数据，则直接退出主程序
@@ -277,7 +277,7 @@ BOOL CMicroClientExDlg::OnInitDialog()
 
 	if (starturl == "")
 	{
-		starturl = GetConfigValue(CString(CONFIG), cfUrl);
+		//starturl = GetConfigValue(CString(CONFIG), cfUrl);
 	}
 	else
 	{
@@ -1583,7 +1583,7 @@ void CMicroClientExDlg::ConncetPipe()
 		连接失败，请直接退出游戏，未连接上时，大厅会认为游戏未启动，所以请直接退出
 		MessageBox只是为了Demo演示，别真弹出来，悄悄退出就好啦，退出功能请开发商根据自己的情况实现
 		*/
-		::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
+		//::MessageBox(NULL, "管道连接失败，程序退出!", "退出提示", MB_OK);
 		Quit();
 	}
 }

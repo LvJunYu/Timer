@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -89,11 +88,19 @@ namespace GameA.Game
         private bool CheckDoorSpace()
         {
             var table = TableManager.Instance.GetUnit(_monsterId);
-            var grid = table.GetColliderGrid(_curPos.x, _curPos.y, 0, Vector2.one);
-            var colliderNode = NodeFactory.GetColliderNode(_unitDesc, _tableUnit);
-            SceneNode sceneNode;
-            return !ColliderScene2D.GridCast(grid, out sceneNode, JoyPhysics2D.LayMaskAll, float.MinValue,
-                float.MaxValue, colliderNode);
+            var checkGrid = table.GetColliderGrid(_curPos.x, _curPos.y, 0, Vector2.one);
+            using (var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid))
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    if (units[i].IsAlive && units[i].Id!= UnitDefine.MonsterCaveId)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public override UnitExtraDynamic UpdateExtraData(UnitExtraDynamic unitExtraDynamic = null)

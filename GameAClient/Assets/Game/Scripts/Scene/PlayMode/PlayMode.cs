@@ -383,7 +383,7 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            CheckAllPlayerWin();
+            CheckPlayerWin();
 
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
@@ -392,23 +392,33 @@ namespace GameA.Game
             }
         }
 
-        private void CheckAllPlayerWin()
+        private void CheckPlayerWin()
         {
-            var playerList = PlayerManager.Instance.PlayerList;
-            for (int i = 0; i < playerList.Count; i++)
+            if (GM2DGame.Instance.GameMode.IsMulti)
             {
-                if (playerList[i] != null)
+                var playerList = PlayerManager.Instance.PlayerList;
+                for (int i = 0; i < playerList.Count; i++)
                 {
-                    if (playerList[i].Animation != null)
+                    if (playerList[i] != null)
                     {
-                        playerList[i].Animation.Reset();
-                        playerList[i].ResetGun();
-                    }
+                        if (playerList[i].Animation != null)
+                        {
+                            playerList[i].Animation.Reset();
+                            playerList[i].ResetGun();
+                        }
 
-                    if (TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
-                    {
-                        playerList[i].OnSucceed();
+                        if (TeamManager.Instance.CheckTeamWin(playerList[i].TeamId))
+                        {
+                            playerList[i].OnSucceed();
+                        }
                     }
+                }
+            }
+            else
+            {
+                if (SceneState.GameSucceed)
+                {
+                    PlayerManager.Instance.MainPlayer.OnSucceed();
                 }
             }
         }
@@ -417,7 +427,7 @@ namespace GameA.Game
         {
             _run = false;
             _gameFailedTime = GameRun.Instance.LogicFrameCnt;
-            CheckAllPlayerWin();
+            CheckPlayerWin();
             if (null != _statistic)
             {
                 _statistic.OnGameFinishFailed();

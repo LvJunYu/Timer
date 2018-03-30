@@ -358,7 +358,7 @@ namespace GameA
 
         private void OnPublishedProjectChanged(long projectId)
         {
-            if (_isOpen && _curMenu == EMenu.NewestProject)
+            if (_isOpen && (_curMenu == EMenu.NewestProject || _curMenu == EMenu.SelfRecommend))
             {
                 _curMenuCtrl.RequestData();
             }
