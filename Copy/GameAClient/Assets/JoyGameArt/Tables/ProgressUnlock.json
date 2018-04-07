@@ -1,0 +1,66 @@
+[
+    {
+        "Id": "1",
+        "Name": "加速跑",
+        "Desc": "匠酱学会了<加速跑>",
+        "Icon": "icon_run_240",
+        "Chapter": "1",
+        "Level": "0"
+    },
+    {
+        "Id": "2",
+        "Name": "二段跳",
+        "Desc": "匠酱学会了<二段跳>",
+        "Icon": "icon_jump_240",
+        "Chapter": "1",
+        "Level": "0"
+    },
+    {
+        "Id": "3",
+        "Name": "射击",
+        "Desc": "匠酱学会了<射击>",
+        "Icon": "icon_water-spray_240",
+        "Chapter": "1",
+        "Level": "0"
+    },
+    {
+        "Id": "4",
+        "Name": "抽奖",
+        "Desc": "开启<抽奖>",
+        "Icon": "icon_cat_240",
+        "Chapter": "8",
+        "Level": "9"
+    },
+    {
+        "Id": "5",
+        "Name": "时装",
+        "Desc": "开启<时装>",
+        "Icon": "icon_clothes_240",
+        "Chapter": "8",
+        "Level": "9"
+    },
+    {
+        "Id": "6",
+        "Name": "工坊",
+        "Desc": "开启<工坊>",
+        "Icon": "icon_work_240",
+        "Chapter": "1",
+        "Level": "0"
+    },
+    {
+        "Id": "7",
+        "Name": "匹配改造",
+        "Desc": "开启<匹配改造>",
+        "Icon": "icon_match_240",
+        "Chapter": "1",
+        "Level": "0"
+    },
+    {
+        "Id": "8",
+        "Name": "世界",
+        "Desc": "开启<世界>",
+        "Icon": "icon_world_240",
+        "Chapter": "1",
+        "Level": "0"
+    }
+]

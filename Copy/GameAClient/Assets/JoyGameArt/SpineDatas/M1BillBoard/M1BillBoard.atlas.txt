@@ -1,0 +1,13 @@
+
+M1BillBoard.png
+size: 128,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+DiKkuai/gonggaoban
+  rotate: false
+  xy: 2, 2
+  size: 92, 168
+  orig: 92, 168
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,20 @@
+
+M1RevivePoint.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1RevivePoint/11
+  rotate: false
+  xy: 2, 2
+  size: 62, 59
+  orig: 62, 59
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qidun
+  rotate: false
+  xy: 2, 63
+  size: 168, 177
+  orig: 168, 177
+  offset: 0, 0
+  index: -1

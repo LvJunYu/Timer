@@ -1,0 +1,76 @@
+
+NpcFishMan.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+jianjia
+  rotate: true
+  xy: 231, 129
+  size: 142, 135
+  orig: 142, 135
+  offset: 0, 0
+  index: -1
+shengti
+  rotate: false
+  xy: 2, 607
+  size: 413, 353
+  orig: 413, 353
+  offset: 0, 0
+  index: -1
+tou
+  rotate: false
+  xy: 2, 273
+  size: 316, 332
+  orig: 316, 332
+  offset: 0, 0
+  index: -1
+youfa
+  rotate: false
+  xy: 320, 446
+  size: 81, 159
+  orig: 81, 159
+  offset: 0, 0
+  index: -1
+youjiao
+  rotate: false
+  xy: 231, 21
+  size: 133, 106
+  orig: 133, 106
+  offset: 0, 0
+  index: -1
+youshou
+  rotate: false
+  xy: 2, 2
+  size: 227, 269
+  orig: 227, 269
+  offset: 0, 0
+  index: -1
+zuodabi
+  rotate: false
+  xy: 789, 796
+  size: 173, 164
+  orig: 173, 164
+  offset: 0, 0
+  index: -1
+zuofa
+  rotate: true
+  xy: 789, 696
+  size: 98, 173
+  orig: 98, 173
+  offset: 0, 0
+  index: -1
+zuojiao
+  rotate: false
+  xy: 417, 583
+  size: 133, 106
+  orig: 133, 106
+  offset: 0, 0
+  index: -1
+zuoshou
+  rotate: false
+  xy: 417, 691
+  size: 370, 269
+  orig: 370, 269
+  offset: 0, 0
+  index: -1

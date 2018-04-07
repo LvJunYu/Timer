@@ -1,0 +1,27 @@
+
+M1Gear.png
+size: 512,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+cilun
+  rotate: false
+  xy: 224, 24
+  size: 82, 82
+  orig: 82, 82
+  offset: 0, 0
+  index: -1
+xiangtinei
+  rotate: false
+  xy: 2, 2
+  size: 110, 104
+  orig: 110, 104
+  offset: 0, 0
+  index: -1
+xiangtiwai
+  rotate: false
+  xy: 114, 5
+  size: 108, 101
+  orig: 108, 101
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LangVersion>4</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectGuid>{91E7BDA8-85D1-0F60-CABB-5E0710831C5C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>Assembly-CSharp-Editor-firstpass</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_4;UNITY_5_5;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VIDEO;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;CROSS_PLATFORM_INPUT;GM2DPROJECT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Temp\bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Plugins\Editor\JetBrains\Unity3DRider.cs" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterExplode\M1MonsterExplode.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
+    <None Include="Assets\ThirdParty\Heureka\AssetHunter\Editor\Settings\ScriptableObjectsFolder.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1NpcGirl\NpcGirl.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1RevivePoint\M1RevivePoint.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\SpineShader\HiddenPass.shader" />
+    <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ToonShading\Shaders\ToonBasic.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\Unit-Color.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Fire\M1Fire.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\UI\Polygon.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ShowAlphaChannel.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1ScorchedEarth\M1ScorchedEarth.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\CFXM_MobileParticleAdd_Alpha8.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\SunShaftsComposite.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\SMainGirl0\SMainGirl0.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ColorCorrectionCurves.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterTree\M1MonsterTree.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\luoxuanxian 1.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ScreenSpaceAmbientObscurance.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1GreenJet\M1GreenJet.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1EffectSwitchEarth\M1EffectSwitchEarth.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Clay\M1Clay.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Wing\skeleton.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\NFAA.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\TiltShiftHdrLensBlur.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Jelly\M1Jelly.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\UI\Sprites-Texture.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\VignetteShader.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfFieldScatter.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1NpcOldMan\NpcOldMan.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\TessellationShaders\Shaders\BumpedSpecularSmooth.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\Projectors\Guidelines.txt" />
+    <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Modules\SkeletonGraphic\Shaders\SkeletonGraphic.shader" />
+    <None Include="Assets\App\Resources\BadWordBank\BadWordBank.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Water1\M1Water1.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\MotionBlur.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\Effect\EnergyPoolLiquid.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBloom.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Portal\M1Portal.atlas.txt" />
+    <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Modules\CustomMaterials\readme.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\Contrast Stretch\MinMaxReduction.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\SSAA.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\RadialBlur.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\Unit-Tiling.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfFieldDX11.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterTiger\M1MonsterTiger.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1SpacetimeDoor\M1SpacetimeDoor.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ContrastComposite.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset3.shader" />
+    <None Include="Assets\ThirdParty\Haste\CHANGELOG.md.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MoWater\M1MoWater_1.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\FisheyeShader.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1BlueStoneRotate\M1BlueStoneRotate.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\Contrast Stretch\Apply.shader" />
+    <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Editor\Resources\SpineAssetDatabaseMarker.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterEvil\M1MonsterEvil.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Materials\ParticleMatNew\UvAnimation.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MoMonsterTree\M1MoMonsterTree.atlas.txt" />
+    <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Modules\Ghost\Shaders\SkeletonGhost.shader" />
+    <None Include="Assets\ThirdParty\Heureka\AssetHunter\Readme.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1BillBoard\M1BillBoard.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1LocationMissile\M1LocationMissile.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\SpineShader\SkeletonWhite.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Ice\M1Ice.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterDragon\M1MonsterDragon.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Materials\ParticleMatNew\chuansongmen.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ToonShading\Shaders\ToonBasicOutline.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\UI\UI-Default_RoundClip.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfField34.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1NpcFishMan\NpcFishMan.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Gate\M1Gate.atlas.txt" />
+    <None Include="Assets\ThirdParty\EasyTouchBundle\Readme.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\SFVertexColor.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\SSAOShader.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Switch\M1Switch.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Shaders\SpriteFilled.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ConvertDepth.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ColorCorrectionCurvesSimple.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\NoiseEffectShaderYUV.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\CreaseApply.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\SpineShader\Bones.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\UI-ParticleRenderTexture.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ChromaticAberrationShader.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1BlueStone\M1BlueStone.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1PasswordDoor\M1PasswordDoor.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Materials\ParticleMatNew\tongtong 1.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\Contrast Stretch\Luminance.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ToonShading\Shaders\ToonLit.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ColorCorrectionSelective.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\Bokeh34.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Roller\M1Roller.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Fan\M1Fan.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\CameraMotionBlurDX11.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\SeparableBlurPlus.shader" />
+    <None Include="Assets\ThirdParty\Haste\README.md.txt" />
+    <None Include="Assets\ThirdParty\CodeEncipher\Log.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\Projectors\Shaders\ProjectorLight.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\MultiPassHollywoodFlares.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\BlurEffectConeTaps.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\CameraMotionBlur.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\TiledSprite2d.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\DLAA.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\NoiseAndGrainDX11.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1SwitchFollow\M1SwitchFollow.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\BrightPassFilter2.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Water\M1Water.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableBlur.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\MotionBlurClear.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\SpineShader\Skeleton.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ColorCorrectionEffect.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\GrayscaleEffect.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\SepiaToneEffect.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\TwirlEffect.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\VortexEffect.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1SwitchGate\M1SwitchGate.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\Contrast Stretch\Adaptation.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MoWater\M1MoWater.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Saw\M1Saw.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Gear\M1Gear.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterCave\M1MonsterCave.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\NoiseAndGrain.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1RevivePoint1\M1RevivePoint1.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\Projectors\Shaders\ProjectorMultiply.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\VignettingShader.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterElephant\M1MonsterElephant.atlas.txt" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1RedJet\M1RedJet.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\Tonemapper.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\BrightPassFilter.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Cloud1\M1Cloud1.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\FXAA2.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\SMainBoy0\SMainBoy0.atlas.txt" />
+    <None Include="Assets\ThirdParty\EasyTouchBundle\EasyTouch\RealseNotes.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\ColorCorrection3DLut.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Cat\M1Cat.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\LensFlareCreate.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\EdgeDetectNormals.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\PrepareSunShaftsBlur.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\Blend.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\SimpleClear.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1Cloud\M1Cloud.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\TessellationShaders\Shaders\BumpedSpecularDisplacement.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1GravitySensor\M1GravitySensor.atlas.txt" />
+    <None Include="Assets\ThirdParty\BehaviorDesigner\Editor\GridShader.shader" />
+    <None Include="Assets\JoyGameArt\SpineDatas\M1MonsterJelly\M1MonsterJelly.atlas.txt" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\FXAA3Console.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\SpineShader\SkeletonLit.shader" />
+    <None Include="Assets\JoyGameArt\Materials\ParticleMatNew\1603.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset2.shader" />
+    <None Include="Assets\JoyGameArt\Shaders\SFSolidColor.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlurAndFlares.shader" />
+    <None Include="Assets\References\UnityStandardAssets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendForBloom.shader" />
+    <Reference Include="UnityEditor.Advertisements">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.EditorTestsRunner">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/UnityEditor.EditorTestsRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Networking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.PlaymodeTestsRunner">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/PlaymodeTestsRunner/Editor/UnityEditor.PlaymodeTestsRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PlaymodeTestsRunner">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/PlaymodeTestsRunner/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TreeEditor">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Analytics">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Analytics">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/Editor/UnityEditor.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.HoloLens">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/Editor/UnityEditor.HoloLens.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HoloLens">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.VR">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/Editor/UnityEditor.VR.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VR">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/JoyGameArt/ThirdParty/DOTween/DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween43">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/JoyGameArt/ThirdParty/DOTween/DOTween43.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween46">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/JoyGameArt/ThirdParty/DOTween/DOTween46.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween50">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/JoyGameArt/ThirdParty/DOTween/DOTween50.dll</HintPath>
+    </Reference>
+    <Reference Include="GameAClient">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/GameAClient.dll</HintPath>
+    </Reference>
+    <Reference Include="GameAClientProto">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/GameAClientProto.dll</HintPath>
+    </Reference>
+    <Reference Include="GameAClientProtoSerializer">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/GameAClientProtoSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="JoyCore">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/JoyCore.dll</HintPath>
+    </Reference>
+    <Reference Include="JoyEngine">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/JoyEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/Plugins/protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="BehaviorDesignerEditor">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/BehaviorDesigner/Editor/BehaviorDesignerEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="BehaviorDesignerRuntime">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/BehaviorDesigner/Runtime/BehaviorDesignerRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="ZIPlib">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/CodeEncipher/Editor/ZIPlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Haste">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/Haste/Editor/Haste.dll</HintPath>
+    </Reference>
+    <Reference Include="Win32">
+      <HintPath>E:/UnityProject/Work/Copy/GameAClient/Assets/ThirdParty/WWebView/Plugins/Win32.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

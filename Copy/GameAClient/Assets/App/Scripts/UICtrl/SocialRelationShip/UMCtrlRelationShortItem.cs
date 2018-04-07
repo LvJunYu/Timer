@@ -1,0 +1,119 @@
+﻿using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
+
+namespace GameA
+{
+    public class UMCtrlRelationShortItem : UMCtrlBase<UMViewRelationShortItem>, IDataItemRenderer
+    {
+        private UserInfoDetail _userInfoDetail;
+        private UICtrlSocialRelationship.EMenu _belongMenu;
+        private bool _followedByMe;
+        private static string _followStr = "关注";
+        private static string _followedStr = "已关注";
+        private static string _removeBlockStr = "移除";
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.InfoBtn.onClick.AddListener(OnInfoBtn);
+            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew)
+            {
+                _cachedView.BtnTxt.text = _followStr;
+                _cachedView.Btn.onClick.AddListener(OnFollowBtn);
+            }
+            else if (_belongMenu == UICtrlSocialRelationship.EMenu.Block)
+            {
+                _cachedView.BtnTxt.text = _removeBlockStr;
+                _cachedView.Btn.onClick.AddListener(OnRemoveBlockBtn);
+            }
+        }
+
+        public void RefreshView()
+        {
+            if (null == _userInfoDetail) return;
+            _cachedView.UserNickNameTxt.text = _userInfoDetail.UserInfoSimple.NickName;
+            _cachedView.Male.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Male);
+            _cachedView.Famale.SetActiveEx(_userInfoDetail.UserInfoSimple.Sex == ESex.S_Female);
+            _cachedView.AdventureLvTxt.text =
+                GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.PlayerLevel);
+            _cachedView.CreateLvTxt.text =
+                GameATools.GetLevelString(_userInfoDetail.UserInfoSimple.LevelData.CreatorLevel);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImg,
+                _userInfoDetail.UserInfoSimple.HeadImgUrl, _cachedView.DefaultTexture);
+            _userInfoDetail.UserInfoSimple.BlueVipData.RefreshBlueVipView(_cachedView.BlueVipDock,
+                _cachedView.BlueImg, _cachedView.SuperBlueImg, _cachedView.BlueYearVipImg);
+            if (_belongMenu == UICtrlSocialRelationship.EMenu.AddNew && _userInfoDetail != null)
+            {
+                _followedByMe = _userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+                _cachedView.BtnTxt.text = _followedByMe ? _followedStr : _followStr;
+            }
+        }
+
+        public RectTransform Transform
+        {
+            get { return _cachedView.Trans; }
+        }
+
+        public int Index { get; set; }
+
+        public object Data
+        {
+            get { return _userInfoDetail; }
+        }
+
+        public void Set(object data)
+        {
+            if (data == null)
+            {
+                Unload();
+                return;
+            }
+            _userInfoDetail = data as UserInfoDetail;
+            RefreshView();
+        }
+
+        public void Unload()
+        {
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.HeadImg, _cachedView.DefaultTexture);
+        }
+
+        private void OnFollowBtn()
+        {
+            if (_userInfoDetail == null)
+            {
+                LogHelper.Error("follow user, but _userInfoDetail == null");
+                return;
+            }
+            if (_followedByMe)
+            {
+                LocalUser.Instance.RelationUserList.RequestRemoveFollowUser(_userInfoDetail);
+            }
+            else
+            {
+                LocalUser.Instance.RelationUserList.RequestFollowUser(_userInfoDetail);
+            }
+        }
+
+        private void OnRemoveBlockBtn()
+        {
+            if (_userInfoDetail == null)
+            {
+                LogHelper.Error("remove follow user, but _userInfoDetail == null");
+                return;
+            }
+            LocalUser.Instance.RelationUserList.RequestRemoveBlockUser(_userInfoDetail);
+        }
+
+        private void OnInfoBtn()
+        {
+            if (null == _userInfoDetail) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>(_userInfoDetail);
+        }
+
+        public void SetMenu(UICtrlSocialRelationship.EMenu eMenu)
+        {
+            _belongMenu = eMenu;
+        }
+    }
+}

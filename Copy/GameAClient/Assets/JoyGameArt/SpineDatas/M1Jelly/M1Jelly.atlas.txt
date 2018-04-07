@@ -1,0 +1,13 @@
+
+M1Jelly.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1Jellies/1
+  rotate: false
+  xy: 2, 2
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1

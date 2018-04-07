@@ -1,0 +1,41 @@
+
+M1GravitySensor.png
+size: 512,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Accelerometer/1
+  rotate: false
+  xy: 302, 57
+  size: 109, 53
+  orig: 109, 53
+  offset: 0, 0
+  index: -1
+Accelerometer/13
+  rotate: false
+  xy: 2, 8
+  size: 298, 102
+  orig: 298, 102
+  offset: 0, 0
+  index: -1
+Accelerometer/2
+  rotate: false
+  xy: 302, 2
+  size: 98, 53
+  orig: 98, 53
+  offset: 0, 0
+  index: -1
+Accelerometer/3
+  rotate: false
+  xy: 402, 2
+  size: 98, 53
+  orig: 98, 53
+  offset: 0, 0
+  index: -1
+Accelerometer/4
+  rotate: false
+  xy: 413, 57
+  size: 77, 53
+  orig: 77, 53
+  offset: 0, 0
+  index: -1

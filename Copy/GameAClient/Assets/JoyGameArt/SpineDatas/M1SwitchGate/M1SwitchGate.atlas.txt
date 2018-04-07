@@ -1,0 +1,20 @@
+
+M1SwitchGate.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1SwitchGate/shengjiangtaidizuo
+  rotate: false
+  xy: 2, 2
+  size: 164, 209
+  orig: 164, 209
+  offset: 0, 0
+  index: -1
+M1SwitchGate/shenjiantai
+  rotate: false
+  xy: 168, 121
+  size: 168, 90
+  orig: 168, 90
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,34 @@
+
+M1Clay.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+DiKkuai/niantu01
+  rotate: false
+  xy: 2, 158
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+DiKkuai/niantu02
+  rotate: false
+  xy: 2, 2
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+DiKkuai/niantu03
+  rotate: false
+  xy: 172, 158
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+DiKkuai/niantu04
+  rotate: false
+  xy: 342, 158
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,62 @@
+
+M1Roller.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1Roller#1/G1
+  rotate: false
+  xy: 2, 2
+  size: 42, 27
+  orig: 42, 27
+  offset: 0, 0
+  index: -1
+M1Roller#1/G2
+  rotate: false
+  xy: 181, 219
+  size: 44, 27
+  orig: 44, 27
+  offset: 0, 0
+  index: -1
+M1Roller#1/G3
+  rotate: false
+  xy: 2, 31
+  size: 43, 27
+  orig: 43, 27
+  offset: 0, 0
+  index: -1
+M1Roller#1/G4
+  rotate: true
+  xy: 227, 202
+  size: 44, 27
+  orig: 44, 27
+  offset: 0, 0
+  index: -1
+M1Roller#1/M1Roller#1  1
+  rotate: false
+  xy: 2, 92
+  size: 177, 154
+  orig: 177, 154
+  offset: 0, 0
+  index: -1
+M1Roller#1/M1Roller#1  2
+  rotate: false
+  xy: 2, 60
+  size: 66, 30
+  orig: 66, 30
+  offset: 0, 0
+  index: -1
+M1Roller#1/X1
+  rotate: false
+  xy: 70, 60
+  size: 40, 30
+  orig: 40, 30
+  offset: 0, 0
+  index: -1
+M1Roller#1/X2
+  rotate: false
+  xy: 181, 187
+  size: 40, 30
+  orig: 40, 30
+  offset: 0, 0
+  index: -1

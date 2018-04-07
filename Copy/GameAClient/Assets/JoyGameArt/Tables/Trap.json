@@ -1,0 +1,14 @@
+[
+    {
+        "Id": "1",
+        "Name": "火焰液体",
+        "Duration": "4000",
+        "TriggerRange": "30",
+        "EffectRange": "30",
+        "EffectType": "0",
+        "TriggerStates": [
+            "22"
+        ],
+        "Particle": "M1BulletFireRange"
+    }
+]

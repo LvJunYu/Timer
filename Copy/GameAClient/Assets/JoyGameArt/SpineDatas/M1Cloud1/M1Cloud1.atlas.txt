@@ -1,0 +1,13 @@
+
+M1Cloud1.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1BuoyancyPlate_2
+  rotate: false
+  xy: 2, 2
+  size: 168, 161
+  orig: 168, 161
+  offset: 0, 0
+  index: -1

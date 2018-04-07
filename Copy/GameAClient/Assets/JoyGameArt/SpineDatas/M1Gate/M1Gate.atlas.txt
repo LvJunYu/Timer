@@ -1,0 +1,62 @@
+
+M1Gate.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+images/yaoshi/yaoshi_01
+  rotate: false
+  xy: 2, 2
+  size: 98, 89
+  orig: 98, 89
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_02
+  rotate: false
+  xy: 682, 158
+  size: 98, 89
+  orig: 98, 89
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_03
+  rotate: false
+  xy: 102, 2
+  size: 98, 89
+  orig: 98, 89
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_04
+  rotate: false
+  xy: 782, 158
+  size: 98, 89
+  orig: 98, 89
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_suo_01
+  rotate: false
+  xy: 2, 93
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_suo_02
+  rotate: false
+  xy: 172, 93
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_suo_03
+  rotate: false
+  xy: 342, 93
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1
+images/yaoshi/yaoshi_suo_04
+  rotate: false
+  xy: 512, 93
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,62 @@
+
+M1Fire.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+DK/pao1
+  rotate: true
+  xy: 476, 378
+  size: 94, 30
+  orig: 96, 32
+  offset: 1, 1
+  index: -1
+DK/pao2
+  rotate: false
+  xy: 2, 2
+  size: 96, 57
+  orig: 98, 59
+  offset: 1, 1
+  index: -1
+DK/pao3
+  rotate: false
+  xy: 112, 59
+  size: 112, 88
+  orig: 114, 90
+  offset: 1, 1
+  index: -1
+DK/pao4
+  rotate: false
+  xy: 112, 149
+  size: 113, 145
+  orig: 115, 147
+  offset: 1, 1
+  index: -1
+DK/pao5
+  rotate: false
+  xy: 348, 303
+  size: 126, 169
+  orig: 128, 171
+  offset: 1, 1
+  index: -1
+DK/pao6
+  rotate: false
+  xy: 2, 296
+  size: 170, 176
+  orig: 172, 178
+  offset: 1, 1
+  index: -1
+DK/pao7
+  rotate: true
+  xy: 2, 61
+  size: 233, 108
+  orig: 235, 110
+  offset: 1, 1
+  index: -1
+DK/zhuti
+  rotate: false
+  xy: 174, 313
+  size: 172, 159
+  orig: 182, 170
+  offset: 9, 10
+  index: -1

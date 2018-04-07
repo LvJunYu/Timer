@@ -1,0 +1,48 @@
+
+M1ScorchedEarth.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+DiKkuai/jiaotu
+  rotate: false
+  xy: 172, 60
+  size: 164, 152
+  orig: 164, 152
+  offset: 0, 0
+  index: -1
+DiKkuai/jiaotufaguang
+  rotate: false
+  xy: 45, 22
+  size: 44, 34
+  orig: 111, 136
+  offset: 67, 97
+  index: -1
+DiKkuai/jiaotufaguang1
+  rotate: false
+  xy: 2, 2
+  size: 41, 54
+  orig: 111, 136
+  offset: 1, 0
+  index: -1
+DiKkuai/jiaotufaguang2
+  rotate: false
+  xy: 451, 168
+  size: 38, 44
+  orig: 111, 136
+  offset: 54, 58
+  index: -1
+DiKkuai/jiaotufaguang3
+  rotate: false
+  xy: 338, 77
+  size: 111, 135
+  orig: 111, 136
+  offset: 0, 1
+  index: -1
+DiKkuai/jiaotukuai
+  rotate: false
+  xy: 2, 58
+  size: 168, 154
+  orig: 168, 154
+  offset: 0, 0
+  index: -1

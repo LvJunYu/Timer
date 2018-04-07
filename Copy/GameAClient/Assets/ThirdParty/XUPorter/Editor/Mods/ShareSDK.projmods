@@ -1,0 +1,76 @@
+{
+    "group": "ShareSDK",
+    "libs": [],
+    "frameworks": [
+        "libicucore.tbd",
+        "libz.tbd",
+        "libstdc++.tbd",
+        "libsqlite3.tbd",
+        "JavaScriptCore.framework",
+        "ImageIO.framework",
+        "UserNotifications.framework"
+    ],
+    "headerpaths": [],
+    "files":   [
+    ],
+    "folders": [],    
+    "excludes": ["^.*.meta$", "^.*.mdown$", "^.*.pdf$"],
+    "compiler_flags": [],
+    "linker_flags": [
+        "-all_load"
+    ],
+    "plist": {
+        "NSAppTransportSecurity": {
+            "NSAllowsArbitraryLoads": true,
+            "NSExceptionDomains": {
+                "qq.com": {
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "sina.com.cn": {
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "sinaimg.cn": {
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "sinajs.cn": {
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "sina.cn": {
+                    "NSExceptionMinimumTLSVersion": "TLSv1.0",
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "weibo.cn": {
+                    "NSExceptionMinimumTLSVersion": "TLSv1.0",
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "weibo.com": {
+                    "NSExceptionMinimumTLSVersion": "TLSv1.0",
+                    "NSIncludesSubdomains": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "file.joy-you.com": {
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "res.joy-you.com": {
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                },
+                "img.joy-you.com": {
+                    "NSThirdPartyExceptionAllowsInsecureHTTPLoads": true,
+                    "NSThirdPartyExceptionRequiresForwardSecrecy": false
+                }
+            }
+        }
+    }
+}

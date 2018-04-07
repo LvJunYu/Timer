@@ -1,0 +1,62 @@
+
+M1RevivePoint1.png
+size: 512,64
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1RevivePoint/qigan
+  rotate: true
+  xy: 2, 22
+  size: 34, 105
+  orig: 34, 105
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi1
+  rotate: false
+  xy: 109, 2
+  size: 54, 54
+  orig: 54, 54
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi2
+  rotate: false
+  xy: 332, 8
+  size: 54, 48
+  orig: 54, 48
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi3
+  rotate: false
+  xy: 388, 9
+  size: 53, 47
+  orig: 53, 47
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi4
+  rotate: false
+  xy: 277, 6
+  size: 53, 50
+  orig: 53, 50
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi5
+  rotate: false
+  xy: 443, 4
+  size: 52, 52
+  orig: 52, 52
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi6
+  rotate: false
+  xy: 165, 4
+  size: 54, 52
+  orig: 54, 52
+  offset: 0, 0
+  index: -1
+M1RevivePoint/qizhi7
+  rotate: false
+  xy: 221, 5
+  size: 54, 51
+  orig: 54, 51
+  offset: 0, 0
+  index: -1

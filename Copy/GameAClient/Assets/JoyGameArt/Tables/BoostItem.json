@@ -1,0 +1,50 @@
+[
+    {
+        "Id": "1",
+        "Name": "关卡时间限制+60秒（限时关卡）",
+        "Desc": "关卡时间限制+60秒（限时关卡）",
+        "Icon": "icon_time_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "2",
+        "Name": "攻击力+10%",
+        "Desc": "攻击力+30%",
+        "Icon": "icon_score_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "3",
+        "Name": "生命值+1",
+        "Desc": "生命值+1",
+        "Icon": "icon_life_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "4",
+        "Name": "磁石收集距离+50%",
+        "Desc": "磁石收集距离+50%",
+        "Icon": "icon_shield_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "5",
+        "Name": "无敌道具时间+5秒（存在）",
+        "Desc": "无敌道具时间+5秒（存在）",
+        "Icon": "icon_shield_2_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "6",
+        "Name": "血量+10%",
+        "Desc": "血量+30%",
+        "Icon": "icon_time_240",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    }
+]

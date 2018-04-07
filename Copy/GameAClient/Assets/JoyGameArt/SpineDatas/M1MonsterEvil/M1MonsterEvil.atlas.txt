@@ -1,0 +1,97 @@
+
+M1MonsterEvil.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+tou
+  rotate: false
+  xy: 2, 632
+  size: 277, 370
+  orig: 277, 370
+  offset: 0, 0
+  index: -1
+yoichi6
+  rotate: false
+  xy: 647, 467
+  size: 122, 253
+  orig: 122, 253
+  offset: 0, 0
+  index: -1
+youchi2
+  rotate: false
+  xy: 330, 404
+  size: 148, 303
+  orig: 148, 303
+  offset: 0, 0
+  index: -1
+youchi3
+  rotate: false
+  xy: 167, 2
+  size: 161, 290
+  orig: 161, 290
+  offset: 0, 0
+  index: -1
+youchi4
+  rotate: false
+  xy: 281, 709
+  size: 190, 293
+  orig: 190, 293
+  offset: 0, 0
+  index: -1
+youchi5
+  rotate: false
+  xy: 480, 443
+  size: 165, 277
+  orig: 165, 277
+  offset: 0, 0
+  index: -1
+youchiang1
+  rotate: true
+  xy: 473, 722
+  size: 129, 320
+  orig: 129, 320
+  offset: 0, 0
+  index: -1
+zuochibang2
+  rotate: true
+  xy: 473, 853
+  size: 149, 320
+  orig: 149, 320
+  offset: 0, 0
+  index: -1
+zuochibang3
+  rotate: false
+  xy: 2, 7
+  size: 163, 309
+  orig: 163, 309
+  offset: 0, 0
+  index: -1
+zuochibang4
+  rotate: false
+  xy: 2, 318
+  size: 195, 312
+  orig: 195, 312
+  offset: 0, 0
+  index: -1
+zuochibang5
+  rotate: false
+  xy: 795, 706
+  size: 167, 296
+  orig: 167, 296
+  offset: 0, 0
+  index: -1
+zuochibang6
+  rotate: false
+  xy: 330, 136
+  size: 122, 266
+  orig: 122, 266
+  offset: 0, 0
+  index: -1
+zuozhibang1
+  rotate: false
+  xy: 199, 294
+  size: 129, 336
+  orig: 129, 336
+  offset: 0, 0
+  index: -1

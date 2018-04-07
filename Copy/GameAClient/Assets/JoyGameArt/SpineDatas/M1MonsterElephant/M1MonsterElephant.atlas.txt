@@ -1,0 +1,202 @@
+
+M1MonsterElephant.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1MonsterTree/xunhuanhuoyan0001
+  rotate: false
+  xy: 136, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0002
+  rotate: false
+  xy: 277, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0003
+  rotate: false
+  xy: 418, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0004
+  rotate: false
+  xy: 559, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0005
+  rotate: false
+  xy: 700, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0006
+  rotate: false
+  xy: 841, 352
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+M1MonsterTree/xunhuanhuoyan0007
+  rotate: false
+  xy: 2, 199
+  size: 139, 139
+  orig: 139, 139
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZ0
+  rotate: true
+  xy: 643, 285
+  size: 65, 130
+  orig: 65, 130
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi
+  rotate: true
+  xy: 143, 167
+  size: 72, 119
+  orig: 72, 119
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi1
+  rotate: false
+  xy: 125, 94
+  size: 119, 71
+  orig: 119, 71
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi2
+  rotate: false
+  xy: 143, 241
+  size: 127, 109
+  orig: 127, 109
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi3
+  rotate: false
+  xy: 272, 263
+  size: 132, 87
+  orig: 132, 87
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi4
+  rotate: false
+  xy: 406, 251
+  size: 117, 99
+  orig: 117, 99
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi5
+  rotate: true
+  xy: 525, 267
+  size: 83, 116
+  orig: 83, 116
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_BiZi6
+  rotate: true
+  xy: 775, 281
+  size: 69, 125
+  orig: 69, 125
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_DianJi
+  rotate: false
+  xy: 2, 340
+  size: 132, 151
+  orig: 132, 151
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_ShenTi
+  rotate: false
+  xy: 2, 47
+  size: 121, 150
+  orig: 121, 150
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_ShuangJiao
+  rotate: false
+  xy: 125, 46
+  size: 107, 46
+  orig: 107, 46
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YaChi
+  rotate: true
+  xy: 272, 245
+  size: 16, 43
+  orig: 16, 43
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YaChi2
+  rotate: true
+  xy: 643, 267
+  size: 16, 39
+  orig: 16, 39
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YanJing
+  rotate: false
+  xy: 2, 2
+  size: 118, 43
+  orig: 118, 43
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YanJing1
+  rotate: true
+  xy: 982, 374
+  size: 117, 40
+  orig: 117, 40
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YouHouJiao
+  rotate: false
+  xy: 941, 315
+  size: 39, 35
+  orig: 39, 35
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_ZuoHouJiao
+  rotate: false
+  xy: 941, 315
+  size: 39, 35
+  orig: 39, 35
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_YouJiao
+  rotate: false
+  xy: 902, 311
+  size: 37, 39
+  orig: 37, 39
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_ZuoJiao
+  rotate: false
+  xy: 902, 311
+  size: 37, 39
+  orig: 37, 39
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_Youbi
+  rotate: false
+  xy: 982, 333
+  size: 31, 39
+  orig: 31, 39
+  offset: 0, 0
+  index: -1
+daxiang/t_MonsterTree_ZuoB1
+  rotate: false
+  xy: 122, 7
+  size: 32, 37
+  orig: 32, 37
+  offset: 0, 0
+  index: -1

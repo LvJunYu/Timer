@@ -1,0 +1,611 @@
+[
+    {
+        "Id": "1",
+        "Description": "冒险模式普通关卡通关",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "60",
+        "Type2": "3",
+        "SubType2": "0",
+        "Id2": "0",
+        "Value2": "20"
+    },
+    {
+        "Id": "998",
+        "Description": "冒险模式重复通关奖励",
+        "Type1": "3",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "2"
+    },
+    {
+        "Id": "999",
+        "Description": "冒险模式失败奖励",
+        "Type1": "3",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "1"
+    },
+    {
+        "Id": "2",
+        "Description": "第一章奖励关1",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "3",
+        "Description": "第一章奖励关2",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "4",
+        "Description": "第一章奖励关3",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "5",
+        "Description": "第二章奖励关1",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "6",
+        "Description": "第二章奖励关2",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "7",
+        "Description": "第二章奖励关3",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
+    },
+    {
+        "Id": "500",
+        "Description": "第一章抽奖券1"
+    },
+    {
+        "Id": "501",
+        "Description": "第一章抽奖券2"
+    },
+    {
+        "Id": "502",
+        "Description": "第一章抽奖券3"
+    },
+    {
+        "Id": "503",
+        "Description": "第二章抽奖券1"
+    },
+    {
+        "Id": "504",
+        "Description": "第二章抽奖券2"
+    },
+    {
+        "Id": "505",
+        "Description": "第二章抽奖券3"
+    },
+    {
+        "Id": "600",
+        "Description": "第一章拼图碎片"
+    },
+    {
+        "Id": "601",
+        "Description": "第二章拼图碎片"
+    },
+    {
+        "Id": "700",
+        "Description": "第一章宝藏1"
+    },
+    {
+        "Id": "701",
+        "Description": "第一章宝藏2"
+    },
+    {
+        "Id": "702",
+        "Description": "第一章宝藏3"
+    },
+    {
+        "Id": "703",
+        "Description": "第一章宝藏4"
+    },
+    {
+        "Id": "704",
+        "Description": "第一章宝藏5"
+    },
+    {
+        "Id": "705",
+        "Description": "第二章宝藏1"
+    },
+    {
+        "Id": "706",
+        "Description": "第二章宝藏2"
+    },
+    {
+        "Id": "707",
+        "Description": "第二章宝藏3"
+    },
+    {
+        "Id": "708",
+        "Description": "第二章宝藏4"
+    },
+    {
+        "Id": "709",
+        "Description": "第二章宝藏5"
+    },
+    {
+        "Id": "710"
+    },
+    {
+        "Id": "1000",
+        "Description": "转盘1奖励1",
+        "Type1": "1",
+        "Value1": "100",
+        "SubType5": "1",
+        "SubType7": "1"
+    },
+    {
+        "Id": "1001",
+        "Description": "转盘1奖励2",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "10",
+        "SubType7": "10"
+    },
+    {
+        "Id": "1002",
+        "Description": "转盘1奖励3",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "11",
+        "SubType7": "11"
+    },
+    {
+        "Id": "1003",
+        "Description": "转盘1奖励4",
+        "Type1": "4",
+        "Value1": "1",
+        "SubType5": "12",
+        "SubType7": "12"
+    },
+    {
+        "Id": "1004",
+        "Description": "转盘1奖励5",
+        "Type1": "1",
+        "Value1": "1",
+        "SubType5": "14",
+        "SubType7": "14"
+    },
+    {
+        "Id": "1005",
+        "Description": "转盘1奖励6",
+        "Type1": "7",
+        "Id1": "2",
+        "Value1": "1",
+        "SubType5": "15",
+        "SubType7": "15"
+    },
+    {
+        "Id": "1006",
+        "Description": "转盘1奖励7",
+        "Type1": "7",
+        "Id1": "1",
+        "Value1": "1",
+        "SubType5": "16",
+        "SubType7": "16"
+    },
+    {
+        "Id": "1007",
+        "Description": "转盘1奖励8",
+        "Type1": "8",
+        "Id1": "1",
+        "Value1": "5",
+        "SubType5": "2",
+        "SubType7": "2"
+    },
+    {
+        "Id": "1008",
+        "Description": "转盘2奖励1",
+        "Type1": "1",
+        "Value1": "100",
+        "SubType5": "1",
+        "SubType7": "1"
+    },
+    {
+        "Id": "1009",
+        "Description": "转盘2奖励2",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "10",
+        "SubType7": "10"
+    },
+    {
+        "Id": "1010",
+        "Description": "转盘2奖励3",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "11",
+        "SubType7": "11"
+    },
+    {
+        "Id": "1011",
+        "Description": "转盘2奖励4",
+        "Type1": "4",
+        "Value1": "1",
+        "SubType5": "12",
+        "SubType7": "12"
+    },
+    {
+        "Id": "1012",
+        "Description": "转盘2奖励5",
+        "Type1": "7",
+        "Id1": "3",
+        "Value1": "1",
+        "SubType5": "14",
+        "SubType7": "14"
+    },
+    {
+        "Id": "1013",
+        "Description": "转盘2奖励6",
+        "Type1": "7",
+        "Id1": "4",
+        "Value1": "1",
+        "SubType5": "15",
+        "SubType7": "15"
+    },
+    {
+        "Id": "1014",
+        "Description": "转盘2奖励7",
+        "Type1": "8",
+        "Id1": "2",
+        "Value1": "8",
+        "SubType5": "16",
+        "SubType7": "16"
+    },
+    {
+        "Id": "1015",
+        "Description": "转盘2奖励8",
+        "Type1": "9",
+        "Id1": "25011",
+        "Value1": "2",
+        "SubType5": "2",
+        "SubType7": "2"
+    },
+    {
+        "Id": "1016",
+        "Description": "转盘3奖励1",
+        "Type1": "1",
+        "Value1": "100",
+        "SubType5": "1",
+        "SubType7": "1"
+    },
+    {
+        "Id": "1017",
+        "Description": "转盘3奖励2",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "10",
+        "SubType7": "10"
+    },
+    {
+        "Id": "1018",
+        "Description": "转盘3奖励3",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "11",
+        "SubType7": "11"
+    },
+    {
+        "Id": "1019",
+        "Description": "转盘3奖励4",
+        "Type1": "4",
+        "Value1": "1",
+        "SubType5": "12",
+        "SubType7": "12"
+    },
+    {
+        "Id": "1020",
+        "Description": "转盘3奖励5",
+        "Type1": "7",
+        "Id1": "5",
+        "Value1": "2",
+        "SubType5": "14",
+        "SubType7": "14"
+    },
+    {
+        "Id": "1021",
+        "Description": "转盘3奖励6",
+        "Type1": "8",
+        "Id1": "3",
+        "Value1": "12",
+        "SubType5": "15",
+        "SubType7": "15"
+    },
+    {
+        "Id": "1022",
+        "Description": "转盘3奖励7",
+        "Type1": "9",
+        "Id1": "24008",
+        "Value1": "4",
+        "SubType5": "16",
+        "SubType7": "16"
+    },
+    {
+        "Id": "1023",
+        "Description": "转盘3奖励8",
+        "Type1": "9",
+        "Id1": "22001",
+        "Value1": "3",
+        "SubType5": "2",
+        "SubType7": "2"
+    },
+    {
+        "Id": "1024",
+        "Description": "转盘4奖励1",
+        "Type1": "1",
+        "Value1": "100",
+        "SubType5": "1",
+        "SubType7": "1"
+    },
+    {
+        "Id": "1025",
+        "Description": "转盘4奖励2",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "10",
+        "SubType7": "10"
+    },
+    {
+        "Id": "1026",
+        "Description": "转盘4奖励3",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "11",
+        "SubType7": "11"
+    },
+    {
+        "Id": "1027",
+        "Description": "转盘4奖励4",
+        "Type1": "4",
+        "Value1": "1",
+        "SubType5": "12",
+        "SubType7": "12"
+    },
+    {
+        "Id": "1028",
+        "Description": "转盘4奖励5",
+        "Type1": "1",
+        "Value1": "1",
+        "SubType5": "14",
+        "SubType7": "14"
+    },
+    {
+        "Id": "1029",
+        "Description": "转盘4奖励6",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "15",
+        "SubType7": "15"
+    },
+    {
+        "Id": "1030",
+        "Description": "转盘4奖励7",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "16",
+        "SubType7": "16"
+    },
+    {
+        "Id": "1031",
+        "Description": "转盘4奖励8",
+        "Type1": "4",
+        "Value1": "10",
+        "SubType5": "2",
+        "SubType7": "2"
+    },
+    {
+        "Id": "1032",
+        "Description": "转盘5奖励1",
+        "Type1": "1",
+        "Value1": "100",
+        "SubType5": "1",
+        "SubType7": "1"
+    },
+    {
+        "Id": "1033",
+        "Description": "转盘5奖励2",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "10",
+        "SubType7": "10"
+    },
+    {
+        "Id": "1034",
+        "Description": "转盘5奖励3",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "11",
+        "SubType7": "11"
+    },
+    {
+        "Id": "1035",
+        "Description": "转盘5奖励4",
+        "Type1": "4",
+        "Value1": "1",
+        "SubType5": "12",
+        "SubType7": "12"
+    },
+    {
+        "Id": "1036",
+        "Description": "转盘5奖励5",
+        "Type1": "1",
+        "Value1": "1",
+        "SubType5": "14",
+        "SubType7": "14"
+    },
+    {
+        "Id": "1037",
+        "Description": "转盘5奖励6",
+        "Type1": "2",
+        "Value1": "1",
+        "SubType5": "15",
+        "SubType7": "15"
+    },
+    {
+        "Id": "1038",
+        "Description": "转盘5奖励7",
+        "Type1": "3",
+        "Value1": "1",
+        "SubType5": "16",
+        "SubType7": "16"
+    },
+    {
+        "Id": "1039",
+        "Description": "转盘5奖励8",
+        "Type1": "4",
+        "Value1": "10",
+        "SubType5": "2",
+        "SubType7": "2"
+    },
+    {
+        "Id": "2000",
+        "Description": "改造奖励第1档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "100",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1"
+    },
+    {
+        "Id": "2001",
+        "Description": "改造奖励第2档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "200",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1"
+    },
+    {
+        "Id": "2002",
+        "Description": "改造奖励第3档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "300",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1",
+        "Type4": "6",
+        "SubType4": "0",
+        "Id4": "3",
+        "Value4": "1"
+    },
+    {
+        "Id": "2100",
+        "Description": "挑战失败奖励",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "10"
+    },
+    {
+        "Id": "2101",
+        "Description": "挑战奖励简单",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "100",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "2"
+    },
+    {
+        "Id": "2102",
+        "Description": "挑战奖励中等",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "200",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1",
+        "Type4": "6",
+        "SubType4": "0",
+        "Id4": "3",
+        "Value4": "1"
+    },
+    {
+        "Id": "2103",
+        "Description": "挑战奖励困难",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "300",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "2",
+        "Value2": "2",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "3",
+        "Value3": "1"
+    },
+    {
+        "Id": "2104",
+        "Description": "挑战奖励未知",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "210",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1",
+        "Type4": "6",
+        "SubType4": "0",
+        "Id4": "3"
+    }
+]

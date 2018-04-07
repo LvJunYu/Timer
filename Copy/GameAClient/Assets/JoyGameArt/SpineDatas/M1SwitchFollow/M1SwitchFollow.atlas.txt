@@ -1,0 +1,34 @@
+
+M1SwitchFollow.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1Switch/M1SwitchFollow1
+  rotate: true
+  xy: 228, 83
+  size: 148, 141
+  orig: 256, 256
+  offset: 64, 64
+  index: -1
+M1Switch/M1SwitchFollow2
+  rotate: true
+  xy: 371, 90
+  size: 141, 138
+  orig: 256, 256
+  offset: 68, 64
+  index: -1
+M1Switch/M1SwitchFollow3
+  rotate: true
+  xy: 371, 7
+  size: 81, 80
+  orig: 81, 80
+  offset: 0, 0
+  index: -1
+M1Switch/faguangti
+  rotate: true
+  xy: 2, 2
+  size: 229, 224
+  orig: 256, 256
+  offset: 23, 23
+  index: -1

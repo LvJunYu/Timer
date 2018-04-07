@@ -1,0 +1,48 @@
+
+M1Water.png
+size: 1024,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+M1Shui2/shui1_0006_6
+  rotate: false
+  xy: 2, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
+M1Shui2/shui1_0009_5
+  rotate: false
+  xy: 172, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
+M1Shui2/shui1_0012_4
+  rotate: false
+  xy: 342, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
+M1Shui2/shui1_0015_3
+  rotate: false
+  xy: 512, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
+M1Shui2/shui1_0018_2
+  rotate: false
+  xy: 682, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
+M1Shui2/shui1_0021_1
+  rotate: false
+  xy: 852, 2
+  size: 168, 105
+  orig: 168, 105
+  offset: 0, 0
+  index: -1
