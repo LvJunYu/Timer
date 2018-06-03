@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\JunYu\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_Test.1496537954.00" t="ExcludeRecursive" />
+    <e p="E:\UnityProject\JunYu\Test" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor-firstpass.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Chronos" t="Include">
+          <e p="Example" t="Include">
+            <e p="ExampleBaseBehaviour.cs" t="Include" />
+            <e p="ExampleBubble.cs" t="Include" />
+            <e p="ExampleNavigator.cs" t="Include" />
+            <e p="ExampleOccurrences.cs" t="Include" />
+            <e p="ExamplePhysics.cs" t="Include" />
+            <e p="ExampleSlider.cs" t="Include" />
+            <e p="ExampleSpin.cs" t="Include" />
+            <e p="ExampleTimeColor.cs" t="Include" />
+          </e>
+          <e p="PlayMaker" t="Include">
+            <e p="ChronosComponentAction.cs" t="Include" />
+            <e p="GetBaseSpeed.cs" t="Include" />
+            <e p="GetClockInfo.cs" t="Include" />
+            <e p="GetGlobalClock.cs" t="Include" />
+            <e p="GetTimelineInfo.cs" t="Include" />
+            <e p="PauseClock.cs" t="Include" />
+            <e p="Physics 2D" t="Include">
+              <e p="AddForce2d.cs" t="Include" />
+              <e p="AddTorque2d.cs" t="Include" />
+              <e p="GetBodyType2d.cs" t="Include" />
+              <e p="GetMass2d.cs" t="Include" />
+              <e p="GetSpeed2d.cs" t="Include" />
+              <e p="GetVelocity2d.cs" t="Include" />
+              <e p="SetBodyType2d.cs" t="Include" />
+              <e p="SetMass2d.cs" t="Include" />
+              <e p="SetVelocity2d.cs" t="Include" />
+            </e>
+            <e p="Physics 3D" t="Include">
+              <e p="AddExplosionForce.cs" t="Include" />
+              <e p="AddForce.cs" t="Include" />
+              <e p="AddTorque.cs" t="Include" />
+              <e p="GetMass.cs" t="Include" />
+              <e p="GetSpeed.cs" t="Include" />
+              <e p="GetVelocity.cs" t="Include" />
+              <e p="IsKinematic.cs" t="Include" />
+              <e p="SetDrag.cs" t="Include" />
+              <e p="SetIsKinematic.cs" t="Include" />
+              <e p="SetMass.cs" t="Include" />
+              <e p="SetVelocity.cs" t="Include" />
+              <e p="UseGravity.cs" t="Include" />
+            </e>
+            <e p="ReleaseAreaClock.cs" t="Include" />
+            <e p="ReleaseTimeline.cs" t="Include" />
+            <e p="ScaleClockTime.cs" t="Include" />
+            <e p="ScaleClockTimeSmoothly.cs" t="Include" />
+            <e p="ScaleGlobalClockTime.cs" t="Include" />
+            <e p="ScaleGlobalClockTimeSmoothly.cs" t="Include" />
+            <e p="Schedule.cs" t="Include" />
+            <e p="SetBaseSpeed.cs" t="Include" />
+            <e p="TimelineStateSwitch.cs" t="Include" />
+          </e>
+          <e p="Readme.txt" t="Include" />
+          <e p="Source" t="Include">
+            <e p="AreaClock.cs" t="Include" />
+            <e p="AreaClock2D.cs" t="Include" />
+            <e p="AreaClock3D.cs" t="Include" />
+            <e p="ChronosException.cs" t="Include" />
+            <e p="Clock.cs" t="Include" />
+            <e p="ComponentTimeline.cs" t="Include" />
+            <e p="CustomRecorder.cs" t="Include" />
+            <e p="Dependencies" t="Include">
+              <e p="Controls" t="Include">
+                <e p="Editor" t="Include">
+                  <e p="DropdownGUI.cs" t="Include" />
+                  <e p="DropdownOption.cs" t="Include" />
+                  <e p="Extensions.cs" t="Include" />
+                  <e p="PopupGUI.cs" t="Include" />
+                  <e p="PopupOption.cs" t="Include" />
+                </e>
+              </e>
+              <e p="Reflection" t="Include">
+                <e p="AnimatorParameter.cs" t="Include" />
+                <e p="Editor" t="Include">
+                  <e p="AnimatorParameterDrawer.cs" t="Include" />
+                  <e p="Extensions.cs" t="Include" />
+                  <e p="TargetedDrawer.cs" t="Include" />
+                  <e p="UnityGetterDrawer.cs" t="Include" />
+                  <e p="UnityMemberDrawer.cs" t="Include" />
+                  <e p="UnityMemberDrawerHelper.cs" t="Include" />
+                  <e p="UnityMethodDrawer.cs" t="Include" />
+                  <e p="UnityObjectType.cs" t="Include" />
+                  <e p="UnityVariableDrawer.cs" t="Include" />
+                </e>
+                <e p="FilterAttribute.cs" t="Include" />
+                <e p="SelfTargetedAttribute.cs" t="Include" />
+                <e p="TypeFamily.cs" t="Include" />
+                <e p="UnityGetter.cs" t="Include" />
+                <e p="UnityMember.cs" t="Include" />
+                <e p="UnityMemberHelper.cs" t="Include" />
+                <e p="UnityMethod.cs" t="Include" />
+                <e p="UnityReflectionException.cs" t="Include" />
+                <e p="UnityVariable.cs" t="Include" />
+                <e p="Utilities" t="Include">
+                  <e p="Extensions.cs" t="Include" />
+                  <e p="TypeSerializer.cs" t="Include" />
+                </e>
+              </e>
+              <e p="ReorderableList" t="Include">
+                <e p="Editor" t="Include">
+                  <e p="Element Adder Menu" t="Include">
+                    <e p="ElementAdderMenuBuilder.cs" t="Include" />
+                    <e p="ElementAdderMenuCommandAttribute.cs" t="Include" />
+                    <e p="ElementAdderMeta.cs" t="Include" />
+                    <e p="GenericElementAdderMenu.cs" t="Include" />
+                    <e p="GenericElementAdderMenuBuilder.cs" t="Include" />
+                    <e p="IElementAdder.cs" t="Include" />
+                    <e p="IElementAdderMenu.cs" t="Include" />
+                    <e p="IElementAdderMenuBuilder.cs" t="Include" />
+                    <e p="IElementAdderMenuCommand.cs" t="Include" />
+                  </e>
+                  <e p="GenericListAdaptor.cs" t="Include" />
+                  <e p="Internal" t="Include">
+                    <e p="GUIHelper.cs" t="Include" />
+                    <e p="ReorderableListResources.cs" t="Include" />
+                    <e p="SerializedPropertyUtility.cs" t="Include" />
+                  </e>
+                  <e p="IReorderableListAdaptor.cs" t="Include" />
+                  <e p="IReorderableListDropTarget.cs" t="Include" />
+                  <e p="ReorderableListControl.cs" t="Include" />
+                  <e p="ReorderableListEvents.cs" t="Include" />
+                  <e p="ReorderableListFlags.cs" t="Include" />
+                  <e p="ReorderableListGUI.cs" t="Include" />
+                  <e p="ReorderableListStyles.cs" t="Include" />
+                  <e p="SerializedPropertyAdaptor.cs" t="Include" />
+                </e>
+              </e>
+            </e>
+            <e p="Editor" t="Include">
+              <e p="AreaClock2DEditor.cs" t="Include" />
+              <e p="AreaClock3DEditor.cs" t="Include" />
+              <e p="AreaClockEditor.cs" t="Include" />
+              <e p="ClockEditor.cs" t="Include" />
+              <e p="CustomRecorderEditor.cs" t="Include" />
+              <e p="GlobalClockDrawer.cs" t="Include" />
+              <e p="GlobalClockEditor.cs" t="Include" />
+              <e p="LocalClockEditor.cs" t="Include" />
+              <e p="TimekeeperEditor.cs" t="Include" />
+              <e p="TimelineChildEditor.cs" t="Include" />
+              <e p="TimelineEditor.cs" t="Include" />
+            </e>
+            <e p="GlobalClock.cs" t="Include" />
+            <e p="GlobalClockAttribute.cs" t="Include" />
+            <e p="LocalClock.cs" t="Include" />
+            <e p="Occurrences" t="Include">
+              <e p="ActionOccurence.cs" t="Include" />
+              <e p="ForwardActionOccurrence.cs" t="Include" />
+              <e p="FuncOccurence.cs" t="Include" />
+              <e p="Occurrence.cs" t="Include" />
+            </e>
+            <e p="Recorder.cs" t="Include" />
+            <e p="RecorderTimeline.cs" t="Include" />
+            <e p="Timekeeper.cs" t="Include" />
+            <e p="Timeline.cs" t="Include" />
+            <e p="TimelineChild.cs" t="Include" />
+            <e p="TimelineEffector.cs" t="Include" />
+            <e p="Timelines" t="Include">
+              <e p="AnimationTimeline.cs" t="Include" />
+              <e p="AnimatorTimeline.cs" t="Include" />
+              <e p="AudioSourceTimeline.cs" t="Include" />
+              <e p="IParticleSystemTimeline.cs" t="Include" />
+              <e p="NavMeshAgentTimeline.cs" t="Include" />
+              <e p="NonRewindableParticleSystemTimeline.cs" t="Include" />
+              <e p="RewindableParticleSystemTimeline.cs" t="Include" />
+              <e p="RigidbodyTimeline.cs" t="Include" />
+              <e p="RigidbodyTimeline2D.cs" t="Include" />
+              <e p="RigidbodyTimeline3D.cs" t="Include" />
+              <e p="TerrainTimeline.cs" t="Include" />
+              <e p="TrailRendererTimeline.cs" t="Include" />
+              <e p="TransformTimeline.cs" t="Include" />
+              <e p="WheelColliderTimeline.cs" t="Include" />
+              <e p="WindZoneTimeline.cs" t="Include" />
+            </e>
+            <e p="TimeState.cs" t="Include" />
+            <e p="Utilities" t="Include">
+              <e p="Editor" t="Include">
+                <e p="AddonDetector.cs" t="Include" />
+              </e>
+              <e p="Severity.cs" t="Include" />
+              <e p="Singleton.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Plugins" t="Include">
+          <e p="Editor" t="Include">
+            <e p="JetBrains" t="Include">
+              <e p="Unity3DRider.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+      <e p="Test.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
